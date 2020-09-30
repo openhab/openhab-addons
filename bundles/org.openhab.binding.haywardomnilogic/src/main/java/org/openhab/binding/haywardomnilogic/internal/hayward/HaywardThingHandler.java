@@ -83,7 +83,7 @@ public class HaywardThingHandler extends BaseThingHandler {
         }
     }
 
-    public void updateData(String systemID, String channelID, String data) {
+    public void updateData(String channelID, String data) {
         Channel chan = getThing().getChannel(channelID);
         if (chan != null) {
             String acceptedItemType = chan.getAcceptedItemType();

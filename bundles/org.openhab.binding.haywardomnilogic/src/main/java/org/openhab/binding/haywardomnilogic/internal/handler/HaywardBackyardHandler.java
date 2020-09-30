@@ -29,30 +29,36 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HaywardBackyardHandler extends HaywardThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(HaywardBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HaywardBackyardHandler.class);
 
     public HaywardBackyardHandler(Thing thing) {
         super(thing);
     }
 
-    public void getTelemetry(String xmlResponse, String systemID) throws Exception {
+    public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
+        List<String> systemIDs = new ArrayList<>();
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
-
         if (bridgehandler != null) {
-            // Air temp
-            data = bridgehandler.evaluateXPath("//Backyard/@airTemp", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_BACKYARD_AIRTEMP, data.get(0));
+            systemIDs = bridgehandler.evaluateXPath("//Backyard/@systemId", xmlResponse);
+            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            for (int i = 0; i < systemIDs.size(); i++) {
+                if (systemIDs.get(i).equals(thingSystemID)) {
+                    // Air temp
+                    data = bridgehandler.evaluateXPath("//Backyard/@airTemp", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_BACKYARD_AIRTEMP, data.get(0));
 
-            // Status
-            data = bridgehandler.evaluateXPath("//Backyard/@status", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_BACKYARD_STATUS, data.get(0));
+                    // Status
+                    data = bridgehandler.evaluateXPath("//Backyard/@status", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_BACKYARD_STATUS, data.get(0));
 
-            // State
-            data = bridgehandler.evaluateXPath("//Backyard/@state", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_BACKYARD_STATE, data.get(0));
+                    // State
+                    data = bridgehandler.evaluateXPath("//Backyard/@state", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_BACKYARD_STATE, data.get(0));
+                }
+            }
         }
     }
 
@@ -89,7 +95,6 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
         }
 
         if (status.equals("0")) {
-
             bowID = bridgehandler.evaluateXPath("//Property[@name='BowID']/text()", xmlResponse);
             parameter1 = bridgehandler.evaluateXPath("//Property[@name='Parameter1']/text()", xmlResponse);
             message = bridgehandler.evaluateXPath("//Property[@name='Message']/text()", xmlResponse);
@@ -100,7 +105,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
                 } else {
                     alarmStr = "";
                 }
-                updateData(systemID, "backyardAlarm" + String.format("%01d", i + 1), alarmStr);
+                updateData("backyardAlarm" + String.format("%01d", i + 1), alarmStr);
             }
         } else {
             logger.error("Hayward getAlarms XML response: {}", xmlResponse);

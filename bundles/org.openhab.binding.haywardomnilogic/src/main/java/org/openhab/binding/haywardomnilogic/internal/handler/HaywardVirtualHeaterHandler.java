@@ -32,7 +32,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
         super(thing);
     }
 
-    public void getTelemetry(String xmlResponse, String systemID) throws Exception {
+    public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
 
         @SuppressWarnings("null")
@@ -41,15 +41,15 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
         if (bridgehandler != null) {
             // Current Setpoint
             data = bridgehandler.evaluateXPath("//VirtualHeater/@Current-Set-Point", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_VIRTUALHEATER_CURRENTSETPOINT, data.get(0));
+            updateData(HaywardBindingConstants.CHANNEL_VIRTUALHEATER_CURRENTSETPOINT, data.get(0));
 
             // Enable
             data = bridgehandler.evaluateXPath("//VirtualHeater/@enable", xmlResponse);
 
             if (data.get(0).equals("yes")) {
-                updateData(systemID, HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "1");
+                updateData(HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "1");
             } else if (data.get(0).equals("no")) {
-                updateData(systemID, HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "0");
+                updateData(HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "0");
             }
         }
     }

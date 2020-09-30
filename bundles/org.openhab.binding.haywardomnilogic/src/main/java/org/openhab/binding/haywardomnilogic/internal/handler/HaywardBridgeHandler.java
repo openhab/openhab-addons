@@ -486,7 +486,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
     }
 
     public synchronized boolean getTelemetryData() throws Exception {
-
         // *****Request Telemetry from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetTelemetryData</Name><Parameters>"
                 + "<Parameter name=\"Token\" dataType=\"String\">" + config.token + "</Parameter>"
@@ -512,56 +511,65 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                 case "BACKYARD": {
                     HaywardBackyardHandler handler = (HaywardBackyardHandler) thing.getHandler();
                     if (handler != null) {
-                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                        handler.getTelemetry(xmlResponse);
                     }
+                    break;
                 }
                 case "BOW": {
                     HaywardBowHandler handler = (HaywardBowHandler) thing.getHandler();
                     if (handler != null) {
-                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                        handler.getTelemetry(xmlResponse);
                     }
+                    break;
                 }
                 case "CHLORINATOR": {
                     HaywardChlorinatorHandler handler = (HaywardChlorinatorHandler) thing.getHandler();
                     if (handler != null) {
-                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                        handler.getTelemetry(xmlResponse);
                     }
+                    break;
                 }
                 case "COLORLOGIC": {
                     HaywardColorLogicHandler handler = (HaywardColorLogicHandler) thing.getHandler();
                     if (handler != null) {
-                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                        handler.getTelemetry(xmlResponse);
                     }
+                    break;
                 }
                 case "FILTER": {
                     HaywardFilterHandler handler = (HaywardFilterHandler) thing.getHandler();
                     if (handler != null) {
-                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                        handler.getTelemetry(xmlResponse);
                     }
+                    break;
                 }
                 case "HEATER": {
                     HaywardHeaterHandler handler = (HaywardHeaterHandler) thing.getHandler();
                     if (handler != null) {
-                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                        handler.getTelemetry(xmlResponse);
                     }
+                    break;
                 }
                 case "RELAY": {
                     HaywardRelayHandler handler = (HaywardRelayHandler) thing.getHandler();
                     if (handler != null) {
-                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                        handler.getTelemetry(xmlResponse);
                     }
+                    break;
                 }
                 case "SENSOR": {
                     HaywardSensorHandler handler = (HaywardSensorHandler) thing.getHandler();
                     if (handler != null) {
-                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                        handler.getTelemetry(xmlResponse);
                     }
+                    break;
                 }
                 case "VIRTUALHEATER": {
                     HaywardVirtualHeaterHandler handler = (HaywardVirtualHeaterHandler) thing.getHandler();
                     if (handler != null) {
-                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                        handler.getTelemetry(xmlResponse);
                     }
+                    break;
                 }
             }
         }

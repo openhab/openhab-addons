@@ -32,27 +32,33 @@ public class HaywardHeaterHandler extends HaywardThingHandler {
         super(thing);
     }
 
-    public void getTelemetry(String xmlResponse, String systemID) throws Exception {
+    public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
+        List<String> systemIDs = new ArrayList<>();
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
-
         if (bridgehandler != null) {
-            // Operating Mode
-            data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(0));
+            systemIDs = bridgehandler.evaluateXPath("//Heater/@systemId", xmlResponse);
+            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            for (int i = 0; i < systemIDs.size(); i++) {
+                if (systemIDs.get(i).equals(thingSystemID)) {
+                    // Operating Mode
+                    data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(0));
 
-            // State
-            data = bridgehandler.evaluateXPath("//Heater/@heaterState", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_HEATER_STATE, data.get(0));
+                    // State
+                    data = bridgehandler.evaluateXPath("//Heater/@heaterState", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_HEATER_STATE, data.get(0));
 
-            // Enable
-            data = bridgehandler.evaluateXPath("//Heater/@enable", xmlResponse);
-            if (data.get(0).equals("0")) {
-                updateData(systemID, HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "0");
-            } else {
-                updateData(systemID, HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "1");
+                    // Enable
+                    data = bridgehandler.evaluateXPath("//Heater/@enable", xmlResponse);
+                    if (data.get(0).equals("0")) {
+                        updateData(HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "0");
+                    } else {
+                        updateData(HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "1");
+                    }
+                }
             }
         }
     }

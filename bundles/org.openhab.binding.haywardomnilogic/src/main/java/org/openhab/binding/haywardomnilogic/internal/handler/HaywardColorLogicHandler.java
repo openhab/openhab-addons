@@ -32,26 +32,32 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
         super(thing);
     }
 
-    public void getTelemetry(String xmlResponse, String systemID) throws Exception {
+    public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
+        List<String> systemIDs = new ArrayList<>();
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
-
         if (bridgehandler != null) {
-            // Light State
-            data = bridgehandler.evaluateXPath("//ColorLogic-Light/@lightState", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_COLORLOGIC_LIGHTSTATE, data.get(0));
+            systemIDs = bridgehandler.evaluateXPath("//ColorLogic-Light/@systemId", xmlResponse);
+            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            for (int i = 0; i < systemIDs.size(); i++) {
+                if (systemIDs.get(i).equals(thingSystemID)) {
+                    // Light State
+                    data = bridgehandler.evaluateXPath("//ColorLogic-Light/@lightState", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_LIGHTSTATE, data.get(0));
 
-            if (data.get(0).equals("0")) {
-                updateData(systemID, HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "0");
-            } else {
-                updateData(systemID, HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "1");
+                    if (data.get(0).equals("0")) {
+                        updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "0");
+                    } else {
+                        updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "1");
+                    }
+
+                    // Current Show
+                    data = bridgehandler.evaluateXPath("//ColorLogic-Light/@currentShow", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW, data.get(0));
+                }
             }
-
-            // Current Show
-            data = bridgehandler.evaluateXPath("//ColorLogic-Light/@currentShow", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW, data.get(0));
         }
     }
 }

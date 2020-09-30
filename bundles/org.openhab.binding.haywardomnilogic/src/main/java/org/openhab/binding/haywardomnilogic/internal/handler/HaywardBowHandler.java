@@ -32,19 +32,26 @@ public class HaywardBowHandler extends HaywardThingHandler {
         super(thing);
     }
 
-    public void getTelemetry(String xmlResponse, String systemID) throws Exception {
+    public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
+        List<String> systemIDs = new ArrayList<>();
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
         if (bridgehandler != null) {
-            // Flow
-            data = bridgehandler.evaluateXPath("//BodyOfWater/@flow", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_BOW_FLOW, data.get(0));
+            systemIDs = bridgehandler.evaluateXPath("//BodyOfWater/@systemId", xmlResponse);
+            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            for (int i = 0; i < systemIDs.size(); i++) {
+                if (systemIDs.get(i).equals(thingSystemID)) {
+                    // Flow
+                    data = bridgehandler.evaluateXPath("//BodyOfWater/@flow", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_BOW_FLOW, data.get(i));
 
-            // Water Temp
-            data = bridgehandler.evaluateXPath("//BodyOfWater/@waterTemp", xmlResponse);
-            updateData(systemID, HaywardBindingConstants.CHANNEL_BOW_WATERTEMP, data.get(0));
+                    // Water Temp
+                    data = bridgehandler.evaluateXPath("//BodyOfWater/@waterTemp", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_BOW_WATERTEMP, data.get(i));
+                }
+            }
         }
     }
 }

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.haywardomnilogic.internal.handler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
@@ -29,7 +32,27 @@ public class HaywardRelayHandler extends HaywardThingHandler {
         super(thing);
     }
 
-    public void getTelemetry(String data, String systemID) throws Exception {
-        updateData(systemID, HaywardBindingConstants.CHANNEL_RELAY_STATE, data);
+    public void getTelemetry(String xmlResponse) throws Exception {
+        List<String> data = new ArrayList<>();
+        List<String> systemIDs = new ArrayList<>();
+
+        @SuppressWarnings("null")
+        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
+        if (bridgehandler != null) {
+            systemIDs = bridgehandler.evaluateXPath("//Relay/@systemId", xmlResponse);
+            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            for (int i = 0; i < systemIDs.size(); i++) {
+                if (systemIDs.get(i).equals(thingSystemID)) {
+                    // State
+                    data = bridgehandler.evaluateXPath("//Sensor/@relayState", xmlResponse);
+                    // for (int i = 0; i < systemIDs.size(); i++) {
+                    // handleHaywardTelemetry(HaywardTypeToRequest.RELAY, systemIDs.get(i),
+                    // HaywardBindingConstants.CHANNEL_RELAY_STATE, data.get(i));
+                    // updateData(HaywardBindingConstants.CHANNEL_RELAY_STATE, data);
+
+                    // }
+                }
+            }
+        }
     }
 }
