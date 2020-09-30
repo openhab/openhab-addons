@@ -79,7 +79,7 @@ public class HueAuthorizedConfig extends HueUnauthorizedConfig {
 
     /**
      * Return a json serializer that behaves like the default one, but updates the UTC and localtime fields
-     * before each serializion.
+     * before each serialization.
      */
     @NonNullByDefault({})
     public static class Serializer implements JsonSerializer<HueAuthorizedConfig> {

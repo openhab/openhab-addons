@@ -71,8 +71,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = false, service = { ConfigStore.class }, configurationPid = {
-        HueEmulationService.CONFIG_PID }, property = "com.eclipsesource.jaxrs.publish=false")
+@Component(immediate = false, service = ConfigStore.class, configurationPid = HueEmulationService.CONFIG_PID)
 @ConfigurableService(category = "io", label = "Hue Emulation", description_uri = "io:hueemulation")
 @NonNullByDefault
 public class ConfigStore {
