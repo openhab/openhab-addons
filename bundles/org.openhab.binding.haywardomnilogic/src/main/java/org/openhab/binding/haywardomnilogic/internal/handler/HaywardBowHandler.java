@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.haywardomnilogic.internal.handler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
 
 /**
@@ -26,5 +30,21 @@ public class HaywardBowHandler extends HaywardThingHandler {
 
     public HaywardBowHandler(Thing thing) {
         super(thing);
+    }
+
+    public void getTelemetry(String xmlResponse, String systemID) throws Exception {
+        List<String> data = new ArrayList<>();
+
+        @SuppressWarnings("null")
+        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
+        if (bridgehandler != null) {
+            // Flow
+            data = bridgehandler.evaluateXPath("//BodyOfWater/@flow", xmlResponse);
+            updateData(systemID, HaywardBindingConstants.CHANNEL_BOW_FLOW, data.get(0));
+
+            // Water Temp
+            data = bridgehandler.evaluateXPath("//BodyOfWater/@waterTemp", xmlResponse);
+            updateData(systemID, HaywardBindingConstants.CHANNEL_BOW_WATERTEMP, data.get(0));
+        }
     }
 }

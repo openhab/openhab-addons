@@ -486,9 +486,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
     }
 
     public synchronized boolean getTelemetryData() throws Exception {
-        String xmlResponse;
-        List<String> data = new ArrayList<>();
-        List<String> systemIDs = new ArrayList<>();
 
         // *****Request Telemetry from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetTelemetryData</Name><Parameters>"
@@ -496,7 +493,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                 + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + config.mspSystemID
                 + "</Parameter></Parameters></Request>";
 
-        xmlResponse = httpXmlResponse(urlParameters);
+        String xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
             logger.error("Hayward getTelemetry XML response was null");
@@ -508,360 +505,80 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             return false;
         }
 
-        // ******************
-        // ***BACKYARD***
-        // ******************
-        systemIDs = evaluateXPath("//Backyard/@systemId", xmlResponse);
+        for (Thing thing : getThing().getThings()) {
+            Map<String, String> properties = thing.getProperties();
 
-        // Air temp
-        data = evaluateXPath("//Backyard/@airTemp", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.BACKYARD, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_BACKYARD_AIRTEMP, data.get(0));
-
-        // Status
-        data = evaluateXPath("//Backyard/@status", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.BACKYARD, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_BACKYARD_STATUS, data.get(0));
-
-        // State
-        data = evaluateXPath("//Backyard/@state", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.BACKYARD, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_BACKYARD_STATE, data.get(0));
-
-        // ******************
-        // ***BodyOfWater***
-        // ******************
-        systemIDs = evaluateXPath("//BodyOfWater/@systemId", xmlResponse);
-
-        // Flow
-        data = evaluateXPath("//BodyOfWater/@flow", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.BOW, systemIDs.get(0), HaywardBindingConstants.CHANNEL_BOW_FLOW,
-                data.get(0));
-
-        // Water Temp
-        data = evaluateXPath("//BodyOfWater/@waterTemp", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.BOW, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_BOW_WATERTEMP, data.get(0));
-
-        // ******************
-        // ***Chlorinator***
-        // ******************
-        systemIDs = evaluateXPath("//Chlorinator/@systemId", xmlResponse);
-
-        // Operating Mode
-        data = evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(0));
-        // chlorState is used to set the chlorinator cfgState in the timedPercent command
-        // this.chlorState = data.get(0);
-
-        // Timed Percent
-        data = evaluateXPath("//Chlorinator/@Timed-Percent", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT, data.get(0));
-        this.chlorTimedPercent = data.get(0);
-
-        // scMode
-        data = evaluateXPath("//Chlorinator/@scMode", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_CHLORINATOR_SCMODE, data.get(0));
-
-        // Error
-        data = evaluateXPath("//Chlorinator/@chlrError", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_CHLORINATOR_ERROR, data.get(0));
-
-        // Alert
-        data = evaluateXPath("//Chlorinator/@chlrAlert", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_CHLORINATOR_ALERT, data.get(0));
-
-        // Average Salt Level
-        data = evaluateXPath("//Chlorinator/@avgSaltLevel", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_CHLORINATOR_AVGSALTLEVEL, data.get(0));
-
-        // Instant Salt Level
-        data = evaluateXPath("//Chlorinator/@instantSaltLevel", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_CHLORINATOR_INSTANTSALTLEVEL, data.get(0));
-
-        // Status
-        data = evaluateXPath("//Chlorinator/@status", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS, data.get(0));
-
-        if (data.get(0).equals("0")) {
-            handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0");
-            // chlorState is used to set the chlorinator cfgState in the timedPercent command
-            this.chlorState = "2";
-        } else {
-            handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "1");
-            // chlorState is used to set the chlorinator cfgState in the timedPercent command
-            this.chlorState = "3";
-        }
-
-        // ***********************
-        // ***Color Logic Light***
-        // ***********************
-        systemIDs = evaluateXPath("//ColorLogic-Light/@systemId", xmlResponse);
-
-        // Light State
-        data = evaluateXPath("//ColorLogic-Light/@lightState", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.COLORLOGIC, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_COLORLOGIC_LIGHTSTATE, data.get(0));
-
-        if (data.get(0).equals("0")) {
-            handleHaywardTelemetry(HaywardTypeToRequest.COLORLOGIC, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "0");
-        } else {
-            handleHaywardTelemetry(HaywardTypeToRequest.COLORLOGIC, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "1");
-        }
-
-        // Current Show
-        data = evaluateXPath("//ColorLogic-Light/@currentShow", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.COLORLOGIC, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW, data.get(0));
-
-        // ******************
-        // ***Filter***
-        // ******************
-        systemIDs = evaluateXPath("//Filter/@systemId", xmlResponse);
-
-        // Valve Position
-        data = evaluateXPath("//Filter/@valvePosition", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.FILTER, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(0));
-
-        // Speed
-        data = evaluateXPath("//Filter/@filterSpeed", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.FILTER, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_FILTER_SPEED, data.get(0));
-
-        if (data.get(0).equals("0")) {
-            handleHaywardTelemetry(HaywardTypeToRequest.FILTER, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "0");
-        } else {
-            handleHaywardTelemetry(HaywardTypeToRequest.FILTER, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "1");
-        }
-
-        // State
-        data = evaluateXPath("//Filter/@filterState", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.FILTER, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_FILTER_STATE, data.get(0));
-
-        // lastSpeed
-        data = evaluateXPath("//Filter/@lastSpeed", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.FILTER, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(0));
-
-        // ******************
-        // ***Heater***
-        // ******************
-        systemIDs = evaluateXPath("//Heater/@systemId", xmlResponse);
-
-        // State
-        data = evaluateXPath("//Heater/@heaterState", xmlResponse);
-        handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_HEATER_STATE, data.get(0));
-
-        // Enable
-        data = evaluateXPath("//Heater/@enable", xmlResponse);
-        if (data.get(0).equals("0")) {
-            handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "0");
-        } else {
-            handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "1");
-        }
-
-        // ******************
-        // ***Relays***
-        // ******************
-        systemIDs = evaluateXPath("//Relay/@systemId", xmlResponse);
-
-        // State
-        data = evaluateXPath("//Relay/@relayState", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            handleHaywardTelemetry(HaywardTypeToRequest.RELAY, systemIDs.get(i),
-                    HaywardBindingConstants.CHANNEL_RELAY_STATE, data.get(i));
-
-        }
-
-        // ******************
-        // ***Sensors***
-        // ******************
-        systemIDs = evaluateXPath("//Sensor/@systemId", xmlResponse);
-
-        // State
-        data = evaluateXPath("//Sensor/@relayState", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            handleHaywardTelemetry(HaywardTypeToRequest.RELAY, systemIDs.get(i),
-                    HaywardBindingConstants.CHANNEL_RELAY_STATE, data.get(i));
-
-        }
-
-        // ******************
-        // ***Virtual Heater***
-        // ******************
-
-        systemIDs = evaluateXPath("//VirtualHeater/@systemId", xmlResponse);
-
-        // Current Setpoint
-        data = evaluateXPath("//VirtualHeater/@Current-Set-Point", xmlResponse);
-
-        handleHaywardTelemetry(HaywardTypeToRequest.VIRTUALHEATER, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_VIRTUALHEATER_CURRENTSETPOINT, data.get(0));
-
-        // Enable
-        data = evaluateXPath("//VirtualHeater/@enable", xmlResponse);
-
-        if (data.get(0).equals("yes")) {
-            handleHaywardTelemetry(HaywardTypeToRequest.VIRTUALHEATER, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "1");
-        } else if (data.get(0).equals("no")) {
-            handleHaywardTelemetry(HaywardTypeToRequest.VIRTUALHEATER, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "0");
+            switch (properties.get(HaywardBindingConstants.PROPERTY_TYPE)) {
+                case "BACKYARD": {
+                    HaywardBackyardHandler handler = (HaywardBackyardHandler) thing.getHandler();
+                    if (handler != null) {
+                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    }
+                }
+                case "BOW": {
+                    HaywardBowHandler handler = (HaywardBowHandler) thing.getHandler();
+                    if (handler != null) {
+                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    }
+                }
+                case "CHLORINATOR": {
+                    HaywardChlorinatorHandler handler = (HaywardChlorinatorHandler) thing.getHandler();
+                    if (handler != null) {
+                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    }
+                }
+                case "COLORLOGIC": {
+                    HaywardColorLogicHandler handler = (HaywardColorLogicHandler) thing.getHandler();
+                    if (handler != null) {
+                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    }
+                }
+                case "FILTER": {
+                    HaywardFilterHandler handler = (HaywardFilterHandler) thing.getHandler();
+                    if (handler != null) {
+                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    }
+                }
+                case "HEATER": {
+                    HaywardHeaterHandler handler = (HaywardHeaterHandler) thing.getHandler();
+                    if (handler != null) {
+                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    }
+                }
+                case "RELAY": {
+                    HaywardRelayHandler handler = (HaywardRelayHandler) thing.getHandler();
+                    if (handler != null) {
+                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    }
+                }
+                case "SENSOR": {
+                    HaywardSensorHandler handler = (HaywardSensorHandler) thing.getHandler();
+                    if (handler != null) {
+                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    }
+                }
+                case "VIRTUALHEATER": {
+                    HaywardVirtualHeaterHandler handler = (HaywardVirtualHeaterHandler) thing.getHandler();
+                    if (handler != null) {
+                        handler.getTelemetry(xmlResponse, properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
+                    }
+                }
+            }
         }
         return true;
     }
 
     public synchronized boolean getAlarmList() throws Exception {
-        List<String> backyardID = new ArrayList<>();
-        List<String> bowID = new ArrayList<>();
-        List<String> parameter1 = new ArrayList<>();
-        List<String> message = new ArrayList<>();
-        String status;
-        String xmlResponse;
-        String alarmStr;
-
-        // Get list backyard ID
         for (Thing thing : getThing().getThings()) {
             Map<String, String> properties = thing.getProperties();
-            if (properties.get(HaywardBindingConstants.PROPERTY_TYPE).equals("Backyard")) {
-                backyardID.add(properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
-            }
-        }
-        if (backyardID.size() == 0) {
-            // No backyard thing exists
-            return true;
-        }
-
-        // *****Request Alarm List from Hayward server
-        String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetAlarmList</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + config.token + "</Parameter>"
-                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + config.mspSystemID + "</Parameter>"
-                + "<Parameter name=\"CultureInfoName\" dataType=\"String\">en-us</Parameter></Parameters></Request>";
-
-        xmlResponse = httpXmlResponse(urlParameters);
-
-        if (xmlResponse.isEmpty()) {
-            logger.error("Hayward getAlarmList XML response was empty");
-            return false;
-        }
-
-        status = evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
-
-        if (!(status.equals("0"))) {
-            logger.error("Hayward getAlarm XML response: {}", xmlResponse);
-            return false;
-        }
-
-        if (status.equals("0")) {
-            bowID = evaluateXPath("//Property[@name='BowID']/text()", xmlResponse);
-            parameter1 = evaluateXPath("//Property[@name='Parameter1']/text()", xmlResponse);
-            message = evaluateXPath("//Property[@name='Message']/text()", xmlResponse);
-
-            for (int i = 0; i < 5; i++) {
-                if (i < bowID.size()) {
-                    alarmStr = parameter1.get(i) + ": " + message.get(i);
-                } else {
-                    alarmStr = "";
-                }
-
-                handleHaywardTelemetry(HaywardTypeToRequest.BACKYARD, backyardID.get(0),
-                        "backyardAlarm" + String.format("%01d", i + 1), alarmStr);
-            }
-        } else {
-            logger.error("Hayward getAlarms XML response: {}", xmlResponse);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void handleHaywardTelemetry(HaywardTypeToRequest type, String systemID, String channelID, String data) {
-        // Once we have a description, see if the thing exists.
-        Thing thing = getThingForType(type, Integer.parseInt(systemID));
-
-        if (thing != null) {
-            if (type == HaywardTypeToRequest.BACKYARD) {
+            if (properties.get(HaywardBindingConstants.PROPERTY_TYPE).equals("BACKYARD")) {
                 HaywardBackyardHandler handler = (HaywardBackyardHandler) thing.getHandler();
                 if (handler != null) {
-                    handler.updateData(systemID, channelID, data);
-                }
-            } else if (type == HaywardTypeToRequest.BOW) {
-                HaywardBowHandler handler = (HaywardBowHandler) thing.getHandler();
-                if (handler != null) {
-                    handler.updateData(systemID, channelID, data);
-                }
-            } else if (type == HaywardTypeToRequest.FILTER) {
-                HaywardFilterHandler handler = (HaywardFilterHandler) thing.getHandler();
-                if (handler != null) {
-                    handler.updateData(systemID, channelID, data);
-                }
-            } else if (type == HaywardTypeToRequest.HEATER) {
-                HaywardHeaterHandler handler = (HaywardHeaterHandler) thing.getHandler();
-                if (handler != null) {
-                    handler.updateData(systemID, channelID, data);
-                }
-            } else if (type == HaywardTypeToRequest.COLORLOGIC) {
-                HaywardColorLogicHandler handler = (HaywardColorLogicHandler) thing.getHandler();
-                if (handler != null) {
-                    handler.updateData(systemID, channelID, data);
-                }
-            } else if (type == HaywardTypeToRequest.CHLORINATOR) {
-                HaywardChlorinatorHandler handler = (HaywardChlorinatorHandler) thing.getHandler();
-                if (handler != null) {
-                    handler.updateData(systemID, channelID, data);
-                }
-            } else if (type == HaywardTypeToRequest.RELAY) {
-                HaywardRelayHandler handler = (HaywardRelayHandler) thing.getHandler();
-                if (handler != null) {
-                    handler.updateData(systemID, channelID, data);
-                }
-            } else if (type == HaywardTypeToRequest.VIRTUALHEATER) {
-                HaywardVirtualHeaterHandler handler = (HaywardVirtualHeaterHandler) thing.getHandler();
-                if (handler != null) {
-                    handler.updateData(systemID, channelID, data);
+                    return handler.getAlarmList(properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID));
                 }
             }
         }
+        return false;
     }
 
     private synchronized void initPolling(int initalDelay) {
@@ -1061,7 +778,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         return null;
     }
 
-    private List<String> evaluateXPath(String xpathExp, String xmlResponse) throws Exception {
+    public List<String> evaluateXPath(String xpathExp, String xmlResponse) throws Exception {
         List<String> values = new ArrayList<>();
         try {
             InputSource inputXML = new InputSource(new StringReader(xmlResponse));
@@ -1086,7 +803,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                 .timeout(10, TimeUnit.SECONDS);
     }
 
-    private synchronized String httpXmlResponse(String urlParameters) throws Exception {
+    public synchronized String httpXmlResponse(String urlParameters) throws Exception {
         String statusMessage;
         String urlParameterslength = Integer.toString(urlParameters.length());
 

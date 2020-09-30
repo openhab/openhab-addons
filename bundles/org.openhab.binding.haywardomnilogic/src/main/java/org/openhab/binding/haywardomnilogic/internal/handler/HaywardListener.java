@@ -24,8 +24,6 @@ import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardTypeToReques
 @NonNullByDefault
 public interface HaywardListener {
 
-    void handleHaywardTelemetry(HaywardTypeToRequest type, String systemID, String channelID, String data);
-
     void onDeviceDiscovered(HaywardTypeToRequest type, Integer systemID, String label, String bowID, String bowName,
             String property1, String property2, String property3, String property4);
 }

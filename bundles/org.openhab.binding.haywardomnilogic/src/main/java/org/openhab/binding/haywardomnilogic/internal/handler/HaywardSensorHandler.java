@@ -14,6 +14,7 @@ package org.openhab.binding.haywardomnilogic.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
 
 /**
@@ -26,5 +27,9 @@ public class HaywardSensorHandler extends HaywardThingHandler {
 
     public HaywardSensorHandler(Thing thing) {
         super(thing);
+    }
+
+    public void getTelemetry(String data, String systemID) throws Exception {
+        updateData(systemID, HaywardBindingConstants.CHANNEL_SENSOR_DATA, data);
     }
 }

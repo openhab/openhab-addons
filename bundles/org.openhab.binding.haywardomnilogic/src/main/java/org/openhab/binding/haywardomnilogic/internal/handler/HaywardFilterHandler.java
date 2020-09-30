@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.haywardomnilogic.internal.handler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +52,41 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         if (chan != null) {
             updateState(chan.getUID(), new DecimalType(data));
             logger.trace("Updated Hayward Filter {} {} to: {}", systemID, channelID, data);
+        }
+    }
+
+    public void getTelemetry(String xmlResponse, String systemID) throws Exception {
+        List<String> data = new ArrayList<>();
+
+        @SuppressWarnings("null")
+        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
+
+        if (bridgehandler != null) {
+            // Operating Mode
+            data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
+            updateData(systemID, HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(0));
+
+            // Valve Position
+            data = bridgehandler.evaluateXPath("//Filter/@valvePosition", xmlResponse);
+            updateData(systemID, HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(0));
+
+            // Speed
+            data = bridgehandler.evaluateXPath("//Filter/@filterSpeed", xmlResponse);
+            updateData(systemID, HaywardBindingConstants.CHANNEL_FILTER_SPEED, data.get(0));
+
+            if (data.get(0).equals("0")) {
+                updateData(systemID, HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "0");
+            } else {
+                updateData(systemID, HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "1");
+            }
+
+            // State
+            data = bridgehandler.evaluateXPath("//Filter/@filterState", xmlResponse);
+            updateData(systemID, HaywardBindingConstants.CHANNEL_FILTER_STATE, data.get(0));
+
+            // lastSpeed
+            data = bridgehandler.evaluateXPath("//Filter/@lastSpeed", xmlResponse);
+            updateData(systemID, HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(0));
         }
     }
 }
