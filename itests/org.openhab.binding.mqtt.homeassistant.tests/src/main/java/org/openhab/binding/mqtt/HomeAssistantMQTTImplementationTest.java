@@ -57,6 +57,7 @@ import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.UIDUtils;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -69,6 +70,7 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
+    private @NonNullByDefault({}) ConfigurationAdmin configurationAdmin;
     private @NonNullByDefault({}) MqttService mqttService;
     private @NonNullByDefault({}) MqttBrokerConnection embeddedConnection;
     private @NonNullByDefault({}) MqttBrokerConnection connection;
@@ -94,14 +96,15 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     public void beforeEach() throws Exception {
         registerVolatileStorageService();
         mocksCloseable = openMocks(this);
+        configurationAdmin = getService(ConfigurationAdmin.class);
         mqttService = getService(MqttService.class);
 
         // Wait for the EmbeddedBrokerService internal connection to be connected
-        embeddedConnection = new EmbeddedBrokerTools().waitForConnection(mqttService);
+        embeddedConnection = new EmbeddedBrokerTools(configurationAdmin, mqttService).waitForConnection();
 
         connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
                 embeddedConnection.isSecure(), "ha_mqtt");
-        connection.start().get(1000, TimeUnit.MILLISECONDS);
+        connection.start().get(2, TimeUnit.SECONDS);
         assertThat(connection.connectionState(), is(MqttConnectionState.CONNECTED));
 
         // If the connection state changes in between -> fail
@@ -117,7 +120,7 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
         futures.add(embeddedConnection.publish(testObjectTopic + "/state", "ON".getBytes(), 0, true));
 
         registeredTopics = futures.size();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(2, TimeUnit.SECONDS);
 
         failure = null;
 
@@ -128,7 +131,7 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     public void afterEach() throws Exception {
         if (connection != null) {
             connection.removeConnectionObserver(failIfChange);
-            connection.stop().get(1000, TimeUnit.MILLISECONDS);
+            connection.stop().get(2, TimeUnit.SECONDS);
         }
 
         mocksCloseable.close();
@@ -137,18 +140,18 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     @Test
     public void reconnectTest() throws InterruptedException, ExecutionException, TimeoutException {
         connection.removeConnectionObserver(failIfChange);
-        connection.stop().get(2000, TimeUnit.MILLISECONDS);
+        connection.stop().get(2, TimeUnit.SECONDS);
         connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
                 embeddedConnection.isSecure(), "ha_mqtt");
-        connection.start().get(2000, TimeUnit.MILLISECONDS);
+        connection.start().get(2, TimeUnit.SECONDS);
     }
 
     @Test
     public void retrieveAllTopics() throws InterruptedException, ExecutionException, TimeoutException {
         CountDownLatch c = new CountDownLatch(registeredTopics);
         connection.subscribe("homeassistant/+/+/" + ThingChannelConstants.testHomeAssistantThing.getId() + "/#",
-                (topic, payload) -> c.countDown()).get(1000, TimeUnit.MILLISECONDS);
-        assertTrue(c.await(1000, TimeUnit.MILLISECONDS),
+                (topic, payload) -> c.countDown()).get(2, TimeUnit.SECONDS);
+        assertTrue(c.await(2, TimeUnit.SECONDS),
                 "Connection " + connection.getClientId() + " not retrieving all topics");
     }
 
@@ -183,8 +186,8 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
                     return null;
                 });
 
-        assertTrue(latch.await(4000, TimeUnit.MILLISECONDS));
-        future.get(2000, TimeUnit.MILLISECONDS);
+        assertTrue(latch.await(4, TimeUnit.SECONDS));
+        future.get(2, TimeUnit.SECONDS);
 
         // No failure expected and one discovered result
         assertNull(failure);

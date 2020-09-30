@@ -35,6 +35,7 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.test.java.JavaOSGiTest;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * Moquette test
@@ -47,6 +48,7 @@ public class MoquetteTest extends JavaOSGiTest {
 
     private @NonNullByDefault({}) AutoCloseable mocksCloseable;
 
+    private @NonNullByDefault({}) ConfigurationAdmin configurationAdmin;
     private @NonNullByDefault({}) MqttService mqttService;
     private @NonNullByDefault({}) MqttBrokerConnection embeddedConnection;
     private @NonNullByDefault({}) MqttBrokerConnection clientConnection;
@@ -62,10 +64,11 @@ public class MoquetteTest extends JavaOSGiTest {
     public void beforeEach() throws Exception {
         registerVolatileStorageService();
         mocksCloseable = openMocks(this);
+        configurationAdmin = getService(ConfigurationAdmin.class);
         mqttService = getService(MqttService.class);
 
         // Wait for the EmbeddedBrokerService internal connection to be connected
-        embeddedConnection = new EmbeddedBrokerTools().waitForConnection(mqttService);
+        embeddedConnection = new EmbeddedBrokerTools(configurationAdmin, mqttService).waitForConnection();
         embeddedConnection.setQos(1);
 
         clientConnection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
