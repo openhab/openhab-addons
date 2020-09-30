@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Russell Stephens - Initial Contribution
  *
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.dscalarm")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.dscalarm")
 public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmBridgeDiscovery.class);
 

@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class)
 public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final CloudConnector cloudConnector;

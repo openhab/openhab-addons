@@ -34,7 +34,7 @@ import org.tellstick.device.TellstickController;
  * @author Jarle Hjortland - Initial contribution
  *
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.tellstick")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.tellstick")
 public class TellstickBridgeDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(TellstickBridgeDiscovery.class);

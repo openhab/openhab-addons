@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Thomas Weißschuh - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.linuxinput")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.linuxinput")
 @NonNullByDefault
 public class LinuxInputDiscoveryService extends AbstractDiscoveryService {
 

@@ -54,7 +54,7 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.lcn")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.lcn")
 public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(LcnPchkDiscoveryService.class);
     private static final String HOSTNAME = "hostname";

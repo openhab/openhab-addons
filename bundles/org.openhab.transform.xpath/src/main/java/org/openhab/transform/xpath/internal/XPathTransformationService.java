@@ -38,7 +38,7 @@ import org.xml.sax.InputSource;
  * @author Thomas.Eichstaedt-Engelen
  */
 @NonNullByDefault
-@Component(immediate = true, property = { "smarthome.transform=XPATH" })
+@Component(property = { "smarthome.transform=XPATH" })
 public class XPathTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(XPathTransformationService.class);

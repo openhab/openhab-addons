@@ -43,7 +43,7 @@ import rx.subscriptions.CompositeSubscription;
  *
  * @author Mattias Markehed - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.minecraft")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.minecraft")
 public class MinecraftDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(MinecraftDiscoveryService.class);

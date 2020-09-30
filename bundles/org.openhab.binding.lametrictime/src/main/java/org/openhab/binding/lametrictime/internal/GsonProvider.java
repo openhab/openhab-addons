@@ -44,7 +44,7 @@ import com.google.gson.Gson;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Component(immediate = true)
+@Component
 public class GsonProvider<T> implements MessageBodyReader<T>, MessageBodyWriter<T> {
 
     private final Gson gson;

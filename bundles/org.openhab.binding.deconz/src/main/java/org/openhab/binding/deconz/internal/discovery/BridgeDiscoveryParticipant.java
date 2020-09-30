@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Component;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(service = UpnpDiscoveryParticipant.class)
 public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override

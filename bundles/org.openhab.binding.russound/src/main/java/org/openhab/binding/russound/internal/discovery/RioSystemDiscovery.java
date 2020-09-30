@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.russound")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.russound")
 public class RioSystemDiscovery extends AbstractDiscoveryService {
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(RioSystemDiscovery.class);

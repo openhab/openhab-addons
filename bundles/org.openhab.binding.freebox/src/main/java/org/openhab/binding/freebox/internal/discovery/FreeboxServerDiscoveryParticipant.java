@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@Component(immediate = true)
+@Component
 public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxServerDiscoveryParticipant.class);
