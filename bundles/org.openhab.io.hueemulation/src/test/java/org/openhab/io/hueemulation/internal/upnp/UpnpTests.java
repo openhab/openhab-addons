@@ -25,6 +25,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.grizzly.osgi.httpservice.HttpServiceImpl;
@@ -81,6 +82,7 @@ public class UpnpTests {
             return null;
         }).when(executor).execute(ArgumentMatchers.any());
         subject = new UpnpServer(executor);
+        subject.clientBuilder = ClientBuilder.newBuilder();
         subject.httpService = httpServiceImpl;
         subject.cs = commonSetup.cs;
         subject.overwriteReadyToFalse = true;
@@ -94,7 +96,7 @@ public class UpnpTests {
     }
 
     @AfterAll
-    public static void tearDownHttp() {
+    public static void tearDownHttp() throws Exception {
         mainHttpHandler.unregisterAll();
         commonSetup.dispose();
     }
