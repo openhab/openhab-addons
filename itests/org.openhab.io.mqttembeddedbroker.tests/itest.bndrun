@@ -10,6 +10,10 @@ Fragment-Host: org.openhab.io.mqttembeddedbroker
 -runblacklist: \
 	bnd.identity;id='org.openhab.core.storage.json'
 
+-runvm: \
+	-Dio.netty.noUnsafe=true,\
+	-Dmqttembeddedbroker.port=${mqttembeddedbroker.port}
+
 #
 # done
 #
@@ -73,4 +77,3 @@ Fragment-Host: org.openhab.io.mqttembeddedbroker
 	org.opentest4j;version='[1.2.0,1.2.1)',\
 	org.reactivestreams.reactive-streams;version='[1.0.2,1.0.3)',\
 	moquette-broker;version='[0.13.0,0.13.1)'
--runvm: -Dio.netty.noUnsafe=true

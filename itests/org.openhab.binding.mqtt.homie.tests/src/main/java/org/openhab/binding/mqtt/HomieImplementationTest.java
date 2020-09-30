@@ -59,6 +59,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.types.UnDefType;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homie device tree.
@@ -71,6 +72,7 @@ public class HomieImplementationTest extends JavaOSGiTest {
     private static final String DEVICE_ID = ThingChannelConstants.testHomieThing.getId();
     private static final String DEVICE_TOPIC = BASE_TOPIC + "/" + DEVICE_ID;
 
+    private @NonNullByDefault({}) ConfigurationAdmin configurationAdmin;
     private @NonNullByDefault({}) MqttService mqttService;
     private @NonNullByDefault({}) MqttBrokerConnection embeddedConnection;
     private @NonNullByDefault({}) MqttBrokerConnection connection;
@@ -99,15 +101,17 @@ public class HomieImplementationTest extends JavaOSGiTest {
     public void beforeEach() throws Exception {
         registerVolatileStorageService();
         mocksCloseable = openMocks(this);
+        configurationAdmin = getService(ConfigurationAdmin.class);
         mqttService = getService(MqttService.class);
 
-        embeddedConnection = new EmbeddedBrokerTools().waitForConnection(mqttService);
+        // Wait for the EmbeddedBrokerService internal connection to be connected
+        embeddedConnection = new EmbeddedBrokerTools(configurationAdmin, mqttService).waitForConnection();
         embeddedConnection.setQos(1);
 
         connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
                 embeddedConnection.isSecure(), "homie");
         connection.setQos(1);
-        connection.start().get(500, TimeUnit.MILLISECONDS);
+        connection.start().get(5, TimeUnit.SECONDS);
         assertThat(connection.connectionState(), is(MqttConnectionState.CONNECTED));
         // If the connection state changes in between -> fail
         connection.addConnectionObserver(failIfChange);
@@ -146,7 +150,7 @@ public class HomieImplementationTest extends JavaOSGiTest {
         futures.add(publish(propertyTestTopic + "/$datatype", "boolean"));
 
         registeredTopics = futures.size();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(2, TimeUnit.SECONDS);
 
         scheduler = new ScheduledThreadPoolExecutor(6);
     }
@@ -159,9 +163,11 @@ public class HomieImplementationTest extends JavaOSGiTest {
     public void afterEach() throws Exception {
         if (connection != null) {
             connection.removeConnectionObserver(failIfChange);
-            connection.stop().get(500, TimeUnit.MILLISECONDS);
+            connection.stop().get(2, TimeUnit.SECONDS);
         }
-        scheduler.shutdownNow();
+        if (scheduler != null) {
+            scheduler.shutdownNow();
+        }
         mocksCloseable.close();
     }
 
@@ -169,9 +175,8 @@ public class HomieImplementationTest extends JavaOSGiTest {
     public void retrieveAllTopics() throws InterruptedException, ExecutionException, TimeoutException {
         // four topics are not under /testnode !
         CountDownLatch c = new CountDownLatch(registeredTopics - 4);
-        connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown()).get(5000,
-                TimeUnit.MILLISECONDS);
-        assertTrue(c.await(5000, TimeUnit.MILLISECONDS),
+        connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown()).get(5, TimeUnit.SECONDS);
+        assertTrue(c.await(5, TimeUnit.SECONDS),
                 "Connection " + connection.getClientId() + " not retrieving all topics ");
     }
 
