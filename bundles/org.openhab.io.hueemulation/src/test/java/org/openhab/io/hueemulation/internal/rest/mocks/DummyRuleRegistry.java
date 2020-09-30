@@ -44,7 +44,6 @@ public class DummyRuleRegistry implements RuleRegistry {
         return items.values();
     }
 
-    @NonNullByDefault({})
     @Override
     public Stream<Rule> stream() {
         return items.values().stream();
@@ -87,13 +86,11 @@ public class DummyRuleRegistry implements RuleRegistry {
         return put;
     }
 
-    @NonNullByDefault({})
     @Override
-    public Collection<Rule> getByTag(String tag) {
+    public Collection<Rule> getByTag(@Nullable String tag) {
         return Collections.emptyList();
     }
 
-    @NonNullByDefault({})
     @Override
     public Collection<Rule> getByTags(String... tags) {
         return Collections.emptyList();
