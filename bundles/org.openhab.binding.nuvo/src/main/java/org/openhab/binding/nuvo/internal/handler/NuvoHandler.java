@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -129,8 +130,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     Set<Integer> activeZones = new HashSet<>(1);
 
-    // A state option list for the source labels
-    List<StateOption> sourceLabels = new ArrayList<>();
+    // A tree map that maps the source ids to source labels
+    TreeMap<String, String> sourceLabels = new TreeMap<String, String>();
 
     /**
      * Constructor
@@ -373,14 +374,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         break;
                     case CHANNEL_TYPE_ALLMUTE:
                         if (command instanceof OnOffType) {
-                            connector.sendCommand(target,
+                            connector.sendCommand(
                                     command == OnOffType.ON ? NuvoCommand.ALLMUTE_ON : NuvoCommand.ALLMUTE_OFF);
                         }
                         break;
                     case CHANNEL_TYPE_PAGE:
                         if (command instanceof OnOffType) {
-                            connector.sendCommand(target,
-                                    command == OnOffType.ON ? NuvoCommand.PAGE_ON : NuvoCommand.PAGE_OFF);
+                            connector.sendCommand(command == OnOffType.ON ? NuvoCommand.PAGE_ON : NuvoCommand.PAGE_OFF);
                         }
                         break;
                 }
@@ -484,10 +484,10 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     } else {
                         logger.debug("no match on message: {}", updateData);
                     }
-                } else if (updateData.contains(NAME_QUOTE) && sourceLabels.size() <= MAX_SRC) {
+                } else if (updateData.contains(NAME_QUOTE)) {
                     // example: NAME"Ipod"
                     String name = updateData.split("\"")[1];
-                    sourceLabels.add(new StateOption(key, name));
+                    sourceLabels.put(key, name);
                 }
                 break;
             case TYPE_ZONE_UPDATE:
@@ -594,11 +594,16 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             if (prevUpdateTime == lastEventReceived) {
                                 error = "Controller not responding to status requests";
                             } else {
+                                List<StateOption> sourceStateOptions = new ArrayList<>();
+                                sourceLabels.keySet().forEach(key -> {
+                                    sourceStateOptions.add(new StateOption(key, sourceLabels.get(key)));
+                                });
+
                                 // Put the source labels on all active zones
                                 activeZones.forEach(zoneNum -> {
                                     stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(),
                                             ZONE.toLowerCase() + zoneNum + CHANNEL_DELIMIT + CHANNEL_TYPE_SOURCE),
-                                            sourceLabels);
+                                            sourceStateOptions);
                                 });
                             }
                         } catch (NuvoException e) {
