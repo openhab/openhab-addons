@@ -16,9 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The ColorLogic Handler
@@ -27,6 +33,7 @@ import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler
  */
 @NonNullByDefault
 public class HaywardColorLogicHandler extends HaywardThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(HaywardColorLogicHandler.class);
 
     public HaywardColorLogicHandler(Thing thing) {
         super(thing);
@@ -57,6 +64,72 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                     data = bridgehandler.evaluateXPath("//ColorLogic-Light/@currentShow", xmlResponse);
                     updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW, data.get(0));
                 }
+            }
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if ((command instanceof RefreshType)) {
+            return;
+        }
+
+        String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+        String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+
+        @SuppressWarnings("null")
+        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
+        if (bridgehandler != null) {
+            String cmdString = this.cmdToString(command);
+            String cmdURL = null;
+            try {
+                switch (channelUID.getId()) {
+                    case HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE:
+                        if (command == OnOffType.ON) {
+                            cmdString = "1";
+                        } else {
+                            cmdString = "0";
+                        }
+                        cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
+                                + "<Name>SetUIEquipmentCmd</Name><Parameters>"
+                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
+                                + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                                + bridgehandler.config.mspSystemID + "</Parameter>"
+                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
+                                + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
+                                + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
+                                + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
+                        break;
+                    case HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW:
+                        cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
+                                + "<Name>SetStandAloneLightShow</Name><Parameters>"
+                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
+                                + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                                + bridgehandler.config.mspSystemID + "</Parameter>"
+                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
+                                + "<Parameter name=\"LightID\" dataType=\"int\">" + systemID + "</Parameter>"
+                                + "<Parameter name=\"Show\" dataType=\"int\">" + cmdString + "</Parameter>"
+                                + "<Parameter name=\"Speed\" dataType=\"byte\">4</Parameter>"
+                                + "<Parameter name=\"Brightness\" dataType=\"byte\">4</Parameter>"
+                                + "<Parameter name=\"Reserved\" dataType=\"byte\">0</Parameter>"
+                                + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
+                        break;
+                    default:
+                        logger.error("haywardCommand Unsupported type {}", channelUID);
+                        return;
+                }
+
+                // *****Send Command to Hayward server
+                String xmlResponse = bridgehandler.httpXmlResponse(cmdURL);
+                String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse).get(0);
+
+                if (!(status.equals("0"))) {
+                    logger.error("haywardCommand XML response: {}", xmlResponse);
+                    return;
+                }
+            } catch (Exception e) {
+                logger.debug("Unable to send command to Hayward's server {}:{}", bridgehandler.config.hostname,
+                        bridgehandler.config.username);
             }
         }
     }

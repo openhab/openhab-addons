@@ -15,6 +15,7 @@ package org.openhab.binding.haywardomnilogic.internal.hayward;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -23,9 +24,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandler;
 
 /**
@@ -48,14 +47,6 @@ public class HaywardThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!(command instanceof RefreshType)) {
-            String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-            String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
-            HaywardBridgeHandler haywardOmniLogixBridgeHandler = getHaywardOmniLogixBridgeHandler();
-            if (haywardOmniLogixBridgeHandler != null) {
-                haywardOmniLogixBridgeHandler.haywardCommand(channelUID, command, systemID, poolID);
-            }
-        }
     }
 
     private HaywardBridgeHandler getHaywardOmniLogixBridgeHandler() {
@@ -80,6 +71,20 @@ public class HaywardThingHandler extends BaseThingHandler {
             return new DecimalType(value);
         } else {
             return StringType.valueOf(value);
+        }
+    }
+
+    public String cmdToString(Command command) {
+        if (command == OnOffType.OFF) {
+            return "0";
+        } else if (command == OnOffType.ON) {
+            return "1";
+        } else if (command instanceof DecimalType) {
+            return ((DecimalType) command).toString();
+        } else if (command instanceof QuantityType) {
+            return ((QuantityType<?>) command).format("%1.0f");
+        } else {
+            return ((StringType) command).toString();
         }
     }
 

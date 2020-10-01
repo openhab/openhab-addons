@@ -16,9 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Chlorinator Handler
@@ -27,6 +32,9 @@ import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler
  */
 @NonNullByDefault
 public class HaywardChlorinatorHandler extends HaywardThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(HaywardChlorinatorHandler.class);
+    public String chlorTimedPercent = "";
+    public String chlorState = "";
 
     public HaywardChlorinatorHandler(Thing thing) {
         super(thing);
@@ -50,7 +58,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                     // Timed Percent
                     data = bridgehandler.evaluateXPath("//Chlorinator/@Timed-Percent", xmlResponse);
                     updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT, data.get(0));
-                    bridgehandler.chlorTimedPercent = data.get(0);
+                    this.chlorTimedPercent = data.get(0);
 
                     // scMode
                     data = bridgehandler.evaluateXPath("//Chlorinator/@scMode", xmlResponse);
@@ -79,13 +87,80 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                     if (data.get(0).equals("0")) {
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0");
                         // chlorState is used to set the chlorinator cfgState in the timedPercent command
-                        bridgehandler.chlorState = "2";
+                        this.chlorState = "2";
                     } else {
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "1");
                         // chlorState is used to set the chlorinator cfgState in the timedPercent command
-                        bridgehandler.chlorState = "3";
+                        this.chlorState = "3";
                     }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if ((command instanceof RefreshType)) {
+            return;
+        }
+
+        String chlorCfgState = null;
+        String chlorTimedPercent = "0";
+
+        String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+        String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+
+        @SuppressWarnings("null")
+        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
+        if (bridgehandler != null) {
+            String cmdString = this.cmdToString(command);
+            try {
+                switch (channelUID.getId()) {
+                    case HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE:
+                        if (cmdString.equals("1")) {
+                            chlorCfgState = "3";
+                            chlorTimedPercent = this.chlorTimedPercent;
+                        } else {
+                            chlorCfgState = "2";
+                            chlorTimedPercent = this.chlorTimedPercent;
+                        }
+                        break;
+                    case HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT:
+                        chlorCfgState = this.chlorState;
+                        chlorTimedPercent = cmdString;
+                        break;
+                    default:
+                        logger.error("haywardCommand Unsupported type {}", channelUID);
+                        return;
+                }
+
+                String cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS + "<Name>SetCHLORParams</Name><Parameters>"
+                        + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token + "</Parameter>"
+                        + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + bridgehandler.config.mspSystemID
+                        + "</Parameter>" + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
+                        + "<Parameter name=\"ChlorID\" dataType=\"int\" alias=\"EquipmentID\">" + systemID
+                        + "</Parameter>" + "<Parameter name=\"CfgState\" dataType=\"byte\" alias=\"Data1\">"
+                        + chlorCfgState + "</Parameter>"
+                        + "<Parameter name=\"OpMode\" dataType=\"byte\" alias=\"Data2\">1</Parameter>"
+                        + "<Parameter name=\"BOWType\" dataType=\"byte\" alias=\"Data3\">1</Parameter>"
+                        + "<Parameter name=\"CellType\" dataType=\"byte\" alias=\"Data4\">4</Parameter>"
+                        + "<Parameter name=\"TimedPercent\" dataType=\"byte\" alias=\"Data5\">" + chlorTimedPercent
+                        + "</Parameter>"
+                        + "<Parameter name=\"SCTimeout\" dataType=\"byte\" unit=\"hour\" alias=\"Data6\">24</Parameter>"
+                        + "<Parameter name=\"ORPTimout\" dataType=\"byte\" unit=\"hour\" alias=\"Data7\">24</Parameter>"
+                        + "</Parameters></Request>";
+
+                // *****Send Command to Hayward server
+                String xmlResponse = bridgehandler.httpXmlResponse(cmdURL);
+                String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse).get(0);
+
+                if (!(status.equals("0"))) {
+                    logger.error("haywardCommand XML response: {}", xmlResponse);
+                    return;
+                }
+            } catch (Exception e) {
+                logger.debug("Unable to send command to Hayward's server {}:{}", bridgehandler.config.hostname,
+                        bridgehandler.config.username);
             }
         }
     }

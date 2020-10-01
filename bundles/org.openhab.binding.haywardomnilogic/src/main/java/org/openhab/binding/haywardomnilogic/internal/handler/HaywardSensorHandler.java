@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Sensor Handler
@@ -27,23 +29,25 @@ import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler
  */
 @NonNullByDefault
 public class HaywardSensorHandler extends HaywardThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(HaywardSensorHandler.class);
 
     public HaywardSensorHandler(Thing thing) {
         super(thing);
     }
 
-    public void getTelemetry(String data) throws Exception {
+    public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
         if (bridgehandler != null) {
-            systemIDs = bridgehandler.evaluateXPath("//Chlorinator/@systemId", xmlResponse);
+            systemIDs = bridgehandler.evaluateXPath("//Sensor/@systemId", xmlResponse);
+            data = bridgehandler.evaluateXPath("//Sensor/@relayState", xmlResponse);
             String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
             for (int i = 0; i < systemIDs.size(); i++) {
                 if (systemIDs.get(i).equals(thingSystemID)) {
-                    // updateData(HaywardBindingConstants.CHANNEL_SENSOR_DATA, data);
+                    updateData(HaywardBindingConstants.CHANNEL_RELAY_STATE, data.get(i));
                 }
             }
         }

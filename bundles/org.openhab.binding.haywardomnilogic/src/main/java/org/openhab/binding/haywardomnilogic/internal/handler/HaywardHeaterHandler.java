@@ -18,7 +18,10 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
+import org.openhab.binding.haywardomnilogic.internal.config.HaywardConfig;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Heater Handler
@@ -27,6 +30,8 @@ import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler
  */
 @NonNullByDefault
 public class HaywardHeaterHandler extends HaywardThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(HaywardHeaterHandler.class);
+    HaywardConfig config = getConfig().as(HaywardConfig.class);
 
     public HaywardHeaterHandler(Thing thing) {
         super(thing);

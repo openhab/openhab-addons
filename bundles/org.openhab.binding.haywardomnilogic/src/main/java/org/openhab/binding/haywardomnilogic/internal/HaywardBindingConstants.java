@@ -118,4 +118,16 @@ public class HaywardBindingConstants {
     public static final String PROPERTY_TYPE = "propertyType";
     public static final String PROPERTY_BOWNAME = "BOW Name";
     public static final String PROPERTY_BOWID = "BOW ID";
+
+    // Hayward Command html
+    public static final String COMMAND_PARAMETERS = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request>";
+
+    public static final String COMMAND_SCHEDULE = "<Parameter name=\"IsCountDownTimer\" dataType=\"bool\">false</Parameter>"
+            + "<Parameter name=\"StartTimeHours\" dataType=\"int\">0</Parameter>"
+            + "<Parameter name=\"StartTimeMinutes\" dataType=\"int\">0</Parameter>"
+            + "<Parameter name=\"EndTimeHours\" dataType=\"int\">0</Parameter>"
+            + "<Parameter name=\"EndTimeMinutes\" dataType=\"int\">0</Parameter>"
+            + "<Parameter name=\"DaysActive\" dataType=\"int\">0</Parameter>"
+            + "<Parameter name=\"Recurring\" dataType=\"bool\">false</Parameter>";
+
 }
