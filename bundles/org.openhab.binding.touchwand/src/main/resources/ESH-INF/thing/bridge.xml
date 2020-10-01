@@ -10,7 +10,7 @@
 			<property name="vendor">TouchWand</property>
 		</properties>
 
-		<config-description uri="bridge-type:touchwand:bridge">
+		<config-description>
 			<parameter name="username" type="text">
 				<label>Username</label>
 				<description>Username for TouchWand Wanderfull Hub</description>
