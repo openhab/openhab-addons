@@ -253,12 +253,14 @@ It has the syntax: `%[flags][width]conversion`.
 Find the full documentation on the [Java](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) web page.
 
 The default is "%s" which means: Output the item state as string.
+Attention: When you are working with a comma separated item state (e.g. Color item), the first %s that you use in the formatting will only put the first value of the list. You will have to use three %s to be able to use h, s and v from the color item.
 
 Here are a few examples:
 
 * All uppercase: "%S". Just use the upper case letter for the conversion argument.
 * Apply a prefix: "myprefix%s"
 * Apply a suffix: "%s suffix"
+* Format Color item as json: "{"color": {"hsv": "%s,%s,%s}}"
 * Number precision: ".4f" for a 4 digit precision. Use the "+" flag to always add a sign: "+.4f".
 * Decimal to Hexadecimal/Octal/Scientific: For example "60" with "%x", "%o", "%e" becomes "74", "3C", "60".
 * Date/Time: To reference the item state multiple times, use "%1$". Use the "tX" conversion where "X" can be any of [h,H,m,M,I,k,l,S,p,B,b,A,a,y,Y,d,e].
