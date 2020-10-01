@@ -28,9 +28,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.touchwand.internal.TouchWandBridgeHandler;
 import org.openhab.binding.touchwand.internal.TouchWandUnitStatusUpdateListener;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
@@ -49,23 +52,21 @@ import com.google.gson.JsonSyntaxException;
  * @author Roie Geron - Initial contribution
  */
 @NonNullByDefault
-public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
+public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
 
     private static final int SEARCH_TIME_SEC = 10;
     private static final int SCAN_INTERVAL_SEC = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC = 5;
     private static final String[] CONNECTIVITY_OPTIONS = { "zwave", "knx" };
-    private final TouchWandBridgeHandler touchWandBridgeHandler;
+    private @NonNullByDefault({}) TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> scanningJob;
     private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
 
-    public TouchWandUnitDiscoveryService(TouchWandBridgeHandler touchWandBridgeHandler) {
+    public TouchWandUnitDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
-        this.touchWandBridgeHandler = touchWandBridgeHandler;
-        removeOlderResults(getTimestampOfLastScan(), touchWandBridgeHandler.getThing().getUID());
-        this.activate();
     }
 
     @Override
@@ -131,11 +132,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void notifyListeners(TouchWandUnitData touchWandUnit) {
-        /* sometimes current status received null , no point update listeners */
-        if (touchWandUnit.getCurrStatus() == null) {
-            return;
-        }
-
         for (TouchWandUnitStatusUpdateListener listener : listeners) {
             listener.onDataReceived(touchWandUnit);
         }
@@ -147,6 +143,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
         super.stopScan();
     }
 
+    @Override
     public void activate() {
         super.activate(null);
         removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
@@ -209,5 +206,18 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                 .build()
         );
         // @formatter:on
+    }
+
+    @Override
+    public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
+        if (handler instanceof TouchWandBridgeHandler) {
+            touchWandBridgeHandler = (TouchWandBridgeHandler) handler;
+            registerListener(touchWandBridgeHandler);
+        }
+    }
+
+    @Override
+    public ThingHandler getThingHandler() {
+        return touchWandBridgeHandler;
     }
 }

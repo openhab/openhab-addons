@@ -14,9 +14,9 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.THING_TYPE_BRIDGE;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,13 +24,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.touchwand.internal.config.TouchwandBridgeConfiguration;
 import org.openhab.binding.touchwand.internal.discovery.TouchWandUnitDiscoveryService;
@@ -90,7 +90,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
             thingReachable = touchWandClient.connect(username, password, host, port.toString());
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                registerItemDiscoveryService(this);
                 TouchWandWebSockets localSockets = touchWandWebSockets = new TouchWandWebSockets(host, scheduler);
                 localSockets.registerListener(this);
                 localSockets.connect();
@@ -112,27 +111,8 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
         return statusRefreshRateSec;
     }
 
-    private synchronized void registerItemDiscoveryService(TouchWandBridgeHandler bridgeHandler) {
-        TouchWandUnitDiscoveryService discoveryService = new TouchWandUnitDiscoveryService(bridgeHandler);
-        discoveryService.registerListener(this); // Register for Unit Status updates as well
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-    }
-
     @Override
     public void dispose() {
-        ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(this.getThing().getUID());
-        if (serviceReg != null) {
-            // remove discovery service
-            TouchWandUnitDiscoveryService service = (TouchWandUnitDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
-            if (service != null) {
-                service.unregisterListener(this); // Unregister Unit status polling
-                serviceReg.unregister();
-                service.deactivate();
-            }
-        }
-
         TouchWandWebSockets myTouchWandWebSockets = touchWandWebSockets;
         if (myTouchWandWebSockets != null) {
             myTouchWandWebSockets.unregisterListener(this);
@@ -159,4 +139,10 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
             updateListener.onItemStatusUpdate(unitData);
         }
     }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(TouchWandUnitDiscoveryService.class);
+    }
+
 }
