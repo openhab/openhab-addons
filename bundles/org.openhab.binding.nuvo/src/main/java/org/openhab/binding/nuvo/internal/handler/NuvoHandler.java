@@ -99,6 +99,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     private static final int MAX_ZONES = 20;
     private static final int MAX_SRC = 6;
+    private static final int MAX_FAV = 12;
     private static final int MIN_VOLUME = 0;
     private static final int MAX_VOLUME = 79;
     private static final int MIN_EQ = -18;
@@ -272,6 +273,15 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             if (value >= 1 && value <= MAX_SRC) {
                                 logger.debug("Got source command {} zone {}", value, target);
                                 connector.sendCommand(target, NuvoCommand.SOURCE, String.valueOf(value));
+                            }
+                        }
+                        break;
+                    case CHANNEL_TYPE_FAVORITE:
+                        if (command instanceof DecimalType) {
+                            int value = ((DecimalType) command).intValue();
+                            if (value >= 1 && value <= MAX_FAV) {
+                                logger.debug("Got favorite command {} zone {}", value, target);
+                                connector.sendCommand(target, NuvoCommand.FAVORITE, String.valueOf(value));
                             }
                         }
                         break;
