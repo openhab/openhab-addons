@@ -52,7 +52,7 @@ public abstract class TouchWandUnitData {
     private String status = "";
     @SerializedName("isFavorite")
     @Expose
-    private Integer isFavorite = 0;
+    private boolean isFavorite = false;
     @SerializedName("errorCode")
     @Expose
     private Integer errorCode = 0;
@@ -64,10 +64,10 @@ public abstract class TouchWandUnitData {
     private boolean hasBattery;
     @SerializedName("config")
     @Expose
-    private String config = "";
+    private Object config = "";
     @SerializedName("association")
     @Expose
-    private String association = "";
+    private Object association = "";
     @SerializedName("customOp")
     @Expose
     private String customOp = "";
@@ -148,11 +148,11 @@ public abstract class TouchWandUnitData {
         this.status = status;
     }
 
-    public Integer getIsFavorite() {
+    public boolean getIsFavorite() {
         return isFavorite;
     }
 
-    public void setIsFavorite(Integer isFavorite) {
+    public void setIsFavorite(boolean isFavorite) {
         this.isFavorite = isFavorite;
     }
 
@@ -180,19 +180,19 @@ public abstract class TouchWandUnitData {
         this.hasBattery = hasBattery;
     }
 
-    public String getConfig() {
+    public Object getConfig() {
         return config;
     }
 
-    public void setConfig(String config) {
+    public void setConfig(Object config) {
         this.config = config;
     }
 
-    public String getAssociation() {
+    public Object getAssociation() {
         return association;
     }
 
-    public void setAssociation(String association) {
+    public void setAssociation(Object association) {
         this.association = association;
     }
 
