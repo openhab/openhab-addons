@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HaywardColorLogicHandler extends HaywardThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardColorLogicHandler.class);
+
+    HaywardThingProperties prop = getConfig().as(HaywardThingProperties.class);
 
     public HaywardColorLogicHandler(Thing thing) {
         super(thing);
@@ -74,8 +77,8 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
             return;
         }
 
-        String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-        String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        prop.systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+        prop.poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
@@ -95,8 +98,8 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                                 + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
                                 + bridgehandler.config.mspSystemID + "</Parameter>"
-                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
-                                + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
+                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
+                                + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
                                 + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
                         break;
@@ -106,8 +109,8 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                                 + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
                                 + bridgehandler.config.mspSystemID + "</Parameter>"
-                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
-                                + "<Parameter name=\"LightID\" dataType=\"int\">" + systemID + "</Parameter>"
+                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
+                                + "<Parameter name=\"LightID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"Show\" dataType=\"int\">" + cmdString + "</Parameter>"
                                 + "<Parameter name=\"Speed\" dataType=\"byte\">4</Parameter>"
                                 + "<Parameter name=\"Brightness\" dataType=\"byte\">4</Parameter>"

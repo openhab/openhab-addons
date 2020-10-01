@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardVirtualHeaterHandler.class);
+
+    HaywardThingProperties prop = getConfig().as(HaywardThingProperties.class);
 
     public HaywardVirtualHeaterHandler(Thing thing) {
         super(thing);
@@ -70,8 +73,8 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
             return;
         }
 
-        String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-        String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        prop.systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+        prop.poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
@@ -105,8 +108,8 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                                 + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
                                 + bridgehandler.config.mspSystemID + "</Parameter>"
-                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
-                                + "<Parameter name=\"HeaterID\" dataType=\"int\">" + systemID + "</Parameter>"
+                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
+                                + "<Parameter name=\"HeaterID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"Enabled\" dataType=\"bool\">" + cmdBool + "</Parameter>"
                                 + "</Parameters></Request>";
                         break;
@@ -116,8 +119,8 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                                 + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
                                 + bridgehandler.config.mspSystemID + "</Parameter>"
-                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
-                                + "<Parameter name=\"HeaterID\" dataType=\"int\">" + systemID + "</Parameter>"
+                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
+                                + "<Parameter name=\"HeaterID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"Temp\" dataType=\"int\">" + cmdValue + "</Parameter>"
                                 + "</Parameters></Request>";
                         break;

@@ -22,10 +22,12 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +40,16 @@ import org.slf4j.LoggerFactory;
 public class HaywardFilterHandler extends HaywardThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardFilterHandler.class);
 
+    HaywardThingProperties prop = getConfig().as(HaywardThingProperties.class);
+
     public HaywardFilterHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.ONLINE);
+
     }
 
     public void setFilterProperty(String systemID, String channelID, String data) {
@@ -106,8 +116,8 @@ public class HaywardFilterHandler extends HaywardThingHandler {
             return;
         }
 
-        String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-        String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        prop.systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+        prop.poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
@@ -133,8 +143,8 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                         + "<Name>SetUIEquipmentCmd</Name><Parameters>"
                         + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token + "</Parameter>"
                         + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + bridgehandler.config.mspSystemID
-                        + "</Parameter>" + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
-                        + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
+                        + "</Parameter>" + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
+                        + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                         + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
                         + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
 

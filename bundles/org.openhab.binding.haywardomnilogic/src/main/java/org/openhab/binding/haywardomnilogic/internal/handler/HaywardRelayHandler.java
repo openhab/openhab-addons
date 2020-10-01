@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HaywardRelayHandler extends HaywardThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardRelayHandler.class);
+
+    HaywardThingProperties prop = getConfig().as(HaywardThingProperties.class);
 
     public HaywardRelayHandler(Thing thing) {
         super(thing);
@@ -62,8 +65,8 @@ public class HaywardRelayHandler extends HaywardThingHandler {
             return;
         }
 
-        String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-        String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        prop.systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+        prop.poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
@@ -78,8 +81,8 @@ public class HaywardRelayHandler extends HaywardThingHandler {
                                 + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
                                 + bridgehandler.config.mspSystemID + "</Parameter>"
-                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
-                                + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
+                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
+                                + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
                                 + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
                         break;
