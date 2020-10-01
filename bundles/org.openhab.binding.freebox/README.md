@@ -29,10 +29,6 @@ The binding has the following configuration options, which can be set for "bindi
 | Parameter               | Name         | Description                                                                | Required |
 |-------------------------|--------------|----------------------------------------------------------------------------|----------|
 | callbackUrl             | Callback URL | URL to use for playing notification sounds, e.g. <http://192.168.0.2:8080> | no       |
-| discoverPhone           |  |  | no       |
-| discoverNetDevice       |  |  | no       |
-| discoverNetInterface    |  |  | no       |
-| discoverAirPlayReceiver |  |  | no       |
 
 ## Thing Configuration
 

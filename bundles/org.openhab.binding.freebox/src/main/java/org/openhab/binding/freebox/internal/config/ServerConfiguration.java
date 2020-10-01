@@ -38,6 +38,7 @@ public class ServerConfiguration {
     public boolean httpsAvailable = false;
 
     public boolean isValidToken() {
-        return appToken != null && !appToken.isEmpty();
+        String token = this.appToken;
+        return token != null && !token.isEmpty();
     }
 }

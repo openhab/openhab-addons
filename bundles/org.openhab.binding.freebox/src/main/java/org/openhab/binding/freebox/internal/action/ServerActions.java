@@ -49,8 +49,9 @@ public class ServerActions implements ThingActions {
     @RuleAction(label = "reboot freebox server", description = "Reboots the Freebox Server")
     public void reboot() {
         logger.debug("Server reboot called");
-        if (handler != null) {
-            handler.reboot();
+        ServerHandler serverHandler = this.handler;
+        if (serverHandler != null) {
+            serverHandler.reboot();
         } else {
             logger.warn("Freebox Action service ThingHandler is null!");
         }

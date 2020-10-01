@@ -49,8 +49,9 @@ public class HostActions implements ThingActions {
     @RuleAction(label = "wol host", description = "Awakes a lan host")
     public void wol() {
         logger.debug("Host WOL called");
-        if (handler != null) {
-            handler.wol();
+        HostHandler hostHandler = this.handler;
+        if (hostHandler != null) {
+            hostHandler.wol();
         } else {
             logger.warn("LanHost Action service ThingHandler is null!");
         }

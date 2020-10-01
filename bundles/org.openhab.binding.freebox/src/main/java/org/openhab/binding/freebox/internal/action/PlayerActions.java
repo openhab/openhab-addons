@@ -50,8 +50,9 @@ public class PlayerActions implements ThingActions {
     @RuleAction(label = "send a key to player", description = "Sends a given key to the player")
     public void sendKey(@ActionInput(name = "key") String key) {
         logger.debug("Sending key {} to player", key);
-        if (handler != null) {
-            handler.sendKey(key, false, 1);
+        PlayerHandler playerHandler = this.handler;
+        if (playerHandler != null) {
+            playerHandler.sendKey(key, false, 1);
         } else {
             logger.warn("Freebox Player Action service ThingHandler is null!");
         }
@@ -60,8 +61,9 @@ public class PlayerActions implements ThingActions {
     @RuleAction(label = "send a long key to player", description = "Sends a given key to the player and keep it pressed")
     public void sendLongKey(@ActionInput(name = "key") String key) {
         logger.debug("Sending long press key {} to player", key);
-        if (handler != null) {
-            handler.sendKey(key, true, 1);
+        PlayerHandler playerHandler = this.handler;
+        if (playerHandler != null) {
+            playerHandler.sendKey(key, true, 1);
         } else {
             logger.warn("Freebox Player Action service ThingHandler is null!");
         }
@@ -70,8 +72,9 @@ public class PlayerActions implements ThingActions {
     @RuleAction(label = "send multiple keys to player", description = "Sends multiple keys to the player, comma separated")
     public void sendMultipleKeys(@ActionInput(name = "key") String keys) {
         logger.debug("Sending keys {} to player", keys);
-        if (handler != null) {
-            handler.sendKey(keys, false, 1);
+        PlayerHandler playerHandler = this.handler;
+        if (playerHandler != null) {
+            playerHandler.sendKey(keys, false, 1);
         } else {
             logger.warn("Freebox Player Action service ThingHandler is null!");
         }
@@ -80,8 +83,9 @@ public class PlayerActions implements ThingActions {
     @RuleAction(label = "send repeating key to player", description = "Sends a given key multiple times to the player")
     public void sendKeyRepeat(@ActionInput(name = "key") String key, @ActionInput(name = "count") int count) {
         logger.debug("Sending key {} to player {} times", key, count);
-        if (handler != null) {
-            handler.sendKey(key, false, count);
+        PlayerHandler playerHandler = this.handler;
+        if (playerHandler != null) {
+            playerHandler.sendKey(key, false, count);
         } else {
             logger.warn("Freebox Player Action service ThingHandler is null!");
         }

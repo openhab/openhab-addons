@@ -113,9 +113,10 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (backgroundFuture != null) {
-            backgroundFuture.cancel(true);
-            backgroundFuture = null;
+        ScheduledFuture<?> future = this.backgroundFuture;
+        if (future != null) {
+            future.cancel(true);
+            this.backgroundFuture = null;
         }
     }
 

@@ -46,6 +46,7 @@ public class LanHostName {
     }
 
     public NameSource getSource() {
-        return source != null ? source : NameSource.UNKNOWN;
+        NameSource current = source;
+        return current != null ? current : NameSource.UNKNOWN;
     }
 }

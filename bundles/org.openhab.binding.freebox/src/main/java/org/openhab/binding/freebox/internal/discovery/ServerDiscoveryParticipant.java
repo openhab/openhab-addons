@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
-@Component(service = MDNSDiscoveryParticipant.class)
+@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 @NonNullByDefault
 public class ServerDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private static final String FBX_DELTA_GW = "fbxgw7";
