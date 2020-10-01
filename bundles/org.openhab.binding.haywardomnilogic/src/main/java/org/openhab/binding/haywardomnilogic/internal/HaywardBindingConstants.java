@@ -129,5 +129,4 @@ public class HaywardBindingConstants {
             + "<Parameter name=\"EndTimeMinutes\" dataType=\"int\">0</Parameter>"
             + "<Parameter name=\"DaysActive\" dataType=\"int\">0</Parameter>"
             + "<Parameter name=\"Recurring\" dataType=\"bool\">false</Parameter>";
-
 }
