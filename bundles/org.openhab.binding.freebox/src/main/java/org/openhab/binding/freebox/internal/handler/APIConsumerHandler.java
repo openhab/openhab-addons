@@ -113,8 +113,7 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
                         channelUID.getId());
             }
         } catch (FreeboxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.warn("Error handling command : {}", e.getMessage());
         }
     }
 

@@ -148,6 +148,7 @@ The following channels are supported:
 
 
 ## Actions
+
 Serveur reboot
 Lan Host WOL
 | airplay       | playurl                  | String    | W           | Play an audio or video media from the given URL                                 |

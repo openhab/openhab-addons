@@ -278,7 +278,7 @@ public class PlayerHandler extends HostHandler implements AudioSink {
             try {
                 HttpUtil.executeUrl("GET", url, null, null, null, HTTP_CALL_DEFAULT_TIMEOUT_MS);
             } catch (IOException e) {
-                logger.warn("Error calling Player url {} : {}", url, e);
+                logger.warn("Error calling Player url {} : {}", url, e.getMessage());
             }
         } else {
             logger.info("Key '{}' is not a valid key expression", key);

@@ -142,7 +142,7 @@ public abstract class ServerHandler extends BaseBridgeHandler {
                             internalPoll();
                             updateStatus(ThingStatus.ONLINE);
                         } catch (FreeboxException e) {
-                            logger.debug("Thing {}: exception : {}", getThing().getUID(), e);
+                            logger.debug("Thing {}: exception : {}", getThing().getUID(), e.getMessage());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                         }
                     }, 5, configuration.refreshInterval, TimeUnit.SECONDS);
