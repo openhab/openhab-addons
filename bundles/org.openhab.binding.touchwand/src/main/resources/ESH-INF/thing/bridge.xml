@@ -9,40 +9,40 @@
 		<properties>
 			<property name="vendor">TouchWand</property>
 		</properties>
-		
-		  <config-description uri="bridge-type:touchwand:bridge">
-        <parameter name="username" type="text">
-            <label>Username</label>
-            <description>Username for TouchWand Wanderfull Hub</description>
-        </parameter>
-        <parameter name="password" type="text" required="true">
-            <context>password</context>
-            <label>Password</label>
-            <description>Password for TouchWand Wanderfull Hub </description>
-        </parameter>
-        <parameter name="ipAddress" type="text" required="true">
-            <context>network-address</context>
-            <label>Network Address</label>
-            <description>Network address of this TouchWand Wanderfull Hub </description>
-        </parameter>
-        <parameter name="port" type="integer" min="80" max="65535" required="true">
-            <label>Port</label>
-            <description>Port of the TouchWand Wanderfull Hub communication channel</description>
-            <default>80</default>
-            <advanced>true</advanced>
-        </parameter>
-        <parameter name="statusrefresh" type="integer" unit="s">
-            <default>120</default>
-            <description>Unit status refresh interval (seconds)</description>
-            <label>Refresh</label>
-            <advanced>true</advanced>
-        </parameter>
-        <parameter name="addSecondaryUnits" type="boolean">
-            <default>false</default>
-            <description>If the controller is primary, add secondary controllers units as well</description>
-            <label>Add Secondary Controllers</label>
-            <advanced>true</advanced>
-        </parameter>
-    </config-description>		
+
+		<config-description uri="bridge-type:touchwand:bridge">
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Username for TouchWand Wanderfull Hub</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for TouchWand Wanderfull Hub </description>
+			</parameter>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of this TouchWand Wanderfull Hub </description>
+			</parameter>
+			<parameter name="port" type="integer" min="80" max="65535" required="true">
+				<label>Port</label>
+				<description>Port of the TouchWand Wanderfull Hub communication channel</description>
+				<default>80</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="statusrefresh" type="integer" unit="s">
+				<default>120</default>
+				<description>Unit status refresh interval (seconds)</description>
+				<label>Refresh</label>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="addSecondaryUnits" type="boolean">
+				<default>false</default>
+				<description>If the controller is primary, add secondary controllers units as well</description>
+				<label>Add Secondary Controllers</label>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>
