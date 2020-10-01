@@ -35,6 +35,6 @@ public class TestUtils {
     }
 
     public static ThingUID randomThingUID() {
-        return new ThingUID("mock", RandomStringUtils.randomAlphabetic(6));
+        return new ThingUID(BluetoothBindingConstants.BINDING_ID, RandomStringUtils.randomAlphabetic(6));
     }
 }

@@ -267,6 +267,10 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             future = future.thenApply(result -> {
                 publishDiscoveryResult(adapter, result);
                 return result;
+            }).whenComplete((r, t) -> {
+                if (t != null) {
+                    logger.warn("Error occured during discovery of {}", device.getAddress(), t);
+                }
             });
 
             // now save this snapshot for later
