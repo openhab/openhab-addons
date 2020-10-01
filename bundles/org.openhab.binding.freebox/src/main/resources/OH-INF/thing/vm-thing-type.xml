@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freebox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="revolution"/>
+			<bridge-type-ref id="delta"/>
+		</supported-bridge-type-refs>
+
+		<label>Virtual Machine</label>
+		<description>Provides informations and control over a virtual machine</description>
+
+		<channel-groups>
+			<channel-group typeId="connectivity" id="connectivity"/>
+			<channel-group typeId="vmstatus" id="vmstatus"/>
+		</channel-groups>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:freebox:vm"/>
+	</thing-type>
+
+</thing:thing-descriptions>

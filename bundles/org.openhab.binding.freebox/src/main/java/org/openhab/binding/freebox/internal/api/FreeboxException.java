@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freebox.internal.api;
 
-import org.openhab.binding.freebox.internal.api.model.FreeboxResponse;
+import org.openhab.binding.freebox.internal.api.FreeboxResponse.ErrorCode;
 
 /**
  * Exception for errors when using the Freebox API
@@ -50,11 +50,11 @@ public class FreeboxException extends Exception {
         return response;
     }
 
-    public boolean isAuthRequired() {
-        return getResponse() != null && getResponse().isAuthRequired();
+    public boolean authRequired() {
+        return getResponse() != null && getResponse().getErrorCode() == ErrorCode.AUTHORIZATION_REQUIRED;
     }
 
-    public boolean isMissingRights() {
-        return getResponse() != null && getResponse().isMissingRights();
+    public boolean insufficientRights() {
+        return getResponse() != null && getResponse().getErrorCode() == ErrorCode.INSUFFICIENT_RIGHTS;
     }
 }

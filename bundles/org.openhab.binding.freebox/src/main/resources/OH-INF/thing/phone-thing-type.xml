@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freebox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="phone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="revolution"/>
+			<bridge-type-ref id="delta"/>
+		</supported-bridge-type-refs>
+
+		<label>Phone</label>
+		<description>Provides various informations regarding the phone state and the phone calls</description>
+
+		<channel-groups>
+			<channel-group typeId="state" id="state"/>
+			<channel-group typeId="accepted" id="accepted"/>
+			<channel-group typeId="missed" id="missed"/>
+			<channel-group typeId="outgoing" id="outgoing"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:freebox:phone"/>
+
+	</thing-type>
+
+</thing:thing-descriptions>
