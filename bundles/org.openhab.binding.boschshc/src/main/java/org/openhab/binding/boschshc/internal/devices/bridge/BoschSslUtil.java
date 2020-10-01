@@ -43,7 +43,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.id.InstanceUUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class BoschSslUtil {
     }
 
     public BoschSslUtil(String keystorePassword) {
-        this.keystorePath = Paths.get(ConfigConstants.getUserDataFolder(), "etc", getBoschSHCId() + ".jks").toString();
+        this.keystorePath = Paths.get(OpenHAB.getUserDataFolder(), "etc", getBoschSHCId() + ".jks").toString();
         this.keystorePassword = keystorePassword;
     }
 

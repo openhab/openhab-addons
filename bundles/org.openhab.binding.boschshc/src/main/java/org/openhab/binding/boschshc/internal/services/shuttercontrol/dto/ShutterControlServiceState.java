@@ -10,38 +10,34 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.shuttercontrol.dto;
+package org.openhab.binding.boschshc.internal.services.shuttercontrol.dto;
 
-import org.openhab.binding.boschshc.internal.devices.shuttercontrol.OperationState;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.shuttercontrol.OperationState;
 
 /**
  * State for a shutter control device
  * 
  * @author Christian Oeing - Initial contribution
  */
-public class ShutterControlState {
-    @SerializedName("@type")
-    public String type = "shutterControlState";
-
+public class ShutterControlServiceState extends BoschSHCServiceState {
     /**
      * Current open ratio of shutter (0.0 [closed] to 1.0 [open])
      */
-    public double level;
+    public Double level;
 
     /**
      * Current operation state of shutter
      */
     public OperationState operationState;
 
-    public ShutterControlState() {
-        this.level = 0.0;
+    public ShutterControlServiceState() {
+        super("shutterControlState");
         this.operationState = OperationState.STOPPED;
     }
 
-    public ShutterControlState(double level) {
+    public ShutterControlServiceState(double level) {
+        this();
         this.level = level;
-        this.operationState = OperationState.STOPPED;
     }
 }

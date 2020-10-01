@@ -14,22 +14,20 @@ package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_LEVEL;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
-import org.openhab.binding.boschshc.internal.devices.shuttercontrol.dto.ShutterControlState;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.shuttercontrol.OperationState;
+import org.openhab.binding.boschshc.internal.services.shuttercontrol.ShutterControlService;
+import org.openhab.binding.boschshc.internal.services.shuttercontrol.dto.ShutterControlServiceState;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Handler for a shutter control device
@@ -51,77 +49,55 @@ public class ShutterControlHandler extends BoschSHCHandler {
         }
     }
 
-    static final String ShutterControlServiceName = "ShutterControl";
+    private ShutterControlService shutterControlService;
 
     public ShutterControlHandler(Thing thing) {
         super(thing);
+        this.shutterControlService = new ShutterControlService();
+    }
+
+    @Override
+    protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
+
+        this.registerService(this.shutterControlService, this::updateChannels, Arrays.asList(CHANNEL_LEVEL));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            ShutterControlState state = this.getDeviceState();
-            if (state == null) {
-                logger.warn("Could not fetch device state, skipping refresh");
-                return;
-            }
-            this.updateState(state);
-        } else if (command instanceof UpDownType) {
+        super.handleCommand(channelUID, command);
+
+        if (command instanceof UpDownType) {
             // Set full close/open as target state
             UpDownType upDownType = (UpDownType) command;
-            ShutterControlState state = new ShutterControlState();
+            ShutterControlServiceState state = new ShutterControlServiceState();
             if (upDownType == UpDownType.UP) {
-                state.level = 1;
+                state.level = 1.0;
             } else if (upDownType == UpDownType.DOWN) {
-                state.level = 0;
+                state.level = 0.0;
             } else {
                 logger.warn("Received unknown UpDownType command: {}", upDownType);
                 return;
             }
-            this.setDeviceState(state);
+            this.shutterControlService.setState(state);
         } else if (command instanceof StopMoveType) {
             // Set STOPPED operation state
-            ShutterControlState state = new ShutterControlState();
+            ShutterControlServiceState state = new ShutterControlServiceState();
             state.operationState = OperationState.STOPPED;
-            this.setDeviceState(state);
+            this.shutterControlService.setState(state);
         } else if (command instanceof PercentType) {
             // Set specific level
             PercentType percentType = (PercentType) command;
             double level = DataConversion.openPercentageToLevel(percentType.doubleValue());
-            this.setDeviceState(new ShutterControlState(level));
+            this.shutterControlService.setState(new ShutterControlServiceState(level));
         }
     }
 
-    @Override
-    public void processUpdate(String id, JsonElement state) {
-        try {
-            updateState(gson.fromJson(state, ShutterControlState.class));
-        } catch (JsonSyntaxException e) {
-            logger.warn("Received unknown update in Shutter Control: {}", state);
+    private void updateChannels(ShutterControlServiceState state) {
+        if (state.level != null) {
+            // Convert level to open ratio
+            int openPercentage = DataConversion.levelToOpenPercentage(state.level);
+            updateState(CHANNEL_LEVEL, new PercentType(openPercentage));
         }
-    }
-
-    private @Nullable ShutterControlState getDeviceState() {
-        return this.getState(ShutterControlServiceName, ShutterControlState.class);
-    }
-
-    private void setDeviceState(ShutterControlState state) {
-        BoschSHCBridgeHandler bridgeHandler;
-        try {
-            bridgeHandler = this.getBridgeHandler();
-        } catch (BoschSHCException e) {
-            return;
-        }
-        String deviceId = this.getBoschID();
-        if (deviceId == null) {
-            return;
-        }
-        bridgeHandler.putState(deviceId, ShutterControlServiceName, state);
-    }
-
-    private void updateState(ShutterControlState state) {
-        // Convert level to open ratio
-        int openPercentage = DataConversion.levelToOpenPercentage(state.level);
-        updateState(CHANNEL_LEVEL, new PercentType(openPercentage));
     }
 }

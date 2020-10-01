@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
+package org.openhab.binding.boschshc.internal.services.shuttercontrol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
