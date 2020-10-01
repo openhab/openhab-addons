@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -34,6 +33,7 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.*;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.binding.boschshc.internal.services.dto.JsonRestExceptionResponse;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -78,7 +78,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-
         if (this.config.ipAddress.isEmpty()) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address set");
             return;
@@ -131,12 +130,10 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                     // Start long polling to receive updates from Bosch SHC.
                     this.longPoll(httpClient);
-
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             "@text/offline.not-reachable");
                 }
-
             } catch (PairingFailedException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-pairing");
@@ -205,7 +202,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             private BoschSHCBridgeHandler bridgeHandler;
 
             public SubscribeListener(BoschSHCBridgeHandler bridgeHandler) {
-
                 super();
                 this.bridgeHandler = bridgeHandler;
             }
@@ -262,7 +258,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private void longPoll(BoschHttpClient httpClient) {
         String subscriptionId = this.subscriptionId;
         if (subscriptionId == null) {
-
             logger.debug("longPoll: Subscription outdated, requesting .. ");
             this.subscribe(httpClient);
             return;
@@ -285,16 +280,13 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
                     if (parsed.result != null) {
                         for (DeviceStatusUpdate update : parsed.result) {
-
                             if (update != null && update.state != null) {
-
                                 logger.debug("Got update for {}", update.deviceId);
 
                                 boolean handled = false;
 
                                 Bridge bridge = this.getThing();
                                 for (Thing childThing : bridge.getThings()) {
-
                                     // All children of this should implement BoschSHCHandler
                                     ThingHandler baseHandler = childThing.getHandler();
                                     if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
@@ -306,7 +298,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                                                 update.deviceId);
 
                                         if (deviceId != null && update.deviceId.equals(deviceId)) {
-
                                             logger.debug("Found child: {} - calling processUpdate with {}", handler,
                                                     update.state);
                                             handler.processUpdate(update.id, update.state);
@@ -316,7 +307,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                                                 "longPoll: child handler for {} does not implement Bosch SHC handler",
                                                 baseHandler);
                                     }
-
                                 }
 
                                 if (!handled) {
@@ -324,7 +314,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                                 }
                             }
                         }
-
                     } else {
                         logger.warn("Could not parse in onComplete: {}", content);
 
@@ -332,11 +321,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         LongPollError parsedError = gson.fromJson(content, LongPollError.class);
 
                         if (parsedError.error != null) {
-
                             logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
 
                             if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-
                                 this.subscriptionId = null;
                                 logger.warn("Invalidating subscription ID!");
                             }
@@ -349,13 +336,10 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                             logger.warn("Failed to sleep in longRun()");
                         }
                     }
-
                 } else {
                     logger.warn("Failed in onComplete");
                 }
-
             } catch (Exception e) {
-
                 logger.warn("Execption in long polling", e);
 
                 // Timeout before retry
@@ -377,7 +361,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private boolean getRooms() {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient != null) {
-
             try {
                 logger.debug("Sending http request to Bosch to request rooms");
                 String url = httpClient.createSmartHomeUrl("rooms");
@@ -398,13 +381,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 }
 
                 return true;
-
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("HTTP request failed", e);
                 return false;
             }
         } else {
-
             return false;
         }
     }
@@ -420,7 +401,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * @throws InterruptedException
      * @throws BoschSHCException
      */
-    public <T extends @NonNull Object> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass)
+    public <T extends BoschSHCServiceState> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass)
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
@@ -459,7 +440,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * 
      * @return Response of request
      */
-    public <T extends @NonNull Object> @Nullable Response putState(String deviceId, String serviceName, T state) {
+    public <T extends BoschSHCServiceState> @Nullable Response putState(String deviceId, String serviceName, T state) {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             logger.warn("HttpClient not initialized");

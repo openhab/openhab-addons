@@ -20,7 +20,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
@@ -203,7 +202,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @param stateName Name of the service to query
      * @param classOfT Class to convert the resulting JSON to
      */
-    protected <T extends @NonNull Object> @Nullable T getState(String stateName, Class<T> classOfT) {
+    protected <T extends BoschSHCServiceState> @Nullable T getState(String stateName, Class<T> classOfT) {
         String deviceId = this.getBoschID();
         if (deviceId == null) {
             return null;

@@ -142,7 +142,6 @@ public class BoschHttpClient extends HttpClient {
                 logger.info("Pairing failed with response status {}.", contentResponse.getStatus());
                 return false;
             }
-
         } catch (InterruptedException | TimeoutException | CertificateEncodingException | KeyStoreException e) {
             logger.warn("Pairing failed with exception {}", e.getMessage());
             return false;
