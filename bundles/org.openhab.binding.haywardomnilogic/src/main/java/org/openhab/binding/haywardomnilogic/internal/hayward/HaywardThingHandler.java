@@ -13,6 +13,7 @@
 
 package org.openhab.binding.haywardomnilogic.internal.hayward;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -56,6 +57,10 @@ public class HaywardThingHandler extends BaseThingHandler {
         } else {
             return (HaywardBridgeHandler) bridge.getHandler();
         }
+    }
+
+    public void getTelemetry(@NonNull String xmlResponse) throws Exception {
+
     }
 
     public State toState(String type, String value) throws NumberFormatException {

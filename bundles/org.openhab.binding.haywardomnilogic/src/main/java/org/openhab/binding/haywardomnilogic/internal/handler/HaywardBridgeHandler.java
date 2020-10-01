@@ -44,6 +44,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.config.HaywardConfig;
+import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardTypeToRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -499,71 +500,10 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         }
 
         for (Thing thing : getThing().getThings()) {
-            Map<String, String> properties = thing.getProperties();
-
-            switch (properties.get(HaywardBindingConstants.PROPERTY_TYPE)) {
-                case "BACKYARD": {
-                    HaywardBackyardHandler handler = (HaywardBackyardHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.getTelemetry(xmlResponse);
-                    }
-                    break;
-                }
-                case "BOW": {
-                    HaywardBowHandler handler = (HaywardBowHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.getTelemetry(xmlResponse);
-                    }
-                    break;
-                }
-                case "CHLORINATOR": {
-                    HaywardChlorinatorHandler handler = (HaywardChlorinatorHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.getTelemetry(xmlResponse);
-                    }
-                    break;
-                }
-                case "COLORLOGIC": {
-                    HaywardColorLogicHandler handler = (HaywardColorLogicHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.getTelemetry(xmlResponse);
-                    }
-                    break;
-                }
-                case "FILTER": {
-                    HaywardFilterHandler handler = (HaywardFilterHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.getTelemetry(xmlResponse);
-                    }
-                    break;
-                }
-                case "HEATER": {
-                    HaywardHeaterHandler handler = (HaywardHeaterHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.getTelemetry(xmlResponse);
-                    }
-                    break;
-                }
-                case "RELAY": {
-                    HaywardRelayHandler handler = (HaywardRelayHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.getTelemetry(xmlResponse);
-                    }
-                    break;
-                }
-                case "SENSOR": {
-                    HaywardSensorHandler handler = (HaywardSensorHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.getTelemetry(xmlResponse);
-                    }
-                    break;
-                }
-                case "VIRTUALHEATER": {
-                    HaywardVirtualHeaterHandler handler = (HaywardVirtualHeaterHandler) thing.getHandler();
-                    if (handler != null) {
-                        handler.getTelemetry(xmlResponse);
-                    }
-                    break;
+            if (thing != null && thing.getHandler() instanceof HaywardThingHandler) {
+                HaywardThingHandler handler = (HaywardThingHandler) thing.getHandler();
+                if (handler != null) {
+                    handler.getTelemetry(xmlResponse);
                 }
             }
         }
