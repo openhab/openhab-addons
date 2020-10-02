@@ -13,9 +13,6 @@
 
 package org.openhab.binding.touchwand.internal.dto;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link CurrStatus} implements CurrStatus data class.
  *
@@ -24,8 +21,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class CurrStatus {
 
-    @SerializedName("csc")
-    @Expose
     private Csc csc;
 
     public Csc getCsc() {

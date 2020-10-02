@@ -15,9 +15,6 @@ package org.openhab.binding.touchwand.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link TouchWandShutterSwitchUnitData} implements Shutter and Switch units property.
  *
@@ -26,8 +23,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class TouchWandShutterSwitchUnitData extends TouchWandUnitData {
 
-    @SerializedName("currStatus")
-    @Expose
     private Integer currStatus = 0;
 
     @Override

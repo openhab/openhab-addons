@@ -13,9 +13,6 @@
 
 package org.openhab.binding.touchwand.internal.dto;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link TouchWandUnitDataWallController} implements WallController unit
  * property.
@@ -24,8 +21,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class TouchWandUnitDataWallController extends TouchWandUnitData {
 
-    @SerializedName("currStatus")
-    @Expose
     private CurrStatus currStatus;
 
     @Override

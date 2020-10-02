@@ -15,9 +15,6 @@ package org.openhab.binding.touchwand.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link TouchWandUnitData} implements unit property.
  *
@@ -26,62 +23,24 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public abstract class TouchWandUnitData {
 
-    @SerializedName("id")
-    @Expose
     private Integer id = 0;
-    @SerializedName("name")
-    @Expose
     private String name = "";
-    @SerializedName("type")
-    @Expose
     private String type = "";
-    @SerializedName("nodeId")
-    @Expose
     private Integer nodeId = 0;
-    @SerializedName("epId")
-    @Expose
     private Integer epId = 0;
-    @SerializedName("icon")
-    @Expose
     private String icon = "";
-    @SerializedName("connectivity")
-    @Expose
     private String connectivity = "";
-    @SerializedName("status")
-    @Expose
     private String status = "";
-    @SerializedName("isFavorite")
-    @Expose
     private boolean isFavorite = false;
-    @SerializedName("errorCode")
-    @Expose
     private Integer errorCode = 0;
-    @SerializedName("hasPowerMeter")
-    @Expose
     private boolean hasPowerMeter;
-    @SerializedName("hasBattery")
-    @Expose
     private boolean hasBattery;
-    @SerializedName("config")
-    @Expose
     private Object config = "";
-    @SerializedName("association")
-    @Expose
     private Object association = "";
-    @SerializedName("customOp")
-    @Expose
     private String customOp = "";
-    @SerializedName("isHidden")
-    @Expose
     private boolean isHidden = false;
-    @SerializedName("createdAt")
-    @Expose
     private String createdAt = "";
-    @SerializedName("updatedAt")
-    @Expose
     private String updatedAt = "";
-    @SerializedName("roomId")
-    @Expose
     private Integer roomId = 0;
 
     public Integer getId() {

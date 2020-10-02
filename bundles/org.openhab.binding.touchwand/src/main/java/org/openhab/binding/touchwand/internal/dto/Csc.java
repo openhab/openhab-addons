@@ -13,9 +13,6 @@
 
 package org.openhab.binding.touchwand.internal.dto;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link Csc} implements Csc data class.
  *
@@ -23,14 +20,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Csc {
 
-    @SerializedName("sceneNo")
-    @Expose
     private int sceneNo;
-    @SerializedName("ts")
-    @Expose
     private int ts;
-    @SerializedName("keyAttr")
-    @Expose
     private int keyAttr;
 
     public int getSceneNo() {
