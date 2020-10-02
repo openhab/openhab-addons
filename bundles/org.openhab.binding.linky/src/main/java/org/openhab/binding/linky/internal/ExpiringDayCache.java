@@ -71,7 +71,7 @@ public class ExpiringDayCache<V> {
             logger.debug("getValue from cache \"{}\" is requiring a fresh value", name);
             cachedValue = refreshValue();
         } else {
-            logger.debug("getValue from cache \"{}\" is returing a cached value", name);
+            logger.debug("getValue from cache \"{}\" is returning a cached value", name);
         }
         return cachedValue;
     }
@@ -111,7 +111,7 @@ public class ExpiringDayCache<V> {
      * @return true if the value is expired
      */
     public boolean isExpired() {
-        return !LocalDateTime.now().isBefore(expiresAt);
+        return LocalDateTime.now().isAfter(expiresAt);
     }
 
     private LocalDateTime calcNextExpiresAt() {

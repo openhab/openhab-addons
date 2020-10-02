@@ -45,7 +45,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return thingTypeUID.equals(THING_TYPE_LINKY);
+        return THING_TYPE_LINKY.equals(thingTypeUID);
     }
 
     @Override
