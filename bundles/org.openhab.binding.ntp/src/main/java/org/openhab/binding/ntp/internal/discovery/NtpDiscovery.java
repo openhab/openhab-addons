@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.ntp")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.ntp")
 public class NtpDiscovery extends AbstractDiscoveryService {
 
     private final TimeZoneProvider timeZoneProvider;

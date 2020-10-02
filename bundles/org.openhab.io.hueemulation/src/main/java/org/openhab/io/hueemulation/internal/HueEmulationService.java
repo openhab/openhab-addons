@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial Contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = HueEmulationService.class)
+@Component(service = HueEmulationService.class)
 public class HueEmulationService implements EventHandler {
 
     public static final String CONFIG_PID = "org.openhab.hueemulation";

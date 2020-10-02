@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Sebastian Prehn - Initial contribution
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true, configurationPid = "discovery.lgwebos.upnp")
+@Component(service = UpnpDiscoveryParticipant.class, configurationPid = "discovery.lgwebos.upnp")
 public class LGWebOSUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(LGWebOSUpnpDiscoveryParticipant.class);

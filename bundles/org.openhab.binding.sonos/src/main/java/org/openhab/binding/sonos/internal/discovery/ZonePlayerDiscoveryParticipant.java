@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(ZonePlayerDiscoveryParticipant.class);

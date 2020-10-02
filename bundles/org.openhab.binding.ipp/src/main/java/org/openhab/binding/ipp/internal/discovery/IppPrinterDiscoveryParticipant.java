@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
-@Component(immediate = true)
+@Component
 public class IppPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(IppPrinterDiscoveryParticipant.class);

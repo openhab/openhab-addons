@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Åberg - Initial contribution
  */
-@Component(immediate = true)
+@Component
 public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(SonyAudioDiscoveryParticipant.class);

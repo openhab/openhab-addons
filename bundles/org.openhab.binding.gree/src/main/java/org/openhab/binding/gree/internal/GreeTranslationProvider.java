@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = GreeTranslationProvider.class, immediate = true, configurationPid = "localization.gree")
+@Component(service = GreeTranslationProvider.class, configurationPid = "localization.gree")
 public class GreeTranslationProvider {
 
     private final Bundle bundle;

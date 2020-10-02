@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Guido Dolfen - Initial contribution
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class)
 public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(Enigma2DiscoveryParticipant.class);

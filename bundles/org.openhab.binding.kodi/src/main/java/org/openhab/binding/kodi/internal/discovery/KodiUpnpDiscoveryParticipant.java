@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Use "discovery.kodi:background=false" to disable discovery service
  */
-@Component(immediate = true, configurationPid = "discovery.kodi")
+@Component(configurationPid = "discovery.kodi")
 @NonNullByDefault
 public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Thomas.Eichstaedt-Engelen
  */
 @NonNullByDefault
-@Component(immediate = true, property = { "smarthome.transform=XSLT" })
+@Component(property = { "smarthome.transform=XSLT" })
 public class XsltTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(XsltTransformationService.class);

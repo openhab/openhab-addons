@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.max")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.max")
 public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     private static final String MAXCUBE_DISCOVER_STRING = "eQ3Max*\0**********I";

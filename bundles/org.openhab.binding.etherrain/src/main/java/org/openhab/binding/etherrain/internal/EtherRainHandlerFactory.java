@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.etherrain")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.etherrain")
 @NonNullByDefault
 public class EtherRainHandlerFactory extends BaseThingHandlerFactory {
 

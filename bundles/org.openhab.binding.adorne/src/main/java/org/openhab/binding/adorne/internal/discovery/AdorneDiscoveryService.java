@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Theiding - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.adorne")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.adorne")
 public class AdorneDiscoveryService extends AbstractDiscoveryService implements AdorneHubChangeNotify {
 
     private final Logger logger = LoggerFactory.getLogger(AdorneDiscoveryService.class);

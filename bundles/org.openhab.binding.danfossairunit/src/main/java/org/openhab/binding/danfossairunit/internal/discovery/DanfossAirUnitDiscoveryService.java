@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Ralf Duckstein - Initial contribution
  * @author Robert Bach - heavy refactorings
  */
-@Component(service = DiscoveryService.class, immediate = true)
+@Component(service = DiscoveryService.class)
 @NonNullByDefault
 public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
 

@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Roberts - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.atlona")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.atlona")
 public class AtlonaDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(AtlonaDiscovery.class);

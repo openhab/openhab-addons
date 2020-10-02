@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Patrick Hecker - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.zway")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.zway")
 public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
