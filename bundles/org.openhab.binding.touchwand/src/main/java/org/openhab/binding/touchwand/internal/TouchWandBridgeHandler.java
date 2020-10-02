@@ -136,5 +136,4 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(TouchWandUnitDiscoveryService.class);
     }
-
 }
