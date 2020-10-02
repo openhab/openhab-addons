@@ -18,7 +18,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -26,7 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandler;
 
 /**
  * The {@link HaywarThingHandler} is a subclass of the BaseThingHandler and a Super
@@ -34,6 +32,7 @@ import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandle
  *
  * @author Matt Myers - Initial contribution
  */
+
 public class HaywardThingHandler extends BaseThingHandler {
     protected Thing thing;
 
@@ -50,17 +49,7 @@ public class HaywardThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    private HaywardBridgeHandler getHaywardOmniLogixBridgeHandler() {
-        Bridge bridge = getBridge();
-        if (bridge == null || bridge.getHandler() == null) {
-            return null;
-        } else {
-            return (HaywardBridgeHandler) bridge.getHandler();
-        }
-    }
-
     public void getTelemetry(@NonNull String xmlResponse) throws Exception {
-
     }
 
     public State toState(String type, String value) throws NumberFormatException {

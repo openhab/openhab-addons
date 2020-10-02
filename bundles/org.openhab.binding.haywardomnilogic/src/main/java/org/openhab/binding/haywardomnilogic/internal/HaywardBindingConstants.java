@@ -13,6 +13,11 @@
 
 package org.openhab.binding.haywardomnilogic.internal;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -39,6 +44,18 @@ public class HaywardBindingConstants {
     public static final ThingTypeUID THING_TYPE_RELAY = new ThingTypeUID(BINDING_ID, "relay");
     public static final ThingTypeUID THING_TYPE_SENSOR = new ThingTypeUID(BINDING_ID, "sensor");
     public static final ThingTypeUID THING_TYPE_VIRTUALHEATER = new ThingTypeUID(BINDING_ID, "virtualHeater");
+
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BRIDGE);
+
+    // public static final Set<ThingTypeUID> ZONE_THING_TYPES_UIDS = Collections.singleton(ZONE_THING_TYPE);
+
+    public static final Set<ThingTypeUID> THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+            Arrays.asList(HaywardBindingConstants.THING_TYPE_BACKYARD, HaywardBindingConstants.THING_TYPE_BOW,
+                    HaywardBindingConstants.THING_TYPE_BRIDGE, HaywardBindingConstants.THING_TYPE_CHLORINATOR,
+                    HaywardBindingConstants.THING_TYPE_COLORLOGIC, HaywardBindingConstants.THING_TYPE_FILTER,
+                    HaywardBindingConstants.THING_TYPE_HEATER, HaywardBindingConstants.THING_TYPE_PUMP,
+                    HaywardBindingConstants.THING_TYPE_RELAY, HaywardBindingConstants.THING_TYPE_SENSOR,
+                    HaywardBindingConstants.THING_TYPE_VIRTUALHEATER));
 
     // List of all Channel ids (bridge)
     // No Channels

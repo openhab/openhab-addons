@@ -49,7 +49,6 @@ public class HaywardFilterHandler extends HaywardThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
-
     }
 
     public void setFilterProperty(String systemID, String channelID, String data) {

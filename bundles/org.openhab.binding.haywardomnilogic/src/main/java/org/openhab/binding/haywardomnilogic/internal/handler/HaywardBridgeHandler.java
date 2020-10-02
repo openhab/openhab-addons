@@ -14,6 +14,8 @@ package org.openhab.binding.haywardomnilogic.internal.handler;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -41,9 +43,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.config.HaywardConfig;
+import org.openhab.binding.haywardomnilogic.internal.discovery.HaywardDiscoveryService;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardTypeToRequest;
 import org.slf4j.Logger;
@@ -59,71 +63,36 @@ import org.xml.sax.InputSource;
  */
 
 @NonNullByDefault
-public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardListener {
+public class HaywardBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardBridgeHandler.class);
-
-    private List<HaywardHandlerListener> listeners = new ArrayList<>();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> initializeFuture;
     private @Nullable ScheduledFuture<?> pollTelemetryFuture;
     private @Nullable ScheduledFuture<?> pollAlarmsFuture;
     private int commFailureCount;
+    private @Nullable HaywardDiscoveryService haywardDiscoveryService;
 
-    HaywardConfig config = getConfig().as(HaywardConfig.class);
+    public HaywardConfig config = getConfig().as(HaywardConfig.class);
 
-    public HaywardBridgeHandler(Bridge thing, HttpClient httpClient) {
-        super(thing);
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(HaywardDiscoveryService.class);
+    }
+
+    public HaywardBridgeHandler(Bridge bridge, HttpClient httpClient) {
+        super(bridge);
         this.httpClient = httpClient;
+    }
+
+    /**
+     * Called by the zone discovery service to let this handler have a reference.
+     */
+    public void setHaywardDiscoveryService(HaywardDiscoveryService s) {
+        this.haywardDiscoveryService = s;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    public void addListener(HaywardHandlerListener listener) {
-        synchronized (listeners) {
-            this.listeners.add(listener);
-        }
-    }
-
-    public void removeListener(HaywardHandlerListener listener) {
-        synchronized (listeners) {
-            this.listeners.remove(listener);
-        }
-    }
-
-    @Override
-    public void onDeviceDiscovered(HaywardTypeToRequest type, Integer systemID, String label, String bowID,
-            String bowName, String property1, String property2, String property3, String property4) {
-        // Once we have a description, see if the thing exists.
-        Thing thing = getThingForType(type, systemID);
-        if (thing == null) {
-            for (HaywardHandlerListener listener : this.listeners) {
-                if (type == HaywardTypeToRequest.BACKYARD) {
-                    listener.onBackyardDiscovered(systemID, label);
-                } else if (type == HaywardTypeToRequest.BOW) {
-                    listener.onBOWDiscovered(systemID, label);
-                } else if (type == HaywardTypeToRequest.FILTER) {
-                    listener.onFilterDiscovered(systemID, label, bowID, bowName, property1, property2, property3,
-                            property4);
-                } else if (type == HaywardTypeToRequest.HEATER) {
-                    listener.onHeaterDiscovered(systemID, label, bowID, bowName);
-                } else if (type == HaywardTypeToRequest.CHLORINATOR) {
-                    listener.onChlorinatorDiscovered(systemID, label, bowID, bowName);
-                } else if (type == HaywardTypeToRequest.COLORLOGIC) {
-                    listener.onColorLogicDiscovered(systemID, label, bowID, bowName);
-                } else if (type == HaywardTypeToRequest.PUMP) {
-                    listener.onPumpDiscovered(systemID, label, bowID, bowName, property1, property2, property3,
-                            property4);
-                } else if (type == HaywardTypeToRequest.RELAY) {
-                    listener.onRelayDiscovered(systemID, label, bowID, bowName);
-                } else if (type == HaywardTypeToRequest.SENSOR) {
-                    listener.onSensorDiscovered(systemID, label, bowID, bowName);
-                } else if (type == HaywardTypeToRequest.VIRTUALHEATER) {
-                    listener.onVirtualHeaterDiscovered(systemID, label, bowID, bowName);
-                }
-            }
-        }
     }
 
     @Override
@@ -138,7 +107,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-
         initializeFuture = scheduler.schedule(this::scheduledInitialize, 1, TimeUnit.SECONDS);
         return;
     }
@@ -163,16 +131,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             if (!(getSiteList())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Unable to getMSP from Hayward's server");
-                clearPolling(pollTelemetryFuture);
-                clearPolling(pollAlarmsFuture);
-                commFailureCount = 50;
-                initPolling(60);
-                return;
-            }
-
-            if (!(getMspConfig())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unable to getConfig from Hayward's server");
                 clearPolling(pollTelemetryFuture);
                 clearPolling(pollAlarmsFuture);
                 commFailureCount = 50;
@@ -286,17 +244,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         return true;
     }
 
-    public synchronized boolean getMspConfig() throws Exception {
-        String xmlResponse;
-        List<String> systemIDs = new ArrayList<>();
-        List<String> names = new ArrayList<>();
-        List<String> bowName = new ArrayList<>();
-        List<String> bowID = new ArrayList<>();
-        List<String> property1 = new ArrayList<>();
-        List<String> property2 = new ArrayList<>();
-        List<String> property3 = new ArrayList<>();
-        List<String> property4 = new ArrayList<>();
-
+    public synchronized String getMspConfig() throws Exception {
         // *****getMspConfig from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetMspConfigFile</Name><Parameters>"
                 + "<Parameter name=\"Token\" dataType=\"String\">" + config.token + "</Parameter>"
@@ -304,7 +252,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                 + "</Parameter><Parameter name=\"Version\" dataType=\"string\">0</Parameter>\r\n"
                 + "</Parameters></Request>";
 
-        xmlResponse = httpXmlResponse(urlParameters);
+        String xmlResponse = httpXmlResponse(urlParameters);
 
         // Debug: Inject xml file for testing
         // String path =
@@ -313,171 +261,14 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
         if (xmlResponse.isEmpty()) {
             logger.error("Hayward requestConfig XML response was null");
-            return false;
+            return "";
         }
 
         if (evaluateXPath("//Backyard/Name/text()", xmlResponse).isEmpty()) {
             logger.error("Hayward requestConfiguration XML response: {}", xmlResponse);
-            return false;
+            return "";
         }
-
-        // Find Backyard
-        names = evaluateXPath("//Backyard/Name/text()", xmlResponse);
-
-        for (String name : names) {
-            onDeviceDiscovered(HaywardTypeToRequest.BACKYARD, Integer.parseInt(config.mspSystemID), name, "", "", "",
-                    "", "", "");
-        }
-
-        // Find Bodies of Water
-        systemIDs = evaluateXPath("//Body-of-water/System-Id/text()", xmlResponse);
-        names = evaluateXPath("//Body-of-water/Name/text()", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            onDeviceDiscovered(HaywardTypeToRequest.BOW, Integer.parseInt(systemIDs.get(i)), names.get(i), "", "", "",
-                    "", "", "");
-        }
-
-        // Find Chlorinators
-        systemIDs = evaluateXPath("//Chlorinator/System-Id/text()", xmlResponse);
-        names = evaluateXPath("//Chlorinator/Name/text()", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            // get Body of Water for each item
-            bowID = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()",
-                    xmlResponse);
-            bowName = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()",
-                    xmlResponse);
-            onDeviceDiscovered(HaywardTypeToRequest.CHLORINATOR, Integer.parseInt(systemIDs.get(i)), names.get(i),
-                    bowID.get(0), bowName.get(0), "", "", "", "");
-        }
-
-        // Find ColorLogic Lights
-        systemIDs = evaluateXPath("//ColorLogic-Light/System-Id/text()", xmlResponse);
-        names = evaluateXPath("//ColorLogic-Light/Name/text()", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            // get Body of Water for each item
-            bowID = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()",
-                    xmlResponse);
-            bowName = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()",
-                    xmlResponse);
-            onDeviceDiscovered(HaywardTypeToRequest.COLORLOGIC, Integer.parseInt(systemIDs.get(i)), names.get(i),
-                    bowID.get(0), bowName.get(0), "", "", "", "");
-        }
-
-        // Find CSAD's
-        systemIDs = evaluateXPath("//CSAD/System-Id/text()", xmlResponse);
-        names = evaluateXPath("//CSAD/Name/text()", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            // get Body of Water for each item
-            bowID = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/System-Id/text()",
-                    xmlResponse);
-            bowName = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/Name/text()",
-                    xmlResponse);
-            onDeviceDiscovered(HaywardTypeToRequest.CSAD, Integer.parseInt(systemIDs.get(i)), names.get(i),
-                    bowID.get(0), bowName.get(0), "", "", "", "");
-        }
-
-        // Find Filters
-        systemIDs = evaluateXPath("//Filter/System-Id/text()", xmlResponse);
-        names = evaluateXPath("//Filter/Name/text()", xmlResponse);
-        property1 = evaluateXPath("//Filter/Min-Pump-Speed/text()", xmlResponse);
-        property2 = evaluateXPath("//Filter/Max-Pump-Speed/text()", xmlResponse);
-        property3 = evaluateXPath("//Filter/Min-Pump-RPM/text()", xmlResponse);
-        property4 = evaluateXPath("//Filter/Max-Pump-RPM/text()", xmlResponse);
-        for (int i = 0; i < systemIDs.size(); i++) {
-            // get Body of Water for each item
-            bowID = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()",
-                    xmlResponse);
-            bowName = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()",
-                    xmlResponse);
-            onDeviceDiscovered(HaywardTypeToRequest.FILTER, Integer.parseInt(systemIDs.get(i)), names.get(i),
-                    bowID.get(0), bowName.get(0), property1.get(i), property2.get(i), property3.get(i),
-                    property4.get(i));
-        }
-
-        // Find Heaters
-        systemIDs = evaluateXPath("//Heater-Equipment/System-Id/text()", xmlResponse);
-        names = evaluateXPath("//Heater-Equipment/Name/text()", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            // get Body of Water for each item
-            bowID = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/System-Id/text()",
-                    xmlResponse);
-            bowName = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/Name/text()",
-                    xmlResponse);
-            onDeviceDiscovered(HaywardTypeToRequest.HEATER, Integer.parseInt(systemIDs.get(i)), names.get(i),
-                    bowID.get(0), bowName.get(0), "", "", "", "");
-        }
-
-        // Find Pumps
-        systemIDs = evaluateXPath("//Pump/System-Id/text()", xmlResponse);
-        names = evaluateXPath("//Pump/Name/text()", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            // get Body of Water for each item
-            bowID = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/System-Id/text()",
-                    xmlResponse);
-            bowName = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/Name/text()",
-                    xmlResponse);
-            onDeviceDiscovered(HaywardTypeToRequest.PUMP, Integer.parseInt(systemIDs.get(i)), names.get(i),
-                    bowID.get(0), bowName.get(0), "", "", "", "");
-        }
-
-        // Find Relays
-        systemIDs = evaluateXPath("//Relay/System-Id/text()", xmlResponse);
-        names = evaluateXPath("//Relay/Name/text()", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            // get Body of Water for each item
-            bowID = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()",
-                    xmlResponse);
-            bowName = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()",
-                    xmlResponse);
-            if (!(bowID.isEmpty())) {
-                onDeviceDiscovered(HaywardTypeToRequest.RELAY, Integer.parseInt(systemIDs.get(i)), names.get(i),
-                        bowID.get(0), bowName.get(0), "", "", "", "");
-            } else {
-                onDeviceDiscovered(HaywardTypeToRequest.RELAY, Integer.parseInt(systemIDs.get(i)), names.get(i), "", "",
-                        "", "", "", "");
-            }
-
-        }
-
-        // Find Virtual Heaters
-        systemIDs = evaluateXPath("//Heater/System-Id/text()", xmlResponse);
-
-        for (int i = 0; i < systemIDs.size(); i++) {
-            // get Body of Water for each item
-            bowID = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()",
-                    xmlResponse);
-            bowName = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()",
-                    xmlResponse);
-            onDeviceDiscovered(HaywardTypeToRequest.VIRTUALHEATER, Integer.parseInt(systemIDs.get(i)), "Virtual Heater",
-                    bowID.get(0), bowName.get(0), "", "", "", "");
-        }
-
-        // Find Sensors
-        // Flow and water temp sensor aren't showing up in telemetry. Need example to determine how to differentiate
-        // "system" sensors
-        // that are reported in the BOW water temp, Filter flow switch, ORP, etc.
-        systemIDs = evaluateXPath("//Sensor/System-Id/text()", xmlResponse);
-        names = evaluateXPath("//Sensor/Name/text()", xmlResponse);
-        for (int i = 0; i < systemIDs.size(); i++) {
-            // get Body of Water for each item
-            bowID = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/System-Id/text()",
-                    xmlResponse);
-            bowName = evaluateXPath("//*[System-Id=" + systemIDs.get(i) + "]/parent::Body-of-water/Name/text()",
-                    xmlResponse);
-            // Do not add backyard sensors that do not exist in the BOW thus bowID is null
-            if (!(bowID.isEmpty())) {
-                onDeviceDiscovered(HaywardTypeToRequest.SENSOR, Integer.parseInt(systemIDs.get(i)), names.get(i),
-                        bowID.get(0), bowName.get(0), "", "", "", "");
-            }
-        }
-        return true;
+        return xmlResponse;
     }
 
     public synchronized boolean getTelemetryData() throws Exception {
@@ -500,7 +291,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         }
 
         for (Thing thing : getThing().getThings()) {
-            if (thing != null && thing.getHandler() instanceof HaywardThingHandler) {
+            if (thing.getHandler() instanceof HaywardThingHandler) {
                 HaywardThingHandler handler = (HaywardThingHandler) thing.getHandler();
                 if (handler != null) {
                     handler.getTelemetry(xmlResponse);
@@ -583,7 +374,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             for (int i = 0; i < nodes.getLength(); i++) {
                 values.add(nodes.item(i).getNodeValue());
             }
-
         } catch (XPathExpressionException e) {
             logger.error("XPathExpression exception:", e);
         }
@@ -614,7 +404,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                     .isEmpty())) {
                 statusMessage = evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()",
                         xmlResponse).get(0);
-
             } else {
                 statusMessage = httpResponse.getReason();
             }
