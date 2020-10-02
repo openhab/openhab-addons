@@ -34,8 +34,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Markus Eckhardt - Initial contribution
  */
-@Component(service = { ChannelTypeProvider.class, ChannelGroupTypeProvider.class,
-        KM200ChannelTypeProvider.class }, immediate = true)
+@Component(service = { ChannelTypeProvider.class, ChannelGroupTypeProvider.class, KM200ChannelTypeProvider.class })
 @NonNullByDefault
 public class KM200ChannelTypeProvider implements ChannelTypeProvider, ChannelGroupTypeProvider {
     private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();

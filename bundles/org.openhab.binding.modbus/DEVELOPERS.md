@@ -97,7 +97,7 @@ You will have to write a discovery participant class which implements the `Modbu
 
 ```java
 
-@Component(immediate = true)
+@Component
 @NonNullByDefault
 public class SunspecDiscoveryParticipant implements ModbusDiscoveryParticipant {
 ...

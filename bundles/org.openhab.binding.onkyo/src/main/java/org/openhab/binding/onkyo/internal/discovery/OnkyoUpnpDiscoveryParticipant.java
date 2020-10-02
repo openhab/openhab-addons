@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Frank - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(OnkyoUpnpDiscoveryParticipant.class);

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = ModuleHandlerFactory.class)
+@Component(service = ModuleHandlerFactory.class)
 public class RulesHandlerFactory extends BaseModuleHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(RulesHandlerFactory.class);

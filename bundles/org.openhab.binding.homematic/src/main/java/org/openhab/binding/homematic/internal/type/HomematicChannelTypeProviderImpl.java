@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Gerhard Riegler - Initial contribution
  * @author Michael Reitler - Added HomematicThingTypeExcluder
  */
-@Component(service = { HomematicChannelTypeProvider.class, ChannelTypeProvider.class }, immediate = true)
+@Component(service = { HomematicChannelTypeProvider.class, ChannelTypeProvider.class })
 public class HomematicChannelTypeProviderImpl implements HomematicChannelTypeProvider {
     private final Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<>();
     protected List<HomematicThingTypeExcluder> homematicThingTypeExcluders = new CopyOnWriteArrayList<>();

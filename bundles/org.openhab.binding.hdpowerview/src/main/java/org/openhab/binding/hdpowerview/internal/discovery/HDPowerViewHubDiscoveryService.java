@@ -39,7 +39,7 @@ import jcifs.netbios.NbtAddress;
  * @author Andy Lintner - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.hdpowerview")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.hdpowerview")
 public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryService.class);

@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Mihaela Memova - removed the getLabel(RemoteDevice device) method due to its unreachable code lines
  * @author Markus Michels - support for Teufel 3sixty discovery
  */
-@Component(immediate = true)
+@Component
 public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(FSInternetRadioDiscoveryParticipant.class);
 

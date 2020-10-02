@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Wouter Born - Add i18n support
  */
 @NonNullByDefault
-@Component(service = LifxChannelFactory.class, immediate = true)
+@Component(service = LifxChannelFactory.class)
 public class LifxChannelFactoryImpl implements LifxChannelFactory {
 
     private static final String COLOR_ZONE_LABEL_KEY = "channel-type.lifx.colorzone.label";

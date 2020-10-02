@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author Wouter Born - Add null annotations
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.harmonyhub")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.harmonyhub")
 public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(HarmonyHubDiscoveryService.class);

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Stewart Cossey - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(HPPrinterDiscoveryParticipant.class);

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - some refactoring for performance and simplification
  *
  */
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(service = UpnpDiscoveryParticipant.class)
 public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(WemoDiscoveryParticipant.class);

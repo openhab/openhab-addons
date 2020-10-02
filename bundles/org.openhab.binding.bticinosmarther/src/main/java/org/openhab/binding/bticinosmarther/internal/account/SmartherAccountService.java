@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Fabio Possieri - Initial contribution
  */
-@Component(service = SmartherAccountService.class, immediate = true, configurationPid = "binding.bticinosmarther.accountService")
+@Component(service = SmartherAccountService.class, configurationPid = "binding.bticinosmarther.accountService")
 @NonNullByDefault
 public class SmartherAccountService {
 

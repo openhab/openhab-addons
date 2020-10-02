@@ -56,7 +56,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class,
-        EventHandler.class }, immediate = true, configurationPid = "binding.smarthings", property = "event.topics=org/openhab/binding/smartthings/state")
+        EventHandler.class }, configurationPid = "binding.smarthings", property = "event.topics=org/openhab/binding/smartthings/state")
 public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory, EventHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsHandlerFactory.class);

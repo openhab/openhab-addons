@@ -35,7 +35,7 @@ import tinyb.BluetoothManager;
  * @author Hilbrand Bouwkamp - Moved background scan to actual background method
  *
  */
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.bluetooth.bluez")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.bluetooth.bluez")
 public class BlueZDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(BlueZDiscoveryService.class);

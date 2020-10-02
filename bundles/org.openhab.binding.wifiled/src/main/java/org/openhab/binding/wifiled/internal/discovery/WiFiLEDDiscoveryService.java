@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osman Basha - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.wifiled")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.wifiled")
 public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DEFAULT_BROADCAST_PORT = 48899;
