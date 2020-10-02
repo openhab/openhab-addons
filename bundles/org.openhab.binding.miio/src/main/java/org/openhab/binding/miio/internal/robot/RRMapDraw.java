@@ -318,7 +318,6 @@ public class RRMapDraw {
             });
 
         }
-
     }
 
     private void drawCircle(Graphics2D g2d, float x, float y, float radius, boolean fill) {
