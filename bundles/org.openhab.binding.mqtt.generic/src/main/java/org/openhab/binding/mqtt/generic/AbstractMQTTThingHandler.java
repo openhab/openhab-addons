@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.generic;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -355,16 +356,16 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     }
 
     protected void calculateThingStatus() {
-        final boolean availabilityTopicsSeen;
+        final Optional<Boolean> availabilityTopicsSeen;
 
         if (availabilityStates.isEmpty()) {
-            availabilityTopicsSeen = true;
+            availabilityTopicsSeen = Optional.empty();
         } else {
-            availabilityTopicsSeen = availabilityStates.values().stream().allMatch(
-                    c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class)));
+            availabilityTopicsSeen = Optional.of(availabilityStates.values().stream().allMatch(
+                    c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
         }
         updateThingStatus(messageReceived.get(), availabilityTopicsSeen);
     }
 
-    protected abstract void updateThingStatus(boolean messageReceived, boolean availabilityTopicsSeen);
+    protected abstract void updateThingStatus(boolean messageReceived, Optional<Boolean> availabilityTopicsSeen);
 }
