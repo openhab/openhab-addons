@@ -96,7 +96,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         AbstractComponent<?> component = null;
 
         if (config.length() > 0) {
-            component = CFactory.createComponent(thingUID, haID, config, updateListener, tracker, gson,
+            component = CFactory.createComponent(thingUID, haID, config, updateListener, tracker, scheduler, gson,
                     transformationServiceProvider);
         }
         if (component != null) {
