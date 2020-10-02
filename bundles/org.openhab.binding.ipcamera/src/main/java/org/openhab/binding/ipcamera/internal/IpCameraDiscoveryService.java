@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "binding.ipcamera")
+@Component(service = DiscoveryService.class, configurationPid = "binding.ipcamera")
 public class IpCameraDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(IpCameraDiscoveryService.class);

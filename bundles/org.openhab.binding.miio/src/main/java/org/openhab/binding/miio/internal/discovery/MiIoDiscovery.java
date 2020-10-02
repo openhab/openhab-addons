@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.miio")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.miio")
 public class MiIoDiscovery extends AbstractDiscoveryService {
 
     /** The refresh interval for background discovery */

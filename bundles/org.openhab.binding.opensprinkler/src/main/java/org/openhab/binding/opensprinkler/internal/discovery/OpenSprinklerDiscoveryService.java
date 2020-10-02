@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Graham - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.opensprinkler")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.opensprinkler")
 public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(

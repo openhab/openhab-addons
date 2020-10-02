@@ -50,7 +50,7 @@ import io.github.hapjava.server.impl.HomekitServer;
  *
  * @author Andy Lintner - Initial contribution
  */
-@Component(immediate = true, service = { Homekit.class }, configurationPid = "org.openhab.homekit", property = {
+@Component(service = { Homekit.class }, configurationPid = "org.openhab.homekit", property = {
         Constants.SERVICE_PID + "=org.openhab.homekit", "port:Integer=9123" })
 @ConfigurableService(category = "io", label = "HomeKit Integration", description_uri = "io:homekit")
 @NonNullByDefault

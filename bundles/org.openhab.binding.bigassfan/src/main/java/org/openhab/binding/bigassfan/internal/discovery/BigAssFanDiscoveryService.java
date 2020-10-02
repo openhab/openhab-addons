@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.bigassfan")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.bigassfan")
 public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(BigAssFanDiscoveryService.class);
 

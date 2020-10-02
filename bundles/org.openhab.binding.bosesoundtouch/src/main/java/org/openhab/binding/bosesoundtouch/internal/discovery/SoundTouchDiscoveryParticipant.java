@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Christian Niessner - Initial contribution
  * @author Thomas Traunbauer - Initial contribution
  */
-@Component(immediate = true, configurationPid = "discovery.bosesoundtouch")
+@Component(configurationPid = "discovery.bosesoundtouch")
 public class SoundTouchDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(SoundTouchDiscoveryParticipant.class);

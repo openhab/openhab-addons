@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial Contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.nikohomecontrol")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.nikohomecontrol")
 @NonNullByDefault
 public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryService {
 

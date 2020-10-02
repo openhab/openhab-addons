@@ -79,7 +79,7 @@ import io.netty.handler.ssl.SslContextBuilder;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = true, service = EmbeddedBrokerService.class, configurationPid = Constants.PID, //
+@Component(service = EmbeddedBrokerService.class, configurationPid = Constants.PID, //
         property = org.osgi.framework.Constants.SERVICE_PID + "=" + Constants.PID)
 @ConfigurableService(category = "MQTT", label = "MQTT Embedded Broker", description_uri = "mqtt:mqttembeddedbroker")
 @NonNullByDefault

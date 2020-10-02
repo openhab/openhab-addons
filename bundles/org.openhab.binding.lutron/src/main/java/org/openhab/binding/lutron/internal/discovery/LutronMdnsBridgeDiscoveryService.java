@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Adair - Initial contribution
  */
-@Component(immediate = true)
+@Component
 @NonNullByDefault
 public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipant {
 

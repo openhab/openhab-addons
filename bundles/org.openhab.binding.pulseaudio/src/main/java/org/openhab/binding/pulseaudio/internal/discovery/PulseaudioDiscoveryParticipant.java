@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias Bräutigam - Initial contribution
  */
-@Component(immediate = true)
+@Component
 public class PulseaudioDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(PulseaudioDiscoveryParticipant.class);

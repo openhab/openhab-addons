@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Joe Inkenbrandt - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.etherrain")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.etherrain")
 public class EtherrainDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(EtherrainDiscoveryService.class);

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = ModuleHandlerFactory.class)
+@Component(service = ModuleHandlerFactory.class)
 public class TimerModuleExHandlerFactory extends BaseModuleHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(TimerModuleExHandlerFactory.class);

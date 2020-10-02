@@ -58,7 +58,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.mqttha")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.mqttha")
 @NonNullByDefault
 public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     @SuppressWarnings("unused")

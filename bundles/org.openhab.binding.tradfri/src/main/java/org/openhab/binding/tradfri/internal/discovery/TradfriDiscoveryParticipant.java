@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kai Kreuzer - Initial contribution
  */
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class)
 @NonNullByDefault
 public class TradfriDiscoveryParticipant implements MDNSDiscoveryParticipant {
 

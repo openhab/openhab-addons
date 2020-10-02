@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gregory Moyer - Initial contribution
  */
-@Component(immediate = true)
+@Component
 public class LaMetricTimeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(LaMetricTimeDiscoveryParticipant.class);

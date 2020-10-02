@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.digitalstrom")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.digitalstrom")
 public class BridgeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeDiscoveryService.class);

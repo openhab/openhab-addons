@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Oliver Libutzki - Initial contribution
  *
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.amazondashbutton")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.amazondashbutton")
 public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService implements PcapNetworkInterfaceListener {
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;

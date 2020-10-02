@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @see <a href="https://openhab.org/documentation/development/bindings/discovery-services.html">MSDN
  *      Discovery</a>
  */
-@Component(immediate = true, configurationPid = "discovery.nanoleaf")
+@Component(configurationPid = "discovery.nanoleaf")
 @NonNullByDefault
 public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 

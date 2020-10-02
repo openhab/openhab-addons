@@ -38,7 +38,7 @@ import com.jayway.jsonpath.PathNotFoundException;
  *
  */
 @NonNullByDefault
-@Component(immediate = true, property = { "smarthome.transform=JSONPATH" })
+@Component(property = { "smarthome.transform=JSONPATH" })
 public class JSonPathTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(JSonPathTransformationService.class);

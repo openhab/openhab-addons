@@ -35,7 +35,7 @@ import com.leapmotion.leap.Listener;
  *
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.leapmotion")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.leapmotion")
 public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
 
     private @NonNullByDefault({}) Controller leapController;

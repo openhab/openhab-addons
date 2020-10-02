@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
  *
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     private static final int RUUVITAG_COMPANY_ID = 1177;

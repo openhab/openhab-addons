@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Rewritten
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.network")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.network")
 public class NetworkDiscoveryService extends AbstractDiscoveryService implements PresenceDetectionListener {
     static final int PING_TIMEOUT_IN_MS = 500;
     static final int MAXIMUM_IPS_PER_INTERFACE = 255;

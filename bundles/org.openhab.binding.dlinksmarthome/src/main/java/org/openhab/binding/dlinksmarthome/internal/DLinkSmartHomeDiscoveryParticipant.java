@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Mike Major - Initial contribution
  *
  */
-@Component(immediate = true)
+@Component
 public class DLinkSmartHomeDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_dhnap._tcp.local.";

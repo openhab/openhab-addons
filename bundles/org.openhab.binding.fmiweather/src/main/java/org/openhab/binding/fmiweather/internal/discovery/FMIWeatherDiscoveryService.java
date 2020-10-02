@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.fmiweather")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.fmiweather")
 public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(FMIWeatherDiscoveryService.class);
 

@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.milight")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.milight")
 public class MilightBridgeDiscovery extends AbstractDiscoveryService implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(MilightBridgeDiscovery.class);
 

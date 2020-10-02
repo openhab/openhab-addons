@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Thomas Höfer - Added representation
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(service = UpnpDiscoveryParticipant.class)
 public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override

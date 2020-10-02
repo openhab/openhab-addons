@@ -50,7 +50,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @SuppressWarnings("serial")
-@Component(immediate = true, service = HttpServlet.class)
+@Component(service = HttpServlet.class)
 public class SmartthingsServlet extends HttpServlet {
     private static final String PATH = "/smartthings";
     private final Logger logger = LoggerFactory.getLogger(SmartthingsServlet.class);

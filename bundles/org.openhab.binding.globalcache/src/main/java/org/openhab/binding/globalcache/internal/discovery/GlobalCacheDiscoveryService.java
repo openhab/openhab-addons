@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.globalcache")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.globalcache")
 public class GlobalCacheDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(GlobalCacheDiscoveryService.class);
 

@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Gerhard Riegler - Initial contribution
  * @author Michael Reitler - Added HomematicThingTypeExcluder
  */
-@Component(service = { HomematicConfigDescriptionProvider.class, ConfigDescriptionProvider.class }, immediate = true)
+@Component(service = { HomematicConfigDescriptionProvider.class, ConfigDescriptionProvider.class })
 public class HomematicConfigDescriptionProviderImpl implements HomematicConfigDescriptionProvider {
     private Map<URI, ConfigDescription> configDescriptionsByURI = new HashMap<>();
     protected List<HomematicThingTypeExcluder> homematicThingTypeExcluders = new CopyOnWriteArrayList<>();

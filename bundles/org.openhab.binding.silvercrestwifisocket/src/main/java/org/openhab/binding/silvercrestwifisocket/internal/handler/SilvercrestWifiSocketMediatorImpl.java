@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jaime Vaz - Initial contribution
  */
-@Component(service = SilvercrestWifiSocketMediator.class, immediate = true)
+@Component(service = SilvercrestWifiSocketMediator.class)
 public class SilvercrestWifiSocketMediatorImpl implements SilvercrestWifiSocketMediator {
 
     private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketMediatorImpl.class);

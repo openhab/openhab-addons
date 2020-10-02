@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 //
 // To-be-discussed: check whether an immediate activation is preferable.
 // Might be activated by:
-// @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.velux")
+// @Component(service = DiscoveryService.class, configurationPid = "discovery.velux")
 //
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.velux")
