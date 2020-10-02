@@ -10,23 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.haywardomnilogic.internal.hayward;
+package org.openhab.binding.haywardomnilogic.internal;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The type to request.
+ * The {@link HaywardThingProperties} class contains fields mapping thing configuration parameters.
  *
  * @author Matt Myers - Initial Contribution
  */
-public enum HaywardTypeToRequest {
-    BACKYARD,
-    BOW,
-    CHLORINATOR,
-    COLORLOGIC,
-    CSAD,
-    FILTER,
-    HEATER,
-    PUMP,
-    RELAY,
-    SENSOR,
-    VIRTUALHEATER
+
+@NonNullByDefault
+public class HaywardThingProperties {
+    public String systemID = "";
+    public String poolID = "";
 }

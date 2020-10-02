@@ -21,8 +21,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
-import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
-import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingProperties;
+import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
+import org.openhab.binding.haywardomnilogic.internal.HaywardThingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

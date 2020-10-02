@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.haywardomnilogic.internal.hayward;
+package org.openhab.binding.haywardomnilogic.internal;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;

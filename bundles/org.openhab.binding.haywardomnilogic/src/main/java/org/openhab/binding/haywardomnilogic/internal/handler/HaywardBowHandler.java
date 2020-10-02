@@ -18,7 +18,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
-import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 
 /**
  * The Body of Water Handler
@@ -32,6 +32,7 @@ public class HaywardBowHandler extends HaywardThingHandler {
         super(thing);
     }
 
+    @Override
     public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();

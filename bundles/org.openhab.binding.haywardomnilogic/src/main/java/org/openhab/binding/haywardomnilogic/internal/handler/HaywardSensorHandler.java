@@ -18,7 +18,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
-import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
+import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

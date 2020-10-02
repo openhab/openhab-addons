@@ -29,8 +29,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
+import org.openhab.binding.haywardomnilogic.internal.HaywardTypeToRequest;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandler;
-import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardTypeToRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
