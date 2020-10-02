@@ -118,11 +118,12 @@ public class VehicleHandler extends BaseThingHandler {
             bridgeHandler = (VolvoOnCallBridgeHandler) thingHandler;
             if (bridgeStatus == ThingStatus.ONLINE) {
                 configuration = getConfigAs(VehicleConfiguration.class);
-                bridgeHandler.getApi().ifPresent(service -> {
+                VocHttpApi api = bridgeHandler.getApi();
+                if (api != null) {
                     try {
-                        vehicle = service.getURL("vehicles/" + configuration.vin, Vehicles.class);
+                        vehicle = api.getURL("vehicles/" + configuration.vin, Vehicles.class);
                         if (thing.getProperties().isEmpty()) {
-                            Map<String, String> properties = discoverAttributes(service);
+                            Map<String, String> properties = discoverAttributes(api);
                             updateProperties(properties);
                         }
 
@@ -135,12 +136,13 @@ public class VehicleHandler extends BaseThingHandler {
                         }
 
                         updateStatus(ThingStatus.ONLINE);
-                        startAutomaticRefresh(configuration.refresh, service);
+                        startAutomaticRefresh(configuration.refresh, api);
                     } catch (VolvoOnCallException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
                     }
 
-                });
+                }
+                ;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
@@ -198,9 +200,10 @@ public class VehicleHandler extends BaseThingHandler {
                             updateState(channelUID, state);
                         }
                     });
-            updateTrips(service);
             if (newVehicleStatus.odometer != vehicleStatus.odometer) {
                 triggerChannel(GROUP_OTHER + "#" + CAR_EVENT, EVENT_CAR_MOVED);
+                // We will update trips only if car position has changed to save server queries
+                updateTrips(service);
             }
             if (!vehicleStatus.getEngineRunning().equals(newVehicleStatus.getEngineRunning())
                     && newVehicleStatus.getEngineRunning().get() == OnOffType.ON) {
@@ -263,7 +266,10 @@ public class VehicleHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelID = channelUID.getIdWithoutGroup();
         if (command instanceof RefreshType) {
-            bridgeHandler.getApi().ifPresent(service -> queryApiAndUpdateChannels(service));
+            VocHttpApi api = bridgeHandler.getApi();
+            if (api != null) {
+                queryApiAndUpdateChannels(api);
+            }
         } else if (command instanceof OnOffType) {
             OnOffType onOffCommand = (OnOffType) command;
             if (ENGINE_START.equals(channelID) && onOffCommand == OnOffType.ON) {
@@ -492,19 +498,20 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void post(String url, @Nullable String param) {
-        bridgeHandler.getApi().ifPresent(service -> {
+        VocHttpApi api = bridgeHandler.getApi();
+        if (api != null) {
             try {
-                PostResponse postResponse = service.postURL(url.toString(), param);
+                PostResponse postResponse = api.postURL(url.toString(), param);
                 if (postResponse != null) {
-                    pendingActions
-                            .add(scheduler.schedule(new ActionResultControler(service, postResponse, scheduler, this),
-                                    1000, TimeUnit.MILLISECONDS));
+                    pendingActions.add(scheduler.schedule(new ActionResultControler(api, postResponse, scheduler, this),
+                            1000, TimeUnit.MILLISECONDS));
                 }
             } catch (VolvoOnCallException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        });
+        }
+        ;
         pendingActions.removeIf(ScheduledFuture::isDone);
     }
 

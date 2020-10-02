@@ -60,10 +60,10 @@ public class ActionResultControler implements Runnable {
             default:
                 try {
                     postResponse = service.getURL(postResponse.serviceURL, PostResponse.class);
-                    scheduler.schedule(this, 1000, TimeUnit.MILLISECONDS);
+                    scheduler.schedule(this, 10000, TimeUnit.MILLISECONDS);
                 } catch (VolvoOnCallException e) {
                     if (e.getType() == ErrorType.SERVICE_UNAVAILABLE || e.getType() == ErrorType.INTERRUPTED) {
-                        scheduler.schedule(this, 1000, TimeUnit.MILLISECONDS);
+                        scheduler.schedule(this, 10000, TimeUnit.MILLISECONDS);
                     }
                 }
         }

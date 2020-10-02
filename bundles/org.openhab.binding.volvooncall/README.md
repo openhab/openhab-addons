@@ -20,10 +20,11 @@ The binding has no configuration options itself, all configuration is done at 'T
 The 'VolvoOnCall API' bridge uses the owner's email address and password in order to access the VOC Remote API.
 This is the same email address and password as used in the VolvoOnCall smartphone app, that allows to remotely control your car(s).
 
-| Parameter | Description                                                              | Required |
-|-----------|------------------------------------------------------------------------- |--------- |
-| username  | Username from the VolvoOnCall app (email address)                        | yes      |
-| password  | Password from the VolvoOnCall app                                        | yes      |
+| Parameter       | Description                                          | Required |
+|-----------------|------------------------------------------------------|--------- |
+| username        | Username from the VolvoOnCall app (email address)    | yes      |
+| password        | Password from the VolvoOnCall app                    | yes      |
+| refreshinterval | Interval in minutes to refresh the data (default=10) | yes      |
 
 Once the bridge created, you will be able to launch discovery of the vehicles attached to it.
 
@@ -35,7 +36,7 @@ The 'VolvoOnCall API' bridge uses the owner's email address and password in orde
 | Parameter       | Name             | Description                                             | Required |
 |-----------------|------------------|---------------------------------------------------------|----------|
 | vin             | Vin              | Vehicle Identification Number of the car                | yes      |
-| refreshinterval | Refresh interval | Interval in minutes to refresh the data (default=10)    | no       |
+
 
 
 

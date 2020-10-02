@@ -14,10 +14,10 @@ package org.openhab.binding.volvooncall.internal.handler;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.volvooncall.internal.api.VocHttpApi;
 import org.openhab.binding.volvooncall.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.discovery.VolvoVehicleDiscoveryService;
@@ -45,40 +45,49 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallBridgeHandler.class);
     private final Gson gson;
+    private final HttpClient httpClient;
 
-    private Optional<VocHttpApi> api = Optional.empty();
+    private @Nullable VocHttpApi api;
 
-    public VolvoOnCallBridgeHandler(Bridge bridge, Gson gson) {
+    public VolvoOnCallBridgeHandler(Bridge bridge, Gson gson, HttpClient httpClient) {
         super(bridge);
         this.gson = gson;
+        this.httpClient = httpClient;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing VolvoOnCall API bridge handler.");
         ApiBridgeConfiguration configuration = getConfigAs(ApiBridgeConfiguration.class);
-        api = Optional.of(new VocHttpApi(configuration, gson));
-        api.ifPresent(service -> {
-            try {
-                CustomerAccounts account = service.getURL("customeraccounts/", CustomerAccounts.class);
-                if (account.username != null) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, account.username);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Incorrect username or password");
-                }
-            } catch (VolvoOnCallException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+
+        try {
+            api = new VocHttpApi(configuration, gson, httpClient);
+            CustomerAccounts account = api.getURL("customeraccounts/", CustomerAccounts.class);
+            if (account.username != null) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, account.username);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Incorrect username or password");
             }
-        });
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+
     }
 
     @Override
     public void dispose() {
-        api = Optional.empty();
+        if (api != null) {
+            try {
+                api.dispose();
+                api = null;
+            } catch (Exception e) {
+                logger.warn("Unable to stop VocHttpApi : {}", e.getMessage());
+            }
+        }
     }
 
-    public Optional<VocHttpApi> getApi() {
+    public @Nullable VocHttpApi getApi() {
         return api;
     }
 

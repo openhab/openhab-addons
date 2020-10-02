@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
+import org.openhab.binding.volvooncall.internal.api.VocHttpApi;
 import org.openhab.binding.volvooncall.internal.config.VehicleConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.AccountVehicleRelation;
 import org.openhab.binding.volvooncall.internal.dto.Attributes;
@@ -76,17 +77,18 @@ public class VolvoVehicleDiscoveryService extends AbstractDiscoveryService imple
         VolvoOnCallBridgeHandler bridgeHandler = this.handler;
         if (bridgeHandler != null) {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            bridgeHandler.getApi().ifPresent(service -> {
+            VocHttpApi api = bridgeHandler.getApi();
+            if (api != null) {
                 try {
-                    CustomerAccounts account = service.getURL("customeraccounts/", CustomerAccounts.class);
+                    CustomerAccounts account = api.getURL("customeraccounts/", CustomerAccounts.class);
                     account.accountVehicleRelationsURL.forEach(relationURL -> {
                         try {
-                            AccountVehicleRelation accountVehicle = service.getURL(relationURL,
+                            AccountVehicleRelation accountVehicle = api.getURL(relationURL,
                                     AccountVehicleRelation.class);
                             logger.debug("Found vehicle : {}", accountVehicle.vehicleId);
 
-                            Vehicles vehicle = service.getURL(accountVehicle.vehicleURL, Vehicles.class);
-                            Attributes attributes = service.getURL(Attributes.class, vehicle.vehicleId);
+                            Vehicles vehicle = api.getURL(accountVehicle.vehicleURL, Vehicles.class);
+                            Attributes attributes = api.getURL(Attributes.class, vehicle.vehicleId);
 
                             thingDiscovered(DiscoveryResultBuilder
                                     .create(new ThingUID(VEHICLE_THING_TYPE, bridgeUID, accountVehicle.vehicleId))
@@ -101,7 +103,8 @@ public class VolvoVehicleDiscoveryService extends AbstractDiscoveryService imple
                 } catch (VolvoOnCallException e) {
                     logger.warn("Error while discovering vehicle: {}", e.getMessage());
                 }
-            });
+            }
+            ;
         }
         stopScan();
     }
