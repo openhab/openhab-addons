@@ -79,9 +79,9 @@ public class HaywardRelayHandler extends HaywardThingHandler {
                     case HaywardBindingConstants.CHANNEL_RELAY_STATE:
                         cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
                                 + "<Name>SetUIEquipmentCmd</Name><Parameters>"
-                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
+                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
-                                + bridgehandler.config.mspSystemID + "</Parameter>"
+                                + bridgehandler.account.mspSystemID + "</Parameter>"
                                 + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
                                 + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"

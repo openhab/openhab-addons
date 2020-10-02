@@ -95,7 +95,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         names = handler.evaluateXPath("//Backyard/Name/text()", xmlResponse);
 
         for (String name : names) {
-            onBackyardDiscovered(Integer.parseInt(handler.config.mspSystemID), name);
+            onBackyardDiscovered(Integer.parseInt(handler.account.mspSystemID), name);
         }
 
         // Find Bodies of Water

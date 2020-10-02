@@ -43,6 +43,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
         super(thing);
     }
 
+    @Override
     public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
@@ -138,9 +139,10 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                 }
 
                 String cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS + "<Name>SetCHLORParams</Name><Parameters>"
-                        + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token + "</Parameter>"
-                        + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + bridgehandler.config.mspSystemID
-                        + "</Parameter>" + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
+                        + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
+                        + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                        + bridgehandler.account.mspSystemID + "</Parameter>"
+                        + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
                         + "<Parameter name=\"ChlorID\" dataType=\"int\" alias=\"EquipmentID\">" + prop.systemID
                         + "</Parameter>" + "<Parameter name=\"CfgState\" dataType=\"byte\" alias=\"Data1\">"
                         + chlorCfgState + "</Parameter>"

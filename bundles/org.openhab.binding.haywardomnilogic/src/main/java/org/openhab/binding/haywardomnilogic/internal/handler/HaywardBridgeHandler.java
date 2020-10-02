@@ -45,6 +45,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.haywardomnilogic.internal.HaywardAccount;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.binding.haywardomnilogic.internal.HaywardTypeToRequest;
@@ -73,6 +74,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     private @Nullable HaywardDiscoveryService haywardDiscoveryService;
 
     public HaywardConfig config = getConfig().as(HaywardConfig.class);
+    public HaywardAccount account = getConfig().as(HaywardAccount.class);
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
@@ -187,8 +189,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        config.token = evaluateXPath("/Response/Parameters//Parameter[@name='Token']/text()", xmlResponse).get(0);
-        config.userID = evaluateXPath("/Response/Parameters//Parameter[@name='UserID']/text()", xmlResponse).get(0);
+        account.token = evaluateXPath("/Response/Parameters//Parameter[@name='Token']/text()", xmlResponse).get(0);
+        account.userID = evaluateXPath("/Response/Parameters//Parameter[@name='UserID']/text()", xmlResponse).get(0);
         return true;
     }
 
@@ -197,8 +199,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
         // *****getConfig from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetAPIDef</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + config.token + "</Parameter>"
-                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + config.mspSystemID + "</Parameter>;"
+                + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
+                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + account.mspSystemID + "</Parameter>;"
                 + "<Parameter name=\"Version\" dataType=\"string\">0.4</Parameter >\r\n"
                 + "<Parameter name=\"Language\" dataType=\"string\">en</Parameter >\r\n" + "</Parameters></Request>";
 
@@ -217,8 +219,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
         // *****Get MSP
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetSiteList</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + config.token
-                + "</Parameter><Parameter name=\"UserID\" dataType=\"String\">" + config.userID
+                + "<Parameter name=\"Token\" dataType=\"String\">" + account.token
+                + "</Parameter><Parameter name=\"UserID\" dataType=\"String\">" + account.userID
                 + "</Parameter></Parameters></Request>";
 
         xmlResponse = httpXmlResponse(urlParameters);
@@ -235,11 +237,11 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        config.mspSystemID = evaluateXPath("/Response/Parameters/Parameter/Item//Property[@name='MspSystemID']/text()",
+        account.mspSystemID = evaluateXPath("/Response/Parameters/Parameter/Item//Property[@name='MspSystemID']/text()",
                 xmlResponse).get(0);
-        config.backyardName = evaluateXPath(
+        account.backyardName = evaluateXPath(
                 "/Response/Parameters/Parameter/Item//Property[@name='BackyardName']/text()", xmlResponse).get(0);
-        config.address = evaluateXPath("/Response/Parameters/Parameter/Item//Property[@name='Address']/text()",
+        account.address = evaluateXPath("/Response/Parameters/Parameter/Item//Property[@name='Address']/text()",
                 xmlResponse).get(0);
         return true;
     }
@@ -247,8 +249,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     public synchronized String getMspConfig() throws Exception {
         // *****getMspConfig from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetMspConfigFile</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + config.token + "</Parameter>"
-                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + config.mspSystemID
+                + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
+                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + account.mspSystemID
                 + "</Parameter><Parameter name=\"Version\" dataType=\"string\">0</Parameter>\r\n"
                 + "</Parameters></Request>";
 
@@ -274,8 +276,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     public synchronized boolean getTelemetryData() throws Exception {
         // *****Request Telemetry from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetTelemetryData</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + config.token + "</Parameter>"
-                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + config.mspSystemID
+                + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
+                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + account.mspSystemID
                 + "</Parameter></Parameters></Request>";
 
         String xmlResponse = httpXmlResponse(urlParameters);

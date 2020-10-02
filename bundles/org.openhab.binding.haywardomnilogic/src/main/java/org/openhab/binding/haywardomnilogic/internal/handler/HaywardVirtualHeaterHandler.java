@@ -45,6 +45,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
         super(thing);
     }
 
+    @Override
     public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
 
@@ -105,9 +106,9 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                 switch (channelUID.getId()) {
                     case HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE:
                         cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS + "<Name>SetHeaterEnable</Name><Parameters>"
-                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
+                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
-                                + bridgehandler.config.mspSystemID + "</Parameter>"
+                                + bridgehandler.account.mspSystemID + "</Parameter>"
                                 + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
                                 + "<Parameter name=\"HeaterID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"Enabled\" dataType=\"bool\">" + cmdBool + "</Parameter>"
@@ -116,9 +117,9 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
 
                     case HaywardBindingConstants.CHANNEL_VIRTUALHEATER_CURRENTSETPOINT:
                         cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS + "<Name>SetUIHeaterCmd</Name><Parameters>"
-                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
+                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
-                                + bridgehandler.config.mspSystemID + "</Parameter>"
+                                + bridgehandler.account.mspSystemID + "</Parameter>"
                                 + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
                                 + "<Parameter name=\"HeaterID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"Temp\" dataType=\"int\">" + cmdValue + "</Parameter>"

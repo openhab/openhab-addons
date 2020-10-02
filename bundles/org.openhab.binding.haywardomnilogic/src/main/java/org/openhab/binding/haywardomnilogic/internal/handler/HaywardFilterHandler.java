@@ -68,6 +68,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         }
     }
 
+    @Override
     public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
@@ -140,9 +141,10 @@ public class HaywardFilterHandler extends HaywardThingHandler {
 
                 String cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
                         + "<Name>SetUIEquipmentCmd</Name><Parameters>"
-                        + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token + "</Parameter>"
-                        + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + bridgehandler.config.mspSystemID
-                        + "</Parameter>" + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
+                        + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
+                        + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                        + bridgehandler.account.mspSystemID + "</Parameter>"
+                        + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
                         + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                         + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
                         + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";

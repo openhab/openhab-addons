@@ -42,6 +42,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
         super(thing);
     }
 
+    @Override
     public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
@@ -95,9 +96,9 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                         }
                         cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
                                 + "<Name>SetUIEquipmentCmd</Name><Parameters>"
-                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
+                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
-                                + bridgehandler.config.mspSystemID + "</Parameter>"
+                                + bridgehandler.account.mspSystemID + "</Parameter>"
                                 + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
                                 + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
@@ -106,9 +107,9 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                     case HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW:
                         cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
                                 + "<Name>SetStandAloneLightShow</Name><Parameters>"
-                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token
+                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
                                 + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
-                                + bridgehandler.config.mspSystemID + "</Parameter>"
+                                + bridgehandler.account.mspSystemID + "</Parameter>"
                                 + "<Parameter name=\"PoolID\" dataType=\"int\">" + prop.poolID + "</Parameter>"
                                 + "<Parameter name=\"LightID\" dataType=\"int\">" + prop.systemID + "</Parameter>"
                                 + "<Parameter name=\"Show\" dataType=\"int\">" + cmdString + "</Parameter>"

@@ -35,6 +35,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
         super(thing);
     }
 
+    @Override
     public void getTelemetry(String xmlResponse) throws Exception {
         List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
@@ -74,8 +75,8 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
         // *****Request Alarm List from Hayward server
         @SuppressWarnings("null")
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetAlarmList</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.config.token + "</Parameter>"
-                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + bridgehandler.config.mspSystemID
+                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token + "</Parameter>"
+                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + bridgehandler.account.mspSystemID
                 + "</Parameter>"
                 + "<Parameter name=\"CultureInfoName\" dataType=\"String\">en-us</Parameter></Parameters></Request>";
 

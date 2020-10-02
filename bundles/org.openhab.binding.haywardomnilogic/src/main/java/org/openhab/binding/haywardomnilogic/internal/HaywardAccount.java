@@ -10,21 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.haywardomnilogic.internal.config;
+package org.openhab.binding.haywardomnilogic.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link HaywardConfig} class contains fields mapping thing configuration parameters.
+ * The {@link HaywardAccount} class contains fields mapping thing configuration parameters.
  *
  * @author Matt Myers - Initial Contribution
  */
 
 @NonNullByDefault
-public class HaywardConfig {
-    public String hostname = "";
-    public String username = "";
-    public String password = "";
-    public int alarmPollTime = 60;
-    public int telemetryPollTime = 10;
+public class HaywardAccount {
+    public String token = "";
+    public String mspSystemID = "";
+    public String userID = "";
+    public String backyardName = "";
+    public String address = "";
+    public String firstName = "";
+    public String lastName = "";
+    public String roleType = "";
 }
