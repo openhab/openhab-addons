@@ -389,8 +389,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     }
 
     public synchronized String httpXmlResponse(String urlParameters) throws Exception {
-        String statusMessage;
         String urlParameterslength = Integer.toString(urlParameters.length());
+        String statusMessage;
 
         try {
             ContentResponse httpResponse = sendRequestBuilder(config.hostname, HttpMethod.POST)
@@ -400,10 +400,10 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             int status = httpResponse.getStatus();
             String xmlResponse = httpResponse.getContentAsString();
 
-            if (!(evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()", xmlResponse)
-                    .isEmpty())) {
-                statusMessage = evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()",
-                        xmlResponse).get(0);
+            List<String> statusMessages = evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()",
+                    xmlResponse);
+            if (!(statusMessages.isEmpty())) {
+                statusMessage = statusMessages.get(0);
             } else {
                 statusMessage = httpResponse.getReason();
             }
