@@ -163,10 +163,10 @@ public class TouchWandWebSockets {
                 }
                 logger.debug("UNIT_CHANGED: name {} id {} status {}", touchWandUnit.getName(), touchWandUnit.getId(),
                         touchWandUnit.getCurrStatus());
-                if (touchWandUnit.getCurrStatus() != null) {
-                    for (TouchWandUnitStatusUpdateListener listener : listeners) {
-                        listener.onDataReceived(touchWandUnit);
-                    }
+
+                for (TouchWandUnitStatusUpdateListener listener : listeners) {
+                    listener.onDataReceived(touchWandUnit);
+
                 }
             } catch (JsonSyntaxException e) {
                 logger.warn("jsonParser.parse {} ", e.getMessage());

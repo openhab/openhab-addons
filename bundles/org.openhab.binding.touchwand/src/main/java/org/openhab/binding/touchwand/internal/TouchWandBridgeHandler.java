@@ -16,7 +16,6 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.T
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +27,6 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
@@ -36,7 +34,6 @@ import org.openhab.binding.touchwand.internal.config.TouchwandBridgeConfiguratio
 import org.openhab.binding.touchwand.internal.discovery.TouchWandUnitDiscoveryService;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +47,8 @@ import org.slf4j.LoggerFactory;
 public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWandUnitStatusUpdateListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(TouchWandBridgeHandler.class);
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = Collections
-            .synchronizedMap(new HashMap<>());
-
     private int statusRefreshRateSec;
     private boolean addSecondaryUnits;
-    private BundleContext bundleContext;
     private @Nullable TouchWandWebSockets touchWandWebSockets;
     private Map<String, TouchWandUnitUpdateListener> unitUpdateListeners = new ConcurrentHashMap<>();
 
@@ -64,7 +57,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     public TouchWandBridgeHandler(Bridge bridge, HttpClient httpClient, BundleContext bundleContext) {
         super(bridge);
         touchWandClient = new TouchWandRestClient(httpClient);
-        this.bundleContext = bundleContext;
         touchWandWebSockets = null;
     }
 
