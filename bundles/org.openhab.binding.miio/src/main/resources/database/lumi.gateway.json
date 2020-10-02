@@ -17,7 +17,7 @@
 				"refresh": false,
 				"actions": [
 					{
-						"command": "enable",
+						"command": "enable_telnet_service",
 						"parameterType": "EMPTY"
 					}
 				]
