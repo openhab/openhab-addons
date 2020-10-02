@@ -66,13 +66,11 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
             if (account.username != null) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, account.username);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Incorrect username or password");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect login credentials");
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-
     }
 
     @Override
