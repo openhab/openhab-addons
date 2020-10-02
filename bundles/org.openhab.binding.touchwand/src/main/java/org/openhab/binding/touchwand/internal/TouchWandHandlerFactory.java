@@ -43,10 +43,9 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(TouchWandBridgeHandler.SUPPORTED_THING_TYPES.stream(),
-                    TouchWandBaseUnitHandler.SUPPORTED_THING_TYPES.stream())
-            .flatMap(i -> i).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.concat(TouchWandBridgeHandler.SUPPORTED_THING_TYPES.stream(),
+                    TouchWandBaseUnitHandler.SUPPORTED_THING_TYPES.stream()).collect(Collectors.toSet()));
 
     private @NonNullByDefault({}) HttpClient httpClient;
 
