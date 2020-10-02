@@ -70,6 +70,7 @@ The following channels are available:
 | zoneN#source (where N= 1-20)         | Number      | Select the source input for a zone (1-6)                                                                      |
 | zoneN#volume (where N= 1-20)         | Dimmer      | Control the volume for a zone (0-100%) [translates to 0-79]                                                   |
 | zoneN#mute (where N= 1-20)           | Switch      | Mute or unmute a zone                                                                                         |
+| zoneN#favorite (where N= 1-20)       | Number      | Select a preset Favorite for a zone (1-12)                                                                    |
 | zoneN#control (where N= 1-20)        | Player      | Simulate pressing the transport control buttons on the keypad e.g. play/pause/next/previous                   |
 | zoneN#treble (where N= 1-20)         | Number      | Adjust the treble control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full               |
 | zoneN#bass (where N= 1-20)           | Number      | Adjust the bass control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                 |
@@ -113,6 +114,7 @@ Switch nuvo_z1_power "Power" { channel="nuvo:amplifier:myamp:zone1#power" }
 Number nuvo_z1_source "Source Input [%s]" { channel="nuvo:amplifier:myamp:zone1#source" }
 Dimmer nuvo_z1_volume "Volume [%d %%]" { channel="nuvo:amplifier:myamp:zone1#volume" }
 Switch nuvo_z1_mute "Mute" { channel="nuvo:amplifier:myamp:zone1#mute" }
+Number nuvo_z1_favorite "Favorite" { channel="nuvo:amplifier:myamp:zone1#favorite" }
 Player nuvo_z1_control "Control" { channel="nuvo:amplifier:myamp:zone1#control" }
 Number nuvo_z1_treble "Treble Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#treble" }
 Number nuvo_z1_bass "Bass Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#bass" }
@@ -197,6 +199,8 @@ sitemap nuvo label="Audio Control" {
         //Volume can be a Setpoint also
         Slider item=nuvo_z1_volume minValue=0 maxValue=100 step=1 visibility=[nuvo_z1_power==ON] icon="soundvolume"
         Switch item=nuvo_z1_mute visibility=[nuvo_z1_power==ON] icon="soundvolume_mute"
+        // mappings is optional to override the default dropdown item labels
+        Selection item=nuvo_z1_favorite visibility=[nuvo_z1_power==ON] icon="player" //mappings=[1="WNYC", 2="BBC One", 2="My Playlist"]
         Default item=nuvo_z1_control visibility=[nuvo_z1_power==ON]
 
         Text item=nuvo_s1_display_line1 visibility=[nuvo_z1_source=="1"] icon="zoom"
@@ -253,13 +257,15 @@ sitemap nuvo label="Audio Control" {
         Text item=nuvo_s6_track_position visibility=[nuvo_z1_source=="6"]
         Text item=nuvo_s6_button_press visibility=[nuvo_z1_source=="6"] icon="none"
 
-        Setpoint item=nuvo_z1_treble label="Treble Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
-        Setpoint item=nuvo_z1_bass label="Bass Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
-        Setpoint item=nuvo_z1_balance label="Balance Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
-        Switch item=nuvo_z1_loudness visibility=[nuvo_z1_power==ON]
-        Switch item=nuvo_z1_dnd visibility=[nuvo_z1_power==ON]
-        Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock"
-        Switch item=nuvo_z1_party visibility=[nuvo_z1_power==ON]
+        Text label="Advanced" icon="settings" visibility=[nuvo_z1_power==ON] {
+            Setpoint item=nuvo_z1_treble label="Treble Adjustment [%d]" minValue=-18 maxValue=18 step=2
+            Setpoint item=nuvo_z1_bass label="Bass Adjustment [%d]" minValue=-18 maxValue=18 step=2
+            Setpoint item=nuvo_z1_balance label="Balance Adjustment [%d]" minValue=-18 maxValue=18 step=2
+            Switch item=nuvo_z1_loudness
+            Switch item=nuvo_z1_dnd
+            Switch item=nuvo_z1_party
+        }
+        Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock" visibility=[nuvo_z1_lock=="1"]
     }
     
     //repeat for zones 2-20 (substitute z1)
@@ -293,9 +299,6 @@ then
 
     // Send a message to Zone 11
     //actions.sendNuvoCommand("Z11MSG\"Hello World\",0,0")
-
-    // Select a Favorite (1-12) for Zone 2
-    //actions.sendNuvoCommand("Z2FAV1")
 
 end
 

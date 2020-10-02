@@ -6,7 +6,7 @@
 
 	<!-- Nuvo Whole House Amplifier Thing -->
 	<thing-type id="amplifier">
-		<label>Whole House Amplifier</label>
+		<label>Nuvo Whole House Amplifier</label>
 		<description>
 			A Multi-zone Whole House Amplifier System
 		</description>
@@ -96,27 +96,27 @@
 				<label>Zone 20</label>
 				<description>The Controls for Zone 20</description>
 			</channel-group>
-			<channel-group id="source1" typeId="source">
+			<channel-group id="source1" typeId="source_info">
 				<label>Source 1</label>
 				<description>The Display Information for Source 1</description>
 			</channel-group>
-			<channel-group id="source2" typeId="source">
+			<channel-group id="source2" typeId="source_info">
 				<label>Source 2</label>
 				<description>The Display Information for Source 2</description>
 			</channel-group>
-			<channel-group id="source3" typeId="source">
+			<channel-group id="source3" typeId="source_info">
 				<label>Source 3</label>
 				<description>The Display Information for Source 3</description>
 			</channel-group>
-			<channel-group id="source4" typeId="source">
+			<channel-group id="source4" typeId="source_info">
 				<label>Source 4</label>
 				<description>The Display Information for Source 4</description>
 			</channel-group>
-			<channel-group id="source5" typeId="source">
+			<channel-group id="source5" typeId="source_info">
 				<label>Source 5</label>
 				<description>The Display Information for Source 5</description>
 			</channel-group>
-			<channel-group id="source6" typeId="source">
+			<channel-group id="source6" typeId="source_info">
 				<label>Source 6</label>
 				<description>The Display Information for Source 6</description>
 			</channel-group>
@@ -169,6 +169,7 @@
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
+			<channel id="favorite" typeId="favorite"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="control" typeId="control"/>
@@ -182,7 +183,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="source">
+	<channel-group-type id="source_info">
 		<label>Source Info</label>
 		<description>The Display Information for the Source</description>
 		<channels>
@@ -213,6 +214,28 @@
 		<item-type>Number</item-type>
 		<label>Source Input</label>
 		<description>Select the Source Input for the Zone</description>
+	</channel-type>
+
+	<channel-type id="favorite">
+		<item-type>Number</item-type>
+		<label>Favorite</label>
+		<description>Select a Preset Favorite for the Zone</description>
+		<state>
+			<options>
+				<option value="1">Favorite 1</option>
+				<option value="2">Favorite 2</option>
+				<option value="3">Favorite 3</option>
+				<option value="4">Favorite 4</option>
+				<option value="5">Favorite 5</option>
+				<option value="6">Favorite 6</option>
+				<option value="7">Favorite 7</option>
+				<option value="8">Favorite 8</option>
+				<option value="9">Favorite 9</option>
+				<option value="10">Favorite 10</option>
+				<option value="11">Favorite 11</option>
+				<option value="12">Favorite 12</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="control">
