@@ -25,5 +25,5 @@ public class VehicleConfiguration {
     public static String VIN = "vin";
 
     public String vin = "";
-    public int refresh = 5;
+    public int refresh = 10;
 }

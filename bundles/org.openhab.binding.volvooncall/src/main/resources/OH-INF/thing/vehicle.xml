@@ -32,10 +32,11 @@
 				<description>VIN of the vehicle associated with this Thing</description>
 			</parameter>
 
-			<parameter name="refresh" type="integer" min="5" required="false">
+			<parameter name="refresh" type="integer" min="5" required="true">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in minutes.</description>
-				<default>5</default>
+				<default>10</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
