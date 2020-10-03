@@ -4,9 +4,13 @@ Bundle-SymbolicName: ${project.artifactId}
 Fragment-Host: org.openhab.binding.wemo
 
 -runrequires: \
-    bnd.identity;id='org.openhab.binding.wemo.tests',\
-    bnd.identity;id='org.openhab.core.binding.xml',\
-    bnd.identity;id='org.openhab.core.thing.xml'
+	bnd.identity;id='org.openhab.binding.wemo.tests',\
+	bnd.identity;id='org.openhab.core.binding.xml',\
+	bnd.identity;id='org.openhab.core.thing.xml'
+
+# We would like to use the "volatile" storage only
+-runblacklist: \
+	bnd.identity;id='org.openhab.core.storage.json'
 
 #
 # done
@@ -27,12 +31,8 @@ Fragment-Host: org.openhab.binding.wemo
 	org.osgi.service.event;version='[1.4.0,1.4.1)',\
 	slf4j.api;version='[1.7.25,1.7.26)',\
 	org.apache.servicemix.bundles.xstream;version='[1.4.7,1.4.8)',\
-	org.apache.servicemix.specs.activation-api-1.1;version='[2.9.0,2.9.1)',\
-	org.apache.servicemix.specs.jaxb-api-2.2;version='[2.9.0,2.9.1)',\
-	org.apache.servicemix.specs.stax-api-1.2;version='[2.9.0,2.9.1)',\
 	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
 	tec.uom.se;version='[1.0.10,1.0.11)',\
-	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)',\
 	org.objectweb.asm;version='[7.1.0,7.1.1)',\
 	org.objectweb.asm.commons;version='[7.1.0,7.1.1)',\
 	org.objectweb.asm.tree;version='[7.1.0,7.1.1)',\
@@ -73,4 +73,8 @@ Fragment-Host: org.openhab.binding.wemo
 	org.openhab.core.test;version='[3.0.0,3.0.1)',\
 	org.openhab.core.thing;version='[3.0.0,3.0.1)',\
 	org.openhab.core.thing.xml;version='[3.0.0,3.0.1)',\
-	org.opentest4j;version='[1.2.0,1.2.1)'
+	org.opentest4j;version='[1.2.0,1.2.1)',\
+	com.sun.xml.bind.jaxb-osgi;version='[2.3.3,2.3.4)',\
+	jakarta.xml.bind-api;version='[2.3.3,2.3.4)',\
+	org.glassfish.hk2.osgi-resource-locator;version='[1.0.1,1.0.2)',\
+	org.apache.servicemix.specs.activation-api-1.2.1;version='[1.2.1,1.2.2)'
