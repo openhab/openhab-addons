@@ -64,7 +64,7 @@
             {
                 "property": "doorbell_push",
                 "friendlyName": "Doorbell Push",
-                "channel": "doorbelPush",
+                "channel": "doorbellPush",
                 "type": "String",
                 "refresh": true,
                 "actions": [

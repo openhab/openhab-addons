@@ -1076,7 +1076,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | doorbelVol       | Number  | Doorbell Volume                     |
 | gatewayVol       | Number  | Gateway Volume                      |
 | alarmingVol      | Number  | Alarming Volume                     |
-| doorbelPush      | String  | Doorbell Push                       |
+| doorbellPush     | String  | Doorbell Push                       |
 
 ### Mi Smart Home Gateway v2 (<a name="lumi-gateway-v2">lumi.gateway.v2</a>) Channels
 
@@ -1086,7 +1086,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | doorbelVol       | Number  | Doorbell Volume                     |
 | gatewayVol       | Number  | Gateway Volume                      |
 | alarmingVol      | Number  | Alarming Volume                     |
-| doorbelPush      | String  | Doorbell Push                       |
+| doorbellPush     | String  | Doorbell Push                       |
 
 ### Mi Smart Home Gateway v3 (<a name="lumi-gateway-v3">lumi.gateway.v3</a>) Channels
 
@@ -1096,7 +1096,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | doorbelVol       | Number  | Doorbell Volume                     |
 | gatewayVol       | Number  | Gateway Volume                      |
 | alarmingVol      | Number  | Alarming Volume                     |
-| doorbelPush      | String  | Doorbell Push                       |
+| doorbellPush     | String  | Doorbell Push                       |
 
 ### Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM (<a name="lumi-gateway-mgl03">lumi.gateway.mgl03</a>) Channels
 
@@ -1106,7 +1106,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | doorbelVol       | Number  | Doorbell Volume                     |
 | gatewayVol       | Number  | Gateway Volume                      |
 | alarmingVol      | Number  | Alarming Volume                     |
-| doorbelPush      | String  | Doorbell Push                       |
+| doorbellPush     | String  | Doorbell Push                       |
 
 ### Mi Humdifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
@@ -2857,7 +2857,7 @@ Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:tel
 Number doorbelVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbelVol"}
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
 Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
-String doorbelPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbelPush"}
+String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
 ```
 
 ### Mi Smart Home Gateway v2 (lumi.gateway.v2) item file lines
@@ -2870,7 +2870,7 @@ Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:tel
 Number doorbelVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbelVol"}
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
 Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
-String doorbelPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbelPush"}
+String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
 ```
 
 ### Mi Smart Home Gateway v3 (lumi.gateway.v3) item file lines
@@ -2883,7 +2883,7 @@ Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:tel
 Number doorbelVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbelVol"}
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
 Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
-String doorbelPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbelPush"}
+String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
 ```
 
 ### Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM (lumi.gateway.mgl03) item file lines
@@ -2896,7 +2896,7 @@ Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:tel
 Number doorbelVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbelVol"}
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
 Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
-String doorbelPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbelPush"}
+String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
 ```
 
 ### Mi Humdifier (zhimi.humidifier.v1) item file lines
