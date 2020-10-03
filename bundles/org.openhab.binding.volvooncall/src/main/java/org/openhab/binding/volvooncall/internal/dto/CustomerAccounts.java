@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.volvooncall.internal.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -26,7 +29,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class CustomerAccounts extends VocAnswer {
     @SerializedName("accountVehicleRelations")
-    public @NonNullByDefault({}) String[] accountVehicleRelationsURL;
+    public List<String> accountVehicleRelationsURL = new ArrayList<>();
     public @Nullable String username;
 
     /*
