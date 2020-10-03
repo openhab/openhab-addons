@@ -13,6 +13,7 @@
 package org.openhab.binding.oppo.internal.handler;
 
 import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
+import static org.openhab.core.thing.Thing.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -416,7 +417,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         updateChannelState(CHANNEL_TIME_DISPLAY, updateData);
                         break;
                     case QVR:
-                        thing.setProperty(FIRMWARE_PROPERTY, updateData);
+                        thing.setProperty(PROPERTY_FIRMWARE_VERSION, updateData);
                         break;
                     case QPW:
                         updateChannelState(CHANNEL_POWER, updateData);

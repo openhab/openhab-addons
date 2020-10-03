@@ -40,10 +40,6 @@
 			<channel id="remote_button" typeId="remote_button"/>
 		</channels>
 
-		<properties>
-			<property name="Firmware Version">unknown</property>
-		</properties>
-
 		<config-description>
 			<parameter name="model" type="integer" required="true">
 				<label>Player Model</label>
