@@ -25,22 +25,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ActionResultControler} is responsible for triggering information
+ * The {@link ActionResultController} is responsible for triggering information
  * update after a post has been submitted to the webservice.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class ActionResultControler implements Runnable {
-    private final Logger logger = LoggerFactory.getLogger(ActionResultControler.class);
+public class ActionResultController implements Runnable {
+    private final Logger logger = LoggerFactory.getLogger(ActionResultController.class);
 
     private final VocHttpApi service;
     private final ScheduledExecutorService scheduler;
-    private PostResponse postResponse;
+    private final PostResponse postResponse;
+    private final ThingHandler vehicle;
 
-    private ThingHandler vehicle;
-
-    public ActionResultControler(VocHttpApi service, PostResponse postResponse, ScheduledExecutorService scheduler,
+    public ActionResultController(VocHttpApi service, PostResponse postResponse, ScheduledExecutorService scheduler,
             ThingHandler vehicle) {
         this.postResponse = postResponse;
         this.service = service;
@@ -53,16 +52,18 @@ public class ActionResultControler implements Runnable {
         switch (postResponse.status) {
             case SUCCESSFULL:
             case FAILED:
-                logger.info("Action {} for vehicle {} resulted : {}.", postResponse.serviceType.toString(),
-                        postResponse.vehicleId, postResponse.status.toString());
+                logger.debug("Action {} for vehicle {} resulted : {}.", postResponse.serviceType,
+                        postResponse.vehicleId, postResponse.status);
                 vehicle.handleCommand(vehicle.getThing().getChannels().get(0).getUID(), RefreshType.REFRESH);
                 break;
             default:
                 try {
-                    postResponse = service.getURL(postResponse.serviceURL, PostResponse.class);
-                    scheduler.schedule(this, 10000, TimeUnit.MILLISECONDS);
+                    scheduler.schedule(
+                            new ActionResultController(service,
+                                    service.getURL(postResponse.serviceURL, PostResponse.class), scheduler, vehicle),
+                            10000, TimeUnit.MILLISECONDS);
                 } catch (VolvoOnCallException e) {
-                    if (e.getType() == ErrorType.SERVICE_UNAVAILABLE || e.getType() == ErrorType.INTERRUPTED) {
+                    if (e.getType() == ErrorType.SERVICE_UNAVAILABLE) {
                         scheduler.schedule(this, 10000, TimeUnit.MILLISECONDS);
                     }
                 }

@@ -60,14 +60,19 @@ public class VocHttpApi {
     private final HttpClient httpClient;
     private final ApiBridgeConfiguration configuration;
 
-    public VocHttpApi(ApiBridgeConfiguration configuration, Gson gson, HttpClient httpClient) throws Exception {
+    public VocHttpApi(ApiBridgeConfiguration configuration, Gson gson, HttpClient httpClient)
+            throws VolvoOnCallException {
         this.gson = gson;
         this.cache = new ExpiringCacheMap<>(120 * 1000);
         this.configuration = configuration;
         this.httpClient = httpClient;
 
         httpClient.setUserAgentField(new HttpField(HttpHeader.USER_AGENT, "openhab/voc_binding/" + InstanceUUID.get()));
-        httpClient.start();
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            throw new VolvoOnCallException(new IOException("Unable to start Jetty HttpClient"));
+        }
     }
 
     public void dispose() throws Exception {

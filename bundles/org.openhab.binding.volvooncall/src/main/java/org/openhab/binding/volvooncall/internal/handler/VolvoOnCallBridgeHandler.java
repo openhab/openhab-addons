@@ -18,6 +18,7 @@ import java.util.Collections;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
 import org.openhab.binding.volvooncall.internal.api.VocHttpApi;
 import org.openhab.binding.volvooncall.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.discovery.VolvoVehicleDiscoveryService;
@@ -68,7 +69,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect login credentials");
             }
-        } catch (Exception e) {
+        } catch (VolvoOnCallException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

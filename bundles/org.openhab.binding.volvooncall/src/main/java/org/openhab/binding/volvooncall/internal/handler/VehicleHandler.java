@@ -32,7 +32,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
 import org.openhab.binding.volvooncall.internal.action.VolvoOnCallActions;
-import org.openhab.binding.volvooncall.internal.api.ActionResultControler;
+import org.openhab.binding.volvooncall.internal.api.ActionResultController;
 import org.openhab.binding.volvooncall.internal.api.VocHttpApi;
 import org.openhab.binding.volvooncall.internal.config.VehicleConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.Attributes;
@@ -142,7 +142,6 @@ public class VehicleHandler extends BaseThingHandler {
                     }
 
                 }
-                ;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
@@ -503,8 +502,9 @@ public class VehicleHandler extends BaseThingHandler {
             try {
                 PostResponse postResponse = api.postURL(url.toString(), param);
                 if (postResponse != null) {
-                    pendingActions.add(scheduler.schedule(new ActionResultControler(api, postResponse, scheduler, this),
-                            1000, TimeUnit.MILLISECONDS));
+                    pendingActions
+                            .add(scheduler.schedule(new ActionResultController(api, postResponse, scheduler, this),
+                                    1000, TimeUnit.MILLISECONDS));
                 }
             } catch (VolvoOnCallException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
