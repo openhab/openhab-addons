@@ -124,7 +124,6 @@ public class TimeclockHandler extends LutronHandler {
             }
         } else if (channelUID.getId().equals(CHANNEL_ENABLEEVENT)) {
             if (command instanceof DecimalType) {
-
                 Integer index = ((DecimalType) command).intValue();
                 timeclock(TimeclockCommand.ACTION_SETEVENT, index, true);
             } else {

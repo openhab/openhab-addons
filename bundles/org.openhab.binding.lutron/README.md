@@ -93,8 +93,7 @@ You should be aware of the following functional differences between the protocol
 This means that using ipbridge you can trigger rules and take actions on keypad key presses/releases, but using leapbridge you can’t.
 * Caseta and RA2 Select device discovery is supported via LEAP, but not via LIP.
 * The leapbridge is a bit more complicated to configure because LEAP uses an SSL connections and authenticates using certificates.
-* LIP is a publicly documented and supported protocol, while LEAP is not.
-This means that Lutron could make a change that breaks LEAP support at any time.
+* LIP is a publicly documented protocol, while LEAP is not. This means that Lutron could make a change that breaks LEAP support at any time.
 
 It is possible to run leapbridge and ipbridge at the same time, for the same bridge device, but each managed device (e.g. keypad or dimmer) should only be configured through *one* bridge.
 Remember that LEAP device IDs and LIP integration IDs are not necessarily equal!
@@ -150,7 +149,7 @@ For instructions on configuring authentication for leapbridge, see the [Leap Not
 The `ipAddress`, `keystore` and `keystorePassword` parameters must be set.
 The optional `port` parameter defaults to 8081 and should not normally need to be changed.
 
-The optional parameter `trusting` defaults to false. It should be set to true only if validation of the hub's server certificate is failing, possibly because the hostname you are using for it does not match its internal hostname.
+The optional parameter `certValidate` defaults to true. It should be set to false only if validation of the hub's server certificate is failing, possibly because the hostname you are using for it does not match its internal hostname.
 If this happens, the leapbridge status will be: "OFFLINE - COMMUNICATION_ERROR - Error opening SSL connection", and a message like the following may be logged:
 ```Error opening SSL connection: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target```.
 

@@ -91,28 +91,10 @@
 				<label>Keystore Password</label>
 				<description>Password for the keystore file</description>
 			</parameter>
-			<!--
-				<parameter name="clientKey" type="text">
-				<label>Client Key File</label>
-				<description>Client key file (caseta.key) path</description>
-				</parameter>
-				<parameter name="clientCert" type="text">
-				<label>Client Cert File</label>
-				<description>Client certificate file (caseta.crt) path</description>
-				</parameter>
-				<parameter name="bridgeCert" type="text">
-				<label>Bridge Cert File</label>
-				<description>Bridge certificate file (caseta-bridge.crt) path</description>
-				</parameter>
-				<parameter name="keyPassword" type="text">
-				<label>Key Password</label>
-				<description>Key Password</description>
-				</parameter>
-			-->
-			<parameter name="trusting" type="boolean" required="false">
-				<label>Trust SSL Certificates</label>
-				<description>Trust server SSL certificate without validating it</description>
-				<default>false</default>
+			<parameter name="certValidate" type="boolean" required="false">
+				<label>Validate SSL Certificates</label>
+				<description>Validate server SSL certificate</description>
+				<default>true</default>
 			</parameter>
 			<parameter name="reconnect" type="integer" min="1" max="60" unit="min">
 				<label>Reconnect Interval</label>

@@ -26,11 +26,7 @@ public class LeapBridgeConfig {
     public int port = 8081;
     public @Nullable String keystore;
     public @Nullable String keystorePassword;
-    // public String clientKey; // TODO remove?
-    // public String clientCert;
-    // public String bridgeCert;
-    // public String keyPassword;
-    public boolean trusting = false;
+    public boolean certValidate = false;
     public int reconnect;
     public int heartbeat;
     public int delay = 0;

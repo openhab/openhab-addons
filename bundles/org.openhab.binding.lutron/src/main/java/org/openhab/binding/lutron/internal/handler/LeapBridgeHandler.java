@@ -176,7 +176,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             kmf.init(keystore, keystorePassword.toCharArray());
 
             TrustManager[] trustManagers;
-            if (!config.trusting) {
+            if (config.certValidate) {
                 // Use default trust manager which will attempt to validate server certificate from hub
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
                 tmf.init(keystore);
