@@ -96,7 +96,7 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
         boolean result = false;
         Optional<NAStationModule> module = getModule();
         if (module.isPresent()) {
-            Boolean reachable = module.get().getReachable();
+            Boolean reachable = module.get().isReachable();
             result = reachable != null ? reachable.booleanValue() : false;
         }
         return result;

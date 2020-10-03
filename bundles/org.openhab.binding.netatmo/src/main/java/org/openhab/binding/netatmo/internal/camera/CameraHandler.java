@@ -114,7 +114,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     protected State getIsLocalState() {
-        return getModule().map(m -> toOnOffType(m.getIsLocal())).orElse(UnDefType.UNDEF);
+        return getModule().map(m -> toOnOffType(m.isIsLocal())).orElse(UnDefType.UNDEF);
     }
 
     protected State getLivePictureURLState() {
@@ -181,7 +181,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     private boolean isLocal() {
-        return getModule().map(NAWelcomeCamera::getIsLocal).orElse(false);
+        return getModule().map(NAWelcomeCamera::isIsLocal).orElse(false);
     }
 
     private void switchVideoSurveillance(boolean isOn) {
