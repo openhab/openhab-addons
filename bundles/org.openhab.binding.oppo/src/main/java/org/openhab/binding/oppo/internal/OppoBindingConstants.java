@@ -38,6 +38,8 @@ public class OppoBindingConstants {
     public static final Integer BDP10X_PORT = 48360;
     public static final Integer BDP20X_PORT = 23;
 
+    public static final String FIRMWARE_PROPERTY = "Firmware Version";
+
     // List of all Channels
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_VOLUME = "volume";
