@@ -11,14 +11,14 @@ These steps assume you already have a Smartthings Hub and have set it up. And, y
 4. Verify your hub is listed.
 
 ### Copying Smartthings files
-The files are located in the GitHub [repository](https://github.com/openhab/openhab2-addons/tree/master/addons/binding/org.openhab.binding.smartthings/contrib).
+The files are located in the GitHub [repository](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.smartthings/contrib/smartthings).
 
 The following files need to be deployed
 * OpenHabAppV2 - This is a SmartApp that receives requests from openHAB and returns the needed data
 * OpenHabDeviceHandler - This is a lower level module that provides a connection between openHAB and the Hub using the LAN connection
 
 ### Install OpenHabAppV2
-1. Locate OpenHabAppV2.groovy in the /contrib/SmartApps Directory.
+1. Locate OpenHabAppV2.groovy in the /contrib/smartthings/SmartApps Directory.
 2. Open OpenHabAppV2.groovy in an editor (Some program you can use to copy the contents to the clipboard)
 3. Copy the contents to the clipboard
 4. Using the Smartthings developers tools:
@@ -32,7 +32,7 @@ The following files need to be deployed
 12. The SmartApp is now ready
 
 ### Install OpenHabDeviceHandler
-1. Locate OpenHabDeviceHandler.groovy in the /contrib/DeviceHandlers Directory.
+1. Locate OpenHabDeviceHandler.groovy in the /contrib/smartthings/DeviceHandlers Directory.
 2. Open OpenHabDeviceHandler.groovy in an editor (Some program you can use to copy the contents to the clipboard)
 3. Copy the contents to the clipboard
 4. Using the Smartthings developers tools:
