@@ -34,7 +34,9 @@ public class VolvoOnCallException extends Exception {
     public static enum ErrorType {
         UNKNOWN,
         SERVICE_UNAVAILABLE,
+        SERVICE_UNABLE_TO_START,
         IOEXCEPTION,
+        INTERRUPTED,
         JSON_SYNTAX;
     }
 
@@ -44,6 +46,8 @@ public class VolvoOnCallException extends Exception {
         super(label);
         if ("FoundationServicesUnavailable".equalsIgnoreCase(label)) {
             cause = ErrorType.SERVICE_UNAVAILABLE;
+        } else if ("ServiceUnableToStart".equalsIgnoreCase(label)) {
+            cause = ErrorType.SERVICE_UNABLE_TO_START;
         } else {
             cause = ErrorType.UNKNOWN;
             logger.warn("Unhandled VoC error : {} : {}", label, description);
@@ -56,6 +60,8 @@ public class VolvoOnCallException extends Exception {
             cause = ErrorType.IOEXCEPTION;
         } else if (e instanceof JsonSyntaxException) {
             cause = ErrorType.JSON_SYNTAX;
+        } else if (e instanceof InterruptedException) {
+            cause = ErrorType.INTERRUPTED;
         } else {
             cause = ErrorType.UNKNOWN;
             logger.warn("Unhandled VoC error : {}", e.getMessage());

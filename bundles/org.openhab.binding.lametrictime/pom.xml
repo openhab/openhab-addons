@@ -54,10 +54,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
+      <groupId>org.apache.servicemix.specs</groupId>
+      <artifactId>org.apache.servicemix.specs.activation-api-1.2.1</artifactId>
+      <version>1.2.1_2</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.googlecode.junit-toolbox</groupId>
