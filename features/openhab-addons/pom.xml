@@ -49,6 +49,7 @@
                     <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.modbus*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
+                    <exclude name="**/org.openhab.io.mqttembeddedbroker/**/feature.xml"/>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
