@@ -71,7 +71,7 @@ public class VocHttpApi {
         try {
             httpClient.start();
         } catch (Exception e) {
-            throw new VolvoOnCallException(new IOException("Unable to start Jetty HttpClient"));
+            throw new VolvoOnCallException(new IOException("Unable to start Jetty HttpClient", e));
         }
     }
 
