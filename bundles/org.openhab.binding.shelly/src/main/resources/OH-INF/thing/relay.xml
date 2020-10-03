@@ -13,7 +13,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
@@ -27,7 +27,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
@@ -45,7 +45,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
@@ -67,7 +67,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
@@ -86,7 +86,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
@@ -100,7 +100,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:roller"/>
 	</thing-type>
 
@@ -123,7 +123,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
@@ -137,7 +137,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:roller"/>
 	</thing-type>
 
@@ -173,7 +173,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
@@ -186,7 +186,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
@@ -200,7 +200,21 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellyplugu1">
+		<label>Shelly Plug US (SHPLG-U1)</label>
+		<description>Shelly Plug US with relay and meter</description>
+
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 
@@ -214,7 +228,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:dimmer"/>
 	</thing-type>
 
@@ -228,7 +242,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:dimmer"/>
 	</thing-type>
 
@@ -242,7 +256,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
 

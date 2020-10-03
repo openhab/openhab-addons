@@ -14,7 +14,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:light"/>
 	</thing-type>
 
@@ -28,7 +28,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:light"/>
 	</thing-type>
 
@@ -42,7 +42,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:light"/>
 	</thing-type>
 
@@ -57,7 +57,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:rgbw2"/>
 	</thing-type>
 
@@ -82,7 +82,7 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-        <representation-property>deviceName</representation-property>
+		<representation-property>deviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:rgbw2"/>
 	</thing-type>
 
