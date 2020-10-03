@@ -360,7 +360,7 @@ public class RRMapFileParser {
 
     private void printAreaDetails(ArrayList<float[]> areas, PrintWriter pw) {
         areas.forEach(area -> {
-            pw.printf("\tArea coordinates:");
+            pw.print("\tArea coordinates:");
             for (int i = 0; i < area.length; i++) {
                 pw.printf("\t%.0f", area[i]);
             }
@@ -370,7 +370,7 @@ public class RRMapFileParser {
 
     private void printObstacleDetails(ArrayList<int[]> obstacle, PrintWriter pw) {
         obstacle.forEach(area -> {
-            pw.printf("\tObstacle coordinates:");
+            pw.print("\tObstacle coordinates:");
             for (int i = 0; i < area.length; i++) {
                 pw.printf("\t%d", area[i]);
             }

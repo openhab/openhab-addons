@@ -316,14 +316,11 @@ public class RRMapDraw {
                     drawCenteredImg(g2d, scale / 3, "obstacle-" + obstacle[2] + ".png", obstacleX, obstacleY + 15);
                 }
             });
-
         }
     }
 
     private void drawCircle(Graphics2D g2d, float x, float y, float radius, boolean fill) {
-
         Ellipse2D.Double circle = new Ellipse2D.Double(x - radius, y - radius, 2.0 * radius, 2.0 * radius);
-
         if (fill) {
             g2d.fill(circle);
         } else {
