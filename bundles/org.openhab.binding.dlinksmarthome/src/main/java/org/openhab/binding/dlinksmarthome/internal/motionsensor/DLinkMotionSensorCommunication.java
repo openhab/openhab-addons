@@ -24,6 +24,7 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
 import org.openhab.binding.dlinksmarthome.internal.DLinkHNAPCommunication;
+import org.openhab.binding.dlinksmarthome.internal.DLinkThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -149,8 +150,8 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
         }
     };
 
-    public DLinkMotionSensorCommunication(final DLinkMotionSensorConfig config,
-            final DLinkMotionSensorListener listener, final ScheduledExecutorService scheduler) {
+    public DLinkMotionSensorCommunication(final DLinkThingConfig config, final DLinkMotionSensorListener listener,
+            final ScheduledExecutorService scheduler) {
         super(config.ipAddress, config.pin);
         this.listener = listener;
 
