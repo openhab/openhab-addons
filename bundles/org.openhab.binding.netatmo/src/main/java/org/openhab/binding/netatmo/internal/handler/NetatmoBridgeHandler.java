@@ -98,7 +98,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         }
 
         @SuppressWarnings("unchecked")
-        public <T> T get(Class<T> apiClass) {
+        public <T> T getAPI(Class<T> apiClass) {
             T api = (T) apiMap.get(apiClass);
             if (api == null) {
                 try {
@@ -244,23 +244,23 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable PartnerApi getPartnerApi() {
-        return apiCreator != null ? apiCreator.get(PartnerApi.class) : null;
+        return apiCreator != null ? apiCreator.getAPI(PartnerApi.class) : null;
     }
 
     public Optional<StationApi> getStationApi() {
-        return apiCreator != null ? Optional.of(apiCreator.get(StationApi.class)) : Optional.empty();
+        return apiCreator != null ? Optional.of(apiCreator.getAPI(StationApi.class)) : Optional.empty();
     }
 
     public Optional<HealthyhomecoachApi> getHomeCoachApi() {
-        return apiCreator != null ? Optional.of(apiCreator.get(HealthyhomecoachApi.class)) : Optional.empty();
+        return apiCreator != null ? Optional.of(apiCreator.getAPI(HealthyhomecoachApi.class)) : Optional.empty();
     }
 
     public Optional<ThermostatApi> getThermostatApi() {
-        return apiCreator != null ? Optional.of(apiCreator.get(ThermostatApi.class)) : Optional.empty();
+        return apiCreator != null ? Optional.of(apiCreator.getAPI(ThermostatApi.class)) : Optional.empty();
     }
 
     public Optional<WelcomeApi> getWelcomeApi() {
-        return apiCreator != null ? Optional.of(apiCreator.get(WelcomeApi.class)) : Optional.empty();
+        return apiCreator != null ? Optional.of(apiCreator.getAPI(WelcomeApi.class)) : Optional.empty();
     }
 
     @Override
