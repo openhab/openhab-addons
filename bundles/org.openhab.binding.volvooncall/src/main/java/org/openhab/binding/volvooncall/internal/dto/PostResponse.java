@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.volvooncall.internal.dto;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
@@ -48,7 +50,7 @@ public class PostResponse extends VocAnswer {
     @SerializedName("service")
     public @NonNullByDefault({}) String serviceURL;
     public @NonNullByDefault({}) ServiceType serviceType;
-
+    public @NonNullByDefault({}) ZonedDateTime startTime;
     /*
      * Currently unused in the binding, maybe interesting in the future
      *
@@ -59,7 +61,7 @@ public class PostResponse extends VocAnswer {
      * }
      *
      * private ZonedDateTime statusTimestamp;
-     * private ZonedDateTime startTime;
+     * 
      * private FailureReason failureReason;
      *
      * private Integer customerServiceId;
