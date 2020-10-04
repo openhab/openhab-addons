@@ -293,7 +293,8 @@ Ditto for the indicator LED channels.
 Note, however, that version 11.6 or higher of the RadioRA 2 software may be required in order to drive keypad LED states, and then this may only be done on unbound buttons.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.104 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
-If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:keypad:radiora2:entrykeypad`) from the openHAB CLI to list the channels.
+If you are having problems determining which channels have been created for a given keypad model, select the appropriate keypad thing under Settings/Things in the Administration UI and click on the Channels tab.
+You can also run the command `things show <thingUID>` (e.g. `things show lutron:keypad:radiora2:entrykeypad`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: H1RLD, H2RLD, H3BSRL, H3S, H4S, H5BRL, H6BRL, HN1RLD, HN2RLD, HN3S, HN3BSRL, HN4S, HN5BRL, HN6BRL, W1RLD, W2RLD, W3BD, W3BRL, W3BSRL, W3S, W4S, W5BRL, W5BRLIR, W6BRL, W7B, Generic (default)
 
@@ -321,7 +322,9 @@ It accepts the same `integrationId`, `model`, and `autorelease` parameters and c
 See the **keypad** section above for a full discussion of configuration and use.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
-If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:ttkeypad:radiora2:bedroomkeypad`) from the openHAB CLI to list the channels.
+If you are having problems determining which channels have been created for a given keypad model, select the appropriate ttkeypad thing under Settings/Things in the Administration UI and click on the Channels tab.
+You can also run the command `things show <thingUID>` (e.g. `things show lutron:ttkeypad:radiora2:bedroomkeypad`) from the openHAB CLI to list the channels.
+
 
 Supported settings for `model` parameter: T5RL, T10RL, T15RL, T5CRL, T10CRL, T15CRL, Generic (default)
 
@@ -338,11 +341,12 @@ It accepts the same `integrationId`, `model`, and `autorelease` parameters and c
 See the **keypad** section above for a full discussion of configuration and use.
 
 To support this keypad's contact closure inputs, CCI channels named *cci1* and *cci2* are created with item type Contact and category Switch.
-They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+They are marked as Advanced, so you will need to check "Show advanced" in order to see them listed in the Administration UI.
 They present ON/OFF states the same as a keypad button.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.107 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
-If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:intlkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
+If you are having problems determining which channels have been created for a given keypad model, select the appropriate intlkeypad thing under Settings/Things in the Administration UI and click on the Channels tab.
+You can also run the command `things show <thingUID>` (e.g. `things show lutron:intlkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: 2B, 3B, 4B, 5BRL, 6BRL, 7BRL, 8BRL, 10BRL / Generic (default)
 
@@ -359,7 +363,8 @@ It accepts the same `integrationId`, `model`, and `autorelease` parameters and c
 See the **keypad** section above for a full discussion of configuration and use.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.95 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
-If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:palladiomkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
+If you are having problems determining which channels have been created for a given keypad model, select the appropriate palladiomkeypad thing under Settings/Things in the Administration UI and click on the Channels tab.
+You can also run the command `things show <thingUID>` (e.g. `things show lutron:palladiomkeypad:hwprocessor:kitchenkeypad`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: 2W, 3W, 4W, RW, 22W, 24W, 42W, 44W, 2RW, 4RW, RRW
 
@@ -378,7 +383,8 @@ The only difference is that no LED channels will be created, since Pico keypads 
 See the discussion above for a full discussion of configuration and use.
 
 Component numbering: For button layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.113 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
-If you are having problems determining which channels have been created for a given keypad model, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:pico:radiora2:hallpico`) from the openHAB CLI to list the channels.
+If you are having problems determining which channels have been created for a given keypad model, select the appropriate pico thing under Settings/Things in the Administration UI and click on the Channels tab.
+You can also run the command `things show <thingUID>` (e.g. `things show lutron:pico:radiora2:hallpico`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: 2B, 2BRL, 3B, 3BRL, 4B, Generic (default)
 
@@ -403,11 +409,12 @@ The model parameter should be set to indicate whether there are zero, one, two, 
 Note that this count does not include the column of 5 scene buttons always found on the right side of the panel.
 
 To support the GRAFIK Eye's contact closure input, a CCI channel named *cci1* will be created with item type Contact and category Switch.
-It is marked as Advanced, so it will not be automatically linked to items in the Paper UI's Simple Mode.
+It is marked as Advanced, so you will need to check "Show advanced" in order to see it listed in the Administration UI.
 It presents ON/OFF states the same as a keypad button.
 
 Component numbering: The buttons and LEDs on the GRAFIK Eye are numbered top to bottom, starting with the 5 scene buttons in a column on the right side of the panel, and then proceeding with the columns of buttons (if any) on the left side of the panel, working left to right.
-If you are having problems determining which channels have been created for a given model setting, click on the thing under Configuration/Things in the Paper UI, or run the command `things show <thingUID>` (e.g. `things show lutron:grafikeyekeypad:radiora2:theaterkeypad`) from the openHAB CLI to list the channels.
+If you are having problems determining which channels have been created for a given model setting, select the appropriate grafikeyekeypad thing under Settings/Things in the Administration UI and click on the Channels tab.
+You can also run the command `things show <thingUID>` (e.g. `things show lutron:grafikeyekeypad:radiora2:theaterkeypad`) from the openHAB CLI to list the channels.
 
 Supported settings for `model` parameter: 0COL, 1COL, 2COL, 3COL (default)
 
@@ -429,7 +436,7 @@ For this to work, the optional `model` parameter must be set to `Caseta`.
 When used with Caseta, no virtual indicator LED channels are created.
 
 The behavior of this binding is the same as the other keypad bindings, with the exception that the button and LED channels created have the Advanced flag set.
-This means, among other things, that they will not be automatically linked to items in the Paper UI's Simple Mode.
+This means, among other things, that you will need to check "Show advanced" in order to see them listed in the Administration UI.
 
 In most cases the integrationId parameter should be set to 1.
 
@@ -452,7 +459,7 @@ Supplying a model is not required, as there is only one model.
 
 To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
 The VCRX security (Full/Flash) input controls both the cci1 and cci2 channels, while input connections 1 and 2 map to the cci3 and cci4 channels respectively.
-The cci channels are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+The cci channels are marked as Advanced, so you will need to check "Show advanced" in order to see them listed in the Administration UI.
 They present OPEN/CLOSED states but do not accept commands since Contact items are read-only in openHAB.
 Note that the `autorelease` option **does not** apply to CCI channels.
 
@@ -470,7 +477,7 @@ The 5 contact closure outputs (CCOs) are handled by the **cco** thing (see below
 The only configuration option is `integrationId`
 
 To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
-They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+They are marked as Advanced, so you will need to check "Show advanced" in order to see them listed in the Administration UI.
 They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in openHAB.
 
 Some functionality may depend on QSE-IO DIP switch settings. See the Lutron documentation for more information.
