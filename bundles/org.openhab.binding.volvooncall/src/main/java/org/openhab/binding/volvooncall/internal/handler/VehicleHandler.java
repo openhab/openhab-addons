@@ -85,7 +85,7 @@ public class VehicleHandler extends BaseThingHandler {
     private VehiclePositionWrapper vehiclePosition = new VehiclePositionWrapper(new Position());
     private Status vehicleStatus = new Status();
     private @NonNullByDefault({}) VehicleConfiguration configuration;
-    private Integer lastTripId = 0;
+    private Long lastTripId = 0L; // Fix for #8518 (backported to 2.5.x)
 
     public VehicleHandler(Thing thing, VehicleStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
@@ -131,7 +131,7 @@ public class VehicleHandler extends BaseThingHandler {
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
                 if (thing.getProperties().containsKey(LAST_TRIP_ID)) {
-                    lastTripId = Integer.parseInt(thing.getProperties().get(LAST_TRIP_ID));
+                    lastTripId = Long.parseLong(thing.getProperties().get(LAST_TRIP_ID));
                 }
 
                 updateStatus(ThingStatus.ONLINE);
@@ -206,7 +206,7 @@ public class VehicleHandler extends BaseThingHandler {
             logger.debug("Trips discovered : {}", newTrips.size());
 
             if (!newTrips.isEmpty()) {
-                Integer newTripId = newTrips.get(newTrips.size() - 1).id;
+                Long newTripId = newTrips.get(newTrips.size() - 1).id;
                 if (newTripId > lastTripId) {
                     updateProperty(LAST_TRIP_ID, newTripId.toString());
                     lastTripId = newTripId;

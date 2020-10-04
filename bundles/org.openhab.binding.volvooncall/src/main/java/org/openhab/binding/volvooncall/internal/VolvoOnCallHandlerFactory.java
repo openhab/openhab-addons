@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.volvooncall.internal.discovery.VolvoOnCallDiscoveryService;
 import org.openhab.binding.volvooncall.internal.handler.VehicleHandler;
 import org.openhab.binding.volvooncall.internal.handler.VehicleStateDescriptionProvider;
@@ -51,10 +52,13 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallHandlerFactory.class);
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final VehicleStateDescriptionProvider stateDescriptionProvider;
+    private final HttpClientFactory defaultHttpClientFactory;
 
     @Activate
-    public VolvoOnCallHandlerFactory(@Reference VehicleStateDescriptionProvider provider) {
+    public VolvoOnCallHandlerFactory(@Reference VehicleStateDescriptionProvider provider,
+            @Reference HttpClientFactory httpClientFactory) {
         this.stateDescriptionProvider = provider;
+        this.defaultHttpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -66,7 +70,8 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (APIBRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            VolvoOnCallBridgeHandler bridgeHandler = new VolvoOnCallBridgeHandler((Bridge) thing);
+            VolvoOnCallBridgeHandler bridgeHandler = new VolvoOnCallBridgeHandler((Bridge) thing,
+                    this.defaultHttpClientFactory);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (VEHICLE_THING_TYPE.equals(thingTypeUID)) {
