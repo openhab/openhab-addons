@@ -156,8 +156,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "scheduledInitialize exception");
-            logger.error("Unable to open connection to Hayward Server: {} Username: {}", config.hostname,
-                    config.username, e);
+            logger.debug("Hayward Connection thing: Unable to open connection to Hayward Server: {} Username: {}",
+                    config.hostname, config.username, e);
             clearPolling(pollTelemetryFuture);
             clearPolling(pollAlarmsFuture);
             commFailureCount = 50;
@@ -185,7 +185,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         status = evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
 
         if (!(status.equals("0"))) {
-            logger.error("Hayward Login XML response: {}", xmlResponse);
+            logger.debug("Hayward Connection thing: Login XML response: {}", xmlResponse);
             return false;
         }
 
@@ -207,7 +207,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
-            logger.error("Hayward Login XML response was null");
+            logger.debug("Hayward Connection thing: Login XML response was null");
             return false;
         }
         return true;
@@ -226,14 +226,14 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
-            logger.error("Hayward getSiteList XML response was null");
+            logger.debug("Hayward Connection thing: getSiteList XML response was null");
             return false;
         }
 
         status = evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
 
         if (!(status.equals("0"))) {
-            logger.error("Hayward getSiteList XML response: {}", xmlResponse);
+            logger.debug("Hayward Connection thing: getSiteList XML response: {}", xmlResponse);
             return false;
         }
 
@@ -262,12 +262,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         // xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
 
         if (xmlResponse.isEmpty()) {
-            logger.error("Hayward requestConfig XML response was null");
+            logger.debug("Hayward Connection thing: requestConfig XML response was null");
             return "";
         }
 
         if (evaluateXPath("//Backyard/Name/text()", xmlResponse).isEmpty()) {
-            logger.error("Hayward requestConfiguration XML response: {}", xmlResponse);
+            logger.debug("Hayward Connection thing: requestConfiguration XML response: {}", xmlResponse);
             return "";
         }
         return xmlResponse;
@@ -283,12 +283,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
-            logger.error("Hayward getTelemetry XML response was null");
+            logger.debug("Hayward Connection thing: getTelemetry XML response was null");
             return false;
         }
 
         if (!evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()", xmlResponse).isEmpty()) {
-            logger.error("Hayward getTelemetry XML response: {}", xmlResponse);
+            logger.debug("Hayward Connection thing: getTelemetry XML response: {}", xmlResponse);
             return false;
         }
 
@@ -331,7 +331,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                     return;
                 }
             } catch (Exception e) {
-                logger.debug("Exception during poll", e);
+                logger.debug("Hayward Connection thing: Exception during poll", e);
             }
         }, initalDelay, config.telemetryPollTime, TimeUnit.SECONDS);
         return;
@@ -342,7 +342,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             try {
                 getAlarmList();
             } catch (Exception e) {
-                logger.debug("Exception during poll", e);
+                logger.debug("Hayward Connection thing: Exception during poll", e);
             }
         }, initalDelay, config.alarmPollTime, TimeUnit.SECONDS);
     }
@@ -412,16 +412,20 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
             if (status == 200) {
                 if (logger.isTraceEnabled()) {
-                    logger.trace("{} Hayward http command: {}", getCallingMethod(), urlParameters);
-                    logger.trace("{} Hayward http response: {} {}", getCallingMethod(), statusMessage, xmlResponse);
+                    logger.trace("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(),
+                            urlParameters);
+                    logger.trace("Hayward Connection thing:  {} Hayward http response: {} {}", getCallingMethod(),
+                            statusMessage, xmlResponse);
                 } else if (logger.isDebugEnabled()) {
-                    logger.debug("{} Hayward http response: {}", getCallingMethod(), statusMessage);
+                    logger.debug("Hayward Connection thing:  {} Hayward http response: {}", getCallingMethod(),
+                            statusMessage);
                 }
                 return xmlResponse;
             } else {
-                if (logger.isErrorEnabled()) {
-                    logger.error("{} Hayward http command: {}", getCallingMethod(), urlParameters);
-                    logger.error("{} Hayward http response: {}", getCallingMethod(), status);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(),
+                            urlParameters);
+                    logger.debug("Hayward Connection thing:  {} Hayward http response: {}", getCallingMethod(), status);
                 }
                 return "";
             }
