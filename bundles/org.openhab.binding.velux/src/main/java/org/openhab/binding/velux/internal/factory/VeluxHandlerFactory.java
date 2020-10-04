@@ -71,8 +71,12 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         boolean createNew = false;
         VeluxDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService == null) {
+<<<<<<< HEAD
             discoveryService = new VeluxDiscoveryService(localization);
             this.discoveryService = discoveryService;
+=======
+            discoveryService = this.discoveryService = new VeluxDiscoveryService(localization);
+>>>>>>> [velux] class variable was not being initialized
             createNew = true;
         }
         discoveryService.addBridge(bridgeHandler);
