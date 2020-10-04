@@ -112,7 +112,6 @@
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
-			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -335,7 +334,6 @@
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
-			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -605,7 +603,6 @@
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
-			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -877,7 +874,6 @@
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
-			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -1161,7 +1157,6 @@
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
-			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -1418,7 +1413,6 @@
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
-			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -1695,7 +1689,6 @@
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
-			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -1978,7 +1971,6 @@
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
-			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -2289,14 +2281,6 @@
 		<item-type>Number</item-type>
 		<label>mp4HistoryLength</label>
 		<description>How many mp4 recordings are stored in the history.</description>
-	</channel-type>
-
-	<channel-type id="mp4Preroll">
-		<item-type>Number</item-type>
-		<label>MP4 preroll</label>
-		<description>Set this channel to a number of how many seconds you wish to record for using the HLS files as a source.</description>
-		<category>Time</category>
-		<state min="0" max="10" step="1" pattern="%.1f Seconds" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="imageUrl">
