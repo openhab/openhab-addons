@@ -52,6 +52,11 @@ public class RRMapFileParser {
     public static final int BLOCKS = 11;
     public static final int MFBZS_AREA = 12;
     public static final int OBSTACLES = 13;
+    public static final int IGNORED_OBSTACLES = 14;
+    public static final int OBSTACLES2 = 15;
+    public static final int IGNORED_OBSTACLES2 = 16;
+    public static final int CARPET_MAP = 17;
+
     public static final int DIGEST = 1024;
     public static final int HEADER = 0x7272;
 
@@ -84,8 +89,9 @@ public class RRMapFileParser {
     private Map<Integer, ArrayList<float[]>> areas = new HashMap<>();
     private ArrayList<float[]> walls = new ArrayList<>();
     private ArrayList<float[]> zones = new ArrayList<>();
-    private ArrayList<int[]> obstacles = new ArrayList<>();
+    private Map<Integer, ArrayList<int[]>> obstacles = new HashMap<>();
     private byte[] blocks = new byte[0];
+    private int[] carpetMap = {};
 
     private final Logger logger = LoggerFactory.getLogger(RRMapFileParser.class);
 
@@ -192,12 +198,62 @@ public class RRMapFileParser {
                     areas.put(Integer.valueOf(blocktype & 0xFF), area);
                     break;
                 case OBSTACLES:
+                case IGNORED_OBSTACLES:
                     int obstaclePairs = getUInt16(header, 0x08);
+                    ArrayList<int[]> obstacle = new ArrayList<>();
                     for (int obstaclePair = 0; obstaclePair < obstaclePairs; obstaclePair++) {
                         int x0 = getUInt16(data, obstaclePair * 5 + 0);
                         int y0 = getUInt16(data, obstaclePair * 5 + 2);
                         int u = data[obstaclePair * 5 + 0] & 0xFF;
-                        obstacles.add(new int[] { x0, y0, u });
+                        obstacle.add(new int[] { x0, y0, u });
+                    }
+                    obstacles.put(Integer.valueOf(blocktype & 0xFF), obstacle);
+                    break;
+                case OBSTACLES2:
+                    int obstacle2Pairs = getUInt16(header, 0x08);
+                    if (obstacle2Pairs == 0) {
+                        break;
+                    }
+                    int obstacleDataLenght = blockDataLength / obstacle2Pairs;
+                    logger.trace("block 15 records lenght: {}", obstacleDataLenght);
+                    ArrayList<int[]> obstacle2 = new ArrayList<>();
+                    for (int obstaclePair = 0; obstaclePair < obstacle2Pairs; obstaclePair++) {
+                        int x0 = getUInt16(data, obstaclePair * obstacleDataLenght + 0);
+                        int y0 = getUInt16(data, obstaclePair * obstacleDataLenght + 2);
+                        int u0 = getUInt16(data, obstaclePair * obstacleDataLenght + 4);
+                        int u1 = getUInt16(data, obstaclePair * obstacleDataLenght + 6);
+                        int u2 = getUInt32LE(data, obstaclePair * obstacleDataLenght + 8);
+                        if (obstacleDataLenght == 28) {
+                            if ((data[obstaclePair * obstacleDataLenght + 12] & 0xFF) == 0) {
+                                logger.trace("obstacle with photo: No text");
+                            } else {
+                                byte[] txt = getBytes(data, obstaclePair * obstacleDataLenght + 12, 16);
+                                logger.trace("obstacle with photo: {}", new String(txt));
+                            }
+                            obstacle2.add(new int[] { x0, y0, u0, u1, u2 });
+                        } else {
+                            int u3 = getUInt32LE(data, obstaclePair * obstacleDataLenght + 12);
+                            obstacle2.add(new int[] { x0, y0, u0, u1, u2, u3 });
+                            logger.trace("obstacle without photo.");
+                        }
+                    }
+                    obstacles.put(Integer.valueOf(blocktype & 0xFF), obstacle2);
+                    break;
+                case IGNORED_OBSTACLES2:
+                    int ignoredObstaclePairs = getUInt16(header, 0x08);
+                    ArrayList<int[]> ignoredObstacle = new ArrayList<>();
+                    for (int obstaclePair = 0; obstaclePair < ignoredObstaclePairs; obstaclePair++) {
+                        int x0 = getUInt16(data, obstaclePair * 6 + 0);
+                        int y0 = getUInt16(data, obstaclePair * 6 + 2);
+                        int u = getUInt16(data, obstaclePair * 6 + 4);
+                        ignoredObstacle.add(new int[] { x0, y0, u });
+                    }
+                    obstacles.put(Integer.valueOf(blocktype & 0xFF), ignoredObstacle);
+                    break;
+                case CARPET_MAP:
+                    carpetMap = new int[blockDataLength];
+                    for (int carpetNode = 0; carpetNode < blockDataLength; carpetNode++) {
+                        carpetMap[carpetNode] = data[carpetNode] & 0xFF;
                     }
                     break;
                 case BLOCKS:
@@ -285,7 +341,10 @@ public class RRMapFileParser {
         printAreaDetails(walls, pw);
         pw.printf("Zones:\t%d\r\n", zones.size());
         printAreaDetails(zones, pw);
-        pw.printf("Obstacles:\t%d\r\n", obstacles.size());
+        for (Integer obstacleType : obstacles.keySet()) {
+            pw.printf("Obstacles Type (%d):\t%d\r\n", obstacleType, obstacles.get(obstacleType).size());
+            printObstacleDetails(obstacles.get(obstacleType), pw);
+        }
         pw.printf("Blocks:\t%d\r\n", blocks.length);
         pw.print("Paths:");
         for (Integer p : pathsDetails.keySet()) {
@@ -301,9 +360,19 @@ public class RRMapFileParser {
 
     private void printAreaDetails(ArrayList<float[]> areas, PrintWriter pw) {
         areas.forEach(area -> {
-            pw.printf("\tArea coordinates:");
+            pw.print("\tArea coordinates:");
             for (int i = 0; i < area.length; i++) {
                 pw.printf("\t%.0f", area[i]);
+            }
+            pw.println();
+        });
+    }
+
+    private void printObstacleDetails(ArrayList<int[]> obstacle, PrintWriter pw) {
+        obstacle.forEach(area -> {
+            pw.print("\tObstacle coordinates:");
+            for (int i = 0; i < area.length; i++) {
+                pw.printf("\t%d", area[i]);
             }
             pw.println();
         });
@@ -416,11 +485,15 @@ public class RRMapFileParser {
         return areas;
     }
 
-    public ArrayList<int[]> getObstacles() {
+    public Map<Integer, ArrayList<int[]>> getObstacles() {
         return obstacles;
     }
 
     public byte[] getBlocks() {
         return blocks;
+    }
+
+    public final int[] getCarpetMap() {
+        return carpetMap;
     }
 }
