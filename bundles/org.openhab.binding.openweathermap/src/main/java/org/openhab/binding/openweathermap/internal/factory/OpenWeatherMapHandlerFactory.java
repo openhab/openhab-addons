@@ -44,8 +44,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenWeatherMapHandlerFactory} is responsible for creating things and thing handlers.
@@ -66,8 +64,6 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
     private final LocationProvider locationProvider;
     private final TranslationProvider i18nProvider;
     private final TimeZoneProvider timeZoneProvider;
-
-    private final Logger logger = LoggerFactory.getLogger(OpenWeatherMapHandlerFactory.class);
 
     @Activate
     public OpenWeatherMapHandlerFactory(final @Reference HttpClientFactory httpClientFactory,

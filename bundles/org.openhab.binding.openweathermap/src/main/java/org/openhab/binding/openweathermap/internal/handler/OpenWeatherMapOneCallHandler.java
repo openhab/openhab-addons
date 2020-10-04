@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOnecallConfiguration;
+import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOneCallConfiguration;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
@@ -78,7 +78,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         initialized = false;
         super.initialize();
         logger.debug("Initialize OpenWeatherMapOneCallHandler handler '{}'.", getThing().getUID());
-        OpenWeatherMapOnecallConfiguration config = getConfigAs(OpenWeatherMapOnecallConfiguration.class);
+        OpenWeatherMapOneCallConfiguration config = getConfigAs(OpenWeatherMapOneCallConfiguration.class);
 
         boolean configValid = true;
         int newForecastMinutes = config.forecastMinutes;
@@ -104,6 +104,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
             logger.debug("Rebuilding thing '{}'.", getThing().getUID());
             List<Channel> toBeAddedChannels = new ArrayList<>();
             List<Channel> toBeRemovedChannels = new ArrayList<>();
+            toBeAddedChannels
+                    .addAll(createChannelsForGroup(CHANNEL_GROUP_ONECALL_CURRENT, CHANNEL_GROUP_TYPE_ONECALL_CURRENT));
 
             if (forecastMinutes != newForecastMinutes) {
                 logger.debug("Rebuilding minutely forecast channel groups.");
@@ -192,7 +194,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
-        // avoid null pointer exceptions and unnecessary work until initiolization is done.
+        // During testing of the binding I got NullPointerExceptions that showed that updateChannel is called already
+        // before the initialization is completed. So we return here if the initialization is not complete.
         if (!initialized) {
             return;
         }

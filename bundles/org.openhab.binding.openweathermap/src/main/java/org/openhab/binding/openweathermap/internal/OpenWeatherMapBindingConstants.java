@@ -59,6 +59,8 @@ public class OpenWeatherMapBindingConstants {
             BINDING_ID, "oneCallHourly");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_DAILY_FORECAST = new ChannelGroupTypeUID(
             BINDING_ID, "oneCallDaily");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_CURRENT = new ChannelGroupTypeUID(BINDING_ID,
+            "oneCallCurrent");
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_STATION = "station";

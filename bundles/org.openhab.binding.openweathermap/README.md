@@ -171,7 +171,7 @@ Where available, the One Call API provides a minutely precipitation forecast for
 | forecastHours03, forecastHours06, ... forecastHours120 | rain                 | Number:Length        | Expected rain volume.                                                      |
 | forecastHours03, forecastHours06, ... forecastHours120 | snow                 | Number:Length        | Expected snow volume.                                                      |
 | forecastHours01 ... forecastHours48                    | dew-point            | Number:Temperature   | Expected dew-point. Only available in the One Call API                     |
-| forecastHours01 ... forecastHours48                    | precip-probability   | Number               | Precipitation probability. Only available in the One Call API              |
+| forecastHours01 ... forecastHours48                    | precip-probability   | Number:Dimensionles  | Precipitation probability. Only available in the One Call API              |
 
 ### One Call API Hourly Forecast
 
@@ -201,7 +201,7 @@ See above for a description of the available channels.
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | snow                 | Number:Length        | Expected snow volume of a day.                                             |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | dew-point            | Number:Temperature   | Expected dew-point. Only available in the One Call API                     |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | uvindex              | Number               | Forecasted Midday UV Index.  Only available in the One Call API            |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | precip-probability   | Number               | Precipitation probability. Only available in the One Call API              |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | precip-probability   | Number:Dimensionless | Precipitation probability. Only available in the One Call API              |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | morning-temperature  | Number:Temperature   | Expected morning temperature. Only available in the One Call API           |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | day-temperature      | Number:Temperature   | Expected day-temperature. Only available in the One Call API               |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | evening-temperature  | Number:Temperature   | Expected evening-temperature. Only available in the One Call API           |

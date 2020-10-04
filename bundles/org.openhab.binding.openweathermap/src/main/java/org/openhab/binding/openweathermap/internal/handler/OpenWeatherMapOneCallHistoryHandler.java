@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOnecallHistoryConfiguration;
+import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOneCallHistoryConfiguration;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
@@ -71,7 +71,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
     public void initialize() {
         initialized = false;
         super.initialize();
-        OpenWeatherMapOnecallHistoryConfiguration config = getConfigAs(OpenWeatherMapOnecallHistoryConfiguration.class);
+        OpenWeatherMapOneCallHistoryConfiguration config = getConfigAs(OpenWeatherMapOneCallHistoryConfiguration.class);
         if (config.historyDay <= 0) {
             logger.warn("historyDay value of {} is not supported", config.historyDay);
             return;
@@ -105,7 +105,8 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
-        // avoid null pointer exceptions and unnecessary work until initiolization is done.
+        // During testing of the binding I got NullPointerExceptions that showed that updateChannel is called already
+        // before the initialization is completed. So we return here if the initialization is not complete.
         if (!initialized) {
             return;
         }
@@ -298,8 +299,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
                     break;
                 case CHANNEL_VISIBILITY:
                     @Nullable
-                    State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)
-                            .toUnit(KILO(METRE));
+                    State tempstate = new QuantityType<>(historyData.getVisibility(), METRE).toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
                 case CHANNEL_RAIN:
                     Rain rain = historyData.getRain();

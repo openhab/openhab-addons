@@ -15,12 +15,12 @@ package org.openhab.binding.openweathermap.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link OpenWeatherMapOnecallHistoryConfiguration} is the class used to match the
+ * The {@link OpenWeatherMapOneCallHistoryConfiguration} is the class used to match the
  * {@link org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapOneCallHistoryHandler}s configuration.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
 @NonNullByDefault
-public class OpenWeatherMapOnecallHistoryConfiguration extends OpenWeatherMapLocationConfiguration {
+public class OpenWeatherMapOneCallHistoryConfiguration extends OpenWeatherMapLocationConfiguration {
     public int historyDay;
 }

@@ -250,6 +250,9 @@ public class OpenWeatherMapConnection {
      * details
      * 
      * @param location location represented as {@link PointType}
+     * @param excludeMinutely if true, will not fetch minutely forecast data from the server
+     * @param excludeHourly if true, will not fethh hourly forecast data from the server
+     * @param excludeDaily if true, will not fetch hourly forecast data from the server
      * @return
      * @throws JsonSyntaxException
      * @throws OpenWeatherMapCommunicationException
