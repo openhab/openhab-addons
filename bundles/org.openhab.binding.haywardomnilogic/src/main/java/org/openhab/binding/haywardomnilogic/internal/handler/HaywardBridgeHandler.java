@@ -274,7 +274,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     }
 
     public synchronized boolean getTelemetryData() throws Exception {
-        // *****Request Telemetry from Hayward server
+        // *****getTelemetry from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetTelemetryData</Name><Parameters>"
                 + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
                 + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + account.mspSystemID
