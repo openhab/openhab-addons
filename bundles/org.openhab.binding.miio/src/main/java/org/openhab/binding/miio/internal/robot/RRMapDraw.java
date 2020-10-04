@@ -306,9 +306,9 @@ public class RRMapDraw {
         g2d.setStroke(stroke);
         g2d.setColor(Color.MAGENTA);
 
-        Map<Integer, ArrayList<int[]>> obstacles = rmfp.getObstacles();
-        for (Integer obstacleType : obstacles.keySet()) {
-            obstacles.get(obstacleType).forEach(obstacle -> {
+        Map<Integer, ArrayList<int[]>> obstacleMap = rmfp.getObstacles();
+        for (ArrayList<int[]> obstacles : obstacleMap.values()) {
+            obstacles.forEach(obstacle -> {
                 final float obstacleX = toXCoord(obstacle[0]) * scale;
                 final float obstacleY = toYCoord(obstacle[1]) * scale;
                 drawCircle(g2d, obstacleX, obstacleY, radius, true);
