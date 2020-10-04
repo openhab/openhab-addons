@@ -26,7 +26,6 @@ Fragment-Host: org.openhab.binding.hue
 	org.jupnp;version='[2.5.2,2.5.3)',\
 	org.osgi.service.event;version='[1.4.0,1.4.1)',\
 	slf4j.api;version='[1.7.25,1.7.26)',\
-	org.apache.servicemix.bundles.xstream;version='[1.4.7,1.4.8)',\
 	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
 	tec.uom.se;version='[1.0.10,1.0.11)',\
 	org.eclipse.jetty.client;version='[9.4.20,9.4.21)',\
@@ -72,4 +71,5 @@ Fragment-Host: org.openhab.binding.hue
 	org.objectweb.asm;version='[8.0.1,8.0.2)',\
 	org.objectweb.asm.commons;version='[8.0.1,8.0.2)',\
 	org.objectweb.asm.tree;version='[8.0.1,8.0.2)',\
-	org.ops4j.pax.web.pax-web-api;version='[7.2.19,7.2.20)'
+	org.ops4j.pax.web.pax-web-api;version='[7.2.19,7.2.20)',\
+	xstream;version='[1.4.13,1.4.14)'
