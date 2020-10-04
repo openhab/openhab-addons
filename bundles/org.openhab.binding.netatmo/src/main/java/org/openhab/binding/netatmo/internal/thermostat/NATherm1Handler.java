@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.thermostat;
 
+import static org.openhab.binding.netatmo.internal.APIUtils.*;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
@@ -80,7 +81,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
     @Override
     public void updateChannels(Object moduleObject) {
         if (isRefreshRequired()) {
-            measurableChannels.getAsCsv().ifPresent(csvParams -> {
+            measurableChannels.getMeasuredChannels().ifPresent(csvParams -> {
                 getApi().ifPresent(api -> {
                     NAMeasureResponse measures = api.getmeasure(getParentId(), "max", csvParams, getId(), null, null, 1,
                             true, true);
@@ -96,7 +97,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
 
     private void updateStateDescription(NAThermostat thermostat) {
         List<StateOption> options = new ArrayList<>();
-        for (NAThermProgram planning : thermostat.getThermProgramList()) {
+        for (NAThermProgram planning : nonNullList(thermostat.getThermProgramList())) {
             options.add(new StateOption(planning.getProgramId(), planning.getName()));
         }
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_PLANNING), options);
@@ -125,7 +126,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                     if (setpoint != null) {
                         Integer endTime = setpoint.getSetpointEndtime();
                         if (endTime == null) {
-                            endTime = getNextProgramTime(thermostat.get().getThermProgramList());
+                            endTime = getNextProgramTime(nonNullList(thermostat.get().getThermProgramList()));
                         }
                         return toDateTimeType(endTime, timeZoneProvider.getTimeZone());
                     }
@@ -138,8 +139,8 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
             case CHANNEL_PLANNING: {
                 String currentPlanning = "-";
                 if (thermostat.isPresent()) {
-                    for (NAThermProgram program : thermostat.get().getThermProgramList()) {
-                        if (program.getSelected() == Boolean.TRUE) {
+                    for (NAThermProgram program : nonNullList(thermostat.get().getThermProgramList())) {
+                        if (program.isSelected() == Boolean.TRUE) {
                             currentPlanning = program.getProgramId();
                         }
                     }
@@ -164,8 +165,8 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
             if (setPoint != null) {
                 String currentMode = setPoint.getSetpointMode();
 
-                NAThermProgram currentProgram = thermostat.get().getThermProgramList().stream()
-                        .filter(p -> p.getSelected() != null && p.getSelected()).findFirst().get();
+                NAThermProgram currentProgram = nonNullStream(thermostat.get().getThermProgramList())
+                        .filter(p -> p.isSelected() != null && p.isSelected()).findFirst().get();
                 switch (currentMode) {
                     case CHANNEL_SETPOINT_MODE_MANUAL:
                         return toDecimalType(setPoint.getSetpointTemp());
@@ -177,7 +178,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                         return toDecimalType(zone1.getTemp());
                     case CHANNEL_SETPOINT_MODE_PROGRAM:
                         NATimeTableItem currentProgramMode = getCurrentProgramMode(
-                                thermostat.get().getThermProgramList());
+                                nonNullList(thermostat.get().getThermProgramList()));
                         if (currentProgramMode != null) {
                             NAZone zone2 = getZone(currentProgram.getZones(), currentProgramMode.getId());
                             return toDecimalType(zone2.getTemp());
@@ -192,7 +193,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
     }
 
     private NAZone getZone(List<NAZone> zones, int searchedId) {
-        return zones.stream().filter(z -> z.getId() == searchedId).findFirst().get();
+        return nonNullStream(zones).filter(z -> z.getId() == searchedId).findFirst().get();
     }
 
     private long getNetatmoProgramBaseTime() {
@@ -210,10 +211,10 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         long diff = (now.getTimeInMillis() - getNetatmoProgramBaseTime()) / 1000 / 60;
 
         Optional<NAThermProgram> currentProgram = thermProgramList.stream()
-                .filter(p -> p.getSelected() != null && p.getSelected()).findFirst();
+                .filter(p -> p.isSelected() != null && p.isSelected()).findFirst();
 
         if (currentProgram.isPresent()) {
-            Stream<NATimeTableItem> pastPrograms = currentProgram.get().getTimetable().stream()
+            Stream<NATimeTableItem> pastPrograms = nonNullStream(currentProgram.get().getTimetable())
                     .filter(t -> t.getMOffset() < diff);
             Optional<NATimeTableItem> program = pastPrograms.reduce((first, second) -> second);
             if (program.isPresent()) {
@@ -231,12 +232,13 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         int result = -1;
 
         for (NAThermProgram thermProgram : thermProgramList) {
-            if (thermProgram.getSelected() != null && thermProgram.getSelected()) {
+            if (thermProgram.isSelected() != null && thermProgram.isSelected()) {
                 // By default we'll use the first slot of next week - this case will be true if
                 // we are in the last schedule of the week so below loop will not exit by break
-                int next = thermProgram.getTimetable().get(0).getMOffset() + (7 * 24 * 60);
+                List<NATimeTableItem> timetable = thermProgram.getTimetable();
+                int next = timetable.get(0).getMOffset() + (7 * 24 * 60);
 
-                for (NATimeTableItem timeTable : thermProgram.getTimetable()) {
+                for (NATimeTableItem timeTable : timetable) {
                     if (timeTable.getMOffset() > diff) {
                         next = timeTable.getMOffset();
                         break;
