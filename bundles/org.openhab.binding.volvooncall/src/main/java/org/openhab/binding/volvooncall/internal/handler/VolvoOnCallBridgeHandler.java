@@ -25,8 +25,10 @@ import java.util.Stack;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,13 +37,15 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException.ErrorType;
 import org.openhab.binding.volvooncall.internal.config.VolvoOnCallBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.CustomerAccounts;
 import org.openhab.binding.volvooncall.internal.dto.PostResponse;
 import org.openhab.binding.volvooncall.internal.dto.VocAnswer;
+import org.openhab.binding.volvooncall.internal.http.HttpClientProvider_VOC;
+import org.openhab.binding.volvooncall.internal.http.HttpUtil_VOC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +59,7 @@ import com.google.gson.JsonSyntaxException;
  * sent to one of the channels.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Mateusz Bronk - Backported (to 2.5.x line) a fix for #8554 (User-Agent header removed)
  */
 @NonNullByDefault
 public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
@@ -66,8 +71,14 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
 
     private @NonNullByDefault({}) CustomerAccounts customerAccount;
 
-    public VolvoOnCallBridgeHandler(Bridge bridge) {
+    public VolvoOnCallBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
+
+        final int MAX_HTTP_CLIENT_NAME_LENGTH = 20;
+        HttpClient customHttpClient = httpClientFactory.createHttpClient(
+                StringUtils.left("voc_bridge_" + bridge.getUID().getId(), MAX_HTTP_CLIENT_NAME_LENGTH));
+        customHttpClient.setUserAgentField(null); // This causes Jetty not to send User-Agent header, fixing #8554
+        HttpUtil_VOC.SetHttpClientFactory(new HttpClientProvider_VOC(customHttpClient));
 
         httpHeader.put("cache-control", "no-cache");
         httpHeader.put("content-type", JSON_CONTENT_TYPE);
@@ -129,7 +140,8 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
 
     public <T extends VocAnswer> T getURL(String url, Class<T> objectClass) throws VolvoOnCallException {
         try {
-            String jsonResponse = HttpUtil.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE, REQUEST_TIMEOUT);
+            String jsonResponse = HttpUtil_VOC.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE,
+                    REQUEST_TIMEOUT);
             logger.debug("Request for : {}", url);
             logger.debug("Received : {}", jsonResponse);
             T response = gson.fromJson(jsonResponse, objectClass);
@@ -177,7 +189,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     void postURL(String URL, @Nullable String body) throws VolvoOnCallException {
         InputStream inputStream = body != null ? new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)) : null;
         try {
-            String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
+            String jsonString = HttpUtil_VOC.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
             logger.debug("Post URL: {} Attributes {}", URL, httpHeader);
             PostResponse postResponse = gson.fromJson(jsonString, PostResponse.class);
             String error = postResponse.getErrorLabel();
