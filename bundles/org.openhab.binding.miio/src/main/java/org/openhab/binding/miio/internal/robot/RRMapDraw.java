@@ -33,6 +33,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -78,8 +82,8 @@ public class RRMapDraw {
     private static final Color ROOM9 = new Color(0xFc, 0xD4, 0x51);
     private static final Color ROOM10 = new Color(72, 201, 176);
     private static final Color ROOM11 = new Color(84, 153, 199);
-    private static final Color ROOM12 = new Color(133, 193, 233);
-    private static final Color ROOM13 = new Color(245, 176, 65);
+    private static final Color ROOM12 = new Color(255, 213, 209);
+    private static final Color ROOM13 = new Color(228, 228, 215);
     private static final Color ROOM14 = new Color(82, 190, 128);
     private static final Color ROOM15 = new Color(72, 201, 176);
     private static final Color ROOM16 = new Color(165, 105, 189);
@@ -132,6 +136,7 @@ public class RRMapDraw {
      */
     private void drawMap(Graphics2D g2d, float scale) {
         Stroke stroke = new BasicStroke(1.1f * scale);
+        Set<Integer> roomIds = new HashSet<Integer>();
         g2d.setStroke(stroke);
         for (int y = 0; y < rmfp.getImgHeight() - 1; y++) {
             for (int x = 0; x < rmfp.getImgWidth() + 1; x++) {
@@ -160,7 +165,8 @@ public class RRMapDraw {
                                 g2d.setColor(Color.BLACK);
                                 break;
                             case 7:
-                                g2d.setColor(ROOM_COLORS[Math.round(mapId / 2)]);
+                                g2d.setColor(ROOM_COLORS[mapId % 15]);
+                                roomIds.add(mapId);
                                 multicolor = true;
                                 break;
                             default:
@@ -172,6 +178,13 @@ public class RRMapDraw {
                 float yP = scale * y;
                 g2d.draw(new Line2D.Float(xPos, yP, xPos, yP));
             }
+        }
+        if (logger.isDebugEnabled() && roomIds.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (Integer r : roomIds) {
+                sb.append(" " + r.toString());
+            }
+            logger.debug("Identified rooms in map:{}", sb.toString());
         }
     }
 
@@ -275,20 +288,44 @@ public class RRMapDraw {
         g2d.setColor(COLOR_CHARGER_HALO);
         final float chargerX = toXCoord(rmfp.getChargerX()) * scale;
         final float chargerY = toYCoord(rmfp.getChargerY()) * scale;
-        drawCircle(g2d, chargerX, chargerY, radius);
+        drawCircle(g2d, chargerX, chargerY, radius, false);
         drawCenteredImg(g2d, scale / 8, "charger.png", chargerX, chargerY);
         radius = 3 * scale;
         g2d.setColor(COLOR_ROBO);
         final float roboX = toXCoord(rmfp.getRoboX()) * scale;
         final float roboY = toYCoord(rmfp.getRoboY()) * scale;
-        drawCircle(g2d, roboX, roboY, radius);
+        drawCircle(g2d, roboX, roboY, radius, false);
         if (scale > 1.5) {
             drawCenteredImg(g2d, scale / 15, "robo.png", roboX, roboY);
         }
     }
 
-    private void drawCircle(Graphics2D g2d, float x, float y, float radius) {
-        g2d.draw(new Ellipse2D.Double(x - radius, y - radius, 2.0 * radius, 2.0 * radius));
+    private void drawObstacles(Graphics2D g2d, float scale) {
+        float radius = 2 * scale;
+        Stroke stroke = new BasicStroke(3 * scale);
+        g2d.setStroke(stroke);
+        g2d.setColor(Color.MAGENTA);
+
+        Map<Integer, ArrayList<int[]>> obstacleMap = rmfp.getObstacles();
+        for (ArrayList<int[]> obstacles : obstacleMap.values()) {
+            obstacles.forEach(obstacle -> {
+                final float obstacleX = toXCoord(obstacle[0]) * scale;
+                final float obstacleY = toYCoord(obstacle[1]) * scale;
+                drawCircle(g2d, obstacleX, obstacleY, radius, true);
+                if (scale > 1.0) {
+                    drawCenteredImg(g2d, scale / 3, "obstacle-" + obstacle[2] + ".png", obstacleX, obstacleY + 15);
+                }
+            });
+        }
+    }
+
+    private void drawCircle(Graphics2D g2d, float x, float y, float radius, boolean fill) {
+        Ellipse2D.Double circle = new Ellipse2D.Double(x - radius, y - radius, 2.0 * radius, 2.0 * radius);
+        if (fill) {
+            g2d.fill(circle);
+        } else {
+            g2d.draw(circle);
+        }
     }
 
     private void drawCenteredImg(Graphics2D g2d, float scale, String imgFile, float x, float y) {
@@ -296,10 +333,10 @@ public class RRMapDraw {
         try {
             if (image != null) {
                 BufferedImage addImg = ImageIO.read(image);
-                int xpos = Math.round(x - (addImg.getWidth() / 2 * scale));
-                int ypos = Math.round(y - (addImg.getHeight() / 2 * scale));
+                int xpos = Math.round(x + (addImg.getWidth() / 2 * scale));
+                int ypos = Math.round(y + (addImg.getHeight() / 2 * scale));
                 AffineTransform at = new AffineTransform();
-                at.scale(scale, scale);
+                at.scale(-scale, -scale);
                 AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
                 g2d.drawImage(addImg, scaleOp, xpos, ypos);
             } else {
@@ -410,6 +447,7 @@ public class RRMapDraw {
         drawPath(g2d, scale);
         drawRobo(g2d, scale);
         drawGoTo(g2d, scale);
+        drawObstacles(g2d, scale);
         g2d = bi.createGraphics();
         drawOpenHabRocks(g2d, width, height, scale);
         return bi;
