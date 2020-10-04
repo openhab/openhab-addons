@@ -65,6 +65,9 @@ public class MiIoBasicChannel {
     @SerializedName("actions")
     @Expose
     private @Nullable List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
+    @SerializedName("readmeComment")
+    @Expose
+    private @Nullable String readmeComment;
 
     public String getProperty() {
         final String property = this.property;
@@ -182,6 +185,15 @@ public class MiIoBasicChannel {
 
     public void setTransfortmation(String transfortmation) {
         this.transfortmation = transfortmation;
+    }
+
+    public String getReadmeComment() {
+        final String readmeComment = this.readmeComment;
+        return (readmeComment != null) ? readmeComment : "";
+    }
+
+    public void setReadmeComment(String readmeComment) {
+        this.readmeComment = readmeComment;
     }
 
     @Override

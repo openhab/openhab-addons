@@ -115,12 +115,13 @@ public class ReadmeHelper {
                     String link = device.getModel().replace(".", "-");
                     sw.write("### " + device.getDescription() + " (" + "<a name=\"" + link + "\">" + device.getModel()
                             + "</a>" + ") Channels\r\n" + "\r\n");
-                    sw.write("| Channel          | Type    | Description                         |\r\n");
-                    sw.write("|------------------|---------|-------------------------------------|\r\n");
+                    sw.write("| Channel          | Type    | Description                         | Comment    |\r\n");
+                    sw.write("|------------------|---------|-------------------------------------|------------|\r\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
                         sw.write("| " + minLengthString(ch.getChannel(), 16) + " | " + minLengthString(ch.getType(), 7)
-                                + " | " + minLengthString(ch.getFriendlyName(), 35) + " |\r\n");
+                                + " | " + minLengthString(ch.getFriendlyName(), 35) + " | "
+                                + minLengthString(ch.getReadmeComment(), 10) + " |\r\n");
                     }
                     sw.write("\r\n");
 
