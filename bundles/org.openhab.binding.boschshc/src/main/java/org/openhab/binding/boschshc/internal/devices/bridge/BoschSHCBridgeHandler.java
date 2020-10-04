@@ -196,7 +196,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * Method is synchronous.
      */
     private void subscribe(BoschHttpClient httpClient) {
-        logger.debug("Sending subscribe request to Bosch");
 
         class SubscribeListener extends BufferingResponseListener {
             private BoschSHCBridgeHandler bridgeHandler;
@@ -235,12 +234,13 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
 
         String url = httpClient.createUrl("remote/json-rpc");
-        JsonRpcRequest request = new JsonRpcRequest("2.0", "RE/subscribe", new String[] { "com/bosch/sh/remote/*" });
+        JsonRpcRequest request = new JsonRpcRequest("2.0", "RE/subscribe",
+                new String[] { "com/bosch/sh/remote/*", null });
 
         // XXX Maybe we should use a different httpClient here, to avoid a race with
         // concurrent use from other
         // functions.
-        logger.debug("Subscribe: Sending content: {} - using httpClient {}", gson.toJson(request), httpClient);
+        logger.debug("Subscribe: Sending request: {} - using httpClient {}", gson.toJson(request), httpClient);
         httpClient.createRequest(url, POST, request).send(new SubscribeListener(this));
     }
 
@@ -336,11 +336,13 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                             logger.warn("Failed to sleep in longRun()");
                         }
                     }
-                } else {
+                } else if (result != null && result.isFailed()) {
                     logger.warn("Failed in onComplete");
+                    logger.trace("Response failed: {}, failed={}, response={}", result, result.isFailed(), response);
                 }
+                // else not failed, but no response
             } catch (Exception e) {
-                logger.warn("Execption in long polling", e);
+                logger.warn("Exception in long polling", e);
 
                 // Timeout before retry
                 try {
