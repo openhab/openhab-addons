@@ -8,6 +8,7 @@
 		<label>Shelly Device</label>
 		<description>A password protected or unknown device.</description>
 
+		<representation-property>deviceName</representation-property>
 		<config-description>
 			<parameter name="userId" type="text" required="true">
 				<label>UserID</label>
@@ -30,6 +31,7 @@
 	<thing-type id="shellyunknown">
 		<label>Unknown Shelly Device</label>
 		<description>This device is currently not supported</description>
+		<representation-property>deviceName</representation-property>
 	</thing-type>
 
 </thing:thing-descriptions>
