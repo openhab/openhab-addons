@@ -207,7 +207,7 @@ public class ShellyComponents {
                         toQuantityType(getDouble(lastMin1), DIGITS_WATT, SmartHomeUnits.WATT));
 
                 // convert totalWatts into kw/h
-                totalWatts = totalWatts / (60.0 * 10000.0);
+                totalWatts = totalWatts / (60.0 * 1000.0);
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
                         toQuantityType(getDouble(currentWatts), DIGITS_WATT, SmartHomeUnits.WATT));
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
