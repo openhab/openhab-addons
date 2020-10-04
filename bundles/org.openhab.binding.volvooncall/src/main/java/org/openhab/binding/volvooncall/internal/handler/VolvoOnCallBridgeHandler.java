@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
@@ -29,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -60,6 +62,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Mateusz Bronk - Backported (to 2.5.x line) a fix for #8554 (User-Agent header removed)
+ * @author Mateusz Bronk - Backported GET request cache from 3.x (to avoid flooding VOC servers)
  */
 @NonNullByDefault
 public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
@@ -68,6 +71,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     private final Properties httpHeader = new Properties();
     private final List<ScheduledFuture<?>> pendingActions = new Stack<>();
     private final Gson gson;
+    private final ExpiringCacheMap<String, SimpleImmutableEntry<@Nullable String, @Nullable IOException>> cache;
 
     private @NonNullByDefault({}) CustomerAccounts customerAccount;
 
@@ -100,6 +104,8 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
                         (JsonDeserializer<OnOffType>) (json, type,
                                 jsonDeserializationContext) -> json.getAsBoolean() ? OnOffType.ON : OnOffType.OFF)
                 .create();
+
+        this.cache = new ExpiringCacheMap<>(120 * 1000);
     }
 
     @Override
@@ -140,8 +146,29 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
 
     public <T extends VocAnswer> T getURL(String url, Class<T> objectClass) throws VolvoOnCallException {
         try {
-            String jsonResponse = HttpUtil_VOC.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE,
-                    REQUEST_TIMEOUT);
+            // The cache stores pairs of: (Response(String), Exception) where only one of the elements is populated at
+            // any given time
+            // This is for backport purposes only, hence creation of a more proper abstraction has been omitted
+            // delibetatelly
+            // - the pair is there only to avoid storing 'Objects' and RTTI.
+            SimpleImmutableEntry<@Nullable String, @Nullable IOException> cacheResponse = cache.putIfAbsentAndGet(url,
+                    () -> {
+                        logger.trace("Cache MISS for URL: {}", url);
+                        try {
+                            return new SimpleImmutableEntry<@Nullable String, @Nullable IOException>(HttpUtil_VOC
+                                    .executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE, REQUEST_TIMEOUT),
+                                    null);
+                        } catch (IOException e) {
+                            return new SimpleImmutableEntry<@Nullable String, @Nullable IOException>(null, e);
+                        }
+                    });
+            if (cacheResponse.getValue() != null) { // Exception ocurred while (re)populating cache
+                                                    // -> invalidate the cache and rethrow
+                                                    // ^- note this should really be handled by the cache internally
+                cache.invalidate(url);
+                throw cacheResponse.getValue();
+            }
+            String jsonResponse = cacheResponse.getKey();
             logger.debug("Request for : {}", url);
             logger.debug("Received : {}", jsonResponse);
             T response = gson.fromJson(jsonResponse, objectClass);
