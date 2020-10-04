@@ -331,11 +331,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @return the registered device Thing handler or null if the id cannot be found
      */
     public @Nullable OpenWebNetThingHandler getRegisteredDevice(String ownId) {
-        if (registeredDevices.containsKey(ownId)) {
-            return registeredDevices.get(ownId);
-        } else {
-            return null;
-        }
+        return registeredDevices.get(ownId);
     }
 
     @Override
