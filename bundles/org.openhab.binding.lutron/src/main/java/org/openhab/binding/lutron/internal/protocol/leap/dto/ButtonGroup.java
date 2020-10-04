@@ -26,9 +26,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Bob Adair - Initial contribution
  */
 public class ButtonGroup extends AbstractMessageBody {
-    private static final Pattern DEVICE_HREF_PATTERN = Pattern.compile("/device/([0-9]+)");
-    private static final Pattern BUTTON_HREF_PATTERN = Pattern.compile("/button/([0-9]+)");
-    private static final Pattern BUTTONGROUP_HREF_PATTERN = Pattern.compile("/buttongroup/([0-9]+)");
+    public static final Pattern BUTTONGROUP_HREF_PATTERN = Pattern.compile("/buttongroup/([0-9]+)");
+    public static final Pattern BUTTON_HREF_PATTERN = Pattern.compile("/button/([0-9]+)");
 
     @SerializedName("href")
     public String href;
@@ -54,7 +53,7 @@ public class ButtonGroup extends AbstractMessageBody {
 
     public int getParentDevice() {
         if (parent != null && parent.href != null) {
-            return hrefNumber(DEVICE_HREF_PATTERN, parent.href);
+            return hrefNumber(Device.DEVICE_HREF_PATTERN, parent.href);
         } else {
             return 0;
         }

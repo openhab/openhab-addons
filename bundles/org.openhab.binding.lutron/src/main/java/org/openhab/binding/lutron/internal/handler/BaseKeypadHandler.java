@@ -117,7 +117,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         List<Channel> channelList = new ArrayList<>();
         List<Channel> existingChannels = getThing().getChannels();
 
-        if (existingChannels != null && !existingChannels.isEmpty()) {
+        if (!existingChannels.isEmpty()) {
             // Clear existing channels
             logger.debug("Clearing existing channels for keypad {}", integrationId);
             ThingBuilder thingBuilder = editThing();

@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Bob Adair - Initial contribution
  */
 public class ZoneStatus extends AbstractMessageBody {
-    private static final Pattern ZONE_HREF_PATTERN = Pattern.compile("/zone/([0-9]+)");
+    public static final Pattern ZONE_HREF_PATTERN = Pattern.compile("/zone/([0-9]+)");
 
     @SerializedName("href")
     public String href = "";

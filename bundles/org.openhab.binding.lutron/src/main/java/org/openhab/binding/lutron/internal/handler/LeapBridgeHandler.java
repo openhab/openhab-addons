@@ -159,55 +159,56 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_MINUTES;
         sendDelay = (config.delay < 0) ? 0 : config.delay;
 
-        try {
-            logger.trace("Initializing keystore");
-            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+        if (config.keystore == null || keystorePassword == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Keystore/keystore password not configured");
+            return;
+        } else {
+            try (FileInputStream keystoreInputStream = new FileInputStream(config.keystore)) {
+                logger.trace("Initializing keystore");
+                KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
 
-            if (config.keystore != null && keystorePassword != null) {
-                keystore.load(new FileInputStream(config.keystore), keystorePassword.toCharArray());
-            } else {
+                keystore.load(keystoreInputStream, keystorePassword.toCharArray());
+
+                logger.trace("Initializing SSL Context");
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                kmf.init(keystore, keystorePassword.toCharArray());
+
+                TrustManager[] trustManagers;
+                if (config.certValidate) {
+                    // Use default trust manager which will attempt to validate server certificate from hub
+                    TrustManagerFactory tmf = TrustManagerFactory
+                            .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                    tmf.init(keystore);
+                    trustManagers = tmf.getTrustManagers();
+                } else {
+                    // Use no-op trust manager which will not verify certificates
+                    trustManagers = defineNoOpTrustManager();
+                }
+
+                sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(kmf.getKeyManagers(), trustManagers, null);
+
+                sslsocketfactory = sslContext.getSocketFactory();
+            } catch (FileNotFoundException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Keystore file not found");
+                return;
+            } catch (CertificateException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Certificate exception");
+                return;
+            } catch (UnrecoverableKeyException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Keystore/keystore password not configured");
+                        "Key unrecoverable with supplied password");
+                return;
+            } catch (KeyManagementException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Key management exception");
+                logger.debug("Key management exception", e);
+                return;
+            } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
+                logger.debug("Error initializing keystore", e);
                 return;
             }
-
-            logger.trace("Initializing SSL Context");
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(keystore, keystorePassword.toCharArray());
-
-            TrustManager[] trustManagers;
-            if (config.certValidate) {
-                // Use default trust manager which will attempt to validate server certificate from hub
-                TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                tmf.init(keystore);
-                trustManagers = tmf.getTrustManagers();
-            } else {
-                // Use no-op trust manager which will not verify certificates
-                trustManagers = defineNoOpTrustManager();
-            }
-
-            sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(kmf.getKeyManagers(), trustManagers, null);
-
-            sslsocketfactory = sslContext.getSocketFactory();
-        } catch (FileNotFoundException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "File not found");
-            return;
-        } catch (CertificateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Certificate exception");
-            return;
-        } catch (UnrecoverableKeyException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Key unrecoverable with supplied password");
-            return;
-        } catch (KeyManagementException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Key management exception");
-            logger.warn("Key management exception", e);
-            return;
-        } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
-            logger.warn("Error initializing keystore", e);
-            return;
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
@@ -291,9 +292,6 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         sendCommand(new LeapCommand(Request.getButtonGroups()));
         queryDiscoveryData();
-        // sendCommand(new LeapCommand(Request.getDevices()));
-        // sendCommand(new LeapCommand(Request.getAreas()));
-        // sendCommand(new LeapCommand(Request.getOccupancyGroups()));
         sendCommand(new LeapCommand(Request.subscribeOccupancyGroupStatus()));
 
         logger.debug("Starting keepAlive job with interval {}", heartbeatInterval);

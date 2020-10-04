@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Bob Adair - Initial contribution
  */
 public class Area extends AbstractMessageBody {
-    private static final Pattern AREA_HREF_PATTERN = Pattern.compile("/area/([0-9]+)");
+    public static final Pattern AREA_HREF_PATTERN = Pattern.compile("/area/([0-9]+)");
 
     @SerializedName("href")
     public String href;

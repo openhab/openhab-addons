@@ -94,7 +94,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(LutronDeviceDiscoveryService.class);
 
-    private IPBridgeHandler bridgeHandler;
+    private final IPBridgeHandler bridgeHandler;
     private DbXmlInfoReader dbXmlInfoReader = new DbXmlInfoReader();
 
     private final HttpClient httpClient;
@@ -111,8 +111,9 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected synchronized void startScan() {
+        Future<?> scanTask = this.scanTask;
         if (scanTask == null || scanTask.isDone()) {
-            scanTask = scheduler.submit(this::asyncDiscoveryTask);
+            this.scanTask = scheduler.submit(this::asyncDiscoveryTask);
         }
     }
 
@@ -131,7 +132,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
     private void readDeviceDatabase() {
         Project project = null;
 
-        if (bridgeHandler == null || bridgeHandler.getIPBridgeConfig() == null) {
+        if (bridgeHandler.getIPBridgeConfig() == null) {
             logger.debug("Unable to get bridge config. Exiting.");
             return;
         }

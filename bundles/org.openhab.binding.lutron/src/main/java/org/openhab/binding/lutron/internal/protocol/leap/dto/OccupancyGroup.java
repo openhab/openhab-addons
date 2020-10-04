@@ -24,8 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Bob Adair - Initial contribution
  */
 public class OccupancyGroup extends AbstractMessageBody {
-    private static final Pattern OGROUP_HREF_PATTERN = Pattern.compile("/occupancygroup/([0-9]+)");
-    private static final Pattern AREA_HREF_PATTERN = Pattern.compile("/area/([0-9]+)");
+    public static final Pattern OGROUP_HREF_PATTERN = Pattern.compile("/occupancygroup/([0-9]+)");
 
     @SerializedName("href")
     public String href;
@@ -47,7 +46,7 @@ public class OccupancyGroup extends AbstractMessageBody {
         public Href area;
 
         public int getAreaNumber() {
-            return hrefNumber(AREA_HREF_PATTERN, area.href);
+            return hrefNumber(Area.AREA_HREF_PATTERN, area.href);
         }
     }
 

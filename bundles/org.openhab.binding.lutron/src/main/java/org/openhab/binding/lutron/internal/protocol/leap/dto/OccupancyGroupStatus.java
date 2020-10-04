@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Bob Adair - Initial contribution
  */
 public class OccupancyGroupStatus extends AbstractMessageBody {
-    private static final Pattern OGROUP_HREF_PATTERN = Pattern.compile("/occupancygroup/([0-9]+)");
+    public static final Pattern OGROUP_HREF_PATTERN = Pattern.compile("/occupancygroup/([0-9]+)");
 
     @SerializedName("href")
     public String href;

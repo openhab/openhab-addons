@@ -29,7 +29,5 @@ public abstract class LutronBridgeHandler extends BaseBridgeHandler {
         super(bridge);
     }
 
-    // public abstract void sendCommand(LutronCommand command);
-
     public abstract void sendCommand(LutronCommandNew command);
 }
