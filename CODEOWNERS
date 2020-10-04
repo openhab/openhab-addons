@@ -272,7 +272,6 @@
 /bundles/org.openhab.io.homekit/ @beowulfe @yfre
 /bundles/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
 /bundles/org.openhab.io.imperihome/ @pdegeus
-/bundles/org.openhab.io.mqttembeddedbroker/ @davidgraeff
 /bundles/org.openhab.io.neeo/ @tmrobert8
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer
 /bundles/org.openhab.io.transport.modbus/ @ssalonen
@@ -312,7 +311,6 @@
 /itests/org.openhab.binding.systeminfo.tests/ @svilenvul
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
 /itests/org.openhab.binding.wemo.tests/ @hmerk
-/itests/org.openhab.io.mqttembeddedbroker.tests/ @J-N-K
 /itests/org.openhab.persistence.mapdb.tests/ @mkhl
 
 # PLEASE HELP ADDING FURTHER LINES HERE!

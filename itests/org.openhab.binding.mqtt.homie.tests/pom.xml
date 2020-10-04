@@ -35,11 +35,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.io.mqttembeddedbroker</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.github.j-n-k</groupId>
       <artifactId>moquette-broker</artifactId>
       <version>0.13.0.OH2</version>
