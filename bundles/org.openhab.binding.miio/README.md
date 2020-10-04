@@ -206,13 +206,21 @@ or in case of unknown models include the model information e.g.:
 |  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes       |            |
 |  Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes       |            |
 |  Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes       |            |
-| Mi Water Purifier v2         | miio:basic       | [yunmi.waterpuri.v2](#yunmi-waterpuri-v2) | Yes       |            |
-| Mi Water Purifier lx2        | miio:basic       | [yunmi.waterpuri.lx2](#yunmi-waterpuri-lx2) | Yes       |            |
-| Mi Water Purifier lx3        | miio:basic       | [yunmi.waterpuri.lx3](#yunmi-waterpuri-lx3) | Yes       |            |
-| Mi Water Purifier lx4        | miio:basic       | [yunmi.waterpuri.lx4](#yunmi-waterpuri-lx4) | Yes       |            |
+| Mi Water Purifier v1         | miio:basic       | [yunmi.waterpurifier.v1](#yunmi-waterpurifier-v1) | Yes       |            |
 | Mi Water Purifier v2         | miio:basic       | [yunmi.waterpurifier.v2](#yunmi-waterpurifier-v2) | Yes       |            |
 | Mi Water Purifier v3         | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       |            |
 | Mi Water Purifier v4         | miio:basic       | [yunmi.waterpurifier.v4](#yunmi-waterpurifier-v4) | Yes       |            |
+| Mi Water Purifier lx2        | miio:basic       | [yunmi.waterpuri.lx2](#yunmi-waterpuri-lx2) | Yes       |            |
+| Mi Water Purifier lx3        | miio:basic       | [yunmi.waterpuri.lx3](#yunmi-waterpuri-lx3) | Yes       |            |
+| Mi Water Purifier lx4        | miio:basic       | [yunmi.waterpuri.lx4](#yunmi-waterpuri-lx4) | Yes       |            |
+| Mi Water Purifier lx5        | miio:basic       | [yunmi.waterpuri.lx5](#yunmi-waterpuri-lx5) | Yes       |            |
+| Mi Water Purifier lx6        | miio:basic       | [yunmi.waterpuri.lx6](#yunmi-waterpuri-lx6) | Yes       |            |
+| Mi Water Purifier lx7        | miio:basic       | [yunmi.waterpuri.lx7](#yunmi-waterpuri-lx7) | Yes       |            |
+| Mi Water Purifier lx8        | miio:basic       | [yunmi.waterpuri.lx8](#yunmi-waterpuri-lx8) | Yes       |            |
+| Mi Water Purifier lx9        | miio:basic       | [yunmi.waterpuri.lx9](#yunmi-waterpuri-lx9) | Yes       |            |
+| Mi Water Purifier lx10       | miio:basic       | [yunmi.waterpuri.lx10](#yunmi-waterpuri-lx10) | Yes       |            |
+| Mi Water Purifier lx11       | miio:basic       | [yunmi.waterpuri.lx11](#yunmi-waterpuri-lx11) | Yes       |            |
+| Mi Water Purifier lx12       | miio:basic       | [yunmi.waterpuri.lx12](#yunmi-waterpuri-lx12) | Yes       |            |
 | Xiaomi Wifi Extender         | miio:unsupported | xiaomi.repeater.v2     | No        |            |
 | Mi Internet Speaker          | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
 | Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp1](#yeelink-light-bslamp1) | Yes       |            |
@@ -1467,47 +1475,350 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switch2name      | String  | Switch Name 2                       |
 | switch3name      | String  | Switch Name 3                       |
 
-### Mi Water Purifier v2 (<a name="yunmi-waterpuri-v2">yunmi.waterpuri.v2</a>) Channels
+### Mi Water Purifier v1 (<a name="yunmi-waterpurifier-v1">yunmi.waterpurifier.v1</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
-
-### Mi Water Purifier lx2 (<a name="yunmi-waterpuri-lx2">yunmi.waterpuri.lx2</a>) Channels
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-
-### Mi Water Purifier lx3 (<a name="yunmi-waterpuri-lx3">yunmi.waterpuri.lx3</a>) Channels
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-
-### Mi Water Purifier lx4 (<a name="yunmi-waterpuri-lx4">yunmi.waterpuri.lx4</a>) Channels
-
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
 
 ### Mi Water Purifier v2 (<a name="yunmi-waterpurifier-v2">yunmi.waterpurifier.v2</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
 
 ### Mi Water Purifier v3 (<a name="yunmi-waterpurifier-v3">yunmi.waterpurifier.v3</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
 
 ### Mi Water Purifier v4 (<a name="yunmi-waterpurifier-v4">yunmi.waterpurifier.v4</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
 | power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx2 (<a name="yunmi-waterpuri-lx2">yunmi.waterpuri.lx2</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx3 (<a name="yunmi-waterpuri-lx3">yunmi.waterpuri.lx3</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx4 (<a name="yunmi-waterpuri-lx4">yunmi.waterpuri.lx4</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx5 (<a name="yunmi-waterpuri-lx5">yunmi.waterpuri.lx5</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx6 (<a name="yunmi-waterpuri-lx6">yunmi.waterpuri.lx6</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx7 (<a name="yunmi-waterpuri-lx7">yunmi.waterpuri.lx7</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx8 (<a name="yunmi-waterpuri-lx8">yunmi.waterpuri.lx8</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx9 (<a name="yunmi-waterpuri-lx9">yunmi.waterpuri.lx9</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx10 (<a name="yunmi-waterpuri-lx10">yunmi.waterpuri.lx10</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx11 (<a name="yunmi-waterpuri-lx11">yunmi.waterpuri.lx11</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
+
+### Mi Water Purifier lx12 (<a name="yunmi-waterpuri-lx12">yunmi.waterpuri.lx12</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| run_status       | Number  | Run Status                          |
+| temperature      | Number  | Temperature                         |
+| rinse            | Number  | Rinse                               |
+| tds_in           | Number  | TDS in                              |
+| tds_out          | Number  | TDS out                             |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |
 
 ### Yeelight Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
 
@@ -3345,40 +3656,30 @@ String switch2name "Switch Name 2" (G_switch) {channel="miio:basic:switch:switch
 String switch3name "Switch Name 3" (G_switch) {channel="miio:basic:switch:switch3name"}
 ```
 
-### Mi Water Purifier v2 (yunmi.waterpuri.v2) item file lines
+### Mi Water Purifier v1 (yunmi.waterpurifier.v1) item file lines
 
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_waterpuri "Mi Water Purifier v2" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
-```
-
-### Mi Water Purifier lx2 (yunmi.waterpuri.lx2) item file lines
-
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpuri "Mi Water Purifier lx2" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
-```
-
-### Mi Water Purifier lx3 (yunmi.waterpuri.lx3) item file lines
-
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_waterpuri "Mi Water Purifier lx3" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
-```
-
-### Mi Water Purifier lx4 (yunmi.waterpuri.lx4) item file lines
-
-note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_waterpuri "Mi Water Purifier lx4" <status>
-Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Group G_waterpurifier "Mi Water Purifier v1" <status>
+Switch power "Power" (G_waterpurifier) {channel="miio:basic:waterpurifier:power"}
+Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
+Number temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
+Number rinse "Rinse" (G_waterpurifier) {channel="miio:basic:waterpurifier:rinse"}
+Number tds_in "TDS in" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_in"}
+Number tds_out "TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedtime"}
 ```
 
 ### Mi Water Purifier v2 (yunmi.waterpurifier.v2) item file lines
@@ -3388,6 +3689,23 @@ note: Autogenerated example. Replace the id (waterpurifier) in the channel with 
 ```java
 Group G_waterpurifier "Mi Water Purifier v2" <status>
 Switch power "Power" (G_waterpurifier) {channel="miio:basic:waterpurifier:power"}
+Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
+Number temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
+Number rinse "Rinse" (G_waterpurifier) {channel="miio:basic:waterpurifier:rinse"}
+Number tds_in "TDS in" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_in"}
+Number tds_out "TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedtime"}
 ```
 
 ### Mi Water Purifier v3 (yunmi.waterpurifier.v3) item file lines
@@ -3397,6 +3715,23 @@ note: Autogenerated example. Replace the id (waterpurifier) in the channel with 
 ```java
 Group G_waterpurifier "Mi Water Purifier v3" <status>
 Switch power "Power" (G_waterpurifier) {channel="miio:basic:waterpurifier:power"}
+Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
+Number temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
+Number rinse "Rinse" (G_waterpurifier) {channel="miio:basic:waterpurifier:rinse"}
+Number tds_in "TDS in" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_in"}
+Number tds_out "TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedtime"}
 ```
 
 ### Mi Water Purifier v4 (yunmi.waterpurifier.v4) item file lines
@@ -3406,6 +3741,309 @@ note: Autogenerated example. Replace the id (waterpurifier) in the channel with 
 ```java
 Group G_waterpurifier "Mi Water Purifier v4" <status>
 Switch power "Power" (G_waterpurifier) {channel="miio:basic:waterpurifier:power"}
+Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
+Number temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
+Number rinse "Rinse" (G_waterpurifier) {channel="miio:basic:waterpurifier:rinse"}
+Number tds_in "TDS in" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_in"}
+Number tds_out "TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedtime"}
+```
+
+### Mi Water Purifier lx2 (yunmi.waterpuri.lx2) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx2" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx3 (yunmi.waterpuri.lx3) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx3" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx4 (yunmi.waterpuri.lx4) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx4" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx5 (yunmi.waterpuri.lx5) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx5" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx6 (yunmi.waterpuri.lx6) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx6" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx7 (yunmi.waterpuri.lx7) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx7" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx8 (yunmi.waterpuri.lx8) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx8" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx9 (yunmi.waterpuri.lx9) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx9" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx10 (yunmi.waterpuri.lx10) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx10" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx11 (yunmi.waterpuri.lx11) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx11" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Water Purifier lx12 (yunmi.waterpuri.lx12) item file lines
+
+note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_waterpuri "Mi Water Purifier lx12" <status>
+Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
+Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
+Number temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
+Number rinse "Rinse" (G_waterpuri) {channel="miio:basic:waterpuri:rinse"}
+Number tds_in "TDS in" (G_waterpuri) {channel="miio:basic:waterpuri:tds_in"}
+Number tds_out "TDS out" (G_waterpuri) {channel="miio:basic:waterpuri:tds_out"}
+Number f1_totalflow "Filter 1 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totalflow"}
+Number f1_totaltime "Filter 1 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_totaltime"}
+Number f1_usedflow "Filter 1 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedflow"}
+Number f1_usedtime "Filter 1 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f1_usedtime"}
+Number f2_totalflow "Filter 2 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totalflow"}
+Number f2_totaltime "Filter 2 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_totaltime"}
+Number f2_usedflow "Filter 2 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedflow"}
+Number f2_usedtime "Filter 2 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f2_usedtime"}
+Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totalflow"}
+Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
+Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
+Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
 ### Yeelight Lamp (yeelink.light.bslamp1) item file lines
