@@ -14,12 +14,9 @@ package org.openhab.binding.haywardomnilogic.internal.handler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -49,23 +46,6 @@ public class HaywardFilterHandler extends HaywardThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
-    }
-
-    public void setFilterProperty(String systemID, String channelID, String data) {
-        Channel chan = getThing().getChannel(channelID);
-        if (chan != null) {
-            Map<String, String> properties = editProperties();
-            updateProperties(properties);
-            logger.trace("Updated Hayward Filter {} {} to: {}", systemID, channelID, data);
-        }
-    }
-
-    public void getFilterProperty(String systemID, String channelID, String data) {
-        Channel chan = getThing().getChannel(channelID);
-        if (chan != null) {
-            updateState(chan.getUID(), new DecimalType(data));
-            logger.trace("Updated Hayward Filter {} {} to: {}", systemID, channelID, data);
-        }
     }
 
     @Override
