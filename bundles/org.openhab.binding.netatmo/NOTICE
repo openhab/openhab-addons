@@ -19,6 +19,11 @@ commons-codec
 * Project; https://commons.apache.org/proper/commons-codec
 * Source:  https://commons.apache.org/proper/commons-codec
 
+gson-fire
+* License: Apache 2.0 License
+* Project: http://gsonfire.io
+* Source:  https://github.com/julman99/gson-fire
+
 json
 * License: JSON License
 * Project: https://www.json.org
@@ -43,8 +48,3 @@ netatmo-swagger-decl
 * License: MIT License
 * Project: https://dev.netatmo.com
 * Source:  https://github.com/cbornet/netatmo-swagger-decl
-
-retrofit
-* License: Apache 2.0 License
-* Project: https://square.github.io/retrofit
-* Source:  https://github.com/square/retrofit
