@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Trip {
-    public int id;
+    public long id; // Fix for #8518 (backported to 2.5.x)
     public @NonNullByDefault({}) List<TripDetail> tripDetails;
     @SerializedName("trip")
     public @Nullable String tripURL;
