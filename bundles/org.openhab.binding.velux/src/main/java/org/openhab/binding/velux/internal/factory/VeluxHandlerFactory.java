@@ -72,6 +72,7 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         VeluxDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService == null) {
             discoveryService = new VeluxDiscoveryService(localization);
+            this.discoveryService = discoveryService;
             createNew = true;
         }
         discoveryService.addBridge(bridgeHandler);
