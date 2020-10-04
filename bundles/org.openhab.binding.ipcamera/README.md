@@ -183,7 +183,6 @@ If you do not specify any of these, the binding will use the default which shoul
 | `mjpegOptions` | Allows you to change the settings for creating a MJPEG stream from RTSP using FFmpeg. Possible reasons to change this would be to rotate or re-scale the picture from the camera, change the JPG compression for better quality or the FPS rate. |
 | `motionOptions` | This gives access to the FFmpeg parameters for detecting motion alarms from a RTSP stream. One possible use for this is to use the CROP feature to ignore any trees that move in the wind or a timecode stamp. Crop will not remove the trees from your picture, it only ignores the movement of the tree. |
 | `gifPreroll`| Store this many snapshots from BEFORE you trigger a GIF creation. Default: `0` will not use snapshots and will instead use a realtime stream from the ffmpegInput URL |
-| `gifPostroll`| How long in seconds to create a GIF from a stream. Alternatively if `gifPreroll` is set to value greater than `0`, this is how many snapshots to use AFTER you trigger a GIF creation as snapshots occur at the poll rate. |
 | `ipWhitelist`| Enter any IPs inside brackets that you wish to allow to access the video stream. `DISABLE` the default value will turn this feature off.  Example: `ipWhitelist="(127.0.0.1)(192.168.0.99)"` |
 | `ptzContinuous`| If set to false (default) the camera will move using Relative commands, If set to true the camera will instead use continuous movements and will require an `OFF` command to stop the movement. |
 
@@ -350,10 +349,9 @@ This is always the best option if it works.
 The IP is for your openHAB server not the camera, and 54321 is the `serverPort` number that you specified in the bindings setup. If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
 The ipcamera.jpg can also be cast, as most cameras can not directly cast their snapshots.
 + Use the `http://192.168.xxx.xxx:54321/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format. 
-See the streaming section for more info.
-+ Use the `updateGif` feature and use a `gifPreroll` value > 0. 
++ Use the record GIF action and use a `gifPreroll` value > 0. 
 This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each `pollTime`. 
-This allows you to get a snapshot from an exact amount of time before, on, or after triggering the GIF to be created. 
+This allows you to get a snapshot from an exact amount of time before, on, or after starting the record to GIF action. 
 Handy for cameras which lag due to slow processors, or if you do not want a hand blocking the image when the door bell was pushed.
 These snapshots can be fetched either directly as they exist on disk, or via this URL format. 
 `http://192.168.xxx.xxx:54321/snapshot0.jpg`
@@ -382,7 +380,7 @@ There are multiple ways to get a moving picture, to use them just enter the URL 
 
 + **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression. 
 This can be used to cast to Chromecast devices, or can display video in many browsers (some browsers require a plugin to be installed).
-Please understand that this format due to the way it works will give you lag behind realtime, more on this below.
+Please understand that this format due to the way it works will give you lag behind real time, more on this below.
 + **ipcamera.mjpeg** whilst needing more bandwidth, it is far more compatible for displaying in a wider range of UIs and browsers.
 It is normally 1 second or less behind real-time.
 FFmpeg can be used to create this stream if your camera does not create one for you, but this uses more CPU. 
@@ -467,7 +465,7 @@ To use the HLS feature, you need to:
 + For `generic` cameras, you will need to use the config `ffmpegInput` to provide a HTTP or RTSP URL.
 + Supply a folder that the openhab user has write permissions for to the config `ffmpegOutput`.
 + Set a valid `serverPort` as the default value of -1 will turn this feature off.
-+ Consider using a SSD/HDD or a tmpfs (ram drive) can be used if you only have micro SD/flash based storage.
++ Consider using a SSD/HDD, zram location, or a tmpfs (ram drive) can be used if you only have micro SD/flash based storage.
 
 ### Ram Drive Setup
 
@@ -743,7 +741,6 @@ Thing ipcamera:generic:TTGoCamera "ESP32 TTGo Camera" @ "Cameras"
     serverPort=51321,
     port=80,
     gifPreroll=1,
-    gifPostroll=6,
     snapshotUrl="http://192.168.1.181/capture",
     mjpegUrl="http://192.168.1.181:81/stream",
     ffmpegOutput="/tmpfs/TTGoCamera/",

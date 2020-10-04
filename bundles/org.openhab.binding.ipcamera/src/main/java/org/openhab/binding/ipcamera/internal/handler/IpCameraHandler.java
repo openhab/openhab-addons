@@ -552,8 +552,8 @@ public class IpCameraHandler extends BaseThingHandler {
         FullHttpRequest request;
         if (!"PUT".equals(httpMethod) || (useDigestAuth && digestString == null)) {
             request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod), httpRequestURL);
-            request.headers().set(HttpHeaderNames.HOST, cameraConfig.getIp());
-            request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+            request.headers().set("Host", cameraConfig.getIp() + ":" + port);
+            request.headers().set("Connection", HttpHeaderValues.KEEP_ALIVE);
         } else {
             request = putRequestWithBody;
         }
@@ -563,13 +563,13 @@ public class IpCameraHandler extends BaseThingHandler {
                 logger.warn("Camera at IP:{} had both Basic and Digest set to be used", cameraConfig.getIp());
                 setBasicAuth(false);
             } else {
-                request.headers().set(HttpHeaderNames.AUTHORIZATION, "Basic " + basicAuth);
+                request.headers().set("Authorization", "Basic " + basicAuth);
             }
         }
 
         if (useDigestAuth) {
             if (digestString != null) {
-                request.headers().set(HttpHeaderNames.AUTHORIZATION, "Digest " + digestString);
+                request.headers().set("Authorization", "Digest " + digestString);
             }
         }
 
@@ -1116,6 +1116,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public void recordGif(String filename, int seconds) {
         gifFilename = filename;
+        gifRecordTime = seconds;
         if (cameraConfig.getGifPreroll() > 0) {
             snapCount = seconds;
         } else {
