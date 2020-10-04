@@ -49,15 +49,21 @@ public class DbXmlInfoReader {
 
         xstream = new XStream(driver);
 
+        configureSecurity(xstream);
         setClassLoader(Project.class.getClassLoader());
-        registerAliases(this.xstream);
+        registerAliases(xstream);
     }
 
-    public void setClassLoader(ClassLoader classLoader) {
+    private void configureSecurity(XStream xstream) {
+        XStream.setupDefaultSecurity(xstream);
+        xstream.allowTypesByWildcard(new String[] { Project.class.getPackageName() + ".**" });
+    }
+
+    private void setClassLoader(ClassLoader classLoader) {
         xstream.setClassLoader(classLoader);
     }
 
-    public void registerAliases(XStream xstream) {
+    private void registerAliases(XStream xstream) {
         xstream.alias("Project", Project.class);
         xstream.aliasField("AppVer", Project.class, "appVersion");
         xstream.aliasField("XMLVer", Project.class, "xmlVersion");
