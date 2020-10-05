@@ -35,6 +35,7 @@ import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
+import org.openhab.binding.bmwconnecteddrive.internal.handler.simulation.Injector;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.BimmerConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
@@ -108,6 +109,16 @@ public class ConnectedDriveProxy {
 
     private synchronized void call(String url, boolean post, Optional<MultiMap<String>> params,
             ResponseCallback callback) {
+        if (Injector.isActive()) {
+            if (url.equals(baseUrl)) {
+                ((StringResponseCallback) callback).onResponse(Optional.of(Injector.getDiscovery()));
+            } else if (url.endsWith(vehicleStatusAPI)) {
+                ((StringResponseCallback) callback).onResponse(Optional.of(Injector.getStatus()));
+            } else {
+                logger.info("Simulation of {} not supported", url);
+            }
+            return;
+        }
         Request req;
         final StringBuffer completeUrl = new StringBuffer(url);
         if (post) {
