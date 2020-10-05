@@ -55,19 +55,19 @@
 					}
 				]
 			},
-            {
-                "property": "status_led",
-                "friendlyName": "Night Light",
-                "channel": "status_led",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "work_night_led",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            }
+			{
+				"property": "status_led",
+				"friendlyName": "Night Light",
+				"channel": "status_led",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "work_night_led",
+						"parameterType": "NUMBER"
+					}
+				]
+			}
 		],
 		"experimental": true
 	}
