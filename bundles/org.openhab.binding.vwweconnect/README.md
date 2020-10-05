@@ -256,59 +256,59 @@ String   VWWeConnectRefreshStatus  "VW We Connect refresh status" {channel="vwwe
 Switch   RefreshVehicleStatus      "Vehicle Refresh Status"
 
 // My vehicles
-String   VehicleName                "Vehicle name [%s]"  <car>   {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:details#name"}
-String   VehicleModel               "Vehicle model [%s]"  <car>  {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:details#model"}
-String   VehicleCode                "Vehicle model code [%s]"  <car>  {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:details#modelCode"}
-String   VehicleYear                "Vehicle model year [%s]" <car> {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:details#modelYear"}
-DateTime VehicleRolloutDate         "Vehicle roll-out date [%1$tY-%1$tm-%1$td]" <car> {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:details#enrollmentDate"}
-Image    VehicleImage               "Vehicle image" <car> {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:details#imageURL"} 
-String   VehicleServiceInspection   "Vehicle service inspection [%s]" <car> {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:details#serviceInspectionStatus"}
-String   VehicleOilInspection       "Vehicle oil inspection [%s]" <car> {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:details#oilInspectionStatus"}
+String   VehicleName                "Vehicle name [%s]"  <car>   {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:details#name"}
+String   VehicleModel               "Vehicle model [%s]"  <car>  {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:details#model"}
+String   VehicleCode                "Vehicle model code [%s]"  <car>  {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:details#modelCode"}
+String   VehicleYear                "Vehicle model year [%s]" <car> {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:details#modelYear"}
+DateTime VehicleRolloutDate         "Vehicle roll-out date [%1$tY-%1$tm-%1$td]" <car> {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:details#enrollmentDate"}
+Image    VehicleImage               "Vehicle image" <car> {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:details#imageURL"} 
+String   VehicleServiceInspection   "Vehicle service inspection [%s]" <car> {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:details#serviceInspectionStatus"}
+String   VehicleOilInspection       "Vehicle oil inspection [%s]" <car> {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:details#oilInspectionStatus"}
 
 // Total trip data
-Number   VehicleTotalAvgSpeed       "Total average speed" <odometer> (gTotalTripData) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:odometer#totalAverageSpeed"}
-Number   VehicleTotalDistance       "Total distance" <odometer> (gTotalTripData) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:odometer#totalTripDistance"}
-Number   VehicleTotalDuration       "Total duration" <odometer> (gTotalTripData) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:odometer#totalTripDuration"}
+Number   VehicleTotalAvgSpeed       "Total average speed" <odometer> (gTotalTripData) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:odometer#totalAverageSpeed"}
+Number   VehicleTotalDistance       "Total distance" <odometer> (gTotalTripData) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:odometer#totalTripDistance"}
+Number   VehicleTotalDuration       "Total duration" <odometer> (gTotalTripData) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:odometer#totalTripDuration"}
 
 // Fuel Info
-Number   VehicleFuelLevel           "Fuel level (%)" <sewerage> (gFuelInfo) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:fuel#fuelLevel"}
-Number   VehicleAvgFuelConsumption  "Average fuel consumption (%)" <sewerage> (gFuelInfo) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:fuel#fuelConsumption"}
-Switch   VehicleFuelAlert           "Fuel alert" <sewerage>  {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:fuel#fuelAlert"}
-Number   VehicleFuelRange           "Fuel Range" <motion> (gFuelInfo) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:fuel#fuelRange"}
+Number   VehicleFuelLevel           "Fuel level (%)" <sewerage> (gFuelInfo) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:fuel#fuelLevel"}
+Number   VehicleAvgFuelConsumption  "Average fuel consumption (%)" <sewerage> (gFuelInfo) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:fuel#fuelConsumption"}
+Switch   VehicleFuelAlert           "Fuel alert" <sewerage>  {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:fuel#fuelAlert"}
+Number   VehicleFuelRange           "Fuel Range" <motion> (gFuelInfo) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:fuel#fuelRange"}
 
 // Door status
-Contact  VehicleTrunk               "Trunk [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:doors#trunk"}
-Contact  VehicleDoorRightBack       "Door right back [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:doors#rightBack"}
-Contact  VehicleDoorLeftBack        "Door left back [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:doors#leftBack"}
-Contact  VehicleDoorRightFont       "Door right front [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:doors#rightFront"}
-Contact  VehicleDoorLeftFront       "Door left front [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:doors#leftFront"}
-Contact  VehicleHood                "Hood [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:doors#hood"}
+Contact  VehicleTrunk               "Trunk [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:doors#trunk"}
+Contact  VehicleDoorRightBack       "Door right back [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:doors#rightBack"}
+Contact  VehicleDoorLeftBack        "Door left back [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:doors#leftBack"}
+Contact  VehicleDoorRightFont       "Door right front [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:doors#rightFront"}
+Contact  VehicleDoorLeftFront       "Door left front [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:doors#leftFront"}
+Contact  VehicleHood                "Hood [%s]" <door> (gDoorStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:doors#hood"}
 
 // Window status
-Contact  VehicleWindowRightBack      "Window right back [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:windows#rightBackWnd"}
-Contact  VehicleWindowLeftBack       "Window left back [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:windows#leftBackWnd"}
-Contact  VehicleWindowRightFont      "Window right front [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:windows#rightFrontWnd"}
-Contact  VehicleWindowLeftFront      "Window left front [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:windows#leftFrontWnd"}
-Contact  VehicleWindowRoof           "Window roof [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:windows#roof"}
-Contact  VehicleWindowSunRoof        "Window sun roof [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:windows#sunroof"}
+Contact  VehicleWindowRightBack      "Window right back [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:windows#rightBackWnd"}
+Contact  VehicleWindowLeftBack       "Window left back [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:windows#leftBackWnd"}
+Contact  VehicleWindowRightFont      "Window right front [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:windows#rightFrontWnd"}
+Contact  VehicleWindowLeftFront      "Window left front [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:windows#leftFrontWnd"}
+Contact  VehicleWindowRoof           "Window roof [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:windows#roof"}
+Contact  VehicleWindowSunRoof        "Window sun roof [%s]" <window> (gWindowStatus) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:windows#sunroof"}
 
 // Location
-Location VehicleLocation             "Location lon/lat" <map> {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:position#location"}
+Location VehicleLocation             "Location lon/lat" <map> {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:position#location"}
 
 // Last trip
-Number   VehicleLastTripDistance     "Last trip distance" <odometer> (gLastTripData) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:lasttrip#tripDistance"}
-Number   VehicleLastTripAvgFuelCons  "Last trip average fuel consumption" <sewerage> (gLastTripData) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:lasttrip#averageFuelConsumption"}
-Number   VehicleLastTripAvgSpeed     "Last trip average speed" <speed> (gLastTripData) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:lasttrip#tripAverageSpeed"}
-DateTime VehicleLastTripStartTime    "Last trip start time [%1$tY-%1$tm-%1$td %1$tR]" <time> (gLastTripData) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:lasttrip#tripStartTime"}
-DateTime VehicleLastTripEndTime      "Last trip end time [%1$tY-%1$tm-%1$td %1$tR]" <time> (gLastTripData) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:lasttrip#tripEndTime"}
-Number   VehicleLastTripDuration     "Last trip duration" <time> (gLastTripData) {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:lasttrip#tripDuration"}
+Number   VehicleLastTripDistance     "Last trip distance" <odometer> (gLastTripData) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:lasttrip#tripDistance"}
+Number   VehicleLastTripAvgFuelCons  "Last trip average fuel consumption" <sewerage> (gLastTripData) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:lasttrip#averageFuelConsumption"}
+Number   VehicleLastTripAvgSpeed     "Last trip average speed" <speed> (gLastTripData) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:lasttrip#tripAverageSpeed"}
+DateTime VehicleLastTripStartTime    "Last trip start time [%1$tY-%1$tm-%1$td %1$tR]" <time> (gLastTripData) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:lasttrip#tripStartTime"}
+DateTime VehicleLastTripEndTime      "Last trip end time [%1$tY-%1$tm-%1$td %1$tR]" <time> (gLastTripData) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:lasttrip#tripEndTime"}
+Number   VehicleLastTripDuration     "Last trip duration" <time> (gLastTripData) {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:lasttrip#tripDuration"}
 
 // Actions
-Switch   VehicleDoorLock            "Vehicle DoorLock"  <lock>   [ "Switchable" ]  {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:doors#doorsLocked"}
-Switch   VehicleRemoteHeater        "Vehicle Remote Heater"  <temperature>   [ "Switchable" ]  {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:action#remoteHeater"}
-Switch   VehicleRemoteVentilation   "Vehicle Remote Ventilation"  <temperature>   [ "Switchable" ]  {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:action#remoteVentilation"}
-Number   VehicleTemperature         "Vehicle Temperature"  <temperature>   {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:action#temperature"}
-Number   VehicleRemaingHeaterTime   "Vehicle remaining heater time" <clock> {channel="vwweconnect:vehicle:WVGZZZ5XAPQ834262:action#remainingTime"}
+Switch   VehicleDoorLock            "Vehicle DoorLock"  <lock>   [ "Switchable" ]  {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:doors#doorsLocked"}
+Switch   VehicleRemoteHeater        "Vehicle Remote Heater"  <temperature>   [ "Switchable" ]  {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:action#remoteHeater"}
+Switch   VehicleRemoteVentilation   "Vehicle Remote Ventilation"  <temperature>   [ "Switchable" ]  {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:action#remoteVentilation"}
+Number   VehicleTemperature         "Vehicle Temperature"  <temperature>   {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:action#temperature"}
+Number   VehicleRemaingHeaterTime   "Vehicle remaining heater time" <clock> {channel="vwweconnect:vehicle:myvwweconnect:JannesFolka:action#remainingTime"}
 ````
 
 ### Sitemap
