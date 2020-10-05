@@ -175,6 +175,15 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         if (event == null) {
             return;
         }
+
+        if (event.getSource() instanceof org.snmp4j.Snmp) {
+            // Always cancel async request when response has been received
+            // otherwise a memory leak is created! Not canceling a request
+            // immediately can be useful when sending a request to a broadcast
+            // address.
+            ((org.snmp4j.Snmp) event.getSource()).cancel(event.getRequest(), this);
+        }
+
         PDU response = event.getResponse();
         if (response == null) {
             Exception e = event.getError();
