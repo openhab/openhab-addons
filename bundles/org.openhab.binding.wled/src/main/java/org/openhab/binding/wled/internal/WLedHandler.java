@@ -81,7 +81,7 @@ public class WLedHandler extends BaseThingHandler {
         config = getConfigAs(WLedConfiguration.class);
     }
 
-    void sendGetRequest(String url) {
+    private void sendGetRequest(String url) {
         Request request = httpClient.newRequest(config.address + url);
         request.timeout(3, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
@@ -156,6 +156,11 @@ public class WLedHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     *
+     * This function should prevent the need to keep updating the binding as more FX and Palettes are added to the
+     * firmware.
+     */
     private void scrapeChannelOptions(String message) {
         List<StateOption> fxOptions = new ArrayList<>();
         List<StateOption> palleteOptions = new ArrayList<>();
@@ -219,7 +224,7 @@ public class WLedHandler extends BaseThingHandler {
         parseColours(message);
     }
 
-    void sendWhite() {
+    private void sendWhite() {
         if (hasWhite) {
             sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=hFF000000" + "&A=" + masterBrightness);
         } else {
@@ -289,12 +294,12 @@ public class WLedHandler extends BaseThingHandler {
                     masterBrightness = new BigDecimal((((HSBType) command).getBrightness()).toString())
                             .multiply(new BigDecimal(2.55));
                     primaryColor = new HSBType(command.toString());
-                    if (primaryColor.getSaturation().intValue() < config.saturationThreshold && hasWhite) {
-                        sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=h000000&W=255" + "&A=" + masterBrightness);
+                    if (primaryColor.getSaturation().intValue() < config.saturationThreshold) {
+                        sendWhite();
                     } else if (primaryColor.getSaturation().intValue() == 32 && primaryColor.getHue().intValue() == 36
                             && hasWhite) {
                         // Google sends this when it wants white
-                        sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=h000000&W=255" + "&A=" + masterBrightness);
+                        sendWhite();
                     } else {
                         sendGetRequest(
                                 "/win&TT=1000&FX=0&CY=0&CL=" + createColorHex(primaryColor) + "&A=" + masterBrightness);
@@ -375,7 +380,6 @@ public class WLedHandler extends BaseThingHandler {
                 } else if (OnOffType.ON.equals(command)) {
                     bigTemp = new BigDecimal(255);
                 } else {
-                    // scale from 0.5 seconds to 1 minute
                     bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(600)).add(new BigDecimal(500));
                 }
                 sendGetRequest("/win&PT=" + bigTemp);
@@ -386,7 +390,6 @@ public class WLedHandler extends BaseThingHandler {
                 } else if (OnOffType.ON.equals(command)) {
                     bigTemp = new BigDecimal(255);
                 } else {
-                    // scale from 0.5 seconds to 1 minute
                     bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(600)).add(new BigDecimal(500));
                 }
                 sendGetRequest("/win&TT=" + bigTemp);
@@ -409,13 +412,17 @@ public class WLedHandler extends BaseThingHandler {
         sendGetRequest("/win&PS=" + presetIndex);
     }
 
-    void pollLED() {
+    private void pollLED() {
         sendGetRequest("/win");
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(WLedConfiguration.class);
+        if (!config.address.contains("://")) {
+            logger.debug("Address was not entered in correct format, it may be the raw IP so adding http:// to start");
+            config.address = "http://" + config.address;
+        }
         pollingFuture = threadPool.scheduleWithFixedDelay(this::pollLED, 1, config.pollTime, TimeUnit.SECONDS);
     }
 
@@ -432,10 +439,10 @@ public class WLedHandler extends BaseThingHandler {
     }
 
     /**
-     * @return A string that starts after finding the element and terminates when it finds the first occurence of the
-     *         end char after the element.
+     * @return A string that starts after finding the element and terminates when it finds the first occurrence of the
+     *         end string after the element.
      */
-    static private String getValue(String message, String element, String end) {
+    static String getValue(String message, String element, String end) {
         int startIndex = message.indexOf(element);
         if (startIndex != -1) // It was found, as -1 means "not found"
         {

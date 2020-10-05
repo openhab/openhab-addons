@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.wled", service = ThingHandlerFactory.class)
 public class WLedHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
-    private final WledDynamicStateDescriptionProvider stateDescriptionProvider;;
+    private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
     public WLedHandlerFactory(@Reference HttpClientFactory httpClientFactory,
