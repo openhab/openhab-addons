@@ -1337,7 +1337,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
+| power            | Switch  | Power                               | If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware |
 | usb              | Switch  | USB                                 |            |
 | temperature      | Number  | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
