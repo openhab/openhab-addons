@@ -14,7 +14,6 @@ package org.openhab.binding.solaxx3mic.internal;
 
 import static org.openhab.binding.solaxx3mic.internal.SolaxX3MicBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;

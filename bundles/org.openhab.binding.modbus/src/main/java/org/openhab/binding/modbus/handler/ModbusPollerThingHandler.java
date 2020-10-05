@@ -383,7 +383,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         }
     }
 
-    @SuppressWarnings("unlikely-arg-type")
+    //@SuppressWarnings("unlikely-arg-type")
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof ModbusDataThingHandler) {
