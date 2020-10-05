@@ -66,7 +66,7 @@ For other gateways you can add them manually, see [Thing Configuration](#thing-c
 
 Devices can also be discovered if activated while an Inbox Scan is active: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer) to have it discovered by the binding.
 
-If a device cannot be discovered automatically it's always possible to add them manually, see [Configuring Devices](#configuring-devices).
+If a device cannot be discovered automatically it's always possible to add it manually, see [Configuring Devices](#configuring-devices).
 
 ### ZigBee Discovery
 
@@ -210,5 +210,6 @@ Special thanks for helping on testing this binding go to:
 [@k0nti](https://community.openhab.org/u/k0nti/),
 [@gilberto.cocchi](https://community.openhab.org/u/gilberto.cocchi/),
 [@llegovich](https://community.openhab.org/u/llegovich),
-[@gabriele.daltoe](https://community.openhab.org/u/gabriele.daltoe)
+[@gabriele.daltoe](https://community.openhab.org/u/gabriele.daltoe),
+[@feodor](https://community.openhab.org/u/feodor)
 and many others at the fantastic openHAB community!
