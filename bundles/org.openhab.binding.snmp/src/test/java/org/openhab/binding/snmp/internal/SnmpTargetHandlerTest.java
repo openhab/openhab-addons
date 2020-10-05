@@ -24,6 +24,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.snmp4j.PDU;
+import org.snmp4j.Snmp;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Counter64;
 import org.snmp4j.smi.Integer32;
@@ -119,7 +120,7 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
         assertEquals(1, source.cancelCallCounter);
     }
 
-    class SnmpMock extends org.snmp4j.Snmp {
+    class SnmpMock extends Snmp {
         public int cancelCallCounter = 0;
 
         @Override
