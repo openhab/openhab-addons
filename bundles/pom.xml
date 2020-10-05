@@ -344,6 +344,7 @@
     <module>org.openhab.binding.modbus.stiebeleltron</module>
         
     <module>org.openhab.binding.modbus.helioseasycontrols</module>
+    <module>org.openhab.binding.modbus.solaxx3mic</module>
         
     <module>org.openhab.binding.monopriceaudio</module>
         
@@ -496,6 +497,7 @@
     <module>org.openhab.binding.solaredge</module>
         
     <module>org.openhab.binding.solarlog</module>
+        
     <module>org.openhab.binding.solaxx3mic</module>
         
     <module>org.openhab.binding.somfymylink</module>
