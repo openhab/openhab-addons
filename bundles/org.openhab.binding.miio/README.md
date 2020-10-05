@@ -140,10 +140,10 @@ or in case of unknown models include the model information e.g.:
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p9](#dmaker-fan-p9) | Yes       |            |
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p10](#dmaker-fan-p10) | Yes       |            |
 | Viomi Internet refrigerator iLive | miio:unsupported | viomi.fridge.v3        | No        |            |
-| Mi Smart Home Gateway v1     | miio:basic       | [lumi.gateway.v1](#lumi-gateway-v1) | Yes       |            |
-| Mi Smart Home Gateway v2     | miio:basic       | [lumi.gateway.v2](#lumi-gateway-v2) | Yes       |            |
-| Mi Smart Home Gateway v3     | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       |            |
-| Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       |            |
+| Mi Smart Home Gateway v1     | miio:basic       | [lumi.gateway.v1](#lumi-gateway-v1) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Home Gateway v2     | miio:basic       | [lumi.gateway.v2](#lumi-gateway-v2) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Home Gateway v3     | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Humdifier                 | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
 | Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral1.v1  | No        |            |
 | Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral2.v1  | No        |            |
@@ -206,21 +206,21 @@ or in case of unknown models include the model information e.g.:
 |  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes       |            |
 |  Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes       |            |
 |  Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes       |            |
-| Mi Water Purifier v1         | miio:basic       | [yunmi.waterpurifier.v1](#yunmi-waterpurifier-v1) | Yes       |            |
-| Mi Water Purifier v2         | miio:basic       | [yunmi.waterpurifier.v2](#yunmi-waterpurifier-v2) | Yes       |            |
-| Mi Water Purifier v3         | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       |            |
-| Mi Water Purifier v4         | miio:basic       | [yunmi.waterpurifier.v4](#yunmi-waterpurifier-v4) | Yes       |            |
-| Mi Water Purifier lx2        | miio:basic       | [yunmi.waterpuri.lx2](#yunmi-waterpuri-lx2) | Yes       |            |
-| Mi Water Purifier lx3        | miio:basic       | [yunmi.waterpuri.lx3](#yunmi-waterpuri-lx3) | Yes       |            |
-| Mi Water Purifier lx4        | miio:basic       | [yunmi.waterpuri.lx4](#yunmi-waterpuri-lx4) | Yes       |            |
-| Mi Water Purifier lx5        | miio:basic       | [yunmi.waterpuri.lx5](#yunmi-waterpuri-lx5) | Yes       |            |
-| Mi Water Purifier lx6        | miio:basic       | [yunmi.waterpuri.lx6](#yunmi-waterpuri-lx6) | Yes       |            |
-| Mi Water Purifier lx7        | miio:basic       | [yunmi.waterpuri.lx7](#yunmi-waterpuri-lx7) | Yes       |            |
-| Mi Water Purifier lx8        | miio:basic       | [yunmi.waterpuri.lx8](#yunmi-waterpuri-lx8) | Yes       |            |
-| Mi Water Purifier lx9        | miio:basic       | [yunmi.waterpuri.lx9](#yunmi-waterpuri-lx9) | Yes       |            |
-| Mi Water Purifier lx10       | miio:basic       | [yunmi.waterpuri.lx10](#yunmi-waterpuri-lx10) | Yes       |            |
-| Mi Water Purifier lx11       | miio:basic       | [yunmi.waterpuri.lx11](#yunmi-waterpuri-lx11) | Yes       |            |
-| Mi Water Purifier lx12       | miio:basic       | [yunmi.waterpuri.lx12](#yunmi-waterpuri-lx12) | Yes       |            |
+| Mi Water Purifier v1         | miio:basic       | [yunmi.waterpurifier.v1](#yunmi-waterpurifier-v1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier v2         | miio:basic       | [yunmi.waterpurifier.v2](#yunmi-waterpurifier-v2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier v3         | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier v4         | miio:basic       | [yunmi.waterpurifier.v4](#yunmi-waterpurifier-v4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx2        | miio:basic       | [yunmi.waterpuri.lx2](#yunmi-waterpuri-lx2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx3        | miio:basic       | [yunmi.waterpuri.lx3](#yunmi-waterpuri-lx3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx4        | miio:basic       | [yunmi.waterpuri.lx4](#yunmi-waterpuri-lx4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx5        | miio:basic       | [yunmi.waterpuri.lx5](#yunmi-waterpuri-lx5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx6        | miio:basic       | [yunmi.waterpuri.lx6](#yunmi-waterpuri-lx6) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx7        | miio:basic       | [yunmi.waterpuri.lx7](#yunmi-waterpuri-lx7) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx8        | miio:basic       | [yunmi.waterpuri.lx8](#yunmi-waterpuri-lx8) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx9        | miio:basic       | [yunmi.waterpuri.lx9](#yunmi-waterpuri-lx9) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx10       | miio:basic       | [yunmi.waterpuri.lx10](#yunmi-waterpuri-lx10) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx11       | miio:basic       | [yunmi.waterpuri.lx11](#yunmi-waterpuri-lx11) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx12       | miio:basic       | [yunmi.waterpuri.lx12](#yunmi-waterpuri-lx12) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Wifi Extender         | miio:unsupported | xiaomi.repeater.v2     | No        |            |
 | Mi Internet Speaker          | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
 | Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp1](#yeelink-light-bslamp1) | Yes       |            |
