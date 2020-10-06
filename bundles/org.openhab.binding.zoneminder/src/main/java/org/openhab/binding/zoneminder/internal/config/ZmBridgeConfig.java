@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.zoneminder.internal.config;
 
+import static org.openhab.binding.zoneminder.internal.ZmBindingConstants.DEFAULT_URL_PATH;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -39,14 +41,9 @@ public class ZmBridgeConfig {
     public @Nullable Integer portNumber;
 
     /**
-     * Use default URL path
-     */
-    public Boolean useDefaultUrlPath = Boolean.TRUE;
-
-    /**
      * URL fragment (e.g. /zm)
      */
-    public @Nullable String urlPath;
+    public String urlPath = DEFAULT_URL_PATH;
 
     /**
      * Frequency at which monitor status will be updated

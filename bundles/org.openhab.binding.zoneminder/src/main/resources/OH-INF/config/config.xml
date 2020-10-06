@@ -51,16 +51,12 @@
 		</parameter>
 		<parameter name="portNumber" type="integer" min="1" max="65535" required="false" groupName="url-info">
 			<label>Port Number</label>
-			<description>Port Number</description>
+			<description>Port Number (leave blank if Zoneminder installed on default port)</description>
 		</parameter>
-		<parameter name="useDefaultUrlPath" type="boolean" required="false" groupName="url-info">
-			<label>Use Default URL Path</label>
-			<description>Use standard URL path (i.e. /zm)</description>
-			<default>true</default>
-		</parameter>
-		<parameter name="urlPath" type="text" required="false" groupName="url-info">
+		<parameter name="urlPath" type="text" required="true" groupName="url-info">
 			<label>URL Path</label>
-			<description>URL path (Used if ZoneMinder URL starts with something other than /zm)</description>
+			<description>URL path (Default is /zm. Use / if Zoneminder installed under the root directory)</description>
+			<default>/zm</default>
 		</parameter>
 		<parameter name="user" type="text" required="false" groupName="auth-info">
 			<label>User Name</label>

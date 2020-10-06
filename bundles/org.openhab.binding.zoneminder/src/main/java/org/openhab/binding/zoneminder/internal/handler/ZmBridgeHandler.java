@@ -114,8 +114,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     private String host = "";
     private boolean useSSL;
     private @Nullable String portNumber;
-    private @NonNullByDefault({}) Boolean useDefaultUrlPath;
-    private @Nullable String urlPath;
+    private String urlPath = DEFAULT_URL_PATH;
     private int monitorsInterval;
     private int discoveryInterval;
     private boolean discoveryEnabled;
@@ -160,9 +159,6 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         host = config.host;
         useSSL = config.useSSL.booleanValue();
         portNumber = config.portNumber != null ? Integer.toString(config.portNumber) : null;
-
-        // Allows the use of a customized path and/or port number
-        useDefaultUrlPath = config.useDefaultUrlPath;
         urlPath = config.urlPath;
 
         // If user and password are configured, then use Zoneminder authentication
@@ -496,11 +492,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         if (portNumber != null) {
             sb.append(":").append(portNumber);
         }
-        if (useDefaultUrlPath) {
-            sb.append("/zm");
-        } else if (urlPath != null) {
-            sb.append(urlPath);
-        }
+        sb.append(urlPath);
         sb.append(path);
         return sb;
     }

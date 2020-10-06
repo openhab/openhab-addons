@@ -54,7 +54,6 @@ public class ZmBindingConstants {
     // Server
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_PORT_NUMBER = "portNumber";
-    public static final String CONFIG_USE_DEFAULT_URL_PATH = "useDefaultUrlPath";
     public static final String CONFIG_URL_PATH = "urlPath";
     public static final String CONFIG_DEFAULT_ALARM_DURATION = "defaultAlarmDuration";
     public static final String CONFIG_DEFAULT_IMAGE_REFRESH_INTERVAL = "defaultImageRefreshInterval";
@@ -65,6 +64,7 @@ public class ZmBindingConstants {
     public static final String CONFIG_ALARM_DURATION = "alarmDuration";
 
     public static final int DEFAULT_ALARM_DURATION_SECONDS = 60;
+    public static final String DEFAULT_URL_PATH = "/zm";
 
     // List of all channel ids
     public static final String CHANNEL_IMAGE_MONITOR_ID = "imageMonitorId";
