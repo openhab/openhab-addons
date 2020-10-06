@@ -276,7 +276,7 @@ public class WLedHandler extends BaseThingHandler {
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (IncreaseDecreaseType.INCREASE.equals(command)) {
                         if (masterBrightness.intValue() < 240) {
-                            sendGetRequest("/win&TT=2000&A=~15"); // 255 divided by 15 = 17 levels
+                            sendGetRequest("/win&TT=2000&A=~15"); // 255 divided by 15 = 17 different levels
                         } else {
                             sendGetRequest("/win&TT=2000&A=255");
                         }
@@ -444,11 +444,10 @@ public class WLedHandler extends BaseThingHandler {
      */
     static String getValue(String message, String element, String end) {
         int startIndex = message.indexOf(element);
-        if (startIndex != -1) // It was found, as -1 means "not found"
+        if (startIndex != -1) // -1 means "not found"
         {
             int endIndex = message.indexOf(end, startIndex + element.length());
-            if (endIndex != -1)// , not found so make second check
-            {
+            if (endIndex != -1) {
                 return message.substring(startIndex + element.length(), endIndex);
             }
         }
