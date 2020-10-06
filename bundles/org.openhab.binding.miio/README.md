@@ -225,6 +225,9 @@ or in case of unknown models include the model information e.g.:
 | Mi Internet Speaker          | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
 | Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp1](#yeelink-light-bslamp1) | Yes       |            |
 | Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp2](#yeelink-light-bslamp2) | Yes       |            |
+| Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp3](#yeelink-light-bslamp3) | Yes       |            |
+| Yeelight BadHeater           | miio:basic       | [yeelink.bhf_light.v1](#yeelink-bhf_light-v1) | Yes       |            |
+| Yeelight BadHeater           | miio:basic       | [yeelink.bhf_light.v2](#yeelink-bhf_light-v2) | Yes       |            |
 | Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling1](#yeelink-light-ceiling1) | Yes       |            |
 | Yeelight LED Ceiling Lamp v2 | miio:basic       | [yeelink.light.ceiling2](#yeelink-light-ceiling2) | Yes       |            |
 | Yeelight LED Ceiling Lamp v3 | miio:basic       | [yeelink.light.ceiling3](#yeelink-light-ceiling3) | Yes       |            |
@@ -239,20 +242,45 @@ or in case of unknown models include the model information e.g.:
 | Yeelight LED Ceiling Lamp v11 | miio:basic       | [yeelink.light.ceiling11](#yeelink-light-ceiling11) | Yes       |            |
 | Yeelight LED Ceiling Lamp v12 | miio:basic       | [yeelink.light.ceiling12](#yeelink-light-ceiling12) | Yes       |            |
 | Yeelight LED Ceiling Lamp v13 | miio:basic       | [yeelink.light.ceiling13](#yeelink-light-ceiling13) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling14](#yeelink-light-ceiling14) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling15](#yeelink-light-ceiling15) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling16](#yeelink-light-ceiling16) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling17](#yeelink-light-ceiling17) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling18](#yeelink-light-ceiling18) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling19](#yeelink-light-ceiling19) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling20](#yeelink-light-ceiling20) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling21](#yeelink-light-ceiling21) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling22](#yeelink-light-ceiling22) | Yes       |            |
+| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling23](#yeelink-light-ceiling23) | Yes       |            |
+| Yeelight LED Ceiling Ambi Lamp | miio:basic       | [yeelink.light.ceiling4.ambi](#yeelink-light-ceiling4-ambi) | Yes       |            |
+| Yeelight LED Ceiling Ambi Lamp | miio:basic       | [yeelink.light.ceiling10.ambi](#yeelink-light-ceiling10-ambi) | Yes       |            |
+| Yeelight LED Ceiling Ambi Lamp | miio:basic       | [yeelink.light.ceiling19.ambi](#yeelink-light-ceiling19-ambi) | Yes       |            |
+| Yeelight LED Ceiling Ambi Lamp | miio:basic       | [yeelink.light.ceiling20.ambi](#yeelink-light-ceiling20-ambi) | Yes       |            |
 | Yeelight ct2                 | miio:basic       | [yeelink.light.ct2](#yeelink-light-ct2) | Yes       |            |
 | Yeelight White Bulb          | miio:basic       | [yeelink.light.mono1](#yeelink-light-mono1) | Yes       |            |
 | Yeelight White Bulb v2       | miio:basic       | [yeelink.light.mono2](#yeelink-light-mono2) | Yes       |            |
+| Yeelight White               | miio:basic       | [yeelink.light.mono5](#yeelink-light-mono5) | Yes       |            |
 | Yeelight Wifi Speaker        | miio:unsupported | yeelink.wifispeaker.v1 | No        |            |
 | Yeelight                     | miio:basic       | [yeelink.light.lamp1](#yeelink-light-lamp1) | Yes       |            |
 | Yeelight                     | miio:basic       | [yeelink.light.lamp2](#yeelink-light-lamp2) | Yes       |            |
 | Yeelight                     | miio:basic       | [yeelink.light.lamp3](#yeelink-light-lamp3) | Yes       |            |
+| Yeelight                     | miio:basic       | [yeelink.light.lamp4](#yeelink-light-lamp4) | Yes       |            |
+| Yeelight                     | miio:basic       | [yeelink.light.lamp5](#yeelink-light-lamp5) | Yes       |            |
+| Yeelight                     | miio:basic       | [yeelink.light.lamp6](#yeelink-light-lamp6) | Yes       |            |
+| Yeelight                     | miio:basic       | [yeelink.light.lamp7](#yeelink-light-lamp7) | Yes       |            |
+| Yeelight                     | miio:basic       | [yeelink.light.lamp8](#yeelink-light-lamp8) | Yes       |            |
+| Yeelight Panel               | miio:basic       | [yeelink.light.panel1](#yeelink-light-panel1) | Yes       |            |
 | Yeelight Strip               | miio:basic       | [yeelink.light.strip1](#yeelink-light-strip1) | Yes       |            |
 | Yeelight Strip               | miio:basic       | [yeelink.light.strip2](#yeelink-light-strip2) | Yes       |            |
+| Yeelight Strip               | miio:basic       | [yeelink.light.strip4](#yeelink-light-strip4) | Yes       |            |
 | Yeelight                     | miio:basic       | [yeelink.light.virtual](#yeelink-light-virtual) | Yes       |            |
 | Yeelight Color Bulb          | miio:basic       | [yeelink.light.color1](#yeelink-light-color1) | Yes       |            |
 | Yeelight Color Bulb YLDP06YL 10W | miio:basic       | [yeelink.light.color2](#yeelink-light-color2) | Yes       |            |
 | Yeelight Color Bulb YLDP02YL 9W | miio:basic       | [yeelink.light.color3](#yeelink-light-color3) | Yes       |            |
 | Yeelight Bulb YLDP13YL (8,5W) | miio:basic       | [yeelink.light.color4](#yeelink-light-color4) | Yes       |            |
+| Yeelight yilai ceiling       | miio:basic       | [yilai.light.ceiling1](#yilai-light-ceiling1) | Yes       |            |
+| Yeelight yilai ceiling       | miio:basic       | [yilai.light.ceiling2](#yilai-light-ceiling2) | Yes       |            |
+| Yeelight yilai ceiling       | miio:basic       | [yilai.light.ceiling3](#yilai-light-ceiling3) | Yes       |            |
 
 
 # Advanced: Unsupported devices
@@ -293,1910 +321,2251 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 ### Mi Air Monitor v1 (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| aqi              | Number  | Air Quality Index                   |
-| battery          | Number  | Battery                             |
-| usb_state        | Switch  | USB State                           |
-| time_state       | Switch  | Time State                          |
-| night_state      | Switch  | Night State                         |
-| night_begin      | Number  | Night Begin Time                    |
-| night_end        | Number  | Night End Time                      |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| battery          | Number  | Battery                             |            |
+| usb_state        | Switch  | USB State                           |            |
+| time_state       | Switch  | Time State                          |            |
+| night_state      | Switch  | Night State                         |            |
+| night_begin      | Number  | Night Begin Time                    |            |
+| night_end        | Number  | Night End Time                      |            |
 
 ### Mi Air Quality Monitor 2gen (<a name="cgllc-airmonitor-b1">cgllc.airmonitor.b1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| battery          | Number  | Battery                             |
-| pm25             | Number  | PM2.5                               |
-| co2              | Number  | CO2e                                |
-| tvoc             | Number  | tVOC                                |
-| humidity         | Number  | Humidity                            |
-| temperature      | Number  | Temperature                         |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| battery          | Number  | Battery                             |            |
+| pm25             | Number  | PM2.5                               |            |
+| co2              | Number  | CO2e                                |            |
+| tvoc             | Number  | tVOC                                |            |
+| humidity         | Number  | Humidity                            |            |
+| temperature      | Number  | Temperature                         |            |
 
 ### Mi Air Quality Monitor S1 (<a name="cgllc-airmonitor-s1">cgllc.airmonitor.s1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| battery          | Number  | Battery                             |
-| pm25             | Number  | PM2.5                               |
-| co2              | Number  | CO2                                 |
-| tvoc             | Number  | tVOC                                |
-| humidity         | Number  | Humidity                            |
-| temperature      | Number  | Temperature                         |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| battery          | Number  | Battery                             |            |
+| pm25             | Number  | PM2.5                               |            |
+| co2              | Number  | CO2                                 |            |
+| tvoc             | Number  | tVOC                                |            |
+| humidity         | Number  | Humidity                            |            |
+| temperature      | Number  | Temperature                         |            |
 
 ### Mi Air Humidifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| setHumidity      | Number  | Humidity Set                        |
-| aqi              | Number  | Air Quality Index                   |
-| translevel       | Number  | Trans_level                         |
-| bright           | Number  | LED Brightness                      |
-| buzzer           | Switch  | Buzzer Status                       |
-| depth            | Number  | Depth                               |
-| dry              | Switch  | Dry                                 |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| temperature      | Number  | Temperature                         |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| setHumidity      | Number  | Humidity Set                        |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| translevel       | Number  | Trans_level                         |            |
+| bright           | Number  | LED Brightness                      |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| depth            | Number  | Depth                               |            |
+| dry              | Switch  | Dry                                 |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| temperature      | Number  | Temperature                         |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Humidifier (<a name="zhimi-humidifier-ca1">zhimi.humidifier.ca1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| setHumidity      | Number  | Humidity Set                        |
-| aqi              | Number  | Air Quality Index                   |
-| translevel       | Number  | Trans_level                         |
-| bright           | Number  | LED Brightness                      |
-| buzzer           | Switch  | Buzzer Status                       |
-| depth            | Number  | Depth                               |
-| dry              | Switch  | Dry                                 |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| temperature      | Number  | Temperature                         |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| setHumidity      | Number  | Humidity Set                        |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| translevel       | Number  | Trans_level                         |            |
+| bright           | Number  | LED Brightness                      |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| depth            | Number  | Depth                               |            |
+| dry              | Switch  | Dry                                 |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| temperature      | Number  | Temperature                         |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Humidifier 2 (<a name="zhimi-humidifier-cb1">zhimi.humidifier.cb1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| humidifierMode   | String  | Humidifier Mode                     |
-| humidity         | Number  | Humidity                            |
-| setHumidity      | Number  | Humidity Set                        |
-| bright           | Number  | LED Brightness                      |
-| buzzer           | Switch  | Buzzer Status                       |
-| depth            | Number  | Depth                               |
-| dry              | Switch  | Dry                                 |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| temperature      | Number  | Temperature                         |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| humidifierMode   | String  | Humidifier Mode                     |            |
+| humidity         | Number  | Humidity                            |            |
+| setHumidity      | Number  | Humidity Set                        |            |
+| bright           | Number  | LED Brightness                      |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| depth            | Number  | Depth                               |            |
+| dry              | Switch  | Dry                                 |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| temperature      | Number  | Temperature                         |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier v1 (<a name="zhimi-airpurifier-v1">zhimi.airpurifier.v1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier v2 (<a name="zhimi-airpurifier-v2">zhimi.airpurifier.v2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier v3 (<a name="zhimi-airpurifier-v3">zhimi.airpurifier.v3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier v5 (<a name="zhimi-airpurifier-v5">zhimi.airpurifier.v5</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier Pro v6 (<a name="zhimi-airpurifier-v6">zhimi.airpurifier.v6</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| bright           | Number  | LED Brightness                      |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| bright           | Number  | LED Brightness                      |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier Pro v7 (<a name="zhimi-airpurifier-v7">zhimi.airpurifier.v7</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| volume           | Number  | Volume                              |
-| led              | Switch  | LED Status                          |
-| illuminance      | Number  | Illuminance                         |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| motorspeed       | Number  | Motor Speed                         |
-| motorspeed2      | Number  | Motor Speed 2                       |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| volume           | Number  | Volume                              |            |
+| led              | Switch  | LED Status                          |            |
+| illuminance      | Number  | Illuminance                         |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| motorspeed2      | Number  | Motor Speed 2                       |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier 2 (mini) (<a name="zhimi-airpurifier-m1">zhimi.airpurifier.m1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier (mini) (<a name="zhimi-airpurifier-m2">zhimi.airpurifier.m2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier MS1 (<a name="zhimi-airpurifier-ma1">zhimi.airpurifier.ma1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier MS2 (<a name="zhimi-airpurifier-ma2">zhimi.airpurifier.ma2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| bright           | Number  | LED Brightness                      |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| bright           | Number  | LED Brightness                      |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier 3 (<a name="zhimi-airpurifier-ma4">zhimi.airpurifier.ma4</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| Fault            | Number  | Air Purifier-Device Fault           |
-| On               | Switch  | Air Purifier-Switch Status          |
-| FanLevel         | Number  | Air Purifier-Fan Level              |
-| Mode             | Number  | Air Purifier-Mode                   |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |
-| Manufacturer     | String  | Device Information-Device Manufacturer |
-| Model            | String  | Device Information-Device Model     |
-| SerialNumber     | String  | Device Information-Device Serial Number |
-| Pm25Density      | Number  | Environment-PM2.5 Density           |
-| RelativeHumidity | Number  | Environment-Relative Humidity       |
-| Temperature      | Number  | Environment-Temperature             |
-| FilterLifeLevel  | Number  | Filter-Filter Life Level            |
-| FilterUsedTime   | String  | Filter-Filter Used Time             |
-| Alarm            | Switch  | Alarm-Alarm                         |
-| Brightness       | Number  | Indicator Light-Brightness          |
-| On1              | Switch  | Indicator Light-Switch Status       |
-| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
-| ButtonPressed    | String  | button-button_pressed               |
-| FilterMaxTime    | Number  | filter-time-filter-max-time         |
-| FilterHourUsedDebug | Number  | filter-time-filter-hour-used-debug  |
-| M1Strong         | Number  | motor-speed-m1-strong               |
-| M1High           | Number  | motor-speed-m1-high                 |
-| M1Med            | Number  | motor-speed-m1-med                  |
-| M1MedL           | Number  | motor-speed-m1-med-l                |
-| M1Low            | Number  | motor-speed-m1-low                  |
-| M1Silent         | Number  | motor-speed-m1-silent               |
-| M1Favorite       | Number  | motor-speed-m1-favorite             |
-| Motor1Speed      | Number  | motor-speed-motor1-speed            |
-| Motor1SetSpeed   | Number  | motor-speed-motor1-set-speed        |
-| FavoriteFanLevel | Number  | motor-speed-favorite fan level      |
-| UseTime          | Number  | use-time-use-time                   |
-| PurifyVolume     | Number  | aqi-purify-volume                   |
-| AverageAqi       | Number  | aqi-average-aqi                     |
-| AverageAqiCnt    | Number  | aqi-average-aqi-cnt                 |
-| AqiZone          | String  | aqi-aqi-zone                        |
-| SensorState      | String  | aqi-sensor-state                    |
-| AqiGoodh         | Number  | aqi-aqi-goodh                       |
-| AqiRunstate      | Number  | aqi-aqi-runstate                    |
-| AqiState         | Number  | aqi-aqi-state                       |
-| AqiUpdataHeartbeat | Number  | aqi-aqi-updata-heartbeat            |
-| RfidTag          | String  | rfid-rfid-tag                       |
-| RfidFactoryId    | String  | rfid-rfid-factory-id                |
-| RfidProductId    | String  | rfid-rfid-product-id                |
-| RfidTime         | String  | rfid-rfid-time                      |
-| RfidSerialNum    | String  | rfid-rfid-serial-num                |
-| AppExtra         | Number  | others-app-extra                    |
-| MainChannel      | Number  | others-main-channel                 |
-| SlaveChannel     | Number  | others-slave-channel                |
-| Cola             | String  | others-cola                         |
-| ButtomDoor       | Switch  | others-buttom-door                  |
-| RebootCause      | Number  | others-reboot_cause                 |
-| HwVersion        | Number  | others-hw-version                   |
-| I2cErrorCount    | Number  | others-i2c-error-count              |
-| ManualLevel      | Number  | others-manual-level                 |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| Fault            | Number  | Air Purifier-Device Fault           |            |
+| On               | Switch  | Air Purifier-Switch Status          |            |
+| FanLevel         | Number  | Air Purifier-Fan Level              |            |
+| Mode             | Number  | Air Purifier-Mode                   |            |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
+| Manufacturer     | String  | Device Information-Device Manufacturer |            |
+| Model            | String  | Device Information-Device Model     |            |
+| SerialNumber     | String  | Device Information-Device Serial Number |            |
+| Pm25Density      | Number  | Environment-PM2.5 Density           |            |
+| RelativeHumidity | Number  | Environment-Relative Humidity       |            |
+| Temperature      | Number  | Environment-Temperature             |            |
+| FilterLifeLevel  | Number  | Filter-Filter Life Level            |            |
+| FilterUsedTime   | String  | Filter-Filter Used Time             |            |
+| Alarm            | Switch  | Alarm-Alarm                         |            |
+| Brightness       | Number  | Indicator Light-Brightness          |            |
+| On1              | Switch  | Indicator Light-Switch Status       |            |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
+| ButtonPressed    | String  | button-button_pressed               |            |
+| FilterMaxTime    | Number  | filter-time-filter-max-time         |            |
+| FilterHourUsedDebug | Number  | filter-time-filter-hour-used-debug  |            |
+| M1Strong         | Number  | motor-speed-m1-strong               |            |
+| M1High           | Number  | motor-speed-m1-high                 |            |
+| M1Med            | Number  | motor-speed-m1-med                  |            |
+| M1MedL           | Number  | motor-speed-m1-med-l                |            |
+| M1Low            | Number  | motor-speed-m1-low                  |            |
+| M1Silent         | Number  | motor-speed-m1-silent               |            |
+| M1Favorite       | Number  | motor-speed-m1-favorite             |            |
+| Motor1Speed      | Number  | motor-speed-motor1-speed            |            |
+| Motor1SetSpeed   | Number  | motor-speed-motor1-set-speed        |            |
+| FavoriteFanLevel | Number  | motor-speed-favorite fan level      |            |
+| UseTime          | Number  | use-time-use-time                   |            |
+| PurifyVolume     | Number  | aqi-purify-volume                   |            |
+| AverageAqi       | Number  | aqi-average-aqi                     |            |
+| AverageAqiCnt    | Number  | aqi-average-aqi-cnt                 |            |
+| AqiZone          | String  | aqi-aqi-zone                        |            |
+| SensorState      | String  | aqi-sensor-state                    |            |
+| AqiGoodh         | Number  | aqi-aqi-goodh                       |            |
+| AqiRunstate      | Number  | aqi-aqi-runstate                    |            |
+| AqiState         | Number  | aqi-aqi-state                       |            |
+| AqiUpdataHeartbeat | Number  | aqi-aqi-updata-heartbeat            |            |
+| RfidTag          | String  | rfid-rfid-tag                       |            |
+| RfidFactoryId    | String  | rfid-rfid-factory-id                |            |
+| RfidProductId    | String  | rfid-rfid-product-id                |            |
+| RfidTime         | String  | rfid-rfid-time                      |            |
+| RfidSerialNum    | String  | rfid-rfid-serial-num                |            |
+| AppExtra         | Number  | others-app-extra                    |            |
+| MainChannel      | Number  | others-main-channel                 |            |
+| SlaveChannel     | Number  | others-slave-channel                |            |
+| Cola             | String  | others-cola                         |            |
+| ButtomDoor       | Switch  | others-buttom-door                  |            |
+| RebootCause      | Number  | others-reboot_cause                 |            |
+| HwVersion        | Number  | others-hw-version                   |            |
+| I2cErrorCount    | Number  | others-i2c-error-count              |            |
+| ManualLevel      | Number  | others-manual-level                 |            |
 
 ### Mi Air Purifier 3 (<a name="zhimi-airpurifier-mb3">zhimi.airpurifier.mb3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| Fault            | Number  | Air Purifier-fault                  |
-| On               | Switch  | Air Purifier-Switch Status          |
-| FanLevel         | Number  | Air Purifier-Fan Level              |
-| Mode             | Number  | Air Purifier-Mode                   |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |
-| Manufacturer     | String  | Device Information-Device Manufacturer |
-| Model            | String  | Device Information-Device Model     |
-| SerialNumber     | String  | Device Information-Device Serial Number |
-| Pm25Density      | Number  | Environment-PM2.5                   |
-| RelativeHumidity | Number  | Environment-Relative Humidity       |
-| Temperature      | Number  | Environment-Temperature             |
-| FilterLifeLevel  | Number  | Filter-Filter Life Level            |
-| FilterUsedTime   | String  | Filter-Filter Used Time             |
-| Alarm            | Switch  | Alarm-Alarm                         |
-| Brightness       | Number  | Indicator Light-brightness          |
-| On1              | Switch  | Indicator Light-Switch Status       |
-| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
-| ButtonPressed    | String  | Button-button-pressed               |
-| FilterMaxTime    | Number  | filter-time-filter-max-time         |
-| FilterHourDebug  | Number  | filter-time-filter-hour-debug       |
-| MotorStrong      | Number  | motor-speed-motor-strong            |
-| MotorHigh        | Number  | motor-speed-motor-high              |
-| MotorMed         | Number  | motor-speed-motor-med               |
-| MotorMedL        | Number  | motor-speed-motor-med-l             |
-| MotorLow         | Number  | motor-speed-motor-low               |
-| MotorSilent      | Number  | motor-speed-motor-silent            |
-| MotorFavorite    | Number  | motor-speed-motor-favorite          |
-| MotorSpeed       | Number  | motor-speed-motor-speed             |
-| MotorSetSpeed    | Number  | motor-speed-motor-set-speed         |
-| FavoriteFanLevel | Number  | motor-speed-favorite-fan-level      |
-| UseTime          | Number  | use-time-use-time                   |
-| PurifyVolume     | Number  | aqi-purify-volume                   |
-| AverageAqi       | Number  | aqi-average-aqi                     |
-| AverageAqiCnt    | Number  | aqi-average-aqi-cnt                 |
-| AqiZone          | String  | aqi-aqi-zone                        |
-| SensorState      | String  | aqi-sensor-state                    |
-| AqiGoodh         | Number  | aqi-aqi-goodh                       |
-| AqiRunstate      | Number  | aqi-aqi-runstate                    |
-| AqiState         | Number  | aqi-aqi-state                       |
-| AqiUpdataHeartbeat | Number  | aqi-aqi-updata-heartbeat            |
-| RfidTag          | String  | rfid-rfid-tag                       |
-| RfidFactoryId    | String  | rfid-rfid-factory-id                |
-| RfidProductId    | String  | rfid-rfid-product-id                |
-| RfidTime         | String  | rfid-rfid-time                      |
-| RfidSerialNum    | String  | rfid-rfid-serial-num                |
-| AppExtra         | Number  | others-app-extra                    |
-| MainChannel      | Number  | others-main-channel                 |
-| SlaveChannel     | Number  | others-slave-channel                |
-| Cola             | String  | others-cola                         |
-| ButtomDoor       | Switch  | others-buttom-door                  |
-| RebootCause      | Number  | others-reboot-cause                 |
-| HwVersion        | Number  | others-hw-version                   |
-| IicErrorCount    | Number  | others-iic-error-count              |
-| ManualLevel      | Number  | others-manual-level                 |
-| CountryCode      | Number  | others-National code                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| Fault            | Number  | Air Purifier-fault                  |            |
+| On               | Switch  | Air Purifier-Switch Status          |            |
+| FanLevel         | Number  | Air Purifier-Fan Level              |            |
+| Mode             | Number  | Air Purifier-Mode                   |            |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
+| Manufacturer     | String  | Device Information-Device Manufacturer |            |
+| Model            | String  | Device Information-Device Model     |            |
+| SerialNumber     | String  | Device Information-Device Serial Number |            |
+| Pm25Density      | Number  | Environment-PM2.5                   |            |
+| RelativeHumidity | Number  | Environment-Relative Humidity       |            |
+| Temperature      | Number  | Environment-Temperature             |            |
+| FilterLifeLevel  | Number  | Filter-Filter Life Level            |            |
+| FilterUsedTime   | String  | Filter-Filter Used Time             |            |
+| Alarm            | Switch  | Alarm-Alarm                         |            |
+| Brightness       | Number  | Indicator Light-brightness          |            |
+| On1              | Switch  | Indicator Light-Switch Status       |            |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
+| ButtonPressed    | String  | Button-button-pressed               |            |
+| FilterMaxTime    | Number  | filter-time-filter-max-time         |            |
+| FilterHourDebug  | Number  | filter-time-filter-hour-debug       |            |
+| MotorStrong      | Number  | motor-speed-motor-strong            |            |
+| MotorHigh        | Number  | motor-speed-motor-high              |            |
+| MotorMed         | Number  | motor-speed-motor-med               |            |
+| MotorMedL        | Number  | motor-speed-motor-med-l             |            |
+| MotorLow         | Number  | motor-speed-motor-low               |            |
+| MotorSilent      | Number  | motor-speed-motor-silent            |            |
+| MotorFavorite    | Number  | motor-speed-motor-favorite          |            |
+| MotorSpeed       | Number  | motor-speed-motor-speed             |            |
+| MotorSetSpeed    | Number  | motor-speed-motor-set-speed         |            |
+| FavoriteFanLevel | Number  | motor-speed-favorite-fan-level      |            |
+| UseTime          | Number  | use-time-use-time                   |            |
+| PurifyVolume     | Number  | aqi-purify-volume                   |            |
+| AverageAqi       | Number  | aqi-average-aqi                     |            |
+| AverageAqiCnt    | Number  | aqi-average-aqi-cnt                 |            |
+| AqiZone          | String  | aqi-aqi-zone                        |            |
+| SensorState      | String  | aqi-sensor-state                    |            |
+| AqiGoodh         | Number  | aqi-aqi-goodh                       |            |
+| AqiRunstate      | Number  | aqi-aqi-runstate                    |            |
+| AqiState         | Number  | aqi-aqi-state                       |            |
+| AqiUpdataHeartbeat | Number  | aqi-aqi-updata-heartbeat            |            |
+| RfidTag          | String  | rfid-rfid-tag                       |            |
+| RfidFactoryId    | String  | rfid-rfid-factory-id                |            |
+| RfidProductId    | String  | rfid-rfid-product-id                |            |
+| RfidTime         | String  | rfid-rfid-time                      |            |
+| RfidSerialNum    | String  | rfid-rfid-serial-num                |            |
+| AppExtra         | Number  | others-app-extra                    |            |
+| MainChannel      | Number  | others-main-channel                 |            |
+| SlaveChannel     | Number  | others-slave-channel                |            |
+| Cola             | String  | others-cola                         |            |
+| ButtomDoor       | Switch  | others-buttom-door                  |            |
+| RebootCause      | Number  | others-reboot-cause                 |            |
+| HwVersion        | Number  | others-hw-version                   |            |
+| IicErrorCount    | Number  | others-iic-error-count              |            |
+| ManualLevel      | Number  | others-manual-level                 |            |
+| CountryCode      | Number  | others-National code                |            |
 
 ### Mi Air Purifier Super (<a name="zhimi-airpurifier-sa1">zhimi.airpurifier.sa1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier Super 2 (<a name="zhimi-airpurifier-sa2">zhimi.airpurifier.sa2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Fresh Air Ventilator (<a name="dmaker-airfresh-t2017">dmaker.airfresh.t2017</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| airFreshMode     | String  | Mode                                |
-| airFreshPTCPower | Switch  | PTC                                 |
-| airFreshPtcLevel | String  | PTC Level                           |
-| airFreshPTCStatus | Switch  | PTC Status                          |
-| airFreshDisplayDirection | String  | Screen direction                    |
-| airFreshDisplay  | Switch  | Display                             |
-| airFreshChildLock | Switch  | Child Lock                          |
-| airFreshSound    | Switch  | Sound                               |
-| airFreshPM25     | Number  | PM2.5                               |
-| airFreshCO2      | Number  | CO2                                 |
-| airFreshCurrentSpeed | Number  | Current Speed                       |
-| airFreshFavoriteSpeed | Number  | Favorite Speed                      |
-| airFreshTemperature | Number  | Temperature Outside                 |
-| airFreshFilterPercents | Number  | Filter Percents Remaining           |
-| airFreshFilterDays | Number  | Filter Days Remaining               |
-| airFreshFilterProPercents | Number  | Filter Pro Percents Remaining       |
-| airFreshFilterProDays | Number  | Filter Pro Days Remaining           |
-| airFreshResetFilter | String  | Reset Filter                        |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| airFreshMode     | String  | Mode                                |            |
+| airFreshPTCPower | Switch  | PTC                                 |            |
+| airFreshPtcLevel | String  | PTC Level                           |            |
+| airFreshPTCStatus | Switch  | PTC Status                          |            |
+| airFreshDisplayDirection | String  | Screen direction                    |            |
+| airFreshDisplay  | Switch  | Display                             |            |
+| airFreshChildLock | Switch  | Child Lock                          |            |
+| airFreshSound    | Switch  | Sound                               |            |
+| airFreshPM25     | Number  | PM2.5                               |            |
+| airFreshCO2      | Number  | CO2                                 |            |
+| airFreshCurrentSpeed | Number  | Current Speed                       |            |
+| airFreshFavoriteSpeed | Number  | Favorite Speed                      |            |
+| airFreshTemperature | Number  | Temperature Outside                 |            |
+| airFreshFilterPercents | Number  | Filter Percents Remaining           |            |
+| airFreshFilterDays | Number  | Filter Days Remaining               |            |
+| airFreshFilterProPercents | Number  | Filter Pro Percents Remaining       |            |
+| airFreshFilterProDays | Number  | Filter Pro Days Remaining           |            |
+| airFreshResetFilter | String  | Reset Filter                        |            |
 
 ### Mi Fresh Air Ventilator A1 (<a name="dmaker-airfresh-a1">dmaker.airfresh.a1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| airFreshMode     | String  | Mode                                |
-| airFreshPTCPower | Switch  | PTC                                 |
-| airFreshPTCStatus | Switch  | PTC Status                          |
-| airFreshDisplay  | Switch  | Display                             |
-| airFreshChildLock | Switch  | Child Lock                          |
-| airFreshSound    | Switch  | Sound                               |
-| airFreshPM25     | Number  | PM2.5                               |
-| airFreshCO2      | Number  | CO2                                 |
-| airFreshCurrentSpeed | Number  | Current Speed                       |
-| airFreshFavoriteSpeed | Number  | Favorite Speed                      |
-| airFreshTemperature | Number  | Temperature Outside                 |
-| airFreshFilterPercents | Number  | Filter Percents Remaining           |
-| airFreshFilterDays | Number  | Filter Days Remaining               |
-| airFreshResetFilterA1 | String  | Reset Filter                        |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| airFreshMode     | String  | Mode                                |            |
+| airFreshPTCPower | Switch  | PTC                                 |            |
+| airFreshPTCStatus | Switch  | PTC Status                          |            |
+| airFreshDisplay  | Switch  | Display                             |            |
+| airFreshChildLock | Switch  | Child Lock                          |            |
+| airFreshSound    | Switch  | Sound                               |            |
+| airFreshPM25     | Number  | PM2.5                               |            |
+| airFreshCO2      | Number  | CO2                                 |            |
+| airFreshCurrentSpeed | Number  | Current Speed                       |            |
+| airFreshFavoriteSpeed | Number  | Favorite Speed                      |            |
+| airFreshTemperature | Number  | Temperature Outside                 |            |
+| airFreshFilterPercents | Number  | Filter Percents Remaining           |            |
+| airFreshFilterDays | Number  | Filter Days Remaining               |            |
+| airFreshResetFilterA1 | String  | Reset Filter                        |            |
 
 ### Gosund Plug (<a name="cuco-plug-cp1">cuco.plug.cp1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| FirmwareRevision | String  | Device Information-CurrentFirmware Version |
-| Manufacturer     | String  | Device Information-Device Manufacturer |
-| Model            | String  | Device Information-Device Model     |
-| SerialNumber     | String  | Device Information-Device Serial Number |
-| On               | Switch  | Switch-Switch Status                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| FirmwareRevision | String  | Device Information-CurrentFirmware Version |            |
+| Manufacturer     | String  | Device Information-Device Manufacturer |            |
+| Model            | String  | Device Information-Device Model     |            |
+| SerialNumber     | String  | Device Information-Device Serial Number |            |
+| On               | Switch  | Switch-Switch Status                |            |
 
 ### Mi Air Purifier mb1 (<a name="zhimi-airpurifier-mb1">zhimi.airpurifier.mb1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mc1">zhimi.airpurifier.mc1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mc2">zhimi.airpurifier.mc2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| aqi              | Number  | Air Quality Index                   |
-| averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | LED Status                          |
-| buzzer           | Switch  | Buzzer Status                       |
-| filtermaxlife    | Number  | Filter Max Life                     |
-| filterhours      | Number  | Filter Hours used                   |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| filterlife       | Number  | Filter  Life                        |
-| favoritelevel    | Number  | Favorite Level                      |
-| temperature      | Number  | Temperature                         |
-| purifyvolume     | Number  | Purivied Volume                     |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| averageaqi       | Number  | Average Air Quality Index           |            |
+| led              | Switch  | LED Status                          |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| filtermaxlife    | Number  | Filter Max Life                     |            |
+| filterhours      | Number  | Filter Hours used                   |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| filterlife       | Number  | Filter  Life                        |            |
+| favoritelevel    | Number  | Favorite Level                      |            |
+| temperature      | Number  | Temperature                         |            |
+| purifyvolume     | Number  | Purivied Volume                     |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Mi Smart Fan (<a name="zhimi-fan-v1">zhimi.fan.v1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| angleEnable      | Switch  | Rotation                            |
-| usedhours        | Number  | Run Time                            |
-| angle            | Number  | Angle                               |
-| poweroffTime     | Number  | Timer                               |
-| buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | LED                                 |
-| child_lock       | Switch  | Child Lock                          |
-| speedLevel       | Number  | Speed Level                         |
-| speed            | Number  | Speed                               |
-| naturalLevel     | Number  | Natural Level                       |
-| temp_dec         | Number  | Temperature                         |
-| humidity         | Number  | Humidity                            |
-| acPower          | String  | AC Power                            |
-| mode             | String  | Battery Charge                      |
-| battery          | Number  | Battery                             |
-| move             | String  | Move Direction                      |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| angleEnable      | Switch  | Rotation                            |            |
+| usedhours        | Number  | Run Time                            |            |
+| angle            | Number  | Angle                               |            |
+| poweroffTime     | Number  | Timer                               |            |
+| buzzer           | Switch  | Buzzer                              |            |
+| led_b            | Number  | LED                                 |            |
+| child_lock       | Switch  | Child Lock                          |            |
+| speedLevel       | Number  | Speed Level                         |            |
+| speed            | Number  | Speed                               |            |
+| naturalLevel     | Number  | Natural Level                       |            |
+| temp_dec         | Number  | Temperature                         |            |
+| humidity         | Number  | Humidity                            |            |
+| acPower          | String  | AC Power                            |            |
+| mode             | String  | Battery Charge                      |            |
+| battery          | Number  | Battery                             |            |
+| move             | String  | Move Direction                      |            |
 
 ### Mi Smart Fan (<a name="zhimi-fan-v2">zhimi.fan.v2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| angleEnable      | Switch  | Rotation                            |
-| usedhours        | Number  | Run Time                            |
-| angle            | Number  | Angle                               |
-| poweroffTime     | Number  | Timer                               |
-| buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | LED                                 |
-| child_lock       | Switch  | Child Lock                          |
-| speedLevel       | Number  | Speed Level                         |
-| speed            | Number  | Speed                               |
-| naturalLevel     | Number  | Natural Level                       |
-| temp_dec         | Number  | Temperature                         |
-| humidity         | Number  | Humidity                            |
-| acPower          | String  | AC Power                            |
-| mode             | String  | Battery Charge                      |
-| battery          | Number  | Battery                             |
-| move             | String  | Move Direction                      |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| angleEnable      | Switch  | Rotation                            |            |
+| usedhours        | Number  | Run Time                            |            |
+| angle            | Number  | Angle                               |            |
+| poweroffTime     | Number  | Timer                               |            |
+| buzzer           | Switch  | Buzzer                              |            |
+| led_b            | Number  | LED                                 |            |
+| child_lock       | Switch  | Child Lock                          |            |
+| speedLevel       | Number  | Speed Level                         |            |
+| speed            | Number  | Speed                               |            |
+| naturalLevel     | Number  | Natural Level                       |            |
+| temp_dec         | Number  | Temperature                         |            |
+| humidity         | Number  | Humidity                            |            |
+| acPower          | String  | AC Power                            |            |
+| mode             | String  | Battery Charge                      |            |
+| battery          | Number  | Battery                             |            |
+| move             | String  | Move Direction                      |            |
 
 ### Mi Smart Pedestal Fan (<a name="zhimi-fan-v3">zhimi.fan.v3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| angleEnable      | Switch  | Rotation                            |
-| usedhours        | Number  | Run Time                            |
-| angle            | Number  | Angle                               |
-| poweroffTime     | Number  | Timer                               |
-| buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | LED                                 |
-| child_lock       | Switch  | Child Lock                          |
-| speedLevel       | Number  | Speed Level                         |
-| speed            | Number  | Speed                               |
-| naturalLevel     | Number  | Natural Level                       |
-| temp_dec         | Number  | Temperature                         |
-| humidity         | Number  | Humidity                            |
-| acPower          | String  | AC Power                            |
-| mode             | String  | Battery Charge                      |
-| battery          | Number  | Battery                             |
-| move             | String  | Move Direction                      |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| angleEnable      | Switch  | Rotation                            |            |
+| usedhours        | Number  | Run Time                            |            |
+| angle            | Number  | Angle                               |            |
+| poweroffTime     | Number  | Timer                               |            |
+| buzzer           | Switch  | Buzzer                              |            |
+| led_b            | Number  | LED                                 |            |
+| child_lock       | Switch  | Child Lock                          |            |
+| speedLevel       | Number  | Speed Level                         |            |
+| speed            | Number  | Speed                               |            |
+| naturalLevel     | Number  | Natural Level                       |            |
+| temp_dec         | Number  | Temperature                         |            |
+| humidity         | Number  | Humidity                            |            |
+| acPower          | String  | AC Power                            |            |
+| mode             | String  | Battery Charge                      |            |
+| battery          | Number  | Battery                             |            |
+| move             | String  | Move Direction                      |            |
 
 ### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-sa1">zhimi.fan.sa1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| angleEnable      | Switch  | Rotation                            |
-| usedhours        | Number  | Run Time                            |
-| angle            | Number  | Angle                               |
-| poweroffTime     | Number  | Timer                               |
-| buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | LED                                 |
-| child_lock       | Switch  | Child Lock                          |
-| speedLevel       | Number  | Speed Level                         |
-| speed            | Number  | Speed                               |
-| naturalLevel     | Number  | Natural Level                       |
-| acPower          | Switch  | AC Power                            |
-| move             | String  | Move Direction                      |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| angleEnable      | Switch  | Rotation                            |            |
+| usedhours        | Number  | Run Time                            |            |
+| angle            | Number  | Angle                               |            |
+| poweroffTime     | Number  | Timer                               |            |
+| buzzer           | Switch  | Buzzer                              |            |
+| led_b            | Number  | LED                                 |            |
+| child_lock       | Switch  | Child Lock                          |            |
+| speedLevel       | Number  | Speed Level                         |            |
+| speed            | Number  | Speed                               |            |
+| naturalLevel     | Number  | Natural Level                       |            |
+| acPower          | Switch  | AC Power                            |            |
+| move             | String  | Move Direction                      |            |
 
 ### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za1">zhimi.fan.za1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| angleEnable      | Switch  | Rotation                            |
-| usedhours        | Number  | Run Time                            |
-| angle            | Number  | Angle                               |
-| poweroffTime     | Number  | Timer                               |
-| buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | LED                                 |
-| child_lock       | Switch  | Child Lock                          |
-| speedLevel       | Number  | Speed Level                         |
-| speed            | Number  | Speed                               |
-| naturalLevel     | Number  | Natural Level                       |
-| acPower          | Switch  | AC Power                            |
-| move             | String  | Move Direction                      |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| angleEnable      | Switch  | Rotation                            |            |
+| usedhours        | Number  | Run Time                            |            |
+| angle            | Number  | Angle                               |            |
+| poweroffTime     | Number  | Timer                               |            |
+| buzzer           | Switch  | Buzzer                              |            |
+| led_b            | Number  | LED                                 |            |
+| child_lock       | Switch  | Child Lock                          |            |
+| speedLevel       | Number  | Speed Level                         |            |
+| speed            | Number  | Speed                               |            |
+| naturalLevel     | Number  | Natural Level                       |            |
+| acPower          | Switch  | AC Power                            |            |
+| move             | String  | Move Direction                      |            |
 
 ### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za4">zhimi.fan.za4</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| angleEnable      | Switch  | Rotation                            |
-| usedhours        | Number  | Run Time                            |
-| angle            | Number  | Angle                               |
-| poweroffTime     | Number  | Timer                               |
-| buzzer           | Number  | Buzzer                              |
-| led_b            | Number  | LED                                 |
-| child_lock       | Switch  | Child Lock                          |
-| speedLevel       | Number  | Speed Level                         |
-| speed            | Number  | Speed                               |
-| naturalLevel     | Number  | Natural Level                       |
-| move             | String  | Move Direction                      |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| angleEnable      | Switch  | Rotation                            |            |
+| usedhours        | Number  | Run Time                            |            |
+| angle            | Number  | Angle                               |            |
+| poweroffTime     | Number  | Timer                               |            |
+| buzzer           | Number  | Buzzer                              |            |
+| led_b            | Number  | LED                                 |            |
+| child_lock       | Switch  | Child Lock                          |            |
+| speedLevel       | Number  | Speed Level                         |            |
+| speed            | Number  | Speed                               |            |
+| naturalLevel     | Number  | Natural Level                       |            |
+| move             | String  | Move Direction                      |            |
 
 ### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-1c">dmaker.fan.1c</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| Manufacturer     | String  | Device Information-Device Manufacturer |
-| Model            | String  | Device Information-Device Model     |
-| SerialNumber     | String  | Device Information-Device Serial Number |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |
-| On               | Switch  | Fan-Switch Status                   |
-| FanLevel         | Number  | Fan-Fan Level                       |
-| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |
-| Mode             | Number  | Fan-Mode                            |
-| OffDelayTime     | Number  | Fan-Power Off Delay Time            |
-| Alarm            | Switch  | Fan-Alarm                           |
-| Brightness       | Switch  | Fan-Brightness                      |
-| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |            |
+| Model            | String  | Device Information-Device Model     |            |
+| SerialNumber     | String  | Device Information-Device Serial Number |            |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
+| On               | Switch  | Fan-Switch Status                   |            |
+| FanLevel         | Number  | Fan-Fan Level                       |            |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |            |
+| Mode             | Number  | Fan-Mode                            |            |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |            |
+| Alarm            | Switch  | Fan-Alarm                           |            |
+| Brightness       | Switch  | Fan-Brightness                      |            |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
 
 ### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p5">dmaker.fan.p5</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| roll             | Switch  | Rotation                            |
-| mode             | Number  | Mode                                |
-| angle            | Number  | Angle                               |
-| timer            | Number  | Timer                               |
-| beep             | Switch  | Beep Sound                          |
-| light            | Number  | Light                               |
-| child_lock       | Switch  | Child Lock                          |
-| speed            | Number  | Speed                               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| roll             | Switch  | Rotation                            |            |
+| mode             | Number  | Mode                                |            |
+| angle            | Number  | Angle                               |            |
+| timer            | Number  | Timer                               |            |
+| beep             | Switch  | Beep Sound                          |            |
+| light            | Number  | Light                               |            |
+| child_lock       | Switch  | Child Lock                          |            |
+| speed            | Number  | Speed                               |            |
 
 ### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p8">dmaker.fan.p8</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| Manufacturer     | String  | Device Information-Device Manufacturer |
-| Model            | String  | Device Information-Device Model     |
-| SerialNumber     | String  | Device Information-Device Serial Number |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |
-| On               | Switch  | Fan-Switch Status                   |
-| FanLevel         | Number  | Fan-Fan Level                       |
-| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |
-| Mode             | Number  | Fan-Mode                            |
-| OffDelayTime     | Number  | Fan-Power Off Delay Time            |
-| Alarm            | Switch  | Fan-Alarm                           |
-| Brightness       | Switch  | Fan-Brightness                      |
-| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |            |
+| Model            | String  | Device Information-Device Model     |            |
+| SerialNumber     | String  | Device Information-Device Serial Number |            |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
+| On               | Switch  | Fan-Switch Status                   |            |
+| FanLevel         | Number  | Fan-Fan Level                       |            |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |            |
+| Mode             | Number  | Fan-Mode                            |            |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |            |
+| Alarm            | Switch  | Fan-Alarm                           |            |
+| Brightness       | Switch  | Fan-Brightness                      |            |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
 
 ### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p9">dmaker.fan.p9</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| Manufacturer     | String  | Device Information-Device Manufacturer |
-| Model            | String  | Device Information-Device Model     |
-| SerialNumber     | String  | Device Information-Device Serial Number |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |
-| On               | Switch  | Fan-Switch Status                   |
-| FanLevel         | Number  | Fan-Fan Level                       |
-| Mode             | Number  | Fan-Mode                            |
-| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |
-| HorizontalAngle  | Number  | Fan-Horizontal Angle                |
-| Alarm            | Switch  | Fan-Alarm                           |
-| OffDelayTime     | Number  | Fan-Power Off Delay Time            |
-| Brightness       | Switch  | Fan-Brightness                      |
-| MotorControl     | Number  | Fan-Motor Control                   |
-| SpeedLevel       | Number  | Fan-Speed Level                     |
-| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |            |
+| Model            | String  | Device Information-Device Model     |            |
+| SerialNumber     | String  | Device Information-Device Serial Number |            |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
+| On               | Switch  | Fan-Switch Status                   |            |
+| FanLevel         | Number  | Fan-Fan Level                       |            |
+| Mode             | Number  | Fan-Mode                            |            |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |            |
+| HorizontalAngle  | Number  | Fan-Horizontal Angle                |            |
+| Alarm            | Switch  | Fan-Alarm                           |            |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |            |
+| Brightness       | Switch  | Fan-Brightness                      |            |
+| MotorControl     | Number  | Fan-Motor Control                   |            |
+| SpeedLevel       | Number  | Fan-Speed Level                     |            |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
 
 ### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p10">dmaker.fan.p10</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| Manufacturer     | String  | Device Information-Device Manufacturer |
-| Model            | String  | Device Information-Device Model     |
-| SerialNumber     | String  | Device Information-Device Serial Number |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |
-| On               | Switch  | Fan-Switch Status                   |
-| FanLevel         | Number  | Fan-Fan Level                       |
-| Mode             | Number  | Fan-Mode                            |
-| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |
-| HorizontalAngle  | Number  | Fan-Horizontal Angle                |
-| Alarm            | Switch  | Fan-Alarm                           |
-| OffDelayTime     | Number  | Fan-Power Off Delay Time            |
-| Brightness       | Switch  | Fan-Brightness                      |
-| MotorControl     | Number  | Fan-Motor Control                   |
-| SpeedLevel       | Number  | Fan-Speed Level                     |
-| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |            |
+| Model            | String  | Device Information-Device Model     |            |
+| SerialNumber     | String  | Device Information-Device Serial Number |            |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
+| On               | Switch  | Fan-Switch Status                   |            |
+| FanLevel         | Number  | Fan-Fan Level                       |            |
+| Mode             | Number  | Fan-Mode                            |            |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |            |
+| HorizontalAngle  | Number  | Fan-Horizontal Angle                |            |
+| Alarm            | Switch  | Fan-Alarm                           |            |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |            |
+| Brightness       | Switch  | Fan-Brightness                      |            |
+| MotorControl     | Number  | Fan-Motor Control                   |            |
+| SpeedLevel       | Number  | Fan-Speed Level                     |            |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
 
 ### Mi Smart Home Gateway v1 (<a name="lumi-gateway-v1">lumi.gateway.v1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| telnetEnable     | Switch  | Enable Telnet                       |
-| doorbellVol      | Number  | Doorbell Volume                     |
-| gatewayVol       | Number  | Gateway Volume                      |
-| alarmingVol      | Number  | Alarming Volume                     |
-| doorbellPush     | String  | Doorbell Push                       |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| telnetEnable     | Switch  | Enable Telnet                       | Access the device with telnet to further unlock developer mode. See forum |
+| doorbellVol      | Number  | Doorbell Volume                     |            |
+| gatewayVol       | Number  | Gateway Volume                      |            |
+| alarmingVol      | Number  | Alarming Volume                     |            |
+| doorbellPush     | String  | Doorbell Push                       |            |
 
 ### Mi Smart Home Gateway v2 (<a name="lumi-gateway-v2">lumi.gateway.v2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| telnetEnable     | Switch  | Enable Telnet                       |
-| doorbellVol      | Number  | Doorbell Volume                     |
-| gatewayVol       | Number  | Gateway Volume                      |
-| alarmingVol      | Number  | Alarming Volume                     |
-| doorbellPush     | String  | Doorbell Push                       |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| telnetEnable     | Switch  | Enable Telnet                       | Access the device with telnet to further unlock developer mode. See forum |
+| doorbellVol      | Number  | Doorbell Volume                     |            |
+| gatewayVol       | Number  | Gateway Volume                      |            |
+| alarmingVol      | Number  | Alarming Volume                     |            |
+| doorbellPush     | String  | Doorbell Push                       |            |
 
 ### Mi Smart Home Gateway v3 (<a name="lumi-gateway-v3">lumi.gateway.v3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| telnetEnable     | Switch  | Enable Telnet                       |
-| doorbellVol      | Number  | Doorbell Volume                     |
-| gatewayVol       | Number  | Gateway Volume                      |
-| alarmingVol      | Number  | Alarming Volume                     |
-| doorbellPush     | String  | Doorbell Push                       |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| telnetEnable     | Switch  | Enable Telnet                       | Access the device with telnet to further unlock developer mode. See forum |
+| doorbellVol      | Number  | Doorbell Volume                     |            |
+| gatewayVol       | Number  | Gateway Volume                      |            |
+| alarmingVol      | Number  | Alarming Volume                     |            |
+| doorbellPush     | String  | Doorbell Push                       |            |
 
 ### Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM (<a name="lumi-gateway-mgl03">lumi.gateway.mgl03</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| telnetEnable     | Switch  | Enable Telnet                       |
-| doorbellVol      | Number  | Doorbell Volume                     |
-| gatewayVol       | Number  | Gateway Volume                      |
-| alarmingVol      | Number  | Alarming Volume                     |
-| doorbellPush     | String  | Doorbell Push                       |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| telnetEnable     | Switch  | Enable Telnet                       | Access the device with telnet to further unlock developer mode. See forum |
+| doorbellVol      | Number  | Doorbell Volume                     |            |
+| gatewayVol       | Number  | Gateway Volume                      |            |
+| alarmingVol      | Number  | Alarming Volume                     |            |
+| doorbellPush     | String  | Doorbell Push                       |            |
 
 ### Mi Humdifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| mode             | String  | Mode                                |
-| humidity         | Number  | Humidity                            |
-| setHumidity      | Number  | Humidity Set                        |
-| aqi              | Number  | Air Quality Index                   |
-| translevel       | Number  | Trans_level                         |
-| bright           | Number  | LED Brightness                      |
-| buzzer           | Switch  | Buzzer Status                       |
-| depth            | Number  | Depth                               |
-| dry              | Switch  | Dry                                 |
-| usedhours        | Number  | Run Time                            |
-| motorspeed       | Number  | Motor Speed                         |
-| temperature      | Number  | Temperature                         |
-| childlock        | Switch  | Child Lock                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | String  | Mode                                |            |
+| humidity         | Number  | Humidity                            |            |
+| setHumidity      | Number  | Humidity Set                        |            |
+| aqi              | Number  | Air Quality Index                   |            |
+| translevel       | Number  | Trans_level                         |            |
+| bright           | Number  | LED Brightness                      |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| depth            | Number  | Depth                               |            |
+| dry              | Switch  | Dry                                 |            |
+| usedhours        | Number  | Run Time                            |            |
+| motorspeed       | Number  | Motor Speed                         |            |
+| temperature      | Number  | Temperature                         |            |
+| childlock        | Switch  | Child Lock                          |            |
 
 ### Xiaomi Philips Eyecare Smart Lamp 2 (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientBrightness | Number  | Ambient Brightness                  |
-| illumination     | Number  | Ambient Illumination                |
-| eyecare          | Switch  | Eyecare                             |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| ambientPower     | Switch  | Ambient Power                       |            |
+| ambientBrightness | Number  | Ambient Brightness                  |            |
+| illumination     | Number  | Ambient Illumination                |            |
+| eyecare          | Switch  | Eyecare                             |            |
 
 ### Xiaomi Philips LED Ceiling Lamp (<a name="philips-light-ceiling">philips.light.ceiling</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| switchscene      | Switch  | Switch Scene                        |
-| toggle           | Switch  | Toggle                              |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| switchscene      | Switch  | Switch Scene                        |            |
+| toggle           | Switch  | Toggle                              |            |
 
 ### Xiaomi Philips LED Ceiling Lamp (<a name="philips-light-zyceiling">philips.light.zyceiling</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| switchscene      | Switch  | Switch Scene                        |
-| toggle           | Switch  | Toggle                              |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| switchscene      | Switch  | Switch Scene                        |            |
+| toggle           | Switch  | Toggle                              |            |
 
 ### Xiaomi Philips Bulb (<a name="philips-light-bulb">philips.light.bulb</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| dv               | Number  | DV                                  |
-| switchscene      | Switch  | Switch Scene                        |
-| delayoff         | Switch  | Delay Off                           |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| switchscene      | Switch  | Switch Scene                        |            |
+| delayoff         | Switch  | Delay Off                           |            |
 
 ### Xiaomi Philips Wi-Fi Bulb E27 White (<a name="philips-light-hbulb">philips.light.hbulb</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| dv               | Number  | DV                                  |
-| switchscene      | Switch  | Switch Scene                        |
-| delayoff         | Switch  | Delay Off                           |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| switchscene      | Switch  | Switch Scene                        |            |
+| delayoff         | Switch  | Delay Off                           |            |
 
 ### PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp (<a name="philips-light-candle">philips.light.candle</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| delayoff         | Switch  | Delay Off                           |            |
+| toggle           | Switch  | Toggle                              |            |
 
 ### Xiaomi Philips Downlight (<a name="philips-light-downlight">philips.light.downlight</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| dv               | Number  | DV                                  |
-| switchscene      | Switch  | Switch Scene                        |
-| delayoff         | Switch  | Delay Off                           |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| switchscene      | Switch  | Switch Scene                        |            |
+| delayoff         | Switch  | Delay Off                           |            |
 
 ### Xiaomi Philips ZhiRui bedside lamp (<a name="philips-light-moonlight">philips.light.moonlight</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| dv               | Number  | DV                                  |
-| gonight          | Switch  | Go Night                            |
-| delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| gonight          | Switch  | Go Night                            |            |
+| delayoff         | Switch  | Delay Off                           |            |
+| toggle           | Switch  | Toggle                              |            |
 
 ### Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal (<a name="philips-light-candle2">philips.light.candle2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| delayoff         | Switch  | Delay Off                           |
-| toggle           | Switch  | Toggle                              |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| delayoff         | Switch  | Delay Off                           |            |
+| toggle           | Switch  | Toggle                              |            |
 
 ### philips.light.mono1 (<a name="philips-light-mono1">philips.light.mono1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| scene            | Number  | Scene                               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| scene            | Number  | Scene                               |            |
 
 ### philips.light.virtual (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| dv               | Number  | DV                                  |
-| switchscene      | Switch  | Switch Scene                        |
-| delayoff         | Switch  | Delay Off                           |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| switchscene      | Switch  | Switch Scene                        |            |
+| delayoff         | Switch  | Delay Off                           |            |
 
 ### philips.light.zysread (<a name="philips-light-zysread">philips.light.zysread</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| dv               | Number  | DV                                  |
-| switchscene      | Switch  | Switch Scene                        |
-| delayoff         | Switch  | Delay Off                           |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| switchscene      | Switch  | Switch Scene                        |            |
+| delayoff         | Switch  | Delay Off                           |            |
 
 ### philips.light.zystrip (<a name="philips-light-zystrip">philips.light.zystrip</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| cct              | Dimmer  | Correlated Color Temperature        |
-| scene            | Number  | Scene                               |
-| dv               | Number  | DV                                  |
-| switchscene      | Switch  | Switch Scene                        |
-| delayoff         | Switch  | Delay Off                           |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| switchscene      | Switch  | Switch Scene                        |            |
+| delayoff         | Switch  | Delay Off                           |            |
 
 ### Mi Power-plug (<a name="chuangmi-plug-m1">chuangmi.plug.m1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| temperature      | Number  | Temperature                         |
-| led              | Switch  | Indicator light                     |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| temperature      | Number  | Temperature                         |            |
+| led              | Switch  | Indicator light                     |            |
 
 ### Mi Power-plug v1 (<a name="chuangmi-plug-v1">chuangmi.plug.v1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| usb              | Switch  | USB                                 |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| usb              | Switch  | USB                                 |            |
 
 ### Mi Power-plug v2 (<a name="chuangmi-plug-v2">chuangmi.plug.v2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| usb              | Switch  | USB                                 |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| usb              | Switch  | USB                                 |            |
 
 ### Mi Power-plug v3 (<a name="chuangmi-plug-v3">chuangmi.plug.v3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| usb              | Switch  | USB                                 |
-| temperature      | Number  | Temperature                         |
-| led              | Switch  | Wifi LED                            |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               | If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware |
+| usb              | Switch  | USB                                 |            |
+| temperature      | Number  | Temperature                         |            |
+| led              | Switch  | Wifi LED                            |            |
 
 ### Mi Power-plug (<a name="chuangmi-plug-m3">chuangmi.plug.m3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| temperature      | Number  | Temperature                         |
-| led              | Switch  | Indicator light                     |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| temperature      | Number  | Temperature                         |            |
+| led              | Switch  | Indicator light                     |            |
 
 ### Mi Smart Plug (<a name="chuangmi-plug-hmi205">chuangmi.plug.hmi205</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| temperature      | Number  | Temperature                         |
-| led              | Switch  | Indicator light                     |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| temperature      | Number  | Temperature                         |            |
+| led              | Switch  | Indicator light                     |            |
 
 ### Qing Mi Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| powerUsage       | Number  | Power Consumption                   |
-| led              | Switch  | wifi LED                            |
-| power_price      | Number  | power_price                         |
-| current          | Number  | Current                             |
-| temperature      | Number  | Temperature                         |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| powerUsage       | Number  | Power Consumption                   |            |
+| led              | Switch  | wifi LED                            |            |
+| power_price      | Number  | power_price                         |            |
+| current          | Number  | Current                             |            |
+| temperature      | Number  | Temperature                         |            |
 
 ### Mi Power-strip v2 (<a name="zimi-powerstrip-v2">zimi.powerstrip.v2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| powerUsage       | Number  | Power Consumption                   |
-| led              | Switch  | wifi LED                            |
-| power_price      | Number  | power_price                         |
-| current          | Number  | Current                             |
-| temperature      | Number  | Temperature                         |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| powerUsage       | Number  | Power Consumption                   |            |
+| led              | Switch  | wifi LED                            |            |
+| power_price      | Number  | power_price                         |            |
+| current          | Number  | Current                             |            |
+| temperature      | Number  | Temperature                         |            |
 
 ### Xiaomi Mijia vacuum V-RVCLM21B (<a name="viomi-vacuum-v6">viomi.vacuum.v6</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| vacuumaction     | Number  | Vacuum Action                       |
-| state            | Number  | State                               |
-| mode             | Number  | Mode                                |
-| err_state        | Number  | Error                               |
-| battery_life     | Number  | Battery                             |
-| box_type         | Number  | Box type                            |
-| mop_type         | Number  | mop_type                            |
-| s_time           | Number  | Clean time                          |
-| s_area           | Number  | Clean Area                          |
-| suction_grade    | Number  | suction_grade                       |
-| water_grade      | Number  | water_grade                         |
-| remember_map     | Number  | remember_map                        |
-| has_map          | Number  | has_map                             |
-| is_mop           | Number  | is_mop                              |
-| has_newmap       | Number  | has_newmap                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| vacuumaction     | Number  | Vacuum Action                       |            |
+| state            | Number  | State                               |            |
+| mode             | Number  | Mode                                |            |
+| err_state        | Number  | Error                               |            |
+| battery_life     | Number  | Battery                             |            |
+| box_type         | Number  | Box type                            |            |
+| mop_type         | Number  | mop_type                            |            |
+| s_time           | Number  | Clean time                          |            |
+| s_area           | Number  | Clean Area                          |            |
+| suction_grade    | Number  | suction_grade                       |            |
+| water_grade      | Number  | water_grade                         |            |
+| remember_map     | Number  | remember_map                        |            |
+| has_map          | Number  | has_map                             |            |
+| is_mop           | Number  | is_mop                              |            |
+| has_newmap       | Number  | has_newmap                          |            |
 
 ### Xiaomi Mijia vacuum mop STYJ02YM (<a name="viomi-vacuum-v7">viomi.vacuum.v7</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| vacuumaction     | Number  | Vacuum Action                       |
-| state            | Number  | State                               |
-| mode             | Number  | Mode                                |
-| err_state        | Number  | Error                               |
-| battery_life     | Number  | Battery                             |
-| box_type         | Number  | Box type                            |
-| mop_type         | Number  | mop_type                            |
-| s_time           | Number  | Clean time                          |
-| s_area           | Number  | Clean Area                          |
-| suction_grade    | Number  | suction_grade                       |
-| water_grade      | Number  | water_grade                         |
-| remember_map     | Number  | remember_map                        |
-| has_map          | Number  | has_map                             |
-| is_mop           | Number  | is_mop                              |
-| has_newmap       | Number  | has_newmap                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| vacuumaction     | Number  | Vacuum Action                       |            |
+| state            | Number  | State                               |            |
+| mode             | Number  | Mode                                |            |
+| err_state        | Number  | Error                               |            |
+| battery_life     | Number  | Battery                             |            |
+| box_type         | Number  | Box type                            |            |
+| mop_type         | Number  | mop_type                            |            |
+| s_time           | Number  | Clean time                          |            |
+| s_area           | Number  | Clean Area                          |            |
+| suction_grade    | Number  | suction_grade                       |            |
+| water_grade      | Number  | water_grade                         |            |
+| remember_map     | Number  | remember_map                        |            |
+| has_map          | Number  | has_map                             |            |
+| is_mop           | Number  | is_mop                              |            |
+| has_newmap       | Number  | has_newmap                          |            |
 
 ### Xiaomi Mijia vacuum mop STYJ02YM v2 (<a name="viomi-vacuum-v8">viomi.vacuum.v8</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| vacuumaction     | Number  | Vacuum Action                       |
-| state            | Number  | State                               |
-| mode             | Number  | Mode                                |
-| err_state        | Number  | Error                               |
-| battery_life     | Number  | Battery                             |
-| box_type         | Number  | Box type                            |
-| mop_type         | Number  | mop_type                            |
-| s_time           | Number  | Clean time                          |
-| s_area           | Number  | Clean Area                          |
-| suction_grade    | Number  | suction_grade                       |
-| water_grade      | Number  | water_grade                         |
-| remember_map     | Number  | remember_map                        |
-| has_map          | Number  | has_map                             |
-| is_mop           | Number  | is_mop                              |
-| has_newmap       | Number  | has_newmap                          |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| vacuumaction     | Number  | Vacuum Action                       |            |
+| state            | Number  | State                               |            |
+| mode             | Number  | Mode                                |            |
+| err_state        | Number  | Error                               |            |
+| battery_life     | Number  | Battery                             |            |
+| box_type         | Number  | Box type                            |            |
+| mop_type         | Number  | mop_type                            |            |
+| s_time           | Number  | Clean time                          |            |
+| s_area           | Number  | Clean Area                          |            |
+| suction_grade    | Number  | suction_grade                       |            |
+| water_grade      | Number  | water_grade                         |            |
+| remember_map     | Number  | remember_map                        |            |
+| has_map          | Number  | has_map                             |            |
+| is_mop           | Number  | is_mop                              |            |
+| has_newmap       | Number  | has_newmap                          |            |
 
 ### Vacuum 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| vacuumaction     | String  | Vacuum Action                       |
-| BatteryLevel     | Number  | Battery-Battery Level               |
-| ChargingState    | Number  | Battery-Charging State              |
-| Fault            | Number  | Robot Cleaner-Device Fault          |
-| Status           | Number  | Robot Cleaner-Status                |
-| BrushLeftTime    | String  | Main Cleaning Brush-Brush Left Time |
-| BrushLifeLevel   | Number  | Main Cleaning Brush-Brush Life Level |
-| FilterLifeLevel  | Number  | Filter-Filter Life Level            |
-| FilterLeftTime   | String  | Filter-Filter Left Time             |
-| BrushLeftTime1   | String  | Side Cleaning Brush-Brush Left Time |
-| BrushLifeLevel1  | Number  | Side Cleaning Brush-Brush Life Level |
-| WorkMode         | Number  | clean-workmode                      |
-| Area             | String  | clean-area                          |
-| Timer            | String  | clean-timer                         |
-| Mode             | Number  | clean-mode                          |
-| TotalCleanTime   | String  | clean-total time                    |
-| TotalCleanTimes  | String  | clean-total times                   |
-| TotalCleanArea   | String  | clean-Total area                    |
-| CleanLogStartTime | String  | clean-Start Time                    |
-| ButtonLed        | String  | clean-led                           |
-| TaskDone         | Number  | clean-task done                     |
-| LifeSieve        | String  | consumable-life-sieve               |
-| LifeBrushSide    | String  | consumable-life-brush-side          |
-| LifeBrushMain    | String  | consumable-life-brush-main          |
-| Enable           | Switch  | annoy-enable                        |
-| StartTime        | String  | annoy-start-time                    |
-| StopTime         | String  | annoy-stop-time                     |
-| MapView          | String  | map-map-view                        |
-| Volume           | Number  | audio-volume                        |
-| VoicePackets     | String  | audio-voiceId                       |
-| TimeZone         | String  | timezone                            |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| vacuumaction     | String  | Vacuum Action                       |            |
+| BatteryLevel     | Number  | Battery-Battery Level               |            |
+| ChargingState    | Number  | Battery-Charging State              |            |
+| Fault            | Number  | Robot Cleaner-Device Fault          |            |
+| Status           | Number  | Robot Cleaner-Status                |            |
+| BrushLeftTime    | String  | Main Cleaning Brush-Brush Left Time |            |
+| BrushLifeLevel   | Number  | Main Cleaning Brush-Brush Life Level |            |
+| FilterLifeLevel  | Number  | Filter-Filter Life Level            |            |
+| FilterLeftTime   | String  | Filter-Filter Left Time             |            |
+| BrushLeftTime1   | String  | Side Cleaning Brush-Brush Left Time |            |
+| BrushLifeLevel1  | Number  | Side Cleaning Brush-Brush Life Level |            |
+| WorkMode         | Number  | clean-workmode                      |            |
+| Area             | String  | clean-area                          |            |
+| Timer            | String  | clean-timer                         |            |
+| Mode             | Number  | clean-mode                          |            |
+| TotalCleanTime   | String  | clean-total time                    |            |
+| TotalCleanTimes  | String  | clean-total times                   |            |
+| TotalCleanArea   | String  | clean-Total area                    |            |
+| CleanLogStartTime | String  | clean-Start Time                    |            |
+| ButtonLed        | String  | clean-led                           |            |
+| TaskDone         | Number  | clean-task done                     |            |
+| LifeSieve        | String  | consumable-life-sieve               |            |
+| LifeBrushSide    | String  | consumable-life-brush-side          |            |
+| LifeBrushMain    | String  | consumable-life-brush-main          |            |
+| Enable           | Switch  | annoy-enable                        |            |
+| StartTime        | String  | annoy-start-time                    |            |
+| StopTime         | String  | annoy-stop-time                     |            |
+| MapView          | String  | map-map-view                        |            |
+| Volume           | Number  | audio-volume                        |            |
+| VoicePackets     | String  | audio-voiceId                       |            |
+| TimeZone         | String  | timezone                            |            |
 
 ###  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| switch1state     | Number  | Switch 1                            |
-| switch1name      | String  | Switch Name 1                       |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| switch1state     | Number  | Switch 1                            |            |
+| switch1name      | String  | Switch Name 1                       |            |
 
 ###  Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch (<a name="090615-switch-xswitch02">090615.switch.xswitch02</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| switch1state     | Number  | Switch 1                            |
-| switch2state     | Number  | Switch 2                            |
-| switch1name      | String  | Switch Name 1                       |
-| switch2name      | String  | Switch Name 2                       |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| switch1state     | Number  | Switch 1                            |            |
+| switch2state     | Number  | Switch 2                            |            |
+| switch1name      | String  | Switch Name 1                       |            |
+| switch2name      | String  | Switch Name 2                       |            |
 
 ###  Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch (<a name="090615-switch-xswitch03">090615.switch.xswitch03</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| switch1state     | Number  | Switch 1                            |
-| switch2state     | Number  | Switch 2                            |
-| switch3state     | Number  | Switch 3                            |
-| switch1name      | String  | Switch Name 1                       |
-| switch2name      | String  | Switch Name 2                       |
-| switch3name      | String  | Switch Name 3                       |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| switch1state     | Number  | Switch 1                            |            |
+| switch2state     | Number  | Switch 2                            |            |
+| switch3state     | Number  | Switch 3                            |            |
+| switch1name      | String  | Switch Name 1                       |            |
+| switch2name      | String  | Switch Name 2                       |            |
+| switch3name      | String  | Switch Name 3                       |            |
 
 ### Mi Water Purifier v1 (<a name="yunmi-waterpurifier-v1">yunmi.waterpurifier.v1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier v2 (<a name="yunmi-waterpurifier-v2">yunmi.waterpurifier.v2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier v3 (<a name="yunmi-waterpurifier-v3">yunmi.waterpurifier.v3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier v4 (<a name="yunmi-waterpurifier-v4">yunmi.waterpurifier.v4</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx2 (<a name="yunmi-waterpuri-lx2">yunmi.waterpuri.lx2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx3 (<a name="yunmi-waterpuri-lx3">yunmi.waterpuri.lx3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx4 (<a name="yunmi-waterpuri-lx4">yunmi.waterpuri.lx4</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx5 (<a name="yunmi-waterpuri-lx5">yunmi.waterpuri.lx5</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx6 (<a name="yunmi-waterpuri-lx6">yunmi.waterpuri.lx6</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx7 (<a name="yunmi-waterpuri-lx7">yunmi.waterpuri.lx7</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx8 (<a name="yunmi-waterpuri-lx8">yunmi.waterpuri.lx8</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx9 (<a name="yunmi-waterpuri-lx9">yunmi.waterpuri.lx9</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx10 (<a name="yunmi-waterpuri-lx10">yunmi.waterpuri.lx10</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx11 (<a name="yunmi-waterpuri-lx11">yunmi.waterpuri.lx11</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Mi Water Purifier lx12 (<a name="yunmi-waterpuri-lx12">yunmi.waterpuri.lx12</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| run_status       | Number  | Run Status                          |
-| temperature      | Number  | Temperature                         |
-| rinse            | Number  | Rinse                               |
-| tds_in           | Number  | TDS in                              |
-| tds_out          | Number  | TDS out                             |
-| f1_totalflow     | Number  | Filter 1 Total Flow                 |
-| f1_totaltime     | Number  | Filter 1 Total Time                 |
-| f1_usedflow      | Number  | Filter 1 Used Flow                  |
-| f1_usedtime      | Number  | Filter 1 Used Time                  |
-| f2_totalflow     | Number  | Filter 2 Total Flow                 |
-| f2_totaltime     | Number  | Filter 2 Total Time                 |
-| f2_usedflow      | Number  | Filter 2 Used Flow                  |
-| f2_usedtime      | Number  | Filter 2 Used Time                  |
-| f3_totalflow     | Number  | Filter 3 Total Flow                 |
-| f3_totaltime     | Number  | Filter 3 Total Time                 |
-| f3_usedflow      | Number  | Filter 3 Used Flow                  |
-| f3_usedtime      | Number  | Filter 3 Used Time                  |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| run_status       | Number  | Run Status                          |            |
+| temperature      | Number  | Temperature                         |            |
+| rinse            | Number  | Rinse                               |            |
+| tds_in           | Number  | TDS in                              |            |
+| tds_out          | Number  | TDS out                             |            |
+| f1_totalflow     | Number  | Filter 1 Total Flow                 |            |
+| f1_totaltime     | Number  | Filter 1 Total Time                 |            |
+| f1_usedflow      | Number  | Filter 1 Used Flow                  |            |
+| f1_usedtime      | Number  | Filter 1 Used Time                  |            |
+| f2_totalflow     | Number  | Filter 2 Total Flow                 |            |
+| f2_totaltime     | Number  | Filter 2 Total Time                 |            |
+| f2_usedflow      | Number  | Filter 2 Used Flow                  |            |
+| f2_usedtime      | Number  | Filter 2 Used Time                  |            |
+| f3_totalflow     | Number  | Filter 3 Total Flow                 |            |
+| f3_totaltime     | Number  | Filter 3 Total Time                 |            |
+| f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
+| f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
 ### Yeelight Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | String  | Color Mode                          |
-| toggle           | Switch  | toggle                              |
-| rgbColor         | Color   | RGB Color                           |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | String  | Color Mode                          |            |
+| toggle           | Switch  | toggle                              |            |
+| rgbColor         | Color   | RGB Color                           |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight Lamp (<a name="yeelink-light-bslamp2">yeelink.light.bslamp2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | String  | Color Mode                          |
-| toggle           | Switch  | toggle                              |
-| rgbColor         | Color   | RGB Color                           |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | String  | Color Mode                          |            |
+| toggle           | Switch  | toggle                              |            |
+| rgbColor         | Color   | RGB Color                           |            |
+| name             | String  | Name                                |            |
+
+### Yeelight Lamp (<a name="yeelink-light-bslamp3">yeelink.light.bslamp3</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | String  | Color Mode                          |            |
+| toggle           | Switch  | toggle                              |            |
+| rgbColor         | Color   | RGB Color                           |            |
+| name             | String  | Name                                |            |
+
+### Yeelight BadHeater (<a name="yeelink-bhf_light-v1">yeelink.bhf_light.v1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| bh_mode          | String  | Bath Heater mode                    |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| temperature      | Number  | Temperature                         |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight BadHeater (<a name="yeelink-bhf_light-v2">yeelink.bhf_light.v2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| bh_mode          | String  | Bath Heater mode                    |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| temperature      | Number  | Temperature                         |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling1">yeelink.light.ceiling1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v2 (<a name="yeelink-light-ceiling2">yeelink.light.ceiling2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v3 (<a name="yeelink-light-ceiling3">yeelink.light.ceiling3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) (<a name="yeelink-light-ceiling4">yeelink.light.ceiling4</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
-| customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| ambientBrightness | Number  | Ambient Brightness                  |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| ambientPower     | Switch  | Ambient Power                       |            |
+| ambientColor     | Color   | Ambient Color                       |            |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |            |
+| customScene      | String  | Set Scene                           |            |
+| ambientColorMode | Number  | Ambient Color Mode                  |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v4 (<a name="yeelink-light-ceiling4-ambi">yeelink.light.ceiling4.ambi</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
-| customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v5 (<a name="yeelink-light-ceiling5">yeelink.light.ceiling5</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v6 (<a name="yeelink-light-ceiling6">yeelink.light.ceiling6</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v7 (<a name="yeelink-light-ceiling7">yeelink.light.ceiling7</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v8 (<a name="yeelink-light-ceiling8">yeelink.light.ceiling8</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v9 (<a name="yeelink-light-ceiling9">yeelink.light.ceiling9</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Meteorite lamp (<a name="yeelink-light-ceiling10">yeelink.light.ceiling10</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| ambientBrightness | Number  | Ambient Brightness                  |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| ambientPower     | Switch  | Ambient Power                       |
-| ambientColor     | Color   | Ambient Color                       |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |
-| customScene      | String  | Set Scene                           |
-| ambientColorMode | Number  | Ambient Color Mode                  |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| ambientBrightness | Number  | Ambient Brightness                  |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| ambientPower     | Switch  | Ambient Power                       |            |
+| ambientColor     | Color   | Ambient Color                       |            |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |            |
+| customScene      | String  | Set Scene                           |            |
+| ambientColorMode | Number  | Ambient Color Mode                  |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v11 (<a name="yeelink-light-ceiling11">yeelink.light.ceiling11</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v12 (<a name="yeelink-light-ceiling12">yeelink.light.ceiling12</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v13 (<a name="yeelink-light-ceiling13">yeelink.light.ceiling13</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
-| customScene      | String  | Set Scene                           |
-| nightlightBrightness | Number  | Nightlight Brightness               |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling14">yeelink.light.ceiling14</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling15">yeelink.light.ceiling15</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling16">yeelink.light.ceiling16</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling17">yeelink.light.ceiling17</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling18">yeelink.light.ceiling18</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling19">yeelink.light.ceiling19</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling20">yeelink.light.ceiling20</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling21">yeelink.light.ceiling21</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling22">yeelink.light.ceiling22</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling23">yeelink.light.ceiling23</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling4-ambi">yeelink.light.ceiling4.ambi</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling10-ambi">yeelink.light.ceiling10.ambi</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling19-ambi">yeelink.light.ceiling19.ambi</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling20-ambi">yeelink.light.ceiling20.ambi</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight ct2 (<a name="yeelink-light-ct2">yeelink.light.ct2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight White Bulb (<a name="yeelink-light-mono1">yeelink.light.mono1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight White Bulb v2 (<a name="yeelink-light-mono2">yeelink.light.mono2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+
+### Yeelight White (<a name="yeelink-light-mono5">yeelink.light.mono5</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight (<a name="yeelink-light-lamp1">yeelink.light.lamp1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight (<a name="yeelink-light-lamp2">yeelink.light.lamp2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight (<a name="yeelink-light-lamp3">yeelink.light.lamp3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+
+### Yeelight (<a name="yeelink-light-lamp4">yeelink.light.lamp4</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+
+### Yeelight (<a name="yeelink-light-lamp5">yeelink.light.lamp5</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+
+### Yeelight (<a name="yeelink-light-lamp6">yeelink.light.lamp6</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+
+### Yeelight (<a name="yeelink-light-lamp7">yeelink.light.lamp7</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+
+### Yeelight (<a name="yeelink-light-lamp8">yeelink.light.lamp8</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+
+### Yeelight Panel (<a name="yeelink-light-panel1">yeelink.light.panel1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight Strip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | String  | Color Mode                          |
-| toggle           | Switch  | toggle                              |
-| rgbColor         | Color   | RGB Color                           |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | String  | Color Mode                          |            |
+| toggle           | Switch  | toggle                              |            |
+| rgbColor         | Color   | RGB Color                           |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight Strip (<a name="yeelink-light-strip2">yeelink.light.strip2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | String  | Color Mode                          |
-| toggle           | Switch  | toggle                              |
-| rgbColor         | Color   | RGB Color                           |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | String  | Color Mode                          |            |
+| toggle           | Switch  | toggle                              |            |
+| rgbColor         | Color   | RGB Color                           |            |
+| name             | String  | Name                                |            |
+
+### Yeelight Strip (<a name="yeelink-light-strip4">yeelink.light.strip4</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight (<a name="yeelink-light-virtual">yeelink.light.virtual</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | Number  | Color Mode                          |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight Color Bulb (<a name="yeelink-light-color1">yeelink.light.color1</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | String  | Color Mode                          |
-| toggle           | Switch  | toggle                              |
-| rgbColor         | Color   | RGB Color                           |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | String  | Color Mode                          |            |
+| toggle           | Switch  | toggle                              |            |
+| rgbColor         | Color   | RGB Color                           |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight Color Bulb YLDP06YL 10W (<a name="yeelink-light-color2">yeelink.light.color2</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | String  | Color Mode                          |
-| toggle           | Switch  | toggle                              |
-| rgbColor         | Color   | RGB Color                           |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | String  | Color Mode                          |            |
+| toggle           | Switch  | toggle                              |            |
+| rgbColor         | Color   | RGB Color                           |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight Color Bulb YLDP02YL 9W (<a name="yeelink-light-color3">yeelink.light.color3</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | String  | Color Mode                          |
-| toggle           | Switch  | toggle                              |
-| rgbColor         | Color   | RGB Color                           |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | String  | Color Mode                          |            |
+| toggle           | Switch  | toggle                              |            |
+| rgbColor         | Color   | RGB Color                           |            |
+| name             | String  | Name                                |            |
 
 ### Yeelight Bulb YLDP13YL (8,5W) (<a name="yeelink-light-color4">yeelink.light.color4</a>) Channels
 
-| Channel          | Type    | Description                         |
-|------------------|---------|-------------------------------------|
-| power            | Switch  | Power                               |
-| brightness       | Dimmer  | Brightness                          |
-| delayoff         | Number  | Shutdown Timer                      |
-| colorTemperature | Number  | Color Temperature                   |
-| colorMode        | String  | Color Mode                          |
-| toggle           | Switch  | toggle                              |
-| rgbColor         | Color   | RGB Color                           |
-| name             | String  | Name                                |
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | String  | Color Mode                          |            |
+| toggle           | Switch  | toggle                              |            |
+| rgbColor         | Color   | RGB Color                           |            |
+| name             | String  | Name                                |            |
+
+### Yeelight yilai ceiling (<a name="yilai-light-ceiling1">yilai.light.ceiling1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight yilai ceiling (<a name="yilai-light-ceiling2">yilai.light.ceiling2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight yilai ceiling (<a name="yilai-light-ceiling3">yilai.light.ceiling3</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 
 
@@ -4078,6 +4447,50 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
+### Yeelight Lamp (yeelink.light.bslamp3) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
+Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight BadHeater (yeelink.bhf_light.v1) item file lines
+
+note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_bhf_light "Yeelight BadHeater" <status>
+Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
+String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
+Dimmer brightness "Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:brightness"}
+Number delayoff "Shutdown Timer" (G_bhf_light) {channel="miio:basic:bhf_light:delayoff"}
+Number temperature "Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:temperature"}
+Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlightBrightness"}
+```
+
+### Yeelight BadHeater (yeelink.bhf_light.v2) item file lines
+
+note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_bhf_light "Yeelight BadHeater" <status>
+Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
+String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
+Dimmer brightness "Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:brightness"}
+Number delayoff "Shutdown Timer" (G_bhf_light) {channel="miio:basic:bhf_light:delayoff"}
+Number temperature "Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:temperature"}
+Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlightBrightness"}
+```
+
 ### Yeelight LED Ceiling Lamp (yeelink.light.ceiling1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -4155,16 +4568,11 @@ note: Autogenerated example. Replace the id (ceiling4) in the channel with your 
 Group G_ceiling4 "Yeelight LED Ceiling Lamp v4" <status>
 Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
 Dimmer brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:ambientBrightness"}
 Number delayoff "Shutdown Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
 Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
 Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
 String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
-Switch ambientPower "Ambient Power" (G_ceiling4) {channel="miio:basic:ceiling4:ambientPower"}
-Color ambientColor "Ambient Color" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorTemperature"}
 String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
 ```
 
@@ -4317,6 +4725,230 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling14) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling15) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling16) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling17) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling18) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling19) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling20) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling21) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling22) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Lamp (yeelink.light.ceiling23) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling4.ambi) item file lines
+
+note: Autogenerated example. Replace the id (ceiling4) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_ceiling4 "Yeelight LED Ceiling Ambi Lamp" <status>
+Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
+Dimmer brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
+Number delayoff "Shutdown Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
+Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
+Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
+String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
+String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling10.ambi) item file lines
+
+note: Autogenerated example. Replace the id (ceiling10) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_ceiling10 "Yeelight LED Ceiling Ambi Lamp" <status>
+Switch power "Power" (G_ceiling10) {channel="miio:basic:ceiling10:power"}
+Dimmer brightness "Brightness" (G_ceiling10) {channel="miio:basic:ceiling10:brightness"}
+Number delayoff "Shutdown Timer" (G_ceiling10) {channel="miio:basic:ceiling10:delayoff"}
+Number colorTemperature "Color Temperature" (G_ceiling10) {channel="miio:basic:ceiling10:colorTemperature"}
+Number colorMode "Color Mode" (G_ceiling10) {channel="miio:basic:ceiling10:colorMode"}
+String name "Name" (G_ceiling10) {channel="miio:basic:ceiling10:name"}
+String customScene "Set Scene" (G_ceiling10) {channel="miio:basic:ceiling10:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_ceiling10) {channel="miio:basic:ceiling10:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling19.ambi) item file lines
+
+note: Autogenerated example. Replace the id (ceiling19) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_ceiling19 "Yeelight LED Ceiling Ambi Lamp" <status>
+Switch power "Power" (G_ceiling19) {channel="miio:basic:ceiling19:power"}
+Dimmer brightness "Brightness" (G_ceiling19) {channel="miio:basic:ceiling19:brightness"}
+Number delayoff "Shutdown Timer" (G_ceiling19) {channel="miio:basic:ceiling19:delayoff"}
+Number colorTemperature "Color Temperature" (G_ceiling19) {channel="miio:basic:ceiling19:colorTemperature"}
+Number colorMode "Color Mode" (G_ceiling19) {channel="miio:basic:ceiling19:colorMode"}
+String name "Name" (G_ceiling19) {channel="miio:basic:ceiling19:name"}
+String customScene "Set Scene" (G_ceiling19) {channel="miio:basic:ceiling19:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_ceiling19) {channel="miio:basic:ceiling19:nightlightBrightness"}
+```
+
+### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling20.ambi) item file lines
+
+note: Autogenerated example. Replace the id (ceiling20) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_ceiling20 "Yeelight LED Ceiling Ambi Lamp" <status>
+Switch power "Power" (G_ceiling20) {channel="miio:basic:ceiling20:power"}
+Dimmer brightness "Brightness" (G_ceiling20) {channel="miio:basic:ceiling20:brightness"}
+Number delayoff "Shutdown Timer" (G_ceiling20) {channel="miio:basic:ceiling20:delayoff"}
+Number colorTemperature "Color Temperature" (G_ceiling20) {channel="miio:basic:ceiling20:colorTemperature"}
+Number colorMode "Color Mode" (G_ceiling20) {channel="miio:basic:ceiling20:colorMode"}
+String name "Name" (G_ceiling20) {channel="miio:basic:ceiling20:name"}
+String customScene "Set Scene" (G_ceiling20) {channel="miio:basic:ceiling20:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_ceiling20) {channel="miio:basic:ceiling20:nightlightBrightness"}
+```
+
 ### Yeelight ct2 (yeelink.light.ct2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -4351,6 +4983,20 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "Yeelight White Bulb v2" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight White (yeelink.light.mono5) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight White" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -4401,6 +5047,92 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
+### Yeelight (yeelink.light.lamp4) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight (yeelink.light.lamp5) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight (yeelink.light.lamp6) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight (yeelink.light.lamp7) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight (yeelink.light.lamp8) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight Panel (yeelink.light.panel1) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Panel" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
 ### Yeelight Strip (yeelink.light.strip1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -4430,6 +5162,20 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight Strip (yeelink.light.strip4) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Strip" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -4509,6 +5255,54 @@ String colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch toggle "toggle" (G_light) {channel="miio:basic:light:toggle"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight yilai ceiling (yilai.light.ceiling1) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight yilai ceiling" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight yilai ceiling (yilai.light.ceiling2) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight yilai ceiling" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight yilai ceiling (yilai.light.ceiling3) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight yilai ceiling" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 
