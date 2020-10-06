@@ -111,7 +111,9 @@ public class ReadmeHelper {
                 sw.write(minLengthString(model, 22));
                 sw.write(" | ");
                 sw.write(isSupported ? "No       " : "Yes      ");
-                sw.write(" | " + minLengthString(remark, 10) + " |\r\n");
+                sw.write(" | ");
+                sw.write(minLengthString(remark, 10));
+                sw.write(" |\r\n");
             }
         });
         return sw;
