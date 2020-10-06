@@ -19,6 +19,7 @@ import static org.eclipse.jetty.http.HttpMethod.PUT;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,8 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.*;
@@ -69,8 +68,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
 
     private @Nullable BoschHttpClient httpClient;
-
-    private @Nullable String subscriptionId;
 
     private BoschSHCBridgeConfiguration config;
 
@@ -128,8 +125,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 if (thingReachable) {
                     updateStatus(ThingStatus.ONLINE);
 
-                    // Start long polling to receive updates from Bosch SHC.
-                    this.longPoll(httpClient);
+                    // Subscribe to state updates.
+                    this.subscribe(httpClient);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             "@text/offline.not-reachable");
@@ -203,36 +200,27 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         Request httpRequest = httpClient.createRequest(url, POST, request);
         httpClient.sendRequest(httpRequest, SubscribeResult.class, response -> {
             logger.debug("Subscribe: Got subscription ID: {} {}", response.getResult(), response.getJsonrpc());
-            this.subscriptionId = response.getResult();
-            this.longPoll(httpClient);
+            String subscriptionId = response.getResult();
+            if (subscriptionId != null) {
+                scheduler.execute(() -> this.longPoll(httpClient, subscriptionId));
+            } else {
+                logger.error("Subscribe: Received no subscription ID, trying to subscribe again");
+                scheduler.execute(() -> this.subscribe(httpClient));
+            }
         });
     }
 
     /**
-     * Long polling
-     *
-     * TODO Do we need to protect against concurrent execution of this method via
-     * locks etc?
-     *
-     * If no subscription ID is present, this function will first try to acquire
-     * one. If that fails, it will attempt to retry after a small timeout.
-     *
-     * Return whether to retry getting a new subscription and restart polling.
+     * Start long polling the home controller. Once a long poll resolves, a new one is started.
      */
-    private void longPoll(BoschHttpClient httpClient) {
-        String subscriptionId = this.subscriptionId;
-        if (subscriptionId == null) {
-            logger.debug("longPoll: Subscription outdated, requesting .. ");
-            this.subscribe(httpClient);
-            return;
-        }
-
+    private void longPoll(BoschHttpClient httpClient, String subscriptionId) {
         logger.debug("Sending long poll request to Bosch");
 
         JsonRpcRequest requestContent = new JsonRpcRequest("2.0", "RE/longPoll", new String[] { subscriptionId, "20" });
         String url = httpClient.createUrl("remote/json-rpc");
         Request request = httpClient.createRequest(url, POST, requestContent);
         request.send(result -> {
+            int delayTillNextRun = 0;
             try {
                 Response response = result != null ? result.getResponse() : null;
                 if (result != null && !result.isFailed() && response instanceof ContentResponse) {
@@ -288,17 +276,14 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                             logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
 
                             if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-                                this.subscriptionId = null;
-                                logger.warn("Invalidating subscription ID!");
+                                logger.warn("Subscription became invalid, subscribing again");
+                                this.subscribe(httpClient);
+                                return;
                             }
                         }
 
-                        // Timeout before retry
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException sleepError) {
-                            logger.warn("Failed to sleep in longRun()");
-                        }
+                        // Wait some time before trying again.
+                        delayTillNextRun = 10;
                     }
                 } else if (result != null && result.isFailed()) {
                     logger.warn("Failed in onComplete");
@@ -308,16 +293,12 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             } catch (Exception e) {
                 logger.warn("Exception in long polling", e);
 
-                // Timeout before retry
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException sleepError) {
-                    logger.warn("Failed to sleep in longRun()");
-                }
+                // Wait some time before trying again.
+                delayTillNextRun = 5;
             }
 
-            // TODO Is this call okay? Should we use scheduler.execute instead?
-            this.longPoll(httpClient);
+            // Schedule next run.
+            scheduler.schedule(() -> this.longPoll(httpClient, subscriptionId), delayTillNextRun, TimeUnit.SECONDS);
         });
     }
 
