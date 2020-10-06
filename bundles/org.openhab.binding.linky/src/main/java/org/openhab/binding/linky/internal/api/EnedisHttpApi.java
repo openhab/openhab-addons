@@ -222,5 +222,4 @@ public class EnedisHttpApi {
     public Consumption getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
         return getMeasures(userId, prmId, from, to, "pmax");
     }
-
 }

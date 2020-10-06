@@ -38,5 +38,4 @@ public class PrmInfo {
     public String codeTitulaire;
     public boolean collecteActivee;
     public boolean multiTitulaire;
-
 }

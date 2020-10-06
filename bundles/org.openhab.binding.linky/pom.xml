@@ -13,8 +13,8 @@
   <artifactId>org.openhab.binding.linky</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Linky Binding</name>
-  
-  
+
+
   <dependencies>
     <dependency>
       <groupId>org.jsoup</groupId>

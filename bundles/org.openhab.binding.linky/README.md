@@ -46,15 +46,17 @@ Instructions given for Firefox :
 
 The information that is retrieved is available as these channels:
 
-| Channel ID        | Item Type     | Description                |
-|-------------------|---------------|----------------------------|
-| daily#yesterday   | Number:Energy | Yesterday energy usage     |
-| weekly#thisWeek   | Number:Energy | Current week energy usage  |
-| weekly#lastWeek   | Number:Energy | Last week energy usage     |
-| monthly#thisMonth | Number:Energy | Current month energy usage |
-| monthly#lastMonth | Number:Energy | Last month energy usage    |
-| yearly#thisYear   | Number:Energy | Current year energy usage  |
-| yearly#lastYear   | Number:Energy | Last year energy usage     |
+| Channel ID        | Item Type     | Description                  |
+|-------------------|---------------|------------------------------|
+| daily#yesterday   | Number:Energy | Yesterday energy usage       |
+| daily#power       | Number:Power  | Yesterday's peak power usage |
+| daily#timestamp   | DateTime      | Timestamp of the power peak  |
+| weekly#thisWeek   | Number:Energy | Current week energy usage    |
+| weekly#lastWeek   | Number:Energy | Last week energy usage       |
+| monthly#thisMonth | Number:Energy | Current month energy usage   |
+| monthly#lastMonth | Number:Energy | Last month energy usage      |
+| yearly#thisYear   | Number:Energy | Current year energy usage    |
+| yearly#lastYear   | Number:Energy | Last year energy usage       |
 
 ## Console Commands
 
@@ -84,10 +86,10 @@ Thing linky:linky:local "Compteur Linky" [ username="example@domaine.fr", passwo
 
 ```
 Number:Energy ConsoHier "Conso hier [%.0f %unit%]" <energy> { channel="linky:linky:local:daily#yesterday" }
-Number:Energy ConsoSemaineEnCours "Conso semaine en cours [%.0f %unit%]" <energy> { channel="linky:linky:local:weekly#thisWeek" }
+Number:Energy ConsoSemaineEnCours "Conso cette semaine [%.0f %unit%]" <energy> { channel="linky:linky:local:weekly#thisWeek" }
 Number:Energy ConsoSemaineDerniere "Conso semaine dernière [%.0f %unit%]" <energy> { channel="linky:linky:local:weekly#lastWeek" }
 Number:Energy ConsoMoisEnCours "Conso mois en cours [%.0f %unit%]" <energy> { channel="linky:linky:local:monthly#thisMonth" }
 Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:linky:local:monthly#lastMonth" }
-Number:Energy ConsoAnneeEnCours "Conso année en cours [%.0f %unit%]" <energy> { channel="linky:linky:local:yearly#thisYear" }
+Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:linky:local:yearly#thisYear" }
 Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:linky:local:yearly#lastYear" }
 ```

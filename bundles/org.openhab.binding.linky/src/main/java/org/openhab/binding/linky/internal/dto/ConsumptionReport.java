@@ -61,5 +61,4 @@ public class ConsumptionReport {
 
     @SerializedName("1")
     public FirstLevel firstLevel;
-
 }
