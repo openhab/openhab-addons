@@ -27,6 +27,7 @@ No other configuration is required.
 
 ### Authenticated
 
+The binding can access ZoneMinder with or without authentication.
 If ZoneMinder authentication is used, first make sure the ZoneMinder user has the **API Enabled** permission set in the ZoneMinder Users configuration.
 Then, enter the user name and password into the ZoneMinder Server thing configuration.
 
@@ -150,10 +151,6 @@ void triggerAlarmOff()
 
 The binding requires ZoneMinder version 1.34.0 or greater, and API version 2.0 or greater.
 The API must be enabled in the ZoneMinder configuration using the **OPT_USE_API** parameter.
-
-The binding can access ZoneMinder with or without authentication.
-If you have authentication enabled in ZoneMinder, set the **user** and **pass** 
-config paremeters in the *server* thing.
 
 ## Full Example
 

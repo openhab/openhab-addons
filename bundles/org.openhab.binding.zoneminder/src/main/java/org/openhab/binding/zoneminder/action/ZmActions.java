@@ -85,7 +85,7 @@ public class ZmActions implements ThingActions, IZmActions {
         logger.debug("ZmActions: Action 'TriggerAlarm' called");
         ZmMonitorHandler localHandler = handler;
         if (localHandler == null) {
-            logger.info("ZmActions: Action service ThingHandler is null!");
+            logger.warn("ZmActions: Action service ThingHandler is null!");
             return;
         }
         localHandler.actionTriggerAlarm(duration);
@@ -105,7 +105,7 @@ public class ZmActions implements ThingActions, IZmActions {
         logger.debug("ZmActions: Action 'TriggerAlarm' called");
         ZmMonitorHandler localHandler = handler;
         if (localHandler == null) {
-            logger.info("ZmActions: Action service ThingHandler is null!");
+            logger.warn("ZmActions: Action service ThingHandler is null!");
             return;
         }
         localHandler.actionTriggerAlarm();
@@ -124,7 +124,7 @@ public class ZmActions implements ThingActions, IZmActions {
         logger.debug("ZmActions: Action 'CancelAlarm' called");
         ZmMonitorHandler localHandler = handler;
         if (localHandler == null) {
-            logger.info("ZmActions: Action service ThingHandler is null!");
+            logger.warn("ZmActions: Action service ThingHandler is null!");
             return;
         }
         localHandler.actionCancelAlarm();

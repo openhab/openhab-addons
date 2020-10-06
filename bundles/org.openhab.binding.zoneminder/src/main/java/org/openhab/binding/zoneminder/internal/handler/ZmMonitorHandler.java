@@ -109,7 +109,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
         logger.debug("Monitor {}: Received command '{}' for channel '{}'", monitorId, command, channelUID.getId());
         ZmBridgeHandler localHandler = bridgeHandler;
         if (localHandler == null) {
-            logger.info("Monitor {}: Can't execute command because bridge handler is null", monitorId);
+            logger.warn("Monitor {}: Can't execute command because bridge handler is null", monitorId);
             return;
         }
         switch (channelUID.getId()) {
