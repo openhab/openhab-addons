@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+/**
+ * The {@link UserInfo} holds informations about energy delivery point
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+
 public class PrmInfo {
     public class Adresse {
         public Object adresseLigneUn;

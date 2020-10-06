@@ -17,6 +17,12 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * The {@link AuthData} holds authentication information
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+
 public class AuthData {
     public class AuthDataCallBack {
         public class NameValuePair {

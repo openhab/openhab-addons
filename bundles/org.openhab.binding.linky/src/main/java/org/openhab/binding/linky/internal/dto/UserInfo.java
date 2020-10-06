@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+/**
+ * The {@link UserInfo} holds informations about the user account
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+
 public class UserInfo {
     public class UserProperties {
         public String av2_interne_id;

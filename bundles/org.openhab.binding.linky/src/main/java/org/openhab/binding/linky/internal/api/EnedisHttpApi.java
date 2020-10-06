@@ -33,13 +33,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
+import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AuthData;
 import org.openhab.binding.linky.internal.dto.AuthResult;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UserInfo;
-import org.openhab.binding.linky.internal.handler.LinkyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

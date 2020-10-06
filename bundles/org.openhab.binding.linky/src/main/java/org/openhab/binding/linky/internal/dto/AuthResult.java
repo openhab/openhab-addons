@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+/**
+ * The {@link AuthResult} holds informations about the ongoing authentication process
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+
 public class AuthResult {
     public String successUrl;
     public String tokenId;
