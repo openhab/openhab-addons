@@ -24,14 +24,12 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -195,34 +193,20 @@ public class BoschHttpClient extends HttpClient {
      * Sends a request and expects a response of the specified type.
      * 
      * @param request Request to send
-     * @param callback Handler to receive response
      * @param TContent Type of expected response
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
      */
-    public <TContent> void sendRequest(Request request, Class<TContent> responseContentClass,
-            Consumer<TContent> callback) {
-        request.send(result -> {
-            if (result == null) {
-                logger.error("BoschHttpClient: Received no result on completion");
-                return;
-            }
+    public <TContent> TContent sendRequest(Request request, Class<TContent> responseContentClass)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        ContentResponse contentResponse = request.send();
 
-            if (result.isFailed()) {
-                logger.error("BoschHttpClient: Received failed result");
-                return;
-            }
+        logger.debug("BoschHttpClient: response complete: {} - return code: {}", contentResponse.getContentAsString(),
+                contentResponse.getStatus());
 
-            Response response = result.getResponse();
-            if (!(response instanceof ContentResponse)) {
-                logger.error("BoschHttpClient: Received response with no content");
-                return;
-            }
-            ContentResponse contentResponse = (ContentResponse) response;
+        TContent content = gson.fromJson(contentResponse.getContentAsString(), responseContentClass);
 
-            logger.debug("BoschHttpClient: response complete: {} - return code: {}",
-                    contentResponse.getContentAsString(), result.getResponse().getStatus());
-
-            TContent content = gson.fromJson(contentResponse.getContentAsString(), responseContentClass);
-            callback.accept(content);
-        });
+        return content;
     }
 }

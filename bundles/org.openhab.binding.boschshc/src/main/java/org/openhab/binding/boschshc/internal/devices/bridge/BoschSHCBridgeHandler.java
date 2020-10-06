@@ -126,7 +126,19 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
 
                     // Subscribe to state updates.
-                    this.subscribe(httpClient);
+                    try {
+                        String subscriptionId = this.subscribe(httpClient);
+                        if (subscriptionId != null) {
+                            scheduler.execute(() -> this.longPoll(httpClient, subscriptionId));
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                    "Subscription failed");
+                        }
+                    } catch (TimeoutException | ExecutionException e) {
+                        logger.error("Error on subscribe request", e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                "Subscription failed");
+                    }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             "@text/offline.not-reachable");
@@ -191,23 +203,25 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * Subscribe to events and store the subscription ID needed for long polling
      *
      * Method is synchronous.
+     * 
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * 
+     * @return Subscription id
      */
-    private void subscribe(BoschHttpClient httpClient) {
+    private String subscribe(BoschHttpClient httpClient)
+            throws InterruptedException, TimeoutException, ExecutionException {
         String url = httpClient.createUrl("remote/json-rpc");
         JsonRpcRequest request = new JsonRpcRequest("2.0", "RE/subscribe",
                 new String[] { "com/bosch/sh/remote/*", null });
         logger.debug("Subscribe: Sending request: {} - using httpClient {}", gson.toJson(request), httpClient);
         Request httpRequest = httpClient.createRequest(url, POST, request);
-        httpClient.sendRequest(httpRequest, SubscribeResult.class, response -> {
-            logger.debug("Subscribe: Got subscription ID: {} {}", response.getResult(), response.getJsonrpc());
-            String subscriptionId = response.getResult();
-            if (subscriptionId != null) {
-                scheduler.execute(() -> this.longPoll(httpClient, subscriptionId));
-            } else {
-                logger.error("Subscribe: Received no subscription ID, trying to subscribe again");
-                scheduler.execute(() -> this.subscribe(httpClient));
-            }
-        });
+        SubscribeResult response = httpClient.sendRequest(httpRequest, SubscribeResult.class);
+
+        logger.debug("Subscribe: Got subscription ID: {} {}", response.getResult(), response.getJsonrpc());
+        String subscriptionId = response.getResult();
+        return subscriptionId;
     }
 
     /**
