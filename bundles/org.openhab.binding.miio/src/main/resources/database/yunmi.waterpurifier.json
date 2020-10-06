@@ -167,6 +167,7 @@
 				"refresh": true,
 				"actions": []
 			}
-		]
+		],
+		"experimental": true
 	}
 }
