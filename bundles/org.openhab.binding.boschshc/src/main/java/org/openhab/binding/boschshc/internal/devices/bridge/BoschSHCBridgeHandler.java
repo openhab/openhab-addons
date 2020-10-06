@@ -196,52 +196,16 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * Method is synchronous.
      */
     private void subscribe(BoschHttpClient httpClient) {
-
-        class SubscribeListener extends BufferingResponseListener {
-            private BoschSHCBridgeHandler bridgeHandler;
-
-            public SubscribeListener(BoschSHCBridgeHandler bridgeHandler) {
-                super();
-                this.bridgeHandler = bridgeHandler;
-            }
-
-            @Override
-            public void onComplete(@Nullable Result result) {
-                if (result == null) {
-                    logger.error("Subscribe: Received no result on completion");
-                    return;
-                }
-
-                // Seems like this should yield something like:
-                // content: [ [ '{"result":"e71k823d0-16","jsonrpc":"2.0"}\n' ] ]
-
-                // The key can then be used later for longPoll like this:
-                // body: [ [
-                // '{"jsonrpc":"2.0","method":"RE/longPoll","params":["e71k823d0-16",20]}' ] ]
-
-                String content = getContentAsString();
-
-                logger.debug("Subscribe: response complete: {} - return code: {}", content,
-                        result.getResponse().getStatus());
-
-                SubscribeResult subscribeResult = gson.fromJson(content, SubscribeResult.class);
-                logger.debug("Subscribe: Got subscription ID: {} {}", subscribeResult.getResult(),
-                        subscribeResult.getJsonrpc());
-
-                bridgeHandler.subscriptionId = subscribeResult.getResult();
-                longPoll(httpClient);
-            }
-        }
-
         String url = httpClient.createUrl("remote/json-rpc");
         JsonRpcRequest request = new JsonRpcRequest("2.0", "RE/subscribe",
                 new String[] { "com/bosch/sh/remote/*", null });
-
-        // XXX Maybe we should use a different httpClient here, to avoid a race with
-        // concurrent use from other
-        // functions.
         logger.debug("Subscribe: Sending request: {} - using httpClient {}", gson.toJson(request), httpClient);
-        httpClient.createRequest(url, POST, request).send(new SubscribeListener(this));
+        Request httpRequest = httpClient.createRequest(url, POST, request);
+        httpClient.sendRequest(httpRequest, SubscribeResult.class, response -> {
+            logger.debug("Subscribe: Got subscription ID: {} {}", response.getResult(), response.getJsonrpc());
+            this.subscriptionId = response.getResult();
+            this.longPoll(httpClient);
+        });
     }
 
     /**

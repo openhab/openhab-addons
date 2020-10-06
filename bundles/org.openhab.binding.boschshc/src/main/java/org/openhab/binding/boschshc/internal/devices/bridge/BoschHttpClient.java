@@ -24,12 +24,15 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -187,5 +190,40 @@ public class BoschHttpClient extends HttpClient {
         request.timeout(10, TimeUnit.SECONDS);
 
         return request;
+    }
+
+    /**
+     * Sends a request and expects a response of the specified type.
+     * 
+     * @param request Request to send
+     * @param callback Handler to receive response
+     * @param TContent Type of expected response
+     */
+    public <TContent> void sendRequest(Request request, Class<TContent> responseContentClass,
+            Consumer<TContent> callback) {
+        request.send(result -> {
+            if (result == null) {
+                logger.error("BoschHttpClient: Received no result on completion");
+                return;
+            }
+
+            if (result.isFailed()) {
+                logger.error("BoschHttpClient: Received failed result");
+                return;
+            }
+
+            Response response = result.getResponse();
+            if (!(response instanceof ContentResponse)) {
+                logger.error("BoschHttpClient: Received response with no content");
+                return;
+            }
+            ContentResponse contentResponse = (ContentResponse) response;
+
+            logger.debug("BoschHttpClient: response complete: {} - return code: {}",
+                    contentResponse.getContentAsString(), result.getResponse().getStatus());
+
+            TContent content = gson.fromJson(contentResponse.getContentAsString(), responseContentClass);
+            callback.accept(content);
+        });
     }
 }
