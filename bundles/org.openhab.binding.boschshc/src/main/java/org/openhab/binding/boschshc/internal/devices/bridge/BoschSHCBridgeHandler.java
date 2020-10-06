@@ -19,6 +19,7 @@ import static org.eclipse.jetty.http.HttpMethod.PUT;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -72,6 +73,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private BoschSHCBridgeConfiguration config;
 
     private final Gson gson = new Gson();
+
+    /**
+     * Next long poll action.
+     */
+    private @Nullable ScheduledFuture<?> nextLongPoll;
 
     @Override
     public void initialize() {
@@ -129,7 +135,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     try {
                         String subscriptionId = this.subscribe(httpClient);
                         if (subscriptionId != null) {
-                            scheduler.execute(() -> this.longPoll(httpClient, subscriptionId));
+                            this.scheduleLongPoll(httpClient, subscriptionId, 0);
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                     "Subscription failed");
@@ -152,6 +158,16 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             }
 
         });
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        if (this.nextLongPoll != null) {
+            this.nextLongPoll.cancel(true);
+            this.nextLongPoll = null;
+        }
     }
 
     @Override
@@ -224,96 +240,103 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         return subscriptionId;
     }
 
+    private void scheduleLongPoll(BoschHttpClient httpClient, String subscriptionId, long delay) {
+        if (this.nextLongPoll != null) {
+            logger.debug("Canceling next long poll");
+            this.nextLongPoll.cancel(true);
+            this.nextLongPoll = null;
+        }
+        logger.debug("Scheduling next long poll in {} seconds", delay);
+        this.nextLongPoll = scheduler.schedule(() -> this.longPoll(this, httpClient, subscriptionId), delay,
+                TimeUnit.SECONDS);
+    }
+
     /**
      * Start long polling the home controller. Once a long poll resolves, a new one is started.
      */
-    private void longPoll(BoschHttpClient httpClient, String subscriptionId) {
+    private void longPoll(BoschSHCBridgeHandler bridgeHandler, BoschHttpClient httpClient, String subscriptionId) {
         logger.debug("Sending long poll request to Bosch");
 
         JsonRpcRequest requestContent = new JsonRpcRequest("2.0", "RE/longPoll", new String[] { subscriptionId, "20" });
         String url = httpClient.createUrl("remote/json-rpc");
         Request request = httpClient.createRequest(url, POST, requestContent);
-        request.send(result -> {
-            int delayTillNextRun = 0;
-            try {
-                Response response = result != null ? result.getResponse() : null;
-                if (result != null && !result.isFailed() && response instanceof ContentResponse) {
-                    ContentResponse contentResponse = (ContentResponse) response;
-                    String content = contentResponse.getContentAsString();
 
-                    logger.debug("Response complete: {} - return code: {}", content, result.getResponse().getStatus());
+        long delayTillNextRun = 0;
+        try {
+            ContentResponse contentResponse = request.send();
+            String content = contentResponse.getContentAsString();
 
-                    LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
-                    if (parsed.result != null) {
-                        for (DeviceStatusUpdate update : parsed.result) {
-                            if (update != null && update.state != null) {
-                                logger.debug("Got update for {}", update.deviceId);
+            logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
-                                boolean handled = false;
+            LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
+            if (parsed.result != null) {
+                bridgeHandler.handleLongPollResult(parsed);
+            } else {
+                logger.warn("Could not parse in onComplete: {}", content);
 
-                                Bridge bridge = this.getThing();
-                                for (Thing childThing : bridge.getThings()) {
-                                    // All children of this should implement BoschSHCHandler
-                                    ThingHandler baseHandler = childThing.getHandler();
-                                    if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
-                                        BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
-                                        String deviceId = handler.getBoschID();
+                // Check if we got a proper result from the SHC
+                LongPollError parsedError = gson.fromJson(content, LongPollError.class);
 
-                                        handled = true;
-                                        logger.debug("Registered device: {} - looking for {}", deviceId,
-                                                update.deviceId);
+                if (parsedError.error != null) {
+                    logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
 
-                                        if (deviceId != null && update.deviceId.equals(deviceId)) {
-                                            logger.debug("Found child: {} - calling processUpdate with {}", handler,
-                                                    update.state);
-                                            handler.processUpdate(update.id, update.state);
-                                        }
-                                    } else {
-                                        logger.warn(
-                                                "longPoll: child handler for {} does not implement Bosch SHC handler",
-                                                baseHandler);
-                                    }
-                                }
-
-                                if (!handled) {
-                                    logger.debug("Could not find a thing for device ID: {}", update.deviceId);
-                                }
-                            }
-                        }
-                    } else {
-                        logger.warn("Could not parse in onComplete: {}", content);
-
-                        // Check if we got a proper result from the SHC
-                        LongPollError parsedError = gson.fromJson(content, LongPollError.class);
-
-                        if (parsedError.error != null) {
-                            logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
-
-                            if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-                                logger.warn("Subscription became invalid, subscribing again");
-                                this.subscribe(httpClient);
-                                return;
-                            }
-                        }
-
-                        // Wait some time before trying again.
-                        delayTillNextRun = 10;
+                    if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
+                        logger.warn("Subscription became invalid, subscribing again");
+                        bridgeHandler.subscribe(httpClient);
+                        return;
                     }
-                } else if (result != null && result.isFailed()) {
-                    logger.warn("Failed in onComplete");
-                    logger.trace("Response failed: {}, failed={}, response={}", result, result.isFailed(), response);
                 }
-                // else not failed, but no response
-            } catch (Exception e) {
-                logger.warn("Exception in long polling", e);
 
                 // Wait some time before trying again.
-                delayTillNextRun = 5;
+                delayTillNextRun = 10;
             }
+        } catch (TimeoutException e) {
+            // Timeout is expected if no status updates from devices arrive.
+        } catch (InterruptedException | ExecutionException e) {
+            logger.warn("Exception in long polling", e);
 
-            // Schedule next run.
-            scheduler.schedule(() -> this.longPoll(httpClient, subscriptionId), delayTillNextRun, TimeUnit.SECONDS);
-        });
+            // Wait some time before trying again.
+            delayTillNextRun = 5;
+        } catch (Exception e) {
+            logger.error("Unexpected exception in long polling", e);
+        }
+
+        // Schedule next run.
+        bridgeHandler.scheduleLongPoll(httpClient, subscriptionId, delayTillNextRun);
+    }
+
+    private void handleLongPollResult(LongPollResult result) {
+        for (DeviceStatusUpdate update : result.result) {
+            if (update != null && update.state != null) {
+                logger.debug("Got update for {}", update.deviceId);
+
+                boolean handled = false;
+
+                Bridge bridge = this.getThing();
+                for (Thing childThing : bridge.getThings()) {
+                    // All children of this should implement BoschSHCHandler
+                    ThingHandler baseHandler = childThing.getHandler();
+                    if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
+                        BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
+                        String deviceId = handler.getBoschID();
+
+                        handled = true;
+                        logger.debug("Registered device: {} - looking for {}", deviceId, update.deviceId);
+
+                        if (deviceId != null && update.deviceId.equals(deviceId)) {
+                            logger.debug("Found child: {} - calling processUpdate with {}", handler, update.state);
+                            handler.processUpdate(update.id, update.state);
+                        }
+                    } else {
+                        logger.warn("longPoll: child handler for {} does not implement Bosch SHC handler", baseHandler);
+                    }
+                }
+
+                if (!handled) {
+                    logger.debug("Could not find a thing for device ID: {}", update.deviceId);
+                }
+            }
+        }
     }
 
     /**
