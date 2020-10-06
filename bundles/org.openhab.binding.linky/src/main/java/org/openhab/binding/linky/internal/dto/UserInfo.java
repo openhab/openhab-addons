@@ -10,17 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal;
+package org.openhab.binding.linky.internal.dto;
 
-/**
- * The {@link LinkyConfiguration} is the class used to match the
- * thing configuration.
- *
- * @author Gaël L'hopital - Initial contribution
- */
-public class LinkyConfiguration {
-    public static final String INTERNAL_AUTH_ID = "internalAuthId";
+public class UserInfo {
+    public class UserProperties {
+        public String av2_interne_id;
+        public String av2_prenom;
+        public String av2_mail;
+        public String av2_nom;
+        public String av2_infos_personnalisees;
+    }
+
     public String username;
-    public String password;
-    public String internalAuthId;
+    public boolean connected;
+    public UserProperties userProperties;
 }

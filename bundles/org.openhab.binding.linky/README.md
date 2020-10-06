@@ -23,10 +23,24 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has the following configuration parameters:
 
-| Parameter       | Description                    |
-|-----------------|--------------------------------|
-| username        | Your Enedis platform username. |
-| password        | Your Enedis platform password. |
+| Parameter      | Description                    |
+|----------------|--------------------------------|
+| username       | Your Enedis platform username. |
+| password       | Your Enedis platform password. |
+| internalAuthId | The internal authID            |
+
+This version is now compatible of new API of enedis (deployed from june 2020).
+To avoid the captcha login, it is necessary to log before on a classical browser (e.g Chrome, Firefox) and to retrieve the user cookies (internalAuthId).
+
+Instructions given for Firefox : 
+
+1. Go to https://mon-compte-client.enedis.fr/.
+2. Select "Particulier" in the drop down list and click on the "Connexion" button.
+3. You'll be redirected to a page where you'll have to enter you Enedis account email address and check the "Je ne suis pas un robot" checkbox.
+4. Clic on suivant.
+5. In the login page, prefilled with your mail address, enter your Enedis account password and click on "Connexion à Espace Client Enedis".
+6. You will be directed to your Enedis account environment. Get back to previous page in you browser.
+7. Open the developper tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You should see an entry named "internalAuthId", copy this value in your Openhab configuration.
 
 ## Channels
 
