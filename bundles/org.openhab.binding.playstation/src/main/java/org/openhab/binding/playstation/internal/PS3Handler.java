@@ -22,6 +22,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -130,7 +131,7 @@ public class PS3Handler extends BaseThingHandler {
             DatagramPacket wakePacket = new DatagramPacket(magicPacket, magicPacket.length, bcAddress,
                     DEFAULT_PS3_WAKE_ON_LAN_PORT);
             // send discover
-            byte[] discover = "SRCH".getBytes();
+            byte[] discover = "SRCH".getBytes(StandardCharsets.US_ASCII);
             DatagramPacket srchPacket = new DatagramPacket(discover, discover.length, bcAddress,
                     DEFAULT_PS3_WAKE_ON_LAN_PORT);
             logger.debug("Search message: '{}'", discover);

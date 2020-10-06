@@ -47,6 +47,7 @@ public class PS4Crypto {
 
     private final Logger logger = LoggerFactory.getLogger(PS4Crypto.class);
 
+    // Public key is from ps4-waker (https://github.com/dhleong/ps4-waker)
     private static final String PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----"
             + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxfAO/MDk5ovZpp7xlG9J"
             + "JKc4Sg4ztAz+BbOt6Gbhub02tF9bryklpTIyzM0v817pwQ3TCoigpxEcWdTykhDL"
@@ -95,7 +96,7 @@ public class PS4Crypto {
         final int buffSize = rBuffer.remaining();
         final int size = rBuffer.getInt();
         if (size > buffSize || size < 12) {
-            logger.info("Response size ({}) not good, buffer size ({}).", size, buffSize);
+            logger.warn("Response size ({}) not good, buffer size ({}).", size, buffSize);
             return result;
         }
         int cmdValue = rBuffer.getInt();
@@ -112,7 +113,7 @@ public class PS4Crypto {
                 result = 0;
             }
         } else {
-            logger.info("Unknown resp-cmd, size:{}, command:{}, status:{}, data:{}.", size, cmdValue, statusValue,
+            logger.debug("Unknown resp-cmd, size:{}, command:{}, status:{}, data:{}.", size, cmdValue, statusValue,
                     respBuff);
         }
         return result;

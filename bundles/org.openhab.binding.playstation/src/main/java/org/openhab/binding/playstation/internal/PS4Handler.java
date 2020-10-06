@@ -553,7 +553,7 @@ public class PS4Handler extends BaseThingHandler {
                     int httpStatus = rBuffer.getInt(8);
                     int port = rBuffer.getInt(12);
                     if (httpStatus != 0 && port != 0) {
-                        secondScrStr = "http://" + config.ipAddress + ":" + Integer.toString(port);
+                        secondScrStr = "http://" + config.ipAddress + ":" + port;
                     }
                     updateState(CHANNEL_2ND_SCREEN, StringType.valueOf(secondScrStr));
                     break;

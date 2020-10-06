@@ -142,7 +142,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         InetAddress localAddress = getIPv4Adress();
 
         if (localAddress == null || bcAddress == null) {
-            logger.info("No IP/Broadcast address found. Make sure OpenHab is configured!");
+            logger.warn("No IP/Broadcast address found. Make sure OpenHab is configured!");
             return;
         }
         try (DatagramSocket socket = new DatagramSocket(0, getIPv4Adress())) {
