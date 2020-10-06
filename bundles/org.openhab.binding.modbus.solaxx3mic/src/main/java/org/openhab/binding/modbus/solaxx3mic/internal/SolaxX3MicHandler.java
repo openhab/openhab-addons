@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.solaxx3mic.internal;
 
-import static org.openhab.binding.modbus.solaxx3mic.internal.modbus.SolaxX3MicBindingConstants.*;
+import static org.openhab.binding.modbus.solaxx3mic.internal.SolaxX3MicBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,13 +32,13 @@ import org.slf4j.LoggerFactory;
  * @author Stanislaw Wawszczak - Initial contribution
  */
 @NonNullByDefault
-public class modbus.SolaxX3MicHandler extends BaseThingHandler {
+public class SolaxX3MicHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(modbus.SolaxX3MicHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SolaxX3MicHandler.class);
 
-    private @Nullable modbus.SolaxX3MicConfiguration config;
+    private @Nullable SolaxX3MicConfiguration config;
 
-    public modbus.SolaxX3MicHandler(Thing thing) {
+    public SolaxX3MicHandler(Thing thing) {
         super(thing);
     }
 
@@ -60,7 +60,7 @@ public class modbus.SolaxX3MicHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(modbus.SolaxX3MicConfiguration.class);
+        config = getConfigAs(SolaxX3MicConfiguration.class);
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly. Also, before leaving this method a thing

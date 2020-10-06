@@ -17,7 +17,7 @@ package org.openhab.binding.modbus.solaxx3mic.internal;
  *
  * @author Stanislaw Wawszczak - Initial contribution
  */
-public class modbus.SolaxX3MicConfiguration {
+public class SolaxX3MicConfiguration {
 
     /**
      * Sample configuration parameter. Replace with your own.

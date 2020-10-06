@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Stanislaw Wawszczak - Initial contribution
  */
 @NonNullByDefault
-public class modbus.SolaxX3MicBindingConstants {
+public class SolaxX3MicBindingConstants {
 
     private static final String BINDING_ID = "modbus.solaxx3mic";
 

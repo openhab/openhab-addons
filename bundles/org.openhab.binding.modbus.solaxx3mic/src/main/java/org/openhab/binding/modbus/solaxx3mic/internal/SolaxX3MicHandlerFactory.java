@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.modbus.solaxx3mic.internal;
 
-import static org.openhab.binding.modbus.solaxx3mic.internal.modbus.SolaxX3MicBindingConstants.*;
+import static org.openhab.binding.modbus.solaxx3mic.internal.SolaxX3MicBindingConstants.*;
 
-import java.util.Collections;
+//import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.modbus.solaxx3mic", service = ThingHandlerFactory.class)
-public class modbus.SolaxX3MicHandlerFactory extends BaseThingHandlerFactory {
+public class SolaxX3MicHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
 
@@ -48,7 +48,7 @@ public class modbus.SolaxX3MicHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new modbus.SolaxX3MicHandler(thing);
+            return new SolaxX3MicHandler(thing);
         }
 
         return null;
