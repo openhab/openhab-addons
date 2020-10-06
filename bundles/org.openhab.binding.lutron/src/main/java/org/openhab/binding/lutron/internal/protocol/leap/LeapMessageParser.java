@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ExceptionDetail;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Header;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroupStatus;
@@ -115,7 +116,27 @@ public class LeapMessageParser {
      * @param message LEAP message
      */
     private void handleExceptionResponse(JsonObject message) {
-        // TODO
+        String detailMessage = "";
+
+        try {
+            JsonObject header = message.get("Header").getAsJsonObject();
+            Header headerObj = gson.fromJson(header, Header.class);
+
+            if (MessageBodyType.ExceptionDetail.toString().equalsIgnoreCase(headerObj.messageBodyType)
+                    && message.has("Body")) {
+                JsonObject body = message.get("Body").getAsJsonObject();
+                ExceptionDetail exceptionDetail = gson.fromJson(body, ExceptionDetail.class);
+                if (exceptionDetail != null) {
+                    detailMessage = exceptionDetail.message;
+                }
+            }
+            logger.debug("Exception response received. Status: {} URL: {} Message: {}", headerObj.statusCode,
+                    headerObj.url, detailMessage);
+
+        } catch (JsonParseException | IllegalStateException e) {
+            logger.debug("Exception response received. Error parsing exception message: {}", e.getMessage());
+            return;
+        }
     }
 
     /**

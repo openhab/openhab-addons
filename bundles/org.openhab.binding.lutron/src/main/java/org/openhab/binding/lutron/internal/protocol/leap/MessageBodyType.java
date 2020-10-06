@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum MessageBodyType {
+    ExceptionDetail("ExceptionDetail"),
     MultipleAffectedZoneDefinition("MultipleAffectedZoneDefinition"),
     MultipleAreaDefinition("MultipleAreaDefinition"),
     MultipleButtonDefinition("MultipleButtonDefinition"),

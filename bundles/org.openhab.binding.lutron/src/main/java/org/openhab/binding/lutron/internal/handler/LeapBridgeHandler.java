@@ -270,8 +270,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid port number");
             return;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error opening SSL connection"); // TODO
-                                                                                                                      // getMesssage()
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error opening SSL connection. Check log.");
             logger.info("Error opening SSL connection: {}", e.getMessage());
             disconnect();
             scheduleConnectRetry(reconnectInterval); // Possibly a temporary problem. Try again later.

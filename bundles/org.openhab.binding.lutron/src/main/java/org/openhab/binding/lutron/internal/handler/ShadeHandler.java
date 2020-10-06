@@ -103,17 +103,20 @@ public class ShadeHandler extends LutronHandler {
             if (command instanceof PercentType) {
                 int level = ((PercentType) command).intValue();
                 output(TargetType.SHADE, OutputCommand.ACTION_ZONELEVEL, level, null, null);
-                // TODO: update channel state here?
+                if (leap) {
+                    // LEAP may not send back a position update
+                    updateState(CHANNEL_SHADELEVEL, new PercentType(level));
+                }
             } else if (command.equals(UpDownType.UP)) {
                 output(TargetType.SHADE, OutputCommand.ACTION_STARTRAISING, null, null, null);
                 if (leap) {
-                    // LEAP won't send a position update
+                    // LEAP won't send a position update when fully open
                     updateState(CHANNEL_SHADELEVEL, new PercentType(100));
                 }
             } else if (command.equals(UpDownType.DOWN)) {
                 output(TargetType.SHADE, OutputCommand.ACTION_STARTLOWERING, null, null, null);
                 if (leap) {
-                    // LEAP won't send a position update
+                    // LEAP won't send a position update when fully closed
                     updateState(CHANNEL_SHADELEVEL, new PercentType(0));
                 }
             } else if (command.equals(StopMoveType.STOP)) {
