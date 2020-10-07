@@ -237,7 +237,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_BACKYARD, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BACKYARD);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(handler.getThing().getUID())
                 .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
@@ -250,7 +250,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_BOW, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BOW);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(handler.getThing().getUID())
                 .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
@@ -263,7 +263,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_CHLORINATOR, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.CHLORINATOR);
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
@@ -278,7 +278,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_COLORLOGIC, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.COLORLOGIC);
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
@@ -294,7 +294,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_FILTER, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.FILTER);
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
@@ -313,7 +313,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_HEATER, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.HEATER);
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
@@ -329,7 +329,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_PUMP, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.PUMP);
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
@@ -348,7 +348,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_RELAY, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.RELAY);
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
@@ -363,7 +363,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_SENSOR, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.SENSOR);
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
@@ -378,7 +378,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_VIRTUALHEATER, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemID);
+        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, String.valueOf(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.VIRTUALHEATER.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);

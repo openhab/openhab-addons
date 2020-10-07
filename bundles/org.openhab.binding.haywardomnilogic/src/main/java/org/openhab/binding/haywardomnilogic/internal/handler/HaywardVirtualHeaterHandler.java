@@ -82,7 +82,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
 
             if (command == OnOffType.ON) {
                 cmdString = "True";
-            } else {
+            } else if (command == OnOffType.OFF) {
                 cmdString = "False";
             }
 
