@@ -110,8 +110,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private @Nullable Thread senderThread;
     private @Nullable Thread readerThread;
 
-    private @Nullable ScheduledFuture<?> keepAlive;
-    private @Nullable ScheduledFuture<?> keepAliveReconnect;
+    private @Nullable ScheduledFuture<?> keepAliveJob;
+    private @Nullable ScheduledFuture<?> keepAliveReconnectJob;
     private @Nullable ScheduledFuture<?> connectRetryJob;
     private final Object keepAliveReconnectLock = new Object();
 
@@ -223,7 +223,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             @Override
             public void checkClientTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType) {
                 logger.debug("Assuming client certificate is valid");
-                if (chain != null) {
+                if (chain != null && logger.isTraceEnabled()) {
                     for (int cert = 0; cert < chain.length; cert++) {
                         logger.trace("Subject DN: {}", chain[cert].getSubjectDN());
                         logger.trace("Issuer DN: {}", chain[cert].getIssuerDN());
@@ -235,7 +235,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             @Override
             public void checkServerTrusted(final X509Certificate @Nullable [] chain, final @Nullable String authType) {
                 logger.debug("Assuming server certificate is valid");
-                if (chain != null) {
+                if (chain != null && logger.isTraceEnabled()) {
                     for (int cert = 0; cert < chain.length; cert++) {
                         logger.trace("Subject DN: {}", chain[cert].getSubjectDN());
                         logger.trace("Issuer DN: {}", chain[cert].getIssuerDN());
@@ -294,8 +294,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         queryDiscoveryData();
         sendCommand(new LeapCommand(Request.subscribeOccupancyGroupStatus()));
 
-        logger.debug("Starting keepAlive job with interval {}", heartbeatInterval);
-        keepAlive = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
+        logger.debug("Starting keepalive job with interval {}", heartbeatInterval);
+        keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
                 TimeUnit.MINUTES);
     }
 
@@ -319,14 +319,16 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         Thread senderThread = this.senderThread;
         Thread readerThread = this.readerThread;
 
+        ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
         if (connectRetryJob != null) {
             connectRetryJob.cancel(true);
         }
-        if (keepAlive != null) {
-            keepAlive.cancel(true);
+        ScheduledFuture<?> keepAliveJob = this.keepAliveJob;
+        if (keepAliveJob != null) {
+            keepAliveJob.cancel(true);
         }
 
-        // May be called from keepAliveReconnect thread, so call cancel with false
+        // May be called from keepAliveReconnectJob thread, so call cancel with false
         reconnectTaskCancel(false);
 
         if (senderThread != null && senderThread.isAlive()) {
@@ -335,14 +337,16 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         if (readerThread != null && readerThread.isAlive()) {
             readerThread.interrupt();
         }
+        SSLSocket sslsocket = this.sslsocket;
         if (sslsocket != null) {
             try {
                 sslsocket.close();
             } catch (IOException e) {
                 logger.debug("Error closing SSL socket: {}", e.getMessage());
             }
-            sslsocket = null;
+            this.sslsocket = null;
         }
+        BufferedReader reader = this.reader;
         if (reader != null) {
             try {
                 reader.close();
@@ -350,6 +354,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                 logger.debug("Error closing reader: {}", e.getMessage());
             }
         }
+        BufferedWriter writer = this.writer;
         if (writer != null) {
             try {
                 writer.close();
@@ -701,17 +706,17 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
     private void reconnectTaskSchedule() {
         synchronized (keepAliveReconnectLock) {
-            keepAliveReconnect = scheduler.schedule(this::reconnect, KEEPALIVE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            keepAliveReconnectJob = scheduler.schedule(this::reconnect, KEEPALIVE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
     }
 
     private void reconnectTaskCancel(boolean interrupt) {
         synchronized (keepAliveReconnectLock) {
-            ScheduledFuture<?> keepAliveReconnect = this.keepAliveReconnect;
-            if (keepAliveReconnect != null) {
+            ScheduledFuture<?> keepAliveReconnectJob = this.keepAliveReconnectJob;
+            if (keepAliveReconnectJob != null) {
                 logger.trace("Canceling scheduled reconnect job.");
-                keepAliveReconnect.cancel(interrupt);
-                this.keepAliveReconnect = null;
+                keepAliveReconnectJob.cancel(interrupt);
+                this.keepAliveReconnectJob = null;
             }
         }
     }

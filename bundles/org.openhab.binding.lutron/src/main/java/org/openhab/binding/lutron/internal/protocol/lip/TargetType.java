@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lutron.internal.protocol.lip;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Target device type enum. Used to annotate LutronCommand objects so the LEAP bridge can translate them.
  *
  * @author Bob Adair - Initial contribution
  */
+@NonNullByDefault
 public enum TargetType {
     BLIND,
     BRIDGE,
