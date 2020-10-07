@@ -3,14 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="kostalinverterpiko1020">
+	<thing-type id="piko1020">
 		<label>KOSTAL PIKO 10-20</label>
 		<description>Thing for the KOSTAL PIKO 10-20</description>
 		<category>Inverter</category>
 		<channels>
 			<channel typeId="device-local-grid-output-power" id="gridOutputPower"/>
-			<channel typeId="statistic-yield-day" id="yieldDay"/>
-			<channel typeId="statistic-yield-total" id="yieldTotal"/>
+			<channel typeId="statistic-yield-day-second-gen" id="yieldDay"/>
+			<channel typeId="statistic-yield-total-second-gen" id="yieldTotal"/>
 			<channel typeId="device-local-operating-status" id="operatingStatus"/>
 			<channel typeId="device-local-grid-voltage-l1" id="gridVoltageL1"/>
 			<channel typeId="device-local-grid-current-l1" id="gridCurrentL1"/>
@@ -56,7 +56,7 @@
 			<channel typeId="statistic-own-cons-rate-total" id="ownConsRateTotal"/>
 			<channel typeId="statistic-autonomy-degree-total" id="autonomyDegreeTotal"/>
 
-			<channel typeId="device-local-battery-voltage" id="batteryVoltage"/>
+			<channel typeId="device-local-battery-voltage-second-gen" id="batteryVoltage"/>
 			<channel typeId="device-local-bat-state-of-charge" id="batStateOfCharge"/>
 			<channel typeId="device-local-self-consumption" id="selfConsumption"/>
 

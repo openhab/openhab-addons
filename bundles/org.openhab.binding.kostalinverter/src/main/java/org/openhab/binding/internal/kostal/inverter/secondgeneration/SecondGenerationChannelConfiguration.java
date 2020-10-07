@@ -57,9 +57,8 @@ public class SecondGenerationChannelConfiguration {
         channelConfiguration
                 .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_YIELD_TOTAL,
                         "td", 10, SmartHomeUnits.KILOWATT_HOUR, "251658753"));
-        channelConfiguration
-                .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_OPERATING_STATUS,
-                        "td", 13, SmartHomeUnits.PERCENT, "16780032"));
+        channelConfiguration.add(new SecondGenerationChannelConfiguration(
+                SecondGenerationBindingConstants.CHANNEL_OPERATING_STATUS, "td", 13, SmartHomeUnits.ONE, "16780032"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_GRIDVOLTAGEL1, "td", 16, SmartHomeUnits.VOLT, "67109378"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
@@ -154,13 +153,13 @@ public class SecondGenerationChannelConfiguration {
         channelConfigurationExt.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_CURRENTDIR, "td", 121, SmartHomeUnits.AMPERE, "33556230"));
         channelConfigurationExt.add(new SecondGenerationChannelConfiguration(
-                SecondGenerationBindingConstants.CHANNEL_CHARGECYCLES, "td", 124, SmartHomeUnits.PERCENT, "33556228"));
+                SecondGenerationBindingConstants.CHANNEL_CHARGECYCLES, "td", 124, SmartHomeUnits.ONE, "33556228"));
         channelConfigurationExt.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_BATTERYTEMPERATURE, "td", 127, SIUnits.CELSIUS, "33556227"));
         channelConfigurationExt.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_LOGINTERVAL, "td", 130, SmartHomeUnits.MINUTE, "150995968"));
         channelConfigurationExt.add(new SecondGenerationChannelConfiguration(
-                SecondGenerationBindingConstants.CHANNEL_S0INPULSECNT, "td", 133, SmartHomeUnits.PERCENT, "184549632"));
+                SecondGenerationBindingConstants.CHANNEL_S0INPULSECNT, "td", 133, SmartHomeUnits.ONE, "184549632"));
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_OWNCONSRATE_TOTAL,
                         "td", 136, SmartHomeUnits.PERCENT, "251659280"));

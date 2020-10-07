@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:kostalpiko1020_config">
 		<parameter name="url" type="text" required="true">
-			<label> Inverter Url</label>
+			<label> Inverter URL</label>
 			<description>URL to inverter.</description>
 			<context>url</context>
 		</parameter>
