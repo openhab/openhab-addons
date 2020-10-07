@@ -10,9 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json;
+package org.openhab.binding.airvisualnode.internal.json.airvisual;
 
 import java.util.List;
+
+import org.openhab.binding.airvisualnode.internal.json.PowerSavingTime;
+import org.openhab.binding.airvisualnode.internal.json.PowerSavingTimeSlot;
 
 import com.google.gson.annotations.SerializedName;
 
