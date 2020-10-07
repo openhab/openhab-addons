@@ -90,9 +90,14 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     }
 
     private void updateAlarmThings() {
+        logger.debug("Updating overall alarm's statuses...");
         @Nullable
         List<JablotronDiscoveredService> services = discoverServices();
         if (services != null) {
+            Bridge localBridge = getThing();
+            if (localBridge != null && ThingStatus.ONLINE != localBridge.getStatus()) {
+                updateStatus(ThingStatus.ONLINE);
+            }
             for (JablotronDiscoveredService service : services) {
                 updateAlarmThing(service);
             }
@@ -150,12 +155,13 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable <T> T sendMessage(String url, String urlParameters, Class<T> classOfT, String encoding,
             boolean relogin) {
+        String line = "";
         try {
             ContentResponse resp = createRequest(url).content(new StringContentProvider(urlParameters), encoding)
                     .send();
 
             logger.trace("Request: {} with data: {}", url, urlParameters);
-            String line = resp.getContentAsString();
+            line = resp.getContentAsString();
             logger.trace("Response: {}", line);
             return gson.fromJson(line, classOfT);
         } catch (TimeoutException e) {
@@ -166,6 +172,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
                     "Interrupt during calling url: " + url);
             Thread.currentThread().interrupt();
         } catch (JsonSyntaxException e) {
+            logger.debug("Invalid JSON received: {}", line);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Syntax error during calling url: " + url);
         } catch (ExecutionException e) {

@@ -72,8 +72,12 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
-        if (ThingStatus.UNINITIALIZED == bridgeStatusInfo.getStatus()) {
+        if (ThingStatus.OFFLINE == bridgeStatusInfo.getStatus()
+                || ThingStatus.UNINITIALIZED == bridgeStatusInfo.getStatus()) {
             cleanup();
+        }
+        if (ThingStatus.ONLINE == bridgeStatusInfo.getStatus()) {
+            initialize();
         }
     }
 
@@ -85,6 +89,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        logger.debug("Initializing the OASIS alarm");
         thingConfig = getConfigAs(JablotronDeviceConfig.class);
         future = scheduler.scheduleWithFixedDelay(this::updateAlarmStatus, 1, thingConfig.getRefresh(),
                 TimeUnit.SECONDS);
@@ -144,6 +149,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected synchronized boolean updateAlarmStatus() {
+        logger.debug("Updating OASIS status");
         JablotronDataUpdateResponse dataUpdate = sendGetStatusRequest();
         if (dataUpdate == null) {
             return false;
