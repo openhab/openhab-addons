@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
@@ -273,7 +274,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error opening SSL connection. Check log.");
             logger.info("Error opening SSL connection: {}", e.getMessage());
-            disconnect();
+            disconnect(false);
             scheduleConnectRetry(reconnectInterval); // Possibly a temporary problem. Try again later.
             return;
         }
@@ -313,7 +314,13 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         connectRetryJob = scheduler.schedule(this::connect, waitMinutes, TimeUnit.MINUTES);
     }
 
-    private synchronized void disconnect() {
+    /**
+     * Disconnect from bridge, cancel retry and keepalive jobs, stop reader and writer threads, and clean up.
+     *
+     * @param interruptAll Set if reconnect task should be interrupted if running. Should be false when calling from
+     *            connect or reconnect, and true when calling from dispose.
+     */
+    private synchronized void disconnect(boolean interruptAll) {
         logger.debug("Disconnecting");
 
         Thread senderThread = this.senderThread;
@@ -328,8 +335,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             keepAliveJob.cancel(true);
         }
 
-        // May be called from keepAliveReconnectJob thread, so call cancel with false
-        reconnectTaskCancel(false);
+        reconnectTaskCancel(interruptAll); // May be called from keepAliveReconnectJob thread
 
         if (senderThread != null && senderThread.isAlive()) {
             senderThread.interrupt();
@@ -370,7 +376,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private synchronized void reconnect() {
         logger.debug("Attempting to reconnect to the bridge");
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "reconnecting");
-        disconnect();
+        disconnect(false);
         connect();
     }
 
@@ -390,6 +396,10 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                         writer.write(command.toString() + "\n");
                         writer.flush();
                     }
+                } catch (InterruptedIOException e) {
+                    logger.debug("Interrupted while sending");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Interrupted");
+                    break; // exit loop and terminate thread
                 } catch (IOException e) {
                     logger.warn("Communication error, will try to reconnect. Error: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -423,6 +433,9 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                 logger.debug("End of input stream detected");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
             }
+        } catch (InterruptedIOException e) {
+            logger.debug("Interrupted while reading");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Interrupted");
         } catch (IOException e) {
             logger.debug("I/O error while reading from stream: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -763,6 +776,6 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
     @Override
     public void dispose() {
-        disconnect();
+        disconnect(true);
     }
 }
