@@ -24,24 +24,24 @@
 		</config-description>
 	</thing-type>
 
-    <thing-type id="intesisBox">
-        <label>IntesisBox Adapter</label>
-        <description>Represents a single IntesisBox adapter on the network, connected to an A/C unit.</description>
-        <channels>
-            <channel id="power" typeId="system.power"/>
-        </channels>
-        <config-description>
-            <parameter name="ipAddress" type="text" required="true">
-                <label>@text/thing-type.config.intesis.ipAddress.label</label>
-                <description>@text/thing-type.config.intesis.ipAddress.description</description>
-                <context>network-address</context>
-            </parameter>
-            <parameter name="port" type="integer" required="true">
-                <label>Port</label>
-                <description>The TCP port to the IntesisBox.</description>
-                <default>3310</default>
-            </parameter>
-        </config-description>
-    </thing-type>
+	<thing-type id="intesisBox">
+		<label>IntesisBox Adapter</label>
+		<description>Represents a single IntesisBox adapter on the network, connected to an A/C unit.</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+		</channels>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>@text/thing-type.config.intesis.ipAddress.label</label>
+				<description>@text/thing-type.config.intesis.ipAddress.description</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>The TCP port to the IntesisBox.</description>
+				<default>3310</default>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 </thing:thing-descriptions>
