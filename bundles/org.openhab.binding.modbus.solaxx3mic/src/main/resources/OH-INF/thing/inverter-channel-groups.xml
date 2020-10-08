@@ -25,10 +25,10 @@
 	<channel-group-type id="ac-phase">
 		<label>AC Phase</label>
 		<channels>
-			<channel id="ac-voltage-to-n" typeId="ac-voltage-to-n-type"/>
+			<channel id="ac-phase-voltage-to-n" typeId="ac-phase-voltage-to-n-type"/>
 			<channel id="ac-phase-current" typeId="ac-phase-current-type"/>
 			<channel id="ac-phase-frequency" typeId="ac-phase-frequency-type"/>
-			<channel id="ac-power" typeId="ac-power-type"/>            
+			<channel id="ac-phase-power" typeId="ac-power-type"/>            
 		</channels>
 	</channel-group-type>
 

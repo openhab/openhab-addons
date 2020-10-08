@@ -14,7 +14,6 @@ package org.openhab.binding.modbus.solaxx3mic.internal;
 
 import static org.openhab.binding.modbus.solaxx3mic.internal.SolaxX3MicBindingConstants.*;
 
-//import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,18 +24,25 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link modbus.SolaxX3MicHandlerFactory} is responsible for creating things and thing
+ * The {@link SolaxX3MicHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Stanislaw Wawszczak - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.modbus.solaxx3mic", service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.solaxx3mic", service = ThingHandlerFactory.class)
 public class SolaxX3MicHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+        /**
+     * Logger instance
+     */
+    private final Logger logger = LoggerFactory.getLogger(SolaxX3MicHandlerFactory.class);
+    
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INVERTER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,7 +53,8 @@ public class SolaxX3MicHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
+        if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
+            logger.debug("New InverterHandler created");
             return new SolaxX3MicHandler(thing);
         }
 

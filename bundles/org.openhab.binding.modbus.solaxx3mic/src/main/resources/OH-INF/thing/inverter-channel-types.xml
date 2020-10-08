@@ -88,9 +88,17 @@
 		<description>Device status</description>
 		<state readOnly="true">
 			<options>
-				<option value="OFF">Off</option>
-				<option value="SLEEP">Sleeping / Night mode</option>
-				<option value="ON">On - producing power</option>
+    			<option value="WAIT">OFF - Wait for Light</option>
+    			<option value="CHECK">INIT - Checking operation conditions</option>
+    			<option value="NORMAL">ON - Producing power</option>
+    			<option value="FAULT">Transient Fault Condition</option>
+    			<option value="PERMANENT_FAULT">Permanent Fault Condition</option>
+    			<option value="UPDATE">Updating system</option>
+    			<option value="EPS_CHECK">Checking EPS</option>
+    			<option value="EPS">Running EPS</option>
+    			<option value="SELF_TEST">Self Testing</option>
+    			<option value="IDLE">IDLE</option>
+    			<option value="STANDBY">STANDING BY</option>
 			</options>
 		</state>
         <config-description-ref uri="channel-type:inverter:channel-config"/>

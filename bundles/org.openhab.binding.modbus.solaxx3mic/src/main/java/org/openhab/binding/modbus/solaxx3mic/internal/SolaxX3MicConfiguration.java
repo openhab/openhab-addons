@@ -19,8 +19,17 @@ package org.openhab.binding.modbus.solaxx3mic.internal;
  */
 public class SolaxX3MicConfiguration {
 
+    public int refresh = 1;
+    public int inputAddress = 1025;
+    public int inputBlockLength = 53;
+    public int maxTries = 3;
+    public int holdingAddress = 769;
+    public int holdingBlockLength = 61;
+
     /**
-     * Sample configuration parameter. Replace with your own.
+     * Gets refresh period in milliseconds
      */
-    public String config1;
+    public long getRefreshMillis() {
+        return refresh * 1000;
+    }
 }

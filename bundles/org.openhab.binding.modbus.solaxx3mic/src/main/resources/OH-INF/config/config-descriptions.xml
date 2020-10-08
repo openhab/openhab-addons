@@ -59,5 +59,30 @@
             <description>This value is designation of modbus function for obtaining value for this channel. Possible functions are 3 - input and 4 - holding</description>
             <default>3</default>
         </paramter>
-        
+
+		<parameter name="registerType" type="text">
+			<label>Type of Register</label>
+			<options>
+				<option value="SHORT">Short 16 bit</option>
+				<option value="USHORT">Unsigned Short 16 bit</option>
+				<option value="INT">Integer 32 bit</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<default>SHORT</default>
+        </parameter>
+
+		<parameter name="registerUnit" type="text">
+			<label>Unit of Register</label>
+			<options>
+				<option value="AMPERE">Ampere</option>
+				<option value="VOLT">Volt</option>
+				<option value="WATT">Watt</option>
+				<option value="CELCIUS">Celcius</option>
+				<option value="STATUS">Status special register</option>
+				<option value="HERTZ">Hertz</option>
+				<option value="KILOWATT_HOUR">Kilowatt*Hour</option>
+			<options>
+			<limitToOptions>false</limitToOptions>
+			<default>WATT</default>
+	</config-description>
 </config-description:config-descriptions>
