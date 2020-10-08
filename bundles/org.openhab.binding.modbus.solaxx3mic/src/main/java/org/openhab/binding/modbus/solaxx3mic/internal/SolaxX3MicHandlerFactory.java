@@ -37,11 +37,11 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.solaxx3mic", service = ThingHandlerFactory.class)
 public class SolaxX3MicHandlerFactory extends BaseThingHandlerFactory {
 
-        /**
+    /**
      * Logger instance
      */
     private final Logger logger = LoggerFactory.getLogger(SolaxX3MicHandlerFactory.class);
-    
+
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INVERTER);
 
     @Override

@@ -17,12 +17,12 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
+import org.openhab.io.transport.modbus.ModbusRegisterArray;
 
 @NonNullByDefault
 public final class ModbusParser {
-    
+
     /**
      * Extract an optional int16 value
      *
@@ -91,5 +91,4 @@ public final class ModbusParser {
     public static Long extractInt32(ModbusRegisterArray raw, int index, long def) {
         return extractOptionalInt32(raw, index).orElse(def);
     }
-
 }

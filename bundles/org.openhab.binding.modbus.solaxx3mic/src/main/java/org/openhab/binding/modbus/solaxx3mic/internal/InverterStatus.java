@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.modbus.solaxx3mic.internal;
+
 /**
  * The {@link InverterStatus} describes
  * possible values for an inverter's status field

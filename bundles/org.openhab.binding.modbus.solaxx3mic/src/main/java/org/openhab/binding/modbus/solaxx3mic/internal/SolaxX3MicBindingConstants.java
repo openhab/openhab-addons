@@ -30,7 +30,7 @@ public class SolaxX3MicBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "inverter-SolaxX3Micu");
 
-    //properties
+    // properties
     public static final String PROPERTY_SERIAL_NUMBER = "serialNumber";
     public static final String PROPERTY_UNIQUE_ADDRESS = "uniqueAddress";
 
@@ -47,7 +47,7 @@ public class SolaxX3MicBindingConstants {
     public static final String CHANNEL_CABINET_TEMPERATURE = "cabinet-temperature";
     public static final String CHANNEL_HEATSINK_TEMPERATURE = "heatsink-temperature";
     public static final String CHANNEL_STATUS = "status";
-   
+
     // List of channel ids in AC general group for inverter
     public static final String CHANNEL_AC_POWER = "ac-power";
     public static final String CHANNEL_AC_DAYLY_ENERGY = "ac-dayly-energy";
@@ -63,5 +63,4 @@ public class SolaxX3MicBindingConstants {
     public static final String CHANNEL_DC_CURRENT = "dc-current";
     public static final String CHANNEL_DC_VOLTAGE = "dc-voltage";
     public static final String CHANNEL_DC_POWER = "dc-power";
-
 }

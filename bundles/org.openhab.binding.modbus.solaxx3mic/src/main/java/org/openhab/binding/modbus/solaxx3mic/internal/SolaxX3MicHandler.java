@@ -17,7 +17,6 @@ import static org.openhab.core.library.unit.SmartHomeUnits.*;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.text.ParsePosition;
 import java.util.Map;
 import java.util.Optional;
 
@@ -60,12 +59,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolaxX3MicHandler extends BaseThingHandler {
-    
+
     /**
      * Logger instance
      */
     private final Logger logger = LoggerFactory.getLogger(SolaxX3MicHandler.class);
-    
+
     /**
      * Configuration instance
      */
@@ -92,7 +91,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-            // Currently we do not support any commands
+        // Currently we do not support any commands
     }
 
     @Override
@@ -103,22 +102,22 @@ public class SolaxX3MicHandler extends BaseThingHandler {
         startUp();
     }
     /*
-            
-        updateStatus(ThingStatus.UNKNOWN);
+     * 
+     * updateStatus(ThingStatus.UNKNOWN);
+     * 
+     * // Example for background initialization:
+     * scheduler.execute(() -> {
+     * boolean thingReachable = true; // <background task with long running initialization here>
+     * // when done do:
+     * if (thingReachable) {
+     * updateStatus(ThingStatus.ONLINE);
+     * } else {
+     * updateStatus(ThingStatus.OFFLINE);
+     * }
+     * });
+     */
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
-    */
-
-        /*
+    /*
      * This method starts the operation of this handler
      * Load the config object of the block
      * Connect to the slave bridge
@@ -161,16 +160,14 @@ public class SolaxX3MicHandler extends BaseThingHandler {
         }
         int blockAddress = 0;
         int blockLength = 0;
-        if(function == RegisterBlockFunction.INPUT_REGISTER_BLOCK)
-        {
+        if (function == RegisterBlockFunction.INPUT_REGISTER_BLOCK) {
             blockAddress = config.inputAddress;
             blockLength = config.inputBlockLength;
         }
-        if(function == RegisterBlockFunction.HOLDING_REGISTER_BLOCK)
-        {
+        if (function == RegisterBlockFunction.HOLDING_REGISTER_BLOCK) {
             blockAddress = config.holdingAddress;
             blockLength = config.holdingBlockLength;
-        }        
+        }
         return new RegisterBlock(blockAddress, blockLength, function);
     }
 
@@ -322,42 +319,38 @@ public class SolaxX3MicHandler extends BaseThingHandler {
      */
     protected void handlePolledData(ModbusRegisterArray registers) {
         Thing mything = this.getThing();
-        for(Channel localchannel : mything.getChannels()) {
+        for (Channel localchannel : mything.getChannels()) {
             Configuration config = localchannel.getConfiguration();
             SolaxX3MicChannelConfiguration solaxChannelConfig = config.as(SolaxX3MicChannelConfiguration.class);
             Long value = 0L;
-            switch(solaxChannelConfig.registerType){
+            switch (solaxChannelConfig.registerType) {
                 case "INT":
                     value = ModbusParser.extractInt32(registers, solaxChannelConfig.registerNumber, 0);
                     break;
                 case "SHORT":
-                    value = (long)ModbusParser.extractInt16(registers, solaxChannelConfig.registerNumber, (short)0);
+                    value = (long) ModbusParser.extractInt16(registers, solaxChannelConfig.registerNumber, (short) 0);
                     break;
                 case "USHORT":
-                    value = (long)ModbusParser.extractUInt16(registers, solaxChannelConfig.registerNumber, 0);
+                    value = (long) ModbusParser.extractUInt16(registers, solaxChannelConfig.registerNumber, 0);
                     break;
             }
-            if(solaxChannelConfig.registerUnit == "STATUS") {
+            if (solaxChannelConfig.registerUnit == "STATUS") {
                 InverterStatus status = InverterStatus.getByCode(value.intValue());
-                updateState(localchannel.getUID(),status == null ? UnDefType.UNDEF : new StringType(status.name()) );
-            }
-            else {
-                try{
+                updateState(localchannel.getUID(), status == null ? UnDefType.UNDEF : new StringType(status.name()));
+            } else {
+                try {
                     Field field = SmartHomeUnits.class.getDeclaredField(solaxChannelConfig.registerUnit);
                     Unit<?> unit = (Unit<?>) field.get(field.getClass());
-                    updateState(localchannel.getUID(),getScaled(value, solaxChannelConfig.registerScaleFactor, unit));
-                }
-                catch(NoSuchFieldException ex) {
+                    updateState(localchannel.getUID(), getScaled(value, solaxChannelConfig.registerScaleFactor, unit));
+                } catch (NoSuchFieldException ex) {
                     logger.warn("Incorrectly set up of Channel UUID = ");
-                }
-                catch(IllegalAccessException ex) {
+                } catch (IllegalAccessException ex) {
                     logger.error("Illegal access exception during reflection to Units!");
                 }
             }
         }
         resetCommunicationError();
     }
-
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {

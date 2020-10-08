@@ -12,6 +12,7 @@
  */
 
 package org.openhab.binding.modbus.solaxx3mic.internal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**

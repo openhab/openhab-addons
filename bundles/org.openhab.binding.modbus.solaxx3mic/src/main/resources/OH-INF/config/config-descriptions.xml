@@ -33,56 +33,59 @@
 			<advanced>true</advanced>
 		</parameter>
 
-        <parameter name="holdingAddress" type="integer">
-            <label>Holding Register Address</label>
-            <description>Start address of the holding (function 4) register block</description>
-            <default>769</default>
-        </parameter>
+		<parameter name="holdingAddress" type="integer">
+			<label>Holding Register Address</label>
+			<description>Start address of the holding (function 4) register block</description>
+			<default>769</default>
+		</parameter>
 
-        <parameter name="holdingBlockLength" type="integer" min="1" max="65535">
-            <label>Holding Block Length</label>
-            <description>Length of the modbus holding (function 4) block in 2 byte words (modbus registers)</description>
-            <default>61</default>
-        <parameter>
+		<parameter name="holdingBlockLength" type="integer" min="1" max="65535">
+			<label>Holding Block Length</label>
+			<description>Length of the modbus holding (function 4) block in 2 byte words (modbus registers)</description>
+			<default>61</default>
+			<parameter>
 
 	</config-description>
 
-    <config-description uri="channel-type:inverter:channel-config">
-		
-        <parameter name="registerNumber" type="integer">
+	<config-description uri="channel-type:inverter:channel-config">
+
+		<parameter name="registerNumber" type="integer">
 			<label>Modbus Register number</label>
-			<description>This value is absolute modbus register number starting from 0. It must be within the range specified in thing configuration as address till address + length.</description>
+			<description>This value is absolute modbus register number starting from 0. It must be within the range specified in
+				thing configuration as address till address + length.</description>
 		</parameter>
 
-        <parameter name="registerFunction" type="integer" min="3" max="4">
-            <label>Modbus Register function</label>
-            <description>This value is designation of modbus function for obtaining value for this channel. Possible functions are 3 - input and 4 - holding</description>
-            <default>3</default>
-        </paramter>
+		<parameter name="registerFunction" type="integer" min="3" max="4">
+			<label>Modbus Register function</label>
+			<description>This value is designation of modbus function for obtaining value for this channel. Possible functions
+				are 3 - input and 4 - holding</description>
+			<default>3</default>
+		</paramter>
 
-		<parameter name="registerType" type="text">
-			<label>Type of Register</label>
-			<options>
-				<option value="SHORT">Short 16 bit</option>
-				<option value="USHORT">Unsigned Short 16 bit</option>
-				<option value="INT">Integer 32 bit</option>
-			</options>
-			<limitToOptions>true</limitToOptions>
-			<default>SHORT</default>
-        </parameter>
+			<parameter name="registerType" type="text">
+				<label>Type of Register</label>
+				<options>
+					<option value="SHORT">Short 16 bit</option>
+					<option value="USHORT">Unsigned Short 16 bit</option>
+					<option value="INT">Integer 32 bit</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>SHORT</default>
+			</parameter>
 
-		<parameter name="registerUnit" type="text">
-			<label>Unit of Register</label>
-			<options>
-				<option value="AMPERE">Ampere</option>
-				<option value="VOLT">Volt</option>
-				<option value="WATT">Watt</option>
-				<option value="CELCIUS">Celcius</option>
-				<option value="STATUS">Status special register</option>
-				<option value="HERTZ">Hertz</option>
-				<option value="KILOWATT_HOUR">Kilowatt*Hour</option>
-			<options>
-			<limitToOptions>false</limitToOptions>
-			<default>WATT</default>
+			<parameter name="registerUnit" type="text">
+				<label>Unit of Register</label>
+				<options>
+					<option value="AMPERE">Ampere</option>
+					<option value="VOLT">Volt</option>
+					<option value="WATT">Watt</option>
+					<option value="CELCIUS">Celcius</option>
+					<option value="STATUS">Status special register</option>
+					<option value="HERTZ">Hertz</option>
+					<option value="KILOWATT_HOUR">Kilowatt*Hour</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
+				<default>WATT</default>
+			</parameter>
 	</config-description>
 </config-description:config-descriptions>

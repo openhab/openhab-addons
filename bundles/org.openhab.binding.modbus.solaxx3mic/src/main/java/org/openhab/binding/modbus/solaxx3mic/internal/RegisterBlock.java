@@ -16,9 +16,8 @@ public class RegisterBlock {
     public int address;
     public int length;
     public RegisterBlockFunction function;
-    
-    RegisterBlock(int addr, int len, RegisterBlockFunction func)
-    {
+
+    RegisterBlock(int addr, int len, RegisterBlockFunction func) {
         address = addr;
         length = len;
         function = func;
