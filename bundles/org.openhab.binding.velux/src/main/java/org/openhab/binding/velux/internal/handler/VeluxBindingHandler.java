@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.common.AbstractUID;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.VeluxItemType;
 import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
@@ -82,9 +84,13 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
      * @param channelUID for type {@link ChannelUID}.
      * @return thingTypeUID of type {@link ThingTypeUID}.
      */
-    @SuppressWarnings("deprecation")
     private ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
-        return channelUID.getThingUID().getThingTypeUID();
+        String[] segments = channelUID.getAsString().split(AbstractUID.SEPARATOR);
+        if (segments.length > 1) {
+            return new ThingTypeUID(segments[0], segments[1]);
+        }
+        logger.warn("thingTypeUIDOf({}) failed.", channelUID);
+        return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, "FAILED");
     }
 
     /**

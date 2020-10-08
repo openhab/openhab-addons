@@ -47,8 +47,8 @@ public class SlipEncoding {
     private final Logger logger = LoggerFactory.getLogger(SlipEncoding.class);
 
     private static final byte PROTOCOL_ID = 0;
-    private static boolean encodingValid = false;
-    private static byte[] message = new byte[0];
+    private boolean encodingValid = false;
+    private byte[] message = new byte[0];
 
     /**
      * Builds a message based on command and parameters.

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.AbstractUID;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -187,9 +188,13 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * @param channelUID for type {@link ChannelUID}.
      * @return thingTypeUID of type {@link ThingTypeUID}.
      */
-    @SuppressWarnings("deprecation")
     ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
-        return channelUID.getThingUID().getThingTypeUID();
+        String[] segments = channelUID.getAsString().split(AbstractUID.SEPARATOR);
+        if (segments.length > 1) {
+            return new ThingTypeUID(segments[0], segments[1]);
+        }
+        logger.warn("thingTypeUIDOf({}) failed.", channelUID);
+        return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, "FAILED");
     }
 
     // Objects and Methods for interface VeluxBridgeInstance

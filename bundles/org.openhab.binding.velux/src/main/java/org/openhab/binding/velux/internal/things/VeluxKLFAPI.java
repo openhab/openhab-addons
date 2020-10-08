@@ -129,7 +129,7 @@ public class VeluxKLFAPI {
         UNDEFTYPE((short) -1, "Unknown command."),
         // Special item: Shutdown of the connection
         GW_OPENHAB_CLOSE((short) -2, "openHAB connection shutdown command."),
-        // Special item: Shutdown of the connection
+        // Special item: ???
         GW_OPENHAB_RECEIVEONLY((short) -3, "openHAB receive command."),
         // Velux specific commands
         GW_ERROR_NTF((short) 0x0000, "Provides information on what triggered the error."),

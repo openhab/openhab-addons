@@ -155,23 +155,43 @@ class SSLconnection {
 
     /**
      * Method to pass a message towards the bridge.
+     * This method gets called when we are initiating a new SLIP transaction.
+     * <p>
+     * Note that DataOutputStream and DataInputStream are buffered I/O's. The SLIP protocol requires that prior requests
+     * should have been fully sent over the socket, and their responses should have been fully read from the buffer
+     * before the next request is initiated. i.e. Both read and write buffers should already be empty. Nevertheless,
+     * just in case, we do the following..
+     * <p>
+     * 1) Flush from the read buffer any orphan response data that may have been left over from prior transactions, and
+     * 2) Flush the write buffer directly to the socket to ensure that any exceptions are raised immediately, and the
+     * KLF starts work immediately
      *
      * @param packet as Array of bytes to be transmitted towards the bridge via the established connection.
-     * @throws java.io.IOException in case of a communication I/O failure.
+     * @throws java.io.IOException in case of a communication I/O failure, and sets 'ready' = false
      */
     @SuppressWarnings("null")
     synchronized void send(byte[] packet) throws IOException {
         logger.trace("send() called, writing {} bytes.", packet.length);
-        if (!ready || (dOut == null)) {
-            throw new IOException();
-        }
-        dOut.write(packet, 0, packet.length);
-        if (logger.isTraceEnabled()) {
-            StringBuilder sb = new StringBuilder();
-            for (byte b : packet) {
-                sb.append(String.format("%02X ", b));
+        try {
+            if (!ready || (dOut == null) || (dIn == null)) {
+                throw new IOException();
             }
-            logger.trace("send() finished after having send {} bytes: {}", packet.length, sb.toString());
+            // flush the read buffer if (exceptionally) there is orphan response data in it
+            flushReadBufffer();
+            // copy packet data to the write buffer
+            dOut.write(packet, 0, packet.length);
+            // force the write buffer data to be written to the socket
+            dOut.flush();
+            if (logger.isTraceEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                for (byte b : packet) {
+                    sb.append(String.format("%02X ", b));
+                }
+                logger.trace("send() finished after having send {} bytes: {}", packet.length, sb.toString());
+            }
+        } catch (IOException e) {
+            ready = false;
+            throw e;
         }
     }
 
@@ -200,22 +220,27 @@ class SSLconnection {
      */
     synchronized byte[] receive() throws IOException {
         logger.trace("receive() called.");
-        if (!ready || (dIn == null)) {
-            throw new IOException();
-        }
-        byte[] message = new byte[CONNECTION_BUFFER_SIZE];
-        @SuppressWarnings("null")
-        int messageLength = dIn.read(message, 0, message.length, ioTimeoutMSecs);
-        byte[] packet = new byte[messageLength];
-        System.arraycopy(message, 0, packet, 0, messageLength);
-        if (logger.isTraceEnabled()) {
-            StringBuilder sb = new StringBuilder();
-            for (byte b : packet) {
-                sb.append(String.format("%02X ", b));
+        try {
+            if (!ready || (dIn == null)) {
+                throw new IOException();
             }
-            logger.trace("receive() finished after having read {} bytes: {}", messageLength, sb.toString());
+            byte[] message = new byte[CONNECTION_BUFFER_SIZE];
+            @SuppressWarnings("null")
+            int messageLength = dIn.read(message, 0, message.length, ioTimeoutMSecs);
+            byte[] packet = new byte[messageLength];
+            System.arraycopy(message, 0, packet, 0, messageLength);
+            if (logger.isTraceEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                for (byte b : packet) {
+                    sb.append(String.format("%02X ", b));
+                }
+                logger.trace("receive() finished after having read {} bytes: {}", messageLength, sb.toString());
+            }
+            return packet;
+        } catch (IOException e) {
+            ready = false;
+            throw e;
         }
-        return packet;
     }
 
     /**
@@ -231,16 +256,19 @@ class SSLconnection {
         DataInputStreamWithTimeout dInX = dIn;
         if (dInX != null) {
             dInX.close();
+            dIn = null;
         }
         // Just for avoidance of Potential null pointer access
         DataOutputStream dOutX = dOut;
         if (dOutX != null) {
             dOutX.close();
+            dOut = null;
         }
         // Just for avoidance of Potential null pointer access
         SSLSocket socketX = socket;
         if (socketX != null) {
             socketX.close();
+            socket = null;
         }
         logger.trace("close() finished.");
     }
@@ -253,5 +281,33 @@ class SSLconnection {
     void setTimeout(int timeoutMSecs) {
         logger.debug("setTimeout() set timeout to {} milliseconds.", timeoutMSecs);
         ioTimeoutMSecs = timeoutMSecs;
+    }
+
+    /**
+     * Method to flush the input buffer.
+     *
+     * @throws java.io.IOException in case of a communication I/O failure.
+     */
+    private void flushReadBufffer() throws IOException {
+        logger.trace("flushReadBuffer() called.");
+        DataInputStreamWithTimeout dInX = dIn;
+        if (!ready || (dInX == null)) {
+            throw new IOException();
+        }
+        int byteCount = dInX.available();
+        if (byteCount > 0) {
+            byte[] byteArray = new byte[byteCount];
+            dInX.readFully(byteArray);
+            if (logger.isTraceEnabled()) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (byte currByte : byteArray) {
+                    stringBuilder.append(String.format("%02X ", currByte));
+                }
+                logger.trace("flushReadBuffer(): discarded {} unexpected bytes in the input buffer: {}", byteCount,
+                        stringBuilder.toString());
+            } else {
+                logger.warn("flushReadBuffer(): discarded {} unexpected bytes in the input buffer", byteCount);
+            }
+        }
     }
 }
