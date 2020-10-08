@@ -10,26 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.exceptions;
+package org.openhab.binding.boschshc.internal.devices.bridge;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 
 /**
- * Exception class for Bosch Smart Home controller errors.
- *
- * @author Gerd Zanker - Initial contribution
+ * Thrown if the long polling failed
+ * 
+ * @author Christian Oeing - Initial contribution
  */
 @SuppressWarnings("serial")
 @NonNullByDefault
-public class BoschSHCException extends Exception {
-    public BoschSHCException() {
-    }
-
-    public BoschSHCException(String message) {
-        super(message);
-    }
-
-    public BoschSHCException(String message, Throwable e) {
+public class LongPollingFailedException extends BoschSHCException {
+    public LongPollingFailedException(String message, Throwable e) {
         super(message, e);
     }
 }
