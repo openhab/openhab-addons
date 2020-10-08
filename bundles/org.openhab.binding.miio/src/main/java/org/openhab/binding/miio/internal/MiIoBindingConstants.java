@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.miio.internal;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -111,4 +113,8 @@ public final class MiIoBindingConstants {
             .of("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", "00000000000000000000000000000000").collect(Collectors.toSet()));
 
     public static final String DATABASE_PATH = "database/";
+    public static final String BINDING_DATABASE_PATH = OpenHAB.getConfigFolder() + File.separator + "misc"
+            + File.separator + BINDING_ID;
+    public static final String BINDING_USERDATA_PATH = OpenHAB.getUserDataFolder() + File.separator
+            + MiIoBindingConstants.BINDING_ID;
 }
