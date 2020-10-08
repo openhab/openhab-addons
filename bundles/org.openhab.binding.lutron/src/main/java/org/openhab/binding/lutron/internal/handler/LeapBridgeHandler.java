@@ -38,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -123,8 +122,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private @Nullable Map<Integer, List<Integer>> deviceButtonMap;
     private final Object deviceButtonMapLock = new Object();
 
-    private final AtomicBoolean deviceDataLoaded = new AtomicBoolean(false);
-    private final AtomicBoolean buttonDataLoaded = new AtomicBoolean(false);
+    private volatile boolean deviceDataLoaded = false;
+    private volatile boolean buttonDataLoaded = false;
 
     private final Map<Integer, LutronHandler> childHandlerMap = new ConcurrentHashMap<>();
     private final Map<Integer, OGroupHandler> groupHandlerMap = new ConcurrentHashMap<>();
@@ -253,8 +252,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     }
 
     private synchronized void connect() {
-        deviceDataLoaded.set(false);
-        buttonDataLoaded.set(false);
+        deviceDataLoaded = false;
+        buttonDataLoaded = false;
 
         try {
             logger.debug("Opening SSL connection to {}:{}", config.ipAddress, config.port);
@@ -369,8 +368,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             }
         }
 
-        deviceDataLoaded.set(false);
-        buttonDataLoaded.set(false);
+        deviceDataLoaded = false;
+        buttonDataLoaded = false;
     }
 
     private synchronized void reconnect() {
@@ -456,7 +455,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         Map<Integer, List<Integer>> deviceButtonMap = new HashMap<>();
         synchronized (deviceButtonMapLock) {
             this.deviceButtonMap = deviceButtonMap;
-            buttonDataLoaded.set(true);
+            buttonDataLoaded = true;
         }
         checkInitialized();
     }
@@ -468,7 +467,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private void checkInitialized() {
         ThingStatusInfo statusInfo = getThing().getStatusInfo();
         if (statusInfo.getStatus() == ThingStatus.OFFLINE && STATUS_INITIALIZING.equals(statusInfo.getDescription())) {
-            if (deviceDataLoaded.get() && buttonDataLoaded.get()) {
+            if (deviceDataLoaded && buttonDataLoaded) {
                 updateStatus(ThingStatus.ONLINE);
             }
         }
@@ -571,7 +570,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         }
         synchronized (deviceButtonMapLock) {
             this.deviceButtonMap = deviceButtonMap;
-            buttonDataLoaded.set(true);
+            buttonDataLoaded = true;
         }
         checkInitialized();
     }
@@ -594,7 +593,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                 }
             }
         }
-        deviceDataLoaded.set(true);
+        deviceDataLoaded = true;
         checkInitialized();
 
         if (discoveryService != null) {
