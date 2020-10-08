@@ -177,7 +177,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             return;
         }
 
-        if (event.getSource() instanceof org.snmp4j.Snmp) {
+        if (event.getSource() instanceof Snmp) {
             // Always cancel async request when response has been received
             // otherwise a memory leak is created! Not canceling a request
             // immediately can be useful when sending a request to a broadcast
