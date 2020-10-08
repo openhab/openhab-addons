@@ -31,8 +31,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.intesis.internal.IntesisConfiguration;
 import org.openhab.binding.intesis.internal.IntesisDynamicStateDescriptionProvider;
-import org.openhab.binding.intesis.internal.IntesisHomeModeEnum;
 import org.openhab.binding.intesis.internal.api.IntesisHomeHttpApi;
+import org.openhab.binding.intesis.internal.enums.IntesisHomeModeEnum;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Data;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Datapoints;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Descr;
@@ -336,7 +336,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                     break;
                             }
                         }
-                        properties.put("Supported modes", opModes.toString());
+                        properties.put("supported modes", opModes.toString());
                         channelId = CHANNEL_TYPE_MODE;
                         addChannel(channelId, itemType, opModes);
                         break;
@@ -349,7 +349,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 fanLevels.add(fanString);
                             }
                         }
-                        properties.put("Supported fan levels", fanLevels.toString());
+                        properties.put("supported fan levels", fanLevels.toString());
                         channelId = CHANNEL_TYPE_FANSPEED;
                         addChannel(channelId, itemType, fanLevels);
                         break;
@@ -372,12 +372,12 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         switch (datapoint.uid) {
                             case 5:
                                 channelId = CHANNEL_TYPE_VANESUD;
-                                properties.put("Supported vane up/down modes", swingModes.toString());
+                                properties.put("supported vane up/down modes", swingModes.toString());
                                 addChannel(channelId, itemType, swingModes);
                                 break;
                             case 6:
                                 channelId = CHANNEL_TYPE_VANESLR;
-                                properties.put("Supported vane left/right modes", swingModes.toString());
+                                properties.put("supported vane left/right modes", swingModes.toString());
                                 addChannel(channelId, itemType, swingModes);
                                 break;
                         }

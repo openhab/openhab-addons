@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.intesis.internal;
+package org.openhab.binding.intesis.internal.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

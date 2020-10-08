@@ -10,18 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.intesis.internal;
+package org.openhab.binding.intesis.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link IntesisConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link DataPointChangedEvent} is an event container for data point changes
  *
  * @author Hans-Jörg Merk - Initial contribution
  */
 @NonNullByDefault
-public class IntesisConfiguration {
-    public String ipAddress = "";
-    public String password = "";
-    public int port;
+public class MessageReceivedEvent {
+    protected String message;
+
+    public MessageReceivedEvent(Object source, String message) {
+        this.message = message;
+    }
+
+    /**
+     * Gets the data-point of the event.
+     *
+     */
+    @Nullable
+    public String getMessage() {
+        return this.message;
+    }
 }
