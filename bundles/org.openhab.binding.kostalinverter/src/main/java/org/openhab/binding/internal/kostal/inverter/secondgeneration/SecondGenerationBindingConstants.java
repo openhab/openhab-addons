@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+opera * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,14 @@ import org.openhab.core.thing.ThingTypeUID;
 public class SecondGenerationBindingConstants {
 
     private static final String BINDING_ID = "kostalinverter";
+
+    public static final long REFRESHINTERVAL_SEC = 60;
+
+    public String url = "";
+    public String username = "";
+    public String password = "";
+    public String dxsIdConf = "";
+    public String valueConf = "";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID SECOND_GENERATION_INVERTER = new ThingTypeUID(BINDING_ID,

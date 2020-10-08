@@ -67,72 +67,74 @@ None
 
 ### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
 
-| Channel Type ID           | Item Type                 | Description
-| gridOutputPower           | Number:Power              | Current output power to the grid
-| yieldDay                  | Number:Energy             | Total produced power today
-| yieldTotal                | Number:Energy             | Total produced power
-| operatingStatus           | Number:One                | Current operating status      
-| gridVoltageL1             | Number:ElectricPotential  | Current output voltage to the grid, L1
-| gridCurrentL1             | Number:ElectricCurrent    | Current output current to the grid, L1
-| gridPowerL1               | Number:Power              | Current output power to the grid, L1
-| gridVoltageL2             | Number:ElectricPotential  | Current output voltage to the grid, L2
-| gridCurrentL2             | Number:ElectricCurrent    | Current output current to the grid, L2
-| gridPowerL2               | Number:Power              | Current output power to the grid, L2
-| gridVoltageL3             | Number:ElectricPotential  | Current output voltage to the grid, L3
-| gridCurrentL3             | Number:ElectricCurrent    | Current output current to the grid, L3
-| gridPowerL3               | Number:Power              | Current output power to the grid, L3
-| dcPowerPV                 | Number:Power              | Current power from all solar panels
-| dc1Voltage                | Number:ElectricPotential  | Current voltage from solar panels, Dc1
-| dc1Current                | Number:ElectricCurrent    | Current current from solar panels, Dc1
-| dc1Power                  | Number:Power              | Current power from solar panels, Dc1
-| dc2Voltage                | Number:ElectricPotential  | Current voltage from solar panels, Dc2
-| dc2Current                | Number:ElectricCurrent    | Current current from solar panels, Dc2
-| dc2Power                  | Number:Power              | Current power from solar panels, Dc2
-| dc3Voltage                | Number:ElectricPotential  | Current voltage from solar panels, Dc3
-| dc3Current                | Number:ElectricCurrent    | Current current from solar panels, Dc3
-| dc3Power                  | Number:Power              | Current power from solar panels, Dc3
-| aktHomeConsumptionSolar   | Number:Power              | Current consumption from solar panels
-| aktHomeConsumptionBat     | Number:Power              | Current consumption from battery
-| aktHomeConsumptionGrid    | Number:Power              | Current consumption from grid
-| phaseSelHomeConsumpL1     | Number:Power              | Current consumption, L1
-| phaseSelHomeConsumpL2     | Number:Power              | Current consumption, L2
-| phaseSelHomeConsumpL3     | Number:Power              | Current consumption, L3
-| gridFreq                  | Number:Frequency          | Current frequency on grid
-| gridCosPhi                | Number:Angle              | Current power factor on grid
-| homeConsumptionDay        | Number:Energy             | Total home consumption today
-| ownConsumptionDay         | Number:Energy             | Total own consumption today
-| ownConsRateDay            | Number:Dimensionless      | Total own consumption rate today
-| autonomyDegreeDay         | Number:Dimensionless      | Total autonomy degree day
-| homeConsumptionTotal      | Number:Energy             | Total home consumption
-| ownConsumptionTotal       | Number:Energy             | Total own consumption
-| totalOperatingTime        | Number:Time               | Total operating time
-| current                   | Number:ElectricCurrent    | Current
-| currentDir                | Number:ElectricCurrent    | Current dir
-| chargeCycles              | Number:One                | Total number of charge cycles       
-| batteryTemperature        | Number:Temperature        | Current battery temperature
-| loginterval               | Number:Time               | Set value for loginterval
-| s0InPulseCnt              | Number:One                | S0-pulse counter  
-| ownConsRateTotal          | Number:Dimensionless      | Total own comsumption rate
-| autonomyDegreeTotal       | Number:Dimensionless      | Total autonomy degree
-| batteryVoltage            | Number:ElectricPotential  | Current battery voltage
-| batStateOfCharge          | Number:Dimensionless      | Current battery charge state
-| selfConsumption           | Number:Power              | Current self consumption
+| Channel Type ID           | Item Type                 | Description                                                 |  Read Write  |
+|-------------------------------|---------------------------|-------------------------------------------------------|-----------------|    
+| gridOutputPower          | Number:Power         | Current output power to the grid                |         R          |              
+| yieldDay                      | Number:Energy        | Total produced power today                       |          R          |                
+| yieldTotal                    | Number:Energy         | Total produced power                           |             R           |                      
+| operatingStatus           | Number:One             | Current operating status                       |          R          |                        
+| gridVoltageL1             | Number:ElectricPotential  | Current output voltage to the grid, L1 |    R         |
+| gridCurrentL1             | Number:ElectricCurrent    | Current output current to the grid, L1  |    R    |
+| gridPowerL1               | Number:Power              | Current output power to the grid, L1  |    R    |
+| gridVoltageL2             | Number:ElectricPotential  | Current output voltage to the grid, L2  |    R    |
+| gridCurrentL2             | Number:ElectricCurrent    | Current output current to the grid, L2  |    R    |
+| gridPowerL2               | Number:Power              | Current output power to the grid, L2  |    R    |
+| gridVoltageL3             | Number:ElectricPotential  | Current output voltage to the grid, L3  |    R    |
+| gridCurrentL3             | Number:ElectricCurrent    | Current output current to the grid, L3  |    R    |
+| gridPowerL3               | Number:Power              | Current output power to the grid, L3  |    R    |
+| dcPowerPV                 | Number:Power              | Current power from all solar panels  |    R    |
+| dc1Voltage                | Number:ElectricPotential  | Current voltage from solar panels, Dc1  |    R    |
+| dc1Current                | Number:ElectricCurrent    | Current current from solar panels, Dc1  |    R    |
+| dc1Power                  | Number:Power              | Current power from solar panels, Dc1  |    R    |
+| dc2Voltage                | Number:ElectricPotential  | Current voltage from solar panels, Dc2  |    R    |
+| dc2Current                | Number:ElectricCurrent    | Current current from solar panels, Dc2  |    R    |
+| dc2Power                  | Number:Power              | Current power from solar panels, Dc2  |    R    |
+| dc3Voltage                | Number:ElectricPotential  | Current voltage from solar panels, Dc3  |    R    |
+| dc3Current                | Number:ElectricCurrent    | Current current from solar panels, Dc3  |    R    |
+| dc3Power                  | Number:Power              | Current power from solar panels, Dc3  |    R    |
+| aktHomeConsumptionSolar   | Number:Power              | Current consumption from solar panels  |    R    |
+| aktHomeConsumptionBat     | Number:Power              | Current consumption from battery  |    R    |
+| aktHomeConsumptionGrid    | Number:Power              | Current consumption from grid  |    R    |
+| phaseSelHomeConsumpL1     | Number:Power              | Current consumption, L1  |    R    |
+| phaseSelHomeConsumpL2     | Number:Power              | Current consumption, L2  |    R    |
+| phaseSelHomeConsumpL3     | Number:Power              | Current consumption, L3  |    R    |
+| gridFreq                  | Number:Frequency          | Current frequency on grid  |    R    |
+| gridCosPhi                | Number:Angle              | Current power factor on grid  |    R    |
+| homeConsumptionDay        | Number:Energy             | Total home consumption today  |    R    |
+| ownConsumptionDay         | Number:Energy             | Total own consumption today  |    R    |
+| ownConsRateDay            | Number:Dimensionless      | Total own consumption rate today  |    R    |
+| autonomyDegreeDay         | Number:Dimensionless      | Total autonomy degree day  |    R    |
+| homeConsumptionTotal      | Number:Energy             | Total home consumption  |    R    |
+| ownConsumptionTotal       | Number:Energy             | Total own consumption  |    R    |
+| totalOperatingTime        | Number:Time               | Total operating time  |    R    |
+| current                   | Number:ElectricCurrent    | Current  |    R    |
+| currentDir                | Number:ElectricCurrent    | Current dir  |    R    |
+| chargeCycles              | Number:One                | Total number of charge cycles  |    R    |       
+| batteryTemperature        | Number:Temperature        | Current battery temperature  |    R    |
+| loginterval               | Number:Time               | Set value for loginterval  |    R    |
+| s0InPulseCnt              | Number:One                | S0-pulse counter  |    R    | 
+| ownConsRateTotal          | Number:Dimensionless      | Total own comsumption rate  |    R    |
+| autonomyDegreeTotal       | Number:Dimensionless      | Total autonomy degree  |    R    |
+| batteryVoltage            | Number:ElectricPotential  | Current battery voltage  |    R    |
+| batStateOfCharge          | Number:Dimensionless      | Current battery charge state  |    R    |
+| selfConsumption           | Number:Power              | Current self consumption  |    R    |
 
 The following Channels are writeable
 
-| Channel Type ID           | Item Type       | Description over writeable values
-| chargeTimeEnd             | Number:Time     | Set charge time end, Value = 00:00
-| batteryType               | String          | Set battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV
-| batteryUsageConsumption   | String          | Set battery usage consumption, Value = 100
-| batteryUsageStrategy      | String          | Set battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical             
-| smartBatteryControl       | Switch          | Set smart battery control, Value = False / True
-| smartBatteryControlText   | String          | Set smart battery control text, Value = False / True
-| batterChargeTimeFrom      | Number:Time     | Set battery charge time from, Value = 00:00
-| batteryChargeTimeTo       | Number:Time     | Set battery charge time to, Value = 23:59
-| maxDepthOfDischarge       | String          | Set max depth of discharge (SoC), Value = 10
-| shadowManagement          | Number          | Set shadow management, Value = 0 = None, Value = 1 = Shadow management + String 1 activated, Value = 2 = Shadow  management + String 2 activated, Value = 3 = Shadow management + String 1 and 2 activated
-| externalModuleControl     | String          | Set external module control, Value = 0 = True
-| inverterName              | String          | Set inverter name, Value = 'Name of inverter'
+| Channel Type ID           | Item Type                 | Description                                                 |  Read Write  |
+|-------------------------------|---------------------------|-------------------------------------------------------|-----------------|    
+| chargeTimeEnd             | Number:Time     | Set charge time end, Value = 00:00  |    W    |
+| batteryType               | String          | Set battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV  |   W    |
+| batteryUsageConsumption   | String          | Set battery usage consumption, Value = 100  |    W    |
+| batteryUsageStrategy      | String          | Set battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |    W    |             
+| smartBatteryControl       | Switch          | Set smart battery control, Value = False / True  |    W    |
+| smartBatteryControlText   | String          | Set smart battery control text, Value = False / True  |    W    |
+| batterChargeTimeFrom      | Number:Time     | Set battery charge time from, Value = 00:00  |    W    |
+| batteryChargeTimeTo       | Number:Time     | Set battery charge time to, Value = 23:59  |    W    |
+| maxDepthOfDischarge       | String          | Set max depth of discharge (SoC), Value = 10  |    W    |
+| shadowManagement          | Number          | Set shadow management, Value = 0 = None, Value = 1 = Shadow management + String 1 activated, Value = 2 = Shadow  management + String 2 activated, Value = 3 = Shadow management + String 1 and 2 activated  |    W    |
+| externalModuleControl     | String          | Set external module control, Value = 0 = True  |    W    |
+| inverterName              | String          | Set inverter name, Value = 'Name of inverter'  |    W    |
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
@@ -225,6 +227,15 @@ You optionally can define a `userName` and a `password` parameter if the access 
 
 
 ### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
+
+Second generation inverters require 4 mandatory parameters:
+
+| Parameter                | Description                                            | Type    |  Unit   | Default value | Example value |
+|--------------------------|--------------------------------------------------------|---------|---------|---------------|---------------|
+| url                      | Host name or IP address of your device                 | Text    | ---     | ---           | 192.168.0.2   |
+| userName             | Username for your inverter| Text    | ---     | ---           | myUsername    |
+| userPassword             | Password for your inverter| Text    | ---     | ---           | myPassword    |
+| refreshInterval | Pollingintervall of inverter  | Integer | Seconds | 60            | 60            |
 
 demo.things
 

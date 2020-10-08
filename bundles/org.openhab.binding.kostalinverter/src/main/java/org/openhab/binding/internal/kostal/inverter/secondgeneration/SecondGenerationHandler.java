@@ -85,8 +85,8 @@ public class SecondGenerationHandler extends BaseThingHandler {
             return;
         }
 
-        final @Nullable SecondGenerationConfiguration handleCommandConfig;
-        handleCommandConfig = getConfigAs(SecondGenerationConfiguration.class);
+        final @Nullable SecondGenerationBindingConstants handleCommandConfig;
+        handleCommandConfig = getConfigAs(SecondGenerationBindingConstants.class);
 
         String url = handleCommandConfig.url.toString();
         String username = handleCommandConfig.username;
@@ -195,13 +195,13 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 logger.debug("Error refreshing source = {}: {}", getThing().getUID(),
                         scheduleWithFixedDelayException.getMessage());
             }
-        }, 0, SecondGenerationConfiguration.REFRESHINTERVAL, TimeUnit.SECONDS);
+        }, 0, SecondGenerationBindingConstants.REFRESHINTERVAL_SEC, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("null")
     private void refresh() {
-        final @Nullable SecondGenerationConfiguration refreshConfig;
-        refreshConfig = getConfigAs(SecondGenerationConfiguration.class);
+        final @Nullable SecondGenerationBindingConstants refreshConfig;
+        refreshConfig = getConfigAs(SecondGenerationBindingConstants.class);
         String dxsEntriesCall = refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
                 + channelConfigs.get(0).dxsEntries;
         String dxsEntriesCallExt = refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
