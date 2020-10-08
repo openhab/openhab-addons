@@ -24,10 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollError;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +40,10 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class LongPolling {
+    @SuppressWarnings("serial")
+    private class AbortLongPolling extends BoschSHCException {
+    }
+
     private final Logger logger = LoggerFactory.getLogger(LongPolling.class);
 
     private final Gson gson = new Gson();
@@ -84,7 +88,7 @@ public class LongPolling {
         this.aborted = true;
         Request request = this.request;
         if (request != null) {
-            request.abort(new Error("Aborted"));
+            request.abort(new AbortLongPolling());
             this.request = null;
         }
     }
@@ -132,7 +136,9 @@ public class LongPolling {
         request.timeout(30, TimeUnit.SECONDS);
 
         this.request = request;
-        request.send(result -> {
+        try {
+            ContentResponse contentResponse = request.send();
+
             // Check if thing is still online
             if (this.aborted) {
                 logger.debug("Canceling long polling for subscription id {} because it was aborted", subscriptionId);
@@ -140,48 +146,47 @@ public class LongPolling {
             }
 
             String nextSubscriptionId = subscriptionId;
-            if (!result.isFailed()) {
-                Response response = result.getResponse();
-                if (response != null && response instanceof ContentResponse) {
-                    ContentResponse contentResponse = (ContentResponse) response;
-                    String content = contentResponse.getContentAsString();
 
-                    logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+            String content = contentResponse.getContentAsString();
 
-                    LongPollResult longPollResult = gson.fromJson(content, LongPollResult.class);
-                    if (longPollResult.result != null) {
-                        this.handleResult.accept(longPollResult);
-                    } else {
-                        logger.warn("Could not parse in onComplete: {}", content);
+            logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
-                        // Check if we got a proper result from the SHC
-                        LongPollError longPollError = gson.fromJson(content, LongPollError.class);
+            LongPollResult longPollResult = gson.fromJson(content, LongPollResult.class);
+            if (longPollResult.result != null) {
+                this.handleResult.accept(longPollResult);
+            } else {
+                logger.warn("Could not parse in onComplete: {}", content);
 
-                        if (longPollError.error != null) {
-                            logger.warn("Got error from SHC: {}", longPollError.error.hashCode());
+                // Check if we got a proper result from the SHC
+                LongPollError longPollError = gson.fromJson(content, LongPollError.class);
 
-                            if (longPollError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-                                logger.warn("Subscription {} became invalid, subscribing again", subscriptionId);
-                                try {
-                                    nextSubscriptionId = this.subscribe(httpClient);
-                                } catch (LongPollingFailedException e) {
-                                    this.handleFailure.accept(e);
-                                    return;
-                                }
-                            }
+                if (longPollError.error != null) {
+                    logger.warn("Got error from SHC: {}", longPollError.error.hashCode());
+
+                    if (longPollError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
+                        logger.warn("Subscription {} became invalid, subscribing again", subscriptionId);
+                        try {
+                            nextSubscriptionId = this.subscribe(httpClient);
+                        } catch (LongPollingFailedException e) {
+                            this.handleFailure.accept(e);
+                            return;
                         }
                     }
-                } else {
-                    // Empty response is okay, no status updates happened
                 }
-            } else {
-                // Check type of failure
-                Throwable e = result.getResponseFailure();
-                logger.error("Unexpected exception in long polling", e);
             }
 
             // Execute next run.
             this.executeLongPoll(httpClient, nextSubscriptionId);
-        });
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof AbortLongPolling) {
+                logger.debug("Canceling long polling for subscription id {} because it was aborted", subscriptionId);
+            } else {
+                this.handleFailure
+                        .accept(new LongPollingFailedException("Unexpected exception during long polling request", e));
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            this.handleFailure
+                    .accept(new LongPollingFailedException("Unexpected exception during long polling request", e));
+        }
     }
 }
