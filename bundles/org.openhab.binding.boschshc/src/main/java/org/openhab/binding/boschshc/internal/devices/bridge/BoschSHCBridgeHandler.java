@@ -19,7 +19,6 @@ import static org.eclipse.jetty.http.HttpMethod.PUT;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -75,9 +74,14 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private final Gson gson = new Gson();
 
     /**
-     * Next long poll action.
+     * Current running long polling request.
      */
-    private @Nullable ScheduledFuture<?> nextLongPoll;
+    private @Nullable Request longPollingRequest;
+
+    /**
+     * Indicates if long polling was aborted.
+     */
+    private boolean longPollingAborted = false;
 
     @Override
     public void initialize() {
@@ -134,7 +138,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     // Subscribe to state updates.
                     String subscriptionId = this.subscribe(httpClient);
                     if (subscriptionId != null) {
-                        this.scheduleLongPoll(httpClient, subscriptionId, 0);
+                        this.executeLongPoll(httpClient, subscriptionId);
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -155,10 +159,12 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         super.dispose();
 
-        ScheduledFuture<?> nextLongPoll = this.nextLongPoll;
-        if (nextLongPoll != null) {
-            nextLongPoll.cancel(true);
-            this.nextLongPoll = null;
+        // Abort long polling.
+        this.longPollingAborted = true;
+        Request longPollingRequest = this.longPollingRequest;
+        if (longPollingRequest != null) {
+            longPollingRequest.abort(new Error("Aborted"));
+            this.longPollingRequest = null;
         }
     }
 
@@ -233,30 +239,31 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void scheduleLongPoll(BoschHttpClient httpClient, String subscriptionId, long delay) {
-        ScheduledFuture<?> nextLongPoll = this.nextLongPoll;
-        if (nextLongPoll != null) {
-            logger.debug("Canceling next long poll");
-            nextLongPoll.cancel(true);
-            this.nextLongPoll = null;
-        }
-        logger.debug("Scheduling next long poll in {} seconds", delay);
-        this.nextLongPoll = scheduler.schedule(() -> this.longPoll(this, httpClient, subscriptionId), delay,
-                TimeUnit.SECONDS);
+    private void executeLongPoll(BoschHttpClient httpClient, String subscriptionId) {
+        scheduler.execute(() -> this.longPoll(this, httpClient, subscriptionId));
     }
 
     /**
      * Start long polling the home controller. Once a long poll resolves, a new one is started.
      */
     private void longPoll(BoschSHCBridgeHandler bridgeHandler, BoschHttpClient httpClient, String subscriptionId) {
-        logger.debug("Sending long poll request to Bosch");
+        logger.debug("Sending long poll request");
 
         JsonRpcRequest requestContent = new JsonRpcRequest("2.0", "RE/longPoll", new String[] { subscriptionId, "20" });
         String url = httpClient.createUrl("remote/json-rpc");
         Request request = httpClient.createRequest(url, POST, requestContent);
 
+        // Long polling responds after 20 seconds with an empty response if no update has happened
+        request.timeout(30, TimeUnit.SECONDS);
+
+        bridgeHandler.longPollingRequest = request;
         request.send(result -> {
-            long delayTillNextRun = 0;
+            // Check if thing is still online
+            if (bridgeHandler.longPollingAborted) {
+                logger.debug("Canceling long polling for subscription id {} because it was aborted", subscriptionId);
+                return;
+            }
+
             String nextSubscriptionId = subscriptionId;
             if (!result.isFailed()) {
                 Response response = result.getResponse();
@@ -279,8 +286,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                             logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
 
                             if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-                                logger.warn("Subscription became invalid, subscribing again");
-                                nextSubscriptionId = this.subscribe(httpClient);
+                                logger.warn("Subscription {} became invalid, subscribing again", subscriptionId);
+                                nextSubscriptionId = bridgeHandler.subscribe(httpClient);
                                 if (nextSubscriptionId == null) {
                                     return;
                                 }
@@ -288,20 +295,16 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         }
                     }
                 } else {
-                    logger.error("Long poll did not return a ContentResponse");
+                    // Empty response is okay, no status updates happened
                 }
             } else {
                 // Check type of failure
                 Throwable e = result.getResponseFailure();
-                if (e instanceof TimeoutException) {
-                    // Timeout is expected if no status updates from devices arrive.
-                } else {
-                    logger.error("Unexpected exception in long polling", e);
-                }
+                logger.error("Unexpected exception in long polling", e);
             }
 
-            // Schedule next run.
-            bridgeHandler.scheduleLongPoll(httpClient, nextSubscriptionId, delayTillNextRun);
+            // Execute next run.
+            bridgeHandler.executeLongPoll(httpClient, nextSubscriptionId);
         });
     }
 
