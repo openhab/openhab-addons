@@ -182,6 +182,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             }
         }).thenAccept(fullState -> {
             if (fullState == null) {
+                scheduler.schedule(this::requestFullState, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
                 return;
             }
             if (fullState.config.name.isEmpty()) {
