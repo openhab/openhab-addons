@@ -19,6 +19,7 @@
       <groupId>org.openhab.binding.rfxcom</groupId>
       <artifactId>jd2xx</artifactId>
       <version>20150103</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
