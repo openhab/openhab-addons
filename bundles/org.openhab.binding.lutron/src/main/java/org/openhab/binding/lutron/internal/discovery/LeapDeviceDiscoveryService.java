@@ -29,8 +29,11 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +43,8 @@ import org.slf4j.LoggerFactory;
  * @author Bob Adair - Initial contribution
  */
 @NonNullByDefault
-public class LeapDeviceDiscoveryService extends AbstractDiscoveryService {
+public class LeapDeviceDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
 
     private static final int DISCOVERY_SERVICE_TIMEOUT = 0; // seconds
 
@@ -50,11 +54,23 @@ public class LeapDeviceDiscoveryService extends AbstractDiscoveryService {
     private @Nullable Map<Integer, String> areaMap;
     private @Nullable List<OccupancyGroup> oGroupList;
 
-    private final LeapBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) LeapBridgeHandler bridgeHandler;
 
-    public LeapDeviceDiscoveryService(LeapBridgeHandler bridgeHandler) throws IllegalArgumentException {
+    public LeapDeviceDiscoveryService() {
         super(LutronHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, DISCOVERY_SERVICE_TIMEOUT);
-        this.bridgeHandler = bridgeHandler;
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof LeapBridgeHandler) {
+            bridgeHandler = (LeapBridgeHandler) handler;
+            bridgeHandler.setDiscoveryService(this);
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 
     @Override
@@ -197,5 +213,10 @@ public class LeapDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private void notifyDiscovery(ThingTypeUID thingTypeUID, Integer integrationId, String label) {
         notifyDiscovery(thingTypeUID, integrationId, label, null, null);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 }

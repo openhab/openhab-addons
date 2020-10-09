@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.lutron.internal.discovery.LeapDeviceDiscoveryService;
 import org.openhab.binding.lutron.internal.discovery.LutronDeviceDiscoveryService;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
@@ -145,7 +144,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_LEAPBRIDGE)) {
             LeapBridgeHandler bridgeHandler = new LeapBridgeHandler((Bridge) thing);
-            registerLeapDiscoveryService(bridgeHandler);
+            // LeapDeviceDiscoveryService discoveryService = new LeapDeviceDiscoveryService(); // TODO
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
             return new DimmerHandler(thing);
@@ -216,7 +215,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof IPBridgeHandler || thingHandler instanceof LeapBridgeHandler) {
+        if (thingHandler instanceof IPBridgeHandler) {
             ServiceRegistration<?> serviceReg = discoveryServiceRegMap.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
                 logger.debug("Unregistering device discovery service.");
@@ -233,19 +232,6 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(IPBridgeHandler bridgeHandler) {
         logger.debug("Registering XML device discovery service.");
         LutronDeviceDiscoveryService discoveryService = new LutronDeviceDiscoveryService(bridgeHandler, httpClient);
-        bridgeHandler.setDiscoveryService(discoveryService);
-        discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
-    }
-
-    /**
-     * Register a discovery service for a LEAP bridge handler.
-     *
-     * @param bridgeHandler LEAP bridge handler for which to register the discovery service
-     */
-    private synchronized void registerLeapDiscoveryService(LeapBridgeHandler bridgeHandler) {
-        logger.debug("Registering LEAP device discovery service.");
-        LeapDeviceDiscoveryService discoveryService = new LeapDeviceDiscoveryService(bridgeHandler);
         bridgeHandler.setDiscoveryService(discoveryService);
         discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
