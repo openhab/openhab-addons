@@ -29,6 +29,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.zone.ZoneRules;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -120,7 +122,13 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
         this.refreshInterval = config.refresh * 1000L;
 
-        this.isProVersion = config.isProVersion;
+        try {
+            var jsonData = gson.fromJson(getNodeJsonData(), Map.class);
+            isProVersion = jsonData.get("measurements") instanceof ArrayList;
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't get node json");
+            return;
+        }
 
         schedulePoll();
     }

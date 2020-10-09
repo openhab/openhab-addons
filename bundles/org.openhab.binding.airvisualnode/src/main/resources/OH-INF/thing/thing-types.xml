@@ -43,11 +43,6 @@
 				<label>Node Password</label>
 				<description>Node network password</description>
 			</parameter>
-			<parameter name="isProVersion" type="boolean" required="true">
-				<label>AirVisual Pro version</label>
-				<description>Use AirVisual Pro version json format</description>
-				<default>false</default>
-			</parameter>
 			<!-- Advanced parameters -->
 			<parameter name="share" type="text">
 				<label>Share Name</label>
