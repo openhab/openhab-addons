@@ -118,32 +118,33 @@ public class LinkyHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
-        scheduler.submit(() -> {
-            try {
-                enedisApi = new EnedisHttpApi(config, gson, httpClient);
+        enedisApi = new EnedisHttpApi(config, gson, httpClient);
 
-                updateStatus(ThingStatus.ONLINE);
+        try {
+            enedisApi.initialize();
+            updateStatus(ThingStatus.ONLINE);
 
-                if (thing.getProperties().isEmpty()) {
-                    Map<String, String> properties = discoverAttributes();
-                    updateProperties(properties);
-                }
-
-                prmId = thing.getProperties().get(PRM_ID);
-                userId = thing.getProperties().get(USER_ID);
-
-                final LocalDateTime now = LocalDateTime.now();
-                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                        .truncatedTo(ChronoUnit.HOURS);
-
-                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                        ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                        REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
-
-            } catch (LinkyException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (thing.getProperties().isEmpty()) {
+                Map<String, String> properties = discoverAttributes();
+                updateProperties(properties);
             }
-        });
+
+            prmId = thing.getProperties().get(PRM_ID);
+            userId = thing.getProperties().get(USER_ID);
+
+            final LocalDateTime now = LocalDateTime.now();
+            final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
+                    .truncatedTo(ChronoUnit.HOURS);
+
+            updateData();
+
+            refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                    ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                    REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+
+        } catch (LinkyException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     private Map<String, String> discoverAttributes() throws LinkyException {
@@ -270,7 +271,7 @@ public class LinkyHandler extends BaseThingHandler {
             Consumption result = getConsumptionData(startDay, endDay);
             if (result != null) {
                 Aggregate days = result.aggregats.days;
-                for (int i = 0; i < days.datas.size() - 1; i++) {
+                for (int i = 0; i < days.datas.size(); i++) {
                     double consumption = days.datas.get(i);
                     String line = days.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
                     if (consumption >= 0) {
@@ -331,6 +332,14 @@ public class LinkyHandler extends BaseThingHandler {
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
             refreshJob = null;
+        }
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            try {
+                api.dispose();
+                enedisApi = null;
+            } catch (LinkyException ignore) {
+            }
         }
     }
 

@@ -62,23 +62,28 @@ public class EnedisHttpApi {
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
+    private final LinkyConfiguration config;
+    private boolean connected = false;
 
-    public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient) throws LinkyException {
+    public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
+        this.config = config;
 
         httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
         httpClient.setFollowRedirects(false);
+    }
 
+    public void initialize() throws LinkyException {
         try {
             httpClient.start();
         } catch (Exception e) {
             throw new LinkyException("Unable to start Jetty HttpClient", e);
         }
-        connect(config);
+        connect();
     }
 
-    private void connect(LinkyConfiguration config) throws LinkyException {
+    private void connect() throws LinkyException {
         addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
 
         logger.debug("Starting login process for user : {}", config.username);
@@ -100,9 +105,8 @@ public class EnedisHttpApi {
             }
 
             logger.debug("Get the location and the reqID");
-            String location = result.getHeaders().get("location");
             Pattern p = Pattern.compile("ReqID%(.*?)%26");
-            Matcher m = p.matcher(location);
+            Matcher m = p.matcher(getLocation(result));
             m.find();
 
             String reqId = m.group(1);
@@ -151,14 +155,34 @@ public class EnedisHttpApi {
             if (result.getStatus() != 302) {
                 throw new LinkyException("Connection failed step 5");
             }
-
+            connected = true;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new LinkyException("Error opening connection with Enedis webservice", e);
         }
     }
 
+    public String getLocation(ContentResponse response) {
+        return response.getHeaders().get(HttpHeader.LOCATION);
+    }
+
+    public void disconnect() throws LinkyException {
+        if (connected) {
+            try { // Three times in a row to get disconnected
+                String location = getLocation(httpClient.GET(URL_APPS_LINCS + "/logout"));
+                location = getLocation(httpClient.GET(location));
+                location = getLocation(httpClient.GET(location));
+                CookieStore cookieStore = httpClient.getCookieStore();
+                cookieStore.removeAll();
+                connected = false;
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                throw new LinkyException("Error while disconnecting from Enedis webservice", e);
+            }
+        }
+    }
+
     public void dispose() throws LinkyException {
         try {
+            disconnect();
             httpClient.stop();
         } catch (Exception e) {
             throw new LinkyException("Error stopping Jetty client", e);
