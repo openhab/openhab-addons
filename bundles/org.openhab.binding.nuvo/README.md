@@ -5,12 +5,15 @@
 This binding can be used to control the Nuvo Grand Concerto or Essentia G whole house multi-zone amplifier.
 Up to 20 keypad zones can be controlled when zone expansion modules are used (if not all zones on the amp are used they can be excluded via configuration).
 
-The binding supports two different kinds of connections:
+The binding supports three different kinds of connections:
 
 * serial connection,
-* serial over IP connection
+* serial over IP connection,
+* direct IP connection via a Nuvo MPS4 music server
 
 For users without a serial connector on the server side, you can use a serial to USB adapter.
+
+If you are using the Nuvo MPS4 music server with your Grand Concerto or Essentia G, the binding can connect to the server's IP address on port 5006.
 
 You don't need to have your Grand Concerto or Essentia G whole house amplifier device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
@@ -37,13 +40,15 @@ The thing has the following configuration parameters:
 | Parameter Label         | Parameter ID | Description                                                                                                                        | Accepted values        |
 |-------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------|------------------------|
 | Serial Port             | serialPort   | Serial port to use for connecting to the Nuvo whole house amplifier device                                                         | a comm port name       |
-| Address                 | host         | Host name or IP address of the machine connected to the Nuvo whole house amplifier device (serial over IP)                         | host name or ip        |
+| Address                 | host         | Host name or IP address of the machine connected to the Nuvo whole house amplifier serial port (serial over IP) or MPS4 server     | host name or ip        |
 | Port                    | port         | Communication port (serial over IP).                                                                                               | ip port number         |
 | Number of Zones         | numZones     | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)        | (1-20; default 6)      |
 | Sync Clock on GConcerto | clockSync    | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock | Boolean; default false |
 
 Some notes:
 
+* The direct connection to the MPS4 server has not been exhaustively tested, please report any issues found.
+* The only issue with the MPS4 connection seen thus far is that the setting SxDISPINFO as seen in the advanced rules below does not work.
 * If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
 * Source display_line1 thru 4 can only be updated on non NuvoNet sources.
 * The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.
@@ -98,6 +103,9 @@ nuvo:amplifier:myamp "Nuvo WHA" [ serialPort="COM5", numZones=6, clockSync=false
 
 // serial over IP connection
 nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=4444, numZones=6, clockSync=false]
+
+// MPS4 server IP connection
+nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=5006, numZones=6, clockSync=false]
 
 ```
 
@@ -200,7 +208,7 @@ sitemap nuvo label="Audio Control" {
         Slider item=nuvo_z1_volume minValue=0 maxValue=100 step=1 visibility=[nuvo_z1_power==ON] icon="soundvolume"
         Switch item=nuvo_z1_mute visibility=[nuvo_z1_power==ON] icon="soundvolume_mute"
         // mappings is optional to override the default dropdown item labels
-        Selection item=nuvo_z1_favorite visibility=[nuvo_z1_power==ON] icon="player" //mappings=[1="WNYC", 2="BBC One", 2="My Playlist"]
+        Selection item=nuvo_z1_favorite visibility=[nuvo_z1_power==ON] icon="player" //mappings=[1="WNYC", 2="BBC One", 3="My Playlist"]
         Default item=nuvo_z1_control visibility=[nuvo_z1_power==ON]
 
         Text item=nuvo_s1_display_line1 visibility=[nuvo_z1_source=="1"] icon="zoom"
