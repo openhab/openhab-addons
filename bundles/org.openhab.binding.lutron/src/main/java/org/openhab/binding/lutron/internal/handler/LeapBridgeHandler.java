@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -106,6 +107,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private @NonNullByDefault({}) LeapMessageParser leapMessageParser;
 
     private final BlockingQueue<LeapCommand> sendQueue = new LinkedBlockingQueue<>();
+
+    private @Nullable Future<?> asyncInitializeTask;
 
     private @Nullable Thread senderThread;
     private @Nullable Thread readerThread;
@@ -212,7 +215,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
-        scheduler.submit(this::connect); // start the async connect task
+        asyncInitializeTask = scheduler.submit(this::connect); // start the async connect task
     }
 
     /**
@@ -268,6 +271,10 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         } catch (IllegalArgumentException e) {
             // port out of valid range
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid port number");
+            return;
+        } catch (InterruptedIOException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while establishing connection");
             return;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -775,6 +782,10 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
     @Override
     public void dispose() {
+        Future<?> asyncInitializeTask = this.asyncInitializeTask;
+        if (asyncInitializeTask != null && !asyncInitializeTask.isDone()) {
+            asyncInitializeTask.cancel(true); // Interrupt async init task if it isn't done yet
+        }
         disconnect(true);
     }
 }
