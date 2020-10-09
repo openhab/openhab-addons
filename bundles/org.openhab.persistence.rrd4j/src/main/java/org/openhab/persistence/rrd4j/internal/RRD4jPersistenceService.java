@@ -367,7 +367,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         // 3. granularity of 15m for the last year
         // 4. granularity of 1h for the last 5 years
         // 5. granularity of 1d for the last 10 years
-        defaultNumeric.addArchives("LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,360,43800:LAST,0.5,8640,3650");
+        defaultNumeric
+                .addArchives("LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,360,43800:LAST,0.5,8640,3650");
         rrdDefs.put(DEFAULT_NUMERIC, defaultNumeric);
 
         RrdDefConfig defaultQuantifiable = new RrdDefConfig(DEFAULT_QUANTIFIABLE);
@@ -379,7 +380,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         // 3. granularity of 15m for the last year
         // 4. granularity of 1h for the last 5 years
         // 5. granularity of 1d for the last 10 years
-        defaultQuantifiable.addArchives("AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:AVERAGE,0.5,90,36500:AVERAGE,0.5,360,43800:AVERAGE,0.5,8640,3650");
+        defaultQuantifiable.addArchives(
+                "AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:AVERAGE,0.5,90,36500:AVERAGE,0.5,360,43800:AVERAGE,0.5,8640,3650");
         rrdDefs.put(DEFAULT_QUANTIFIABLE, defaultQuantifiable);
 
         RrdDefConfig defaultOther = new RrdDefConfig(DEFAULT_OTHER);
