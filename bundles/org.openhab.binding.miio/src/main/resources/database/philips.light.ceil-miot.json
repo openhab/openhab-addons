@@ -1,0 +1,179 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.dlight",
+			"philips.light.mceil",
+			"philips.light.mceilm",
+			"philips.light.mceils",
+			"philips.light.obceil",
+			"philips.light.obceim",
+			"philips.light.obceis",
+			"philips.light.sceil",
+			"philips.light.sceilm",
+			"philips.light.sceils",
+			"philips.light.xzceil",
+			"philips.light.xzceim",
+			"philips.light.xzceis"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Color Temperature",
+				"channel": "cct",
+				"channelType": "miot_uint32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "dvalue",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Delayed Turn-off",
+				"channel": "dv",
+				"channelType": "miot_uint16",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "wall-scene-en",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Wall Scene Enable",
+				"channel": "WallSceneEn",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "wall-scene",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Wall Scene",
+				"channel": "WallScene",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "auto-cct",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "Auto CCT",
+				"channel": "autoCct",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "dimming-period",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Dimming Period",
+				"channel": "dimmingPeriod",
+				"channelType": "miot_uint16",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "miband-status",
+				"siid": 3,
+				"piid": 12,
+				"friendlyName": "Mi Band Status",
+				"channel": "MibandStatus",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			}
+		],
+		"experimental": true
+	}
+}

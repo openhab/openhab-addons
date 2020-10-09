@@ -140,10 +140,10 @@ or in case of unknown models include the model information e.g.:
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p9](#dmaker-fan-p9) | Yes       |            |
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p10](#dmaker-fan-p10) | Yes       |            |
 | Viomi Internet refrigerator iLive | miio:unsupported | viomi.fridge.v3        | No        |            |
-| Mi Smart Home Gateway v1     | miio:basic       | [lumi.gateway.v1](#lumi-gateway-v1) | Yes       |            |
-| Mi Smart Home Gateway v2     | miio:basic       | [lumi.gateway.v2](#lumi-gateway-v2) | Yes       |            |
-| Mi Smart Home Gateway v3     | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       |            |
-| Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       |            |
+| Mi Smart Home Gateway v1     | miio:basic       | [lumi.gateway.v1](#lumi-gateway-v1) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Home Gateway v2     | miio:basic       | [lumi.gateway.v2](#lumi-gateway-v2) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Home Gateway v3     | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Humdifier                 | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
 | Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral1.v1  | No        |            |
 | Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral2.v1  | No        |            |
@@ -155,8 +155,27 @@ or in case of unknown models include the model information e.g.:
 | PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp | miio:basic       | [philips.light.candle](#philips-light-candle) | Yes       |            |
 | Xiaomi Philips Downlight     | miio:basic       | [philips.light.downlight](#philips-light-downlight) | Yes       |            |
 | Xiaomi Philips ZhiRui bedside lamp | miio:basic       | [philips.light.moonlight](#philips-light-moonlight) | Yes       |            |
+| Philips Ceiling Light        | miio:basic       | [philips.light.bceiling1](#philips-light-bceiling1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.bceiling2](#philips-light-bceiling2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Light                | miio:basic       | [philips.light.lnblight1](#philips-light-lnblight1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Light                | miio:basic       | [philips.light.lnblight2](#philips-light-lnblight2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Light                | miio:basic       | [philips.light.lnlrlight](#philips-light-lnlrlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Light                | miio:basic       | [philips.light.lrceiling](#philips-light-lrceiling) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal | miio:basic       | [philips.light.candle2](#philips-light-candle2) | Yes       |            |
 | philips.light.mono1          | miio:basic       | [philips.light.mono1](#philips-light-mono1) | Yes       |            |
+| Light                        | miio:basic       | [philips.light.dlight](#philips-light-dlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.mceil](#philips-light-mceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.mceilm](#philips-light-mceilm) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.mceils](#philips-light-mceils) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.obceil](#philips-light-obceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.obceim](#philips-light-obceim) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.obceis](#philips-light-obceis) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.sceil](#philips-light-sceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.sceilm](#philips-light-sceilm) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.sceils](#philips-light-sceils) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.xzceil](#philips-light-xzceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.xzceim](#philips-light-xzceim) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Ceiling Light        | miio:basic       | [philips.light.xzceis](#philips-light-xzceis) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | philips.light.virtual        | miio:basic       | [philips.light.virtual](#philips-light-virtual) | Yes       |            |
 | philips.light.zysread        | miio:basic       | [philips.light.zysread](#philips-light-zysread) | Yes       |            |
 | philips.light.zystrip        | miio:basic       | [philips.light.zystrip](#philips-light-zystrip) | Yes       |            |
@@ -206,23 +225,27 @@ or in case of unknown models include the model information e.g.:
 |  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes       |            |
 |  Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes       |            |
 |  Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes       |            |
-| Mi Water Purifier v1         | miio:basic       | [yunmi.waterpurifier.v1](#yunmi-waterpurifier-v1) | Yes       |            |
-| Mi Water Purifier v2         | miio:basic       | [yunmi.waterpurifier.v2](#yunmi-waterpurifier-v2) | Yes       |            |
-| Mi Water Purifier v3         | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       |            |
-| Mi Water Purifier v4         | miio:basic       | [yunmi.waterpurifier.v4](#yunmi-waterpurifier-v4) | Yes       |            |
-| Mi Water Purifier lx2        | miio:basic       | [yunmi.waterpuri.lx2](#yunmi-waterpuri-lx2) | Yes       |            |
-| Mi Water Purifier lx3        | miio:basic       | [yunmi.waterpuri.lx3](#yunmi-waterpuri-lx3) | Yes       |            |
-| Mi Water Purifier lx4        | miio:basic       | [yunmi.waterpuri.lx4](#yunmi-waterpuri-lx4) | Yes       |            |
-| Mi Water Purifier lx5        | miio:basic       | [yunmi.waterpuri.lx5](#yunmi-waterpuri-lx5) | Yes       |            |
-| Mi Water Purifier lx6        | miio:basic       | [yunmi.waterpuri.lx6](#yunmi-waterpuri-lx6) | Yes       |            |
-| Mi Water Purifier lx7        | miio:basic       | [yunmi.waterpuri.lx7](#yunmi-waterpuri-lx7) | Yes       |            |
-| Mi Water Purifier lx8        | miio:basic       | [yunmi.waterpuri.lx8](#yunmi-waterpuri-lx8) | Yes       |            |
-| Mi Water Purifier lx9        | miio:basic       | [yunmi.waterpuri.lx9](#yunmi-waterpuri-lx9) | Yes       |            |
-| Mi Water Purifier lx10       | miio:basic       | [yunmi.waterpuri.lx10](#yunmi-waterpuri-lx10) | Yes       |            |
-| Mi Water Purifier lx11       | miio:basic       | [yunmi.waterpuri.lx11](#yunmi-waterpuri-lx11) | Yes       |            |
-| Mi Water Purifier lx12       | miio:basic       | [yunmi.waterpuri.lx12](#yunmi-waterpuri-lx12) | Yes       |            |
+| Mi Water Purifier v1         | miio:basic       | [yunmi.waterpurifier.v1](#yunmi-waterpurifier-v1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier v2         | miio:basic       | [yunmi.waterpurifier.v2](#yunmi-waterpurifier-v2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier v3         | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier v4         | miio:basic       | [yunmi.waterpurifier.v4](#yunmi-waterpurifier-v4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx2        | miio:basic       | [yunmi.waterpuri.lx2](#yunmi-waterpuri-lx2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx3        | miio:basic       | [yunmi.waterpuri.lx3](#yunmi-waterpuri-lx3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx4        | miio:basic       | [yunmi.waterpuri.lx4](#yunmi-waterpuri-lx4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx5        | miio:basic       | [yunmi.waterpuri.lx5](#yunmi-waterpuri-lx5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx6        | miio:basic       | [yunmi.waterpuri.lx6](#yunmi-waterpuri-lx6) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx7        | miio:basic       | [yunmi.waterpuri.lx7](#yunmi-waterpuri-lx7) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx8        | miio:basic       | [yunmi.waterpuri.lx8](#yunmi-waterpuri-lx8) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx9        | miio:basic       | [yunmi.waterpuri.lx9](#yunmi-waterpuri-lx9) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx10       | miio:basic       | [yunmi.waterpuri.lx10](#yunmi-waterpuri-lx10) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx11       | miio:basic       | [yunmi.waterpuri.lx11](#yunmi-waterpuri-lx11) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier lx12       | miio:basic       | [yunmi.waterpuri.lx12](#yunmi-waterpuri-lx12) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Wifi Extender         | miio:unsupported | xiaomi.repeater.v2     | No        |            |
 | Mi Internet Speaker          | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
+| Xiaomi Mijia Whale Smart Toilet Cover | miio:basic       | [xjx.toilet.pro](#xjx-toilet-pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Mijia Smart Toilet Cover | miio:basic       | [xjx.toilet.relax](#xjx-toilet-relax) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Mijia Smart Toilet Cover | miio:basic       | [xjx.toilet.pure](#xjx-toilet-pure) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Mijia Smart Toilet Cover | miio:basic       | [xjx.toilet.zero](#xjx-toilet-zero) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp1](#yeelink-light-bslamp1) | Yes       |            |
 | Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp2](#yeelink-light-bslamp2) | Yes       |            |
 | Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp3](#yeelink-light-bslamp3) | Yes       |            |
@@ -1256,6 +1279,102 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | toggle           | Switch  | Toggle                              |            |
 
+### Philips Ceiling Light (<a name="philips-light-bceiling1">philips.light.bceiling1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| sw               | Switch  | Switch                              |            |
+| bl               | Switch  | Night Light                         |            |
+| ms               | Switch  | MiBand Notifications                |            |
+| ac               | Switch  | Auto Ambiance                       |            |
+| delayoff         | Switch  | Delay Off                           |            |
+| mb               | Switch  | MiBand                              |            |
+
+### Philips Ceiling Light (<a name="philips-light-bceiling2">philips.light.bceiling2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| sw               | Switch  | Switch                              |            |
+| bl               | Switch  | Night Light                         |            |
+| ms               | Switch  | MiBand Notifications                |            |
+| ac               | Switch  | Auto Ambiance                       |            |
+| delayoff         | Switch  | Delay Off                           |            |
+| mb               | Switch  | MiBand                              |            |
+
+### Philips Light (<a name="philips-light-lnblight1">philips.light.lnblight1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| sw               | Switch  | Switch                              |            |
+| bl               | Switch  | Night Light                         |            |
+| ms               | Switch  | MiBand Notifications                |            |
+| ac               | Switch  | Auto Ambiance                       |            |
+| delayoff         | Switch  | Delay Off                           |            |
+| mb               | Switch  | MiBand                              |            |
+
+### Philips Light (<a name="philips-light-lnblight2">philips.light.lnblight2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| sw               | Switch  | Switch                              |            |
+| bl               | Switch  | Night Light                         |            |
+| ms               | Switch  | MiBand Notifications                |            |
+| ac               | Switch  | Auto Ambiance                       |            |
+| delayoff         | Switch  | Delay Off                           |            |
+| mb               | Switch  | MiBand                              |            |
+
+### Philips Light (<a name="philips-light-lnlrlight">philips.light.lnlrlight</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| sw               | Switch  | Switch                              |            |
+| bl               | Switch  | Night Light                         |            |
+| ms               | Switch  | MiBand Notifications                |            |
+| ac               | Switch  | Auto Ambiance                       |            |
+| delayoff         | Switch  | Delay Off                           |            |
+| mb               | Switch  | MiBand                              |            |
+
+### Philips Light (<a name="philips-light-lrceiling">philips.light.lrceiling</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| sw               | Switch  | Switch                              |            |
+| bl               | Switch  | Night Light                         |            |
+| ms               | Switch  | MiBand Notifications                |            |
+| ac               | Switch  | Auto Ambiance                       |            |
+| delayoff         | Switch  | Delay Off                           |            |
+| mb               | Switch  | MiBand                              |            |
+
 ### Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal (<a name="philips-light-candle2">philips.light.candle2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
@@ -1274,6 +1393,201 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
 | scene            | Number  | Scene                               |            |
+
+### Light (<a name="philips-light-dlight">philips.light.dlight</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-mceil">philips.light.mceil</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-mceilm">philips.light.mceilm</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-mceils">philips.light.mceils</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-obceil">philips.light.obceil</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-obceim">philips.light.obceim</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-obceis">philips.light.obceis</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-sceil">philips.light.sceil</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-sceilm">philips.light.sceilm</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-sceils">philips.light.sceils</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-xzceil">philips.light.xzceil</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-xzceim">philips.light.xzceim</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
+
+### Philips Ceiling Light (<a name="philips-light-xzceis">philips.light.xzceis</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| brightness       | Number  | Brightness                          |            |
+| cct              | Number  | Color Temperature                   |            |
+| dv               | Number  | Delayed Turn-off                    |            |
+| WallSceneEn      | Switch  | Wall Scene Enable                   |            |
+| WallScene        | String  | Wall Scene                          |            |
+| autoCct          | String  | Auto CCT                            |            |
+| dimmingPeriod    | Number  | Dimming Period                      |            |
+| MibandStatus     | String  | Mi Band Status                      |            |
 
 ### philips.light.virtual (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
 
@@ -1847,6 +2161,46 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+
+### Xiaomi Mijia Whale Smart Toilet Cover (<a name="xjx-toilet-pro">xjx.toilet.pro</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| seat_temp        | Number  | Seat Temperature                    |            |
+| status_seatheat  | Number  | Seat Status                         |            |
+| water_temp_t     | Number  | Water Temperature                   |            |
+| fan_temp         | Number  | Fan Temperature                     |            |
+| status_led       | Number  | Night Light                         |            |
+
+### Xiaomi Mijia Smart Toilet Cover (<a name="xjx-toilet-relax">xjx.toilet.relax</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| seat_temp        | Number  | Seat Temperature                    |            |
+| status_seatheat  | Number  | Seat Status                         |            |
+| water_temp_t     | Number  | Water Temperature                   |            |
+| fan_temp         | Number  | Fan Temperature                     |            |
+| status_led       | Number  | Night Light                         |            |
+
+### Xiaomi Mijia Smart Toilet Cover (<a name="xjx-toilet-pure">xjx.toilet.pure</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| seat_temp        | Number  | Seat Temperature                    |            |
+| status_seatheat  | Number  | Seat Status                         |            |
+| water_temp_t     | Number  | Water Temperature                   |            |
+| fan_temp         | Number  | Fan Temperature                     |            |
+| status_led       | Number  | Night Light                         |            |
+
+### Xiaomi Mijia Smart Toilet Cover (<a name="xjx-toilet-zero">xjx.toilet.zero</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| seat_temp        | Number  | Seat Temperature                    |            |
+| status_seatheat  | Number  | Seat Status                         |            |
+| water_temp_t     | Number  | Water Temperature                   |            |
+| fan_temp         | Number  | Fan Temperature                     |            |
+| status_led       | Number  | Night Light                         |            |
 
 ### Yeelight Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
 
@@ -3718,6 +4072,120 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
+### Philips Ceiling Light (philips.light.bceiling1) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+```
+
+### Philips Ceiling Light (philips.light.bceiling2) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+```
+
+### Philips Light (philips.light.lnblight1) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+```
+
+### Philips Light (philips.light.lnblight2) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+```
+
+### Philips Light (philips.light.lnlrlight) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+```
+
+### Philips Light (philips.light.lrceiling) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+```
+
 ### Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal (philips.light.candle2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -3741,6 +4209,240 @@ Group G_light "philips.light.mono1" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+```
+
+### Light (philips.light.dlight) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.mceil) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.mceilm) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.mceils) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.obceil) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.obceim) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.obceis) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.sceil) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.sceilm) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.sceils) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.xzceil) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.xzceim) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+```
+
+### Philips Ceiling Light (philips.light.xzceis) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips Ceiling Light" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
+Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
+Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
+String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
+String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
+Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
+String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
 ### philips.light.virtual (philips.light.virtual) item file lines
@@ -4413,6 +5115,58 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Xiaomi Mijia Whale Smart Toilet Cover (xjx.toilet.pro) item file lines
+
+note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_toilet "Xiaomi Mijia Whale Smart Toilet Cover" <status>
+Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
+Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
+Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
+Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
+Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+```
+
+### Xiaomi Mijia Smart Toilet Cover (xjx.toilet.relax) item file lines
+
+note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_toilet "Xiaomi Mijia Smart Toilet Cover" <status>
+Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
+Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
+Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
+Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
+Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+```
+
+### Xiaomi Mijia Smart Toilet Cover (xjx.toilet.pure) item file lines
+
+note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_toilet "Xiaomi Mijia Smart Toilet Cover" <status>
+Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
+Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
+Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
+Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
+Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+```
+
+### Xiaomi Mijia Smart Toilet Cover (xjx.toilet.zero) item file lines
+
+note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_toilet "Xiaomi Mijia Smart Toilet Cover" <status>
+Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
+Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
+Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
+Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
+Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
 ### Yeelight Lamp (yeelink.light.bslamp1) item file lines

@@ -18,9 +18,11 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.time.Duration;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -73,8 +75,8 @@ public class WakeOnLanUtility {
             return null;
         }
 
-        String cmd = String.format(COMMAND, hostName);
-        String response = ExecUtil.executeCommandLineAndWaitResponse(cmd, CMD_TIMEOUT_MS);
+        String[] cmds = Stream.of(COMMAND.split(" ")).map(arg -> String.format(arg, hostName)).toArray(String[]::new);
+        String response = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(CMD_TIMEOUT_MS), cmds);
         Matcher matcher = MAC_REGEX.matcher(response);
         String macAddress = null;
 
@@ -90,7 +92,8 @@ public class WakeOnLanUtility {
         if (macAddress != null) {
             LOGGER.debug("MAC address of host {} is {}", hostName, macAddress);
         } else {
-            LOGGER.debug("Problem executing command {} to retrieve MAC address for {}: {}", cmd, hostName, response);
+            LOGGER.debug("Problem executing command {} to retrieve MAC address for {}: {}",
+                    String.format(COMMAND, hostName), hostName, response);
         }
         return macAddress;
     }

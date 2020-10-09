@@ -10,13 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.zoneminder.internal.config;
+package org.openhab.binding.zoneminder.internal.dto;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * base class containing Configuration in openHAB
+ * The {@link EventContainerDTO} holds a Zoneminder event object.
  *
- * @author Martin S. Eskildsen - Initial contribution
+ * @author Mark Hilbush - Initial contribution
  */
-public abstract class ZoneMinderConfig {
-    public abstract String getConfigId();
+public class EventContainerDTO {
+
+    /**
+     * Zoneminder event object
+     */
+    @SerializedName("Event")
+    public EventDTO event;
 }
