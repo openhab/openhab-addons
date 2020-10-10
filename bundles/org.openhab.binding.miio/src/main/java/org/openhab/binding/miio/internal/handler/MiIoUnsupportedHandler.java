@@ -147,7 +147,6 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
             sb.append("\r\n");
             String res = response.getResult().toString();
             if (!response.isError() && !res.contentEquals("[null]") && !res.contentEquals("[]")) {
-                logger.info("got one Supported prop: {}");
                 if (testChannelList.containsKey(response.getId())) {
                     supportedChannelList.put(testChannelList.get(response.getId()), res);
                 }
@@ -181,7 +180,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         }
         this.lastCommand = lastCommand;
         sb.append("\r\n");
-        logger.info(sb.toString());
+        logger.info("{}", sb.toString());
     }
 
     private LinkedHashMap<String, MiIoBasicChannel> collectProperties(String model) {
@@ -260,7 +259,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         }
         sb.append(
                 "\r\nPlease share your this output on the community forum or github to get this device supported.\r\n");
-        logger.info(sb.toString());
+        logger.info("{}", sb.toString());
         writeLog();
     }
 
