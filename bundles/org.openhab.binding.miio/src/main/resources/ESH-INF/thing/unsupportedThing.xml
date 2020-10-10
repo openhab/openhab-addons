@@ -30,7 +30,7 @@
 
 	<channel-type id="testcommands">
 		<item-type>Switch</item-type>
-		<label>(experimental)Execute Test Commands</label>
-		<description>(experimental)Execute Test Commands to support development for your device. (NB device can switch modes)</description>
+		<label>(experimental)Execute test to find supported channels</label>
+		<description>(experimental)Execute test for all known properties to find channels supported by your device.</description>
 	</channel-type>
 </thing:thing-descriptions>

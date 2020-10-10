@@ -88,12 +88,25 @@ or in case of unknown models include the model information e.g.:
 Newer devices may not yet be supported.
 However, many devices share large similarities with existing devices.
 The binding allows to try/test if your new device is working with database files of older devices as well.
+
+There are 2 ways to get unsupported devices working, by overriding the model with the model of a supported item or by test all known properties to see which are supported by your device.
+
+## Substitute model for unsupported devices
+Replace the model with the model which is already supported.
 For this, first remove your unsupported thing. Manually add a miio:basic thing. 
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
 Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
 
-# Advanced: adding local database files to support new devices
+## Supported property test
+The unsupported device has a test channel with switch. When switching on, all known properties are tested, this may take few minutes.
+A test report will be shown in the log and is saved in the userdata/miio folder.
+If supported properties are found, an experimental database file is saved to the conf/misc/miio folder (see below chapter).
+The thing will go offline and will come back online as basic device, supporting the found channels.
+The database file may need to be modified to display the right channel names.
+After validation, please share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
+
+## Advanced: adding local database files to support new devices
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
@@ -101,7 +114,7 @@ The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned fo
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
 For format, please check the current database files in openHAB GitHub.
 
-## Channels
+# Channels
 
 Depending on the device, different channels are available.
 
