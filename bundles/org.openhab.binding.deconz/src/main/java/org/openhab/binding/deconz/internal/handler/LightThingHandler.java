@@ -28,7 +28,6 @@ import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
-import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -91,8 +90,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     private int ctMin = ZCL_CT_MIN;
 
     public LightThingHandler(Thing thing, Gson gson, StateDescriptionProvider stateDescriptionProvider) {
-        super(thing, gson);
-
+        super(thing, gson, ResourceType.LIGHTS);
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -120,22 +118,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             }
         }
         super.initialize();
-    }
-
-    @Override
-    protected void registerListener() {
-        WebSocketConnection conn = connection;
-        if (conn != null) {
-            conn.registerListener(ResourceType.LIGHTS, config.id, this);
-        }
-    }
-
-    @Override
-    protected void unregisterListener() {
-        WebSocketConnection conn = connection;
-        if (conn != null) {
-            conn.unregisterListener(ResourceType.LIGHTS, config.id);
-        }
     }
 
     @Override
@@ -383,10 +365,5 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 }
             }
         }
-    }
-
-    @Override
-    public Class<? extends DeconzBaseMessage> getExpectedMessageType() {
-        return LightMessage.class;
     }
 }

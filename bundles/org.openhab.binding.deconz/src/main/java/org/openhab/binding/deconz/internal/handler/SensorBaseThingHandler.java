@@ -29,7 +29,6 @@ import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
-import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -78,28 +77,12 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
     private @Nullable ScheduledFuture<?> lastSeenPollingJob;
 
     public SensorBaseThingHandler(Thing thing, Gson gson) {
-        super(thing, gson);
+        super(thing, gson, ResourceType.SENSORS);
     }
 
     @Override
     protected void requestState() {
         requestState("sensors");
-    }
-
-    @Override
-    protected void registerListener() {
-        WebSocketConnection conn = connection;
-        if (conn != null) {
-            conn.registerListener(ResourceType.SENSORS, config.id, this);
-        }
-    }
-
-    @Override
-    protected void unregisterListener() {
-        WebSocketConnection conn = connection;
-        if (conn != null) {
-            conn.unregisterListener(ResourceType.SENSORS, config.id);
-        }
     }
 
     @Override
@@ -320,10 +303,5 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
             return;
         }
         updateState(channelID, new QuantityType<>(value.doubleValue() * scaling, unit));
-    }
-
-    @Override
-    public Class<? extends DeconzBaseMessage> getExpectedMessageType() {
-        return SensorMessage.class;
     }
 }

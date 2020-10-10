@@ -25,6 +25,9 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
+import org.openhab.binding.deconz.internal.dto.GroupMessage;
+import org.openhab.binding.deconz.internal.dto.LightMessage;
+import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +44,10 @@ import com.google.gson.Gson;
 @WebSocket
 @NonNullByDefault
 public class WebSocketConnection {
+    private static final Map<ResourceType, Class<? extends DeconzBaseMessage>> EXPECTED_MESSAGE_TYPES = Map.of(
+            ResourceType.GROUPS, GroupMessage.class, ResourceType.LIGHTS, LightMessage.class, ResourceType.SENSORS,
+            SensorMessage.class);
+
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
 
     private final WebSocketClient client;
@@ -105,7 +112,10 @@ public class WebSocketConnection {
         DeconzBaseMessage changedMessage = gson.fromJson(message, DeconzBaseMessage.class);
         WebSocketMessageListener listener = listeners.get(Map.entry(changedMessage.r, changedMessage.id));
         if (listener != null) {
-            listener.messageReceived(changedMessage.id, gson.fromJson(message, listener.getExpectedMessageType()));
+            Class<? extends DeconzBaseMessage> expectedMessageType = EXPECTED_MESSAGE_TYPES.get(changedMessage.r);
+            if (expectedMessageType != null) {
+                listener.messageReceived(changedMessage.id, gson.fromJson(message, expectedMessageType));
+            }
         } else {
             logger.trace("Couldn't find {} listener for id {}", changedMessage.r, changedMessage.id);
         }

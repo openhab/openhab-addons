@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.dto.*;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
-import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.*;
@@ -65,23 +64,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
     private GroupAction lastCommand = new GroupAction();
 
     public GroupThingHandler(Thing thing, Gson gson) {
-        super(thing, gson);
-    }
-
-    @Override
-    protected void registerListener() {
-        WebSocketConnection conn = connection;
-        if (conn != null) {
-            conn.registerListener(ResourceType.GROUPS, config.id, this);
-        }
-    }
-
-    @Override
-    protected void unregisterListener() {
-        WebSocketConnection conn = connection;
-        if (conn != null) {
-            conn.unregisterListener(ResourceType.GROUPS, config.id);
-        }
+        super(thing, gson, ResourceType.GROUPS);
     }
 
     @Override
@@ -303,10 +286,5 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
                 thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, groupState));
             }
         }
-    }
-
-    @Override
-    public Class<? extends DeconzBaseMessage> getExpectedMessageType() {
-        return GroupMessage.class;
     }
 }

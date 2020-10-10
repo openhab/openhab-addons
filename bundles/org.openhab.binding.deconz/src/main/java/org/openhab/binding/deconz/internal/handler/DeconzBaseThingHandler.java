@@ -26,6 +26,7 @@ import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
+import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -50,6 +51,7 @@ import com.google.gson.Gson;
 public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extends BaseThingHandler
         implements WebSocketMessageListener {
     private final Logger logger = LoggerFactory.getLogger(DeconzBaseThingHandler.class);
+    private final ResourceType resourceType;
     protected ThingConfig config = new ThingConfig();
     protected DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
     protected final Gson gson;
@@ -57,9 +59,10 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     protected @Nullable WebSocketConnection connection;
     protected @Nullable AsyncHttpClient http;
 
-    public DeconzBaseThingHandler(Thing thing, Gson gson) {
+    public DeconzBaseThingHandler(Thing thing, Gson gson, ResourceType resourceType) {
         super(thing);
         this.gson = gson;
+        this.resourceType = resourceType;
     }
 
     /**
@@ -73,9 +76,19 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         }
     }
 
-    protected abstract void registerListener();
+    private void registerListener() {
+        WebSocketConnection conn = connection;
+        if (conn != null) {
+            conn.registerListener(resourceType, config.id, this);
+        }
+    }
 
-    protected abstract void unregisterListener();
+    private void unregisterListener() {
+        WebSocketConnection conn = connection;
+        if (conn != null) {
+            conn.unregisterListener(resourceType, config.id);
+        }
+    }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
@@ -84,39 +97,38 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
             return;
         }
 
-        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            // the bridge is ONLINE, we can communicate with the gateway, so we update the connection parameters and
+            // register the listener
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
+            DeconzBridgeHandler bridgeHandler = (DeconzBridgeHandler) bridge.getHandler();
+            if (bridgeHandler == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
+
+            final WebSocketConnection webSocketConnection = bridgeHandler.getWebsocketConnection();
+            this.connection = webSocketConnection;
+            this.http = bridgeHandler.getHttp();
+            this.bridgeConfig = bridgeHandler.getBridgeConfig();
+
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
+
+            // Real-time data
+            registerListener();
+
+            // get initial values
+            requestState();
+        } else {
+            // if the bridge is not ONLINE, we assume communication is not possible, so we unregister the listener and
+            // set the thing status to OFFLINE
             unregisterListener();
-            return;
-        }
-
-        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
-
-        Bridge bridge = getBridge();
-        if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
         }
-        DeconzBridgeHandler bridgeHandler = (DeconzBridgeHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
-
-        final WebSocketConnection webSocketConnection = bridgeHandler.getWebsocketConnection();
-        this.connection = webSocketConnection;
-        this.http = bridgeHandler.getHttp();
-        this.bridgeConfig = bridgeHandler.getBridgeConfig();
-
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
-
-        // Real-time data
-        registerListener();
-
-        // get initial values
-        requestState();
     }
 
     protected abstract @Nullable T parseStateResponse(AsyncHttpClient.Result r);
@@ -166,6 +178,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     @Override
     public void dispose() {
         stopInitializationJob();
+        unregisterListener();
         super.dispose();
     }
 
