@@ -83,6 +83,8 @@ public class DeviceCommand extends LutronCommandNew {
                 return null;
             }
 
+            Integer integrationId = this.integrationId;
+            Integer leapComponent = this.leapComponent; // make the broken null checker happy
             if (action.equals(DeviceCommand.ACTION_PRESS) && integrationId != null && leapComponent != null) {
                 int button = bridgeHandler.getButton(integrationId, leapComponent);
                 if (button > 0) {

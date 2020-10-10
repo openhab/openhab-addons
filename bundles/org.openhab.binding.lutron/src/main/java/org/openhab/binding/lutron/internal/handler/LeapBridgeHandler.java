@@ -603,6 +603,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         deviceDataLoaded = true;
         checkInitialized();
 
+        LeapDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.processDeviceDefinitions(deviceList);
         }
@@ -610,6 +611,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
     @Override
     public void handleMultipleAreaDefinition(List<Area> areaList) {
+        LeapDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.setAreas(areaList);
         }
@@ -617,6 +619,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
     @Override
     public void handleMultipleOccupancyGroupDefinition(List<OccupancyGroup> oGroupList) {
+        LeapDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.setOccupancyGroups(oGroupList);
         }
