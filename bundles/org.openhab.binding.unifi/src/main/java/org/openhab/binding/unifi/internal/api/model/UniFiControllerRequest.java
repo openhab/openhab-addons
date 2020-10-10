@@ -81,6 +81,10 @@ public class UniFiControllerRequest<T> {
 
     private final int port;
 
+    private final boolean unifiOS;
+
+    private String csrfToken;
+
     private String path = "/";
 
     private Map<String, String> queryParameters = new HashMap<>();
@@ -91,16 +95,36 @@ public class UniFiControllerRequest<T> {
 
     // Public API
 
-    public UniFiControllerRequest(Class<T> resultType, Gson gson, HttpClient httpClient, String host, int port) {
+    public UniFiControllerRequest(Class<T> resultType, Gson gson, HttpClient httpClient, String host, int port,
+            boolean unifiOS) {
         this.resultType = resultType;
         this.gson = gson;
         this.httpClient = httpClient;
         this.host = host;
+        this.unifiOS = unifiOS;
         this.port = port;
+        this.csrfToken = "";
     }
 
     public void setPath(String path) {
+        // prefix paths if unifiOS
+        if (unifiOS) {
+            this.path = "/proxy/network" + path;
+        } else {
+            this.path = path;
+        }
+    }
+
+    public void setAuthPath(String path) {
         this.path = path;
+    }
+
+    public String getCsrfToken() {
+        return this.csrfToken;
+    }
+
+    public void setCsrfToken(String csrfToken) {
+        this.csrfToken = csrfToken;
     }
 
     public void setBodyParameter(String key, Object value) {
@@ -132,6 +156,7 @@ public class UniFiControllerRequest<T> {
         int status = response.getStatus();
         switch (status) {
             case HttpStatus.OK_200:
+                this.csrfToken = response.getHeaders().get("X-CSRF-Token");
                 content = response.getContentAsString();
                 if (logger.isTraceEnabled()) {
                     logger.trace("<< {} {} \n{}", status, HttpStatus.getMessage(status), prettyPrintJson(content));
@@ -197,6 +222,9 @@ public class UniFiControllerRequest<T> {
             ContentProvider content = new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON, jsonBody,
                     StandardCharsets.UTF_8);
             request = request.content(content);
+        }
+        if (this.csrfToken != "") {
+            request.header("X-CSRF-Token", this.csrfToken);
         }
         return request;
     }

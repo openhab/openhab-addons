@@ -61,18 +61,30 @@ public class UniFiController {
 
     private final int port;
 
+    private String csrfToken;
+
     private final String username;
 
     private final String password;
+
+    private final boolean unifiOS;
 
     private final Gson gson;
 
     public UniFiController(HttpClient httpClient, String host, int port, String username, String password) {
         this.httpClient = httpClient;
         this.host = host;
-        this.port = port;
+        // assume UniFi-OS on UDM if port is 443
+        if (port == 443) {
+            this.unifiOS = true;
+            this.port = -1;
+        } else {
+            this.unifiOS = false;
+            this.port = port;
+        }
         this.username = username;
         this.password = password;
+        this.csrfToken = "";
         UniFiSiteInstanceCreator siteInstanceCreator = new UniFiSiteInstanceCreator(this);
         UniFiDeviceInstanceCreator deviceInstanceCreator = new UniFiDeviceInstanceCreator(this);
         UniFiClientInstanceCreator clientInstanceCreator = new UniFiClientInstanceCreator(this);
@@ -97,18 +109,31 @@ public class UniFiController {
 
     public void login() throws UniFiException {
         UniFiControllerRequest<Void> req = newRequest(Void.class);
-        req.setPath("/api/login");
         req.setBodyParameter("username", username);
         req.setBodyParameter("password", password);
         // scurb: Changed strict = false to make blocking feature work
         req.setBodyParameter("strict", false);
         req.setBodyParameter("remember", false);
+        if (this.unifiOS) {
+            req.setAuthPath("/api/auth/login");
+        } else {
+            req.setAuthPath("/api/login");
+        }
         executeRequest(req);
+        this.csrfToken = req.getCsrfToken();
     }
 
     public void logout() throws UniFiException {
         UniFiControllerRequest<Void> req = newRequest(Void.class);
-        req.setPath("/logout");
+        // unifiOS
+        if (this.unifiOS) {
+            // have something in the body to make the downstream method switch to POST
+            req.setBodyParameter("username", username);
+            req.setAuthPath("/api/auth/logout");
+            req.setCsrfToken(this.csrfToken);
+        } else {
+            req.setAuthPath("/logout");
+        }
         executeRequest(req);
     }
 
@@ -189,7 +214,7 @@ public class UniFiController {
     // Internal API
 
     private <T> UniFiControllerRequest<T> newRequest(Class<T> responseType) {
-        return new UniFiControllerRequest<>(responseType, gson, httpClient, host, port);
+        return new UniFiControllerRequest<>(responseType, gson, httpClient, host, port, unifiOS);
     }
 
     private <T> @Nullable T executeRequest(UniFiControllerRequest<T> request) throws UniFiException {
