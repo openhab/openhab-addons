@@ -25,9 +25,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
-import org.openhab.binding.deconz.internal.dto.GroupMessage;
-import org.openhab.binding.deconz.internal.dto.LightMessage;
-import org.openhab.binding.deconz.internal.dto.SensorMessage;
+import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +45,7 @@ public class WebSocketConnection {
 
     private final WebSocketClient client;
     private final WebSocketConnectionListener connectionListener;
-    private final Map<String, WebSocketMessageListener> sensorListener = new ConcurrentHashMap<>();
-    private final Map<String, WebSocketMessageListener> lightListener = new ConcurrentHashMap<>();
-    private final Map<String, WebSocketMessageListener> groupListener = new ConcurrentHashMap<>();
+    private final Map<Map.Entry<ResourceType, String>, WebSocketMessageListener> listeners = new ConcurrentHashMap<>();
 
     private final Gson gson;
     private boolean connected = false;
@@ -87,28 +83,12 @@ public class WebSocketConnection {
         client.destroy();
     }
 
-    public void registerSensorListener(String sensorID, WebSocketMessageListener listener) {
-        sensorListener.put(sensorID, listener);
+    public void registerListener(ResourceType resourceType, String sensorID, WebSocketMessageListener listener) {
+        listeners.put(Map.entry(resourceType, sensorID), listener);
     }
 
-    public void unregisterSensorListener(String sensorID) {
-        sensorListener.remove(sensorID);
-    }
-
-    public void registerLightListener(String lightID, WebSocketMessageListener listener) {
-        lightListener.put(lightID, listener);
-    }
-
-    public void unregisterLightListener(String lightID) {
-        sensorListener.remove(lightID);
-    }
-
-    public void registerGroupListener(String groupID, WebSocketMessageListener listener) {
-        groupListener.put(groupID, listener);
-    }
-
-    public void unregisterGroupListener(String groupID) {
-        sensorListener.remove(groupID);
+    public void unregisterListener(ResourceType resourceType, String sensorID) {
+        listeners.remove(Map.entry(resourceType, sensorID));
     }
 
     @OnWebSocketConnect
@@ -123,33 +103,11 @@ public class WebSocketConnection {
     public void onMessage(String message) {
         logger.trace("Raw data received by websocket: {}", message);
         DeconzBaseMessage changedMessage = gson.fromJson(message, DeconzBaseMessage.class);
-        switch (changedMessage.r) {
-            case "sensors":
-                WebSocketMessageListener listener = sensorListener.get(changedMessage.id);
-                if (listener != null) {
-                    listener.messageReceived(changedMessage.id, gson.fromJson(message, SensorMessage.class));
-                } else {
-                    logger.trace("Couldn't find sensor listener for id {}", changedMessage.id);
-                }
-                break;
-            case "lights":
-                listener = lightListener.get(changedMessage.id);
-                if (listener != null) {
-                    listener.messageReceived(changedMessage.id, gson.fromJson(message, LightMessage.class));
-                } else {
-                    logger.trace("Couldn't find light listener for id {}", changedMessage.id);
-                }
-                break;
-            case "groups":
-                listener = groupListener.get(changedMessage.id);
-                if (listener != null) {
-                    listener.messageReceived(changedMessage.id, gson.fromJson(message, GroupMessage.class));
-                } else {
-                    logger.trace("Couldn't find group listener for id {}", changedMessage.id);
-                }
-                break;
-            default:
-                logger.debug("Unknown message type: {}", changedMessage.r);
+        WebSocketMessageListener listener = listeners.get(Map.entry(changedMessage.r, changedMessage.id));
+        if (listener != null) {
+            listener.messageReceived(changedMessage.id, gson.fromJson(message, listener.getExpectedMessageType()));
+        } else {
+            logger.trace("Couldn't find {} listener for id {}", changedMessage.r, changedMessage.id);
         }
     }
 

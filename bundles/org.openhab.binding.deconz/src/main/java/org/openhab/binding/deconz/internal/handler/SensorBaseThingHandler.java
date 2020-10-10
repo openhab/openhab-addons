@@ -30,6 +30,7 @@ import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
+import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -89,7 +90,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
     protected void registerListener() {
         WebSocketConnection conn = connection;
         if (conn != null) {
-            conn.registerSensorListener(config.id, this);
+            conn.registerListener(ResourceType.SENSORS, config.id, this);
         }
     }
 
@@ -97,7 +98,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
     protected void unregisterListener() {
         WebSocketConnection conn = connection;
         if (conn != null) {
-            conn.unregisterSensorListener(config.id);
+            conn.unregisterListener(ResourceType.SENSORS, config.id);
         }
     }
 
@@ -319,5 +320,10 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
             return;
         }
         updateState(channelID, new QuantityType<>(value.doubleValue() * scaling, unit));
+    }
+
+    @Override
+    public Class<? extends DeconzBaseMessage> getExpectedMessageType() {
+        return SensorMessage.class;
     }
 }

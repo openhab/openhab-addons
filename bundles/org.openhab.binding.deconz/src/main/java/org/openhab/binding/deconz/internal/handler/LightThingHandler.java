@@ -19,8 +19,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,6 +29,7 @@ import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
+import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -68,12 +67,10 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
             THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT,
-            THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE).collect(Collectors.toSet());
+            THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE);
 
-    private static final double HUE_FACTOR = 65535 / 360.0;
-    private static final double BRIGHTNESS_FACTOR = 2.54;
     private static final long DEFAULT_COMMAND_EXPIRY_TIME = 250; // in ms
 
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
@@ -129,7 +126,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     protected void registerListener() {
         WebSocketConnection conn = connection;
         if (conn != null) {
-            conn.registerLightListener(config.id, this);
+            conn.registerListener(ResourceType.LIGHTS, config.id, this);
         }
     }
 
@@ -137,7 +134,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     protected void unregisterListener() {
         WebSocketConnection conn = connection;
         if (conn != null) {
-            conn.unregisterLightListener(config.id);
+            conn.unregisterListener(ResourceType.LIGHTS, config.id);
         }
     }
 
@@ -184,15 +181,15 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                             logger.warn("Failed to convert {} to xy-values", command);
                         }
                         newLightState.xy = new double[] { xy[0].doubleValue() / 100.0, xy[1].doubleValue() / 100.0 };
-                        newLightState.bri = fromPercentType(hsbCommand.getBrightness());
+                        newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
                     } else {
                         // default is colormode "hs" (used when colormode "hs" is set or colormode is unknown)
-                        newLightState.bri = fromPercentType(hsbCommand.getBrightness());
+                        newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
                         newLightState.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
-                        newLightState.sat = fromPercentType(hsbCommand.getSaturation());
+                        newLightState.sat = Util.fromPercentType(hsbCommand.getSaturation());
                     }
                 } else if (command instanceof PercentType) {
-                    newLightState.bri = fromPercentType((PercentType) command);
+                    newLightState.bri = Util.fromPercentType((PercentType) command);
                 } else if (command instanceof DecimalType) {
                     newLightState.bri = ((DecimalType) command).intValue();
                 } else {
@@ -388,18 +385,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         }
     }
 
-    private PercentType toPercentType(int val) {
-        int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
-        if (scaledValue < 0 || scaledValue > 100) {
-            logger.trace("received value {} (converted to {}). Coercing.", val, scaledValue);
-            scaledValue = scaledValue < 0 ? 0 : scaledValue;
-            scaledValue = scaledValue > 100 ? 100 : scaledValue;
-        }
-        logger.debug("val = '{}', scaledValue = '{}'", val, scaledValue);
-        return new PercentType(scaledValue);
-    }
-
-    private int fromPercentType(PercentType val) {
-        return (int) Math.floor(val.doubleValue() * BRIGHTNESS_FACTOR);
+    @Override
+    public Class<? extends DeconzBaseMessage> getExpectedMessageType() {
+        return LightMessage.class;
     }
 }

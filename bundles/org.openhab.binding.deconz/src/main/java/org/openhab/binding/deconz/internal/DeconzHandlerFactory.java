@@ -20,10 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.handler.*;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
-import org.openhab.binding.deconz.internal.types.LightType;
-import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
-import org.openhab.binding.deconz.internal.types.ThermostatMode;
-import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
+import org.openhab.binding.deconz.internal.types.*;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -69,6 +66,8 @@ public class DeconzHandlerFactory extends BaseThingHandlerFactory {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
+        gsonBuilder.registerTypeAdapter(GroupType.class, new GroupTypeDeserializer());
+        gsonBuilder.registerTypeAdapter(ResourceType.class, new ResourceTypeDeserializer());
         gsonBuilder.registerTypeAdapter(ThermostatMode.class, new ThermostatModeGsonTypeAdapter());
         gson = gsonBuilder.create();
     }

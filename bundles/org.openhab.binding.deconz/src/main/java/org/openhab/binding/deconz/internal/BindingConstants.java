@@ -124,4 +124,7 @@ public class BindingConstants {
     public static final int ZCL_CT_MIN = 1;
     public static final int ZCL_CT_MAX = 65279; // 0xFEFF
     public static final int ZCL_CT_INVALID = 65535; // 0xFFFF
+
+    public static final double HUE_FACTOR = 65535 / 360.0;
+    public static final double BRIGHTNESS_FACTOR = 2.54;
 }

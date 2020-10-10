@@ -22,6 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Scene {
-    public String id;
-    public String name;
+    public String id = "";
+    public String name = "";
 }

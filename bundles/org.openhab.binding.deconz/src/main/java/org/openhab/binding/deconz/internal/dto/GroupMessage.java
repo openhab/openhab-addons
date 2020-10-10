@@ -27,11 +27,9 @@ public class GroupMessage extends DeconzBaseMessage {
     public @Nullable GroupAction action;
     public String @Nullable [] devicemembership;
     public @Nullable Boolean hidden;
-    public @Nullable String id;
     public String @Nullable [] lights;
     public String @Nullable [] lightsequence;
     public String @Nullable [] multideviceids;
-    public @Nullable String name;
     public Scene @Nullable [] scenes;
     public @Nullable GroupState state;
     public @Nullable GroupType type;

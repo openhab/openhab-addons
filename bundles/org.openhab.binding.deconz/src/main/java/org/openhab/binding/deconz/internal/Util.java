@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deconz.internal;
 
+import static org.openhab.binding.deconz.internal.BindingConstants.BRIGHTNESS_FACTOR;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -22,6 +24,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.PercentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Util} class defines common utility methods
@@ -30,6 +35,8 @@ import org.openhab.core.library.types.DateTimeType;
  */
 @NonNullByDefault
 public class Util {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
+
     public static String buildUrl(String host, int port, String... urlParts) {
         StringBuilder url = new StringBuilder();
         url.append("http://");
@@ -52,6 +59,33 @@ public class Util {
 
     public static int constrainToRange(int intValue, int min, int max) {
         return Math.max(min, Math.min(intValue, max));
+    }
+
+    /**
+     * convert a brightness value from int to PercentType
+     *
+     * @param val the value
+     * @return the corresponding PercentType value
+     */
+    public static PercentType toPercentType(int val) {
+        int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
+        if (scaledValue < 0 || scaledValue > 100) {
+            LOGGER.trace("received value {} (converted to {}). Coercing.", val, scaledValue);
+            scaledValue = scaledValue < 0 ? 0 : scaledValue;
+            scaledValue = scaledValue > 100 ? 100 : scaledValue;
+        }
+
+        return new PercentType(scaledValue);
+    }
+
+    /**
+     * convert a brightness value from PercentType to int
+     *
+     * @param val the value
+     * @return the corresponding int value
+     */
+    public static int fromPercentType(PercentType val) {
+        return (int) Math.floor(val.doubleValue() * BRIGHTNESS_FACTOR);
     }
 
     /**

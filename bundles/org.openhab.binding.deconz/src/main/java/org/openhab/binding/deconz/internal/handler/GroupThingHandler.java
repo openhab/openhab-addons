@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.dto.*;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
+import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.*;
 import org.openhab.core.types.*;
@@ -71,7 +72,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
     protected void registerListener() {
         WebSocketConnection conn = connection;
         if (conn != null) {
-            conn.registerGroupListener(config.id, this);
+            conn.registerListener(ResourceType.GROUPS, config.id, this);
         }
     }
 
@@ -79,7 +80,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
     protected void unregisterListener() {
         WebSocketConnection conn = connection;
         if (conn != null) {
-            conn.unregisterGroupListener(config.id);
+            conn.unregisterListener(ResourceType.GROUPS, config.id);
         }
     }
 
@@ -304,18 +305,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
         }
     }
 
-    private PercentType toPercentType(int val) {
-        int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
-        if (scaledValue < 0 || scaledValue > 100) {
-            logger.trace("received value {} (converted to {}). Coercing.", val, scaledValue);
-            scaledValue = scaledValue < 0 ? 0 : scaledValue;
-            scaledValue = scaledValue > 100 ? 100 : scaledValue;
-        }
-        logger.debug("val = '{}', scaledValue = '{}'", val, scaledValue);
-        return new PercentType(scaledValue);
-    }
-
-    private int fromPercentType(PercentType val) {
-        return (int) Math.floor(val.doubleValue() * BRIGHTNESS_FACTOR);
+    @Override
+    public Class<? extends DeconzBaseMessage> getExpectedMessageType() {
+        return GroupMessage.class;
     }
 }

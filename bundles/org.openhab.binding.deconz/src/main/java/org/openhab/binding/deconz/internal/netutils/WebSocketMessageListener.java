@@ -28,6 +28,12 @@ public interface WebSocketMessageListener {
      * @param sensorID The sensor ID (API endpoint)
      * @param message The received message
      */
-
     void messageReceived(String sensorID, DeconzBaseMessage message);
+
+    /**
+     * get the message type expected by this listener
+     * 
+     * @return the class of the message type
+     */
+    Class<? extends DeconzBaseMessage> getExpectedMessageType();
 }

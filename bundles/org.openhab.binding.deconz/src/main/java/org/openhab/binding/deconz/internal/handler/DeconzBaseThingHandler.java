@@ -42,9 +42,7 @@ import com.google.gson.Gson;
  *
  * It waits for the bridge to come online, grab the websocket connection and bridge configuration
  * and registers to the websocket connection as a listener.
- *
- * A REST API call is made to get the initial light/rollershutter state.
- *
+ **
  * @author David Graeff - Initial contribution
  * @author Jan N. Klug - Refactored to abstract class
  */
@@ -168,10 +166,6 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     @Override
     public void dispose() {
         stopInitializationJob();
-        WebSocketConnection webSocketConnection = connection;
-        if (webSocketConnection != null) {
-            webSocketConnection.unregisterLightListener(config.id);
-        }
         super.dispose();
     }
 
