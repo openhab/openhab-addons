@@ -1,18 +1,16 @@
 # DBQuery Binding
 
-This binding allow creating items from native database queries.
-It currently supports InfluxDB 2.0, MySQL and PostgreSQL.
+This binding allow creating items from the result of native database queries.
+It currently supports InfluxDB 2.0 and will support major relational databases through JDBC.
 
 ## Supported Things
 
 There are two types of supported things: `Bridge` and a `Query`.
 For each different database you want to connect you must define a `Bridge` thing for that database.
-And each `Bridge` can define as much as wanted `Query` things you want to execute.
+Then each `Bridge` can define as much as wanted `Query` things you want to execute.
 
 Current supported `Bridge` are:
 - `Influx2Bridge`
-- `JDBCBridge`
-
 
 ## Thing Configuration
 
@@ -28,9 +26,6 @@ Current supported `Bridge` are:
 | organization | Yes      | database organitzation name               |
 | bucket       | Yes      | database bucket name                      |
 
-#### JDBCBridge
-TODO
-
 ### Query
 
 The `Query` Thing requieres the native query to run in the `query` parameter. The syntax of that query must
@@ -44,8 +39,9 @@ The `Query` Thing requieres the native query to run in the `query` parameter. Th
 Optionally you can specify the following parameters:
 - `timeout` - A time-out in seconds to wait for the query result, if it's exceeded result will be discarded and the 
 addon will do it's best effort to cancel the query.
-- `scalarResult` - If true (the default value) the query is expected to return a single scalar value that will be saved in `result` channel as a String.
-If the query can return several rows and/or several columns per row then in need to be set to false and the result will be saved in 
+- `scalarResult` - If true (the default value) the query is expected to return a single scalar value that will be available to `result` channels as an
+scalar value.
+If the query can return several rows and/or several columns per row then it needs to be set to false and the result will be saved in 
 `result` channel as a JSON String in `nonScalarResultFormat`.   
 
 

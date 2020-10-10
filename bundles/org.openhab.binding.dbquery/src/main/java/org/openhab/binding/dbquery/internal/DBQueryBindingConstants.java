@@ -41,7 +41,7 @@ public class DBQueryBindingConstants {
 
     public static final String CHANNEL_PARAMETERS = "parameters";
     public static final String CHANNEL_CORRECT = "correct";
-    public static final String TRIGGER_CHANNEL_CALCULATE_PARAMETERS = "calculate_parameters";
+    public static final String TRIGGER_CHANNEL_CALCULATE_PARAMETERS = "calculateParameters";
 
     public static final String RESULT_STRING_CHANNEL_TYPE = "result-channel-string";
     public static final String RESULT_NUMBER_CHANNEL_TYPE = "result-channel-number";

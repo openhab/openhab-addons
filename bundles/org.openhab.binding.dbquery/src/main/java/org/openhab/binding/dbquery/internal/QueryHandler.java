@@ -145,6 +145,8 @@ public class QueryHandler extends BaseThingHandler {
             this.currentQueryExecution = queryExecution;
 
             if (config.isHasParameters()) {
+                logger.trace("{} triggered to set parameters for {}", TRIGGER_CHANNEL_CALCULATE_PARAMETERS,
+                        currentQueryExecution);
                 triggerChannel(TRIGGER_CHANNEL_CALCULATE_PARAMETERS);
             } else {
                 currentQueryExecution.execute();

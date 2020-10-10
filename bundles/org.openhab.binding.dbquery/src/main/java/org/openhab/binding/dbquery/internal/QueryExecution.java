@@ -61,4 +61,9 @@ public class QueryExecution {
     public interface QueryResultListener {
         void queryResultReceived(QueryResult queryResult);
     }
+
+    @Override
+    public String toString() {
+        return "QueryExecution{" + "queryString='" + queryString + '\'' + ", queryParameters=" + queryParameters + '}';
+    }
 }
