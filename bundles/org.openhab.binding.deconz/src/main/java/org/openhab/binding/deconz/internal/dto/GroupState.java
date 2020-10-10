@@ -24,4 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class GroupState {
     public boolean all_on;
     public boolean any_on;
+
+    @Override
+    public String toString() {
+        return "GroupState{" + "all_on=" + all_on + ", any_on=" + any_on + '}';
+    }
 }

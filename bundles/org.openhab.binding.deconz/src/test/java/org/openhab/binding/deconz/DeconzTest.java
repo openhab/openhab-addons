@@ -83,7 +83,7 @@ public class DeconzTest {
         discoveryService.addDiscoveryListener(discoveryListener);
 
         discoveryService.stateRequestFinished(bridgeFullState);
-        Mockito.verify(discoveryListener, times(15)).thingDiscovered(any(), any());
+        Mockito.verify(discoveryListener, times(20)).thingDiscovered(any(), any());
     }
 
     public static <T> T getObjectFromJson(String filename, Class<T> clazz, Gson gson) throws IOException {

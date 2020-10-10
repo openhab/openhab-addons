@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deconz.internal.dto;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -34,4 +36,11 @@ public class GroupAction {
     public @Nullable String effect;
     public @Nullable Integer colorloopspeed;
     public @Nullable Integer transitiontime;
+
+    @Override
+    public String toString() {
+        return "GroupAction{" + "on=" + on + ", toggle=" + toggle + ", bri=" + bri + ", hue=" + hue + ", sat=" + sat
+                + ", ct=" + ct + ", xy=" + Arrays.toString(xy) + ", alert='" + alert + '\'' + ", effect='" + effect
+                + '\'' + ", colorloopspeed=" + colorloopspeed + ", transitiontime=" + transitiontime + '}';
+    }
 }

@@ -13,19 +13,24 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
-import static org.openhab.binding.deconz.internal.Util.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.deconz.internal.dto.*;
+import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
+import org.openhab.binding.deconz.internal.dto.GroupAction;
+import org.openhab.binding.deconz.internal.dto.GroupMessage;
+import org.openhab.binding.deconz.internal.dto.GroupState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ResourceType;
-import org.openhab.core.library.types.*;
-import org.openhab.core.thing.*;
-import org.openhab.core.types.*;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +52,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.singleton(THING_TYPE_LIGHTGROUP);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_LIGHTGROUP);
 
     private static final double HUE_FACTOR = 65535 / 360.0;
     private static final double BRIGHTNESS_FACTOR = 2.54;
@@ -61,7 +66,6 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
      * The group state.
      */
     private GroupState groupStateCache = new GroupState();
-    private GroupAction lastCommand = new GroupAction();
 
     public GroupThingHandler(Thing thing, Gson gson) {
         super(thing, gson, ResourceType.GROUPS);
@@ -222,58 +226,19 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
         if (stateResponse == null) {
             return;
         }
-
         messageReceived(config.id, stateResponse);
     }
 
     private void valueUpdated(String channelId, GroupState newState) {
-        // TODO: enable value handling
-        /*
-         * switch (channelId) {
-         * case CHANNEL_ALERT:
-         * updateState(channelId, "alert".equals(newState.alert) ? OnOffType.ON : OnOffType.OFF);
-         * break;
-         * case CHANNEL_SWITCH:
-         * if (on != null) {
-         * updateState(channelId, OnOffType.from(on));
-         * }
-         * break;
-         * case CHANNEL_COLOR:
-         * if (on != null && on == false) {
-         * updateState(channelId, OnOffType.OFF);
-         * } else if (bri != null && newState.colormode != null && newState.colormode.equals("xy")) {
-         * final double @Nullable [] xy = newState.xy;
-         * if (xy != null && xy.length == 2) {
-         * HSBType color = HSBType.fromXY((float) xy[0], (float) xy[1]);
-         * updateState(channelId, new HSBType(color.getHue(), color.getSaturation(), toPercentType(bri)));
-         * }
-         * } else if (bri != null && newState.hue != null && newState.sat != null) {
-         * final Integer hue = newState.hue;
-         * final Integer sat = newState.sat;
-         * updateState(channelId,
-         * new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
-         * }
-         * break;
-         * case CHANNEL_BRIGHTNESS:
-         * if (bri != null && on != null && on) {
-         * updateState(channelId, toPercentType(bri));
-         * } else {
-         * updateState(channelId, OnOffType.OFF);
-         * }
-         * break;
-         * case CHANNEL_COLOR_TEMPERATURE:
-         * Integer ct = newState.ct;
-         * if (ct != null && ct >= ctMin && ct <= ctMax) {
-         * updateState(channelId, new DecimalType(miredToKelvin(ct)));
-         * }
-         * break;
-         * case CHANNEL_POSITION:
-         * if (bri != null) {
-         * updateState(channelId, toPercentType(bri));
-         * }
-         * default:
-         * }
-         */
+        switch (channelId) {
+            case CHANNEL_ALL_ON:
+                updateState(channelId, OnOffType.from(newState.all_on));
+                break;
+            case CHANNEL_ANY_ON:
+                updateState(channelId, OnOffType.from(newState.any_on));
+                break;
+            default:
+        }
     }
 
     @Override
@@ -283,6 +248,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
             logger.trace("{} received {}", thing.getUID(), groupMessage);
             GroupState groupState = groupMessage.state;
             if (groupState != null) {
+                updateStatus(ThingStatus.ONLINE);
                 thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, groupState));
             }
         }

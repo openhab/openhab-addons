@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deconz.internal.dto;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.types.GroupType;
@@ -33,4 +35,12 @@ public class GroupMessage extends DeconzBaseMessage {
     public Scene @Nullable [] scenes;
     public @Nullable GroupState state;
     public @Nullable GroupType type;
+
+    @Override
+    public String toString() {
+        return "GroupMessage{" + "action=" + action + ", devicemembership=" + Arrays.toString(devicemembership)
+                + ", hidden=" + hidden + ", lights=" + Arrays.toString(lights) + ", lightsequence="
+                + Arrays.toString(lightsequence) + ", multideviceids=" + Arrays.toString(multideviceids) + ", scenes="
+                + Arrays.toString(scenes) + ", state=" + state + ", type=" + type + '}';
+    }
 }
