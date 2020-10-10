@@ -63,6 +63,9 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_WINDOW_COVERING = new ThingTypeUID(BINDING_ID, "windowcovering");
     public static final ThingTypeUID THING_TYPE_WARNING_DEVICE = new ThingTypeUID(BINDING_ID, "warningdevice");
 
+    // groups
+    public static final ThingTypeUID THING_TYPE_LIGHTGROUP = new ThingTypeUID(BINDING_ID, "lightgroup");
+
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
     public static final String CHANNEL_LAST_UPDATED = "last_updated";

@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.deconz.internal.dto;
 
-import java.util.Arrays;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link GroupState} is send by the websocket connection as well as the Rest API.

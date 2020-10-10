@@ -15,7 +15,6 @@ package org.openhab.binding.deconz.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.types.GroupType;
-import org.openhab.binding.deconz.internal.types.LightType;
 
 /**
  * The REST interface and websocket connection are using the same fields.
@@ -26,14 +25,14 @@ import org.openhab.binding.deconz.internal.types.LightType;
 @NonNullByDefault
 public class GroupMessage extends DeconzBaseMessage {
     public @Nullable GroupAction action;
-    public String @Nullable[] devicemembership;
+    public String @Nullable [] devicemembership;
     public @Nullable Boolean hidden;
     public @Nullable String id;
-    public String @Nullable[] lights;
-    public String @Nullable[] lightsequence;
-    public String @Nullable[] multideviceids;
+    public String @Nullable [] lights;
+    public String @Nullable [] lightsequence;
+    public String @Nullable [] multideviceids;
     public @Nullable String name;
-    public Scene @Nullable[] scenes;
+    public Scene @Nullable [] scenes;
     public @Nullable GroupState state;
     public @Nullable GroupType type;
 }

@@ -25,6 +25,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
+import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.slf4j.Logger;
@@ -48,6 +49,8 @@ public class WebSocketConnection {
     private final WebSocketConnectionListener connectionListener;
     private final Map<String, WebSocketMessageListener> sensorListener = new ConcurrentHashMap<>();
     private final Map<String, WebSocketMessageListener> lightListener = new ConcurrentHashMap<>();
+    private final Map<String, WebSocketMessageListener> groupListener = new ConcurrentHashMap<>();
+
     private final Gson gson;
     private boolean connected = false;
 
@@ -100,6 +103,14 @@ public class WebSocketConnection {
         sensorListener.remove(lightID);
     }
 
+    public void registerGroupListener(String groupID, WebSocketMessageListener listener) {
+        groupListener.put(groupID, listener);
+    }
+
+    public void unregisterGroupListener(String groupID) {
+        sensorListener.remove(groupID);
+    }
+
     @OnWebSocketConnect
     public void onConnect(Session session) {
         connected = true;
@@ -127,6 +138,14 @@ public class WebSocketConnection {
                     listener.messageReceived(changedMessage.id, gson.fromJson(message, LightMessage.class));
                 } else {
                     logger.trace("Couldn't find light listener for id {}", changedMessage.id);
+                }
+                break;
+            case "groups":
+                listener = groupListener.get(changedMessage.id);
+                if (listener != null) {
+                    listener.messageReceived(changedMessage.id, gson.fromJson(message, GroupMessage.class));
+                } else {
+                    logger.trace("Couldn't find group listener for id {}", changedMessage.id);
                 }
                 break;
             default:
