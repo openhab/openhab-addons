@@ -127,6 +127,8 @@ public enum MiIoDevices {
     POWERPLUG3("chuangmi.plug.v3", "Mi Power-plug v3", THING_TYPE_BASIC),
     POWERPLUGM3("chuangmi.plug.m3", "Mi Power-plug", THING_TYPE_BASIC),
     POWERPLUG_HMI205("chuangmi.plug.hmi205", "Mi Smart Plug", THING_TYPE_BASIC),
+    CHUANGMI_PLUG_HMI206("chuangmi.plug.hmi206", "Mi Smart Plug", THING_TYPE_BASIC),
+    CHUANGMI_PLUG_HMI208("chuangmi.plug.hmi208", "Mi Smart Plug", THING_TYPE_BASIC),
     POWERSTRIP("qmi.powerstrip.v1", "Qing Mi Smart Power Strip v1", THING_TYPE_BASIC),
     POWERSTRIP2("zimi.powerstrip.v2", "Mi Power-strip v2", THING_TYPE_BASIC),
     TOOTHBRUSH("soocare.toothbrush.x3", "Mi Toothbrush", THING_TYPE_UNSUPPORTED),
