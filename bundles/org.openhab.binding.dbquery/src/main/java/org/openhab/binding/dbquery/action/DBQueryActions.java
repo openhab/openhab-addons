@@ -60,7 +60,7 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
         if (thingHandler instanceof QueryHandler)
             this.queryHandler = ((QueryHandler) thingHandler);
         else if (thingHandler instanceof BridgeHandler)
-            this.bridgeHandler = ((BridgeHandler) bridgeHandler);
+            this.bridgeHandler = ((BridgeHandler) thingHandler);
         else
             throw new UnnexpectedCondition("Not expected thing handler " + thingHandler);
     }
