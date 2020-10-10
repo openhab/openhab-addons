@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.junit.Test;
 import org.snmp4j.PDU;
+import org.snmp4j.Snmp;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.Counter64;
 import org.snmp4j.smi.Integer32;
@@ -103,5 +104,28 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(new DecimalType("12.4")));
+    }
+
+    @Test
+    public void testCancelingAsyncRequest() {
+        setup(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpChannelMode.READ, SnmpDatatype.FLOAT);
+        PDU responsePDU = new PDU(PDU.RESPONSE,
+                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new OctetString("12.4"))));
+
+        SnmpMock source = new SnmpMock();
+
+        ResponseEvent event = new ResponseEvent(source, null, null, responsePDU, null);
+
+        thingHandler.onResponse(event);
+        assertEquals(1, source.cancelCallCounter);
+    }
+
+    class SnmpMock extends Snmp {
+        public int cancelCallCounter = 0;
+
+        @Override
+        public void cancel(PDU request, org.snmp4j.event.ResponseListener listener) {
+            ++cancelCallCounter;
+        }
     }
 }
