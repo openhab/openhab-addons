@@ -71,7 +71,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     protected void startScan() {
         final DeconzBridgeHandler handler = this.handler;
         if (handler != null) {
-            handler.requestFullState();
+            handler.requestFullState(false);
         }
     }
 
