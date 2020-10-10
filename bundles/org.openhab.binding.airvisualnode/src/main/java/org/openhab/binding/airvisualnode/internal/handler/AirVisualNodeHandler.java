@@ -30,6 +30,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.zone.ZoneRules;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +49,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -124,13 +126,29 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
         try {
             var jsonData = gson.fromJson(getNodeJsonData(), Map.class);
-            isProVersion = jsonData.get("measurements") instanceof ArrayList;
+            this.isProVersion = jsonData.get("measurements") instanceof ArrayList;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't get node json");
             return;
         }
 
+        if (!this.isProVersion) {
+            removeProChannels();
+        }
+
         schedulePoll();
+    }
+
+    private void removeProChannels() {
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        channels.removeIf(channel -> channel.getLabel().equals("PM0.1") || channel.getLabel().equals("PM10"));
+        replaceChannels(channels);
+    }
+
+    private void replaceChannels(List<Channel> channels) {
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withChannels(channels);
+        updateThing(thingBuilder.build());
     }
 
     @Override
@@ -221,7 +239,6 @@ public class AirVisualNodeHandler extends BaseThingHandler {
             state = new DecimalType(
                     BigDecimal.valueOf(Math.max(0, nodeData.getStatus().getWifiStrength() - 1)).longValue());
         } else {
-
             MeasurementsInterface measurements = nodeData.getMeasurements();
             // Handle binding-specific channel IDs
             switch (channelId) {
