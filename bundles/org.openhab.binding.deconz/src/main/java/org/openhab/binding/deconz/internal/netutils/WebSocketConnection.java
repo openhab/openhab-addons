@@ -109,16 +109,29 @@ public class WebSocketConnection {
     @OnWebSocketMessage
     public void onMessage(String message) {
         logger.trace("Raw data received by websocket: {}", message);
+
         DeconzBaseMessage changedMessage = gson.fromJson(message, DeconzBaseMessage.class);
-        WebSocketMessageListener listener = listeners.get(Map.entry(changedMessage.r, changedMessage.id));
-        if (listener != null) {
-            Class<? extends DeconzBaseMessage> expectedMessageType = EXPECTED_MESSAGE_TYPES.get(changedMessage.r);
-            if (expectedMessageType != null) {
-                listener.messageReceived(changedMessage.id, gson.fromJson(message, expectedMessageType));
-            }
-        } else {
-            logger.trace("Couldn't find {} listener for id {}", changedMessage.r, changedMessage.id);
+        if (changedMessage.r == ResourceType.UNKNOWN) {
+            logger.trace("Received message has unknown resource type. Skipping message.");
+            return;
         }
+
+        WebSocketMessageListener listener = listeners.get(Map.entry(changedMessage.r, changedMessage.id));
+        if (listener == null) {
+            logger.debug(
+                    "Couldn't find listener for id {} with resource type {}. Either no thing for this id has been defined or this is a bug.",
+                    changedMessage.id, changedMessage.r);
+            return;
+        }
+
+        Class<? extends DeconzBaseMessage> expectedMessageType = EXPECTED_MESSAGE_TYPES.get(changedMessage.r);
+        if (expectedMessageType == null) {
+            logger.warn("BUG! Could not get expected message type for resource type {}. Please report this incident.",
+                    changedMessage.r);
+            return;
+        }
+
+        listener.messageReceived(changedMessage.id, gson.fromJson(message, expectedMessageType));
     }
 
     @OnWebSocketError
