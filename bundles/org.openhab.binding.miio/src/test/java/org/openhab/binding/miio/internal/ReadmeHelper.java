@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -67,11 +68,11 @@ public class ReadmeHelper {
         StringWriter itemFileExamples = rm.itemFileExamples();
         LOGGER.info("## Done");
         try {
-            String baseDoc = new String(Files.readAllBytes(Paths.get(BASEFILE)));
-            String nw = baseDoc.replaceAll("!!!devices", deviceList.toString())
+            String baseDoc = new String(Files.readAllBytes(Paths.get(BASEFILE)), StandardCharsets.UTF_8);
+            String newDoc = baseDoc.replaceAll("!!!devices", deviceList.toString())
                     .replaceAll("!!!channelList", channelList.toString())
                     .replaceAll("!!!itemFileExamples", itemFileExamples.toString());
-            Files.write(Paths.get(OUTPUTFILE), nw.getBytes());
+            Files.write(Paths.get(OUTPUTFILE), newDoc.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             LOGGER.warn("IO exception", e);
         }
