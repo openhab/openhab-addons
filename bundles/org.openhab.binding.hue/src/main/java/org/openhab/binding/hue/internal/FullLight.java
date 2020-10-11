@@ -16,6 +16,8 @@ import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -26,15 +28,13 @@ import com.google.gson.reflect.TypeToken;
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  * @author Samuel Leisering - added GSon Type to FullLight, refactored content to {@link FullHueObject}
  */
+@NonNullByDefault
 public class FullLight extends FullHueObject {
     public static final Type GSON_TYPE = new TypeToken<Map<String, FullLight>>() {
     }.getType();
 
-    private State state;
+    private @NonNullByDefault({}) State state;
     private final long fadetime = 400; // milliseconds
-
-    FullLight() {
-    }
 
     /**
      * Returns the current state of the light.

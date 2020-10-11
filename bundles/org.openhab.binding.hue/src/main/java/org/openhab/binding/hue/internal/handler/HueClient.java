@@ -19,7 +19,7 @@ import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.StateUpdate;
-import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
+import org.openhab.binding.hue.internal.discovery.HueDeviceDiscoveryService;
 
 /**
  * Access to the Hue system for light handlers.
@@ -33,15 +33,15 @@ import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 public interface HueClient {
 
     /**
-     * Register {@link HueLightDiscoveryService} to bridge handler
+     * Register {@link HueDeviceDiscoveryService} to bridge handler
      *
      * @param listener the discovery service
      * @return {@code true} if the new discovery service is accepted
      */
-    boolean registerDiscoveryListener(HueLightDiscoveryService listener);
+    boolean registerDiscoveryListener(HueDeviceDiscoveryService listener);
 
     /**
-     * Unregister {@link HueLightDiscoveryService} from bridge handler
+     * Unregister {@link HueDeviceDiscoveryService} from bridge handler
      *
      * @return {@code true} if the discovery service was removed
      */

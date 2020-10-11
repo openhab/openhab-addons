@@ -108,8 +108,14 @@ public class FullHueObject extends HueObject {
      *
      * @return the unique id, can be null for some virtual types like the daylight sensor
      */
-
     public @Nullable String getUniqueID() {
         return uniqueid;
+    }
+
+    /**
+     * Sets the unique id of the object.
+     */
+    protected void setUniqueID(final String uniqueid) {
+        this.uniqueid = uniqueid;
     }
 }
