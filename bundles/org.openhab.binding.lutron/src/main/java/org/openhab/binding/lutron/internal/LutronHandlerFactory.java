@@ -144,7 +144,6 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_LEAPBRIDGE)) {
             LeapBridgeHandler bridgeHandler = new LeapBridgeHandler((Bridge) thing);
-            // LeapDeviceDiscoveryService discoveryService = new LeapDeviceDiscoveryService(); // TODO
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
             return new DimmerHandler(thing);
