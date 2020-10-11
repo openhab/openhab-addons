@@ -207,7 +207,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
 
         final List<Channel> currentChannels = getThing().getChannels();
         final ThingBuilder thingBuilder = editThing();
-        if (config.maxEvents == null || config.maxEvents.compareTo(new BigDecimal(0)) < 1) {
+        if (config.maxEvents == null || config.maxEvents.compareTo(BigDecimal.ZERO) < 1) {
             thingBuilder.withoutChannels(currentChannels);
             updateThing(thingBuilder.build());
             return;
