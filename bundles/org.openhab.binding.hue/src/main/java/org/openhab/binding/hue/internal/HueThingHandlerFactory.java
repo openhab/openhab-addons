@@ -31,6 +31,7 @@ import org.openhab.binding.hue.internal.handler.HueLightHandler;
 import org.openhab.binding.hue.internal.handler.HueStateDescriptionOptionProvider;
 import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
+import org.openhab.binding.hue.internal.handler.sensors.GeofencePresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
 import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
@@ -63,12 +64,14 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.hue")
 public class HueThingHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
-            Stream.of(HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
+            .of(HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
                     DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
-                    PresenceHandler.SUPPORTED_THING_TYPES.stream(), TemperatureHandler.SUPPORTED_THING_TYPES.stream(),
-                    LightLevelHandler.SUPPORTED_THING_TYPES.stream(), ClipHandler.SUPPORTED_THING_TYPES.stream(),
-                    HueGroupHandler.SUPPORTED_THING_TYPES.stream()).flatMap(i -> i).collect(Collectors.toSet()));
+                    PresenceHandler.SUPPORTED_THING_TYPES.stream(),
+                    GeofencePresenceHandler.SUPPORTED_THING_TYPES.stream(),
+                    TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
+                    ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream())
+            .flatMap(i -> i).collect(Collectors.toSet()));
 
     private final HueStateDescriptionOptionProvider stateOptionProvider;
 
@@ -90,6 +93,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || TapSwitchHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || PresenceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
+                || GeofencePresenceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || TemperatureHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || LightLevelHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || ClipHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -157,6 +161,8 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             return new TapSwitchHandler(thing);
         } else if (PresenceHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new PresenceHandler(thing);
+        } else if (GeofencePresenceHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            return new GeofencePresenceHandler(thing);
         } else if (TemperatureHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new TemperatureHandler(thing);
         } else if (LightLevelHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {

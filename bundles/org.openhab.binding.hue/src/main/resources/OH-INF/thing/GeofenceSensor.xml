@@ -3,24 +3,22 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Hue Presence Sensor -->
-	<thing-type id="0107">
+	<!-- Geofence Sensor -->
+	<thing-type id="geofencesensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Presence Sensor</label>
-		<description>A motion sensor providing presence detection.</description>
+		<label>Geofence Sensor</label>
+		<description>A sensor providing geofence based presence detection.</description>
 
 		<channels>
 			<channel id="presence" typeId="system.motion"/>
 			<channel id="last_updated" typeId="last_updated"/>
-			<channel id="battery_level" typeId="system.battery-level"/>
-			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
 
-		<config-description-ref uri="thing-type:hue:presencesensor"/>
+		<config-description-ref uri="thing-type:hue:geofencesensor"/>
 	</thing-type>
 </thing:thing-descriptions>
