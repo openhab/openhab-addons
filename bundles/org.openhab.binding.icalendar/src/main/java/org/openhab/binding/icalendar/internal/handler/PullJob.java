@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class PullJob implements Runnable {
-    private final static String TMP_FILE_PREFIX = "icalendardld";
+    private static final String TMP_FILE_PREFIX = "icalendardld";
 
     private final Authentication.@Nullable Result authentication;
     private final File destination;

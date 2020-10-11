@@ -13,6 +13,7 @@ There can be multiple things having different properties representing different 
 Each calendar can have event filters which allow to get multiple events, maybe filtered by additional criteria. Time based filtering is done by each event's start.
 
 ## Thing Configuration
+
 ### Configuration for `calendar`
 
 Each `calendar` thing requires the following configuration parameters:
@@ -27,6 +28,7 @@ Each `calendar` thing requires the following configuration parameters:
 | `authorizationCode` | The authorization code to permit the execution of embedded command tags. If set, the binding checks that the authorization code in the command tag matches before executing any commands. | optional                      |
 
 ### Configuration for `eventfilter`
+
 Each `eventfilter` thing requires a bridge of type `calendar` and has following configuration options:
 
 | parameter name   | description                                                                                                                                                                                  | optional                                   |
@@ -42,7 +44,9 @@ Each `eventfilter` thing requires a bridge of type `calendar` and has following 
 | `textValueType`  | The type of the text to filter with. Valid values: `TEXT` (field must contain value), `REGEX` (field must match value, completely, dot matches all, case insensetive).                       | optional/required for text-based filtering |
 
 ## Channels
+
 ### Channels for `calendar` 
+
 The channels of `calendar` describe the current and the next forthcoming event.
 They are all read-only.
 
@@ -57,6 +61,7 @@ They are all read-only.
 | next_end          | DateTime  | End of the next event                                                               |
 
 ### Channels for `eventfilter`
+
 The channels of `eventfilter` are generated using following scheme, all are read-only.
 
 | Channel-scheme      | Type      | Description            |
