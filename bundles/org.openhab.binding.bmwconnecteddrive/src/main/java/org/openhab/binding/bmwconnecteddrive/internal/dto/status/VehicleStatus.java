@@ -160,7 +160,7 @@ public class VehicleStatus {
             int serviceMileage = Integer.MAX_VALUE;
             for (int i = 0; i < cbsData.size(); i++) {
                 CBSMessage entry = cbsData.get(i);
-                if (entry.cbsRemainingMileage != 0) {
+                if (entry.cbsRemainingMileage != -1) {
                     if (entry.cbsRemainingMileage < serviceMileage) {
                         serviceMileage = entry.cbsRemainingMileage;
                     }

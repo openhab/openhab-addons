@@ -30,8 +30,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BimmerConstants {
 
+    // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/country_selector.py
     public static final String SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us";
-    public static final String SERVER_CHINA = "b2vapi.bmwgroup.cn:859";
+    public static final String SERVER_CHINA = "b2vapi.bmwgroup.cn:8592";
     public static final String SERVER_ROW = "b2vapi.bmwgroup.com";
     public static final Map<String, String> SERVER_MAP = new HashMap<String, String>() {
         {
