@@ -350,8 +350,6 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
         if (currentUpdateFuture != null) {
             currentUpdateFuture.cancel(true);
         }
-        updateFuture = scheduler.scheduleWithFixedDelay(() -> {
-            updateStates();
-        }, refreshTime, refreshTime, TimeUnit.MINUTES);
+        updateFuture = scheduler.scheduleWithFixedDelay(this::updateStates, refreshTime, refreshTime, TimeUnit.MINUTES);
     }
 }
