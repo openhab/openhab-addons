@@ -57,7 +57,7 @@
 		<description>State</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">0</option>
+				<option value="0">Powered Off</option>
 				<option value="1">Normal</option>
 				<option value="2">Service Mode</option>
 				<option value="3">Config Mode</option>
