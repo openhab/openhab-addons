@@ -109,6 +109,8 @@ public class ConnectedDriveProxy {
 
     private synchronized void call(String url, boolean post, Optional<MultiMap<String>> params,
             ResponseCallback callback) {
+        // only executed in "simulation mode"
+        // SimulationTest.testSimulationOff() assures Injector is off when releasing
         if (Injector.isActive()) {
             if (url.equals(baseUrl)) {
                 ((StringResponseCallback) callback).onResponse(Optional.of(Injector.getDiscovery()));
@@ -119,6 +121,7 @@ public class ConnectedDriveProxy {
             }
             return;
         }
+
         Request req;
         final StringBuffer completeUrl = new StringBuffer(url);
         if (post) {
@@ -181,7 +184,7 @@ public class ConnectedDriveProxy {
                 callback);
     }
 
-    public void requestOldVehcileStatus(VehicleConfiguration vehicleConfiguration, StringResponseCallback callback) {
+    public void requestLegacyVehcileStatus(VehicleConfiguration vehicleConfiguration, StringResponseCallback callback) {
         get("https://b2vapi.bmwgroup.com/api/vehicle/dynamic/v1/" + vehicleConfiguration.vin, Optional.empty(),
                 callback);
     }
@@ -276,9 +279,12 @@ public class ConnectedDriveProxy {
                 HttpFields fields = contentResponse.getHeaders();
                 HttpField field = fields.getField(HttpHeader.LOCATION);
                 tokenFromUrl(field.getValue());
+            } else {
+                logger.debug("Authorization status {} reason {}", contentResponse.getStatus(),
+                        contentResponse.getReason());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.warn("Auth Exception: {}", e.getMessage());
+            logger.debug("Authorization exception: {}", e.getMessage());
         }
         httpClient.setFollowRedirects(true);
     }

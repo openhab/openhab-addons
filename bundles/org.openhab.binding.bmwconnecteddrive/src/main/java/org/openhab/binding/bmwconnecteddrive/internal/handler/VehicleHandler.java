@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VehicleHandler extends VehicleChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
-    private boolean compatibilityMode = false; // switch to old API in case of 404 Errors
+    private boolean legacyMode = false; // switch to legacy API in case of 404 Errors
 
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<RemoteServiceHandler> remote = Optional.empty();
@@ -73,7 +73,7 @@ public class VehicleHandler extends VehicleChannelHandler {
     private ImageProperties imageProperties = new ImageProperties();
 
     VehicleStatusCallback vehicleStatusCallback = new VehicleStatusCallback();
-    StringResponseCallback oldVehicleStatusCallback = new OldVehicleStatusCallback();
+    StringResponseCallback oldVehicleStatusCallback = new LegacyVehicleStatusCallback();
     StringResponseCallback lastTripCallback = new LastTripCallback();
     StringResponseCallback allTripsCallback = new AllTripsCallback();
     StringResponseCallback chargeProfileCallback = new ChargeProfilesCallback();
@@ -369,10 +369,10 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     public void getData() {
         if (proxy.isPresent() && configuration.isPresent()) {
-            if (!compatibilityMode) {
+            if (!legacyMode) {
                 proxy.get().requestVehcileStatus(configuration.get(), vehicleStatusCallback);
             } else {
-                proxy.get().requestOldVehcileStatus(configuration.get(), oldVehicleStatusCallback);
+                proxy.get().requestLegacyVehcileStatus(configuration.get(), oldVehicleStatusCallback);
             }
             if (isSupported(Constants.STATISTICS)) {
                 proxy.get().requestLastTrip(configuration.get(), lastTripCallback);
@@ -617,9 +617,9 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
             if (error.status == 404) {
-                compatibilityMode = true;
-                logger.debug("VehicleStatus not found - switch to old API");
-                proxy.get().requestOldVehcileStatus(configuration.get(), oldVehicleStatusCallback);
+                legacyMode = true;
+                logger.debug("VehicleStatus not found - switch to legacy API");
+                proxy.get().requestLegacyVehcileStatus(configuration.get(), oldVehicleStatusCallback);
             }
             vehicleStatusCache = Optional.of(Converter.getGson().toJson(error));
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
@@ -638,7 +638,7 @@ public class VehicleHandler extends VehicleChannelHandler {
      * The delivered data is converted into the origin dto object so no changes in previous functional code needed
      */
     @NonNullByDefault({})
-    public class OldVehicleStatusCallback implements StringResponseCallback {
+    public class LegacyVehicleStatusCallback implements StringResponseCallback {
         @Override
         public void onResponse(Optional<String> content) {
             if (content.isPresent()) {
