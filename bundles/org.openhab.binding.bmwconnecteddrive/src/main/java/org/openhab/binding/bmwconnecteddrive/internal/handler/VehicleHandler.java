@@ -228,8 +228,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                             status.position.lat = -1;
                             status.position.lon = -1;
                             status.position.heading = -1;
-                            logger.warn("{}", Converter.getGson().toJson(container));
                         }
+                        logger.warn("{}", Converter.getGson().toJson(container));
                     } else {
                         logger.warn("### Vehicle Status Empty ###");
                     }
