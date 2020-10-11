@@ -18,11 +18,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Disabled;
@@ -52,6 +54,7 @@ import com.google.gson.JsonParser;
 public class ReadmeHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadmeHelper.class);
     private static final String BASEFILE = "./README.base.md";
+    private static final String OUTPUTFILE = "./README.md";
 
     @Disabled
     public static void main(String[] args) {
@@ -65,14 +68,11 @@ public class ReadmeHelper {
         StringWriter itemFileExamples = rm.itemFileExamples();
         LOGGER.info("## Done");
         try {
-            File file = new File(BASEFILE);
-            String baseDoc = FileUtils.readFileToString(file, "UTF-8");
-            String nw = baseDoc.replaceAll("!!!devices", deviceList.toString())
+            String baseDoc = new String(Files.readAllBytes(Paths.get(BASEFILE)), StandardCharsets.UTF_8);
+            String newDoc = baseDoc.replaceAll("!!!devices", deviceList.toString())
                     .replaceAll("!!!channelList", channelList.toString())
                     .replaceAll("!!!itemFileExamples", itemFileExamples.toString());
-
-            File newDocfile = new File("README.md");
-            FileUtils.writeStringToFile(newDocfile, nw, "UTF-8");
+            Files.write(Paths.get(OUTPUTFILE), newDoc.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             LOGGER.warn("IO exception", e);
         }
@@ -211,8 +211,7 @@ public class ReadmeHelper {
                         arrayList.add(devdb);
                     }
                 } catch (Exception e) {
-                    LOGGER.debug("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
-                    LOGGER.info(e.getMessage());
+                    LOGGER.info("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
                 }
             }
         }
