@@ -16,7 +16,6 @@ import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.List;
@@ -31,6 +30,7 @@ import org.openhab.binding.icalendar.internal.handler.PullJob.CalendarUpdateList
 import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
 import org.openhab.binding.icalendar.internal.logic.Event;
 import org.openhab.binding.icalendar.internal.logic.EventTextFilter;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -62,13 +62,15 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     private @Nullable EventFilterConfiguration configuration;
     private final Logger logger = LoggerFactory.getLogger(EventFilterHandler.class);
     private final List<ResultChannelSet> resultChannels;
+    private final TimeZoneProvider tzProvider;
     private @Nullable ScheduledFuture<?> updateFuture;
     private boolean initFinished;
 
-    public EventFilterHandler(Thing thing) {
+    public EventFilterHandler(Thing thing, TimeZoneProvider tzProvider) {
         super(thing);
         resultChannels = new CopyOnWriteArrayList<>();
         initFinished = false;
+        this.tzProvider = tzProvider;
     }
 
     @Override
@@ -300,7 +302,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
             }
 
             if (config.datetimeRound) {
-                ZonedDateTime refDT = reference.atZone(ZoneId.systemDefault());
+                ZonedDateTime refDT = reference.atZone(tzProvider.getTimeZone());
                 switch (multiplicator) {
                     case WEEK:
                         refDT = refDT.with(ChronoField.DAY_OF_WEEK, 1);
@@ -329,8 +331,8 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                 if (position < results.size()) {
                     Event result = results.get(position);
                     updateState(channels.titleChannel, new StringType(result.title));
-                    updateState(channels.beginChannel, new DateTimeType(result.start.atZone(ZoneId.systemDefault())));
-                    updateState(channels.endChannel, new DateTimeType(result.end.atZone(ZoneId.systemDefault())));
+                    updateState(channels.beginChannel, new DateTimeType(result.start.atZone(tzProvider.getTimeZone())));
+                    updateState(channels.endChannel, new DateTimeType(result.end.atZone(tzProvider.getTimeZone())));
                 } else {
                     updateState(channels.titleChannel, UnDefType.UNDEF);
                     updateState(channels.beginChannel, UnDefType.UNDEF);

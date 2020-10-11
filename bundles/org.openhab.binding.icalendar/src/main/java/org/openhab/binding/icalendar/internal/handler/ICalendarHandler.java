@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +36,7 @@ import org.openhab.binding.icalendar.internal.logic.CommandTagType;
 import org.openhab.binding.icalendar.internal.logic.Event;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.events.EventPublisher;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -69,18 +69,21 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
     private final EventPublisher eventPublisherCallback;
     private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(ICalendarHandler.class);
+    private final TimeZoneProvider tzProvider;
     private @Nullable ScheduledFuture<?> pullJobFuture;
     private @Nullable AbstractPresentableCalendar runtimeCalendar;
     private @Nullable ScheduledFuture<?> updateJobFuture;
     private Instant updateStatesLastCalledTime;
 
-    public ICalendarHandler(Bridge bridge, HttpClient httpClient, EventPublisher eventPublisher) {
+    public ICalendarHandler(Bridge bridge, HttpClient httpClient, EventPublisher eventPublisher,
+            TimeZoneProvider tzProvider) {
         super(bridge);
         this.httpClient = httpClient;
         calendarFile = new File(OpenHAB.getUserDataFolder() + File.separator
                 + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
         eventPublisherCallback = eventPublisher;
         updateStatesLastCalledTime = Instant.now();
+        this.tzProvider = tzProvider;
     }
 
     @Override
@@ -336,9 +339,9 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 } else {
                     updateState(CHANNEL_CURRENT_EVENT_TITLE, new StringType(currentEvent.title));
                     updateState(CHANNEL_CURRENT_EVENT_START,
-                            new DateTimeType(currentEvent.start.atZone(ZoneId.systemDefault())));
+                            new DateTimeType(currentEvent.start.atZone(tzProvider.getTimeZone())));
                     updateState(CHANNEL_CURRENT_EVENT_END,
-                            new DateTimeType(currentEvent.end.atZone(ZoneId.systemDefault())));
+                            new DateTimeType(currentEvent.end.atZone(tzProvider.getTimeZone())));
                 }
             } else {
                 updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.OFF);
@@ -350,8 +353,9 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             final Event nextEvent = calendar.getNextEvent(now);
             if (nextEvent != null) {
                 updateState(CHANNEL_NEXT_EVENT_TITLE, new StringType(nextEvent.title));
-                updateState(CHANNEL_NEXT_EVENT_START, new DateTimeType(nextEvent.start.atZone(ZoneId.systemDefault())));
-                updateState(CHANNEL_NEXT_EVENT_END, new DateTimeType(nextEvent.end.atZone(ZoneId.systemDefault())));
+                updateState(CHANNEL_NEXT_EVENT_START,
+                        new DateTimeType(nextEvent.start.atZone(tzProvider.getTimeZone())));
+                updateState(CHANNEL_NEXT_EVENT_END, new DateTimeType(nextEvent.end.atZone(tzProvider.getTimeZone())));
             } else {
                 updateState(CHANNEL_NEXT_EVENT_TITLE, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_START, UnDefType.UNDEF);

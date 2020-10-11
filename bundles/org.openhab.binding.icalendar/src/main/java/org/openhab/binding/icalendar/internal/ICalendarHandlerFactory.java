@@ -28,6 +28,7 @@ import org.openhab.binding.icalendar.internal.handler.ICalendarHandler;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.EventPublisher;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -63,13 +64,16 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient sharedHttpClient;
     private final EventPublisher eventPublisher;
     private final ThingRegistry thingRegistry;
+    private final TimeZoneProvider tzProvider;
 
     @Activate
     public ICalendarHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference EventPublisher eventPublisher, @Reference ThingRegistry thingRegistry) {
+            @Reference EventPublisher eventPublisher, @Reference ThingRegistry thingRegistry,
+            @Reference TimeZoneProvider tzProvider) {
         this.eventPublisher = eventPublisher;
         sharedHttpClient = httpClientFactory.getCommonHttpClient();
         this.thingRegistry = thingRegistry;
+        this.tzProvider = tzProvider;
     }
 
     @Override
@@ -86,7 +90,7 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_CALENDAR)) {
             if (thing instanceof Bridge) {
-                return new ICalendarHandler((Bridge) thing, sharedHttpClient, eventPublisher);
+                return new ICalendarHandler((Bridge) thing, sharedHttpClient, eventPublisher, tzProvider);
             } else {
                 // Migration needs to be done asynchronously. Using thread pool for common things.
                 ThingUID uidToCopy = thing.getUID();
@@ -95,7 +99,7 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
                 return null;
             }
         } else if (thingTypeUID.equals(THING_TYPE_FILTERED_EVENTS)) {
-            return new EventFilterHandler(thing);
+            return new EventFilterHandler(thing, tzProvider);
         }
         return null;
     }
