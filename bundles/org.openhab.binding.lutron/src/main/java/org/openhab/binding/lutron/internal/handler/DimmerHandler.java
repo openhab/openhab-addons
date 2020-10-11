@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.openhab.binding.lutron.action.DimmerActions;
+import org.openhab.binding.lutron.internal.action.DimmerActions;
 import org.openhab.binding.lutron.internal.config.DimmerConfig;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.openhab.binding.lutron.internal.protocol.LutronDuration;

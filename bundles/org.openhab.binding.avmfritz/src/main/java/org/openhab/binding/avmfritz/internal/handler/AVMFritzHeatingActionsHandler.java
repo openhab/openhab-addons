@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.avmfritz.actions.AVMFritzHeatingActions;
+import org.openhab.binding.avmfritz.internal.actions.AVMFritzHeatingActions;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 

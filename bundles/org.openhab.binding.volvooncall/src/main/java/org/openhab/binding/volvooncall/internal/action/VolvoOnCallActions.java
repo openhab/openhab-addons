@@ -41,7 +41,7 @@ public class VolvoOnCallActions implements ThingActions {
     private @Nullable VehicleHandler handler;
 
     public VolvoOnCallActions() {
-        logger.info("Volvo On Call actions service instanciated");
+        logger.debug("Volvo On Call actions service instantiated");
     }
 
     @Override
@@ -53,7 +53,7 @@ public class VolvoOnCallActions implements ThingActions {
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return this.handler;
+        return handler;
     }
 
     @RuleAction(label = "close the car", description = "Closes the car")
