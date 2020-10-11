@@ -18,7 +18,7 @@
     <dependency>
       <groupId>net.sf.biweekly</groupId>
       <artifactId>biweekly</artifactId>
-      <version>0.6.3</version>
+      <version>0.6.4</version>
       <scope>compile</scope>
     </dependency>
     <!-- dependencies of biweekly -->
