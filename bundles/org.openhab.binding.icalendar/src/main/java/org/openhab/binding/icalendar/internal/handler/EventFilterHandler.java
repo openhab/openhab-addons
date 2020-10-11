@@ -103,7 +103,6 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        @Nullable
         Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
             logger.warn("This thing requires a bridge configured to work.");
@@ -201,7 +200,6 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
      * @param config The validated Configuration of the Thing.
      */
     private void updateChannelSet(EventFilterConfiguration config) {
-        @Nullable
         final ThingHandlerCallback handlerCallback = getCallback();
         if (handlerCallback == null) {
             return;
@@ -217,7 +215,6 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
         generateExpectedChannelList(config.maxEvents.intValue());
 
         currentChannels.stream().filter((Channel current) -> {
-            @Nullable
             String currentGroupId = current.getUID().getGroupId();
             if (currentGroupId == null) {
                 return true;
@@ -237,7 +234,6 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
         }).forEach((ResultChannelSet current) -> {
             for (ChannelBuilder builder : handlerCallback.createChannelBuilders(current.resultGroup, GROUP_TYPE_UID)) {
                 Channel currentChannel = builder.build();
-                @Nullable
                 Channel existingChannel = getThing().getChannel(currentChannel.getUID());
                 if (existingChannel == null) {
                     thingBuilder.withChannel(currentChannel);
@@ -267,7 +263,6 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
             logger.debug("Configuration not instantiated!");
             return;
         }
-        @Nullable
         final AbstractPresentableCalendar cal = iCalendarHandler.getRuntimeCalendar();
         if (cal != null) {
             updateStatus(ThingStatus.ONLINE);

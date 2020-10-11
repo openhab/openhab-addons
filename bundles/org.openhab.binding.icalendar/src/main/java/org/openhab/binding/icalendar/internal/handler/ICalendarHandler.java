@@ -193,9 +193,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             return;
         }
 
-        // prevent potential synchronization issues (MVN null pointer warnings) in "configuration"
-        @Nullable
-        ICalendarConfiguration syncConfiguration = configuration;
+        final ICalendarConfiguration syncConfiguration = configuration;
         if (syncConfiguration == null) {
             logger.debug("Configuration not instantiated!");
             return;

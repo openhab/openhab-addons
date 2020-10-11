@@ -103,8 +103,6 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
     /**
      * This Runnable "upgrades" the thing "calendar" to the bridge of same type. To make sure the thing isn't in use, a
      * sleep blocks before doing actual work.
-     *
-     * @author Michael Wodniok - Initial contribution
      */
     private class ReregisterThingRunnable implements Runnable {
         private final ThingUID thingUID;

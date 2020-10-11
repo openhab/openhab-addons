@@ -149,7 +149,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             while (startDates.hasNext()) {
                 final Instant startInstant = startDates.next().toInstant();
                 if (startInstant.isAfter(instant)) {
-                    @Nullable
                     final Uid currentEventUid = currentEvent.getUid();
                     if (currentEventUid == null || !isCounteredBy(startInstant, currentEventUid, negativeEvents)) {
                         candidates.add(new VEventWPeriod(currentEvent, startInstant, startInstant.plus(duration)));
@@ -268,7 +267,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                 }
 
                 final VEventWPeriod resultingVEWP = new VEventWPeriod(positiveEvent, begInst, begInst.plus(duration));
-                @Nullable
                 final Uid eventUid = positiveEvent.getUid();
                 if (eventUid != null) {
                     if (!isCounteredBy(begInst, eventUid, negativeEvents)) {
@@ -291,7 +289,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      */
     private void classifyEvents(Collection<VEvent> positiveEvents, Collection<VEvent> negativeEvents) {
         for (final VEvent currentEvent : usedCalendar.getEvents()) {
-            @Nullable
             final Status eventStatus = currentEvent.getStatus();
             boolean positive = (eventStatus == null || (eventStatus.isTentative() || eventStatus.isConfirmed()));
             final Collection<VEvent> positiveOrNegativeEvents = (positive ? positiveEvents : negativeEvents);
@@ -321,7 +318,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                 final Instant startInstant = startDates.next().toInstant();
                 final Instant endInstant = startInstant.plus(duration);
                 if (startInstant.isBefore(instant) && endInstant.isAfter(instant)) {
-                    @Nullable
                     final Uid eventUid = currentEvent.getUid();
                     if (eventUid == null || !isCounteredBy(startInstant, eventUid, negativeEvents)) {
                         return new VEventWPeriod(currentEvent, startInstant, endInstant);
@@ -386,7 +382,6 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      */
     private boolean isCounteredBy(Instant startInstant, Uid eventUid, Collection<VEvent> counterEvents) {
         for (final VEvent counterEvent : counterEvents) {
-            @Nullable
             final Uid counterEventUid = counterEvent.getUid();
             if (counterEventUid != null && eventUid.getValue().contentEquals(counterEventUid.getValue())) {
                 final DateIterator counterStartDates = getRecurredEventDateIterator(counterEvent);
