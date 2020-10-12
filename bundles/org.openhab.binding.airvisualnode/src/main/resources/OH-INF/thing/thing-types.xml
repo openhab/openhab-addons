@@ -14,7 +14,9 @@
 			<channel id="co2" typeId="Co2"/>
 			<channel id="humidity" typeId="Humidity"/>
 			<channel id="aqi" typeId="Aqi"/>
+			<channel id="pm_01" typeId="Pm_01"/>
 			<channel id="pm_25" typeId="Pm_25"/>
+			<channel id="pm_10" typeId="Pm_10"/>
 			<channel id="temperature" typeId="Temperature"/>
 			<channel id="timestamp" typeId="Timestamp"/>
 			<channel id="used_memory" typeId="Used_memory"/>
@@ -87,6 +89,20 @@
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>PM2.5 level, µg/m&#179;</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="Pm_10">
+		<item-type>Number:Density</item-type>
+		<label>PM10</label>
+		<description>PM10 level, µg/m&#179;(Only in Pro version)</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="Pm_01">
+		<item-type>Number:Density</item-type>
+		<label>PM0.1</label>
+		<description>PM0.1 level, µg/m&#179;(Only in Pro version)</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

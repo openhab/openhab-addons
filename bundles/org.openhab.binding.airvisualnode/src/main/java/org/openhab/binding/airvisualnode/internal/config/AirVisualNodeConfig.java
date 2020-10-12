@@ -30,4 +30,6 @@ public class AirVisualNodeConfig {
     public String share;
 
     public long refresh;
+
+    public boolean isProVersion;
 }
