@@ -15,7 +15,10 @@ package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -41,7 +44,8 @@ import com.google.gson.JsonParser;
 public class SecondGenerationConfigurationHandler {
 
     public static void executeConfigurationChanges(HttpClient httpClient, String url, String username, String password,
-            String dxsId, String value) throws Exception {
+            String dxsId, String value)
+            throws InterruptedException, ExecutionException, TimeoutException, NoSuchAlgorithmException {
         String urlLogin = url + "/api/login.json?";
         String salt = "";
         String sessionId = "";
@@ -49,6 +53,7 @@ public class SecondGenerationConfigurationHandler {
         Logger logger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
 
         String getAuthenticateResponse = httpClient.GET(urlLogin).getContentAsString();
+
         try {
             JsonObject getAuthenticateResponseJsonObject = (JsonObject) new JsonParser()
                     .parse(transformJsonResponse(getAuthenticateResponse));
@@ -105,8 +110,8 @@ public class SecondGenerationConfigurationHandler {
 
             JsonObject postJsonObject = (JsonObject) new JsonParser().parse(transformJsonResponse(postResponse));
             sessionId = extractSessionId(postJsonObject);
-        } catch (JsonIOException e) {
-            logger.debug("Could not read the response: {}", e.getMessage());
+        } catch (JsonIOException getAuthenticateResponseException) {
+            logger.debug("Could not read the response: {}", getAuthenticateResponseException.getMessage());
         }
     }
 
@@ -127,7 +132,8 @@ public class SecondGenerationConfigurationHandler {
         return transformJsonObject;
     }
 
-    static String extractSessionId(JsonObject extractJsonObject) throws Exception {
+    static String extractSessionId(JsonObject extractJsonObject)
+            throws InterruptedException, ExecutionException, TimeoutException {
         // Method extractSessionId extracts sessionId from JsonObject
         String extractSessionId = "";
         JsonArray extractJsonArray = extractJsonObject.getAsJsonArray("session");

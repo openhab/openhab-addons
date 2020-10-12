@@ -13,16 +13,12 @@
 
 package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.measure.Unit;
 
@@ -39,7 +35,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -57,7 +52,6 @@ import com.google.gson.GsonBuilder;
  * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  * @author Örjan Backsell - Redesigned regarding Piko1020, Piko New Generation
  */
-
 @NonNullByDefault
 public class SecondGenerationHandler extends BaseThingHandler {
 
@@ -76,15 +70,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
-        if (command instanceof RefreshType) {
-            logger.debug("Handle command for {} on channel {}: {}", thing.getUID(), channelUID, command);
-        }
-
-        if (command == RefreshType.REFRESH) {
-            return;
-        }
-
         final @Nullable SecondGenerationBindingConstants handleCommandConfig;
         handleCommandConfig = getConfigAs(SecondGenerationBindingConstants.class);
 
@@ -185,21 +170,27 @@ public class SecondGenerationHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.scheduleWithFixedDelay(() -> {
+
             try {
-                updateStatus(ThingStatus.ONLINE);
                 refresh();
+                updateStatus(ThingStatus.ONLINE);
             } catch (RuntimeException scheduleWithFixedDelayException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         scheduleWithFixedDelayException.getClass().getName() + ":"
                                 + scheduleWithFixedDelayException.getMessage());
-                logger.debug("Error refreshing source = {}: {}", getThing().getUID(),
+                logger.debug("Error when connecting to inverter, {}: {}", getThing().getUID(),
                         scheduleWithFixedDelayException.getMessage());
+            } catch (InterruptedException e) {
+                logger.debug("Communication with inverter interrupted, exception {}", e.getMessage());
+            } catch (ExecutionException e) {
+                logger.debug("Communication with inverter failed, exception {}", e.getMessage());
+            } catch (TimeoutException e) {
+                logger.debug("Communication with inverter timed out, exception {}", e.getMessage());
             }
         }, 0, SecondGenerationBindingConstants.REFRESHINTERVAL_SEC, TimeUnit.SECONDS);
     }
 
-    @SuppressWarnings("null")
-    private void refresh() {
+    private void refresh() throws InterruptedException, ExecutionException, TimeoutException {
         final @Nullable SecondGenerationBindingConstants refreshConfig;
         refreshConfig = getConfigAs(SecondGenerationBindingConstants.class);
         String dxsEntriesCall = refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
@@ -222,12 +213,12 @@ public class SecondGenerationHandler extends BaseThingHandler {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         // Parse result
-        SecondGenerationDxsEntriesContainer dxsEntriesContainer = gson.fromJson(jsonDxsEntriesResponse,
-                SecondGenerationDxsEntriesContainer.class);
-        SecondGenerationDxsEntriesContainer dxsEntriesContainerExt = gson.fromJson(jsonDxsEntriesResponseExt,
-                SecondGenerationDxsEntriesContainer.class);
-        SecondGenerationDxsEntriesContainer dxsEntriesContainerExtExt = gson.fromJson(jsonDxsEntriesResponseExtExt,
-                SecondGenerationDxsEntriesContainer.class);
+        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainer = gson.fromJson(jsonDxsEntriesResponse,
+                SecondGenerationDxsEntriesContainerDTO.class);
+        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExt = gson.fromJson(jsonDxsEntriesResponseExt,
+                SecondGenerationDxsEntriesContainerDTO.class);
+        SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExtExt = gson.fromJson(jsonDxsEntriesResponseExtExt,
+                SecondGenerationDxsEntriesContainerDTO.class);
 
         // Create channel-posts array's
         String[] channelPosts = new String[23];
@@ -308,35 +299,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
         }
     }
 
-    public final String callURL(String myURL) {
-        StringBuilder sb = new StringBuilder();
-        URLConnection urlConn = null;
-        InputStreamReader in = null;
-        try {
-            URL url = new URL(myURL);
-            urlConn = url.openConnection();
-            if (urlConn != null) {
-                urlConn.setReadTimeout(60 * 1000);
-            }
-            if (urlConn != null && urlConn.getInputStream() != null) {
-                try {
-                    in = new InputStreamReader(urlConn.getInputStream(), Charset.defaultCharset());
-                    BufferedReader bufferedReader = new BufferedReader(in);
-                    int cp;
-                    while ((cp = bufferedReader.read()) != -1) {
-                        sb.append((char) cp);
-                    }
-                    bufferedReader.close();
-                    in.close();
-                } catch (IOException getInputStreamReaderException) {
-                    logger.debug("Could not open connection urlConn {}: {}", urlConn,
-                            getInputStreamReaderException.getMessage());
-                }
-            }
-        } catch (IOException callURLException) {
-            logger.debug("InputStream urlConn is empty");
-        }
-        return sb.toString();
+    public final String callURL(String dxsEntriesCall)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        String jsonDxsresponse = httpClient.GET(dxsEntriesCall).getContentAsString();
+
+        return jsonDxsresponse;
     }
 
     private State getState(String value, @Nullable Unit<?> unit) {

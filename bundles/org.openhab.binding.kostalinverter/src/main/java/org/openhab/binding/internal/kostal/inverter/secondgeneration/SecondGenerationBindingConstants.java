@@ -1,5 +1,5 @@
 /**
-opera * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@ opera * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;

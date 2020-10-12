@@ -72,7 +72,7 @@ None
 | gridOutputPower          | Number:Power         | Current output power to the grid                |         R          |              
 | yieldDay                      | Number:Energy        | Total produced power today                       |          R          |                
 | yieldTotal                    | Number:Energy         | Total produced power                           |             R           |                      
-| operatingStatus           | Number:One             | Current operating status                       |          R          |                        
+| operatingStatus           | Number:One             | Current operating status, 0 = Standby, 3 = WO-IDLE                       |          R          |                        
 | gridVoltageL1             | Number:ElectricPotential  | Current output voltage to the grid, L1 |    R         |
 | gridCurrentL1             | Number:ElectricCurrent    | Current output current to the grid, L1  |    R    |
 | gridPowerL1               | Number:Power              | Current output power to the grid, L1  |    R    |
