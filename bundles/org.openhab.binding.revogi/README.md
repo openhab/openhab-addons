@@ -20,27 +20,27 @@ You need to know the serial number. Usually you can find it on the back. The ser
 
 ## Channels
 
-| channel            | type   | description                               |
-|--------------------|--------|-------------------------------------------|
-| overallPlug#switch | Switch | Switch all plugs                          |
-| plug1#switch       | Switch | Switch plug 1                             |
-| plug1#watt         | Number | Contains currently used power of plug 1   |
-| plug1#amp          | Number | Contains currently used current of plug 1 |
-| plug2#switch       | Switch | Switch plug 2                             |
-| plug2#watt         | Number | Contains currently used power of plug 2   |
-| plug2#amp          | Number | Contains currently used current of plug 2 |
-| plug3#switch       | Switch | Switch plug 3                             |
-| plug3#watt         | Number | Contains currently used power of plug 3   |
-| plug3#amp          | Number | Contains currently used current of plug 3 |
-| plug4#switch       | Switch | Switch plug 4                             |
-| plug4#watt         | Number | Contains currently used power of plug 4   |
-| plug4#amp          | Number | Contains currently used current of plug 4 |
-| plug5#switch       | Switch | Switch plug 5                             |
-| plug5#watt         | Number | Contains currently used power of plug 5   |
-| plug5#amp          | Number | Contains currently used current of plug 5 |
-| plug6#switch       | Switch | Switch plug 6                             |
-| plug6#watt         | Number | Contains currently used power of plug 6   |
-| plug6#amp          | Number | Contains currently used current of plug 6 |
+| channel            | type                   | description                               |
+|--------------------|------------------------|-------------------------------------------|
+| overallPlug#switch | Switch                 | Switches all plugs                        |
+| plug1#switch       | Switch                 | Switch plug 1                             |
+| plug1#watt         | Number:Power           | Contains currently used power of plug 1   |
+| plug1#amp          | Number:ElectricCurrent | Contains currently used current of plug 1 |
+| plug2#switch       | Switch                 | Switch plug 2                             |
+| plug2#watt         | Number:Power           | Contains currently used power of plug 2   |
+| plug2#amp          | Number:ElectricCurrent | Contains currently used current of plug 2 |
+| plug3#switch       | Switch                 | Switch plug 3                             |
+| plug3#watt         | Number:Power           | Contains currently used power of plug 3   |
+| plug3#amp          | Number:ElectricCurrent | Contains currently used current of plug 3 |
+| plug4#switch       | Switch                 | Switch plug 4                             |
+| plug4#watt         | Number:Power           | Contains currently used power of plug 4   |
+| plug4#amp          | Number:ElectricCurrent | Contains currently used current of plug 4 |
+| plug5#switch       | Switch                 | Switch plug 5                             |
+| plug5#watt         | Number:Power           | Contains currently used power of plug 5   |
+| plug5#amp          | Number:ElectricCurrent | Contains currently used current of plug 5 |
+| plug6#switch       | Switch                 | Switch plug 6                             |
+| plug6#watt         | Number:Power           | Contains currently used power of plug 6   |
+| plug6#amp          | Number:ElectricCurrent | Contains currently used current of plug 6 |
 
 ## Full Example
 
