@@ -29,11 +29,17 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.zone.ZoneRules;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.airvisualnode.internal.config.AirVisualNodeConfig;
-import org.openhab.binding.airvisualnode.internal.json.NodeData;
+import org.openhab.binding.airvisualnode.internal.json.MeasurementsInterface;
+import org.openhab.binding.airvisualnode.internal.json.NodeDataInterface;
+import org.openhab.binding.airvisualnode.internal.json.airvisual.NodeData;
+import org.openhab.binding.airvisualnode.internal.json.airvisualpro.ProNodeData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -43,6 +49,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -84,7 +91,9 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
     private String nodeShareName;
 
-    private NodeData nodeData;
+    private NodeDataInterface nodeData;
+
+    private boolean isProVersion;
 
     public AirVisualNodeHandler(Thing thing) {
         super(thing);
@@ -115,7 +124,31 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
         this.refreshInterval = config.refresh * 1000L;
 
+        try {
+            var jsonData = gson.fromJson(getNodeJsonData(), Map.class);
+            this.isProVersion = jsonData.get("measurements") instanceof ArrayList;
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't get node json");
+            return;
+        }
+
+        if (!this.isProVersion) {
+            removeProChannels();
+        }
+
         schedulePoll();
+    }
+
+    private void removeProChannels() {
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        channels.removeIf(channel -> channel.getLabel().equals("PM0.1") || channel.getLabel().equals("PM10"));
+        replaceChannels(channels);
+    }
+
+    private void replaceChannels(List<Channel> channels) {
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withChannels(channels);
+        updateThing(thingBuilder.build());
     }
 
     @Override
@@ -163,7 +196,14 @@ public class AirVisualNodeHandler extends BaseThingHandler {
 
     private void pollNode() throws IOException {
         String jsonData = getNodeJsonData();
-        NodeData currentNodeData = gson.fromJson(jsonData, NodeData.class);
+
+        NodeDataInterface currentNodeData;
+        if (isProVersion) {
+            currentNodeData = gson.fromJson(jsonData, ProNodeData.class);
+        } else {
+            currentNodeData = gson.fromJson(jsonData, NodeData.class);
+        }
+
         if (nodeData == null || currentNodeData.getStatus().getDatetime() > nodeData.getStatus().getDatetime()) {
             nodeData = currentNodeData;
             // Update all channels from the updated Node data
@@ -189,7 +229,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
         }
     }
 
-    private State getChannelState(String channelId, NodeData nodeData) {
+    private State getChannelState(String channelId, NodeDataInterface nodeData) {
         State state = UnDefType.UNDEF;
 
         // Handle system channel IDs separately, because 'switch/case' expressions must be constant expressions
@@ -199,24 +239,32 @@ public class AirVisualNodeHandler extends BaseThingHandler {
             state = new DecimalType(
                     BigDecimal.valueOf(Math.max(0, nodeData.getStatus().getWifiStrength() - 1)).longValue());
         } else {
+            MeasurementsInterface measurements = nodeData.getMeasurements();
             // Handle binding-specific channel IDs
             switch (channelId) {
                 case CHANNEL_CO2:
-                    state = new QuantityType<>(nodeData.getMeasurements().getCo2Ppm(), PARTS_PER_MILLION);
+                    state = new QuantityType<>(measurements.getCo2Ppm(), PARTS_PER_MILLION);
                     break;
                 case CHANNEL_HUMIDITY:
-                    state = new QuantityType<>(nodeData.getMeasurements().getHumidityRH(), PERCENT);
+                    state = new QuantityType<>(measurements.getHumidityRH(), PERCENT);
                     break;
                 case CHANNEL_AQI_US:
-                    state = new QuantityType<>(nodeData.getMeasurements().getPm25AQIUS(), ONE);
+                    state = new QuantityType<>(measurements.getPm25AQIUS(), ONE);
                     break;
                 case CHANNEL_PM_25:
                     // PM2.5 is in ug/m3
-                    state = new QuantityType<>(nodeData.getMeasurements().getPm25Ugm3(),
-                            MICRO(GRAM).divide(CUBIC_METRE));
+                    state = new QuantityType<>(measurements.getPm25Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
+                    break;
+                case CHANNEL_PM_10:
+                    // PM10 is in ug/m3
+                    state = new QuantityType<>(measurements.getPm10Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
+                    break;
+                case CHANNEL_PM_01:
+                    // PM0.1 is in ug/m3
+                    state = new QuantityType<>(measurements.getPm01Ugm3(), MICRO(GRAM).divide(CUBIC_METRE));
                     break;
                 case CHANNEL_TEMP_CELSIUS:
-                    state = new QuantityType<>(nodeData.getMeasurements().getTemperatureC(), CELSIUS);
+                    state = new QuantityType<>(measurements.getTemperatureC(), CELSIUS);
                     break;
                 case CHANNEL_TIMESTAMP:
                     // It seem the Node timestamp is Unix timestamp converted from UTC time plus timezone offset.

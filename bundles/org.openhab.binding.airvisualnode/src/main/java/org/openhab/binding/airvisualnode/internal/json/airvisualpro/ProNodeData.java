@@ -10,22 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airvisualnode.internal.json;
+package org.openhab.binding.airvisualnode.internal.json.airvisualpro;
+
+import java.util.List;
+
+import org.openhab.binding.airvisualnode.internal.json.DateAndTime;
+import org.openhab.binding.airvisualnode.internal.json.MeasurementsInterface;
+import org.openhab.binding.airvisualnode.internal.json.NodeDataInterface;
+import org.openhab.binding.airvisualnode.internal.json.airvisual.Settings;
+import org.openhab.binding.airvisualnode.internal.json.airvisual.Status;
 
 /**
  * Top level object for AirVisual Node JSON data.
  *
  * @author Victor Antonovich - Initial contribution
  */
-public class NodeData {
+public class ProNodeData implements NodeDataInterface {
 
     private DateAndTime dateAndTime;
-    private Measurements measurements;
+    private List<Measurements> measurements;
     private String serialNumber;
     private Settings settings;
     private Status status;
 
-    public NodeData(DateAndTime dateAndTime, Measurements measurements, String serialNumber, Settings settings,
+    public ProNodeData(DateAndTime dateAndTime, List<Measurements> measurements, String serialNumber, Settings settings,
             Status status) {
         this.dateAndTime = dateAndTime;
         this.measurements = measurements;
@@ -42,11 +50,11 @@ public class NodeData {
         this.dateAndTime = dateAndTime;
     }
 
-    public Measurements getMeasurements() {
-        return measurements;
+    public MeasurementsInterface getMeasurements() {
+        return measurements.get(0);
     }
 
-    public void setMeasurements(Measurements measurements) {
+    public void setMeasurements(List<Measurements> measurements) {
         this.measurements = measurements;
     }
 
