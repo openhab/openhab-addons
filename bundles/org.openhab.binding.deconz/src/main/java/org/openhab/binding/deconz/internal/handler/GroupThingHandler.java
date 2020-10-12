@@ -13,18 +13,23 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
+import static org.openhab.binding.deconz.internal.Util.buildUrl;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.GroupAction;
 import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.GroupState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ResourceType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -78,135 +83,74 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            valueUpdated(channelUID.getId(), groupStateCache);
-            return;
-        }
+        String channelId = channelUID.getId();
 
         GroupAction newGroupAction = new GroupAction();
-        // TODO: enable actions
-        /*
-         * switch (channelUID.getId()) {
-         * case CHANNEL_ALERT:
-         * if (command instanceof OnOffType) {
-         * newLightState.alert = command == OnOffType.ON ? "alert" : "none";
-         * } else {
-         * return;
-         * }
-         * case CHANNEL_SWITCH:
-         * if (command instanceof OnOffType) {
-         * newLightState.on = (command == OnOffType.ON);
-         * } else {
-         * return;
-         * }
-         * break;
-         * case CHANNEL_BRIGHTNESS:
-         * case CHANNEL_COLOR:
-         * if (command instanceof OnOffType) {
-         * newLightState.on = (command == OnOffType.ON);
-         * } else if (command instanceof HSBType) {
-         * HSBType hsbCommand = (HSBType) command;
-         * 
-         * if ("xy".equals(groupStateCache.colormode)) {
-         * PercentType[] xy = hsbCommand.toXY();
-         * if (xy.length < 2) {
-         * logger.warn("Failed to convert {} to xy-values", command);
-         * }
-         * newLightState.xy = new double[] { xy[0].doubleValue() / 100.0, xy[1].doubleValue() / 100.0 };
-         * newLightState.bri = fromPercentType(hsbCommand.getBrightness());
-         * } else {
-         * // default is colormode "hs" (used when colormode "hs" is set or colormode is unknown)
-         * newLightState.bri = fromPercentType(hsbCommand.getBrightness());
-         * newLightState.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
-         * newLightState.sat = fromPercentType(hsbCommand.getSaturation());
-         * }
-         * } else if (command instanceof PercentType) {
-         * newLightState.bri = fromPercentType((PercentType) command);
-         * } else if (command instanceof DecimalType) {
-         * newLightState.bri = ((DecimalType) command).intValue();
-         * } else {
-         * return;
-         * }
-         * 
-         * // send on/off state together with brightness if not already set or unknown
-         * Integer newBri = newLightState.bri;
-         * if ((newBri != null) && ((currentOn == null) || ((newBri > 0) != currentOn))) {
-         * newLightState.on = (newBri > 0);
-         * }
-         * 
-         * // fix sending bri=0 when light is already off
-         * if (newBri != null && newBri == 0 && currentOn != null && !currentOn) {
-         * return;
-         * }
-         * 
-         * Double transitiontime = config.transitiontime;
-         * if (transitiontime != null) {
-         * // value is in 1/10 seconds
-         * newLightState.transitiontime = (int) Math.round(10 * transitiontime);
-         * }
-         * break;
-         * case CHANNEL_COLOR_TEMPERATURE:
-         * if (command instanceof DecimalType) {
-         * int miredValue = kelvinToMired(((DecimalType) command).intValue());
-         * newLightState.ct = constrainToRange(miredValue, ctMin, ctMax);
-         * 
-         * if (currentOn != null && !currentOn) {
-         * // sending new color temperature is only allowed when light is on
-         * newLightState.on = true;
-         * }
-         * } else {
-         * return;
-         * }
-         * break;
-         * case CHANNEL_POSITION:
-         * if (command instanceof UpDownType) {
-         * newLightState.on = (command == UpDownType.DOWN);
-         * } else if (command == StopMoveType.STOP) {
-         * if (currentOn != null && currentOn && currentBri != null && currentBri <= 254) {
-         * // going down or currently stop (254 because of rounding error)
-         * newLightState.on = true;
-         * } else if (currentOn != null && !currentOn && currentBri != null && currentBri > 0) {
-         * // going up or currently stopped
-         * newLightState.on = false;
-         * }
-         * } else if (command instanceof PercentType) {
-         * newLightState.bri = fromPercentType((PercentType) command);
-         * } else {
-         * return;
-         * }
-         * break;
-         * default:
-         * // no supported command
-         * return;
-         * }
-         * 
-         * AsyncHttpClient asyncHttpClient = http;
-         * if (asyncHttpClient == null) {
-         * return;
-         * }
-         * String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id,
-         * "state");
-         * 
-         * if (newLightState.on != null && !newLightState.on) {
-         * // if light shall be off, no other commands are allowed, so reset the new light state
-         * newLightState.clear();
-         * newLightState.on = false;
-         * }
-         * 
-         * String json = gson.toJson(newLightState);
-         * logger.trace("Sending {} to light {} via {}", json, config.id, url);
-         * 
-         * asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
-         * lastCommandExpireTimestamp = System.currentTimeMillis()
-         * + (newLightState.transitiontime != null ? newLightState.transitiontime
-         * : DEFAULT_COMMAND_EXPIRY_TIME);
-         * lastCommand = newLightState;
-         * logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
-         * }).exceptionally(e -> {
-         * logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
-         * return null;
-         * });
-         */
+        switch (channelId) {
+            case CHANNEL_ALL_ON:
+            case CHANNEL_ANY_ON:
+                if (command instanceof RefreshType) {
+                    valueUpdated(channelUID.getId(), groupStateCache);
+                    return;
+                }
+                break;
+            case CHANNEL_ALERT:
+                if (command instanceof OnOffType) {
+                    newGroupAction.alert = command == OnOffType.ON ? "alert" : "none";
+                } else {
+                    return;
+                }
+                break;
+            case CHANNEL_COLOR:
+                if (command instanceof HSBType) {
+                    HSBType hsbCommand = (HSBType) command;
+                    newGroupAction.bri = Util.fromPercentType(hsbCommand.getBrightness());
+                    if (newGroupAction.bri > 0) {
+                        newGroupAction.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
+                        newGroupAction.sat = Util.fromPercentType(hsbCommand.getSaturation());
+                    }
+                } else if (command instanceof PercentType) {
+                    newGroupAction.bri = Util.fromPercentType((PercentType) command);
+                } else if (command instanceof DecimalType) {
+                    newGroupAction.bri = ((DecimalType) command).intValue();
+                } else if (command instanceof OnOffType) {
+                    newGroupAction.on = OnOffType.ON.equals(command);
+                } else {
+                    return;
+                }
+                break;
+            case CHANNEL_COLOR_TEMPERATURE:
+                if (command instanceof DecimalType) {
+                    int miredValue = Util.kelvinToMired(((DecimalType) command).intValue());
+                    newGroupAction.ct = Util.constrainToRange(miredValue, ZCL_CT_MIN, ZCL_CT_MAX);
+                } else {
+                    return;
+                }
+                break;
+            default:
+                return;
+        }
+
+        if (newGroupAction.bri != null && newGroupAction.bri > 0) {
+            newGroupAction.on = true;
+        }
+
+        AsyncHttpClient asyncHttpClient = http;
+        if (asyncHttpClient == null) {
+            return;
+        }
+        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "groups", config.id,
+                "action");
+
+        String json = gson.toJson(newGroupAction);
+        logger.trace("Sending {} to group {} via {}", json, config.id, url);
+
+        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
+            logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
+        }).exceptionally(e -> {
+            logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
+            return null;
+        });
     }
 
     @Override
