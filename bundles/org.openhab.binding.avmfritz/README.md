@@ -10,7 +10,25 @@ The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ([AVM Hom
 
 FRITZ!Boxes (thing type `fritzbox`) are supported as bridges and they offer channels for call monitoring.
 To activate the call monitor interface on a FRITZ!Box, you need to dial once `#96*5*` on a connected telephone.
+You should hear a short audio signal as confirmation.
+This procedure opens TCP/IP port 1012 on your FRITZ!Box.
 (It can be deactivated again by dialing `#96*4*`.)
+You can test if everything is working with the Telnet program from your openHAB server:
+
+```
+telnet fritz.box 1012
+```
+
+If you see an output like this:
+
+```
+Trying 192.168.178.1...
+Connected to fritz.box.
+Escape character is '^]'.
+```
+
+then it successfully connected to the call monitor.
+If not, please make sure target openHAB system does not block the port on its firewall.
 
 Additionally, they serve as a bridge for accessing other AHA devices.
 For AHA functionality, the router has to run at least on firmware FRITZ!OS 6.00 and it has to support the "Smart Home" service.
