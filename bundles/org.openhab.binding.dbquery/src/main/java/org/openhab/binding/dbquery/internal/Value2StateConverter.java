@@ -11,6 +11,8 @@ import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dbquery.internal.domain.QueryResult;
+import org.openhab.binding.dbquery.internal.domain.QueryResultJSONEncoder;
 import org.openhab.binding.dbquery.internal.error.UnnexpectedCondition;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -25,6 +27,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Value2StateConverter {
     private final Logger logger = LoggerFactory.getLogger(Value2StateConverter.class);
+    private final QueryResultJSONEncoder queryResultJSONEncoder = new QueryResultJSONEncoder();
 
     public State convertValue(@Nullable Object value, Class<? extends State> targetType) {
         if (value == null) {
@@ -92,10 +95,12 @@ public class Value2StateConverter {
     }
 
     private State convert2String(Object value) {
-        if (value instanceof String)
+        if (value instanceof String) {
             return new StringType((String) value);
-        else if (value instanceof byte[]) {
+        } else if (value instanceof byte[]) {
             return new StringType(Base64.getEncoder().encodeToString((byte[]) value));
+        } else if (value instanceof QueryResult) {
+            return new StringType(queryResultJSONEncoder.encode((QueryResult) value));
         } else {
             return new StringType(String.valueOf(value));
         }

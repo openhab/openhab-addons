@@ -15,6 +15,7 @@ package org.openhab.binding.dbquery.action;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link IDBQueryActions} interface defines rule actions for interacting with DBQuery addon Things.
@@ -23,21 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface IDBQueryActions {
-    String executeQuery(String query, Map<String, Object> parameters);
+    ActionQueryResult executeQuery(String query, Map<String, @Nullable Object> parameters, int timeoutInSeconds);
 
-    QueryResult executeQueryNonScalar(String query, Map<String, Object> parameters);
+    ActionQueryResult getLastQueryResult();
 
-    void setQueryParameters(Map<String, Object> parameters);
-
-    class QueryResult {
-        private boolean correct;
-
-        public QueryResult(boolean correct) {
-            this.correct = correct;
-        }
-
-        public boolean isCorrect() {
-            return correct;
-        }
-    }
+    void setQueryParameters(Map<String, @Nullable Object> parameters);
 }

@@ -52,7 +52,7 @@ Item channels:
 | Channel Type ID | Item Type | Description                                                                                                                        |
 |-----------------|-----------|------------------------------------------------------------------------------------------------------------------------------------|
 | execute         | Switch    | Send `ON` to execute the query, the current state tells if the query is running                                                    |
-| result          | String    | Result data of last executed query. A string with the result if `scalarResult` is true and a JSON with result data if set to false |
+| result          | String    | Result data of last executed query. A string with the result if `scalarResult` is true and a list of maps for each register a JSON with result data if set to false |
 | parameters      | String    | If query has parameters it exposes current parameters values as JSON object                                                        |
 | correct         | Switch    | True if the result executed correctly, otherwise false                                                                             |
 

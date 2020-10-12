@@ -67,6 +67,7 @@ public class QueryHandler extends BaseThingHandler {
     private Database database = Database.EMPTY;
 
     private @Nullable QueryExecution currentQueryExecution;
+    private QueryResult lastQueryResult = QueryResult.NO_RESULT;
 
     public QueryHandler(Thing thing) {
         super(thing);
@@ -90,7 +91,7 @@ public class QueryHandler extends BaseThingHandler {
 
     private void scheduleQueryExecutionIntervalIfNeeded() {
         int interval = config.getInterval();
-        if (interval != 0 && scheduledQueryExecutionInterval == null) {
+        if (interval != QueryConfiguration.NO_INTERVAL && scheduledQueryExecutionInterval == null) {
             logger.trace("Scheduling query execution every {} seconds for {}", interval, getQueryIdentifier());
             scheduledQueryExecutionInterval = Executors.newSingleThreadScheduledExecutor()
                     .scheduleAtFixedRate(this::executeQuery, 0, interval, TimeUnit.SECONDS);
@@ -238,6 +239,10 @@ public class QueryHandler extends BaseThingHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(DBQueryActions.class);
+    }
+
+    public QueryResult getLastQueryResult() {
+        return lastQueryResult;
     }
 
     private List<Channel> getChannels2Update() {

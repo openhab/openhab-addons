@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Joan Pujol - Initial contribution
  */
 public class QueryConfiguration {
+    public static final int NO_INTERVAL = 0;
+
     private String query;
     private int interval;
     private int timeout;

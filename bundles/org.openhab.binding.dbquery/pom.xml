@@ -42,7 +42,7 @@
       <groupId>com.squareup.retrofit2</groupId>
       <version>2.5.0</version>
     </dependency>
-    <dependency>
+    <dependency> <!-- also used for querydb library -->
       <artifactId>gson</artifactId>
       <groupId>com.google.code.gson</groupId>
       <version>2.8.5</version>

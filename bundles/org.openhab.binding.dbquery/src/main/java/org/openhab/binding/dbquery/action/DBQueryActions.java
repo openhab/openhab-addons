@@ -1,13 +1,19 @@
 package org.openhab.binding.dbquery.action;
 
+import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dbquery.internal.DatabaseBridgeHandler;
 import org.openhab.binding.dbquery.internal.QueryHandler;
+import org.openhab.binding.dbquery.internal.domain.ExecuteNonConfiguredQuery;
+import org.openhab.binding.dbquery.internal.domain.QueryResult;
+import org.openhab.binding.dbquery.internal.domain.ResultRow;
 import org.openhab.binding.dbquery.internal.error.UnnexpectedCondition;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -19,7 +25,7 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
     private final Logger logger = LoggerFactory.getLogger(DBQueryActions.class);
 
     private @Nullable QueryHandler queryHandler;
-    private @Nullable BridgeHandler bridgeHandler;
+    private @Nullable DatabaseBridgeHandler databaseBridgeHandler;
 
     @Override
     public void activate() {
@@ -32,20 +38,32 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
     }
 
     @Override
-    public String executeQuery(String query, Map<String, Object> parameters) {
-        logger.info("executeQuery {} params={}", query, parameters);
-        return "value";
+    @RuleAction(label = "Execute query", description = "Execute query synchronously (use with care)")
+    public ActionQueryResult executeQuery(String query, Map<String, @Nullable Object> parameters,
+            int timeoutInSeconds) {
+        logger.debug("executeQuery from action {} params={}", query, parameters);
+        QueryResult queryResult = new ExecuteNonConfiguredQuery(databaseBridgeHandler.getDatabase())
+                .executeSynchronously(query, parameters, Duration.ofSeconds(timeoutInSeconds));
+        logger.debug("executeQuery from action result {}", queryResult);
+        return queryResult2ActionQueryResult(queryResult);
     }
 
-    @Override
-    public QueryResult executeQueryNonScalar(String query, Map<String, Object> parameters) {
-        logger.info("executeQueryNonScalar {} params={}", query, parameters);
-        return new QueryResult(true);
+    private ActionQueryResult queryResult2ActionQueryResult(QueryResult queryResult) {
+        return new ActionQueryResult(queryResult.isCorrect(),
+                queryResult.getData().stream().map(DBQueryActions::resultRow2Map).collect(Collectors.toList()));
+    }
+
+    private static Map<String, Object> resultRow2Map(ResultRow resultRow) {
+        Map<String, Object> map = new HashMap<>();
+        for (String column : resultRow.getColumnNames()) {
+            map.put(column, resultRow.getValue(column));
+        }
+        return map;
     }
 
     @Override
     @RuleAction(label = "Set query parameters", description = "Set query parameters for a query")
-    public void setQueryParameters(@ActionInput(name = "parameters") Map<String, Object> parameters) {
+    public void setQueryParameters(@ActionInput(name = "parameters") Map<String, @Nullable Object> parameters) {
         logger.info("setQueryParameters {}", parameters);
         var queryHandler = getThingHandler();
         if (queryHandler instanceof QueryHandler) {
@@ -56,17 +74,23 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
     }
 
     @Override
+    @RuleAction(label = "Get last query result", description = "Get last result from a query")
+    public ActionQueryResult getLastQueryResult() {
+        return queryResult2ActionQueryResult(queryHandler.getLastQueryResult());
+    }
+
+    @Override
     public void setThingHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof QueryHandler)
             this.queryHandler = ((QueryHandler) thingHandler);
-        else if (thingHandler instanceof BridgeHandler)
-            this.bridgeHandler = ((BridgeHandler) thingHandler);
+        else if (thingHandler instanceof DatabaseBridgeHandler)
+            this.databaseBridgeHandler = ((DatabaseBridgeHandler) thingHandler);
         else
             throw new UnnexpectedCondition("Not expected thing handler " + thingHandler);
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return queryHandler != null ? queryHandler : bridgeHandler;
+        return queryHandler != null ? queryHandler : databaseBridgeHandler;
     }
 }

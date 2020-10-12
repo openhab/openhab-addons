@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class QueryResult {
     private final Logger logger = LoggerFactory.getLogger(QueryResult.class);
+    public static final QueryResult NO_RESULT = QueryResult.ofIncorrectResult("No result");
 
     private final boolean correct;
     private final @Nullable String errorMessage;
