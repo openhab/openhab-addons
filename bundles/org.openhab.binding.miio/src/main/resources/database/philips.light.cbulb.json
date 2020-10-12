@@ -1,8 +1,9 @@
 {
 	"deviceMapping": {
 		"id": [
-			"philips.light.sread1",
-			"philips.light.sread2"
+			"philips.light.cbulb",
+			"philips.light.cbulbs",
+			"philips.light.dcolor"
 		],
 		"channels": [
 			{
@@ -44,65 +45,85 @@
 				]
 			},
 			{
-				"property": "ambstatus",
-				"friendlyName": "Ambient Power",
-				"channel": "ambientPower",
-				"type": "Switch",
+				"property": "cct",
+				"friendlyName": "Correlated Color Temperature",
+				"channel": "cct",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "enable_amb",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
-				"property": "ambvalue",
-				"friendlyName": "Ambient Brightness",
-				"channel": "ambientBrightness",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_amb_bright",
+						"command": "set_cct",
 						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property": "dvalue",
-				"friendlyName": "Ambient Illumination",
-				"channel": "illumination",
+				"property": "snm",
+				"friendlyName": "Scene",
+				"channel": "scene",
 				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "",
-				"actions": []
-			},
-			{
-				"property": "eyecare",
-				"friendlyName": "Eyecare",
-				"channel": "eyecare",
-				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_eyecare",
-						"parameterType": "ONOFF"
+						"command": "apply_scene",
+						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property": "bl",
-				"friendlyName": "Night Light",
-				"channel": "bl",
-				"type": "Switch",
+				"property": "cid",
+				"friendlyName": "Color",
+				"channel": "cid",
+				"type": "Color",
 				"refresh": true,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "enable_bl",
+						"command": "set_cid",
+						"parameterType": "COLOR"
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Switch Scene",
+				"channel": "switchscene",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "switch_the_scene",
+						"parameterType": "EMPTY"
+					}
+				]
+			},
+			{
+				"property": "get_switch_en",
+				"friendlyName": "Switch Enabled",
+				"channel": "switch_en",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_switch_en",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Delay Off",
+				"channel": "delayoff",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "delay_off",
 						"parameterType": "NUMBER"
 					}
 				]
