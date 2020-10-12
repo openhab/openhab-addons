@@ -1,8 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"philips.light.sread1",
-			"philips.light.sread2"
+			"philips.light.rwread"
 		],
 		"channels": [
 			{
@@ -44,66 +43,42 @@
 				]
 			},
 			{
-				"property": "ambstatus",
-				"friendlyName": "Ambient Power",
-				"channel": "ambientPower",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "enable_amb",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
-				"property": "ambvalue",
-				"friendlyName": "Ambient Brightness",
-				"channel": "ambientBrightness",
+				"property": "snm",
+				"friendlyName": "Scene",
+				"channel": "scene",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_amb_bright",
+						"command": "apply_scene",
 						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property": "dvalue",
-				"friendlyName": "Ambient Illumination",
-				"channel": "illumination",
+				"property": "flm",
+				"friendlyName": "Follow Me",
+				"channel": "flm",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
-				"actions": []
+				"actions": [
+					{
+						"command": "set_flmvalue",
+						"parameterType": "NUMBER"
+					}
+				]
 			},
 			{
-				"property": "eyecare",
-				"friendlyName": "Eyecare",
-				"channel": "eyecare",
-				"type": "Switch",
+				"property": "dv",
+				"friendlyName": "DV",
+				"channel": "dv",
+				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_eyecare",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
-				"property": "bl",
-				"friendlyName": "Night Light",
-				"channel": "bl",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "enable_bl",
-						"parameterType": "NUMBER"
+						"parameterType": "EMPTY"
 					}
 				]
 			}
