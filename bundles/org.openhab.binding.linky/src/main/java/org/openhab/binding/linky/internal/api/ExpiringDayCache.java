@@ -111,7 +111,7 @@ public class ExpiringDayCache<V> {
      * @return true if the value is expired
      */
     public boolean isExpired() {
-        return LocalDateTime.now().isAfter(expiresAt);
+        return !LocalDateTime.now().isBefore(expiresAt);
     }
 
     private LocalDateTime calcNextExpiresAt() {

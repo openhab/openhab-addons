@@ -47,5 +47,5 @@ public class AuthData {
     public String template;
     public String stage;
     public String header;
-    public List<AuthDataCallBack> callbacks;
+    public List<AuthDataCallBack> callbacks = new ArrayList<>();
 }

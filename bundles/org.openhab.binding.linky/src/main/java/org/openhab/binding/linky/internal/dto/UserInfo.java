@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link UserInfo} holds informations about the user account
  *
@@ -20,11 +22,16 @@ package org.openhab.binding.linky.internal.dto;
 
 public class UserInfo {
     public class UserProperties {
-        public String av2_interne_id;
-        public String av2_prenom;
-        public String av2_mail;
-        public String av2_nom;
-        public String av2_infos_personnalisees;
+        @SerializedName("av2_interne_id")
+        public String internId;
+        @SerializedName("av2_prenom")
+        public String firstName;
+        @SerializedName("av2_mail")
+        public String mail;
+        @SerializedName("av2_nom")
+        public String name;
+        @SerializedName("av2_infos_personnalisees")
+        public String personalInfo;
     }
 
     public String username;

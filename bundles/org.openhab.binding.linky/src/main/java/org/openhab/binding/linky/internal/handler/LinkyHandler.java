@@ -153,7 +153,7 @@ public class LinkyHandler extends BaseThingHandler {
         if (api != null) {
             PrmInfo prmInfo = api.getPrmInfo();
             UserInfo userInfo = api.getUserInfo();
-            properties.put(USER_ID, userInfo.userProperties.av2_interne_id);
+            properties.put(USER_ID, userInfo.userProperties.internId);
             properties.put(PUISSANCE, prmInfo.puissanceSouscrite + " kVA");
             properties.put(PRM_ID, prmInfo.prmId);
         }

@@ -69,12 +69,11 @@ public class EnedisHttpApi {
         this.gson = gson;
         this.httpClient = httpClient;
         this.config = config;
-
-        httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
-        httpClient.setFollowRedirects(false);
     }
 
     public void initialize() throws LinkyException {
+        httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
+        httpClient.setFollowRedirects(false);
         try {
             httpClient.start();
         } catch (Exception e) {
@@ -104,10 +103,12 @@ public class EnedisHttpApi {
                 throw new LinkyException("Connection failed step 2");
             }
 
-            logger.debug("Get the location and the reqID");
+            logger.debug("Get the location and the ReqID");
             Pattern p = Pattern.compile("ReqID%(.*?)%26");
             Matcher m = p.matcher(getLocation(result));
-            m.find();
+            if (!m.find()) {
+                throw new LinkyException("Unable to locate ReqId in header");
+            }
 
             String reqId = m.group(1);
             String url = URL_MON_COMPTE
@@ -123,7 +124,9 @@ public class EnedisHttpApi {
             }
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
-            if (!config.username.contentEquals(authData.callbacks.get(0).input.get(0).valueAsString())) {
+            if (authData.callbacks.size() < 2 || authData.callbacks.get(0).input.size() == 0
+                    || authData.callbacks.get(1).input.size() == 0
+                    || !config.username.contentEquals(authData.callbacks.get(0).input.get(0).valueAsString())) {
                 throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
             }
 
@@ -211,7 +214,7 @@ public class EnedisHttpApi {
             }
             return result.getContentAsString();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new LinkyException("Error getting initial informations", e);
+            throw new LinkyException(String.format("Error getting url : '%s'", url), e);
         }
     }
 
