@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.dwdunwetter</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: DwdUnwetter Binding</name>
+  <name>openHAB Add-ons :: Bundles :: DWD Unwetter Binding</name>
 
 </project>
