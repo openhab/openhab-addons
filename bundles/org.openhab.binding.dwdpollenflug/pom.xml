@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.dwdpollenflug</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: DWDPollenflug Binding</name>
+  <name>openHAB Add-ons :: Bundles :: DWD Pollenflug Binding</name>
 
 </project>
