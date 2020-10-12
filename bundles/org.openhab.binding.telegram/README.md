@@ -161,13 +161,6 @@ Just put the chat id (must be a long value!) followed by an "L" as the first arg
 telegramAction.sendTelegram(1234567L, "Hello world!")
 ```
 
-You can also define a global variable to use in all your rules file:
-
-```
-val Id = 1234567L
-telegramAction.sendTelegram(Id, "Hello world!")
-```
-
 ## Full Example
 
 ### Send a text message to telegram chat
