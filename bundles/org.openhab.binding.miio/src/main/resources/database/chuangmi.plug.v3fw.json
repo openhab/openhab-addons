@@ -1,6 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
+			"chuangmi.plug.v3",
 			"chuangmi.plug.v3fw"
 		],
 		"channels": [
@@ -11,6 +12,7 @@
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "",
+				"readmeComment": "If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware",
 				"actions": [
 					{
 						"command": "set_power",

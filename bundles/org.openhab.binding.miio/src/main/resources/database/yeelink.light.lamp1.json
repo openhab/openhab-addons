@@ -4,9 +4,17 @@
 			"yeelink.light.lamp1",
 			"yeelink.light.lamp2",
 			"yeelink.light.lamp3",
+			"yeelink.light.lamp4",
+			"yeelink.light.lamp5",
+			"yeelink.light.lamp6",
+			"yeelink.light.lamp7",
+			"yeelink.light.lamp8",
+			"yeelink.light.strip4",
 			"yeelink.light.ct2",
 			"yeelink.light.mono1",
 			"yeelink.light.mono2",
+			"yeelink.light.mono5",
+			"yeelink.light.panel1",
 			"yeelink.light.virtual"
 		],
 		"channels": [

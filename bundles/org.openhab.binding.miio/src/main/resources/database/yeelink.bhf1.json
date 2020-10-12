@@ -1,8 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"yeelink.light.ceiling2",
-			"yeelink.light.panel1"
+			"yeelink.bhf_light.v1",
+			"yeelink.bhf_light.v2"
 		],
 		"channels": [
 			{
@@ -16,6 +16,20 @@
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bh_mode",
+				"friendlyName": "Bath Heater mode",
+				"channel": "bh_mode",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_bh_mode",
+						"parameterType": "STRING"
 					}
 				]
 			},
@@ -62,60 +76,13 @@
 				]
 			},
 			{
-				"property": "ct",
-				"friendlyName": "Color Temperature",
-				"channel": "colorTemperature",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_ct_abx",
-						"parameterType": "NUMBER",
-						"parameters": [
-							"$value$",
-							"smooth",
-							500
-						]
-					}
-				]
-			},
-			{
-				"property": "color_mode",
-				"friendlyName": "Color Mode",
-				"channel": "colorMode",
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "",
 				"actions": []
-			},
-			{
-				"property": "name",
-				"friendlyName": "Name",
-				"channel": "name",
-				"type": "String",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_name",
-						"parameterType": "STRING"
-					}
-				]
-			},
-			{
-				"property": "",
-				"friendlyName": "Set Scene",
-				"channel": "customScene",
-				"type": "String",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_scene",
-						"parameterType": "CUSTOMSTRING"
-					}
-				]
 			},
 			{
 				"property": "nl_br",

@@ -90,6 +90,18 @@ public class ReadmeHelper {
             if (!device.getModel().equals("unknown")) {
                 String link = device.getModel().replace(".", "-");
                 boolean isSupported = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED);
+                String remark = "";
+                if (device.getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+                    MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
+                    if (dev != null) {
+                        remark = dev.getDevice().getReadmeComment();
+                        final Boolean experimental = dev.getDevice().getExperimental();
+                        if (experimental != null && experimental.booleanValue()) {
+                            remark += (remark.isEmpty() ? "" : " ")
+                                    + "Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses";
+                        }
+                    }
+                }
                 sw.write("| ");
                 sw.write(minLengthString(device.getDescription(), 28));
                 sw.write(" | ");
@@ -99,7 +111,9 @@ public class ReadmeHelper {
                 sw.write(minLengthString(model, 22));
                 sw.write(" | ");
                 sw.write(isSupported ? "No       " : "Yes      ");
-                sw.write(" |            |\r\n");
+                sw.write(" | ");
+                sw.write(minLengthString(remark, 10));
+                sw.write(" |\r\n");
             }
         });
         return sw;
@@ -115,12 +129,13 @@ public class ReadmeHelper {
                     String link = device.getModel().replace(".", "-");
                     sw.write("### " + device.getDescription() + " (" + "<a name=\"" + link + "\">" + device.getModel()
                             + "</a>" + ") Channels\r\n" + "\r\n");
-                    sw.write("| Channel          | Type    | Description                         |\r\n");
-                    sw.write("|------------------|---------|-------------------------------------|\r\n");
+                    sw.write("| Channel          | Type    | Description                         | Comment    |\r\n");
+                    sw.write("|------------------|---------|-------------------------------------|------------|\r\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
                         sw.write("| " + minLengthString(ch.getChannel(), 16) + " | " + minLengthString(ch.getType(), 7)
-                                + " | " + minLengthString(ch.getFriendlyName(), 35) + " |\r\n");
+                                + " | " + minLengthString(ch.getFriendlyName(), 35) + " | "
+                                + minLengthString(ch.getReadmeComment(), 10) + " |\r\n");
                     }
                     sw.write("\r\n");
 
