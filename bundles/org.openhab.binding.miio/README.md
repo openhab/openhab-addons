@@ -147,6 +147,9 @@ or in case of unknown models include the model information e.g.:
 | Mi Humdifier                 | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
 | Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral1.v1  | No        |            |
 | Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral2.v1  | No        |            |
+| Mr Bond M1 Pro Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mr Bond M1 Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mr Bond M1 Super Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Philips Eyecare Smart Lamp 2 | miio:basic       | [philips.light.sread1](#philips-light-sread1) | Yes       |            |
 | Xiaomi Philips LED Ceiling Lamp | miio:basic       | [philips.light.ceiling](#philips-light-ceiling) | Yes       |            |
 | Xiaomi Philips LED Ceiling Lamp | miio:basic       | [philips.light.zyceiling](#philips-light-zyceiling) | Yes       |            |
@@ -1200,6 +1203,42 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | motorspeed       | Number  | Motor Speed                         |            |
 | temperature      | Number  | Temperature                         |            |
 | childlock        | Switch  | Child Lock                          |            |
+
+### Mr Bond M1 Pro Smart Clothes Dryer (<a name="mrbond-airer-m1pro">mrbond.airer.m1pro</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| dry              | Switch  | Dry                                 |            |
+| led              | Switch  | LED Status                          |            |
+| motor            | Number  | Motor                               |            |
+| drytime          | Number  | Dry Time                            |            |
+| airer_location   | Number  | Airer Location                      |            |
+| disinfect        | Switch  | disinfect                           |            |
+| distime          | Number  | Disinfect Time                      |            |
+
+### Mr Bond M1 Smart Clothes Dryer (<a name="mrbond-airer-m1s">mrbond.airer.m1s</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| dry              | Switch  | Dry                                 |            |
+| led              | Switch  | LED Status                          |            |
+| motor            | Number  | Motor                               |            |
+| drytime          | Number  | Dry Time                            |            |
+| airer_location   | Number  | Airer Location                      |            |
+| disinfect        | Switch  | disinfect                           |            |
+| distime          | Number  | Disinfect Time                      |            |
+
+### Mr Bond M1 Super Smart Clothes Dryer (<a name="mrbond-airer-m1super">mrbond.airer.m1super</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| dry              | Switch  | Dry                                 |            |
+| led              | Switch  | LED Status                          |            |
+| motor            | Number  | Motor                               |            |
+| drytime          | Number  | Dry Time                            |            |
+| airer_location   | Number  | Airer Location                      |            |
+| disinfect        | Switch  | disinfect                           |            |
+| distime          | Number  | Disinfect Time                      |            |
 
 ### Xiaomi Philips Eyecare Smart Lamp 2 (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
 
@@ -3986,6 +4025,51 @@ Number usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedh
 Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
 Number temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
 Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+```
+
+### Mr Bond M1 Pro Smart Clothes Dryer (mrbond.airer.m1pro) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airer "Mr Bond M1 Pro Smart Clothes Dryer" <status>
+Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
+Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
+Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
+Number drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
+Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
+Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
+Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
+```
+
+### Mr Bond M1 Smart Clothes Dryer (mrbond.airer.m1s) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airer "Mr Bond M1 Smart Clothes Dryer" <status>
+Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
+Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
+Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
+Number drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
+Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
+Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
+Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
+```
+
+### Mr Bond M1 Super Smart Clothes Dryer (mrbond.airer.m1super) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airer "Mr Bond M1 Super Smart Clothes Dryer" <status>
+Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
+Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
+Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
+Number drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
+Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
+Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
+Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 ```
 
 ### Xiaomi Philips Eyecare Smart Lamp 2 (philips.light.sread1) item file lines
