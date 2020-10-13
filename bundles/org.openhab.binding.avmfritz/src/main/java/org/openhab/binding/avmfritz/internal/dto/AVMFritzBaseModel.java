@@ -206,15 +206,15 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     public String toString() {
         return new StringBuilder().append("[ain=").append(ident).append(",bitmask=").append(bitmask)
                 .append(",isHANFUNDevice=").append(isHANFUNDevice()).append(",isHANFUNButton=").append(isHANFUNButton())
-                .append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor()).append(",isButton").append(isButton())
+                .append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor()).append(",isButton=").append(isButton())
                 .append(",isSwitchableOutlet=").append(isSwitchableOutlet()).append(",isTempSensor=")
                 .append(isTempSensor()).append(",isPowermeter=").append(isPowermeter()).append(",isDectRepeater=")
                 .append(isDectRepeater()).append(",isHeatingThermostat=").append(isHeatingThermostat())
                 .append(",isMicrophone=").append(isMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit())
                 .append(",id=").append(deviceId).append(",manufacturer=").append(deviceManufacturer)
                 .append(",productname=").append(productName).append(",fwversion=").append(firmwareVersion)
-                .append(",present=").append(present).append(",name=").append(name).append(",battery")
-                .append(getBattery()).append(",batterylow").append(getBatterylow()).append(getSwitch())
-                .append(getPowermeter()).append(getHkr()).toString();
+                .append(",present=").append(present).append(",name=").append(name).append(",battery=")
+                .append(getBattery()).append(",batterylow=").append(getBatterylow()).append(",").append(getSwitch())
+                .append(",").append(getPowermeter()).append(",").append(getHkr()).append(",").toString();
     }
 }
