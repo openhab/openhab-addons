@@ -131,8 +131,7 @@ public class LcnModuleHandler extends BaseThingHandler {
                 }
 
                 // Initialize inversion converter
-                if (invertState instanceof Boolean && invertState.equals(true)
-                        || invertUpDown instanceof Boolean && invertUpDown.equals(true)) {
+                if (Boolean.TRUE.equals(invertState) || Boolean.TRUE.equals(invertUpDown)) {
                     converters.put(channel.getUID(), INVERSION_CONVERTER);
                 }
 
