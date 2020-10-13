@@ -15,6 +15,8 @@ package org.openhab.binding.velux.internal.bridge.slip.io;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -69,6 +71,7 @@ class SSLconnection {
     private @Nullable DataOutputStream dOut;
     private @Nullable DataInputStreamWithTimeout dIn;
     private int ioTimeoutMSecs = 60000;
+    private int connectTimeoutMSecs = 5000;
 
     /**
      * Fake trust manager to suppress any certificate errors,
@@ -127,9 +130,18 @@ class SSLconnection {
         }
         logger.trace("SSLconnection(): creating socket...");
         // Just for avoidance of Potential null pointer access
-        SSLSocket socketX = (SSLSocket) ctx.getSocketFactory().createSocket(host, port);
-        logger.trace("SSLconnection(): starting SSL handshake...");
+        SSLSocket socketX = (SSLSocket) ctx.getSocketFactory().createSocket();
         if (socketX != null) {
+            socketX.setSoTimeout(ioTimeoutMSecs);
+            socketX.setKeepAlive(true);
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "SSLconnection(): connecting... (ip={}, port={}, connectTimeout={}, soTimeout={}, soKeepAlive={})",
+                        host, port, connectTimeoutMSecs, socketX.getSoTimeout(),
+                        socketX.getKeepAlive() ? "true" : "false");
+            }
+            socketX.connect(new InetSocketAddress(host, port), connectTimeoutMSecs);
+            logger.trace("SSLconnection(): starting SSL handshake...");
             socketX.startHandshake();
             dOut = new DataOutputStream(socketX.getOutputStream());
             dIn = new DataInputStreamWithTimeout(socketX.getInputStream());
@@ -277,10 +289,16 @@ class SSLconnection {
      * Parameter modification.
      *
      * @param timeoutMSecs the maximum duration in milliseconds for read operations.
+     * @throws SocketException
      */
-    void setTimeout(int timeoutMSecs) {
+    void setTimeout(int timeoutMSecs) throws SocketException {
         logger.debug("setTimeout() set timeout to {} milliseconds.", timeoutMSecs);
         ioTimeoutMSecs = timeoutMSecs;
+        SSLSocket socketX = socket;
+        if (socketX != null) {
+            socketX.setSoTimeout(ioTimeoutMSecs);
+            logger.trace("setTimeout() confirmed {} milliseconds.", socketX.getSoTimeout());
+        }
     }
 
     /**
