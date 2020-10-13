@@ -79,9 +79,11 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class InnogyClient {
+
     private static final String BEARER = "Bearer ";
     private static final String CONTENT_TYPE = "application/json";
-    private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 10;
+    private static final int HTTP_REQUEST_TIMEOUT_SECONDS = 10;
+    private static final int HTTP_REQUEST_IDLE_TIMEOUT_SECONDS = 20;
 
     private final Logger logger = LoggerFactory.getLogger(InnogyClient.class);
 
@@ -185,7 +187,8 @@ public class InnogyClient {
 
             response = request.header(HttpHeader.ACCEPT, CONTENT_TYPE)
                     .header(HttpHeader.AUTHORIZATION, BEARER + accessTokenResponse.getAccessToken())
-                    .timeout(HTTP_CLIENT_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+                    .idleTimeout(HTTP_REQUEST_IDLE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .timeout(HTTP_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new IOException(e);
         }
