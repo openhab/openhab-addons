@@ -7,7 +7,7 @@
 	<thing-type id="wled">
 		<label>WLED String</label>
 		<description>A WLED string of LEDs</description>
-		<category>Lightbulb</category>
+		<category>ColorLight</category>
 		<channels>
 			<channel id="masterControls" typeId="masterControls"/>
 			<channel id="primaryColor" typeId="primaryColor"/>
