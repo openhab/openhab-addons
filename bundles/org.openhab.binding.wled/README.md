@@ -52,20 +52,20 @@ The full example section below gives everything needed to quickly setup using te
 *.things
 
 ```
-Thing wled:wled:ChristmasTree "My Christmas Tree" @ "Lights" [address="http://192.168.0.4:80"]
+Thing wled:wled:XmasTree "My Christmas Tree" @ "Lights" [address="http://192.168.0.4:80"]
 ```
 
 *.items
 
 ```
 Color XmasTree_MasterControls "Christmas Tree" ["Lighting"] {channel="wled:wled:ChristmasTree:masterControls"}
-Color XmasTree_Primary "Primary Color"    {channel="wled:wled:ChristmasTree:primaryColor"}
-Color XmasTree_Secondary   "Secondary Color"  {channel="wled:wled:ChristmasTree:secondaryColor"}
-String XmasTree_FX       "FX"        <text>{channel="wled:wled:ChristmasTree:fx"}
-String XmasTree_Palette  "Palette"   <colorwheel>    {channel="wled:wled:ChristmasTree:palettes"}
+Color XmasTree_PrimaryColor "Primary Color"    {channel="wled:wled:ChristmasTree:primaryColor"}
+Color XmasTree_SecondaryColor   "Secondary Color"  {channel="wled:wled:ChristmasTree:secondaryColor"}
+String XmasTree_Effect      "FX"        <text>{channel="wled:wled:ChristmasTree:fx"}
+String XmasTree_Palettes  "Palette"   <colorwheel>    {channel="wled:wled:ChristmasTree:palettes"}
 String XmasTree_Presets  "Preset"    <text> {channel="wled:wled:ChristmasTree:presets"}
-Dimmer XmasTree_Speed    "FX Speed"  <time>  {channel="wled:wled:ChristmasTree:speed"}
-Dimmer XmasTree_Intensity "FX Intensity" {channel="wled:wled:ChristmasTree:intensity"}
+Dimmer XmasTree_FXSpeed    "FX Speed"  <time>  {channel="wled:wled:ChristmasTree:speed"}
+Dimmer XmasTree_FXIntensity "FX Intensity" {channel="wled:wled:ChristmasTree:intensity"}
 Switch XmasTree_PresetCycle "presetCycle" <time> {channel="wled:wled:ChristmasTree:presetCycle"}
 Dimmer XmasTree_PresetDuration "presetDuration" <time> {channel="wled:wled:ChristmasTree:presetDuration"}
 Dimmer XmasTree_TransformTime "presetTransformTime" <time> {channel="wled:wled:ChristmasTree:transformTime"}
@@ -76,20 +76,20 @@ Switch XmasTree_Sleep    "Sleep"     <moon> {channel="wled:wled:ChristmasTree:sl
 *.sitemap
 
 ```
-        Text label="XmasLights" icon="rgb"{
+Text label="XmasLights" icon="rgb"{
             Switch item=XmasTree_MasterControls
             Slider item=XmasTree_MasterControls
             Colorpicker item=XmasTree_MasterControls
             Switch item=XmasTree_Sleep
-            Colorpicker item=XmasTree_Primary
-            Colorpicker item=XmasTree_Secondary            
-            Selection item=XmasTree_FX
-            Selection item=XmasTree_Palette
+            Colorpicker item=XmasTree_PrimaryColor
+            Colorpicker item=XmasTree_SecondaryColor
+            Selection item=XmasTree_Effect
+            Selection item=XmasTree_Palettes
             Selection item=XmasTree_Presets
-            Default item=XmasTree_Speed  
-            Default item=XmasTree_Intensity            
-            Default item=XmasTree_PresetCycle  
-            Default item=XmasTree_PresetDuration 
+            Default item=XmasTree_FXSpeed
+            Default item=XmasTree_FXIntensity
+            Default item=XmasTree_PresetCycle
+            Default item=XmasTree_PresetDuration
             Default item=XmasTree_TransformTime
         }
         
