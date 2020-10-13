@@ -28,7 +28,7 @@ Escape character is '^]'.
 ```
 
 then it successfully connected to the call monitor.
-If not, please make sure target openHAB system does not block the port on its firewall.
+If not, please make sure that the target openHAB system does not block the port on its firewall.
 
 Additionally, they serve as a bridge for accessing other AHA devices.
 For AHA functionality, the router has to run at least on firmware FRITZ!OS 6.00 and it has to support the "Smart Home" service.
