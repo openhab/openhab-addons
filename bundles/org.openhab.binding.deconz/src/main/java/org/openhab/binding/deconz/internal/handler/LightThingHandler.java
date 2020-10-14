@@ -253,7 +253,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             lastCommand = newLightState;
             logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
         }).exceptionally(e -> {
-            logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
+            logger.debug("Sending command {} to channel {} failed: {} - {}", command, channelUID, e.getClass(),
+                    e.getMessage());
             return null;
         });
     }

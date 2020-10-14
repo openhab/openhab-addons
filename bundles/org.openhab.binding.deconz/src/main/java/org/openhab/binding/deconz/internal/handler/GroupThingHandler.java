@@ -58,14 +58,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_LIGHTGROUP);
-
-    private static final double HUE_FACTOR = 65535 / 360.0;
-    private static final double BRIGHTNESS_FACTOR = 2.54;
-
     private final Logger logger = LoggerFactory.getLogger(GroupThingHandler.class);
-
-    private long lastCommandExpireTimestamp = 0;
-    private boolean needsPropertyUpdate = false;
 
     /**
      * The group state.
@@ -139,18 +132,18 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
         if (asyncHttpClient == null) {
             return;
         }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "groups", config.id,
                 "action");
 
         String json = gson.toJson(newGroupAction);
         logger.trace("Sending {} to group {} via {}", json, config.id, url);
 
-        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
-            logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
-        }).exceptionally(e -> {
-            logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
-            return null;
-        });
+        asyncHttpClient.put(url, json, bridgeConfig.timeout)
+                .thenAccept(v -> logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody()))
+                .exceptionally(e -> {
+                    logger.debug("Sending command {} to channel {} failed: {} - {}", command, channelUID, e.getClass(),
+                            e.getMessage());
+                    return null;
+                });
     }
 
     @Override
@@ -158,8 +151,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
         if (r.getResponseCode() == 403) {
             return null;
         } else if (r.getResponseCode() == 200) {
-            GroupMessage groupMessage = gson.fromJson(r.getBody(), GroupMessage.class);
-            return groupMessage;
+            return gson.fromJson(r.getBody(), GroupMessage.class);
         } else {
             throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
         }
@@ -194,6 +186,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
             if (groupState != null) {
                 updateStatus(ThingStatus.ONLINE);
                 thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, groupState));
+                groupStateCache = groupState;
             }
         }
     }
