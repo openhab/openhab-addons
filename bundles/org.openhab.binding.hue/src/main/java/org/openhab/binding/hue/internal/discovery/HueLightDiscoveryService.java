@@ -35,6 +35,7 @@ import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
 import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
+import org.openhab.binding.hue.internal.handler.sensors.GeofencePresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
 import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
@@ -67,6 +68,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
             .of(HueLightHandler.SUPPORTED_THING_TYPES.stream(), DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     TapSwitchHandler.SUPPORTED_THING_TYPES.stream(), PresenceHandler.SUPPORTED_THING_TYPES.stream(),
+                    GeofencePresenceHandler.SUPPORTED_THING_TYPES.stream(),
                     TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
                     ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(i -> i).collect(Collectors.toSet()));
@@ -89,6 +91,7 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService {
             new SimpleEntry<>("clipgenericstatus", "0840"),
             new SimpleEntry<>("clipgenericflag", "0850"),
             new SimpleEntry<>("zllpresence", "0107"),
+            new SimpleEntry<>("geofence", "0107"),
             new SimpleEntry<>("zlltemperature", "0302"),
             new SimpleEntry<>("zlllightlevel", "0106")
         ).collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue()));
