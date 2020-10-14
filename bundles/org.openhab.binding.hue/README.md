@@ -9,8 +9,8 @@ The integration happens through the Hue bridge, which acts as an IP gateway to t
 
 The Hue bridge is required as a "bridge" for accessing any other Hue device.
 It supports the ZigBee LightLink protocol as well as the upwards compatible ZigBee 3.0 protocol.
-There are two types of Hue bridges, generally refered to as v1 (the rounded version) and v2 (the squared version).
-Only noticable difference between the two generation of bridges is the added support for Apple HomeKit in v2.
+There are two types of Hue bridges, generally referred to as v1 (the rounded version) and v2 (the squared version).
+Only noticeable difference between the two generation of bridges is the added support for Apple HomeKit in v2.
 Both bridges are fully supported by this binding.
 
 Almost all available Hue devices are supported by this binding.
@@ -52,19 +52,20 @@ The Hue Motion Sensor registers a `ZLLLightLevel` sensor (0106), a `ZLLPresence`
 The Hue CLIP Sensor saves scene states with status or flag for HUE rules. 
 They are presented by the following ZigBee Device ID and _Thing type_:
 
-| Device type                 | ZigBee Device ID | Thing type |
-|-----------------------------|------------------|------------|
-| Light Sensor                | 0x0106           | 0106       |
-| Occupancy Sensor            | 0x0107           | 0107       |
-| Temperature Sensor          | 0x0302           | 0302       |
-| Non-Colour Controller       | 0x0820           | 0820       |
-| Non-Colour Scene Controller | 0x0830           | 0830       |
-| CLIP Generic Status Sensor  | 0x0840           | 0840       |
-| CLIP Generic Flag Sensor    | 0x0850           | 0850       |
+| Device type                 | ZigBee Device ID | Thing type     |
+|-----------------------------|------------------|----------------|
+| Light Sensor                | 0x0106           | 0106           |
+| Occupancy Sensor            | 0x0107           | 0107           |
+| Temperature Sensor          | 0x0302           | 0302           |
+| Non-Colour Controller       | 0x0820           | 0820           |
+| Non-Colour Scene Controller | 0x0830           | 0830           |
+| CLIP Generic Status Sensor  | 0x0840           | 0840           |
+| CLIP Generic Flag Sensor    | 0x0850           | 0850           |
+| Geofence Sensor             |                  | geofencesensor |
 
 The Hue Dimmer Switch has 4 buttons and registers as a Non-Colour Controller switch, while the Hue Tap (also 4 buttons) registers as a Non-Colour Scene Controller in accordance with the ZLL standard.
 
-Also, Hue bridge support CLIP Generic Status Sensor and CLIP Generic Flag Sensor. These sensors save state for rules and calculate what actions to do. CLIP Sensor set or get by json through IP.
+Also, Hue bridge support CLIP Generic Status Sensor and CLIP Generic Flag Sensor. These sensors save state for rules and calculate what actions to do. CLIP Sensor set or get by JSON through IP.
 
 The type of a specific device can be found in the configuration section for things in the PaperUI.
 It is part of the unique thing id which could look like:
@@ -234,14 +235,14 @@ The `tap_switch_event` can trigger one of the following events:
 This binding includes a rule action, which allows to change a light channel with a specific fading time from within rules.
 There is a separate instance for each light, which can be retrieved e.g. through
 
-```
+```php
 val hueActions = getActions("hue","hue:0210:00178810d0dc:1")
 ```
 
 where the first parameter always has to be `hue` and the second is the full Thing UID of the light that should be used.
 Once this action instance is retrieved, you can invoke the `fadingLightCommand(String channel, Command command, DecimalType fadeTime)` method on it:
 
-```
+```php
 hueActions.fadingLightCommand("color", new PercentType(100), new DecimalType(1000))
 ```
 
@@ -366,7 +367,7 @@ If ommited the rule gets triggered by any key action and you can determine the e
 Be aware that the events have a '.0' attached to them, like `2001.0` or `34.0`.
 So, testing for specific events looks like this:
 
-```
+```php
 if (receivedEvent.getEvent() == "1000.0")) {
     //do stuff
 }       
