@@ -36,7 +36,7 @@ public class TouchWandBindingConstants {
     public static final ThingTypeUID THING_TYPE_SHUTTER = new ThingTypeUID(BINDING_ID, "shutter");
     public static final ThingTypeUID THING_TYPE_WALLCONTROLLER = new ThingTypeUID(BINDING_ID, "wallcontroller");
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
-    public static final ThingTypeUID THING_TYPE_ALARMSENSOR = new ThingTypeUID(BINDING_ID, "AlarmSensor"); // TBD
+    public static final ThingTypeUID THING_TYPE_ALARMSENSOR = new ThingTypeUID(BINDING_ID, "alarmsensor");
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";

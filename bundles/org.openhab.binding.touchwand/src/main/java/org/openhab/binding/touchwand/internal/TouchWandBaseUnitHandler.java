@@ -49,8 +49,8 @@ import com.google.gson.JsonParser;
 public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implements TouchWandUnitUpdateListener {
 
     protected final Logger logger = LoggerFactory.getLogger(TouchWandBaseUnitHandler.class);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_SHUTTER,
+            THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER, THING_TYPE_ALARMSENSOR));
 
     protected String unitId = "";
 
