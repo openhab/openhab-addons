@@ -2629,7 +2629,7 @@
 		<item-type>String</item-type>
 		<label>Go To Preset</label>
 		<description>Move a P.T.Z camera to this ONVIF preset location.</description>
-		<state readOnly="true">
+		<state readOnly="false">
 			<options>
 				<option value="1">Preset 1</option>
 				<option value="2">Preset 2</option>
