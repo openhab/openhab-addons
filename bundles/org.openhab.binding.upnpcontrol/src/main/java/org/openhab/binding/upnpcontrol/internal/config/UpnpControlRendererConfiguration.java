@@ -13,16 +13,14 @@
 package org.openhab.binding.upnpcontrol.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
  * @author Mark Herwege - Initial contribution
- * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
 @NonNullByDefault
-public class UpnpControlConfiguration {
-    public @Nullable String udn;
-    public int refresh = 60;
-    public int responsetimeout = 2500;
+public class UpnpControlRendererConfiguration extends UpnpControlConfiguration {
+    public int notificationvolumeadjustment = 10;
+    public int maxnotificationduration = 15;
+    public int seekstep = 5;
 }

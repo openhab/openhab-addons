@@ -10,19 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upnpcontrol.internal.config;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+package org.openhab.binding.upnpcontrol.internal.queue;
 
 /**
+ * Interface for updating playlists list in multiple handlers.
  *
  * @author Mark Herwege - Initial contribution
- * @author Karel Goderis - Based on UPnP logic in Sonos binding
+ *
  */
-@NonNullByDefault
-public class UpnpControlConfiguration {
-    public @Nullable String udn;
-    public int refresh = 60;
-    public int responsetimeout = 2500;
+public interface UpnpPlaylistsListener {
+
+    public void playlistsListChanged();
 }

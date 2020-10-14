@@ -16,13 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * Listener interface for binding configuration parameter updates.
  *
  * @author Mark Herwege - Initial contribution
- * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
 @NonNullByDefault
-public class UpnpControlConfiguration {
-    public @Nullable String udn;
-    public int refresh = 60;
-    public int responsetimeout = 2500;
+public interface UpnpControlBindingConfigurationListener {
+
+    public void bindingConfigurationChanged(@Nullable String path);
 }
