@@ -26,7 +26,7 @@ import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.zoneminder.action.ZmActions;
+import org.openhab.binding.zoneminder.internal.action.ZmActions;
 import org.openhab.binding.zoneminder.internal.config.ZmMonitorConfig;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;

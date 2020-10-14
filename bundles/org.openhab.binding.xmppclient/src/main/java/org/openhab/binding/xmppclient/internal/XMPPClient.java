@@ -16,7 +16,12 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.ReconnectionManager;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
@@ -28,7 +33,7 @@ import org.jivesoftware.smackx.disco.packet.DiscoverInfo.Identity;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
-import org.openhab.binding.xmppclient.handler.XMPPClientMessageSubscriber;
+import org.openhab.binding.xmppclient.internal.handler.XMPPClientMessageSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
