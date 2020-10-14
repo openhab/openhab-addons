@@ -42,8 +42,9 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperature",
-				"type": "Number",
+				"channelType": "temperatureC",
+				"unit": "CELCIUS",
+				"type": "Number:Temperature",
 				"refresh": true,
 				"ChannelGroup": "",
 				"actions": []

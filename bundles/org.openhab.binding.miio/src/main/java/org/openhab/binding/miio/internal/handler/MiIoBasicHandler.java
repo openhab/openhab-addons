@@ -23,11 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+import javax.measure.format.ParserException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
+import org.openhab.binding.miio.internal.MiIoQuantiyTypes;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.basic.ActionConditions;
@@ -44,7 +48,10 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -105,7 +112,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUID, Command receivedCommand) {
+        Command command = receivedCommand;
         if (command == RefreshType.REFRESH) {
             if (updateDataCache.isExpired()) {
                 logger.debug("Refreshing {}", channelUID);
@@ -119,7 +127,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             cmds.put(sendCommand(command.toString()), command.toString());
             return;
         }
-        logger.debug("Locating action for channel '{}': '{}'", channelUID.getId(), command);
+        logger.debug("Locating action for {} channel '{}': '{}'", getThing().getUID(), channelUID.getId(), command);
         if (!actions.isEmpty()) {
             if (actions.containsKey(channelUID)) {
                 int valuePos = 0;
@@ -137,6 +145,25 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     String cmd = action.getCommand();
                     CommandParameterType paramType = action.getparameterType();
+                    if (command instanceof QuantityType) {
+                        QuantityType<?> qtc = null;
+                        try {
+                            if (!miIoBasicChannel.getUnit().isBlank()) {
+                                Unit<?> unit = MiIoQuantiyTypes.get(miIoBasicChannel.getUnit());
+                                if (unit != null) {
+                                    qtc = ((QuantityType<?>) command).toUnit(unit);
+                                }
+                            }
+                        } catch (ParserException e) {
+                            // swallow
+                        }
+                        if (qtc != null) {
+                            command = new DecimalType(qtc.toBigDecimal());
+                        } else {
+                            logger.debug("Could not convert QuantityType to '{}'", miIoBasicChannel.getUnit());
+                            command = new DecimalType(((QuantityType<?>) command).toBigDecimal());
+                        }
+                    }
                     if (paramType == CommandParameterType.COLOR) {
                         if (command instanceof HSBType) {
                             HSBType hsb = (HSBType) command;
@@ -505,9 +532,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             val = transformed;
         }
         try {
-            switch (basicChannel.getType().toLowerCase()) {
+            String[] chType = basicChannel.getType().toLowerCase().split(":");
+            switch (chType[0]) {
                 case "number":
-                    updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
+                    quantityTypeUpdate(basicChannel, val, chType.length > 1 ? chType[1] : "");
                     break;
                 case "dimmer":
                     updateState(basicChannel.getChannel(), new PercentType(val.getAsBigDecimal()));
@@ -531,6 +559,37 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             logger.debug("Error updating {} property {} with '{}' : {}: {}", getThing().getUID(),
                     basicChannel.getChannel(), val, e.getClass().getCanonicalName(), e.getMessage());
             logger.trace("Property update error detail:", e);
+        }
+    }
+
+    private void quantityTypeUpdate(MiIoBasicChannel basicChannel, JsonElement val, String type) {
+        if (!basicChannel.getUnit().isBlank()) {
+            Unit<?> unit = MiIoQuantiyTypes.get(basicChannel.getUnit());
+            if (unit != null) {
+                logger.debug("'{}' channel '{}' has unit '{}' with symbol '{}'.", getThing().getUID(),
+                        basicChannel.getChannel(), basicChannel.getUnit(), unit);
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), unit));
+            } else {
+                logger.debug("Unit '{}' used by '{}' channel '{}' is not found.. using default unit.",
+                        getThing().getUID(), basicChannel.getUnit(), basicChannel.getChannel());
+            }
+        }
+        // if no unit is provided or unit not found use default units, these units have so far been seen for miio
+        // devices
+        switch (type.toLowerCase()) {
+            case "temperature":
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SIUnits.CELSIUS));
+                break;
+            case "electriccurrent":
+                updateState(basicChannel.getChannel(),
+                        new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.AMPERE));
+                break;
+            case "energy":
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.WATT));
+            case "time":
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.HOUR));
+            default:
+                updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
         }
     }
 
