@@ -14,9 +14,9 @@ package org.openhab.binding.velux.internal.discovery;
 
 import static org.openhab.binding.velux.internal.VeluxBindingConstants.THING_TYPE_BRIDGE;
 
+import java.net.Inet4Address;
 import java.util.Collections;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.jmdns.ServiceInfo;
 
@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers Velux KLF200 hubs by means of mDNS
+ * Discovers Velux KLF200 hubs by means of mDNS-SD
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -43,10 +43,7 @@ public class VeluxHubMdnsDiscoveryParticipant implements MDNSDiscoveryParticipan
 
     private final Logger logger = LoggerFactory.getLogger(VeluxHubMdnsDiscoveryParticipant.class);
 
-    private static final Pattern VALID_IP_V4_ADDRESS = Pattern
-            .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
-
-    private static final String MDNS_HTTP_SERVICE = "_http._tcp.local";
+    private static final String HTTP_TCP_LOCAL = "_http._tcp.local.";
     private static final String VELUX_KLF_LAN = "VELUX_KLF_LAN";
 
     @Override
@@ -56,34 +53,37 @@ public class VeluxHubMdnsDiscoveryParticipant implements MDNSDiscoveryParticipan
 
     @Override
     public String getServiceType() {
-        return MDNS_HTTP_SERVICE;
+        return HTTP_TCP_LOCAL;
     }
 
     @Override
-    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
-        if (service.getName().startsWith(VELUX_KLF_LAN)) {
-            for (String host : service.getHostAddresses()) {
-                if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                    ThingUID thingUID = new ThingUID(THING_TYPE_BRIDGE, host.replace('.', '_'));
-                    DiscoveryResult klfHub = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS, host)
-                            .withRepresentationProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS)
-                            .withLabel("Velux KLF200 Hub (" + host + ")").build();
-                    logger.debug("mDNS discovered hub on host '{}'", host);
-                    return klfHub;
-                }
+    public @Nullable DiscoveryResult createResult(ServiceInfo info) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("createResult(): {}", info.toString());
+        }
+        if (info.getName().startsWith(VELUX_KLF_LAN)) {
+            for (Inet4Address ipv4Addr : info.getInet4Addresses()) {
+                String ipAddr = ipv4Addr.getHostAddress();
+                ThingUID thingUID = new ThingUID(THING_TYPE_BRIDGE, ipAddr.replace('.', '_'));
+                DiscoveryResult klfHub = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS, ipAddr)
+                        .withRepresentationProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS)
+                        .withLabel("Velux KLF200 Hub (" + ipAddr + ")").build();
+                logger.debug("mDNS discovered hub on host '{}'", ipAddr);
+                return klfHub;
             }
         }
         return null;
     }
 
     @Override
-    public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        if (service.getName().startsWith(VELUX_KLF_LAN)) {
-            for (String host : service.getHostAddresses()) {
-                if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
-                    return new ThingUID(THING_TYPE_BRIDGE, host.replace('.', '_'));
-                }
+    public @Nullable ThingUID getThingUID(ServiceInfo info) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("getThingUID(): {}", info.toString());
+        }
+        if (info.getName().startsWith(VELUX_KLF_LAN)) {
+            for (Inet4Address ipv4Addr : info.getInet4Addresses()) {
+                return new ThingUID(THING_TYPE_BRIDGE, ipv4Addr.getHostAddress().replace('.', '_'));
             }
         }
         return null;
