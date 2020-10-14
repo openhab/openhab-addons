@@ -10,17 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.clearone.internal;
+package org.openhab.binding.clearone.internal.config;
 
 /**
- * The {@link ClearOneConfiguration} class contains fields mapping thing configuration parameters.
+ * Configuration class for the ClearOne Unit Thing.
  *
  * @author Garry Mitchell - Initial contribution
  */
-public class ClearOneConfiguration {
 
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
-    public String config1;
+public class UnitConfiguration {
+
+    // Unit Thing constants
+    public static final String UNIT_NUMBER = "deviceId";
+    public static final String UNIT_TYPE = "typeId";
+
+    public String deviceId;
+    public String typeId;
 }
