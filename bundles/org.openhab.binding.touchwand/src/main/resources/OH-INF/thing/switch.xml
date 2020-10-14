@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="touchwand"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"></bridge-type-ref>
+		</supported-bridge-type-refs>
+		<label>TouchWand Switch Unit</label>
+		<channels>
+			<channel id="switch" typeId="switch">
+				<description>Unit on off switch</description>
+			</channel>
+		</channels>
+	</thing-type>
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>The switch channel allows to switch the light on and off.
+		</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+</thing:thing-descriptions>
