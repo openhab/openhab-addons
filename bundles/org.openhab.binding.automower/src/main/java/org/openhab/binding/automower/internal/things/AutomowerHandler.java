@@ -45,11 +45,14 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.binding.automower.internal.actions.AutomowerActions;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.RestrictedReason;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.State;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +62,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Markus Pfleger - Initial contribution
+ * @author Marcin Czeczko - Added support for planner data
  */
 @NonNullByDefault
 public class AutomowerHandler extends BaseThingHandler {
@@ -243,13 +247,21 @@ public class AutomowerHandler extends BaseThingHandler {
         updateAutomowerState();
     }
 
+    private String restrictedState(RestrictedReason reason) {
+        return "RESTRICTED_" + reason.name();
+    }
+
     private void updateChannelState(Mower mower) {
         if (isValidResult(mower)) {
-            updateState(CHANNEL_MOWER_NAME, new StringType(mower.getAttributes().getSystem().getName()));
-
             updateState(CHANNEL_STATUS_MODE, new StringType(mower.getAttributes().getMower().getMode().name()));
             updateState(CHANNEL_STATUS_ACTIVITY, new StringType(mower.getAttributes().getMower().getActivity().name()));
-            updateState(CHANNEL_STATUS_STATE, new StringType(mower.getAttributes().getMower().getState().name()));
+
+            if (mower.getAttributes().getMower().getState() != State.RESTRICTED) {
+                updateState(CHANNEL_STATUS_STATE, new StringType(mower.getAttributes().getMower().getState().name()));
+            } else {
+                updateState(CHANNEL_STATUS_STATE,
+                        new StringType(restrictedState(mower.getAttributes().getPlanner().getRestrictedReason())));
+            }
 
             Instant statusTimestamp = Instant.ofEpochMilli(mower.getAttributes().getMetadata().getStatusTimestamp());
             updateState(CHANNEL_STATUS_LAST_UPDATE,
@@ -263,6 +275,17 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_ERROR_TIMESTAMP,
                     new DateTimeType(ZonedDateTime.ofInstant(errorCodeTimestamp, ZoneId.systemDefault())));
 
+            long nextStartTimestamp = mower.getAttributes().getPlanner().getNextStartTimestamp();
+            // If next start timestamp is 0 it means the mower should start now, so using current timestamp
+            if (nextStartTimestamp == 0L) {
+                updateState(CHANNEL_PLANNER_NEXT_START, UnDefType.NULL);
+            } else {
+                Instant plannerNextStartTimestamp = Instant.ofEpochMilli(nextStartTimestamp);
+                updateState(CHANNEL_PLANNER_NEXT_START,
+                        new DateTimeType(ZonedDateTime.ofInstant(plannerNextStartTimestamp, ZoneId.systemDefault())));
+            }
+            updateState(CHANNEL_PLANNER_OVERRIDE_ACTION,
+                    new StringType(mower.getAttributes().getPlanner().getOverride().getAction()));
         }
     }
 

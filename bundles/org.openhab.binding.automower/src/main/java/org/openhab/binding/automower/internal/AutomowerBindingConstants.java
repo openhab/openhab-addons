@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Markus Pfleger - Initial contribution
+ * @author Marcin Czeczko - Added support for planner data
  */
 @NonNullByDefault
 public class AutomowerBindingConstants {
@@ -32,7 +33,6 @@ public class AutomowerBindingConstants {
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "automower");
 
     // List of all Channel ids
-    public static final String CHANNEL_MOWER_NAME = "name";
     public static final String CHANNEL_STATUS_MODE = "mode";
     public static final String CHANNEL_STATUS_ACTIVITY = "activity";
     public static final String CHANNEL_STATUS_STATE = "state";
@@ -40,6 +40,8 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATUS_BATTERY = "battery";
     public static final String CHANNEL_STATUS_ERROR_CODE = "error-code";
     public static final String CHANNEL_STATUS_ERROR_TIMESTAMP = "error-timestamp";
+    public static final String CHANNEL_PLANNER_NEXT_START = "planner-next-start";
+    public static final String CHANNEL_PLANNER_OVERRIDE_ACTION = "planner-override-action";
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
