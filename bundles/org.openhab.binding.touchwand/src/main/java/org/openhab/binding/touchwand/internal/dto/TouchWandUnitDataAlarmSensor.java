@@ -31,5 +31,4 @@ public class TouchWandUnitDataAlarmSensor extends TouchWandUnitData {
     public void setCurrStatus(Integer currStatus) {
         this.currStatus = currStatus;
     }
-
 }

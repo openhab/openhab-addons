@@ -33,11 +33,9 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-
     }
 
     @Override
     void touchWandUnitHandleCommand(Command command) {
-
     }
 }
