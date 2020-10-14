@@ -48,12 +48,8 @@ public class NuvoThingActions implements ThingActions {
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void sendNuvoCommand(@Nullable ThingActions actions, String rawCommand) {
-        if (actions instanceof NuvoThingActions) {
-            ((NuvoThingActions) actions).sendNuvoCommand(rawCommand);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of NuvoThingActions");
-        }
+    public static void sendNuvoCommand(ThingActions actions, String rawCommand) {
+        ((NuvoThingActions) actions).sendNuvoCommand(rawCommand);
     }
 
     @Override

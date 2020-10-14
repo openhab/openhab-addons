@@ -76,12 +76,8 @@ public class LightActions implements ThingActions {
         logger.debug("send LightAction to {} with {}ms of fadeTime", channel, fadeTime);
     }
 
-    public static void fadingLightCommand(@Nullable ThingActions actions, @Nullable String channel,
-            @Nullable Command command, @Nullable DecimalType fadeTime) {
-        if (actions instanceof LightActions) {
-            ((LightActions) actions).fadingLightCommand(channel, command, fadeTime);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LightActions");
-        }
+    public static void fadingLightCommand(ThingActions actions, @Nullable String channel, @Nullable Command command,
+            @Nullable DecimalType fadeTime) {
+        ((LightActions) actions).fadingLightCommand(channel, command, fadeTime);
     }
 }

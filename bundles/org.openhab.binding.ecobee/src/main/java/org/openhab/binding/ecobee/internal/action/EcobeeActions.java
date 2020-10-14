@@ -102,13 +102,9 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean acknowledge(@Nullable ThingActions actions, @Nullable String ackRef, @Nullable String ackType,
+    public static boolean acknowledge(ThingActions actions, @Nullable String ackRef, @Nullable String ackType,
             @Nullable Boolean remindMeLater) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).acknowledge(ackRef, ackType, remindMeLater);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+        return ((EcobeeActions) actions).acknowledge(ackRef, ackType, remindMeLater);
     }
 
     /**
@@ -137,15 +133,11 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean controlPlug(@Nullable ThingActions actions, @Nullable String plugName,
-            @Nullable String plugState, @Nullable Date startDateTime, @Nullable Date endDateTime,
-            @Nullable String holdType, @Nullable Number holdHours) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).controlPlug(plugName, plugState, startDateTime, endDateTime, holdType,
-                    holdHours);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static boolean controlPlug(ThingActions actions, @Nullable String plugName, @Nullable String plugState,
+            @Nullable Date startDateTime, @Nullable Date endDateTime, @Nullable String holdType,
+            @Nullable Number holdHours) {
+        return ((EcobeeActions) actions).controlPlug(plugName, plugState, startDateTime, endDateTime, holdType,
+                holdHours);
     }
 
     /**
@@ -175,16 +167,12 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean createVacation(@Nullable ThingActions actions, @Nullable String name,
+    public static boolean createVacation(ThingActions actions, @Nullable String name,
             @Nullable QuantityType<Temperature> coolHoldTemp, @Nullable QuantityType<Temperature> heatHoldTemp,
             @Nullable Date startDateTime, @Nullable Date endDateTime, @Nullable String fan,
             @Nullable Number fanMinOnTime) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).createVacation(name, coolHoldTemp, heatHoldTemp, startDateTime,
-                    endDateTime, fan, fanMinOnTime);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+        return ((EcobeeActions) actions).createVacation(name, coolHoldTemp, heatHoldTemp, startDateTime, endDateTime,
+                fan, fanMinOnTime);
     }
 
     /**
@@ -206,12 +194,8 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean deleteVacation(@Nullable ThingActions actions, @Nullable String name) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).deleteVacation(name);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static boolean deleteVacation(ThingActions actions, @Nullable String name) {
+        return ((EcobeeActions) actions).deleteVacation(name);
     }
 
     /**
@@ -232,12 +216,8 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean resetPreferences(@Nullable ThingActions actions) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).resetPreferences();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static boolean resetPreferences(ThingActions actions) {
+        return ((EcobeeActions) actions).resetPreferences();
     }
 
     /**
@@ -259,12 +239,8 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean resumeProgram(@Nullable ThingActions actions, @Nullable Boolean resumeAll) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).resumeProgram(resumeAll);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static boolean resumeProgram(ThingActions actions, @Nullable Boolean resumeAll) {
+        return ((EcobeeActions) actions).resumeProgram(resumeAll);
     }
 
     /**
@@ -286,12 +262,8 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean sendMessage(@Nullable ThingActions actions, @Nullable String text) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).sendMessage(text);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static boolean sendMessage(ThingActions actions, @Nullable String text) {
+        return ((EcobeeActions) actions).sendMessage(text);
     }
 
     /**
@@ -312,13 +284,9 @@ public class EcobeeActions implements ThingActions {
         return setHold(params, null, null, null, null);
     }
 
-    public static boolean setHold(@Nullable ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
+    public static boolean setHold(ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
             @Nullable QuantityType<Temperature> heatHoldTemp) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).setHold(coolHoldTemp, heatHoldTemp);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+        return ((EcobeeActions) actions).setHold(coolHoldTemp, heatHoldTemp);
     }
 
     /**
@@ -343,13 +311,9 @@ public class EcobeeActions implements ThingActions {
         return setHold(params, null, null, null, null);
     }
 
-    public static boolean setHold(@Nullable ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
+    public static boolean setHold(ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
             @Nullable QuantityType<Temperature> heatHoldTemp, @Nullable Number holdHours) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).setHold(coolHoldTemp, heatHoldTemp, holdHours);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+        return ((EcobeeActions) actions).setHold(coolHoldTemp, heatHoldTemp, holdHours);
     }
 
     /**
@@ -371,12 +335,8 @@ public class EcobeeActions implements ThingActions {
         return setHold(params, null, null, null, null);
     }
 
-    public static boolean setHold(@Nullable ThingActions actions, @Nullable String holdClimateRef) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).setHold(holdClimateRef);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static boolean setHold(ThingActions actions, @Nullable String holdClimateRef) {
+        return ((EcobeeActions) actions).setHold(holdClimateRef);
     }
 
     /**
@@ -404,13 +364,8 @@ public class EcobeeActions implements ThingActions {
         return setHold(params, null, null, null, null);
     }
 
-    public static boolean setHold(@Nullable ThingActions actions, @Nullable String holdClimateRef,
-            @Nullable Number holdHours) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).setHold(holdClimateRef, holdHours);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static boolean setHold(ThingActions actions, @Nullable String holdClimateRef, @Nullable Number holdHours) {
+        return ((EcobeeActions) actions).setHold(holdClimateRef, holdHours);
     }
 
     /**
@@ -438,16 +393,12 @@ public class EcobeeActions implements ThingActions {
         return setHold(params, holdType, holdHours, startDateTime, endDateTime);
     }
 
-    public static boolean setHold(@Nullable ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
+    public static boolean setHold(ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
             @Nullable QuantityType<Temperature> heatHoldTemp, @Nullable String holdClimateRef,
             @Nullable Date startDateTime, @Nullable Date endDateTime, @Nullable String holdType,
             @Nullable Number holdHours) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).setHold(coolHoldTemp, heatHoldTemp, holdClimateRef, startDateTime,
-                    endDateTime, holdType, holdHours);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+        return ((EcobeeActions) actions).setHold(coolHoldTemp, heatHoldTemp, holdClimateRef, startDateTime, endDateTime,
+                holdType, holdHours);
     }
 
     /**
@@ -528,14 +479,9 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean setHold(@Nullable ThingActions actions, @Nullable Map<String, Object> params,
-            @Nullable String holdType, @Nullable Number holdHours, @Nullable Date startDateTime,
-            @Nullable Date endDateTime) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).setHold(params, holdType, holdHours, startDateTime, endDateTime);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static boolean setHold(ThingActions actions, @Nullable Map<String, Object> params, @Nullable String holdType,
+            @Nullable Number holdHours, @Nullable Date startDateTime, @Nullable Date endDateTime) {
+        return ((EcobeeActions) actions).setHold(params, holdType, holdHours, startDateTime, endDateTime);
     }
 
     /**
@@ -564,14 +510,9 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean setOccupied(@Nullable ThingActions actions, @Nullable Boolean occupied,
-            @Nullable Date startDateTime, @Nullable Date endDateTime, @Nullable String holdType,
-            @Nullable Number holdHours) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).setOccupied(occupied, startDateTime, endDateTime, holdType, holdHours);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static boolean setOccupied(ThingActions actions, @Nullable Boolean occupied, @Nullable Date startDateTime,
+            @Nullable Date endDateTime, @Nullable String holdType, @Nullable Number holdHours) {
+        return ((EcobeeActions) actions).setOccupied(occupied, startDateTime, endDateTime, holdType, holdHours);
     }
 
     /**
@@ -595,13 +536,9 @@ public class EcobeeActions implements ThingActions {
         return localHandler.actionPerformFunction(function);
     }
 
-    public static boolean updateSensor(@Nullable ThingActions actions, @Nullable String name, @Nullable String deviceId,
+    public static boolean updateSensor(ThingActions actions, @Nullable String name, @Nullable String deviceId,
             @Nullable String sensorId) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).updateSensor(name, deviceId, sensorId);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+        return ((EcobeeActions) actions).updateSensor(name, deviceId, sensorId);
     }
 
     /**
@@ -618,12 +555,8 @@ public class EcobeeActions implements ThingActions {
         return localHandler.getAlerts();
     }
 
-    public static @Nullable String getAlerts(@Nullable ThingActions actions) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).getAlerts();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static @Nullable String getAlerts(ThingActions actions) {
+        return ((EcobeeActions) actions).getAlerts();
     }
 
     /**
@@ -640,12 +573,8 @@ public class EcobeeActions implements ThingActions {
         return localHandler.getEvents();
     }
 
-    public static @Nullable String getEvents(@Nullable ThingActions actions) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).getEvents();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static @Nullable String getEvents(ThingActions actions) {
+        return ((EcobeeActions) actions).getEvents();
     }
 
     /**
@@ -662,11 +591,7 @@ public class EcobeeActions implements ThingActions {
         return localHandler.getClimates();
     }
 
-    public static @Nullable String getClimates(@Nullable ThingActions actions) {
-        if (actions instanceof EcobeeActions) {
-            return ((EcobeeActions) actions).getClimates();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
-        }
+    public static @Nullable String getClimates(ThingActions actions) {
+        return ((EcobeeActions) actions).getClimates();
     }
 }

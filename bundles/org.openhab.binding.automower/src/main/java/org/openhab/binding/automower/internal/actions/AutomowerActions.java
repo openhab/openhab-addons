@@ -54,12 +54,8 @@ public class AutomowerActions implements ThingActions {
         }
     }
 
-    public static void start(@Nullable ThingActions actions, int durationMin) {
-        if (actions instanceof AutomowerActions) {
-            ((AutomowerActions) actions).start(durationMin);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AutomowerActions");
-        }
+    public static void start(ThingActions actions, int durationMin) {
+        ((AutomowerActions) actions).start(durationMin);
     }
 
     @RuleAction(label = "@text/action-pause-label", description = "@text/action-pause-desc")
@@ -72,12 +68,8 @@ public class AutomowerActions implements ThingActions {
         }
     }
 
-    public static void pause(@Nullable ThingActions actions) {
-        if (actions instanceof AutomowerActions) {
-            ((AutomowerActions) actions).pause();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AutomowerActions");
-        }
+    public static void pause(ThingActions actions) {
+        ((AutomowerActions) actions).pause();
     }
 
     @RuleAction(label = "@text/action-parkuntilnextschedule-label", description = "@text/action-parkuntilnextschedule-desc")
@@ -90,12 +82,8 @@ public class AutomowerActions implements ThingActions {
         }
     }
 
-    public static void parkUntilNextSchedule(@Nullable ThingActions actions) {
-        if (actions instanceof AutomowerActions) {
-            ((AutomowerActions) actions).parkUntilNextSchedule();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AutomowerActions");
-        }
+    public static void parkUntilNextSchedule(ThingActions actions) {
+        ((AutomowerActions) actions).parkUntilNextSchedule();
     }
 
     @RuleAction(label = "@text/action-parkuntilfurthernotice-label", description = "@text/action-parkuntilfurthernotice-desc")
@@ -108,12 +96,8 @@ public class AutomowerActions implements ThingActions {
         }
     }
 
-    public static void parkUntilFurtherNotice(@Nullable ThingActions actions) {
-        if (actions instanceof AutomowerActions) {
-            ((AutomowerActions) actions).parkUntilFurtherNotice();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AutomowerActions");
-        }
+    public static void parkUntilFurtherNotice(ThingActions actions) {
+        ((AutomowerActions) actions).parkUntilFurtherNotice();
     }
 
     @RuleAction(label = "@text/action-park-label", description = "@text/action-park-desc")
@@ -127,12 +111,8 @@ public class AutomowerActions implements ThingActions {
         }
     }
 
-    public static void park(@Nullable ThingActions actions, int durationMin) {
-        if (actions instanceof AutomowerActions) {
-            ((AutomowerActions) actions).park(durationMin);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AutomowerActions");
-        }
+    public static void park(ThingActions actions, int durationMin) {
+        ((AutomowerActions) actions).park(durationMin);
     }
 
     @RuleAction(label = "@text/action-resumeschedule-label", description = "@text/action-resumeschedule-desc")
@@ -145,11 +125,7 @@ public class AutomowerActions implements ThingActions {
         }
     }
 
-    public static void resumeSchedule(@Nullable ThingActions actions) {
-        if (actions instanceof AutomowerActions) {
-            ((AutomowerActions) actions).resumeSchedule();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AutomowerActions");
-        }
+    public static void resumeSchedule(ThingActions actions) {
+        ((AutomowerActions) actions).resumeSchedule();
     }
 }

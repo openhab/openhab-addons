@@ -112,34 +112,20 @@ public class AstroActions implements ThingActions {
         return null;
     }
 
-    public static @Nullable QuantityType<Angle> getElevation(@Nullable ThingActions actions,
-            @Nullable ZonedDateTime date) {
-        if (actions instanceof AstroActions) {
-            return ((AstroActions) actions).getElevation(date);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AstroActions");
-        }
+    public static @Nullable QuantityType<Angle> getElevation(ThingActions actions, @Nullable ZonedDateTime date) {
+        return ((AstroActions) actions).getElevation(date);
     }
 
-    public static @Nullable QuantityType<Angle> getAzimuth(@Nullable ThingActions actions,
-            @Nullable ZonedDateTime date) {
-        if (actions instanceof AstroActions) {
-            return ((AstroActions) actions).getAzimuth(date);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AstroActions");
-        }
+    public static @Nullable QuantityType<Angle> getAzimuth(ThingActions actions, @Nullable ZonedDateTime date) {
+        return ((AstroActions) actions).getAzimuth(date);
     }
 
-    public static @Nullable ZonedDateTime getEventTime(@Nullable ThingActions actions, @Nullable String phaseName,
+    public static @Nullable ZonedDateTime getEventTime(ThingActions actions, @Nullable String phaseName,
             @Nullable ZonedDateTime date, @Nullable String moment) {
-        if (actions instanceof AstroActions) {
-            if (phaseName != null) {
-                return ((AstroActions) actions).getEventTime(phaseName, date, moment);
-            } else {
-                throw new IllegalArgumentException("phaseName can not be null");
-            }
+        if (phaseName != null) {
+            return ((AstroActions) actions).getEventTime(phaseName, date, moment);
         } else {
-            throw new IllegalArgumentException("Actions is not an instance of AstroActions");
+            throw new IllegalArgumentException("phaseName can not be null");
         }
     }
 }

@@ -61,12 +61,8 @@ public class DoorbirdActions implements ThingActions {
         }
     }
 
-    public static void restart(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            ((DoorbirdActions) actions).restart();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of DoorbirdActions");
-        }
+    public static void restart(ThingActions actions) {
+        ((DoorbirdActions) actions).restart();
     }
 
     @RuleAction(label = "hangup a SIP call", description = "Hangup SIP call.")
@@ -79,12 +75,8 @@ public class DoorbirdActions implements ThingActions {
         }
     }
 
-    public static void sipHangup(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            ((DoorbirdActions) actions).sipHangup();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of DoorbirdActions");
-        }
+    public static void sipHangup(ThingActions actions) {
+        ((DoorbirdActions) actions).sipHangup();
     }
 
     @RuleAction(label = "get the ring time limit", description = "Get the value of RING_TIME_LIMIT.")
@@ -98,12 +90,8 @@ public class DoorbirdActions implements ThingActions {
         }
     }
 
-    public static String getRingTimeLimit(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            return ((DoorbirdActions) actions).getRingTimeLimit();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of DoorbirdActions");
-        }
+    public static String getRingTimeLimit(ThingActions actions) {
+        return ((DoorbirdActions) actions).getRingTimeLimit();
     }
 
     @RuleAction(label = "get the call time limit", description = "Get the value of CALL_TIME_LIMIT.")
@@ -117,12 +105,8 @@ public class DoorbirdActions implements ThingActions {
         }
     }
 
-    public static String getCallTimeLimit(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            return ((DoorbirdActions) actions).getCallTimeLimit();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of DoorbirdActions");
-        }
+    public static String getCallTimeLimit(ThingActions actions) {
+        return ((DoorbirdActions) actions).getCallTimeLimit();
     }
 
     @RuleAction(label = "get the last error code", description = "Get the value of LASTERRORCODE.")
@@ -136,12 +120,8 @@ public class DoorbirdActions implements ThingActions {
         }
     }
 
-    public static String getLastErrorCode(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            return ((DoorbirdActions) actions).getLastErrorCode();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of DoorbirdActions");
-        }
+    public static String getLastErrorCode(ThingActions actions) {
+        return ((DoorbirdActions) actions).getLastErrorCode();
     }
 
     @RuleAction(label = "get the last error text", description = "Get the value of LASTERRORTEXT.")
@@ -155,11 +135,7 @@ public class DoorbirdActions implements ThingActions {
         }
     }
 
-    public static String getLastErrorText(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            return ((DoorbirdActions) actions).getLastErrorText();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of DoorbirdActions");
-        }
+    public static String getLastErrorText(ThingActions actions) {
+        return ((DoorbirdActions) actions).getLastErrorText();
     }
 }

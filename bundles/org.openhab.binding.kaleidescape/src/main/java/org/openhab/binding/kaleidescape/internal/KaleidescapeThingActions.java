@@ -47,12 +47,8 @@ public class KaleidescapeThingActions implements ThingActions {
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void sendKCommand(@Nullable ThingActions actions, String kCommand) throws IllegalArgumentException {
-        if (actions instanceof KaleidescapeThingActions) {
-            ((KaleidescapeThingActions) actions).sendKCommand(kCommand);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of KaleidescapeThingActions");
-        }
+    public static void sendKCommand(ThingActions actions, String kCommand) throws IllegalArgumentException {
+        ((KaleidescapeThingActions) actions).sendKCommand(kCommand);
     }
 
     @Override
