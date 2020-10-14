@@ -253,6 +253,7 @@ public enum MiIoDevices {
     YL_CEILING1("yilai.light.ceiling1", "Yeelight yilai ceiling", THING_TYPE_BASIC),
     YL_CEILING2("yilai.light.ceiling2", "Yeelight yilai ceiling", THING_TYPE_BASIC),
     YL_CEILING3("yilai.light.ceiling3", "Yeelight yilai ceiling", THING_TYPE_BASIC),
+    ZHIMI_HEATER_ZA1("zhimi.heater.za1", "Zhimi Heater", THING_TYPE_BASIC),
     UNKNOWN("unknown", "Unknown Mi IO Device", THING_TYPE_UNSUPPORTED);
 
     public static MiIoDevices getType(String modelString) {
