@@ -52,8 +52,8 @@ public class AVMFritzHeatingActionsTest {
     }
 
     @Test
-    public void testSetBoostModeThingActionsIsNotPushoverThingActions() {
-        assertThrows(IllegalArgumentException.class,
+    public void testSetBoostModeThingActionsIsNotAVMFritzHeatingActions() {
+        assertThrows(ClassCastException.class,
                 () -> AVMFritzHeatingActions.setBoostMode(thingActionsStub, Long.valueOf(5L)));
     }
 
@@ -76,8 +76,8 @@ public class AVMFritzHeatingActionsTest {
     }
 
     @Test
-    public void testSetWindowOpenModeThingActionsIsNotPushoverThingActions() {
-        assertThrows(IllegalArgumentException.class,
+    public void testSetWindowOpenModeThingActionsIsNotAVMFritzHeatingActions() {
+        assertThrows(ClassCastException.class,
                 () -> AVMFritzHeatingActions.setWindowOpenMode(thingActionsStub, Long.valueOf(5L)));
     }
 
