@@ -19,7 +19,7 @@ import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mail.action.SendMailActions;
+import org.openhab.binding.mail.internal.action.SendMailActions;
 import org.openhab.binding.mail.internal.config.SMTPConfig;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
