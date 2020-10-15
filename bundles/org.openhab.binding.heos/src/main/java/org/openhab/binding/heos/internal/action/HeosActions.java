@@ -62,7 +62,7 @@ public class HeosActions implements ThingActions {
         return handler.getApiConnection();
     }
 
-    @RuleAction(label = "Play Input", description = "Play an input from another device")
+    @RuleAction(label = "play an input", description = "Play an input from another device.")
     public void playInputFromPlayer(
             @ActionInput(name = "source", label = "Source Player", description = "Player used for input") @Nullable Integer sourcePlayer,
             @ActionInput(name = "input", label = "Source Input", description = "Input source used") @Nullable String input,
@@ -88,12 +88,8 @@ public class HeosActions implements ThingActions {
         }
     }
 
-    public static void playInputFromPlayer(@Nullable ThingActions actions, @Nullable Integer sourcePlayer,
-            @Nullable String input, @Nullable Integer destinationPlayer) {
-        if (actions instanceof HeosActions) {
-            ((HeosActions) actions).playInputFromPlayer(sourcePlayer, input, destinationPlayer);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of HeosActions");
-        }
+    public static void playInputFromPlayer(ThingActions actions, @Nullable Integer sourcePlayer, @Nullable String input,
+            @Nullable Integer destinationPlayer) {
+        ((HeosActions) actions).playInputFromPlayer(sourcePlayer, input, destinationPlayer);
     }
 }

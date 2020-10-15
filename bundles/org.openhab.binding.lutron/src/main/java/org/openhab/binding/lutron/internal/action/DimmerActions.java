@@ -98,12 +98,8 @@ public class DimmerActions implements ThingActions {
     /**
      * Static setLevel method for Rules DSL backward compatibility
      */
-    public static void setLevel(@Nullable ThingActions actions, @Nullable Double level, @Nullable Double fadeTime,
+    public static void setLevel(ThingActions actions, @Nullable Double level, @Nullable Double fadeTime,
             @Nullable Double delayTime) {
-        if (actions instanceof DimmerActions) {
-            ((DimmerActions) actions).setLevel(level, fadeTime, delayTime);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of DimmerActions");
-        }
+        ((DimmerActions) actions).setLevel(level, fadeTime, delayTime);
     }
 }

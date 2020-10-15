@@ -71,11 +71,7 @@ public class SatelEventLogActions implements ThingActions {
         return result;
     }
 
-    public static Map<String, Object> readEvent(@Nullable ThingActions actions, @Nullable Number index) {
-        if (actions instanceof SatelEventLogActions) {
-            return ((SatelEventLogActions) actions).readEvent(index);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of SatelEventLogActions");
-        }
+    public static Map<String, Object> readEvent(ThingActions actions, @Nullable Number index) {
+        return ((SatelEventLogActions) actions).readEvent(index);
     }
 }

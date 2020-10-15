@@ -45,7 +45,7 @@ public class IpCameraActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "Record MP4", description = "Record MP4 to a set filename if given, or if filename is null to ipcamera.mp4")
+    @RuleAction(label = "record an MP4", description = "Record MP4 to a set filename if given, or if filename is null to ipcamera.mp4")
     public void recordMP4(
             @ActionInput(name = "filename", label = "Filename", description = "Name that the recording will have once created, don't include the .mp4.") @Nullable String filename,
             @ActionInput(name = "secondsToRecord", label = "Seconds to Record", description = "Enter a number of how many seconds to record.") int secondsToRecord) {
@@ -57,15 +57,11 @@ public class IpCameraActions implements ThingActions {
         }
     }
 
-    public static void recordMP4(@Nullable ThingActions actions, @Nullable String filename, int secondsToRecord) {
-        if (actions instanceof IpCameraActions) {
-            ((IpCameraActions) actions).recordMP4(filename, secondsToRecord);
-        } else {
-            throw new IllegalArgumentException("Instance is not a IpCamera class.");
-        }
+    public static void recordMP4(ThingActions actions, @Nullable String filename, int secondsToRecord) {
+        ((IpCameraActions) actions).recordMP4(filename, secondsToRecord);
     }
 
-    @RuleAction(label = "Record GIF", description = "Record GIF to a set filename if given, or if filename is null to ipcamera.gif")
+    @RuleAction(label = "record a GIF", description = "Record GIF to a set filename if given, or if filename is null to ipcamera.gif")
     public void recordGIF(
             @ActionInput(name = "filename", label = "Filename", description = "Name that the recording will have once created, don't include the .mp4.") @Nullable String filename,
             @ActionInput(name = "secondsToRecord", label = "Seconds to Record", description = "Enter a number of how many seconds to record.") int secondsToRecord) {
@@ -77,11 +73,7 @@ public class IpCameraActions implements ThingActions {
         }
     }
 
-    public static void recordGIF(@Nullable ThingActions actions, @Nullable String filename, int secondsToRecord) {
-        if (actions instanceof IpCameraActions) {
-            ((IpCameraActions) actions).recordGIF(filename, secondsToRecord);
-        } else {
-            throw new IllegalArgumentException("Instance is not a IpCamera class.");
-        }
+    public static void recordGIF(ThingActions actions, @Nullable String filename, int secondsToRecord) {
+        ((IpCameraActions) actions).recordGIF(filename, secondsToRecord);
     }
 }

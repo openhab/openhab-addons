@@ -50,12 +50,8 @@ public class RadioThermostatThingActions implements ThingActions {
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void sendRawCommand(@Nullable ThingActions actions, @Nullable String rawCommand) {
-        if (actions instanceof RadioThermostatThingActions) {
-            ((RadioThermostatThingActions) actions).sendRawCommand(rawCommand);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of RadioThermostatThingActions");
-        }
+    public static void sendRawCommand(ThingActions actions, @Nullable String rawCommand) {
+        ((RadioThermostatThingActions) actions).sendRawCommand(rawCommand);
     }
 
     @Override
