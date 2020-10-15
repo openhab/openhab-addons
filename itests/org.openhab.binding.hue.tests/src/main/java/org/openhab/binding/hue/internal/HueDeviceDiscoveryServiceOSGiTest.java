@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
+import org.openhab.binding.hue.internal.discovery.HueDeviceDiscoveryService;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryListener;
@@ -44,7 +44,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 
 /**
- * Tests for {@link HueLightDiscoveryService}.
+ * Tests for {@link HueDeviceDiscoveryService}.
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Andre Fuechsel - added test 'assert start search is called()'
@@ -52,14 +52,14 @@ import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Markus Rathgeb - migrated to plain Java test
  */
-public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent {
+public class HueDeviceDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent {
 
     protected HueThingHandlerFactory hueThingHandlerFactory;
     protected DiscoveryListener discoveryListener;
     protected ThingRegistry thingRegistry;
     protected Bridge hueBridge;
     protected HueBridgeHandler hueBridgeHandler;
-    protected HueLightDiscoveryService discoveryService;
+    protected HueDeviceDiscoveryService discoveryService;
 
     protected final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID("hue", "bridge");
     protected final ThingUID BRIDGE_THING_UID = new ThingUID(BRIDGE_THING_TYPE_UID, "testBridge");
@@ -85,7 +85,7 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
         hueBridgeHandler = getThingHandler(hueBridge, HueBridgeHandler.class);
         assertThat(hueBridgeHandler, is(notNullValue()));
 
-        discoveryService = getService(DiscoveryService.class, HueLightDiscoveryService.class);
+        discoveryService = getService(DiscoveryService.class, HueDeviceDiscoveryService.class);
         assertThat(discoveryService, is(notNullValue()));
     }
 
@@ -93,7 +93,7 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
     public void cleanUp() {
         thingRegistry.remove(BRIDGE_THING_UID);
         waitForAssert(() -> {
-            assertNull(getService(DiscoveryService.class, HueLightDiscoveryService.class));
+            assertNull(getService(DiscoveryService.class, HueDeviceDiscoveryService.class));
         });
     }
 
@@ -113,6 +113,7 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
     public void hueLightRegistration() {
         FullLight light = new FullLight();
         light.setId("1");
+        light.setUniqueID("AA:BB:CC:DD:EE:FF:00:11-XX");
         light.setModelID("LCT001");
         light.setType("Extended color light");
 
@@ -164,7 +165,7 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
                 if (address.endsWith("testUserName")) {
                     String body = "{\"lights\":{}}";
                     return new Result(body, 200);
-                } else if (address.endsWith("lights") || address.endsWith("sensors")) {
+                } else if (address.endsWith("lights") || address.endsWith("sensors") || address.endsWith("groups")) {
                     String body = "{}";
                     return new Result(body, 200);
                 } else if (address.endsWith("testUserName/config")) {

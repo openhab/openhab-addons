@@ -46,7 +46,7 @@ import org.openhab.binding.hue.internal.Scene;
 import org.openhab.binding.hue.internal.State;
 import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.config.HueBridgeConfig;
-import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
+import org.openhab.binding.hue.internal.discovery.HueDeviceDiscoveryService;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.DeviceOffException;
 import org.openhab.binding.hue.internal.exceptions.EntityNotAvailableException;
@@ -63,6 +63,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -87,7 +88,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueClient {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private static final long BYPASS_MIN_DURATION_BEFORE_CMD = 1500L;
 
@@ -102,7 +103,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private final Map<String, @Nullable FullSensor> lastSensorStates = new ConcurrentHashMap<>();
     private final Map<String, @Nullable FullGroup> lastGroupStates = new ConcurrentHashMap<>();
 
-    private @Nullable HueLightDiscoveryService discoveryService;
+    private @Nullable HueDeviceDiscoveryService discoveryService;
     private final Map<String, @Nullable LightStatusListener> lightStatusListeners = new ConcurrentHashMap<>();
     private final Map<String, @Nullable SensorStatusListener> sensorStatusListeners = new ConcurrentHashMap<>();
     private final Map<String, @Nullable GroupStatusListener> groupStatusListeners = new ConcurrentHashMap<>();
@@ -183,7 +184,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         protected void doConnectedRun() throws IOException, ApiException {
             Map<String, @Nullable FullSensor> lastSensorStateCopy = new HashMap<>(lastSensorStates);
 
-            final HueLightDiscoveryService discovery = discoveryService;
+            final HueDeviceDiscoveryService discovery = discoveryService;
 
             for (final FullSensor sensor : hueBridge.getSensors()) {
                 String sensorId = sensor.getId();
@@ -239,7 +240,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 lights = hueBridge.getFullConfig().getLights();
             }
 
-            final HueLightDiscoveryService discovery = discoveryService;
+            final HueDeviceDiscoveryService discovery = discoveryService;
 
             for (final FullLight fullLight : lights) {
                 final String lightId = fullLight.getId();
@@ -282,7 +283,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
             List<FullGroup> groups = hueBridge.getGroups();
 
-            final HueLightDiscoveryService discovery = discoveryService;
+            final HueDeviceDiscoveryService discovery = discoveryService;
 
             for (final FullGroup fullGroup : groups) {
                 State groupState = new State();
@@ -410,6 +411,11 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(HueDeviceDiscoveryService.class);
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (CHANNEL_SCENE.equals(channelUID.getId()) && command instanceof StringType) {
             recallScene(command.toString());
@@ -528,7 +534,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             }
         } else if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing light: {}", e.getMessage(), e);
-            final HueLightDiscoveryService discovery = discoveryService;
+            final HueDeviceDiscoveryService discovery = discoveryService;
             if (discovery != null) {
                 discovery.removeLightDiscovery(light);
             }
@@ -541,7 +547,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private void handleSensorUpdateException(FullSensor sensor, Throwable e) {
         if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
-            final HueLightDiscoveryService discovery = discoveryService;
+            final HueDeviceDiscoveryService discovery = discoveryService;
             if (discovery != null) {
                 discovery.removeSensorDiscovery(sensor);
             }
@@ -557,7 +563,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private void handleGroupUpdateException(FullGroup group, Throwable e) {
         if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing group: {}", e.getMessage(), e);
-            final HueLightDiscoveryService discovery = discoveryService;
+            final HueDeviceDiscoveryService discovery = discoveryService;
             if (discovery != null) {
                 discovery.removeGroupDiscovery(group);
             }
@@ -840,7 +846,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     @Override
-    public boolean registerDiscoveryListener(HueLightDiscoveryService listener) {
+    public boolean registerDiscoveryListener(HueDeviceDiscoveryService listener) {
         if (discoveryService == null) {
             discoveryService = listener;
             getFullLights().forEach(listener::addLightDiscovery);
@@ -964,21 +970,21 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         List<FullLight> ret = withReAuthentication("search for new lights", () -> {
             return hueBridge.getFullLights();
         });
-        return ret != null ? ret : Collections.emptyList();
+        return ret != null ? ret : List.of();
     }
 
     public List<FullSensor> getFullSensors() {
         List<FullSensor> ret = withReAuthentication("search for new sensors", () -> {
             return hueBridge.getSensors();
         });
-        return ret != null ? ret : Collections.emptyList();
+        return ret != null ? ret : List.of();
     }
 
     public List<FullGroup> getFullGroups() {
         List<FullGroup> ret = withReAuthentication("search for new groups", () -> {
             return hueBridge.getGroups();
         });
-        return ret != null ? ret : Collections.emptyList();
+        return ret != null ? ret : List.of();
     }
 
     public void startSearch() {
@@ -1024,17 +1030,13 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
         // The bridge IP address to be used for checks
-        Collection<ConfigStatusMessage> configStatusMessages;
-
         // Check whether an IP address is provided
         String ip = hueBridgeConfig.getIpAddress();
         if (ip == null || ip.isEmpty()) {
-            configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(HOST)
+            return List.of(ConfigStatusMessage.Builder.error(HOST)
                     .withMessageKeySuffix(HueConfigStatusMessage.IP_ADDRESS_MISSING).withArguments(HOST).build());
         } else {
-            configStatusMessages = Collections.emptyList();
+            return List.of();
         }
-
-        return configStatusMessages;
     }
 }
