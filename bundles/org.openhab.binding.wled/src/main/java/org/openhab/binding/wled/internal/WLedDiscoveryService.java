@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class)
 public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(WLedDiscoveryService.class);
 
