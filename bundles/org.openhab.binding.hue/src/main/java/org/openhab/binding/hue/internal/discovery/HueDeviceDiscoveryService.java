@@ -92,7 +92,7 @@ public class HueDeviceDiscoveryService extends AbstractDiscoveryService
             new SimpleEntry<>("clipgenericstatus", "0840"),
             new SimpleEntry<>("clipgenericflag", "0850"),
             new SimpleEntry<>("zllpresence", "0107"),
-            new SimpleEntry<>("geofence", "0107"),
+            new SimpleEntry<>("geofence", "geofencesensor"),
             new SimpleEntry<>("zlltemperature", "0302"),
             new SimpleEntry<>("zlllightlevel", "0106"));
     // @formatter:on
