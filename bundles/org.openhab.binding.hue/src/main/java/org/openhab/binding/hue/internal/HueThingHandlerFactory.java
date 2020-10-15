@@ -15,16 +15,12 @@ package org.openhab.binding.hue.internal;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
@@ -37,7 +33,6 @@ import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -45,7 +40,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -74,8 +68,6 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             .flatMap(i -> i).collect(Collectors.toSet()));
 
     private final HueStateDescriptionOptionProvider stateOptionProvider;
-
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
     public HueThingHandlerFactory(final @Reference HueStateDescriptionOptionProvider stateOptionProvider) {
@@ -150,9 +142,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            HueBridgeHandler handler = new HueBridgeHandler((Bridge) thing, stateOptionProvider);
-            registerLightDiscoveryService(handler);
-            return handler;
+            return new HueBridgeHandler((Bridge) thing, stateOptionProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueLightHandler(thing);
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
@@ -173,29 +163,6 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             return new HueGroupHandler(thing, stateOptionProvider);
         } else {
             return null;
-        }
-    }
-
-    private synchronized void registerLightDiscoveryService(HueBridgeHandler bridgeHandler) {
-        HueLightDiscoveryService discoveryService = new HueLightDiscoveryService(bridgeHandler);
-        discoveryService.activate();
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof HueBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                // remove discovery service, if bridge handler is removed
-                HueLightDiscoveryService service = (HueLightDiscoveryService) bundleContext
-                        .getService(serviceReg.getReference());
-                serviceReg.unregister();
-                if (service != null) {
-                    service.deactivate();
-                }
-            }
         }
     }
 }
