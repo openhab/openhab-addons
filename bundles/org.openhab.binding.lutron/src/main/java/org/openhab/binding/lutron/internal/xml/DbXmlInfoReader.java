@@ -74,6 +74,8 @@ public class DbXmlInfoReader {
         xstream.alias("Area", Area.class);
         xstream.aliasField("Name", Area.class, "name");
         xstream.useAttributeFor(Area.class, "name");
+        xstream.aliasField("IntegrationID", Area.class, "integrationId");
+        xstream.useAttributeFor(Area.class, "integrationId");
         xstream.aliasField("DeviceGroups", Area.class, "deviceNodes");
         xstream.aliasField("Outputs", Area.class, "outputs");
         xstream.aliasField("Areas", Area.class, "areas");
