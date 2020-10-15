@@ -83,5 +83,4 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
             logger.debug("OpenUV Bridge Handler is not set -> Will not provide any discovery results");
         }
     }
-
 }

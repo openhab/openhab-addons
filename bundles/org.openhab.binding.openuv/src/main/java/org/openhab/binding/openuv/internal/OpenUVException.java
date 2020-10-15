@@ -36,5 +36,4 @@ public class OpenUVException extends Exception {
     public boolean isQuotaError() {
         return this.getMessage().startsWith(ERROR_QUOTA_EXCEEDED);
     }
-
 }
