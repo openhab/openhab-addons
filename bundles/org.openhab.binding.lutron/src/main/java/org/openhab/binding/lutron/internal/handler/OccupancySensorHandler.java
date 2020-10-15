@@ -15,7 +15,8 @@ package org.openhab.binding.lutron.internal.handler;
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_OCCUPANCYSTATUS;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.DeviceCommand;
+import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -33,10 +34,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OccupancySensorHandler extends LutronHandler {
-    private static final String OCCUPIED_STATE_UPDATE = "2";
-    private static final String STATE_OCCUPIED = "3";
-    private static final String STATE_UNOCCUPIED = "4";
-
     private final Logger logger = LoggerFactory.getLogger(OccupancySensorHandler.class);
 
     private int integrationId;
@@ -82,10 +79,11 @@ public class OccupancySensorHandler extends LutronHandler {
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
-        if (type == LutronCommandType.DEVICE && parameters.length == 2 && OCCUPIED_STATE_UPDATE.equals(parameters[0])) {
-            if (STATE_OCCUPIED.equals(parameters[1])) {
+        if (type == LutronCommandType.DEVICE && parameters.length == 2
+                && DeviceCommand.OCCUPIED_STATE_COMPONENT.equals(parameters[0])) {
+            if (DeviceCommand.STATE_OCCUPIED.equals(parameters[1])) {
                 updateState(CHANNEL_OCCUPANCYSTATUS, OnOffType.ON);
-            } else if (STATE_UNOCCUPIED.equals(parameters[1])) {
+            } else if (DeviceCommand.STATE_UNOCCUPIED.equals(parameters[1])) {
                 updateState(CHANNEL_OCCUPANCYSTATUS, OnOffType.OFF);
             }
         }

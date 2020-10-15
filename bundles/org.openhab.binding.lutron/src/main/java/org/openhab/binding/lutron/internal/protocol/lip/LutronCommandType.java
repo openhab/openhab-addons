@@ -10,26 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lutron.internal.protocol;
+package org.openhab.binding.lutron.internal.protocol.lip;
 
 /**
- * Requested operation of a command to the Lutron integration protocol.
+ * Type of command in the Lutron integration protocol.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added additional commands
  *
  */
-public enum LutronOperation {
-    EXECUTE("#"),
-    QUERY("?");
-
-    private final String operationChar;
-
-    LutronOperation(String operationChar) {
-        this.operationChar = operationChar;
-    }
-
-    @Override
-    public String toString() {
-        return this.operationChar;
-    }
+public enum LutronCommandType {
+    AREA,
+    DEVICE,
+    GROUP,
+    MODE,
+    MONITORING,
+    OUTPUT,
+    SHADEGRP,
+    SYSTEM,
+    SYSVAR,
+    TIMECLOCK,
 }
