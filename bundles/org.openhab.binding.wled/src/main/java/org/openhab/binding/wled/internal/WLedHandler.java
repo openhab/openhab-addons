@@ -423,7 +423,7 @@ public class WLedHandler extends BaseThingHandler {
             logger.debug("Address was not entered in correct format, it may be the raw IP so adding http:// to start");
             config.address = "http://" + config.address;
         }
-        pollingFuture = threadPool.scheduleWithFixedDelay(this::pollLED, 1, config.pollTime, TimeUnit.SECONDS);
+        pollingFuture = scheduler.scheduleWithFixedDelay(this::pollLED, 1, config.pollTime, TimeUnit.SECONDS);
     }
 
     @Override
