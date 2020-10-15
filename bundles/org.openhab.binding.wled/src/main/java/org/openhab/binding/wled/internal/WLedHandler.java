@@ -165,7 +165,7 @@ public class WLedHandler extends BaseThingHandler {
         List<StateOption> fxOptions = new ArrayList<>();
         List<StateOption> palleteOptions = new ArrayList<>();
         int counter = 0;
-        for (String value : (getValue(message, "\"effects\":[", "]").replace("\"", "")).split(",")) {
+        for (String value : getValue(message, "\"effects\":[", "]").replace("\"", "").split(",")) {
             fxOptions.add(new StateOption("" + counter++, value));
         }
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FX), fxOptions);
