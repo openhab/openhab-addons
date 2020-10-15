@@ -15,15 +15,12 @@ package org.openhab.binding.openuv.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ReportConfiguration} is the class used to match the
- * thing configuration.
+ * The {@link BridgeConfiguration} is the class used to match the
+ * bridge configuration.
  *
  * @author Gaël L"hopital - Initial contribution
  */
 @NonNullByDefault
-public class ReportConfiguration {
-    public static final String LOCATION = "location";
-
-    public int refresh = 10;
-    public String location = "";
+public class BridgeConfiguration {
+    public String apikey = "";
 }

@@ -15,15 +15,13 @@ package org.openhab.binding.openuv.internal;
 import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
 
 import java.time.ZonedDateTime;
-import java.util.Hashtable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openuv.internal.discovery.OpenUVDiscoveryService;
 import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.openhab.binding.openuv.internal.handler.OpenUVReportHandler;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -51,18 +49,21 @@ import com.google.gson.JsonDeserializer;
 public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
 
     private final LocationProvider locationProvider;
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(DecimalType.class,
-                    (JsonDeserializer<DecimalType>) (json, type, jsonDeserializationContext) -> DecimalType
-                            .valueOf(json.getAsJsonPrimitive().getAsString()))
-            .registerTypeAdapter(ZonedDateTime.class,
-                    (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                            .parse(json.getAsJsonPrimitive().getAsString()))
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+    private final Gson gson;
 
     @Activate
-    public OpenUVHandlerFactory(@Reference LocationProvider locationProvider) {
+    public OpenUVHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
+            @Reference LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(DecimalType.class,
+                        (JsonDeserializer<DecimalType>) (json, type, jsonDeserializationContext) -> DecimalType
+                                .valueOf(json.getAsJsonPrimitive().getAsString()))
+                .registerTypeAdapter(ZonedDateTime.class,
+                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                                .parse(json.getAsJsonPrimitive().getAsString())
+                                .withZoneSameInstant(timeZoneProvider.getTimeZone()))
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     }
 
     @Override
@@ -74,20 +75,8 @@ public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (APIBRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            OpenUVBridgeHandler handler = new OpenUVBridgeHandler((Bridge) thing, gson);
-            registerOpenUVDiscoveryService(handler);
-            return handler;
-        } else if (LOCATION_REPORT_THING_TYPE.equals(thingTypeUID)) {
-            return new OpenUVReportHandler(thing);
-        }
-
-        return null;
-    }
-
-    private void registerOpenUVDiscoveryService(OpenUVBridgeHandler bridgeHandler) {
-        OpenUVDiscoveryService discoveryService = new OpenUVDiscoveryService(bridgeHandler, locationProvider);
-        bridgeHandler.getDiscoveryServiceRegs().put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
+        return APIBRIDGE_THING_TYPE.equals(thingTypeUID)
+                ? new OpenUVBridgeHandler((Bridge) thing, locationProvider, gson)
+                : LOCATION_REPORT_THING_TYPE.equals(thingTypeUID) ? new OpenUVReportHandler(thing) : null;
     }
 }

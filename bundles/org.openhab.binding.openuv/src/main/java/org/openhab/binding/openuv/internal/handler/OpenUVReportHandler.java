@@ -29,6 +29,7 @@ import org.openhab.binding.openuv.internal.config.SafeExposureConfiguration;
 import org.openhab.binding.openuv.internal.json.OpenUVResult;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Bridge;
@@ -117,7 +118,6 @@ public class OpenUVReportHandler extends BaseThingHandler {
         ScheduledFuture<?> job = this.refreshJob;
         if (job == null || job.isCancelled()) {
             ReportConfiguration config = getConfigAs(ReportConfiguration.class);
-
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {
                 if (!suspendUpdates) {
                     updateChannels(config);
@@ -129,8 +129,9 @@ public class OpenUVReportHandler extends BaseThingHandler {
     private void updateChannels(ReportConfiguration config) {
         ThingStatusInfo bridgeStatusInfo = bridgeHandler.getThing().getStatusInfo();
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            OpenUVResult openUVData = bridgeHandler.getUVData(config.getLatitude(), config.getLongitude(),
-                    config.getAltitude());
+            PointType location = new PointType(config.location);
+            OpenUVResult openUVData = bridgeHandler.getUVData(location.getLatitude().toString(),
+                    location.getLongitude().toString(), location.getAltitude().toString());
             if (openUVData != null) {
                 scheduleUVMaxEvent(openUVData);
                 getThing().getChannels().forEach(channel -> {
