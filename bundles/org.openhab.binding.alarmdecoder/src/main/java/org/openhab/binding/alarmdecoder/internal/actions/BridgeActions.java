@@ -67,11 +67,7 @@ public class BridgeActions implements ThingActions {
     }
 
     // Static method for Rules DSL backward compatibility
-    public static void reboot(@Nullable ThingActions actions) {
-        if (actions instanceof BridgeActions) {
-            ((BridgeActions) actions).reboot();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of BridgeActions");
-        }
+    public static void reboot(ThingActions actions) {
+        ((BridgeActions) actions).reboot();
     }
 }

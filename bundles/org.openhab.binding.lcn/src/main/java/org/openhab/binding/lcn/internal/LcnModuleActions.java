@@ -169,40 +169,23 @@ public class LcnModuleActions implements ThingActions {
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void hitKey(@Nullable ThingActions actions, @Nullable String table, int key,
-            @Nullable String action) {
-        if (actions instanceof LcnModuleHandler) {
-            ((LcnModuleActions) actions).hitKey(table, key, action);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LcnModuleActions");
-        }
+    public static void hitKey(ThingActions actions, @Nullable String table, int key, @Nullable String action) {
+        ((LcnModuleActions) actions).hitKey(table, key, action);
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void flickerOutput(@Nullable ThingActions actions, int output, int depth, int ramp, int count) {
-        if (actions instanceof LcnModuleHandler) {
-            ((LcnModuleActions) actions).flickerOutput(output, depth, ramp, count);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LcnModuleActions");
-        }
+    public static void flickerOutput(ThingActions actions, int output, int depth, int ramp, int count) {
+        ((LcnModuleActions) actions).flickerOutput(output, depth, ramp, count);
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void sendDynamicText(@Nullable ThingActions actions, int row, @Nullable String text) {
-        if (actions instanceof LcnModuleHandler) {
-            ((LcnModuleActions) actions).sendDynamicText(row, text);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LcnModuleActions");
-        }
+    public static void sendDynamicText(ThingActions actions, int row, @Nullable String text) {
+        ((LcnModuleActions) actions).sendDynamicText(row, text);
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void startRelayTimer(@Nullable ThingActions actions, int relaynumber, double duration) {
-        if (actions instanceof LcnModuleHandler) {
-            ((LcnModuleActions) actions).startRelayTimer(relaynumber, duration);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LcnModuleActions");
-        }
+    public static void startRelayTimer(ThingActions actions, int relaynumber, double duration) {
+        ((LcnModuleActions) actions).startRelayTimer(relaynumber, duration);
     }
 
     private LcnModuleHandler getHandler() throws LcnException {

@@ -48,13 +48,8 @@ public class OnkyoThingActions implements ThingActions {
         handler.sendRawCommand(command, value);
     }
 
-    public static void sendRawCommand(@Nullable ThingActions actions, @Nullable String command,
-            @Nullable String value) {
-        if (actions instanceof OnkyoThingActions) {
-            ((OnkyoThingActions) actions).sendRawCommand(command, value);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of OnkyoThingActions");
-        }
+    public static void sendRawCommand(ThingActions actions, @Nullable String command, @Nullable String value) {
+        ((OnkyoThingActions) actions).sendRawCommand(command, value);
     }
 
     @Override

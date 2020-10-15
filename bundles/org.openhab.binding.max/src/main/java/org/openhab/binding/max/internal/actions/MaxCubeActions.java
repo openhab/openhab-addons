@@ -59,12 +59,8 @@ public class MaxCubeActions implements ThingActions {
         return true;
     }
 
-    public static boolean backup(@Nullable ThingActions actions) {
-        if (actions instanceof MaxCubeActions) {
-            return ((MaxCubeActions) actions).backup();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of MaxCubeActions");
-        }
+    public static boolean backup(ThingActions actions) {
+        return ((MaxCubeActions) actions).backup();
     }
 
     @RuleAction(label = "reset the Cube configuration", description = "Resets the MAX! Cube room and device information. Devices will need to be included again!")
@@ -78,12 +74,8 @@ public class MaxCubeActions implements ThingActions {
         return true;
     }
 
-    public static boolean reset(@Nullable ThingActions actions) {
-        if (actions instanceof MaxCubeActions) {
-            return ((MaxCubeActions) actions).resetConfig();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of MaxCubeActions");
-        }
+    public static boolean reset(ThingActions actions) {
+        return ((MaxCubeActions) actions).resetConfig();
     }
 
     @RuleAction(label = "restart the Cube", description = "Restarts the MAX! Cube.")
@@ -97,11 +89,7 @@ public class MaxCubeActions implements ThingActions {
         return true;
     }
 
-    public static boolean reboot(@Nullable ThingActions actions) {
-        if (actions instanceof MaxCubeActions) {
-            return ((MaxCubeActions) actions).reboot();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of MaxCubeActions");
-        }
+    public static boolean reboot(ThingActions actions) {
+        return ((MaxCubeActions) actions).reboot();
     }
 }

@@ -14,11 +14,9 @@ package org.openhab.binding.enigma2.internal.actions;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.enigma2.internal.Enigma2BindingConstants;
@@ -29,13 +27,10 @@ import org.openhab.binding.enigma2.internal.handler.Enigma2Handler;
  *
  * @author Guido Dolfen - Initial contribution
  */
-@SuppressWarnings("null")
 @NonNullByDefault
 public class Enigma2ActionsTest {
-    @Nullable
-    private Enigma2Actions enigma2Actions;
-    @Nullable
-    private Enigma2Handler enigma2Handler;
+    private @NonNullByDefault({}) Enigma2Actions enigma2Actions;
+    private @NonNullByDefault({}) Enigma2Handler enigma2Handler;
     public static final String SOME_TEXT = "some Text";
 
     @BeforeEach
@@ -111,11 +106,6 @@ public class Enigma2ActionsTest {
     }
 
     @Test
-    public void testSendRcCommandStaticWithException() {
-        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendRcCommand(null, "KEY_1"));
-    }
-
-    @Test
     public void testSendInfoStatic() {
         Enigma2Actions.sendInfo(enigma2Actions, SOME_TEXT);
         verify(enigma2Handler).sendInfo(Enigma2BindingConstants.MESSAGE_TIMEOUT, SOME_TEXT);
@@ -125,11 +115,6 @@ public class Enigma2ActionsTest {
     public void testSendInfoTimeoutStatic() {
         Enigma2Actions.sendInfo(enigma2Actions, SOME_TEXT, 10);
         verify(enigma2Handler).sendInfo(10, SOME_TEXT);
-    }
-
-    @Test
-    public void testSendInfoStaticWithException() {
-        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendInfo(null, SOME_TEXT));
     }
 
     @Test
@@ -145,11 +130,6 @@ public class Enigma2ActionsTest {
     }
 
     @Test
-    public void testSendErrorStaticWithException() {
-        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendError(null, SOME_TEXT));
-    }
-
-    @Test
     public void testSendWarningStatic() {
         Enigma2Actions.sendWarning(enigma2Actions, SOME_TEXT);
         verify(enigma2Handler).sendWarning(Enigma2BindingConstants.MESSAGE_TIMEOUT, SOME_TEXT);
@@ -162,11 +142,6 @@ public class Enigma2ActionsTest {
     }
 
     @Test
-    public void testSendWarningStaticWithException() {
-        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendWarning(null, SOME_TEXT));
-    }
-
-    @Test
     public void testSendQuestionStatic() {
         Enigma2Actions.sendQuestion(enigma2Actions, SOME_TEXT);
         verify(enigma2Handler).sendQuestion(Enigma2BindingConstants.MESSAGE_TIMEOUT, SOME_TEXT);
@@ -176,10 +151,5 @@ public class Enigma2ActionsTest {
     public void testSendQuestionTimeoutStatic() {
         Enigma2Actions.sendQuestion(enigma2Actions, SOME_TEXT, 10);
         verify(enigma2Handler).sendQuestion(10, SOME_TEXT);
-    }
-
-    @Test
-    public void testSendQuestionStaticWithException() {
-        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendQuestion(null, SOME_TEXT));
     }
 }

@@ -63,13 +63,9 @@ public class PushbulletActions implements ThingActions {
         return localHandler.sendPush(recipient, title, message, "note");
     }
 
-    public static boolean sendPushbulletNote(@Nullable ThingActions actions, @Nullable String recipient,
-            @Nullable String title, @Nullable String message) {
-        if (actions instanceof PushbulletActions) {
-            return ((PushbulletActions) actions).sendPushbulletNote(recipient, title, message);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of PushbulletActions");
-        }
+    public static boolean sendPushbulletNote(ThingActions actions, @Nullable String recipient, @Nullable String title,
+            @Nullable String message) {
+        return ((PushbulletActions) actions).sendPushbulletNote(recipient, title, message);
     }
 
     @RuleAction(label = "@text/actionSendPushbulletNoteLabel", description = "@text/actionSendPushbulletNoteDesc")
@@ -87,12 +83,8 @@ public class PushbulletActions implements ThingActions {
         return localHandler.sendPush(recipient, message, "note");
     }
 
-    public static boolean sendPushbulletNote(@Nullable ThingActions actions, @Nullable String recipient,
+    public static boolean sendPushbulletNote(ThingActions actions, @Nullable String recipient,
             @Nullable String message) {
-        if (actions instanceof PushbulletActions) {
-            return ((PushbulletActions) actions).sendPushbulletNote(recipient, message);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of PushbulletActions");
-        }
+        return ((PushbulletActions) actions).sendPushbulletNote(recipient, message);
     }
 }
