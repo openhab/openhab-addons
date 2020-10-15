@@ -102,16 +102,15 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>();
         properties.put(LOCATION, location.toString());
         thingDiscovered(DiscoveryResultBuilder.create(localOpenUVThing).withLabel("Local UV Information")
-                .withProperties(properties).withRepresentationProperty(location.toString()).withBridge(bridgeUID)
-                .build());
+                .withProperties(properties).withRepresentationProperty(LOCATION).withBridge(bridgeUID).build());
     }
 
-    @SuppressWarnings("null")
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping OpenUV background discovery");
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
-            if (discoveryJob.cancel(true)) {
+        ScheduledFuture<?> job = this.discoveryJob;
+        if (job != null && !job.isCancelled()) {
+            if (job.cancel(true)) {
                 discoveryJob = null;
                 logger.debug("Stopped OpenUV background discovery");
             }

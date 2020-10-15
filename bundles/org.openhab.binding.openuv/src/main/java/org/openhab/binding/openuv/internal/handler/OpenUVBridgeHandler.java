@@ -18,13 +18,13 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
+import javax.ws.rs.HttpMethod;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openuv.internal.OpenUVBindingConstants;
@@ -32,7 +32,6 @@ import org.openhab.binding.openuv.internal.json.OpenUVResponse;
 import org.openhab.binding.openuv.internal.json.OpenUVResult;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -45,10 +44,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 
 /**
  * {@link OpenUVBridgeHandler} is the handler for OpenUV API and connects it
@@ -63,22 +59,15 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private static final String ERROR_QUOTA_EXCEEDED = "Daily API quota exceeded";
     private static final String ERROR_WRONG_KEY = "User with API Key not found";
 
-    private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
-
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(DecimalType.class,
-                    (JsonDeserializer<DecimalType>) (json, type, jsonDeserializationContext) -> DecimalType
-                            .valueOf(json.getAsJsonPrimitive().getAsString()))
-            .registerTypeAdapter(ZonedDateTime.class,
-                    (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                            .parse(json.getAsJsonPrimitive().getAsString()))
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+    private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
     private Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final Properties header = new Properties();
+    private final Gson gson;
 
-    public OpenUVBridgeHandler(Bridge bridge) {
+    public OpenUVBridgeHandler(Bridge bridge, Gson gson) {
         super(bridge);
+        this.gson = gson;
     }
 
     @Override
@@ -86,7 +75,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing OpenUV API bridge handler.");
         Configuration config = getThing().getConfiguration();
         String apiKey = (String) config.get(OpenUVBindingConstants.APIKEY);
-        if (StringUtils.trimToNull(apiKey) == null) {
+        if (apiKey.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'apikey' must be configured.");
         } else {
@@ -136,7 +125,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
         }
         String errorMessage = null;
         try {
-            String jsonData = HttpUtil.executeUrl("GET", urlBuilder.toString(), header, null, null, REQUEST_TIMEOUT);
+            String jsonData = HttpUtil.executeUrl(HttpMethod.GET, urlBuilder.toString(), header, null, null,
+                    REQUEST_TIMEOUT_MS);
             OpenUVResponse uvResponse = gson.fromJson(jsonData, OpenUVResponse.class);
             if (uvResponse.getError() == null) {
                 updateStatus(ThingStatus.ONLINE);
@@ -157,7 +147,6 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
             logger.warn("Quota Exceeded, going OFFLINE for today, will retry at : {} ", tomorrowMidnight);
             scheduler.schedule(this::initiateConnexion,
                     Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES);
-
         } else if (errorMessage.startsWith(ERROR_WRONG_KEY)) {
             logger.error("Error occured during API query : {}", errorMessage);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);

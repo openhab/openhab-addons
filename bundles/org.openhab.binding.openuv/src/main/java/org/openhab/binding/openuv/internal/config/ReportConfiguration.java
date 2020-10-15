@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openuv.internal;
+package org.openhab.binding.openuv.internal.config;
 
 /**
  * The {@link ReportConfiguration} is the class used to match the
@@ -22,7 +22,7 @@ public class ReportConfiguration {
     String[] elements = null;
 
     private String location;
-    public Integer refresh;
+    public int refresh = 10;
 
     public String getLatitude() {
         return getElement(0);

@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openuv.internal;
+package org.openhab.binding.openuv.internal.config;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SafeExposureConfiguration} is the class used to match the
@@ -18,6 +20,7 @@ package org.openhab.binding.openuv.internal;
  *
  * @author Gaël L"hopital - Initial contribution
  */
+@NonNullByDefault
 public class SafeExposureConfiguration {
     public int index = -1;
 }
