@@ -32,6 +32,7 @@
 				<property name="check" />
 			-->
 		</properties>
+		<representation-property>ipAddress</representation-property>
 
 		<config-description-ref uri="bridge-type:velux:bridge"/>
 
