@@ -21,7 +21,6 @@ import javax.measure.quantity.Time;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -91,10 +90,11 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             return;
         }
         QuantityType<?> quantity = (QuantityType<?>) command;
-        this.nextDurationTime = quantity.toBigDecimal();
+        this.nextDurationTime = quantity.toUnit(Units.SECOND).toBigDecimal();
         updateState(channelUID, quantity);
     }
 
+    @SuppressWarnings("null")
     private void handleStationStateCommand(OpenSprinklerApi api, Command command) {
         if (!(command instanceof OnOffType)) {
             logger.error("Received invalid command type for OpenSprinkler station ({}).", command);
@@ -204,7 +204,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             case NEXT_DURATION:
                 BigDecimal duration = nextDurationValue();
                 if (duration != null) {
-                    updateState(channel, new DecimalType(duration));
+                    updateState(channel, new QuantityType<>(duration, Units.SECOND));
                 }
                 break;
             case STATION_QUEUED:
