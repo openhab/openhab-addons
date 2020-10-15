@@ -111,75 +111,39 @@ public class Enigma2Actions implements ThingActions {
     }
 
     // delegation methods for "legacy" rule support
-    public static void sendRcCommand(@Nullable ThingActions actions, String rcButton) {
-        if (actions instanceof Enigma2Actions) {
-            ((Enigma2Actions) actions).sendRcCommand(rcButton);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Enigma2Actions");
-        }
+    public static void sendRcCommand(ThingActions actions, String rcButton) {
+        ((Enigma2Actions) actions).sendRcCommand(rcButton);
     }
 
-    public static void sendInfo(@Nullable ThingActions actions, String info) {
-        if (actions instanceof Enigma2Actions) {
-            ((Enigma2Actions) actions).sendInfo(info);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Enigma2Actions");
-        }
+    public static void sendInfo(ThingActions actions, String info) {
+        ((Enigma2Actions) actions).sendInfo(info);
     }
 
-    public static void sendInfo(@Nullable ThingActions actions, String info, int timeout) {
-        if (actions instanceof Enigma2Actions) {
-            ((Enigma2Actions) actions).sendInfo(info, timeout);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Enigma2Actions");
-        }
+    public static void sendInfo(ThingActions actions, String info, int timeout) {
+        ((Enigma2Actions) actions).sendInfo(info, timeout);
     }
 
-    public static void sendWarning(@Nullable ThingActions actions, String warning) {
-        if (actions instanceof Enigma2Actions) {
-            ((Enigma2Actions) actions).sendWarning(warning);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Enigma2Actions");
-        }
+    public static void sendWarning(ThingActions actions, String warning) {
+        ((Enigma2Actions) actions).sendWarning(warning);
     }
 
-    public static void sendWarning(@Nullable ThingActions actions, String warning, int timeout) {
-        if (actions instanceof Enigma2Actions) {
-            ((Enigma2Actions) actions).sendWarning(warning, timeout);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Enigma2Actions");
-        }
+    public static void sendWarning(ThingActions actions, String warning, int timeout) {
+        ((Enigma2Actions) actions).sendWarning(warning, timeout);
     }
 
-    public static void sendError(@Nullable ThingActions actions, String error) {
-        if (actions instanceof Enigma2Actions) {
-            ((Enigma2Actions) actions).sendError(error);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Enigma2Actions");
-        }
+    public static void sendError(ThingActions actions, String error) {
+        ((Enigma2Actions) actions).sendError(error);
     }
 
-    public static void sendError(@Nullable ThingActions actions, String error, int timeout) {
-        if (actions instanceof Enigma2Actions) {
-            ((Enigma2Actions) actions).sendError(error, timeout);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Enigma2Actions");
-        }
+    public static void sendError(ThingActions actions, String error, int timeout) {
+        ((Enigma2Actions) actions).sendError(error, timeout);
     }
 
-    public static void sendQuestion(@Nullable ThingActions actions, String text) {
-        if (actions instanceof Enigma2Actions) {
-            ((Enigma2Actions) actions).sendQuestion(text);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Enigma2Actions");
-        }
+    public static void sendQuestion(ThingActions actions, String text) {
+        ((Enigma2Actions) actions).sendQuestion(text);
     }
 
-    public static void sendQuestion(@Nullable ThingActions actions, String text, int timeout) {
-        if (actions instanceof Enigma2Actions) {
-            ((Enigma2Actions) actions).sendQuestion(text, timeout);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Enigma2Actions");
-        }
+    public static void sendQuestion(ThingActions actions, String text, int timeout) {
+        ((Enigma2Actions) actions).sendQuestion(text, timeout);
     }
 }

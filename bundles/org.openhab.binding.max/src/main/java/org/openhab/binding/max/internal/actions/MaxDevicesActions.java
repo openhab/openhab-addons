@@ -59,11 +59,7 @@ public class MaxDevicesActions implements ThingActions {
         return true;
     }
 
-    public static boolean deleteFromCube(@Nullable ThingActions actions) {
-        if (actions instanceof MaxDevicesActions) {
-            return ((MaxDevicesActions) actions).deleteFromCube();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of MaxDevicesActions");
-        }
+    public static boolean deleteFromCube(ThingActions actions) {
+        return ((MaxDevicesActions) actions).deleteFromCube();
     }
 }

@@ -393,105 +393,58 @@ public class TelegramActions implements ThingActions {
 
     // legacy delegate methods
     /* APIs without chatId parameter */
-    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String format,
-            @Nullable Object... args) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(format, args);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegram(ThingActions actions, @Nullable String format, @Nullable Object... args) {
+        return ((TelegramActions) actions).sendTelegram(format, args);
     }
 
-    public static boolean sendTelegramQuery(@Nullable ThingActions actions, @Nullable String message,
-            @Nullable String replyId, @Nullable String... buttons) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramQuery(message, replyId, buttons);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegramQuery(ThingActions actions, @Nullable String message, @Nullable String replyId,
+            @Nullable String... buttons) {
+        return ((TelegramActions) actions).sendTelegramQuery(message, replyId, buttons);
     }
 
-    public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable String photoURL,
-            @Nullable String caption) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption, null, null);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegramPhoto(ThingActions actions, @Nullable String photoURL, @Nullable String caption) {
+        return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption, null, null);
     }
 
-    public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable String photoURL,
-            @Nullable String caption, @Nullable String username, @Nullable String password) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption, username, password);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegramPhoto(ThingActions actions, @Nullable String photoURL, @Nullable String caption,
+            @Nullable String username, @Nullable String password) {
+        return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption, username, password);
     }
 
-    public static boolean sendTelegramAnswer(@Nullable ThingActions actions, @Nullable String replyId,
-            @Nullable String message) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramAnswer(replyId, message);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String replyId, @Nullable String message) {
+        return ((TelegramActions) actions).sendTelegramAnswer(replyId, message);
     }
 
     /* APIs with chatId parameter */
 
-    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable Long chatId, @Nullable String format,
+    public static boolean sendTelegram(ThingActions actions, @Nullable Long chatId, @Nullable String format,
             @Nullable Object... args) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(chatId, format, args);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+        return ((TelegramActions) actions).sendTelegram(chatId, format, args);
     }
 
-    public static boolean sendTelegramQuery(@Nullable ThingActions actions, @Nullable Long chatId,
-            @Nullable String message, @Nullable String replyId, @Nullable String... buttons) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramQuery(chatId, message, replyId, buttons);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegramQuery(ThingActions actions, @Nullable Long chatId, @Nullable String message,
+            @Nullable String replyId, @Nullable String... buttons) {
+        return ((TelegramActions) actions).sendTelegramQuery(chatId, message, replyId, buttons);
     }
 
-    public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable Long chatId,
-            @Nullable String photoURL, @Nullable String caption) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption, null, null);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegramPhoto(ThingActions actions, @Nullable Long chatId, @Nullable String photoURL,
+            @Nullable String caption) {
+        return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption, null, null);
     }
 
-    public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable Long chatId,
-            @Nullable String photoURL, @Nullable String caption, @Nullable String username, @Nullable String password) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption, username, password);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegramPhoto(ThingActions actions, @Nullable Long chatId, @Nullable String photoURL,
+            @Nullable String caption, @Nullable String username, @Nullable String password) {
+        return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption, username, password);
     }
 
-    public static boolean sendTelegramAnswer(@Nullable ThingActions actions, @Nullable Long chatId,
-            @Nullable String replyId, @Nullable String message) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramAnswer(chatId, replyId, message);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegramAnswer(ThingActions actions, @Nullable Long chatId, @Nullable String replyId,
+            @Nullable String message) {
+        return ((TelegramActions) actions).sendTelegramAnswer(chatId, replyId, message);
     }
 
-    public static boolean sendTelegramAnswer(@Nullable ThingActions actions, @Nullable String chatId,
-            @Nullable String replyId, @Nullable String message) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
-        }
+    public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String chatId, @Nullable String replyId,
+            @Nullable String message) {
+        return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
     }
 
     @Override

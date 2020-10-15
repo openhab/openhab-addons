@@ -75,19 +75,11 @@ public class Ipx800Actions implements ThingActions {
         }
     }
 
-    public static void resetCounter(@Nullable ThingActions actions, Integer counter) {
-        if (actions instanceof Ipx800Actions) {
-            ((Ipx800Actions) actions).resetCounter(counter);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Ipx800Actions");
-        }
+    public static void resetCounter(ThingActions actions, Integer counter) {
+        ((Ipx800Actions) actions).resetCounter(counter);
     }
 
-    public static void reset(@Nullable ThingActions actions, @Nullable Integer placeholder) {
-        if (actions instanceof Ipx800Actions) {
-            ((Ipx800Actions) actions).reset(placeholder);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of Ipx800Actions");
-        }
+    public static void reset(ThingActions actions, @Nullable Integer placeholder) {
+        ((Ipx800Actions) actions).reset(placeholder);
     }
 }

@@ -73,20 +73,11 @@ public class MPDActions implements ThingActions {
         }
     }
 
-    public static void sendCommand(@Nullable ThingActions actions, @Nullable String command,
-            @Nullable String parameter) {
-        if (actions instanceof MPDActions) {
-            ((MPDActions) actions).sendCommand(command, parameter);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of MPDActions");
-        }
+    public static void sendCommand(ThingActions actions, @Nullable String command, @Nullable String parameter) {
+        ((MPDActions) actions).sendCommand(command, parameter);
     }
 
-    public static void sendCommand(@Nullable ThingActions actions, @Nullable String command) {
-        if (actions instanceof MPDActions) {
-            ((MPDActions) actions).sendCommand(command);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of MPDActions");
-        }
+    public static void sendCommand(ThingActions actions, @Nullable String command) {
+        ((MPDActions) actions).sendCommand(command);
     }
 }

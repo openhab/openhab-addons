@@ -103,12 +103,12 @@ public class SendMailActions implements ThingActions {
         }
     }
 
-    public static boolean sendMail(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String subject,
+    public static boolean sendMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text) {
         return SendMailActions.sendMail(actions, recipient, subject, text, new ArrayList<>());
     }
 
-    public static boolean sendMail(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String subject,
+    public static boolean sendMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text, @Nullable String urlString) {
         List<String> urlList = new ArrayList<>();
         if (urlString != null) {
@@ -117,13 +117,9 @@ public class SendMailActions implements ThingActions {
         return SendMailActions.sendMail(actions, recipient, subject, text, urlList);
     }
 
-    public static boolean sendMail(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String subject,
+    public static boolean sendMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text, @Nullable List<String> urlStringList) {
-        if (actions instanceof SendMailActions) {
-            return ((SendMailActions) actions).sendMail(recipient, subject, text, urlStringList);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of SendMailActions");
-        }
+        return ((SendMailActions) actions).sendMail(recipient, subject, text, urlStringList);
     }
 
     @RuleAction(label = "send a HTML mail", description = "Sends a HTML mail.")
@@ -184,13 +180,13 @@ public class SendMailActions implements ThingActions {
         }
     }
 
-    public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,
-            @Nullable String subject, @Nullable String html) {
+    public static boolean sendHtmlMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
+            @Nullable String html) {
         return SendMailActions.sendHtmlMail(actions, recipient, subject, html, new ArrayList<>());
     }
 
-    public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,
-            @Nullable String subject, @Nullable String html, @Nullable String urlString) {
+    public static boolean sendHtmlMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
+            @Nullable String html, @Nullable String urlString) {
         List<String> urlList = new ArrayList<>();
         if (urlString != null) {
             urlList.add(urlString);
@@ -198,13 +194,9 @@ public class SendMailActions implements ThingActions {
         return SendMailActions.sendHtmlMail(actions, recipient, subject, html, urlList);
     }
 
-    public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,
-            @Nullable String subject, @Nullable String html, @Nullable List<String> urlStringList) {
-        if (actions instanceof SendMailActions) {
-            return ((SendMailActions) actions).sendHtmlMail(recipient, subject, html, urlStringList);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of SendMailActions");
-        }
+    public static boolean sendHtmlMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
+            @Nullable String html, @Nullable List<String> urlStringList) {
+        return ((SendMailActions) actions).sendHtmlMail(recipient, subject, html, urlStringList);
     }
 
     @Override

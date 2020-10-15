@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Gololobov - Initial contribution
  */
-@ThingActionsScope(name = "xmpp")
+@ThingActionsScope(name = "xmppclient")
 @NonNullByDefault
 public class XMPPActions implements ThingActions {
     private static final Logger logger = LoggerFactory.getLogger(XMPPActions.class);
@@ -66,11 +66,7 @@ public class XMPPActions implements ThingActions {
         connection.sendMessage(to, text);
     }
 
-    public static void publishXMPP(@Nullable ThingActions actions, @Nullable String to, @Nullable String text) {
-        if (actions instanceof XMPPActions) {
-            ((XMPPActions) actions).publishXMPP(to, text);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of XMPPActions");
-        }
+    public static void publishXMPP(ThingActions actions, @Nullable String to, @Nullable String text) {
+        ((XMPPActions) actions).publishXMPP(to, text);
     }
 }

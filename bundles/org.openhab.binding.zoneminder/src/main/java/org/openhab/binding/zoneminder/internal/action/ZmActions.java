@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
-@ThingActionsScope(name = "zm")
+@ThingActionsScope(name = "zoneminder")
 @NonNullByDefault
 public class ZmActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(ZmActions.class);
@@ -63,12 +63,8 @@ public class ZmActions implements ThingActions {
         localHandler.actionTriggerAlarm(duration);
     }
 
-    public static void triggerAlarm(@Nullable ThingActions actions, @Nullable Number alarmDuration) {
-        if (actions instanceof ZmActions) {
-            ((ZmActions) actions).triggerAlarm(alarmDuration);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of ZmActions");
-        }
+    public static void triggerAlarm(ThingActions actions, @Nullable Number alarmDuration) {
+        ((ZmActions) actions).triggerAlarm(alarmDuration);
     }
 
     /**
@@ -86,12 +82,8 @@ public class ZmActions implements ThingActions {
         localHandler.actionTriggerAlarm();
     }
 
-    public static void triggerAlarm(@Nullable ThingActions actions) {
-        if (actions instanceof ZmActions) {
-            ((ZmActions) actions).triggerAlarm();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of ZmActions");
-        }
+    public static void triggerAlarm(ThingActions actions) {
+        ((ZmActions) actions).triggerAlarm();
     }
 
     /**
@@ -108,11 +100,7 @@ public class ZmActions implements ThingActions {
         localHandler.actionCancelAlarm();
     }
 
-    public static void cancelAlarm(@Nullable ThingActions actions) {
-        if (actions instanceof ZmActions) {
-            ((ZmActions) actions).cancelAlarm();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of ZmActions");
-        }
+    public static void cancelAlarm(ThingActions actions) {
+        ((ZmActions) actions).cancelAlarm();
     }
 }

@@ -55,12 +55,8 @@ public class AVMFritzHeatingActions implements ThingActions {
         actionsHandler.setBoostMode(duration.longValue());
     }
 
-    public static void setBoostMode(@Nullable ThingActions actions, @Nullable Long duration) {
-        if (actions instanceof AVMFritzHeatingActions) {
-            ((AVMFritzHeatingActions) actions).setBoostMode(duration);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AVMFritzHeatingActions");
-        }
+    public static void setBoostMode(ThingActions actions, @Nullable Long duration) {
+        ((AVMFritzHeatingActions) actions).setBoostMode(duration);
     }
 
     @RuleAction(label = "@text/setWindowOpenModeActionLabel", description = "@text/setWindowOpenModeActionDescription")
@@ -76,11 +72,7 @@ public class AVMFritzHeatingActions implements ThingActions {
         actionsHandler.setWindowOpenMode(duration.longValue());
     }
 
-    public static void setWindowOpenMode(@Nullable ThingActions actions, @Nullable Long duration) {
-        if (actions instanceof AVMFritzHeatingActions) {
-            ((AVMFritzHeatingActions) actions).setWindowOpenMode(duration);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of AVMFritzHeatingActions");
-        }
+    public static void setWindowOpenMode(ThingActions actions, @Nullable Long duration) {
+        ((AVMFritzHeatingActions) actions).setWindowOpenMode(duration);
     }
 }

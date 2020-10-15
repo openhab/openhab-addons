@@ -281,83 +281,43 @@ public class LGWebOSActions implements ThingActions {
 
     // delegation methods for "legacy" rule support
 
-    public static void showToast(@Nullable ThingActions actions, String text) throws IOException {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).showToast(text);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void showToast(ThingActions actions, String text) throws IOException {
+        ((LGWebOSActions) actions).showToast(text);
     }
 
-    public static void showToast(@Nullable ThingActions actions, String icon, String text) throws IOException {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).showToast(icon, text);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void showToast(ThingActions actions, String icon, String text) throws IOException {
+        ((LGWebOSActions) actions).showToast(icon, text);
     }
 
-    public static void launchBrowser(@Nullable ThingActions actions, String url) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).launchBrowser(url);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void launchBrowser(ThingActions actions, String url) {
+        ((LGWebOSActions) actions).launchBrowser(url);
     }
 
-    public static void launchApplication(@Nullable ThingActions actions, String appId) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).launchApplication(appId);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void launchApplication(ThingActions actions, String appId) {
+        ((LGWebOSActions) actions).launchApplication(appId);
     }
 
-    public static void launchApplication(@Nullable ThingActions actions, String appId, String param) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).launchApplication(appId, param);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void launchApplication(ThingActions actions, String appId, String param) {
+        ((LGWebOSActions) actions).launchApplication(appId, param);
     }
 
-    public static void sendText(@Nullable ThingActions actions, String text) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).sendText(text);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void sendText(ThingActions actions, String text) {
+        ((LGWebOSActions) actions).sendText(text);
     }
 
-    public static void sendButton(@Nullable ThingActions actions, String button) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).sendButton(button);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void sendButton(ThingActions actions, String button) {
+        ((LGWebOSActions) actions).sendButton(button);
     }
 
-    public static void increaseChannel(@Nullable ThingActions actions) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).increaseChannel();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void increaseChannel(ThingActions actions) {
+        ((LGWebOSActions) actions).increaseChannel();
     }
 
-    public static void decreaseChannel(@Nullable ThingActions actions) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).decreaseChannel();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void decreaseChannel(ThingActions actions) {
+        ((LGWebOSActions) actions).decreaseChannel();
     }
 
-    public static void sendRCButton(@Nullable ThingActions actions, String rcButton) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).sendRCButton(rcButton);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
-        }
+    public static void sendRCButton(ThingActions actions, String rcButton) {
+        ((LGWebOSActions) actions).sendRCButton(rcButton);
     }
 }

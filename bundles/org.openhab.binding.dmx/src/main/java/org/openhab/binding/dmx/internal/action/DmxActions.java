@@ -66,13 +66,9 @@ public class DmxActions implements ThingActions {
         }
     }
 
-    public static void sendFade(@Nullable ThingActions actions, @Nullable String channels, @Nullable String fade,
+    public static void sendFade(ThingActions actions, @Nullable String channels, @Nullable String fade,
             @Nullable Boolean resumeAfter) {
-        if (actions instanceof DmxActions) {
-            ((DmxActions) actions).sendFade(channels, fade, resumeAfter);
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of DmxActions");
-        }
+        ((DmxActions) actions).sendFade(channels, fade, resumeAfter);
     }
 
     @Override

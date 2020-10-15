@@ -57,11 +57,7 @@ public class NetworkActions implements ThingActions {
         }
     }
 
-    public static void sendWakeOnLanPacket(@Nullable ThingActions actions) {
-        if (actions instanceof NetworkActions) {
-            ((NetworkActions) actions).sendWakeOnLanPacket();
-        } else {
-            throw new IllegalArgumentException("Actions is not an instance of NetworkActions");
-        }
+    public static void sendWakeOnLanPacket(ThingActions actions) {
+        ((NetworkActions) actions).sendWakeOnLanPacket();
     }
 }
