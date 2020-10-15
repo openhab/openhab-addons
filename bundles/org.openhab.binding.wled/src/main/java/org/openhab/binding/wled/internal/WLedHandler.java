@@ -346,7 +346,7 @@ public class WLedHandler extends BaseThingHandler {
             case CHANNEL_SPEED:
                 BigDecimal bigTemp = new BigDecimal(command.toString());
                 if (OnOffType.OFF.equals(command)) {
-                    bigTemp = new BigDecimal(0);
+                    bigTemp = BigDecimal.ZERO;
                 } else if (OnOffType.ON.equals(command)) {
                     bigTemp = new BigDecimal(255);
                 } else {
