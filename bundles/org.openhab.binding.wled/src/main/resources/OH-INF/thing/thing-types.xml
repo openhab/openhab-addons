@@ -30,7 +30,7 @@
 				<label>Address</label>
 				<description>Use this format http://192.168.1.2:80</description>
 			</parameter>
-			<parameter name="pollTime" type="integer" required="true" min="1" max="9999999" unit="s">
+			<parameter name="pollTime" type="integer" required="true" min="1" unit="s">
 				<label>Poll States</label>
 				<description>Time in seconds of how often to fetch the state of the LEDs.</description>
 				<default>10</default>
