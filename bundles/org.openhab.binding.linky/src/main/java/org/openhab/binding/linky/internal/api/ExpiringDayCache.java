@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal;
+package org.openhab.binding.linky.internal.api;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -71,7 +71,7 @@ public class ExpiringDayCache<V> {
             logger.debug("getValue from cache \"{}\" is requiring a fresh value", name);
             cachedValue = refreshValue();
         } else {
-            logger.debug("getValue from cache \"{}\" is returing a cached value", name);
+            logger.debug("getValue from cache \"{}\" is returning a cached value", name);
         }
         return cachedValue;
     }

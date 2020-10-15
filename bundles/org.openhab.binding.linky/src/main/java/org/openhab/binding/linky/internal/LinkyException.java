@@ -10,30 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal.model;
+package org.openhab.binding.linky.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link LinkyTimeScale} enumerates all possible time scale
- * for API queries
+ * Will be thrown for cloud errors
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public enum LinkyTimeScale {
-    HOURLY("urlCdcHeure"),
-    DAILY("urlCdcJour"),
-    MONTHLY("urlCdcMois"),
-    YEARLY("urlCdcAn");
+public class LinkyException extends Exception {
 
-    private String id;
+    private static final long serialVersionUID = 3703839284673384018L;
 
-    private LinkyTimeScale(String id) {
-        this.id = id;
+    public LinkyException() {
+        super();
     }
 
-    public String getId() {
-        return this.id;
+    public LinkyException(String message) {
+        super(message);
+    }
+
+    public LinkyException(String message, Exception e) {
+        super(message, e);
     }
 }
