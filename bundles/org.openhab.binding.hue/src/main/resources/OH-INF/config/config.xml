@@ -29,7 +29,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:hue:geofecnesensor">
+	<config-description uri="thing-type:hue:geofencesensor">
 		<parameter name="sensorId" type="text">
 			<label>Sensor ID</label>
 			<description>The identifier that is used within the hue bridge.</description>
