@@ -151,13 +151,14 @@ public class OpenUVReportHandler extends BaseThingHandler {
         ScheduledFuture<?> refresh = this.refreshJob;
         if (refresh != null && !refresh.isCancelled()) {
             refresh.cancel(true);
-            refreshJob = null;
         }
+        refreshJob = null;
+
         ScheduledFuture<?> uxMax = this.uvMaxJob;
         if (uxMax != null && !uxMax.isCancelled()) {
             uxMax.cancel(true);
-            uvMaxJob = null;
         }
+        uvMaxJob = null;
     }
 
     @SuppressWarnings("unchecked")

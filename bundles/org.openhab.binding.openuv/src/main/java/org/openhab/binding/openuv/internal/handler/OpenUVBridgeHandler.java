@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,6 +64,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private final Gson gson;
 
     private final LocationProvider locationProvider;
+    private @Nullable ScheduledFuture<?> reconnectJob;
 
     public OpenUVBridgeHandler(Bridge bridge, LocationProvider locationProvider, Gson gson) {
         super(bridge);
@@ -81,6 +83,15 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
             header.put("x-access-token", config.apikey);
             initiateConnexion();
         }
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> job = this.reconnectJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+        }
+        reconnectJob = null;
     }
 
     @Override
@@ -121,7 +132,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                         + tomorrowMidnight.toString();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
 
-                scheduler.schedule(this::initiateConnexion,
+                reconnectJob = scheduler.schedule(this::initiateConnexion,
                         Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES);
             } else if (e.isApiKeyError()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
