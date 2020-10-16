@@ -16,7 +16,7 @@
 		</channels>
 	</thing-type>
 	<channel-type id="wallaction">
-		<item-type>wallcontroller</item-type>
+		<item-type>String</item-type>
 		<label>WallController action</label>
 		<event>
 			<options>
