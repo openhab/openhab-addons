@@ -56,6 +56,16 @@ public class TouchWandBindingConstants {
     public static final String STATUS_REFRESH_TIME = "statusrefresh";
     public static final String ADD_SECONDARY_UNITS = "addSecondaryUnits";
 
+    // Unit handler properties
+
+    public static final String HANDLER_PROPERTIES_ID = "id";
+    public static final String HANDLER_PROPERTIES_NAME = "name";
+
+    // Connectivity options
+
+    public static final String CONNECTIVITY_KNX = "knx";
+    public static final String CONNECTIVITY_ZWAVE = "zwave";
+
     // commands
     public static final String SWITCH_STATUS_ON = "255";
     public static final String SWITCH_STATUS_OFF = "0";

@@ -59,7 +59,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
     private static final int SEARCH_TIME_SEC = 10;
     private static final int SCAN_INTERVAL_SEC = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC = 5;
-    private static final String[] CONNECTIVITY_OPTIONS = { "zwave", "knx" };
+    private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE };
     private @NonNullByDefault({}) TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
@@ -195,8 +195,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
         ThingUID bridgeUID = touchWandBridgeHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(typeUID, bridgeUID, unit.getId().toString());
         Map<String, Object> properties = new HashMap<>();
-        properties.put("id", unit.getId().toString());
-        properties.put("name", unit.getName());
+        properties.put(HANDLER_PROPERTIES_ID, unit.getId().toString());
+        properties.put(HANDLER_PROPERTIES_NAME, unit.getName());
         // @formatter:off
         thingDiscovered(DiscoveryResultBuilder.create(thingUID)
                 .withThingType(typeUID)
