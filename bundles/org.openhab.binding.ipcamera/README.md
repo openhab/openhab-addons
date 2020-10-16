@@ -695,7 +695,7 @@ If you have 3 seconds worth of video segments in each cameras HLS stream, this i
 ## Sitemap Example
 
 Use the following example to base your sitemap on to save some time.
-In openHAB 3, if you use the `Create Equipment from Thing` feature to auto create your items, the following will need minimal editing to change the camera name from `BabyCam` to what you choose to name the camera.
+If you use the `Create Equipment from Thing` feature to auto create your items, the following will need minimal editing to change the camera name from `BabyCam` to what you choose to name the camera.
 
 *.sitemap
 
