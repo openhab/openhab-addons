@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ThingStatus;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.event.ResponseEvent;
@@ -62,6 +63,7 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
                 new OctetString("on"), false));
         assertNull(
                 onResponseSwitchChannel(SnmpChannelMode.TRAP, SnmpDatatype.INT32, "1", "2", new Integer32(2), false));
+        verifyStatus(ThingStatus.ONLINE);
     }
 
     @Test
@@ -104,6 +106,7 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(new DecimalType("12.4")));
+        verifyStatus(ThingStatus.ONLINE);
     }
 
     @Test
@@ -118,6 +121,7 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
 
         thingHandler.onResponse(event);
         assertEquals(1, source.cancelCallCounter);
+        verifyStatus(ThingStatus.ONLINE);
     }
 
     class SnmpMock extends Snmp {
