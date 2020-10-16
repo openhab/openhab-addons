@@ -25,7 +25,7 @@ import com.google.gson.JsonParser;
 
 class QueryResultJSONEncoderTest {
     public static final double TOLERANCE = 0.001d;
-    private QueryResultJSONEncoder instance = new QueryResultJSONEncoder();
+    private DBQueryJSONEncoder instance = new DBQueryJSONEncoder();
     private Gson gson = new Gson();
     private JsonParser jsonParser = new JsonParser();
 
@@ -48,6 +48,10 @@ class QueryResultJSONEncoderTest {
         assertThat(data, Matchers.hasSize(2));
         Map firstRow = data.get(0);
 
+        assertReadGivenValuesDecodedFromJson(firstRow);
+    }
+
+    private void assertReadGivenValuesDecodedFromJson(Map firstRow) {
         assertThat(firstRow.get("strValue"), is("an string"));
 
         Object doubleValue = firstRow.get("doubleValue");
@@ -84,6 +88,16 @@ class QueryResultJSONEncoderTest {
         Map<String, Object> map = gson.fromJson(json, Map.class);
         assertThat(map, Matchers.hasEntry("correct", Boolean.FALSE));
         assertThat(map.get("errorMessage"), is("Incorrect"));
+    }
+
+    @Test
+    public void given_query_parameters_are_correctly_serialized_to_json() {
+        QueryParameters queryParameters = new QueryParameters(givenRowValues());
+
+        String json = instance.encode(queryParameters);
+
+        Map<String, Object> map = gson.fromJson(json, Map.class);
+        assertReadGivenValuesDecodedFromJson(map);
     }
 
     private QueryResult givenQueryResultWithResults() {

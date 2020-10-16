@@ -32,7 +32,7 @@ class Influx2DatabaseTest {
     @Test
     public void given_query_that_returns_scalar_result_get_valid_scalar_result() throws Exception {
         instance.connect().get();
-        Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.SCALAR_QUERY, new QueryParameters(),
+        Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.SCALAR_QUERY, QueryParameters.EMPTY,
                 null);
         var future = instance.executeQuery(query);
         var queryResult = future.get();
@@ -47,7 +47,7 @@ class Influx2DatabaseTest {
     public void given_query_that_returns_multiple_rows_get_valid_query_result() throws Exception {
         instance.connect().get();
         Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.MULTIPLE_ROWS_QUERY,
-                new QueryParameters(), null);
+                QueryParameters.EMPTY, null);
         var future = instance.executeQuery(query);
         var queryResult = future.get();
 
@@ -64,7 +64,7 @@ class Influx2DatabaseTest {
     @Test
     public void given_query_that_returns_error_get_erroneus_result() throws Exception {
         instance.connect().get();
-        Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.INVALID_QUERY, new QueryParameters(),
+        Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.INVALID_QUERY, QueryParameters.EMPTY,
                 null);
         var future = instance.executeQuery(query);
         var queryResult = future.get();
@@ -77,7 +77,7 @@ class Influx2DatabaseTest {
     @Test
     public void given_query_that_returns_no_rows_get_empty_result() throws Exception {
         instance.connect().get();
-        Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.EMPTY_QUERY, new QueryParameters(),
+        Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.EMPTY_QUERY, QueryParameters.EMPTY,
                 null);
         var future = instance.executeQuery(query);
         var queryResult = future.get();
@@ -89,7 +89,7 @@ class Influx2DatabaseTest {
 
     @Test
     public void given_not_connected_client_should_get_incorrect_query() {
-        Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.SCALAR_QUERY, new QueryParameters(),
+        Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.SCALAR_QUERY, QueryParameters.EMPTY,
                 null);
         var future = instance.executeQuery(query);
         assertThat(future.isCompletedExceptionally(), is(Boolean.TRUE));

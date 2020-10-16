@@ -28,10 +28,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.dbquery.action.DBQueryActions;
 import org.openhab.binding.dbquery.internal.config.QueryConfiguration;
+import org.openhab.binding.dbquery.internal.domain.DBQueryJSONEncoder;
 import org.openhab.binding.dbquery.internal.domain.Database;
 import org.openhab.binding.dbquery.internal.domain.QueryParameters;
 import org.openhab.binding.dbquery.internal.domain.QueryResult;
 import org.openhab.binding.dbquery.internal.domain.ResultValue;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -65,6 +68,7 @@ public class QueryHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture scheduledQueryExecutionInterval;
     private @Nullable QueryResultChannelUpdater queryResultChannelUpdater;
     private Database database = Database.EMPTY;
+    private DBQueryJSONEncoder jsonEncoder = new DBQueryJSONEncoder();
 
     private @Nullable QueryExecution currentQueryExecution;
     private QueryResult lastQueryResult = QueryResult.NO_RESULT;
@@ -74,7 +78,6 @@ public class QueryHandler extends BaseThingHandler {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void initialize() {
         logger.trace("initialize query handler for {}", getQueryIdentifier());
         config = getConfigAs(QueryConfiguration.class);
@@ -86,7 +89,7 @@ public class QueryHandler extends BaseThingHandler {
 
     private void initQueryResultChannelUpdater() {
         ChannelStateUpdater channelStateUpdater = (channel, state) -> updateState(channel.getUID(), state);
-        queryResultChannelUpdater = new QueryResultChannelUpdater(channelStateUpdater, this::getChannels2Update);
+        queryResultChannelUpdater = new QueryResultChannelUpdater(channelStateUpdater, this::getResultChannels2Update);
     }
 
     private void scheduleQueryExecutionIntervalIfNeeded() {
@@ -148,6 +151,7 @@ public class QueryHandler extends BaseThingHandler {
             if (config.isHasParameters()) {
                 logger.trace("{} triggered to set parameters for {}", TRIGGER_CHANNEL_CALCULATE_PARAMETERS,
                         currentQueryExecution);
+                updateParametersChannel(QueryParameters.EMPTY);
                 triggerChannel(TRIGGER_CHANNEL_CALCULATE_PARAMETERS);
             } else {
                 currentQueryExecution.execute();
@@ -170,13 +174,24 @@ public class QueryHandler extends BaseThingHandler {
         var currentQueryResultChannelUpdater = queryResultChannelUpdater;
         if (currentQueryResultChannelUpdater != null) {
             ResultValue resultValue = queryResultExtractor.extractResult(queryResult);
-            if (resultValue.isCorrect())
+            updateCorrectChannel(resultValue.isCorrect());
+            updateParametersChannel(currentQueryExecution.getQueryParameters());
+            if (resultValue.isCorrect()) {
                 currentQueryResultChannelUpdater.updateChannelResults(resultValue.getResult());
-            else
+            } else {
                 currentQueryResultChannelUpdater.clearChannelResults();
+            }
         } else {
             logger.warn("QueryResult discarded as queryResultChannelUpdater is not expected to be null");
         }
+    }
+
+    private void updateCorrectChannel(boolean correct) {
+        updateState(DBQueryBindingConstants.CHANNEL_CORRECT, OnOffType.from(correct));
+    }
+
+    private void updateParametersChannel(QueryParameters queryParameters) {
+        updateState(DBQueryBindingConstants.CHANNEL_PARAMETERS, new StringType(jsonEncoder.encode(queryParameters)));
     }
 
     private void updateStateWithParentBridgeStatus() {
@@ -219,7 +234,8 @@ public class QueryHandler extends BaseThingHandler {
     public void setParameters(Map<String, @Nullable Object> parameters) {
         final @Nullable QueryExecution queryExecution = currentQueryExecution;
         if (queryExecution != null) {
-            queryExecution.setQueryParameters(new QueryParameters(parameters));
+            QueryParameters queryParameters = new QueryParameters(parameters);
+            queryExecution.setQueryParameters(queryParameters);
             queryExecution.execute();
         } else {
             logger.trace("setParameters ignored as there is any executing query for {}", getQueryIdentifier());
@@ -245,9 +261,12 @@ public class QueryHandler extends BaseThingHandler {
         return lastQueryResult;
     }
 
-    private List<Channel> getChannels2Update() {
+    private List<Channel> getResultChannels2Update() {
         return getThing().getChannels().stream().filter(channel -> isLinked(channel.getUID()))
-                // .filter(channel -> channel.getUID())
-                .collect(Collectors.toList());
+                .filter(this::isResultChannel).collect(Collectors.toList());
+    }
+
+    private boolean isResultChannel(Channel channel) {
+        return channel.getChannelTypeUID().getId().startsWith("result");
     }
 }

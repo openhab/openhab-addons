@@ -1,5 +1,6 @@
 package org.openhab.binding.dbquery.internal.domain;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,10 @@ public class QueryParameters {
 
     public @Nullable Object getParameter(String paramName) {
         return params.get(paramName);
+    }
+
+    public Map<String,@Nullable Object> getAll() {
+        return Collections.unmodifiableMap(params);
     }
 
     public int size() {

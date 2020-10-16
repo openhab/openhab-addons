@@ -17,7 +17,7 @@ public class QueryExecution {
     private final String queryString;
     private final QueryConfiguration queryConfiguration;
 
-    private QueryParameters queryParameters = new QueryParameters();
+    private QueryParameters queryParameters;
     private @Nullable QueryResultListener queryResultListener;
 
     public QueryExecution(Database database, QueryConfiguration queryConfiguration,
@@ -26,7 +26,7 @@ public class QueryExecution {
         this.queryString = queryConfiguration.getQuery();
         this.queryConfiguration = queryConfiguration;
         this.queryResultListener = queryResultListener;
-        this.queryParameters = new QueryParameters();
+        this.queryParameters = QueryParameters.EMPTY;
     }
 
     public void setQueryParameters(QueryParameters queryParameters) {
@@ -56,6 +56,10 @@ public class QueryExecution {
 
     public void cancel() {
         queryResultListener = null;
+    }
+
+    public QueryParameters getQueryParameters() {
+        return queryParameters;
     }
 
     public interface QueryResultListener {
