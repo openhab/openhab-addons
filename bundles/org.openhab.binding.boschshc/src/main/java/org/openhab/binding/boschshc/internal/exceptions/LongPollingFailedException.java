@@ -10,10 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.bridge;
+package org.openhab.binding.boschshc.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 
 /**
  * Thrown if the long polling failed

@@ -28,6 +28,7 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollError;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
