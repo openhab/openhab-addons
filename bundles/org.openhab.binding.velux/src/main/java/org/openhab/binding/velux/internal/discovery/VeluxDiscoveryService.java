@@ -143,6 +143,7 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withProperty(VeluxBindingProperties.PROPERTY_BINDING_BUNDLEVERSION,
                         ManifestInformation.getBundleVersion())
+                .withRepresentationProperty(VeluxBindingProperties.PROPERTY_BINDING_BUNDLEVERSION)
                 .withLabel(localization.getText("discovery.velux.binding...label")).build();
         logger.debug("startScan(): registering new thing {}.", discoveryResult);
         thingDiscovered(discoveryResult);
