@@ -202,7 +202,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                 .withLabel(unit.getName())
                 .withBridge(bridgeUID)
                 .withProperties(properties)
-                .withRepresentationProperty("id")
+                .withRepresentationProperty(HANDLER_PROPERTIES_ID)
                 .build()
         );
         // @formatter:on
