@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.openhab.binding.dmx.action.DmxActions;
+import org.openhab.binding.dmx.internal.action.DmxActions;
 import org.openhab.binding.dmx.internal.action.FadeAction;
 import org.openhab.binding.dmx.internal.action.ResumeAction;
 import org.openhab.binding.dmx.internal.config.DmxBridgeHandlerConfiguration;

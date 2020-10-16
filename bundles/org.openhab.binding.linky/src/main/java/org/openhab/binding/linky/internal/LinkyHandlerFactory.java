@@ -14,10 +14,15 @@ package org.openhab.binding.linky.internal;
 
 import static org.openhab.binding.linky.internal.LinkyBindingConstants.THING_TYPE_LINKY;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -27,6 +32,10 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+
 /**
  * The {@link LinkyHandlerFactory} is responsible for creating things handlers.
  *
@@ -35,25 +44,33 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
-
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private final LocaleProvider localeProvider;
+    private final Gson gson;
+    private final HttpClient httpClient;
 
     @Activate
-    public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider) {
+    public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
+            final @Reference HttpClientFactory httpClientFactory) {
         this.localeProvider = localeProvider;
+        this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID);
+        this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
+                (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                        .parse(json.getAsJsonPrimitive().getAsString(), formatter))
+                .create();
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return thingTypeUID.equals(THING_TYPE_LINKY);
+        return THING_TYPE_LINKY.equals(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_LINKY)) {
-            return new LinkyHandler(thing, localeProvider);
+        if (supportsThingType(thingTypeUID)) {
+            return new LinkyHandler(thing, localeProvider, gson, httpClient);
         }
 
         return null;

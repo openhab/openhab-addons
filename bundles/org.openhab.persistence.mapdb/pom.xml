@@ -14,6 +14,10 @@
 
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: MapDB</name>
 
+  <properties>
+    <bnd.importpackage>org.openhab.core.library.types</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.mapdb</groupId>

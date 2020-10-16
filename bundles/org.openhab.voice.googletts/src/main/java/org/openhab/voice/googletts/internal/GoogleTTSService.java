@@ -129,7 +129,7 @@ public class GoogleTTSService implements TTSService {
         if (!cacheFolder.exists()) {
             cacheFolder.mkdirs();
         }
-        logger.info("Using cache folder {}", cacheFolder.getAbsolutePath());
+        logger.debug("Using cache folder {}", cacheFolder.getAbsolutePath());
 
         apiImpl = new GoogleCloudAPI(configAdmin, oAuthFactory, cacheFolder);
         updateConfig(config);

@@ -15,8 +15,7 @@ package org.openhab.binding.xmppclient.internal;
 import java.util.Collections;
 import java.util.Set;
 
-import org.openhab.binding.xmppclient.XMPPClientBindingConstants;
-import org.openhab.binding.xmppclient.handler.XMPPClientHandler;
+import org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;

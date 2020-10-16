@@ -32,7 +32,7 @@ import org.openhab.binding.onkyo.internal.OnkyoConnection;
 import org.openhab.binding.onkyo.internal.OnkyoEventListener;
 import org.openhab.binding.onkyo.internal.OnkyoStateDescriptionProvider;
 import org.openhab.binding.onkyo.internal.ServiceType;
-import org.openhab.binding.onkyo.internal.automation.modules.OnkyoThingActionsService;
+import org.openhab.binding.onkyo.internal.automation.modules.OnkyoThingActions;
 import org.openhab.binding.onkyo.internal.config.OnkyoDeviceConfiguration;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
@@ -910,6 +910,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(OnkyoThingActionsService.class);
+        return Collections.singletonList(OnkyoThingActions.class);
     }
 }

@@ -40,6 +40,8 @@ public class AirVisualNodeBindingConstants {
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_AQI_US = "aqi";
     public static final String CHANNEL_PM_25 = "pm_25";
+    public static final String CHANNEL_PM_10 = "pm_10";
+    public static final String CHANNEL_PM_01 = "pm_01";
     public static final String CHANNEL_TEMP_CELSIUS = "temperature";
     public static final String CHANNEL_TIMESTAMP = "timestamp";
     public static final String CHANNEL_USED_MEMORY = "used_memory";
@@ -53,7 +55,8 @@ public class AirVisualNodeBindingConstants {
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_AVNODE)));
 
     // List of all supported Channel ids
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Collections.unmodifiableSet(new HashSet<>(
-            Arrays.asList(CHANNEL_CO2, CHANNEL_HUMIDITY, CHANNEL_AQI_US, CHANNEL_PM_25, CHANNEL_TEMP_CELSIUS,
-                    CHANNEL_BATTERY_LEVEL, CHANNEL_WIFI_STRENGTH, CHANNEL_TIMESTAMP, CHANNEL_USED_MEMORY)));
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_CO2, CHANNEL_HUMIDITY, CHANNEL_AQI_US, CHANNEL_PM_25,
+                    CHANNEL_PM_10, CHANNEL_PM_01, CHANNEL_TEMP_CELSIUS, CHANNEL_BATTERY_LEVEL, CHANNEL_WIFI_STRENGTH,
+                    CHANNEL_TIMESTAMP, CHANNEL_USED_MEMORY)));
 }

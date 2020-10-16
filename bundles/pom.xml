@@ -485,47 +485,6 @@
   </build>
 
   <profiles>
-    <!-- remove unused classes / shrink jar -->
-    <profile>
-      <id>shrink-bundle</id>
-      <activation>
-        <file>
-          <exists>shrinkBundle.profile</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.wvengen</groupId>
-            <artifactId>proguard-maven-plugin</artifactId>
-            <version>2.1.1</version>
-            <executions>
-              <execution>
-                <id>shrink-bundle</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>proguard</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <obfuscate>false</obfuscate>
-              <injarNotExistsSkip>true</injarNotExistsSkip>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <libs>
-                <lib>${java.home}/lib/rt.jar</lib>
-              </libs>
-              <options>
-                <option>-dontwarn</option>
-                <option>-dontnote</option>
-                <option>-keep,includedescriptorclasses public class org.openhab.** { *; }</option>
-                <option>-printusage ${project.build.directory}/shrink_log.txt</option>
-              </options>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <!-- suppress embedding of dependencies -->
     <profile>
       <id>no-embed-dependencies</id>

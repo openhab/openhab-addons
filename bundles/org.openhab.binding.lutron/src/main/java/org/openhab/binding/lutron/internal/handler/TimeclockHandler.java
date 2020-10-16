@@ -20,7 +20,8 @@ import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.TimeclockCommand;
+import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
@@ -40,14 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TimeclockHandler extends LutronHandler {
-    private static final Integer ACTION_CLOCKMODE = 1;
-    private static final Integer ACTION_SUNRISE = 2;
-    private static final Integer ACTION_SUNSET = 3;
-    private static final Integer ACTION_EXECEVENT = 5;
-    private static final Integer ACTION_SETEVENT = 6;
-    private static final Integer EVENT_ENABLE = 1;
-    private static final Integer EVENT_DISABLE = 2;
-
     private final Logger logger = LoggerFactory.getLogger(TimeclockHandler.class);
 
     private int integrationId;
@@ -81,7 +74,8 @@ public class TimeclockHandler extends LutronHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
-            queryTimeclock(ACTION_CLOCKMODE); // handleUpdate() will set thing status to online when response arrives
+            queryTimeclock(TimeclockCommand.ACTION_CLOCKMODE);
+            // handleUpdate() will set thing status to online when response arrives
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -91,7 +85,7 @@ public class TimeclockHandler extends LutronHandler {
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("Handling channel link request for timeclock {}", integrationId);
         if (channelUID.getId().equals(CHANNEL_CLOCKMODE)) {
-            queryTimeclock(ACTION_CLOCKMODE);
+            queryTimeclock(TimeclockCommand.ACTION_CLOCKMODE);
         }
     }
 
@@ -103,42 +97,42 @@ public class TimeclockHandler extends LutronHandler {
         if (channelUID.getId().equals(CHANNEL_CLOCKMODE)) {
             if (command instanceof DecimalType) {
                 Integer mode = ((DecimalType) command).intValue();
-                timeclock(ACTION_CLOCKMODE, mode);
+                timeclock(TimeclockCommand.ACTION_CLOCKMODE, mode, null);
             } else if (command instanceof RefreshType) {
-                queryTimeclock(ACTION_CLOCKMODE);
+                queryTimeclock(TimeclockCommand.ACTION_CLOCKMODE);
             } else {
                 logger.debug("Invalid command type for clockmode channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_EXECEVENT)) {
             if (command instanceof DecimalType) {
                 Integer index = ((DecimalType) command).intValue();
-                timeclock(ACTION_EXECEVENT, index);
+                timeclock(TimeclockCommand.ACTION_EXECEVENT, index, null);
             } else {
                 logger.debug("Invalid command type for execevent channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_SUNRISE)) {
             if (command instanceof RefreshType) {
-                queryTimeclock(ACTION_SUNRISE);
+                queryTimeclock(TimeclockCommand.ACTION_SUNRISE);
             } else {
                 logger.debug("Invalid command type for sunrise channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_SUNSET)) {
             if (command instanceof RefreshType) {
-                queryTimeclock(ACTION_SUNSET);
+                queryTimeclock(TimeclockCommand.ACTION_SUNSET);
             } else {
                 logger.debug("Invalid command type for sunset channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_ENABLEEVENT)) {
             if (command instanceof DecimalType) {
                 Integer index = ((DecimalType) command).intValue();
-                timeclock(ACTION_SETEVENT, index, EVENT_ENABLE);
+                timeclock(TimeclockCommand.ACTION_SETEVENT, index, true);
             } else {
                 logger.debug("Invalid command type for enableevent channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_DISABLEEVENT)) {
             if (command instanceof DecimalType) {
                 Integer index = ((DecimalType) command).intValue();
-                timeclock(ACTION_SETEVENT, index, EVENT_DISABLE);
+                timeclock(TimeclockCommand.ACTION_SETEVENT, index, false);
             } else {
                 logger.debug("Invalid command type for disableevent channnel");
             }
@@ -172,37 +166,37 @@ public class TimeclockHandler extends LutronHandler {
         logger.debug("Handling update received from timeclock {}", integrationId);
 
         try {
-            if (parameters.length >= 2 && ACTION_CLOCKMODE.toString().equals(parameters[0])) {
+            if (parameters.length >= 2 && TimeclockCommand.ACTION_CLOCKMODE.toString().equals(parameters[0])) {
                 Integer mode = Integer.valueOf(parameters[1]);
                 if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                     updateStatus(ThingStatus.ONLINE);
                 }
                 updateState(CHANNEL_CLOCKMODE, new DecimalType(mode));
 
-            } else if (parameters.length >= 2 && ACTION_SUNRISE.toString().equals(parameters[0])) {
+            } else if (parameters.length >= 2 && TimeclockCommand.ACTION_SUNRISE.toString().equals(parameters[0])) {
                 Calendar calendar = parseLutronTime(parameters[1]);
                 if (calendar != null) {
                     updateState(CHANNEL_SUNRISE,
                             new DateTimeType(ZonedDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault())));
                 }
 
-            } else if (parameters.length >= 2 && ACTION_SUNSET.toString().equals(parameters[0])) {
+            } else if (parameters.length >= 2 && TimeclockCommand.ACTION_SUNSET.toString().equals(parameters[0])) {
                 Calendar calendar = parseLutronTime(parameters[1]);
                 if (calendar != null) {
                     updateState(CHANNEL_SUNSET,
                             new DateTimeType(ZonedDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault())));
                 }
 
-            } else if (parameters.length >= 2 && ACTION_EXECEVENT.toString().equals(parameters[0])) {
+            } else if (parameters.length >= 2 && TimeclockCommand.ACTION_EXECEVENT.toString().equals(parameters[0])) {
                 Integer index = Integer.valueOf(parameters[1]);
                 updateState(CHANNEL_EXECEVENT, new DecimalType(index));
 
-            } else if (parameters.length >= 3 && ACTION_SETEVENT.toString().equals(parameters[0])) {
+            } else if (parameters.length >= 3 && TimeclockCommand.ACTION_SETEVENT.toString().equals(parameters[0])) {
                 Integer index = Integer.valueOf(parameters[1]);
                 Integer state = Integer.valueOf(parameters[2]);
-                if (state.equals(EVENT_ENABLE)) {
+                if (state.equals(TimeclockCommand.EVENT_ENABLE)) {
                     updateState(CHANNEL_ENABLEEVENT, new DecimalType(index));
-                } else if (state.equals(EVENT_DISABLE)) {
+                } else if (state.equals(TimeclockCommand.EVENT_DISABLE)) {
                     updateState(CHANNEL_DISABLEEVENT, new DecimalType(index));
                 }
             }
