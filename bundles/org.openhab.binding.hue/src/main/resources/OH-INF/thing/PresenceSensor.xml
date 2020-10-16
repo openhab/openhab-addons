@@ -15,6 +15,7 @@
 		<channels>
 			<channel id="presence" typeId="system.motion"/>
 			<channel id="last_updated" typeId="last_updated"/>
+			<channel id="enabled" typeId="system.power"/>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
