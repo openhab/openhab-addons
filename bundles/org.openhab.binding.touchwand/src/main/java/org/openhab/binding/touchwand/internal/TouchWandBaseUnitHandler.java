@@ -14,8 +14,6 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,9 +47,8 @@ import com.google.gson.JsonParser;
 public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implements TouchWandUnitUpdateListener {
 
     protected final Logger logger = LoggerFactory.getLogger(TouchWandBaseUnitHandler.class);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER));
-
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SHUTTER, THING_TYPE_SWITCH,
+            THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER);
     protected String unitId = "";
 
     @Nullable
