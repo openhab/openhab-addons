@@ -50,10 +50,6 @@ public class TouchWandRestClient {
 
     static CookieManager cookieManager = new CookieManager();
 
-    private String touchWandIpAddr = "";
-    private String touchWandPort = "";
-    private boolean isConnected = false;
-
     private static final HttpMethod METHOD_GET = HttpMethod.GET;
     private static final HttpMethod METHOD_POST = HttpMethod.POST;
 
@@ -84,6 +80,9 @@ public class TouchWandRestClient {
         COMMAND_MAP.put(CMD_GET_UNIT_BY_ID, "/units/getUnitByID?");
     }
 
+    private String touchWandIpAddr = "";
+    private String touchWandPort = "";
+    private boolean isConnected = false;
     private HttpClient httpClient;
 
     public TouchWandRestClient(HttpClient httpClient) {
