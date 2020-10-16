@@ -138,7 +138,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    protected synchronized void stopScan() {
+    protected void stopScan() {
         removeOlderResults(getTimestampOfLastScan());
         super.stopScan();
     }
