@@ -15,12 +15,11 @@ package org.openhab.binding.touchwand.internal.discovery;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -64,7 +63,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> scanningJob;
-    private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
+    private CopyOnWriteArraySet<TouchWandUnitStatusUpdateListener> listeners = new CopyOnWriteArraySet<>();
 
     public TouchWandUnitDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
@@ -174,14 +173,14 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    public synchronized void registerListener(TouchWandUnitStatusUpdateListener listener) {
+    public void registerListener(TouchWandUnitStatusUpdateListener listener) {
         if (!listeners.contains(listener)) {
             logger.debug("Adding TouchWandWebSocket listener {}", listener);
             listeners.add(listener);
         }
     }
 
-    public synchronized void unregisterListener(TouchWandUnitStatusUpdateListener listener) {
+    public void unregisterListener(TouchWandUnitStatusUpdateListener listener) {
         logger.debug("Removing TouchWandWebSocket listener {}", listener);
         listeners.remove(listener);
     }
