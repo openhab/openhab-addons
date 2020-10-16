@@ -20,6 +20,12 @@ import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 
+/**
+ * The {@link InverterStatus} describes
+ * possible values for an inverter's status field
+ *
+ * @author Stanislaw Wawszczak - Initial contribution
+ */
 @NonNullByDefault
 public final class ModbusParser {
 

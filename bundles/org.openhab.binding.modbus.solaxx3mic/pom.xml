@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.modbus.solaxx3mic</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: modbus.SolaxX3Mic Binding</name>
+  <name>openHAB Add-ons :: Bundles :: SolaxX3Mic Binding</name>
 
   <dependencies>
     <dependency>

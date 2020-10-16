@@ -20,22 +20,22 @@
 			</channel-group>
 			<channel-group id="acGeneral" typeId="ac-general">
 				<label>Production Summary</label>
-			</cahnnel-group>
-				<channel-group id="acPhaseA" typeId="ac-phase">
-					<label>AC Phase A (L1)</label>
-				</channel-group>
-				<channel-group id="acPhaseB" typeId="ac-phase">
-					<label>AC Phase B (L2)</label>
-				</channel-group>
-				<channel-group id="acPhaseC" typeId="ac-phase">
-					<label>AC Phase C (L3)</label>
-				</channel-group>
-				<channel-group id="dcGeneral1" typeId="dc-general">
-					<label>DC Chain 1</label>
-				</channel-group>
-				<channel-group id="dcGeneral2" typeId="dc-general">
-					<label>DC Chain 2</label>
-				</channel-group>
+			</channel-group>
+			<channel-group id="acPhaseA" typeId="ac-phase">
+				<label>AC Phase A (L1)</label>
+			</channel-group>
+			<channel-group id="acPhaseB" typeId="ac-phase">
+				<label>AC Phase B (L2)</label>
+			</channel-group>
+			<channel-group id="acPhaseC" typeId="ac-phase">
+				<label>AC Phase C (L3)</label>
+			</channel-group>
+			<channel-group id="dcGeneral1" typeId="dc-general">
+				<label>DC Chain 1</label>
+			</channel-group>
+			<channel-group id="dcGeneral2" typeId="dc-general">
+				<label>DC Chain 2</label>
+			</channel-group>
 		</channel-groups>
 
 		<properties>

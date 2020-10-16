@@ -13,7 +13,6 @@
 package org.openhab.binding.modbus.solaxx3mic.internal;
 
 import static org.openhab.binding.modbus.solaxx3mic.internal.SolaxX3MicBindingConstants.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -155,18 +154,20 @@ public class SolaxX3MicHandler extends BaseThingHandler {
      * Load configuration from main configuration
      */
     private @Nullable RegisterBlock getRegisterBlockFromConfig(RegisterBlockFunction function) {
-        if (config == null) {
+        SolaxX3MicConfiguration myconfig = config; // this is because of bug in Nullness checker
+        // without local reference, there is an warning about potential null access
+        if (myconfig == null) {
             return null;
         }
         int blockAddress = 0;
         int blockLength = 0;
         if (function == RegisterBlockFunction.INPUT_REGISTER_BLOCK) {
-            blockAddress = config.inputAddress;
-            blockLength = config.inputBlockLength;
+            blockAddress = myconfig.inputAddress;
+            blockLength = myconfig.inputBlockLength;
         }
         if (function == RegisterBlockFunction.HOLDING_REGISTER_BLOCK) {
-            blockAddress = config.holdingAddress;
-            blockLength = config.holdingBlockLength;
+            blockAddress = myconfig.holdingAddress;
+            blockLength = myconfig.holdingBlockLength;
         }
         return new RegisterBlock(blockAddress, blockLength, function);
     }
@@ -295,17 +296,21 @@ public class SolaxX3MicHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             throw new IllegalStateException("pollTask should be unregistered before registering a new one!");
         }
-        if (config == null || comms == null) {
+        // this must be because of Nullable checker bug.
+        SolaxX3MicConfiguration myconfig = config;
+        // this must be because of Nullable checker bug.
+        ModbusCommunicationInterface mycomms = comms;
+        if (myconfig == null || mycomms == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");
         }
 
         logger.debug("Setting up regular polling");
 
         ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length, config.maxTries);
+                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
 
-        long refreshMillis = config.getRefreshMillis();
-        pollTask = comms.registerRegularPoll(request, refreshMillis, 1000, result -> {
+        long refreshMillis = myconfig.getRefreshMillis();
+        pollTask = mycomms.registerRegularPoll(request, refreshMillis, 1000, result -> {
             result.getRegisters().ifPresent(this::handlePolledData);
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);

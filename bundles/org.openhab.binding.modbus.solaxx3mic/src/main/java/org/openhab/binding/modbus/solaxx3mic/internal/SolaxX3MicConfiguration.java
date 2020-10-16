@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.modbus.solaxx3mic.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link modbus.SolaxX3MicConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link modbus.SolaxX3MicConfiguration} class contains fields mapping
+ * thing configuration parameters.
  *
  * @author Stanislaw Wawszczak - Initial contribution
  */
+@NonNullByDefault
 public class SolaxX3MicConfiguration {
 
     public int refresh = 1;

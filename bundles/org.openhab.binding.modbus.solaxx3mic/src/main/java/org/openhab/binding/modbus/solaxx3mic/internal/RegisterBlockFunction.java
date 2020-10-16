@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.modbus.solaxx3mic.internal;
 
+/**
+ * The {@link RegisterBlockFunction} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Stanislaw Wawszczak - Initial contribution
+ */
 public enum RegisterBlockFunction {
     INPUT_REGISTER_BLOCK(3),
     HOLDING_REGISTER_BLOCK(4);

@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.modbus.solaxx3mic.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link RegisterBlock} describes possible values for an inverter's status
+ * field
+ *
+ * @author Stanislaw Wawszczak - Initial contribution
+ */
+@NonNullByDefault
 public class RegisterBlock {
     public int address;
     public int length;
