@@ -64,7 +64,7 @@ public class TouchWandWebSockets {
     private @Nullable ScheduledFuture<?> socketReconnect;
     private @Nullable URI uri;
 
-    ScheduledExecutorService scheduler;
+    private ScheduledExecutorService scheduler;
 
     public TouchWandWebSockets(String ipAddress, ScheduledExecutorService scheduler) {
         client = new WebSocketClient();
