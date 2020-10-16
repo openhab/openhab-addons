@@ -152,7 +152,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void deactivate() {
-        removeOlderResults(System.currentTimeMillis(), touchWandBridgeHandler.getThing().getUID());
+        removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
         super.deactivate();
     }
 
