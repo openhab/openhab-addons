@@ -54,7 +54,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
 
     public TouchWandControllerDiscoveryService() throws SocketException {
         super(TouchWandBridgeHandler.SUPPORTED_THING_TYPES, SEARCH_TIME_SEC, true);
-        removeOlderResults(getTimestampOfLastScan());
+
         listenSocket = new DatagramSocket(TOUCHWAND_BCAST_PORT);
     }
 
@@ -65,8 +65,14 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
     }
 
     @Override
-    protected synchronized void stopScan() {
+    protected void stopScan() {
         super.stopScan();
+    }
+
+    @Override
+    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+        removeOlderResults(getTimestampOfLastScan());
+        super.activate(configProperties);
     }
 
     @Override
