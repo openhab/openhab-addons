@@ -178,12 +178,13 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
             if (msg instanceof HttpContent) {
                 HttpContent content = (HttpContent) msg;
                 if (recievedBytes == 0) {
-                    incomingJpeg = content.content().array();
+                    incomingJpeg = new byte[content.content().readableBytes()];
+                    content.content().getBytes(0, incomingJpeg, 0, content.content().readableBytes());
                 } else {
                     byte[] temp = incomingJpeg;
-                    incomingJpeg = new byte[recievedBytes + content.content().capacity()];
+                    incomingJpeg = new byte[recievedBytes + content.content().readableBytes()];
                     System.arraycopy(temp, 0, incomingJpeg, 0, temp.length);
-                    System.arraycopy(content.content().array(), 0, incomingJpeg, recievedBytes, content.content().capacity());
+                    content.content().getBytes(0, incomingJpeg, temp.length, content.content().readableBytes());
                 }
                 recievedBytes = incomingJpeg.length;
                 if (content instanceof LastHttpContent) {
