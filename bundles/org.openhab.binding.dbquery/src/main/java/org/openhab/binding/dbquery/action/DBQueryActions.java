@@ -44,12 +44,12 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
 
     @Override
     public void activate() {
-        logger.info("activate actions");
+        logger.trace("activate actions");
     }
 
     @Override
     public void deactivate() {
-        logger.info("deactivate actions");
+        logger.trace("deactivate actions");
     }
 
     @Override
