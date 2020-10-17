@@ -17,8 +17,6 @@ import org.openhab.binding.dbquery.internal.dbimpl.influx2.Influx2Database;
 import org.openhab.binding.dbquery.internal.dbimpl.influx2.InfluxDBClientFacadeImpl;
 import org.openhab.binding.dbquery.internal.domain.Database;
 import org.openhab.core.thing.Bridge;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Concrete implementation of {@link DatabaseBridgeHandler} for Influx2
@@ -26,7 +24,6 @@ import org.slf4j.LoggerFactory;
  * @author Joan Pujol - Initial contribution
  */
 public class InfluxDB2BridgeHandler extends DatabaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(InfluxDB2BridgeHandler.class);
     private InfluxDB2BridgeConfiguration config = new InfluxDB2BridgeConfiguration();
 
     public InfluxDB2BridgeHandler(Bridge bridge) {

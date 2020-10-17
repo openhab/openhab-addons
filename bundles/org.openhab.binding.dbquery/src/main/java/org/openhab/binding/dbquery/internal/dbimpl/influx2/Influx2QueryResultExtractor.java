@@ -41,8 +41,7 @@ public class Influx2QueryResultExtractor implements Function<List<FluxRecord>, Q
 
     private static ResultRow mapRecord2Row(FluxRecord record) {
         Map<String, @Nullable Object> values = record.getValues().entrySet().stream()
-                .filter(entry -> !Set.of("result", "table").contains(entry.getKey())) // TODO: Change and use a
-                                                                                      // fieldName for scalar extraction
+                .filter(entry -> !Set.of("result", "table").contains(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         return new ResultRow(values);

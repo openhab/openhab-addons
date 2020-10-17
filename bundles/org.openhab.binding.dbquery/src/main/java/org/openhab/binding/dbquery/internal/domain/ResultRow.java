@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ResultRow {
-    private static Logger logger = LoggerFactory.getLogger(ResultRow.class);
+    private static final Logger logger = LoggerFactory.getLogger(ResultRow.class);
 
     private final LinkedHashMap<String, @Nullable Object> values;
 

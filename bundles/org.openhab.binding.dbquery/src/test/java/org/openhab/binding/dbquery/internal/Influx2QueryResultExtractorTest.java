@@ -37,11 +37,12 @@ class Influx2QueryResultExtractorTest {
             .of(new ResultRow(Map.of("valueName", "value1", "column2", "value2")));
     public static final QueryResult INCORRECT_RESULT = QueryResult.ofIncorrectResult("Incorrect result");
 
-    private static QueryConfiguration scalarValueConfig = new QueryConfiguration("query", 10, 10, true, null, false);
-    private static QueryConfiguration nonScalarValueConfig = new QueryConfiguration("query", 10, 10, false, null,
+    private static final QueryConfiguration scalarValueConfig = new QueryConfiguration("query", 10, 10, true, null,
             false);
-    private static QueryConfiguration scalarValueConfigWithScalarColumn = new QueryConfiguration("query", 10, 10, true,
-            "valueName", false);
+    private static final QueryConfiguration nonScalarValueConfig = new QueryConfiguration("query", 10, 10, false, null,
+            false);
+    private static final QueryConfiguration scalarValueConfigWithScalarColumn = new QueryConfiguration("query", 10, 10,
+            true, "valueName", false);
 
     @Test
     void given_a_result_with_one_row_and_one_column_and_scalar_configuration_scalar_value_is_returned() {

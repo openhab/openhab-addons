@@ -29,9 +29,11 @@ public class JDBCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        // TODO: implement
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // TODO: implement
     }
 }

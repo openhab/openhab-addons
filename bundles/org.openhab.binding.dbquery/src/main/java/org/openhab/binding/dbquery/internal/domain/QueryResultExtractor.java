@@ -69,14 +69,14 @@ public class QueryResultExtractor {
                 if (oneColumn || config.isScalarColumnDefined()) {
                     valid = true;
                 } else {
-                    logger.warn(baseErrorMessage + "Columns size is {} and scalarColumn isn't defined",
+                    logger.warn("{} Columns size is {} and scalarColumn isn't defined", baseErrorMessage,
                             queryResult.getData().get(0).getColumnNames().size());
                 }
             } else {
-                logger.warn(baseErrorMessage + "Rows size is {}", queryResult.getData().size());
+                logger.warn("{} Rows size is {}", baseErrorMessage, queryResult.getData().size());
             }
         } else {
-            logger.debug(baseErrorMessage + " Incorrect result");
+            logger.debug("{} Incorrect result", baseErrorMessage);
         }
         return valid;
     }

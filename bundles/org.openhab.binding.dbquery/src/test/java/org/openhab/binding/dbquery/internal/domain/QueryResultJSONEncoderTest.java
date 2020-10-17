@@ -41,9 +41,9 @@ import com.google.gson.JsonParser;
  */
 class QueryResultJSONEncoderTest {
     public static final double TOLERANCE = 0.001d;
-    private DBQueryJSONEncoder instance = new DBQueryJSONEncoder();
-    private Gson gson = new Gson();
-    private JsonParser jsonParser = new JsonParser();
+    private final DBQueryJSONEncoder instance = new DBQueryJSONEncoder();
+    private final Gson gson = new Gson();
+    private final JsonParser jsonParser = new JsonParser();
 
     @Test
     public void given_query_result_is_serialized_to_json() {

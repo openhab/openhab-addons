@@ -64,7 +64,7 @@ public class Value2StateConverter {
                 @Nullable
                 Boolean bool = convert2Boolean(value);
                 if (bool != null)
-                    return convert2Boolean(value) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                    return bool ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 else
                     return UnDefType.NULL;
             } else {

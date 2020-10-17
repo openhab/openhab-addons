@@ -59,6 +59,7 @@ public class ExecuteNonConfiguredQuery {
                 return completableFuture.get(timeout.getSeconds(), TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.debug("Query was interrupted", e);
+            Thread.currentThread().interrupt();
             return QueryResult.ofIncorrectResult("Query execution was interrupted");
         } catch (ExecutionException e) {
             logger.warn("Error executing query", e);

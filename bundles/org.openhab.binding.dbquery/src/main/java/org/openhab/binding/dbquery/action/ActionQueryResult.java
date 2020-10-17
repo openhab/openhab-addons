@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class ActionQueryResult {
-    private boolean correct;
+    private final boolean correct;
     private List<Map<String, Object>> data = Collections.emptyList();
 
     public ActionQueryResult(boolean correct, @Nullable List<Map<String, Object>> data) {

@@ -18,8 +18,6 @@ import java.util.StringJoiner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Query result
@@ -28,7 +26,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class QueryResult {
-    private final Logger logger = LoggerFactory.getLogger(QueryResult.class);
     public static final QueryResult NO_RESULT = QueryResult.ofIncorrectResult("No result");
 
     private final boolean correct;

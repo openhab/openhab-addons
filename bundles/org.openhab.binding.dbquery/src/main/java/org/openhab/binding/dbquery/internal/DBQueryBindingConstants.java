@@ -47,4 +47,7 @@ public class DBQueryBindingConstants {
     public static final String RESULT_DATETIME_CHANNEL_TYPE = "result-channel-datetime";
     public static final String RESULT_CONTACT_CHANNEL_TYPE = "result-channel-contact";
     public static final String RESULT_SWITCH_CHANNEL_TYPE = "result-channel-switch";
+
+    private DBQueryBindingConstants() {
+    }
 }

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.dbquery", service = ThingHandlerFactory.class)
 public class DBQueryHandlerFactory extends BaseThingHandlerFactory {
-    private static Logger logger = LoggerFactory.getLogger(DBQueryHandlerFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(DBQueryHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INFLUXDB2_BRIDGE,
             THING_TYPE_JDBC_BRIDGE, THING_TYPE_QUERY);

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MockDatabase implements Database {
     private final Logger logger = LoggerFactory.getLogger(MockDatabase.class);
-    private MockQueryFactory mockQueryFactory = new MockQueryFactory();
+    private final MockQueryFactory mockQueryFactory = new MockQueryFactory();
 
     private boolean connected = false;
 

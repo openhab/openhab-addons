@@ -65,10 +65,10 @@ public class QueryHandler extends BaseThingHandler {
     private @NonNullByDefault({}) QueryConfiguration config;
     private @NonNullByDefault({}) QueryResultExtractor queryResultExtractor;
 
-    private @Nullable ScheduledFuture scheduledQueryExecutionInterval;
+    private @Nullable ScheduledFuture<?> scheduledQueryExecutionInterval;
     private @Nullable QueryResultChannelUpdater queryResultChannelUpdater;
     private Database database = Database.EMPTY;
-    private DBQueryJSONEncoder jsonEncoder = new DBQueryJSONEncoder();
+    private final DBQueryJSONEncoder jsonEncoder = new DBQueryJSONEncoder();
 
     private @Nullable QueryExecution currentQueryExecution;
     private QueryResult lastQueryResult = QueryResult.NO_RESULT;
@@ -107,7 +107,8 @@ public class QueryHandler extends BaseThingHandler {
     }
 
     private void cancelQueryExecutionIntervalIfNeeded() {
-        var currentFuture = scheduledQueryExecutionInterval;
+        @Nullable
+        ScheduledFuture<?> currentFuture = scheduledQueryExecutionInterval;
         if (currentFuture != null) {
             currentFuture.cancel(true);
         }
@@ -129,7 +130,6 @@ public class QueryHandler extends BaseThingHandler {
             if (CHANNEL_EXECUTE.equals(channelUID.getId())) {
                 executeQuery();
             }
-            // TODO: HAndle s'afageix un nou canal o sobreescriure on ChannelLinked
         } else {
             logger.debug("Query Thing can only handle RefreshType commands as the thing is read-only");
         }
@@ -172,6 +172,7 @@ public class QueryHandler extends BaseThingHandler {
 
     private void updateStateWithQueryResult(QueryResult queryResult) {
         var currentQueryResultChannelUpdater = queryResultChannelUpdater;
+        lastQueryResult = queryResult;
         if (currentQueryResultChannelUpdater != null) {
             ResultValue resultValue = queryResultExtractor.extractResult(queryResult);
             updateCorrectChannel(resultValue.isCorrect());
@@ -242,9 +243,8 @@ public class QueryHandler extends BaseThingHandler {
         }
     }
 
-    private final QueryExecution.QueryResultListener queryResultReceived = new QueryExecution.QueryResultListener() {
-        @Override
-        public synchronized void queryResultReceived(QueryResult queryResult) {
+    private final QueryExecution.QueryResultListener queryResultReceived = (QueryResult queryResult) -> {
+        synchronized (QueryHandler.this) {
             logger.trace("queryResultReceived for {} : {}", getQueryIdentifier(), queryResult);
             updateStateWithQueryResult(queryResult);
 

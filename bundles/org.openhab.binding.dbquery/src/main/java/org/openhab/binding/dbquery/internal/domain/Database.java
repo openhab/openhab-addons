@@ -34,7 +34,7 @@ public interface Database {
 
     CompletableFuture<QueryResult> executeQuery(Query query);
 
-    public static final Database EMPTY = new Database() {
+    Database EMPTY = new Database() {
         @Override
         public boolean isConnected() {
             return false;
