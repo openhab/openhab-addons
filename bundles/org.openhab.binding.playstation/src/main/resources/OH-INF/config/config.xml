@@ -27,7 +27,7 @@
 			<label>Pairing Code</label>
 			<description>Code to Pair openHAB Device to PlayStation 4. Only Needed During Pairing.</description>
 		</parameter>
-		<parameter name="connectionTimeout" type="integer" min="0">
+		<parameter name="connectionTimeout" type="integer" min="0" unit="s">
 			<label>Connection Timeout</label>
 			<description>How Many Seconds After the Last Command the Connection to the PS4 Closes Down. Use 0 to Never Close
 				Connection.</description>

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DiscoveryService.class, PlayStationDiscovery.class }, configurationPid = "binding.playstation")
+@Component(service = { DiscoveryService.class, PlayStationDiscovery.class }, configurationPid = "discovery.playstation")
 public class PlayStationDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(PlayStationDiscovery.class);

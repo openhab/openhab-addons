@@ -50,6 +50,7 @@ public class PS3Handler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PS3Handler.class);
     private static final int SOCKET_TIMEOUT_SECONDS = 2;
+    private boolean isDisposed = false;
 
     private PS3Configuration config = new PS3Configuration();
 
@@ -80,6 +81,7 @@ public class PS3Handler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        isDisposed = true;
         final ScheduledFuture<?> timer = refreshTimer;
         if (timer != null) {
             timer.cancel(false);
@@ -161,7 +163,7 @@ public class PS3Handler extends BaseThingHandler {
                 // try again
             }
             wakeSocket.send(wakePacket);
-            if (triesLeft <= 0) {
+            if (triesLeft <= 0 || isDisposed) {
                 logger.debug("PS3 not started!");
             } else {
                 scheduler.execute(() -> wakeMethod(srchPacket, receivePacket, wakePacket, triesLeft - 1));
