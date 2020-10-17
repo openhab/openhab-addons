@@ -58,4 +58,18 @@ public class LatencyParserTest {
             assertFalse(resultLatency.isPresent());
         }
     }
+
+    @Test
+    public void parseWindows10ResultFoundTest() {
+        // Arrange
+        LatencyParser latencyParser = new LatencyParser();
+        String input = "Reply from 192.168.178.207: bytes=32 time=2ms TTL=64";
+
+        // Act
+        Optional<Double> resultLatency = latencyParser.parseLatency(input);
+
+        // Assert
+        assertTrue(resultLatency.isPresent());
+        assertEquals(2, resultLatency.get(), 0);
+    }
 }
