@@ -4,7 +4,6 @@
 
 	<feature name="openhab-automation-groovyscripting" description="Groovy Scripting" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature dependency="true">openhab-core-automation-module-script-rulesupport</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.automation.groovyscripting/${project.version}</bundle>
 	</feature>
 </features>
