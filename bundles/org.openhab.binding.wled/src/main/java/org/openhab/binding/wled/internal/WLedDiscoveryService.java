@@ -51,7 +51,6 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
             logger.debug("WLED discovered with empty IP address-{}", service);
             return null;
         }
-        logger.info("WLED discovered at {}", address[0]);
         ThingTypeUID thingtypeuid = new ThingTypeUID("wled", "wled");
         ThingUID thingUID = new ThingUID(thingtypeuid,
                 address[0].substring(7, address[0].length() - 3).replace(".", "-"));
