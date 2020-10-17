@@ -41,6 +41,17 @@ If it fails to find your WLED, you can manually add a `wled` thing by using the 
 | `transformTime` | Dimmer | How long it takes to transform/morph from one look to the next. |
 | `sleep` | Switch | Turns on the sleep timer. |
 
+## Rule Actions
+
+This binding has a rule Action `savePreset(int presetNumber)` which can save the current state of the WLED string into a preset slot that you can specify.
+Currently 1 to 16 are valid preset slots.
+
+In Xtend rules, you can use the Actions like this.
+
+```
+getActions("wled", "wled:wled:XmasTree").savePreset(5)
+```
+
 ## Sitemap Example
 
 If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the below and just change the name before the underscore to match what you named the `wled` thing when it was added.
