@@ -14,6 +14,7 @@ package org.openhab.binding.ambientweather.internal.handler;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -109,11 +110,12 @@ public class AmbientWeatherEventListener {
     }
 
     private AmbientWeatherStationHandler getHandler(String macAddress) {
-        logger.debug("Listener: Search for MAC {} in handlers list with {} entries", macAddress, handlers.size());
+        logger.debug("Listener: Search for MAC {} in handlers list with {} entries: {}", macAddress, handlers.size(),
+                Arrays.asList(handlers.values()));
         for (Map.Entry<AmbientWeatherStationHandler, String> device : handlers.entrySet()) {
             AmbientWeatherStationHandler handler = device.getKey();
             String mac = device.getValue();
-            if (mac.equals(macAddress)) {
+            if (mac.equalsIgnoreCase(macAddress)) {
                 logger.debug("Listener: Found handler for {} with MAC {}", handler.getThing().getUID(), macAddress);
                 return handler;
             }
