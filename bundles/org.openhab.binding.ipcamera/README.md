@@ -128,9 +128,11 @@ Thing ipcamera:hikvision:West "West Camera"
 ## Discovery
 
 The discovery feature of openHAB can be used to find and setup any ONVIF cameras. 
-This method should be preferred as it will discover the camera, ports and URLs for you, making the setup much easier.
+This method should be preferred as it will discover the cameras IP, ports and URLs for you, making the setup much easier.
+The binding needs to use UDP port 3702 to discover the cameras with, so this port needs to be unblocked by your firewall or add the camera manually if the camera is not auto found.
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
-If your camera is not found after a few searches, it may not be ONVIF and in this case you will need to manually add via the UI your camera as a `generic` thing type and provide the URLs manually.
+If your camera is not found after a few searches, it may not be ONVIF and in this case you will need to manually add the camera via the UI.
+Cameras that are not ONVIF should be added as a `generic` thing type and you will need to provide the URLs manually.
 
 ## Supported Things
 
