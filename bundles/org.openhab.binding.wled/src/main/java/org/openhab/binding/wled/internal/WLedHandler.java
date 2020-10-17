@@ -62,11 +62,11 @@ public class WLedHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
-    private BigDecimal masterBrightness = new BigDecimal(0);
+    private BigDecimal masterBrightness = BigDecimal.ZERO;
     private HSBType primaryColor = new HSBType();
-    private BigDecimal primaryWhite = new BigDecimal(0);
+    private BigDecimal primaryWhite = BigDecimal.ZERO;
     private HSBType secondaryColor = new HSBType();
-    private BigDecimal secondaryWhite = new BigDecimal(0);
+    private BigDecimal secondaryWhite = BigDecimal.ZERO;
     private boolean hasWhite = false;
     private WLedConfiguration config;
 
@@ -353,7 +353,7 @@ public class WLedHandler extends BaseThingHandler {
                 break;
             case CHANNEL_INTENSITY:
                 if (OnOffType.OFF.equals(command)) {
-                    bigTemp = new BigDecimal(0);
+                    bigTemp = BigDecimal.ZERO;
                 } else if (OnOffType.ON.equals(command)) {
                     bigTemp = new BigDecimal(255);
                 } else {
@@ -373,7 +373,7 @@ public class WLedHandler extends BaseThingHandler {
                 break;
             case CHANNEL_PRESET_DURATION:
                 if (OnOffType.OFF.equals(command)) {
-                    bigTemp = new BigDecimal(0);
+                    bigTemp = BigDecimal.ZERO;
                 } else if (OnOffType.ON.equals(command)) {
                     bigTemp = new BigDecimal(255);
                 } else {
@@ -383,7 +383,7 @@ public class WLedHandler extends BaseThingHandler {
                 break;
             case CHANNEL_TRANS_TIME:
                 if (OnOffType.OFF.equals(command)) {
-                    bigTemp = new BigDecimal(0);
+                    bigTemp = BigDecimal.ZERO;
                 } else if (OnOffType.ON.equals(command)) {
                     bigTemp = new BigDecimal(255);
                 } else {
