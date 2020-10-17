@@ -99,8 +99,9 @@ public class TouchWandWebSockets {
         isShutDown = true;
         try {
             client.stop();
-            if (socketReconnect != null) {
-                socketReconnect.cancel(true);
+            ScheduledFuture<?> mySocketReconnect = socketReconnect;
+            if (mySocketReconnect != null) {
+                mySocketReconnect.cancel(true);
             }
         } catch (Exception e) {
             logger.warn("Could not stop webSocketClient,  message {}", e.getMessage());
@@ -121,9 +122,6 @@ public class TouchWandWebSockets {
 
     @WebSocket(maxIdleTime = WEBSOCKET_IDLE_TIMEOUT_MS)
     public class TouchWandSocket {
-
-        public TouchWandSocket() {
-        }
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
@@ -184,7 +182,6 @@ public class TouchWandWebSockets {
             }
         }
 
-        @SuppressWarnings("null")
         private void asyncWeb() {
             ScheduledFuture<?> mySocketReconnect = socketReconnect;
             if (mySocketReconnect == null || mySocketReconnect.isDone()) {

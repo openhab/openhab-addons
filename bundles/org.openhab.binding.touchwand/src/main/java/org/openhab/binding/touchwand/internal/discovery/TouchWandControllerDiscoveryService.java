@@ -108,6 +108,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
     protected void runReceiveThread(DatagramSocket socket) {
         Thread localSocketReceivedThread = socketReceiveThread = new ReceiverThread(socket);
         localSocketReceivedThread.setName(TouchWandBindingConstants.DISCOVERY_THREAD_ID);
+        localSocketReceivedThread.setDaemon(true);
         localSocketReceivedThread.start();
     }
 
@@ -115,7 +116,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
 
         private static final int BUFFER_LENGTH = 256;
         private DatagramPacket dgram = new DatagramPacket(new byte[BUFFER_LENGTH], BUFFER_LENGTH);
-        DatagramSocket mySocket;
+        private DatagramSocket mySocket;
 
         public ReceiverThread(DatagramSocket socket) {
             mySocket = socket;

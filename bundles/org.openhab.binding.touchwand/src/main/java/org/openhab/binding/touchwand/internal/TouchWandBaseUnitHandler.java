@@ -51,8 +51,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER);
     protected String unitId = "";
 
-    @Nullable
-    protected TouchWandBridgeHandler bridgeHandler;
+    protected @Nullable TouchWandBridgeHandler bridgeHandler;
 
     public TouchWandBaseUnitHandler(Thing thing) {
         super(thing);

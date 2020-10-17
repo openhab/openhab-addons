@@ -113,7 +113,7 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         isRunning = false;
         TouchWandWebSockets myTouchWandWebSockets = touchWandWebSockets;
         if (myTouchWandWebSockets != null) {
