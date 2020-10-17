@@ -29,8 +29,15 @@ public class LinkyBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
 
+    // Thing properties
+    public static final String PUISSANCE = "puissance";
+    public static final String PRM_ID = "prmId";
+    public static final String USER_ID = "av2_interne_id";
+
     // List of all Channel id's
     public static final String YESTERDAY = "daily#yesterday";
+    public static final String PEAK_POWER = "daily#power";
+    public static final String PEAK_TIMESTAMP = "daily#timestamp";
     public static final String THIS_WEEK = "weekly#thisWeek";
     public static final String LAST_WEEK = "weekly#lastWeek";
     public static final String THIS_MONTH = "monthly#thisMonth";

@@ -135,7 +135,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             configuration.put(CONFIG_APIKEY, config.apikey);
             updateConfiguration(configuration);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for configuration");
-            requestFullState();
+            requestFullState(true);
         } else {
             throw new IllegalStateException("Unknown status code for authorisation request");
         }
@@ -161,7 +161,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      * Perform a request to the REST API for retrieving the full bridge state with all sensors and switches
      * and configuration.
      */
-    public void requestFullState() {
+    public void requestFullState(boolean isInitialRequest) {
         if (config.apikey == null) {
             return;
         }
@@ -182,6 +182,10 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             }
         }).thenAccept(fullState -> {
             if (fullState == null) {
+                if (isInitialRequest) {
+                    scheduledFuture = scheduler.schedule(() -> requestFullState(true), POLL_FREQUENCY_SEC,
+                            TimeUnit.SECONDS);
+                }
                 return;
             }
             if (fullState.config.name.isEmpty()) {
@@ -260,7 +264,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         if (config.apikey == null) {
             requestApiKey();
         } else {
-            requestFullState();
+            requestFullState(true);
         }
     }
 

@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.KeypadComponent;
 import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
+import org.openhab.binding.lutron.internal.protocol.lip.TargetType;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,5 +101,6 @@ public class VirtualKeypadHandler extends BaseKeypadHandler {
         super(thing);
         // Mark all channels "Advanced" since most are unlikely to be used in any particular config
         advancedChannels = true;
+        commandTargetType = TargetType.VIRTUALKEYPAD; // For the LEAP bridge
     }
 }

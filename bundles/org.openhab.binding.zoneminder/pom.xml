@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -12,21 +12,6 @@
 
   <artifactId>org.openhab.binding.zoneminder</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Zoneminder Binding</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>1.10.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>name.eskildsen</groupId>
-      <artifactId>zoneminder4j</artifactId>
-      <version>0.9.7</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
+  <name>openHAB Add-ons :: Bundles :: ZoneMinder Binding</name>
 
 </project>

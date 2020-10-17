@@ -17,7 +17,9 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.OutputCommand;
+import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.lip.TargetType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
@@ -38,16 +40,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShadeHandler extends LutronHandler {
-    private static final Integer ACTION_ZONELEVEL = 1;
-    private static final Integer ACTION_STARTRAISING = 2;
-    private static final Integer ACTION_STARTLOWERING = 3;
-    private static final Integer ACTION_STOP = 4;
-    private static final Integer ACTION_POSITION_UPDATE = 32; // undocumented in integration protocol guide
     private static final Integer PARAMETER_POSITION_UPDATE = 2; // undocumented in integration protocol guide
 
     private final Logger logger = LoggerFactory.getLogger(ShadeHandler.class);
 
     protected int integrationId;
+    private boolean leap = false;
 
     public ShadeHandler(Thing thing) {
         super(thing);
@@ -68,6 +66,11 @@ public class ShadeHandler extends LutronHandler {
         integrationId = id.intValue();
         logger.debug("Initializing Shade handler for integration ID {}", id);
 
+        LutronBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler instanceof LeapBridgeHandler) {
+            leap = true;
+        }
+
         initDeviceState();
     }
 
@@ -79,7 +82,8 @@ public class ShadeHandler extends LutronHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
-            queryOutput(ACTION_ZONELEVEL); // handleUpdate() will set thing status to online when response arrives
+            queryOutput(TargetType.SHADE, OutputCommand.ACTION_ZONELEVEL);
+            // handleUpdate() will set thing status to online when response arrives
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -89,7 +93,7 @@ public class ShadeHandler extends LutronHandler {
     public void channelLinked(ChannelUID channelUID) {
         // Refresh state when new item is linked.
         if (channelUID.getId().equals(CHANNEL_SHADELEVEL)) {
-            queryOutput(ACTION_ZONELEVEL);
+            queryOutput(TargetType.SHADE, OutputCommand.ACTION_ZONELEVEL);
         }
     }
 
@@ -98,15 +102,27 @@ public class ShadeHandler extends LutronHandler {
         if (channelUID.getId().equals(CHANNEL_SHADELEVEL)) {
             if (command instanceof PercentType) {
                 int level = ((PercentType) command).intValue();
-                output(ACTION_ZONELEVEL, level, 0);
+                output(TargetType.SHADE, OutputCommand.ACTION_ZONELEVEL, level, null, null);
+                if (leap) {
+                    // LEAP may not send back a position update
+                    updateState(CHANNEL_SHADELEVEL, new PercentType(level));
+                }
             } else if (command.equals(UpDownType.UP)) {
-                output(ACTION_STARTRAISING);
+                output(TargetType.SHADE, OutputCommand.ACTION_STARTRAISING, null, null, null);
+                if (leap) {
+                    // LEAP won't send a position update when fully open
+                    updateState(CHANNEL_SHADELEVEL, new PercentType(100));
+                }
             } else if (command.equals(UpDownType.DOWN)) {
-                output(ACTION_STARTLOWERING);
+                output(TargetType.SHADE, OutputCommand.ACTION_STARTLOWERING, null, null, null);
+                if (leap) {
+                    // LEAP won't send a position update when fully closed
+                    updateState(CHANNEL_SHADELEVEL, new PercentType(0));
+                }
             } else if (command.equals(StopMoveType.STOP)) {
-                output(ACTION_STOP);
+                output(TargetType.SHADE, OutputCommand.ACTION_STOP, null, null, null);
             } else if (command instanceof RefreshType) {
-                queryOutput(ACTION_ZONELEVEL);
+                queryOutput(TargetType.SHADE, OutputCommand.ACTION_ZONELEVEL);
             }
         }
     }
@@ -114,14 +130,14 @@ public class ShadeHandler extends LutronHandler {
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
         if (type == LutronCommandType.OUTPUT && parameters.length >= 2) {
-            if (ACTION_ZONELEVEL.toString().equals(parameters[0])) {
+            if (OutputCommand.ACTION_ZONELEVEL.toString().equals(parameters[0])) {
                 BigDecimal level = new BigDecimal(parameters[1]);
                 if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                     updateStatus(ThingStatus.ONLINE);
                 }
                 logger.trace("Shade {} received zone level: {}", getIntegrationId(), level);
                 updateState(CHANNEL_SHADELEVEL, new PercentType(level));
-            } else if (ACTION_POSITION_UPDATE.toString().equals(parameters[0])
+            } else if (OutputCommand.ACTION_POSITION_UPDATE.toString().equals(parameters[0])
                     && PARAMETER_POSITION_UPDATE.toString().equals(parameters[1]) && parameters.length >= 3) {
                 BigDecimal level = new BigDecimal(parameters[2]);
                 logger.trace("Shade {} received position update: {}", getIntegrationId(), level);

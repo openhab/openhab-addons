@@ -19,10 +19,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.openhab.binding.lutron.action.DimmerActions;
+import org.openhab.binding.lutron.internal.action.DimmerActions;
 import org.openhab.binding.lutron.internal.config.DimmerConfig;
-import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.openhab.binding.lutron.internal.protocol.LutronDuration;
+import org.openhab.binding.lutron.internal.protocol.OutputCommand;
+import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.lip.TargetType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
@@ -42,8 +44,6 @@ import org.slf4j.LoggerFactory;
  * @author Bob Adair - Added initDeviceState method, and onLevel and onToLast parameters
  */
 public class DimmerHandler extends LutronHandler {
-    private static final Integer ACTION_ZONELEVEL = 1;
-
     private final Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
     private DimmerConfig config;
     private LutronDuration fadeInTime;
@@ -90,7 +90,8 @@ public class DimmerHandler extends LutronHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
-            queryOutput(ACTION_ZONELEVEL); // handleUpdate() will set thing status to online when response arrives
+            queryOutput(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL);
+            // handleUpdate() will set thing status to online when response arrives
             lastLightLevel.set(config.onLevel);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -101,7 +102,7 @@ public class DimmerHandler extends LutronHandler {
     public void channelLinked(ChannelUID channelUID) {
         if (channelUID.getId().equals(CHANNEL_LIGHTLEVEL)) {
             // Refresh state when new item is linked.
-            queryOutput(ACTION_ZONELEVEL);
+            queryOutput(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL);
         }
     }
 
@@ -110,28 +111,28 @@ public class DimmerHandler extends LutronHandler {
         if (channelUID.getId().equals(CHANNEL_LIGHTLEVEL)) {
             if (command instanceof Number) {
                 int level = ((Number) command).intValue();
-                output(ACTION_ZONELEVEL, level, 0.25);
+                output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, level, new LutronDuration("0.25"), null);
             } else if (command.equals(OnOffType.ON)) {
                 if (config.onToLast) {
-                    output(ACTION_ZONELEVEL, lastLightLevel.get(), fadeInTime);
+                    output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, lastLightLevel.get(), fadeInTime, null);
                 } else {
-                    output(ACTION_ZONELEVEL, config.onLevel, fadeInTime);
+                    output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, config.onLevel, fadeInTime, null);
                 }
             } else if (command.equals(OnOffType.OFF)) {
-                output(ACTION_ZONELEVEL, 0, fadeOutTime);
+                output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, 0, fadeOutTime, null);
             }
         }
     }
 
     public void setLightLevel(BigDecimal level, LutronDuration fade, LutronDuration delay) {
         int intLevel = level.intValue();
-        output(ACTION_ZONELEVEL, intLevel, fade, delay);
+        output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, intLevel, fade, delay);
     }
 
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
         if (type == LutronCommandType.OUTPUT && parameters.length > 1
-                && ACTION_ZONELEVEL.toString().equals(parameters[0])) {
+                && OutputCommand.ACTION_ZONELEVEL.toString().equals(parameters[0])) {
             BigDecimal level = new BigDecimal(parameters[1]);
             if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                 updateStatus(ThingStatus.ONLINE);

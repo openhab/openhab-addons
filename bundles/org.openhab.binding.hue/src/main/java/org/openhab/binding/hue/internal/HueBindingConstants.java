@@ -50,6 +50,7 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_CLIP_GENERIC_STATUS = new ThingTypeUID(BINDING_ID, "0840");
     public static final ThingTypeUID THING_TYPE_CLIP_GENERIC_FLAG = new ThingTypeUID(BINDING_ID, "0850");
     public static final ThingTypeUID THING_TYPE_PRESENCE_SENSOR = new ThingTypeUID(BINDING_ID, "0107");
+    public static final ThingTypeUID THING_TYPE_GEOFENCE_SENSOR = new ThingTypeUID(BINDING_ID, "geofencesensor");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "0302");
     public static final ThingTypeUID THING_TYPE_LIGHT_LEVEL_SENSOR = new ThingTypeUID(BINDING_ID, "0106");
 
@@ -65,6 +66,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_DIMMER_SWITCH = "dimmer_switch";
     public static final String CHANNEL_TAP_SWITCH = "tap_switch";
     public static final String CHANNEL_PRESENCE = "presence";
+    public static final String CHANNEL_ENABLED = "enabled";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_LAST_UPDATED = "last_updated";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";

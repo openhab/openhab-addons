@@ -120,6 +120,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Next Open Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
-		<state readOnly="false" pattern="%.0f s"/>
+		<state readOnly="false" pattern="%.0f min"/>
 	</channel-type>
 </thing:thing-descriptions>

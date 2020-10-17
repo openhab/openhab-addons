@@ -16,7 +16,7 @@ import static org.openhab.binding.enigma2.internal.Enigma2BindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.enigma2.handler.Enigma2Handler;
+import org.openhab.binding.enigma2.internal.handler.Enigma2Handler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;

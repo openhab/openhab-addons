@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.gce.internal.action;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gce.internal.handler.Ipx800v3Handler;
@@ -27,18 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {Ipx800Actions } defines rule actions for the GCE binding.
- * <p>
- * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
- * the test <i>actions instanceof Ipx800Actions</i> fails. This test can fail
- * due to an issue in openHAB core v2.5.0 where the {@link Ipx800Actions} class
- * can be loaded by a different classloader than the <i>actions</i> instance.
+ * Defines rule actions for the GCE binding.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @ThingActionsScope(name = "gce")
 @NonNullByDefault
-public class Ipx800Actions implements ThingActions, IIpx800Actions {
+public class Ipx800Actions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(Ipx800Actions.class);
 
     protected @Nullable Ipx800v3Handler handler;
@@ -56,11 +48,10 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return this.handler;
+        return handler;
     }
 
-    @Override
-    @RuleAction(label = "GCE : Reset counter", description = "Resets to 0 value of a given counter")
+    @RuleAction(label = "reset a counter", description = "Resets to 0 value of a given counter.")
     public void resetCounter(
             @ActionInput(name = "counter", label = "Counter", required = true, description = "Id of the counter", type = "java.lang.Integer") Integer counter) {
         logger.debug("IPX800 action 'resetCounter' called");
@@ -72,8 +63,7 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
         }
     }
 
-    @Override
-    @RuleAction(label = "GCE : Reset PLC", description = "Restarts the IPX800")
+    @RuleAction(label = "reset the PLC", description = "Restarts the IPX800.")
     public void reset(
             @ActionInput(name = "placeholder", label = "Placeholder", required = false, description = "This parameter is not used", type = "java.lang.Integer") @Nullable Integer placeholder) {
         logger.debug("IPX800 action 'reset' called");
@@ -85,30 +75,11 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
         }
     }
 
-    public static void resetCounter(@Nullable ThingActions actions, Integer counter) {
-        invokeMethodOf(actions).resetCounter(counter);
+    public static void resetCounter(ThingActions actions, Integer counter) {
+        ((Ipx800Actions) actions).resetCounter(counter);
     }
 
-    public static void reset(@Nullable ThingActions actions, @Nullable Integer placeholder) {
-        invokeMethodOf(actions).reset(placeholder);
-    }
-
-    private static IIpx800Actions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(Ipx800Actions.class.getName())) {
-            if (actions instanceof IIpx800Actions) {
-                return (IIpx800Actions) actions;
-            } else {
-                return (IIpx800Actions) Proxy.newProxyInstance(IIpx800Actions.class.getClassLoader(),
-                        new Class[] { IIpx800Actions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException("Actions is not an instance of Ipx800Actions");
+    public static void reset(ThingActions actions, @Nullable Integer placeholder) {
+        ((Ipx800Actions) actions).reset(placeholder);
     }
 }

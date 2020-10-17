@@ -131,7 +131,15 @@ public class LutronDuration {
     }
 
     public String asLeapString() {
-        return ""; // TBD
+        Integer seconds = this.seconds;
+        if (seconds.equals(0) && hundredths > 0) {
+            // use 1 second if interval is > 0 and < 1
+            seconds = 1;
+        } else if (hundredths >= 50) {
+            // else apply normal rounding of hundredths
+            seconds++;
+        }
+        return String.format("%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, (seconds % 60));
     }
 
     @Override
