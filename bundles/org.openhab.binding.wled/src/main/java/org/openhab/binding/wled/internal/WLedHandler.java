@@ -83,7 +83,7 @@ public class WLedHandler extends BaseThingHandler {
         request.timeout(3, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
         request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
-        logger.debug("Sending WLED GET:{}", url);
+        logger.trace("Sending WLED GET:{}", url);
         String errorReason = "";
         try {
             ContentResponse contentResponse = request.send();
@@ -308,12 +308,12 @@ public class WLedHandler extends BaseThingHandler {
                 return;
             case CHANNEL_PRIMARY_COLOR:
                 if (command instanceof OnOffType) {
-                    logger.info("OnOffType commands should use masterControls channel");
+                    return;
                 } else if (command instanceof HSBType) {
                     primaryColor = new HSBType(command.toString());
                     sendGetRequest("/win&CL=" + createColorHex(primaryColor));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    logger.info("IncreaseDecrease commands should use masterControls channel");
+                    return;
                 } else {// Percentype
                     primaryColor = new HSBType(primaryColor.getHue().toString() + ","
                             + primaryColor.getSaturation().toString() + ",command");
@@ -322,12 +322,12 @@ public class WLedHandler extends BaseThingHandler {
                 return;
             case CHANNEL_SECONDARY_COLOR:
                 if (command instanceof OnOffType) {
-                    logger.info("OnOffType commands should use masterControls channel");
+                    return;
                 } else if (command instanceof HSBType) {
                     secondaryColor = new HSBType(command.toString());
                     sendGetRequest("/win&C2=" + createColorHex(secondaryColor));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    logger.info("IncreaseDecrease commands should use masterControls channel");
+                    return;
                 } else {// Percentype
                     secondaryColor = new HSBType(secondaryColor.getHue().toString() + ","
                             + secondaryColor.getSaturation().toString() + ",command");
