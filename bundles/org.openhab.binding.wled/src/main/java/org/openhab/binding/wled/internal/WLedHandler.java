@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -64,7 +62,6 @@ public class WLedHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
-    private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(1);
     private BigDecimal masterBrightness = new BigDecimal(0);
     private HSBType primaryColor = new HSBType();
     private BigDecimal primaryWhite = new BigDecimal(0);
