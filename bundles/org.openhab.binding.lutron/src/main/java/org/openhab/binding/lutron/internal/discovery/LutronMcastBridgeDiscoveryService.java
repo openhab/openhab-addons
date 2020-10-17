@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Bob Adair - Renamed and added bridge properties
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.lutron")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.lutron")
 public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private static final int SCAN_INTERVAL_MINUTES = 30;

@@ -62,7 +62,6 @@ class JCgetDeviceStatus extends GetDeviceStatus implements JsonBridgeCommunicati
      * NOTE: the gateway software is extremely sensitive to this exact JSON structure.
      * Any modifications (like omitting empty params) will lead to an gateway error.
      */
-    @NonNullByDefault
     private static class Request {
 
         @SuppressWarnings("unused")
@@ -93,7 +92,6 @@ class JCgetDeviceStatus extends GetDeviceStatus implements JsonBridgeCommunicati
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

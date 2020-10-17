@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Daniel Walters - Initial contribution
  */
 
-@Component(immediate = true)
+@Component
 public class HyperionDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true, configurationPid = "discovery.heos")
+@Component(service = UpnpDiscoveryParticipant.class, configurationPid = "discovery.heos")
 public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(HeosDiscoveryParticipant.class);
 

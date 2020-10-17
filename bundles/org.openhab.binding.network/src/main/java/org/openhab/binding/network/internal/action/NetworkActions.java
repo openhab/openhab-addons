@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.network.internal.action;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.network.internal.handler.NetworkHandler;
@@ -27,17 +24,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The class is responsible to call corresponding actions on {@link NetworkHandler}.
- * <p>
- * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
- * the test <i>actions instanceof NetworkActions</i> fails. This test can fail
- * due to an issue in openHAB core v2.5.0 where the {@link NetworkActions} class
- * can be loaded by a different classloader than the <i>actions</i> instance.
  *
  * @author Wouter Born - Initial contribution
  */
 @ThingActionsScope(name = "network")
 @NonNullByDefault
-public class NetworkActions implements ThingActions, INetworkActions {
+public class NetworkActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(NetworkActions.class);
 
@@ -55,8 +47,7 @@ public class NetworkActions implements ThingActions, INetworkActions {
         return handler;
     }
 
-    @Override
-    @RuleAction(label = "Send WoL Packet", description = "Send a Wake-on-LAN packet to wake the device")
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
     public void sendWakeOnLanPacket() {
         NetworkHandler localHandler = handler;
         if (localHandler != null) {
@@ -66,26 +57,7 @@ public class NetworkActions implements ThingActions, INetworkActions {
         }
     }
 
-    public static void sendWakeOnLanPacket(@Nullable ThingActions actions) {
-        invokeMethodOf(actions).sendWakeOnLanPacket();
-    }
-
-    private static INetworkActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(NetworkActions.class.getName())) {
-            if (actions instanceof INetworkActions) {
-                return (INetworkActions) actions;
-            } else {
-                return (INetworkActions) Proxy.newProxyInstance(INetworkActions.class.getClassLoader(),
-                        new Class[] { INetworkActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException("Actions is not an instance of " + NetworkActions.class.getName());
+    public static void sendWakeOnLanPacket(ThingActions actions) {
+        ((NetworkActions) actions).sendWakeOnLanPacket();
     }
 }

@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
  *
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     private static final int AIRTHINGS_COMPANY_ID = 820; // Formerly Corentium AS

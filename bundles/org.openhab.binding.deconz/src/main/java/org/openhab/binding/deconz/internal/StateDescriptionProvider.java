@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DynamicStateDescriptionProvider.class, StateDescriptionProvider.class }, immediate = true)
+@Component(service = { DynamicStateDescriptionProvider.class, StateDescriptionProvider.class })
 public class StateDescriptionProvider implements DynamicStateDescriptionProvider {
 
     private final Map<ChannelUID, StateDescription> descriptions = new ConcurrentHashMap<>();

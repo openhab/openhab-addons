@@ -260,7 +260,7 @@ Here are a few examples:
 * Apply a prefix: "myprefix%s"
 * Apply a suffix: "%s suffix"
 * Number precision: ".4f" for a 4 digit precision. Use the "+" flag to always add a sign: "+.4f".
-* Decimal to Hexadecimal/Octal/Scientific: For example "60" with "%x", "%o", "%e" becomes "74", "3C", "60".
+* Decimal to Hexadecimal/Octal/Scientific: For example "60" with "%x", "%o", "%e" becomes "3C", "74", "60".
 * Date/Time: To reference the item state multiple times, use "%1$". Use the "tX" conversion where "X" can be any of [h,H,m,M,I,k,l,S,p,B,b,A,a,y,Y,d,e].
   - For an output of *May 23, 1995* use "%1$**tb** %1$**te**,%1$**tY**".
   - For an output of *23.05.1995* use "%1$**td**.%1$**tm**.%1$**tY**".

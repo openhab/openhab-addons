@@ -28,6 +28,8 @@
 
     <module>org.openhab.io.homekit</module>
 
+    <module>org.openhab.io.hueemulation</module>
+
     <module>org.openhab.io.imperihome</module>
 
     <module>org.openhab.io.neeo</module>
@@ -35,8 +37,6 @@
     <module>org.openhab.io.openhabcloud</module>
 
     <module>org.openhab.io.transport.modbus</module>
-
-    <module>org.openhab.io.mqttembeddedbroker</module>
 
     <!-- transformations -->
 
@@ -371,6 +371,8 @@
 
     <module>org.openhab.binding.nest</module>
 
+    <module>org.openhab.binding.netatmo</module>
+
     <module>org.openhab.binding.network</module>
 
     <module>org.openhab.binding.networkupstools</module>
@@ -552,6 +554,8 @@
     <module>org.openhab.binding.vektiva</module>
 
     <module>org.openhab.binding.velbus</module>
+
+    <module>org.openhab.binding.velux</module>
 
     <module>org.openhab.binding.venstarthermostat</module>
 

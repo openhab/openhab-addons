@@ -48,7 +48,6 @@ public class VeluxBridgeWLANConfig {
      * <li>wlanPassword.
      * </ul>
      */
-    @NonNullByDefault
     public class Channel {
         public boolean isRetrieved = false;
         public StringType openHABwlanSSID = new StringType(VeluxBindingConstants.UNKNOWN);

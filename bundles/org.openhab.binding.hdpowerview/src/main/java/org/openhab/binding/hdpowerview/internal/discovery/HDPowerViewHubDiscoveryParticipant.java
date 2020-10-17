@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant.class);

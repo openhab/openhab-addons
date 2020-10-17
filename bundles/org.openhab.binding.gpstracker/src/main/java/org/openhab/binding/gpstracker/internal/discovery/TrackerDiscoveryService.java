@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Modified;
  */
 @NonNullByDefault
 @Component(service = { DiscoveryService.class,
-        TrackerDiscoveryService.class }, immediate = true, configurationPid = "discovery.gpstracker")
+        TrackerDiscoveryService.class }, configurationPid = "discovery.gpstracker")
 public class TrackerDiscoveryService extends AbstractDiscoveryService {
     /**
      * Discovery timeout

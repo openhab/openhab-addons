@@ -13,6 +13,7 @@
 package org.openhab.binding.volvooncall.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.StringType;
 
 /**
  * The {@link TyrePressure} is responsible for storing
@@ -22,10 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TyrePressure {
-    public @NonNullByDefault({}) String frontLeftTyrePressure;
-    public @NonNullByDefault({}) String frontRightTyrePressure;
-    public @NonNullByDefault({}) String rearLeftTyrePressure;
-    public @NonNullByDefault({}) String rearRightTyrePressure;
+    public @NonNullByDefault({}) StringType frontLeftTyrePressure;
+    public @NonNullByDefault({}) StringType frontRightTyrePressure;
+    public @NonNullByDefault({}) StringType rearLeftTyrePressure;
+    public @NonNullByDefault({}) StringType rearRightTyrePressure;
     /*
      * Currently unused in the binding, maybe interesting in the future
      * private ZonedDateTime timestamp;

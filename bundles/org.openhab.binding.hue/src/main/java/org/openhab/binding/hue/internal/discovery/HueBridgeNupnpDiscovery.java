@@ -49,7 +49,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Andre Fuechsel - make {@link #startScan()} asynchronous
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.hue")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.hue")
 public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
 
     private static final String MODEL_NAME_PHILIPS_HUE = "<modelName>Philips hue";

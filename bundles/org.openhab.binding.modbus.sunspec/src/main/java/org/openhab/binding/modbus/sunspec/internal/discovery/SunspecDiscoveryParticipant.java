@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Nagy Attila Gabor - initial contribution
  *
  */
-@Component(immediate = true)
+@Component
 @NonNullByDefault
 public class SunspecDiscoveryParticipant implements ModbusDiscoveryParticipant {
 

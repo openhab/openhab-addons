@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
-@Component(immediate = true)
+@Component
 public class DenonMarantzDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(DenonMarantzDiscoveryParticipant.class);

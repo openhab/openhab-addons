@@ -102,7 +102,6 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         if (db != null) {
             db.close();
         }
-        threadPool.shutdown();
     }
 
     @Override

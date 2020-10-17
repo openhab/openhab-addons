@@ -26,6 +26,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,26 +51,26 @@ import com.google.gson.GsonBuilder;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class DiscoverComponentsTest extends JavaOSGiTest {
 
-    private AutoCloseable mocksCloseable;
+    private @NonNullByDefault({}) AutoCloseable mocksCloseable;
 
-    private @Mock MqttBrokerConnection connection;
-    private @Mock ComponentDiscovered discovered;
-    private @Mock TransformationServiceProvider transformationServiceProvider;
-    private @Mock ChannelStateUpdateListener channelStateUpdateListener;
-    private @Mock AvailabilityTracker availabilityTracker;
+    private @Mock @NonNullByDefault({}) MqttBrokerConnection connection;
+    private @Mock @NonNullByDefault({}) ComponentDiscovered discovered;
+    private @Mock @NonNullByDefault({}) TransformationServiceProvider transformationServiceProvider;
+    private @Mock @NonNullByDefault({}) ChannelStateUpdateListener channelStateUpdateListener;
+    private @Mock @NonNullByDefault({}) AvailabilityTracker availabilityTracker;
 
     @BeforeEach
     public void beforeEach() {
         mocksCloseable = openMocks(this);
 
-        CompletableFuture<Void> voidFutureComplete = new CompletableFuture<>();
+        CompletableFuture<@Nullable Void> voidFutureComplete = new CompletableFuture<>();
         voidFutureComplete.complete(null);
         doReturn(voidFutureComplete).when(connection).unsubscribeAll();
         doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
         doReturn(CompletableFuture.completedFuture(true)).when(connection).unsubscribe(any(), any());
-        doReturn(CompletableFuture.completedFuture(true)).when(connection).publish(any(), any());
         doReturn(CompletableFuture.completedFuture(true)).when(connection).publish(any(), any(), anyInt(),
                 anyBoolean());
         doReturn(null).when(transformationServiceProvider).getTransformationService(any());

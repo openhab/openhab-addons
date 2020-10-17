@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Antoine Besnard - Initial contribution
  */
-@Component(immediate = true)
+@Component
 public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(PioneerAvrDiscoveryParticipant.class);

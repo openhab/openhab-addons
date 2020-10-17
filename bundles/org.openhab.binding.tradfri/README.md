@@ -4,13 +4,13 @@ This binding integrates the IKEA TRÅDFRI gateway and devices connected to it (s
 
 ## Supported Things
 
-Beside the gateway (thing type "gateway"), the binding currently supports colored bulbs, dimmable warm white bulbs as well as white spectrum bulbs and control outlets.
+Beside the gateway (thing type "gateway"), the binding currently supports colored bulbs, dimmable warm white bulbs as well as white spectrum bulbs, control outlets and blinds.
 The binding also supports read-only data from remote controls and motion sensors (e.g. the battery status).
 The TRÅDFRI controller and sensor devices currently cannot be observed right away because they are communicating directly with the bulbs or lamps without routing their commands through the gateway.
 This makes it nearly impossible to trigger events for pressed buttons.
 We only can access some static data like the present status or battery level.
 
-The thing type ids are defined according to the lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf).
+The thing type ids are defined according to the lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf)).
 These are:
 
 | Device type                     | ZigBee Device ID | Thing type |
@@ -63,7 +63,7 @@ The remote control and the motion sensor supports the `battery_level` and `batte
 
 The control outlet supports the `power` channel.
 
-A blind or curtain supports beside `battery_level` and `battery_low` channels a `positon` channel.
+A blind or curtain supports, beside `battery_level` and `battery_low` channels,  a `positon` channel.
 
 Refer to the matrix above.
 

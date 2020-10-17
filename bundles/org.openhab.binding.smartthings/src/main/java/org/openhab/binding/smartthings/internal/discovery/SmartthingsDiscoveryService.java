@@ -49,7 +49,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @Component(service = { DiscoveryService.class,
-        EventHandler.class }, immediate = true, configurationPid = "discovery.smartthings", property = "event.topics=org/openhab/binding/smartthings/discovery")
+        EventHandler.class }, configurationPid = "discovery.smartthings", property = "event.topics=org/openhab/binding/smartthings/discovery")
 public class SmartthingsDiscoveryService extends AbstractDiscoveryService implements EventHandler {
     private static final int DISCOVERY_TIMEOUT_SEC = 30;
     private static final int INITIAL_DELAY_SEC = 10; // Delay 10 sec to give time for bridge and things to be created

@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Marius Bjoernstad - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.folding")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.folding")
 public class FoldingSlotDiscoveryService extends AbstractDiscoveryService {
 
     public FoldingSlotDiscoveryService() {

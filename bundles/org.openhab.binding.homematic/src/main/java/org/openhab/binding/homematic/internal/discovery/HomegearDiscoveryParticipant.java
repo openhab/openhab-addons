@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@Component(immediate = true)
+@Component
 public class HomegearDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(HomegearDiscoveryParticipant.class);
 

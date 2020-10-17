@@ -99,7 +99,7 @@ public class ScheduleTests {
     }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws Exception {
         RuleUtils.random = new Random();
         commonSetup.dispose();
     }

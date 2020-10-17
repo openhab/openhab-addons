@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Thomas.Eichstaedt-Engelen
  */
 @NonNullByDefault
-@Component(immediate = true, property = { "smarthome.transform=REGEX" })
+@Component(property = { "smarthome.transform=REGEX" })
 public class RegExTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(RegExTransformationService.class);

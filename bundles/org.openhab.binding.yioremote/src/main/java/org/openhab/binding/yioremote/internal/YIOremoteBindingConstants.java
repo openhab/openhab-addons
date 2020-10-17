@@ -33,7 +33,9 @@ public class YIOremoteBindingConstants {
         AUTHENTICATION_FAILED,
         AUTHENTICATION_COMPLETE,
         CONNECTION_FAILED,
-        CONNECTION_ESTABLISHED;
+        CONNECTION_ESTABLISHED,
+        COMMUNICATION_ERROR,
+        RECONNECTION_PROCESS;
     }
 
     public static enum YioRemoteMessages {
@@ -45,7 +47,7 @@ public class YIOremoteBindingConstants {
     }
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_YIOREMOTEDOCK = new ThingTypeUID(BINDING_ID, "yioremotedock");
+    public static final ThingTypeUID THING_TYPE_YIOREMOTEDOCK = new ThingTypeUID(BINDING_ID, "yioRemoteDock");
 
     // List of all Channel Groups Group Channel ids
     public static final String GROUP_INPUT = "input";

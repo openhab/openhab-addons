@@ -40,7 +40,7 @@ import com.hubspot.jinjava.Jinjava;
  *
  */
 @NonNullByDefault
-@Component(immediate = true, property = { "smarthome.transform=JINJA" })
+@Component(property = { "smarthome.transform=JINJA" })
 public class JinjaTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(JinjaTransformationService.class);

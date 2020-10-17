@@ -54,7 +54,7 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.lcn")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.lcn")
 public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(LcnPchkDiscoveryService.class);
     private static final String HOSTNAME = "hostname";
@@ -148,6 +148,8 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
 
     ServicesResponse xmlToServiceResponse(String response) {
         XStream xstream = new XStream(new StaxDriver());
+        XStream.setupDefaultSecurity(xstream);
+        xstream.allowTypesByWildcard(new String[] { ServicesResponse.class.getPackageName() + ".**" });
         xstream.setClassLoader(getClass().getClassLoader());
         xstream.autodetectAnnotations(true);
         xstream.alias("ServicesResponse", ServicesResponse.class);

@@ -49,6 +49,7 @@ import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.binding.velux.internal.utils.Localization;
+import org.openhab.core.common.AbstractUID;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -155,7 +156,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * <LI>{@link #wlanConfig} - Information about the gateway configuration.</LI>
      * </UL>
      */
-    @NonNullByDefault
     public class BridgeParameters {
         /** Information retrieved by {@link VeluxBridgeActuators#getProducts} */
         public VeluxBridgeActuators actuators = new VeluxBridgeActuators();
@@ -187,9 +187,13 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * @param channelUID for type {@link ChannelUID}.
      * @return thingTypeUID of type {@link ThingTypeUID}.
      */
-    @SuppressWarnings("deprecation")
     ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
-        return channelUID.getThingUID().getThingTypeUID();
+        String[] segments = channelUID.getAsString().split(AbstractUID.SEPARATOR);
+        if (segments.length > 1) {
+            return new ThingTypeUID(segments[0], segments[1]);
+        }
+        logger.warn("thingTypeUIDOf({}) failed.", channelUID);
+        return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, VeluxBindingConstants.UNKNOWN_THING_TYPE_ID);
     }
 
     // Objects and Methods for interface VeluxBridgeInstance

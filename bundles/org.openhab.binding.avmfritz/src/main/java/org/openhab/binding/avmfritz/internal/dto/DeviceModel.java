@@ -75,8 +75,8 @@ public class DeviceModel extends AVMFritzBaseModel {
 
     @Override
     public String toString() {
-        return new StringBuilder().append(super.toString()).append(temperature).append(alert).append(getButtons())
-                .append(etsiunitinfo).append("]").toString();
+        return new StringBuilder().append(super.toString()).append(temperature).append(",").append(alert).append(",")
+                .append(getButtons()).append(",").append(etsiunitinfo).append("]").toString();
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

@@ -42,8 +42,7 @@ public class ComponentCamera extends AbstractComponent<ComponentCamera.ChannelCo
 
         ImageValue value = new ImageValue();
 
-        buildChannel(cameraChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())//
-                .stateTopic(channelConfiguration.topic)//
-                .build();
+        buildChannel(cameraChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())
+                .stateTopic(channelConfiguration.topic).build();
     }
 }

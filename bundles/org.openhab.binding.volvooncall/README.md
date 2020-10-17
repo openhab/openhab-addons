@@ -20,10 +20,10 @@ The binding has no configuration options itself, all configuration is done at 'T
 The 'VolvoOnCall API' bridge uses the owner's email address and password in order to access the VOC Remote API.
 This is the same email address and password as used in the VolvoOnCall smartphone app, that allows to remotely control your car(s).
 
-| Parameter | Description                                                              | Required |
-|-----------|------------------------------------------------------------------------- |--------- |
-| username  | Username from the VolvoOnCall app (email address)                        | yes      |
-| password  | Password from the VolvoOnCall app                                        | yes      |
+| Parameter       | Description                                          | Required |
+|-----------------|------------------------------------------------------|--------- |
+| username        | Username from the VolvoOnCall app (email address)    | yes      |
+| password        | Password from the VolvoOnCall app                    | yes      |
 
 Once the bridge created, you will be able to launch discovery of the vehicles attached to it.
 
@@ -35,7 +35,8 @@ The 'VolvoOnCall API' bridge uses the owner's email address and password in orde
 | Parameter       | Name             | Description                                             | Required |
 |-----------------|------------------|---------------------------------------------------------|----------|
 | vin             | Vin              | Vehicle Identification Number of the car                | yes      |
-| refreshinterval | Refresh interval | Interval in minutes to refresh the data (default=10)    | no       |
+| refreshinterval | Refresj Interval | Interval in minutes to refresh the data (default=10)    | yes      |
+
 
 
 
@@ -99,6 +100,15 @@ Following channels are currently available:
 | lasttrip#startPosition                        | Location             | Last trip start location                         |                                                 |
 | lasttrip#endPosition                          | Location             | Last trip end location                           |                                                 |
 
+
+## Events
+
+| Channel Type ID    | Options     | Description                                                    |
+|--------------------|-------------|----------------------------------------------------------------|
+| other#carEvent     |             |                                                                |
+|                    | CAR_STOPPED | Triggered when the car has finished a trip                     |
+|                    | CAR_MOVED   | Triggered if the car mileage has changed between two polls     |
+|                    | CAR_STARTED | Triggered when the engine of the car went on between two polls |
 
 ## Full Example
 

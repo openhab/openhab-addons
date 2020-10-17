@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Stenlund - Initial contribution
  * @author Hilbrand Bouwkamp - Made this the service class instead of only interface. Added templates
  */
-@Component(service = SpotifyAuthService.class, immediate = true, configurationPid = "binding.spotify.authService")
+@Component(service = SpotifyAuthService.class, configurationPid = "binding.spotify.authService")
 @NonNullByDefault
 public class SpotifyAuthService {
 

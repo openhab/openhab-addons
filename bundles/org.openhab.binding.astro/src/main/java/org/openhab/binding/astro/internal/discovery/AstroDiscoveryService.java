@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Stefan Triller - Use configured location
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.astro")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.astro")
 public class AstroDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
