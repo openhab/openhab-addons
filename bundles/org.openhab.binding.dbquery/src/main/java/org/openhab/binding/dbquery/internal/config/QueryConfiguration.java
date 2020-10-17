@@ -17,7 +17,7 @@ import java.util.StringJoiner;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link QueryConfiguration} class contains fields mapping thing configuration parameters.
+ * Contains fields mapping query things parameters.
  *
  * @author Joan Pujol - Initial contribution
  */

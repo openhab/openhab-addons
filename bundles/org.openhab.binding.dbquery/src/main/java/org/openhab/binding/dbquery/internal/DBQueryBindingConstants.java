@@ -16,8 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link DBQueryBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * Common constants, which are used across the whole binding.
  *
  * @author Joan Pujol - Initial contribution
  */

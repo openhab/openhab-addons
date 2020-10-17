@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link IDBQueryActions} interface defines rule actions for interacting with DBQuery addon Things.
+ * Defines rule actions for interacting with DBQuery addon Things.
  *
  * @author Joan Pujol - Initial contribution
  */

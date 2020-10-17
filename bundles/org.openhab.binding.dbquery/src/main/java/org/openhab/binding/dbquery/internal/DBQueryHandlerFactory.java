@@ -32,8 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DBQueryHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * DBQuery binding factory that is responsible for creating things and thing handlers.
  *
  * @author Joan Pujol Espinar- Initial contribution
  */

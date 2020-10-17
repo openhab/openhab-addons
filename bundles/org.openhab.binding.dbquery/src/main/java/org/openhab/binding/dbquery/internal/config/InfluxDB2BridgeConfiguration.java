@@ -18,17 +18,17 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link InfluxDB2BridgeConfiguration} class contains fields mapping thing configuration parameters.
+ * Contains fields mapping InfluxDB2 bridge configuration parameters.
  *
  * @author Joan Pujol - Initial contribution
  */
 @NonNullByDefault
 public class InfluxDB2BridgeConfiguration {
-    private @NonNull String url;
-    private @NonNull String user;
-    private @NonNull String token;
-    private @NonNull String organization;
-    private @NonNull String bucket;
+    private @NonNull final String url;
+    private @NonNull final String user;
+    private @NonNull final String token;
+    private @NonNull final String organization;
+    private @NonNull final String bucket;
 
     public InfluxDB2BridgeConfiguration(@NonNull String url, @NonNull String user, @NonNull String token,
             @NonNull String organization, @NonNull String bucket) {

@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.dbquery.internal;
 
+import java.util.List;
+
 import org.openhab.core.thing.Channel;
-import org.openhab.core.types.State;
 
 /**
- * Abstract the operation to update a channel
+ * Abstract the action to get channels that need to be updated
  *
  * @author Joan Pujol - Initial contribution
  */
-public interface ChannelStateUpdater {
-    void updateChannelState(Channel channelUID, State value);
+public interface ChannelsToUpdateQueryResult {
+    List<Channel> getChannels();
 }

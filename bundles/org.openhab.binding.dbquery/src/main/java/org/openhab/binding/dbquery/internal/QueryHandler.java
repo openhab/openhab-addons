@@ -32,6 +32,7 @@ import org.openhab.binding.dbquery.internal.domain.DBQueryJSONEncoder;
 import org.openhab.binding.dbquery.internal.domain.Database;
 import org.openhab.binding.dbquery.internal.domain.QueryParameters;
 import org.openhab.binding.dbquery.internal.domain.QueryResult;
+import org.openhab.binding.dbquery.internal.domain.QueryResultExtractor;
 import org.openhab.binding.dbquery.internal.domain.ResultValue;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -52,8 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link QueryHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * Manages query thing, handling it's commands and updating it's channels
  *
  * @author Joan Pujol - Initial contribution
  */

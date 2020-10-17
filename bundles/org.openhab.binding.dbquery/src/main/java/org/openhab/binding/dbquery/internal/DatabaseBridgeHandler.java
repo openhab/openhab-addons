@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2020-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.dbquery.internal;
 
 import java.util.Collection;
@@ -19,6 +31,11 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Base implementation common to all implementation of database bridge
+ *
+ * @author Joan Pujol - Initial contribution
+ */
 public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
     private static final long RETRY_CONNECTION_ATTEMPT_TIME_SECONDS = 60;
     private final Logger logger = LoggerFactory.getLogger(DatabaseBridgeHandler.class);
@@ -30,7 +47,6 @@ public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void initialize() {
         logger.trace("initialize bridge {}", getThing().getUID());
         initConfig();
