@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SmartHomeUnits;
@@ -325,8 +324,7 @@ public class SolaxX3MicHandler extends BaseThingHandler {
     protected void handlePolledData(ModbusRegisterArray registers) {
         Thing mything = this.getThing();
         for (Channel localchannel : mything.getChannels()) {
-            Configuration config = localchannel.getConfiguration();
-            SolaxX3MicChannelConfiguration solaxChannelConfig = config.as(SolaxX3MicChannelConfiguration.class);
+            SolaxX3MicChannelConfiguration solaxChannelConfig = localchannel.getConfiguration().as(SolaxX3MicChannelConfiguration.class);
             Long value = 0L;
             switch (solaxChannelConfig.registerType) {
                 case "INT":
