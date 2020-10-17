@@ -1,12 +1,7 @@
 # WLED Binding
 
-This openHAB binding allows you to auto discover and use LED strings based on the WLED project:
+This binding allows you to auto discover and use LED strings based on the WLED project:
 <https://github.com/Aircoookie/WLED>
-
-## Fault Finding
-
-To watch what the binding does you can enter this in to the openHAB console, `log:set TRACE org.openhab.binding.wled` which will allow you to test the same commands in a web browser to determine if it is a bug in the binding, or in the firmware for WLED.
-Firmware 0.10.2 is working very well with this binding after extensive testing, so if an issue is found please report what firmware version you are using.
 
 ## Supported Things
 
@@ -18,15 +13,14 @@ Firmware 0.10.2 is working very well with this binding after extensive testing, 
 
 The auto discovery will work with this binding if your network supports mDNS.
 If it fails to find your WLED, you can manually add a `wled` thing by using the UI or textual methods.
-The full example section below gives everything needed to quickly setup using textual config.
 
 ## Thing Configuration
 
-| Parameter | Description |
-|-|-|
-| `address`| The full URL to your WLED device. Example is `http://192.168.0.2:80` |
-| `pollTime`| How often you want the states of the LED fetched in case you make changes with a non openHAB app, web browser, or the light is auto changing FX or presets. |
-| `saturationThreshold` | Allows you to use a colorpicker control linked to the `masterControls` channel to trigger only using the pure white LEDs when your using RGBW strings instead of creating fake white light from the RGB channels. Try setting the value to 12 or for RGB strings, leave this on 0. |
+| Parameter | Description | Required | Default |
+|-|-|-|-|
+| `address`| The full URL to your WLED device. Example is `http://192.168.0.2:80` | Y | |
+| `pollTime`| How often in seconds you want the states of the LED fetched in case you make changes with a non openHAB app, web browser, or the light is auto changing FX or presets. | Y | 10 |
+| `saturationThreshold` | Allows you to use a colorpicker control linked to the `masterControls` channel to trigger only using the pure white LEDs instead of creating fake white light from the RGB channels. Try setting the value to 12 or leave this on 0 for RGB strings. | Y | 0 |
 
 ## Channels
 
@@ -47,31 +41,9 @@ The full example section below gives everything needed to quickly setup using te
 | `transformTime` | Dimmer | How long it takes to transform/morph from one look to the next. |
 | `sleep` | Switch | Turns on the sleep timer. |
 
-## Full Example
+## Sitemap Example
 
-*.things
-
-```
-Thing wled:wled:XmasTree "My Christmas Tree" @ "Lights" [address="http://192.168.0.4:80"]
-```
-
-*.items
-
-```
-Color XmasTree_MasterControls "Christmas Tree" ["Lighting"] {channel="wled:wled:ChristmasTree:masterControls"}
-Color XmasTree_PrimaryColor "Primary Color"    {channel="wled:wled:ChristmasTree:primaryColor"}
-Color XmasTree_SecondaryColor   "Secondary Color"  {channel="wled:wled:ChristmasTree:secondaryColor"}
-String XmasTree_Effect      "FX"        <text>{channel="wled:wled:ChristmasTree:fx"}
-String XmasTree_Palettes  "Palette"   <colorwheel>    {channel="wled:wled:ChristmasTree:palettes"}
-String XmasTree_Presets  "Preset"    <text> {channel="wled:wled:ChristmasTree:presets"}
-Dimmer XmasTree_FXSpeed    "FX Speed"  <time>  {channel="wled:wled:ChristmasTree:speed"}
-Dimmer XmasTree_FXIntensity "FX Intensity" {channel="wled:wled:ChristmasTree:intensity"}
-Switch XmasTree_PresetCycle "presetCycle" <time> {channel="wled:wled:ChristmasTree:presetCycle"}
-Dimmer XmasTree_PresetDuration "presetDuration" <time> {channel="wled:wled:ChristmasTree:presetDuration"}
-Dimmer XmasTree_TransformTime "presetTransformTime" <time> {channel="wled:wled:ChristmasTree:transformTime"}
-Switch XmasTree_Sleep    "Sleep"     <moon> {channel="wled:wled:ChristmasTree:sleep"}
-
-```
+If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the below and just change the name before the underscore to match what you named the `wled` thing when it was added.
 
 *.sitemap
 

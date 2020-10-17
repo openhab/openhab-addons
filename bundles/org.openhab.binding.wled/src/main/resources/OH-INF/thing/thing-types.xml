@@ -26,7 +26,6 @@
 		</channels>
 		<config-description>
 			<parameter name="address" type="text" required="true">
-				<context>network-address</context>
 				<label>Address</label>
 				<description>Use this format http://192.168.1.2:80</description>
 			</parameter>
