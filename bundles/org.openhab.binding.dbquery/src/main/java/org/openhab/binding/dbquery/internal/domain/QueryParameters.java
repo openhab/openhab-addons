@@ -9,9 +9,10 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class QueryParameters {
+    public static final QueryParameters EMPTY = new QueryParameters(Collections.emptyMap());
     private final Map<String, @Nullable Object> params;
 
-    public QueryParameters() {
+    private QueryParameters() {
         this.params = new HashMap<>();
     }
 
@@ -27,7 +28,7 @@ public class QueryParameters {
         return params.get(paramName);
     }
 
-    public Map<String,@Nullable Object> getAll() {
+    public Map<String, @Nullable Object> getAll() {
         return Collections.unmodifiableMap(params);
     }
 

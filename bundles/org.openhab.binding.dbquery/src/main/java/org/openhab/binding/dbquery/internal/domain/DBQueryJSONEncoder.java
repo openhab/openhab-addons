@@ -23,8 +23,7 @@ public class DBQueryJSONEncoder {
     public DBQueryJSONEncoder() {
         gson = new GsonBuilder().registerTypeAdapter(QueryResult.class, new QueryResultGSONSerializer())
                 .registerTypeAdapter(ResultRow.class, new ResultRowGSONSerializer())
-                       .registerTypeAdapter(QueryParameters.class, new QueryParametersGSONSerializer())
-                       .create();
+                .registerTypeAdapter(QueryParameters.class, new QueryParametersGSONSerializer()).create();
     }
 
     public String encode(QueryResult queryResult) {
@@ -80,7 +79,7 @@ public class DBQueryJSONEncoder {
         @Override
         public JsonElement serialize(QueryParameters src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
-            for(Map.Entry<String,@Nullable Object> param : src.getAll().entrySet())  {
+            for (Map.Entry<String, @Nullable Object> param : src.getAll().entrySet()) {
                 jsonObject.add(param.getKey(), convertValueToJsonPrimitive(param.getValue()));
             }
             return jsonObject;
