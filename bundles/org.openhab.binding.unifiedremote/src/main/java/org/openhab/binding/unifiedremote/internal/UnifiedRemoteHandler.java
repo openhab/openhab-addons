@@ -132,7 +132,7 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
     }
 
     private void stopConnectionChecker() {
-        if (connectionCheckerSchedule != null && !connectionCheckerSchedule.isCancelled()) {
+        if (connectionCheckerSchedule != null) {
             connectionCheckerSchedule.cancel(true);
         }
         connectionCheckerSchedule = null;

@@ -10,7 +10,7 @@ Discovery works on the default discovery UDP port 9511.
 
 ## Thing Configuration
 
-Only supported thing is 'Unified Remote Server Thing' witch requires the Hostname to be correctly configured in order to work.
+Only supported thing is 'Unified Remote Server Thing' which requires the Hostname to be correctly configured in order to work.
 
 | ThinTypeID   | description                  |
 |----------|------------------------------|
@@ -35,10 +35,13 @@ Only supported thing is 'Unified Remote Server Thing' witch requires the Hostnam
 ## Full Example
 
 ### Sample Thing
+
 ```
 Thing unifiedremote:server:xx-xx-xx-xx-xx-xx [ host="192.168.1.10" ]
 ```
+
 ### Sample Items
+
 ```
 Group   pcRemote    "Living room PC"
 String  PC_SendKey       "Send Key"                            (pcRemote)   {  channel="unifiedremote:server:xx-xx-xx-xx-xx-xx:send-key" }

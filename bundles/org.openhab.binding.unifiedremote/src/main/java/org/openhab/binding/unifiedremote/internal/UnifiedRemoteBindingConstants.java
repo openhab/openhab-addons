@@ -39,6 +39,7 @@ public class UnifiedRemoteBindingConstants {
     public static final String SEND_KEY_CHANNEL = "send-key";
 
     // List of all Parameters
+    public static final String PARAMETER_MAC_ADDRESS = "macAddress";
     public static final String PARAMETER_HOSTNAME = "host";
     public static final String PARAMETER_TCP_PORT = "udpPort";
     public static final String PARAMETER_UDP_PORT = "tcpPort";

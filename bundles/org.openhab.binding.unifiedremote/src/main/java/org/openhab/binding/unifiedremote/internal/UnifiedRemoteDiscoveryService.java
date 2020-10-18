@@ -57,12 +57,13 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
 
     private void addNewServer(UnifiedRemoteUdpDiscovery.ServerInfo serverInfo) {
         Map<String, Object> properties = new HashMap<>();
+        properties.put(PARAMETER_MAC_ADDRESS, serverInfo.macAddress);
         properties.put(PARAMETER_HOSTNAME, serverInfo.host);
         properties.put(PARAMETER_TCP_PORT, serverInfo.tcpPort);
         properties.put(PARAMETER_UDP_PORT, serverInfo.udpPort);
         thingDiscovered(
                 DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_UNIFIED_REMOTE_SERVER, serverInfo.macAddress))
-                        .withTTL(DISCOVERY_RESULT_TTL_SEC).withRepresentationProperty(serverInfo.macAddress)
+                        .withTTL(DISCOVERY_RESULT_TTL_SEC).withRepresentationProperty(PARAMETER_MAC_ADDRESS)
                         .withProperties(properties).withLabel(serverInfo.name).build());
     }
 
