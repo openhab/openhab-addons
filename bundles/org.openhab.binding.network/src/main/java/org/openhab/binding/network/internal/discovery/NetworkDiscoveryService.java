@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,7 +66,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     // TCP port 1025 (Xbox / MS-RPC)
     private Set<Integer> tcpServicePorts = Collections
             .unmodifiableSet(Stream.of(80, 548, 554, 1025).collect(Collectors.toSet()));
-    private Integer scannedIPcount = 0;
+    private AtomicInteger scannedIPcount = new AtomicInteger(0);
     private @Nullable ExecutorService executorService = null;
     private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
     private final NetworkUtils networkUtils = new NetworkUtils();
@@ -135,7 +136,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         logger.trace("Starting Network Device Discovery");
 
         final Set<String> networkIPs = networkUtils.getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE);
-        scannedIPcount = 0;
+        scannedIPcount.set(0);
 
         for (String ip : networkIPs) {
             final PresenceDetection s = new PresenceDetection(this, 2000);
@@ -152,12 +153,10 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             service.execute(() -> {
                 Thread.currentThread().setName("Discovery thread " + ip);
                 s.performPresenceDetection(true);
-                synchronized (scannedIPcount) {
-                    scannedIPcount += 1;
-                    if (scannedIPcount == networkIPs.size()) {
-                        logger.trace("Scan of {} IPs successful", scannedIPcount);
-                        stopScan();
-                    }
+                int count = scannedIPcount.incrementAndGet();
+                if (count == networkIPs.size()) {
+                    logger.trace("Scan of {} IPs successful", scannedIPcount);
+                    stopScan();
                 }
             });
         }
