@@ -31,5 +31,5 @@ public class DimmerConfig {
     public BigDecimal fadeInTime = new BigDecimal(DEFAULT_FADE);
     public BigDecimal fadeOutTime = new BigDecimal(DEFAULT_FADE);
     public BigDecimal onLevel = new BigDecimal(DEFAULT_ONLEVEL);
-    public Boolean onToLast = new Boolean(DEFAULT_ONTOLAST);
+    public Boolean onToLast = DEFAULT_ONTOLAST;
 }

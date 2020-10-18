@@ -19,6 +19,8 @@ package org.openhab.binding.linky.internal;
  * @author Gaël L'hopital - Initial contribution
  */
 public class LinkyConfiguration {
+    public static final String INTERNAL_AUTH_ID = "internalAuthId";
     public String username;
     public String password;
+    public String internalAuthId;
 }

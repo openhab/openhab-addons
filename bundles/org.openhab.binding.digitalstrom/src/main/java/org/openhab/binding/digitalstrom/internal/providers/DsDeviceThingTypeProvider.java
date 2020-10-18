@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Ochel - initial contributer
  * @author Matthias Siegele - initial contributer
  */
-@Component(service = ThingTypeProvider.class, immediate = true)
+@Component(service = ThingTypeProvider.class)
 public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypeProvider {
 
     /**

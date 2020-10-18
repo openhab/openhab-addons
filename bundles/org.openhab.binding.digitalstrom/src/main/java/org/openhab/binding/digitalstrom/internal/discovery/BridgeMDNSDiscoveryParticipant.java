@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Matthias Siegele - Initial contribution
  *
  */
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class)
 public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeMDNSDiscoveryParticipant.class);

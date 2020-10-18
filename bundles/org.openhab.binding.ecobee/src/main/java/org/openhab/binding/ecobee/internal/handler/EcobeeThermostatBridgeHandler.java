@@ -32,7 +32,7 @@ import javax.measure.Unit;
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ecobee.action.EcobeeActions;
+import org.openhab.binding.ecobee.internal.action.EcobeeActions;
 import org.openhab.binding.ecobee.internal.api.EcobeeApi;
 import org.openhab.binding.ecobee.internal.config.EcobeeThermostatConfiguration;
 import org.openhab.binding.ecobee.internal.discovery.SensorDiscoveryService;

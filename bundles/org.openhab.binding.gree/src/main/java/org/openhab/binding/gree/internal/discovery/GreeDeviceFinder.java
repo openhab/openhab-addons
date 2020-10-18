@@ -49,7 +49,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
  */
 @NonNullByDefault
-@Component(service = GreeDeviceFinder.class, immediate = true, configurationPid = "devicefinder.gree")
+@Component(service = GreeDeviceFinder.class, configurationPid = "devicefinder.gree")
 public class GreeDeviceFinder {
     private final Logger logger = LoggerFactory.getLogger(GreeDeviceFinder.class);
     private static final Gson gson = (new GsonBuilder()).create();

@@ -326,11 +326,10 @@ public class IpCameraGroupHandler extends BaseThingHandler {
                         for (IpCameraHandler handler : cameraOrder) {
                             String channelPrefix = "ipcamera:" + handler.getThing().getThingTypeUID() + ":"
                                     + handler.getThing().getUID().getId() + ":";
-
                             handler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM), OnOffType.ON);
                         }
                     } else {
-                        // TODO: Do we turn all controls OFF or do we remember the state before we turned them all on?
+                        // Do we turn all controls OFF, or do we remember the state before we turned them all on?
                         hlsTurnedOn = false;
                     }
             }

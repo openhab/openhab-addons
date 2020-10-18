@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.sagercaster")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.sagercaster")
 public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(SagerCasterDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;

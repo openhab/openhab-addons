@@ -152,6 +152,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             value = new JsonPrimitive(command == OnOffType.ON ? "on" : "off");
                         } else if (paramType == CommandParameterType.ONOFFPARA) {
                             cmd = cmd.replace("*", command == OnOffType.ON ? "on" : "off");
+                            value = new JsonArray();
                         } else if (paramType == CommandParameterType.ONOFFBOOL) {
                             boolean boolCommand = command == OnOffType.ON;
                             value = new JsonPrimitive(boolCommand);
@@ -186,7 +187,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             value = miotTransform(miIoBasicChannel, value);
                         }
                     }
-                    if (paramType != CommandParameterType.NONE && value != null) {
+                    if (paramType != CommandParameterType.NONE && paramType != CommandParameterType.ONOFFPARA
+                            && value != null) {
                         if (parameters.size() > 0) {
                             parameters.set(valuePos, value);
                         } else {
@@ -426,6 +428,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (res.size() != para.size()) {
             logger.debug("Unexpected size different. Request size {},  response size {}. (Req: {}, Resp:{})",
                     para.size(), res.size(), para, res);
+            return;
         }
         for (int i = 0; i < para.size(); i++) {
             // This is a miot parameter

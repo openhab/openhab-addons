@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"yeelink.light.ceiling2"
+			"yeelink.light.ceiling2",
+			"yeelink.light.panel1"
 		],
 		"channels": [
 			{

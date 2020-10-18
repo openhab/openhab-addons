@@ -21,12 +21,12 @@
 
 			<parameter name="additionalDevices" type="text">
 				<label>Additional Devices</label>
-				<description>Optional file with additional device types.</description>
+				<description>File with additional device types.</description>
 			</parameter>
 
 			<parameter name="additionalFeatures" type="text">
 				<label>Additional Features</label>
-				<description>Optional file with additional feature templates.</description>
+				<description>File with additional feature templates.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>

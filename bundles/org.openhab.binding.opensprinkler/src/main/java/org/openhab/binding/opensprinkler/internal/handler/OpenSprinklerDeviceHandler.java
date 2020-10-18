@@ -27,6 +27,7 @@ import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -94,7 +95,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 logger.debug("Could not query current draw. Not removing channel as it could be temporary.", e);
             }
         }
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

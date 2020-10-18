@@ -73,7 +73,34 @@
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
-	<!-- Channel definitions of specific FRITZ! devices -->
+	<!-- Channel Group definitions of specific FRITZ! devices -->
+	<channel-group-type id="button">
+		<label>Button</label>
+		<channels>
+			<channel id="press" typeId="system.rawbutton">
+				<label>Button Press</label>
+				<description>Triggeres PRESSED when a button was pressed.</description>
+			</channel>
+			<channel id="last_change" typeId="last_change"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="device">
+		<label>Device Data</label>
+		<channels>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sensors">
+		<label>Sensor Data</label>
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel definitions of specific FRITZ! devices or Channel Groups -->
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Current Temperature</label>

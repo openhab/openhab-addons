@@ -40,7 +40,7 @@ import com.google.gson.JsonObject;
  * @author Kuba Wolanin - logger fixes
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.mihome")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.mihome")
 public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService implements XiaomiSocketListener {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);

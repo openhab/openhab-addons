@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Connor Petty - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = { BluetoothDiscoveryParticipant.class })
+@Component(service = { BluetoothDiscoveryParticipant.class })
 public class RoamingBluetoothDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();

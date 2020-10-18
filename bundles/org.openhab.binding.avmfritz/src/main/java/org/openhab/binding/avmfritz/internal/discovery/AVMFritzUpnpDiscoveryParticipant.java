@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for groups
  * @author Christoph Weitkamp - Use "discovery.avmfritz:background=false" to disable discovery service
  */
-@Component(immediate = true, configurationPid = "discovery.avmfritz")
+@Component(configurationPid = "discovery.avmfritz")
 @NonNullByDefault
 public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 

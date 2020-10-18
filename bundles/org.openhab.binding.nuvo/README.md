@@ -5,12 +5,15 @@
 This binding can be used to control the Nuvo Grand Concerto or Essentia G whole house multi-zone amplifier.
 Up to 20 keypad zones can be controlled when zone expansion modules are used (if not all zones on the amp are used they can be excluded via configuration).
 
-The binding supports two different kinds of connections:
+The binding supports three different kinds of connections:
 
 * serial connection,
-* serial over IP connection
+* serial over IP connection,
+* direct IP connection via a Nuvo MPS4 music server
 
 For users without a serial connector on the server side, you can use a serial to USB adapter.
+
+If you are using the Nuvo MPS4 music server with your Grand Concerto or Essentia G, the binding can connect to the server's IP address on port 5006.
 
 You don't need to have your Grand Concerto or Essentia G whole house amplifier device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
@@ -37,13 +40,15 @@ The thing has the following configuration parameters:
 | Parameter Label         | Parameter ID | Description                                                                                                                        | Accepted values        |
 |-------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------|------------------------|
 | Serial Port             | serialPort   | Serial port to use for connecting to the Nuvo whole house amplifier device                                                         | a comm port name       |
-| Address                 | host         | Host name or IP address of the machine connected to the Nuvo whole house amplifier device (serial over IP)                         | host name or ip        |
+| Address                 | host         | Host name or IP address of the machine connected to the Nuvo whole house amplifier serial port (serial over IP) or MPS4 server     | host name or ip        |
 | Port                    | port         | Communication port (serial over IP).                                                                                               | ip port number         |
 | Number of Zones         | numZones     | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)        | (1-20; default 6)      |
 | Sync Clock on GConcerto | clockSync    | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock | Boolean; default false |
 
 Some notes:
 
+* The direct connection to the MPS4 server has not been exhaustively tested, please report any issues found.
+* The only issue with the MPS4 connection seen thus far is that the setting SxDISPINFO as seen in the advanced rules below does not work.
 * If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
 * Source display_line1 thru 4 can only be updated on non NuvoNet sources.
 * The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.
@@ -70,6 +75,7 @@ The following channels are available:
 | zoneN#source (where N= 1-20)         | Number      | Select the source input for a zone (1-6)                                                                      |
 | zoneN#volume (where N= 1-20)         | Dimmer      | Control the volume for a zone (0-100%) [translates to 0-79]                                                   |
 | zoneN#mute (where N= 1-20)           | Switch      | Mute or unmute a zone                                                                                         |
+| zoneN#favorite (where N= 1-20)       | Number      | Select a preset Favorite for a zone (1-12)                                                                    |
 | zoneN#control (where N= 1-20)        | Player      | Simulate pressing the transport control buttons on the keypad e.g. play/pause/next/previous                   |
 | zoneN#treble (where N= 1-20)         | Number      | Adjust the treble control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full               |
 | zoneN#bass (where N= 1-20)           | Number      | Adjust the bass control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                 |
@@ -98,6 +104,9 @@ nuvo:amplifier:myamp "Nuvo WHA" [ serialPort="COM5", numZones=6, clockSync=false
 // serial over IP connection
 nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=4444, numZones=6, clockSync=false]
 
+// MPS4 server IP connection
+nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=5006, numZones=6, clockSync=false]
+
 ```
 
 nuvo.items:
@@ -113,6 +122,7 @@ Switch nuvo_z1_power "Power" { channel="nuvo:amplifier:myamp:zone1#power" }
 Number nuvo_z1_source "Source Input [%s]" { channel="nuvo:amplifier:myamp:zone1#source" }
 Dimmer nuvo_z1_volume "Volume [%d %%]" { channel="nuvo:amplifier:myamp:zone1#volume" }
 Switch nuvo_z1_mute "Mute" { channel="nuvo:amplifier:myamp:zone1#mute" }
+Number nuvo_z1_favorite "Favorite" { channel="nuvo:amplifier:myamp:zone1#favorite" }
 Player nuvo_z1_control "Control" { channel="nuvo:amplifier:myamp:zone1#control" }
 Number nuvo_z1_treble "Treble Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#treble" }
 Number nuvo_z1_bass "Bass Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#bass" }
@@ -197,6 +207,8 @@ sitemap nuvo label="Audio Control" {
         //Volume can be a Setpoint also
         Slider item=nuvo_z1_volume minValue=0 maxValue=100 step=1 visibility=[nuvo_z1_power==ON] icon="soundvolume"
         Switch item=nuvo_z1_mute visibility=[nuvo_z1_power==ON] icon="soundvolume_mute"
+        // mappings is optional to override the default dropdown item labels
+        Selection item=nuvo_z1_favorite visibility=[nuvo_z1_power==ON] icon="player" //mappings=[1="WNYC", 2="BBC One", 3="My Playlist"]
         Default item=nuvo_z1_control visibility=[nuvo_z1_power==ON]
 
         Text item=nuvo_s1_display_line1 visibility=[nuvo_z1_source=="1"] icon="zoom"
@@ -253,13 +265,15 @@ sitemap nuvo label="Audio Control" {
         Text item=nuvo_s6_track_position visibility=[nuvo_z1_source=="6"]
         Text item=nuvo_s6_button_press visibility=[nuvo_z1_source=="6"] icon="none"
 
-        Setpoint item=nuvo_z1_treble label="Treble Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
-        Setpoint item=nuvo_z1_bass label="Bass Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
-        Setpoint item=nuvo_z1_balance label="Balance Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
-        Switch item=nuvo_z1_loudness visibility=[nuvo_z1_power==ON]
-        Switch item=nuvo_z1_dnd visibility=[nuvo_z1_power==ON]
-        Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock"
-        Switch item=nuvo_z1_party visibility=[nuvo_z1_power==ON]
+        Text label="Advanced" icon="settings" visibility=[nuvo_z1_power==ON] {
+            Setpoint item=nuvo_z1_treble label="Treble Adjustment [%d]" minValue=-18 maxValue=18 step=2
+            Setpoint item=nuvo_z1_bass label="Bass Adjustment [%d]" minValue=-18 maxValue=18 step=2
+            Setpoint item=nuvo_z1_balance label="Balance Adjustment [%d]" minValue=-18 maxValue=18 step=2
+            Switch item=nuvo_z1_loudness
+            Switch item=nuvo_z1_dnd
+            Switch item=nuvo_z1_party
+        }
+        Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock" visibility=[nuvo_z1_lock=="1"]
     }
     
     //repeat for zones 2-20 (substitute z1)
@@ -293,9 +307,6 @@ then
 
     // Send a message to Zone 11
     //actions.sendNuvoCommand("Z11MSG\"Hello World\",0,0")
-
-    // Select a Favorite (1-12) for Zone 2
-    //actions.sendNuvoCommand("Z2FAV1")
 
 end
 

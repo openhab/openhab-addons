@@ -20,10 +20,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
@@ -41,10 +41,8 @@ import org.slf4j.LoggerFactory;
  * @author Jochen Hiller - Initial contribution and API
  * @author Laurent Garnier - add support for OGG and AAC audio formats
  */
-@Component(configurationPid = "org.openhab.voicerss", property = { Constants.SERVICE_PID + "=org.openhab.voicerss",
-        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=voice:voicerss",
-        ConfigurableService.SERVICE_PROPERTY_LABEL + "=VoiceRSS Text-to-Speech",
-        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=voice" })
+@Component(configurationPid = "org.openhab.voicerss", property = Constants.SERVICE_PID + "=org.openhab.voicerss")
+@ConfigurableService(category = "voice", label = "VoiceRSS Text-to-Speech", description_uri = "voice:voicerss")
 public class VoiceRSSTTSService implements TTSService {
 
     /** Cache folder name is below userdata/voicerss/cache. */
@@ -220,7 +218,7 @@ public class VoiceRSSTTSService implements TTSService {
 
     private String getCacheFolderName() {
         // we assume that this folder does NOT have a trailing separator
-        return ConfigConstants.getUserDataFolder() + File.separator + CACHE_FOLDER_NAME;
+        return OpenHAB.getUserDataFolder() + File.separator + CACHE_FOLDER_NAME;
     }
 
     @Override

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="zoneminder"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="server">
+		<label>ZoneMinder Server</label>
+		<description>Represents a ZoneMinder server</description>
+		<channels>
+			<channel id="imageMonitorId" typeId="id">
+				<label>Image Monitor Id</label>
+				<description>Monitor ID for Image URL Channel</description>
+			</channel>
+			<channel id="imageUrl" typeId="url">
+				<label>Image URL</label>
+			</channel>
+			<channel id="videoMonitorId" typeId="id">
+				<label>Video Monitor Id</label>
+				<description>Monitor ID for Video URL Channel</description>
+			</channel>
+			<channel id="videoUrl" typeId="url">
+				<label>Video URL</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:zoneminder:server"/>
+	</bridge-type>
+
+	<thing-type id="monitor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+
+		<label>ZoneMinder Monitor</label>
+		<description>Represents a ZoneMinder monitor</description>
+		<channels>
+			<channel id="id" typeId="id"/>
+			<channel id="name" typeId="name"/>
+			<channel id="image" typeId="image"/>
+			<channel id="enable" typeId="enable"/>
+			<channel id="function" typeId="function"/>
+			<channel id="alarm" typeId="alarm"/>
+			<channel id="state" typeId="state"/>
+			<channel id="triggerAlarm" typeId="triggerAlarm"/>
+			<channel id="hourEvents" typeId="events">
+				<label>Hour Events</label>
+			</channel>
+			<channel id="dayEvents" typeId="events">
+				<label>Day Events</label>
+			</channel>
+			<channel id="weekEvents" typeId="events">
+				<label>Week Events</label>
+			</channel>
+			<channel id="monthEvents" typeId="events">
+				<label>Month Events</label>
+			</channel>
+			<channel id="totalEvents" typeId="events">
+				<label>Total Events</label>
+			</channel>
+			<channel id="imageUrl" typeId="url">
+				<label>Image URL</label>
+			</channel>
+			<channel id="videoUrl" typeId="url">
+				<label>Video URL</label>
+			</channel>
+			<channel id="eventId" typeId="eventId"/>
+			<channel id="eventName" typeId="eventName"/>
+			<channel id="eventCause" typeId="eventCause"/>
+			<channel id="eventNotes" typeId="eventNotes"/>
+			<channel id="eventStart" typeId="eventStart"/>
+			<channel id="eventEnd" typeId="eventEnd"/>
+			<channel id="eventFrames" typeId="eventFrames"/>
+			<channel id="eventAlarmFrames" typeId="eventAlarmFrames"/>
+			<channel id="eventLength" typeId="eventLength"/>
+		</channels>
+		<config-description-ref uri="thing-type:zoneminder:monitor"/>
+	</thing-type>
+
+	<channel-type id="id">
+		<item-type>String</item-type>
+		<label>ID</label>
+		<description>Monitor ID</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Monitor name</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<description>A single snapshot image</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="enable">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>Enable or disable monitor</description>
+		<state pattern="%s">
+			<options>
+				<option value="ON">Enable</option>
+				<option value="OFF">Disable</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="function">
+		<item-type>String</item-type>
+		<label>Function</label>
+		<description>State of the monitor (e.g. Nodect, Record)</description>
+		<state pattern="%s">
+			<options>
+				<option value="None">None</option>
+				<option value="Monitor">Monitor</option>
+				<option value="Modect">Modect</option>
+				<option value="Record">Record</option>
+				<option value="Mocord">Mocord</option>
+				<option value="Nodect">Nodect</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<description>Monitor alarm status</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>Current monitor state</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="UNKNOWN">UNKNOWN</option>
+				<option value="IDLE">IDLE</option>
+				<option value="PREALARM">PREALARM</option>
+				<option value="ALARM">ALARM</option>
+				<option value="ALERT">ALERT</option>
+				<option value="TAPE">TAPE</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="triggerAlarm">
+		<item-type>Switch</item-type>
+		<label>Trigger Alarm</label>
+		<description>Triggers an alarm</description>
+		<state pattern="%s"></state>
+	</channel-type>
+	<channel-type id="events">
+		<item-type>Number</item-type>
+		<label>Number of Events</label>
+		<description>Number of events in time period</description>
+		<state readOnly="true" pattern="%.0f"></state>
+	</channel-type>
+	<channel-type id="url">
+		<item-type>String</item-type>
+		<label>URL</label>
+		<description>URL of image or stream</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="eventId">
+		<item-type>String</item-type>
+		<label>Event Id</label>
+		<description>Id of the event</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="eventName">
+		<item-type>String</item-type>
+		<label>Event Name</label>
+		<description>Name of the event</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="eventCause">
+		<item-type>String</item-type>
+		<label>Event Cause</label>
+		<description>Cause of the event</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="eventNotes">
+		<item-type>String</item-type>
+		<label>Event Notes</label>
+		<description>Notes for the event</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="eventStart">
+		<item-type>DateTime</item-type>
+		<label>Event Start</label>
+		<description>Start date/time of the event</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"></state>
+	</channel-type>
+	<channel-type id="eventEnd">
+		<item-type>DateTime</item-type>
+		<label>Event End</label>
+		<description>End date/time of the event</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"></state>
+	</channel-type>
+	<channel-type id="eventFrames">
+		<item-type>Number</item-type>
+		<label>Event Frames</label>
+		<description>Number of frames in the event</description>
+		<state readOnly="true" pattern="%d"></state>
+	</channel-type>
+	<channel-type id="eventAlarmFrames">
+		<item-type>Number</item-type>
+		<label>Event Alarm Frames</label>
+		<description>Number of alarm frames in the event</description>
+		<state readOnly="true" pattern="%d"></state>
+	</channel-type>
+	<channel-type id="eventLength">
+		<item-type>Number:Time</item-type>
+		<label>Event Length</label>
+		<description>Length of the event in seconds</description>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

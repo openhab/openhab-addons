@@ -49,7 +49,11 @@ public class DataTypeTemperature implements ComfoAirDataType {
         } else {
             int[] readReplyDataPos = commandType.getReadReplyDataPos();
             if (readReplyDataPos != null && readReplyDataPos[0] < data.length) {
-                return new QuantityType<>((((double) data[readReplyDataPos[0]]) / 2) - 20, SIUnits.CELSIUS);
+                if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_EWT) {
+                    return new QuantityType<>((double) data[readReplyDataPos[0]], SIUnits.CELSIUS);
+                } else {
+                    return new QuantityType<>((((double) data[readReplyDataPos[0]]) / 2) - 20, SIUnits.CELSIUS);
+                }
             } else {
                 return UnDefType.NULL;
             }
@@ -62,7 +66,11 @@ public class DataTypeTemperature implements ComfoAirDataType {
         QuantityType<?> celsius = ((QuantityType<?>) value).toUnit(SIUnits.CELSIUS);
 
         if (celsius != null) {
-            template[commandType.getChangeDataPos()] = (int) (celsius.doubleValue() + 20) * 2;
+            if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_EWT) {
+                template[commandType.getChangeDataPos()] = celsius.intValue();
+            } else {
+                template[commandType.getChangeDataPos()] = (int) (celsius.doubleValue() + 20) * 2;
+            }
             return template;
         } else {
             logger.trace("\"DataTypeTemperature\" class \"convertFromState\" undefined state");

@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.velux.internal;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
 import java.lang.reflect.Field;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
@@ -56,8 +53,9 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
         logger.trace("VeluxBinding(constructor) called.");
         if (logger.isTraceEnabled()) {
             for (Field field : VeluxBridgeConfiguration.class.getFields()) {
-                if (!StringUtils.capitalize(field.getName()).contentEquals(field.getName())) {
-                    logger.trace("VeluxBinding(): FYI: a potential configuration string is '{}'.", field.getName());
+                String fName = field.getName();
+                if ((fName.length() > 0) && Character.isUpperCase(fName.charAt(0))) {
+                    logger.trace("VeluxBinding(): FYI: a potential configuration string is '{}'.", fName);
                 }
             }
         }
@@ -65,11 +63,11 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
             logger.debug("No configuration found, using default values.");
         } else {
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_PROTOCOL);
-            if (isNotBlank(uncheckedConfiguration.protocol)) {
+            if (!uncheckedConfiguration.protocol.isBlank()) {
                 this.protocol = uncheckedConfiguration.protocol;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_IPADDRESS);
-            if (isNotBlank(uncheckedConfiguration.ipAddress)) {
+            if (!uncheckedConfiguration.ipAddress.isBlank()) {
                 this.ipAddress = uncheckedConfiguration.ipAddress;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_TCPPORT);
@@ -77,7 +75,7 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
                 this.tcpPort = uncheckedConfiguration.tcpPort;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_PASSWORD);
-            if (isNotBlank(uncheckedConfiguration.password)) {
+            if (!uncheckedConfiguration.password.isBlank()) {
                 this.password = uncheckedConfiguration.password;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_TIMEOUT_MSECS);

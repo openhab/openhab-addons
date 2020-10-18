@@ -31,7 +31,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.OpenHAB;
-import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
@@ -71,12 +70,10 @@ import org.slf4j.LoggerFactory;
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
  */
-@Component(immediate = true, service = { EventSubscriber.class,
-        ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = {
-                Constants.SERVICE_PID + "=org.openhab.openhabcloud",
-                ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:openhabcloud",
-                ConfigurableService.SERVICE_PROPERTY_LABEL + "=openHAB Cloud",
-                ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io" })
+@Component(service = { EventSubscriber.class,
+        ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = Constants.SERVICE_PID
+                + "=org.openhab.openhabcloud")
+@ConfigurableService(category = "io", label = "openHAB Cloud", description_uri = "io:openhabcloud")
 public class CloudService implements ActionService, CloudClientListener, EventSubscriber {
 
     private static final String CFG_EXPOSE = "expose";
@@ -291,7 +288,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * Returns either existing secret from the file or newly created secret.
      */
     private String getSecret() {
-        File file = new File(ConfigConstants.getUserDataFolder() + File.separator + SECRET_FILE_NAME);
+        File file = new File(OpenHAB.getUserDataFolder() + File.separator + SECRET_FILE_NAME);
         String newSecretString = "";
 
         if (!file.exists()) {

@@ -23,11 +23,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.PresenceConfigUpdate;
 import org.openhab.binding.hue.internal.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.handler.HueClient;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Presence Sensor
@@ -39,8 +45,36 @@ import org.openhab.core.thing.ThingTypeUID;
 public class PresenceHandler extends HueSensorHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PRESENCE_SENSOR);
 
+    private final Logger logger = LoggerFactory.getLogger(PresenceHandler.class);
+
     public PresenceHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void handleCommand(String channel, Command command) {
+        HueClient hueBridge = getHueClient();
+        if (hueBridge == null) {
+            logger.warn("hue bridge handler not found. Cannot handle command without bridge.");
+            return;
+        }
+
+        final FullSensor sensor = lastFullSensor;
+        if (sensor == null) {
+            logger.debug("hue sensor not known on bridge. Cannot handle command.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-wrong-sensor-id");
+            return;
+        }
+
+        SensorConfigUpdate configUpdate = new SensorConfigUpdate();
+        switch (channel) {
+            case CHANNEL_ENABLED:
+                configUpdate.setOn(OnOffType.ON.equals(command));
+                break;
+        }
+
+        hueBridge.updateSensorConfig(sensor, configUpdate);
     }
 
     @Override

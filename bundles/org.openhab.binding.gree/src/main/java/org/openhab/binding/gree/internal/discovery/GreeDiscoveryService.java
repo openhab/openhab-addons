@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.gree")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.gree")
 public class GreeDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT_SEC = 10;
     private final Logger logger = LoggerFactory.getLogger(GreeDiscoveryService.class);

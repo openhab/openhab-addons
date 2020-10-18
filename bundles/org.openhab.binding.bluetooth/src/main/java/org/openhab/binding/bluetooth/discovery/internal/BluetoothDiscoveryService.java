@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Connor Petty - Introduced connection based discovery and added roaming support
  */
 @NonNullByDefault
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.bluetooth")
 public class BluetoothDiscoveryService extends AbstractDiscoveryService implements BluetoothDiscoveryListener {
 
     private final Logger logger = LoggerFactory.getLogger(BluetoothDiscoveryService.class);
@@ -267,6 +267,10 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             future = future.thenApply(result -> {
                 publishDiscoveryResult(adapter, result);
                 return result;
+            }).whenComplete((r, t) -> {
+                if (t != null) {
+                    logger.warn("Error occured during discovery of {}", device.getAddress(), t);
+                }
             });
 
             // now save this snapshot for later

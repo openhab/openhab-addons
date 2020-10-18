@@ -21,8 +21,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.thing.Bridge;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jupnp.model.ValidationException;
@@ -34,6 +32,8 @@ import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.binding.wemo.internal.test.GenericWemoLightOSGiTestParent;
 import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.thing.Bridge;
 
 /**
  * Tests for {@link WemoLinkDiscoveryService}.

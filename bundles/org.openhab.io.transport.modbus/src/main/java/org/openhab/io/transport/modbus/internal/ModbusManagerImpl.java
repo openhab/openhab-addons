@@ -84,7 +84,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
  *
  * @author Sami Salonen - Initial contribution
  */
-@Component(service = ModbusManager.class, immediate = true, configurationPid = "transport.modbus")
+@Component(service = ModbusManager.class, configurationPid = "transport.modbus")
 @NonNullByDefault
 public class ModbusManagerImpl implements ModbusManager {
 

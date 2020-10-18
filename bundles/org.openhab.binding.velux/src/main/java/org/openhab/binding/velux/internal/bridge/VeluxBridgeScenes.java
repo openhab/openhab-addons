@@ -49,7 +49,6 @@ public class VeluxBridgeScenes {
      * <li>existingScenes ({@link VeluxExistingScenes}).
      * </ul>
      */
-    @NonNullByDefault
     public class Channel {
         public VeluxExistingScenes existingScenes = new VeluxExistingScenes();
     }

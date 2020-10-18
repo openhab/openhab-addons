@@ -37,7 +37,6 @@ public class VeluxProductState {
 
     // Type definitions
 
-    @NonNullByDefault
     private class ProductState {
 
         private int state;

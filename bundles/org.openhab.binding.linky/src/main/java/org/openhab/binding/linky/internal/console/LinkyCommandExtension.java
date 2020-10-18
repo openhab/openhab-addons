@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.linky.internal.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
@@ -47,7 +48,7 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
 
     @Activate
     public LinkyCommandExtension(final @Reference ThingRegistry thingRegistry) {
-        super("linky", "Interact with the Linky binding.");
+        super(LinkyBindingConstants.BINDING_ID, "Interact with the Linky binding.");
         this.thingRegistry = thingRegistry;
     }
 
@@ -70,13 +71,13 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                 }
             }
             if (thing == null) {
-                console.println("Bad thing id '" + args[0] + "'");
+                console.println(String.format("Bad thing id '%s'", args[0]));
                 printUsage(console);
             } else if (thingHandler == null) {
-                console.println("No handler initialized for the thing id '" + args[0] + "'");
+                console.println(String.format("No handler initialized for the thing id '%s'", args[0]));
                 printUsage(console);
             } else if (handler == null) {
-                console.println("'" + args[0] + "' is not a Linky thing id");
+                console.println(String.format("'%s' is not a Linky thing id", args[0]));
                 printUsage(console);
             } else if (REPORT.equals(args[1])) {
                 LocalDate now = LocalDate.now();
@@ -87,8 +88,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                     try {
                         start = LocalDate.parse(args[2], DateTimeFormatter.ISO_LOCAL_DATE);
                     } catch (DateTimeParseException e) {
-                        console.println(
-                                "Invalid format for start day '" + args[2] + "'; expected format is YYYY-MM-DD");
+                        console.println(String
+                                .format("Invalid format for start day '%s'; expected format is YYYY-MM-DD", args[2]));
                         printUsage(console);
                         return;
                     }
@@ -97,7 +98,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
                     try {
                         end = LocalDate.parse(args[3], DateTimeFormatter.ISO_LOCAL_DATE);
                     } catch (DateTimeParseException e) {
-                        console.println("Invalid format for end day '" + args[3] + "'; expected format is YYYY-MM-DD");
+                        console.println(String.format("Invalid format for end day '%s'; expected format is YYYY-MM-DD",
+                                args[3]));
                         printUsage(console);
                         return;
                     }
@@ -124,7 +126,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage("<thingUID> " + REPORT + " <start day> <end day> [<separator>]",
-                "report daily consumptions between two dates"));
+        return Arrays
+                .asList(buildCommandUsage(String.format("<thingUID> %s <start day> <end day> [<separator>]", REPORT),
+                        "report daily consumptions between two dates"));
     }
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import static org.openhab.binding.netatmo.internal.APIUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.MEASURABLE_CHANNELS;
 
 import java.util.ArrayList;
@@ -20,11 +21,11 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 
-import io.swagger.client.CollectionFormats.CSVParams;
+import io.swagger.client.model.NAMeasureBodyElem;
 import io.swagger.client.model.NAMeasureResponse;
 
 /**
@@ -64,10 +65,11 @@ public class MeasurableChannels {
         int index = measuredChannels.indexOf(channelId);
         NAMeasureResponse theMeasures = measures;
         if (index != -1 && theMeasures != null) {
-            if (!theMeasures.getBody().isEmpty()) {
-                List<List<Float>> valueList = theMeasures.getBody().get(0).getValue();
+            List<NAMeasureBodyElem> body = nonNullList(theMeasures.getBody());
+            if (!body.isEmpty()) {
+                List<List<Float>> valueList = nonNullList(body.get(0).getValue());
                 if (!valueList.isEmpty()) {
-                    List<Float> values = valueList.get(0);
+                    List<Float> values = nonNullList(valueList.get(0));
                     if (values.size() >= index) {
                         Float value = values.get(index);
                         return Optional.of(ChannelTypeUtils.toDecimalType(value));
@@ -78,9 +80,9 @@ public class MeasurableChannels {
         return Optional.empty();
     }
 
-    public Optional<CSVParams> getAsCsv() {
+    public Optional<List<String>> getMeasuredChannels() {
         if (!measuredChannels.isEmpty()) {
-            return Optional.of(new CSVParams(measuredChannels));
+            return Optional.of(measuredChannels);
         }
         return Optional.empty();
     }

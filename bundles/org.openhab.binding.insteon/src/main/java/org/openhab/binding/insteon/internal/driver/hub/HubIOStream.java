@@ -23,7 +23,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.driver.IOStream;
@@ -213,7 +212,7 @@ public class HubIOStream extends IOStream implements Runnable {
             return; // XXX why return here????
         }
 
-        if (StringUtils.repeat("0", data.length()).equals(data)) {
+        if (allZeros(data)) {
             logger.trace("skip cleared buffer");
             bufferIdx = 0;
             return;
@@ -223,7 +222,7 @@ public class HubIOStream extends IOStream implements Runnable {
         if (nIdx < bufferIdx) {
             String msgStart = data.substring(bufferIdx, data.length());
             String msgEnd = data.substring(0, nIdx);
-            if (StringUtils.repeat("0", msgStart.length()).equals(msgStart)) {
+            if (allZeros(msgStart)) {
                 logger.trace("discard cleared buffer wrap around msg start");
                 msgStart = "";
             }
@@ -239,6 +238,10 @@ public class HubIOStream extends IOStream implements Runnable {
             ((HubInputStream) in).handle(buf);
         }
         bufferIdx = nIdx;
+    }
+
+    private boolean allZeros(String s) {
+        return "0".repeat(s.length()).equals(s);
     }
 
     /**

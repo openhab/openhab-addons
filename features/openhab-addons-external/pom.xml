@@ -10,7 +10,7 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.addons.features.karaf.openhab-addons-external3</artifactId>
+  <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
   <packaging>pom</packaging>
 
   <name>openHAB Add-ons :: Features :: Karaf :: Add-ons External</name>

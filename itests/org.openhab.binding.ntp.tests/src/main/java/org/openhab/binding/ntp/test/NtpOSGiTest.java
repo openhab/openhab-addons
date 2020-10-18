@@ -69,6 +69,7 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
@@ -489,7 +490,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         registerService(eventSubscriberMock);
 
         if (updateEventType.equals(UpdateEventType.HANDLE_COMMAND)) {
-            ntpHandler.handleCommand(new ChannelUID("ntp:test:chan:1"), new StringType("test"));
+            ntpHandler.handleCommand(new ChannelUID("ntp:test:chan:1"), RefreshType.REFRESH);
         } else if (updateEventType.equals(UpdateEventType.CHANNEL_LINKED)) {
             ntpHandler.channelLinked(new ChannelUID("ntp:test:chan:1"));
         }
