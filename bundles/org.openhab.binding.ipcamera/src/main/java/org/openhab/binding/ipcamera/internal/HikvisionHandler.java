@@ -230,7 +230,6 @@ public class HikvisionHandler extends ChannelDuplexHandler {
 
     // This does debouncing of the alarms
     void countDown() {
-
         if (lineCount > 1) {
             lineCount--;
         } else if (lineCount == 1) {

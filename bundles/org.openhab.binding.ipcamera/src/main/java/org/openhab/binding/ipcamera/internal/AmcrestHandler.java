@@ -96,7 +96,6 @@ public class AmcrestHandler extends ChannelDuplexHandler {
                 String value = ipCameraHandler.returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
                 ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value));
             }
-
         } finally {
             ReferenceCountUtil.release(msg);
             ctx.close();

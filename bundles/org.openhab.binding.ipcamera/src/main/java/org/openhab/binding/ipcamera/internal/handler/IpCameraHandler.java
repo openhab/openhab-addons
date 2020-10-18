@@ -161,7 +161,6 @@ public class IpCameraHandler extends BaseThingHandler {
     private String mp4Filename = "ipcamera";
     private int mp4RecordTime;
     private int gifRecordTime = 5;
-    private int mp4Preroll;
     private LinkedList<byte[]> fifoSnapshotBuffer = new LinkedList<byte[]>();
     private int snapCount;
     private boolean updateImageChannel = false;
@@ -409,7 +408,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     // false clears the stored user/pass hash, true creates the hash
     public boolean setBasicAuth(boolean useBasic) {
-        if (useBasic == false) {
+        if (!useBasic) {
             logger.debug("Clearing out the stored BASIC auth now.");
             basicAuth = "";
             return false;
@@ -495,7 +494,6 @@ public class IpCameraHandler extends BaseThingHandler {
     // The authHandler will generate a digest string and re-send using this same function when needed.
     @SuppressWarnings("null")
     public void sendHttpRequest(String httpMethod, String httpRequestURLFull, @Nullable String digestString) {
-
         int port = getPortFromShortenedUrl(httpRequestURLFull);
         String httpRequestURL = getTinyUrl(httpRequestURLFull);
 
@@ -818,8 +816,8 @@ public class IpCameraHandler extends BaseThingHandler {
 
     // sends direct to ctx so can be either snapshots.mjpeg or normal mjpeg stream
     public void sendMjpegFirstPacket(ChannelHandlerContext ctx) {
-        final String BOUNDARY = "thisMjpegStream";
-        String contentType = "multipart/x-mixed-replace; boundary=" + BOUNDARY;
+        final String boundary = "thisMjpegStream";
+        String contentType = "multipart/x-mixed-replace; boundary=" + boundary;
         HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
         response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
@@ -830,10 +828,10 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void sendMjpegFrame(byte[] jpg, ChannelGroup channelGroup) {
-        final String BOUNDARY = "thisMjpegStream";
+        final String boundary = "thisMjpegStream";
         ByteBuf imageByteBuf = Unpooled.copiedBuffer(jpg);
         int length = imageByteBuf.readableBytes();
-        String header = "--" + BOUNDARY + "\r\n" + "content-type: image/jpeg" + "\r\n" + "content-length: " + length
+        String header = "--" + boundary + "\r\n" + "content-type: image/jpeg" + "\r\n" + "content-length: " + length
                 + "\r\n\r\n";
         ByteBuf headerBbuf = Unpooled.copiedBuffer(header, 0, header.length(), StandardCharsets.UTF_8);
         ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
@@ -959,22 +957,17 @@ public class IpCameraHandler extends BaseThingHandler {
                 ffmpegRecord = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                         cameraConfig.getMp4OutOptions(), cameraConfig.getFfmpegOutput() + mp4Filename + ".mp4",
                         cameraConfig.getUser(), cameraConfig.getPassword());
-                if (mp4Preroll > 0) {
-                    // fetchFromHLS(); todo: not done yet
-                }
-                if (ffmpegRecord != null) {
-                    ffmpegRecord.startConverting();
-                    if (mp4History.isEmpty()) {
-                        mp4History = mp4Filename;
-                    } else if (!mp4Filename.equals("ipcamera")) {
-                        mp4History = mp4Filename + "," + mp4History;
-                        if (mp4HistoryLength > 49) {
-                            int endIndex = mp4History.lastIndexOf(",");
-                            mp4History = mp4History.substring(0, endIndex);
-                        }
+                ffmpegRecord.startConverting();
+                if (mp4History.isEmpty()) {
+                    mp4History = mp4Filename;
+                } else if (!mp4Filename.equals("ipcamera")) {
+                    mp4History = mp4Filename + "," + mp4History;
+                    if (mp4HistoryLength > 49) {
+                        int endIndex = mp4History.lastIndexOf(",");
+                        mp4History = mp4History.substring(0, endIndex);
                     }
-                    setChannelState(CHANNEL_MP4_HISTORY, new StringType(mp4History));
                 }
+                setChannelState(CHANNEL_MP4_HISTORY, new StringType(mp4History));
                 break;
             case RTSP_ALARMS:
                 if (ffmpegRtspHelper != null) {
@@ -984,7 +977,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                 }
                 String input = (cameraConfig.getAlarmInputUrl().isEmpty()) ? rtspUri : cameraConfig.getAlarmInputUrl();
-                String OutputOptions = "-f null -";
+                String outputOptions = "-f null -";
                 String filterOptions = "";
                 if (!audioAlarmEnabled) {
                     filterOptions = "-an";
@@ -993,7 +986,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 if (!motionAlarmEnabled && !ffmpegSnapshotGeneration) {
                     filterOptions = filterOptions.concat(" -vn");
-                } else if (motionAlarmEnabled == true) {
+                } else if (motionAlarmEnabled) {
                     filterOptions = filterOptions
                             .concat(" -vf select='gte(scene," + motionThreshold + ")',metadata=print");
                 }
@@ -1001,7 +994,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     filterOptions += " ";// add space as the Framework does not allow spaces at start of config.
                 }
                 ffmpegRtspHelper = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, input,
-                        filterOptions + cameraConfig.getMotionOptions(), OutputOptions, cameraConfig.getUser(),
+                        filterOptions + cameraConfig.getMotionOptions(), outputOptions, cameraConfig.getUser(),
                         cameraConfig.getPassword());
                 ffmpegRtspHelper.startConverting();
                 break;
