@@ -112,7 +112,8 @@ public class LcnModuleHandler extends BaseThingHandler {
             for (Channel channel : thing.getChannels()) {
                 Object unitObject = channel.getConfiguration().get("unit");
                 Object parameterObject = channel.getConfiguration().get("parameter");
-                Object invertConfig = channel.getConfiguration().get("invertState");
+                Object invertState = channel.getConfiguration().get("invertState");
+                Object invertUpDown = channel.getConfiguration().get("invertUpDown");
 
                 // Initialize value converters
                 if (unitObject instanceof String) {
@@ -130,7 +131,7 @@ public class LcnModuleHandler extends BaseThingHandler {
                 }
 
                 // Initialize inversion converter
-                if (invertConfig instanceof Boolean && invertConfig.equals(true)) {
+                if (Boolean.TRUE.equals(invertState) || Boolean.TRUE.equals(invertUpDown)) {
                     converters.put(channel.getUID(), INVERSION_CONVERTER);
                 }
 
