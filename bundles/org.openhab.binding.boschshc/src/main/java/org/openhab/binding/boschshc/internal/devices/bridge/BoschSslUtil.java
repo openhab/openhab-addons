@@ -103,10 +103,6 @@ public class BoschSslUtil {
             } else {
                 // load keystore as a first check
                 KeyStore keyStore = KeyStore.getInstance("JKS");
-                // TODO if SHC system password is changed the keystore can't be loaded and an IOException "... password
-                // was incorrect" is thrown
-                // Either use a different secret instead of the system password (e.g. openHAB UUID?)
-                // or recreate a new keystore with the different system password again (needs pairing)
                 keyStore.load(new FileInputStream(file), keystorePassword.toCharArray());
                 logger.debug("Using existing keystore {}", keystorePath);
                 return keyStore;
