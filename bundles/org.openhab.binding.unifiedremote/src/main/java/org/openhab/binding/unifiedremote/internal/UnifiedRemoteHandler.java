@@ -15,11 +15,15 @@ package org.openhab.binding.unifiedremote.internal;
 import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingConstants.MOUSE_CHANNEL;
 import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingConstants.SEND_KEY_CHANNEL;
 
+import java.net.ConnectException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -27,7 +31,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,23 +43,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UnifiedRemoteHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(UnifiedRemoteHandler.class);
+    private Logger logger = LoggerFactory.getLogger(UnifiedRemoteHandler.class);
 
     private @Nullable UnifiedRemoteConfiguration config;
 
     private @Nullable UnifiedRemoteConnection connection;
     private @Nullable ScheduledFuture<?> connectionCheckerSchedule;
+    private HttpClient httpClient;
 
-    public UnifiedRemoteHandler(Thing thing) {
+    public UnifiedRemoteHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            // TODO: nothing to do for now
-            return;
-        }
         String channelId = channelUID.getId();
         if (!isLinked(channelId))
             return;
@@ -82,9 +83,14 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection not initialized");
             }
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Server request fail: " + e.getMessage());
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            if (e.getCause() instanceof ConnectException) {
+                // we assume thing is offline
+                updateStatus(ThingStatus.OFFLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Unexpected exception: " + e.getMessage());
+            }
         }
     }
 
@@ -97,7 +103,7 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
 
     private UnifiedRemoteConnection getNewConnection() {
         config = getConfigAs(UnifiedRemoteConfiguration.class);
-        return new UnifiedRemoteConnection(config.host);
+        return new UnifiedRemoteConnection(this.httpClient, config.host);
     }
 
     private void initConnectionChecker() {
@@ -113,9 +119,13 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Keep alive failed");
                     }
                 }
-            } catch (Exception e) {
-                if (thing.getStatus() != ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                if (e.getCause() instanceof ConnectException) {
+                    // we assume thing is offline
+                    updateStatus(ThingStatus.OFFLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unexpected exception: " + e.getMessage());
                 }
             }
         }, 0, 40, TimeUnit.SECONDS);
@@ -131,10 +141,6 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         stopConnectionChecker();
-        if (connection != null) {
-            connection.close();
-            connection = null;
-        }
         super.dispose();
     }
 

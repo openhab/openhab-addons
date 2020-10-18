@@ -11,10 +11,11 @@
 			<channel id="mouse-move" typeId="mouse-move-channel"/>
 			<channel id="send-key" typeId="send-key-channel"/>
 		</channels>
-
+		<representation-property>macAddress</representation-property>
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Hostname</label>
+				<context>network-address</context>
 				<description>Unified Remote Server Hostname</description>
 			</parameter>
 			<parameter name="tcpPort" type="integer">

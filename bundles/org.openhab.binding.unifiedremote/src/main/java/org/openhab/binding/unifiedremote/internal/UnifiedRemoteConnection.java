@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.unifiedremote.internal;
 
-import java.io.Closeable;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,33 +39,34 @@ import com.google.gson.JsonParser;
  * @author Miguel Alvarez - Initial contribution
  */
 @NonNullByDefault
-public class UnifiedRemoteConnection implements Closeable {
-    private final Logger logger = LoggerFactory.getLogger(UnifiedRemoteConnection.class);
+public class UnifiedRemoteConnection {
+
+    private static final int WEB_CLIENT_PORT = 9510;
+    private static final int TIMEOUT_SEC = 10;
+    private static final String CONNECTION_ID_HEADER = "UR-Connection-ID";
+    private static final String MOUSE_REMOTE = "Relmtech.Basic Input";
+    private static final String NAVIGATION_REMOTE = "Unified.Navigation";
+    private static final String POWER_REMOTE = "Unified.Power";
+    private static final String MEDIA_REMOTE = "Unified.Media";
+    private static final String MONITOR_REMOTE = "Unified.Monitor";
+
+    private Logger logger = LoggerFactory.getLogger(UnifiedRemoteConnection.class);
     private final String url;
-    private final HttpClient http = new HttpClient();
     private final JsonParser jsonParser = new JsonParser();
-    private final int WEB_CLIENT_PORT = 9510;
-    private final String CONNECTION_ID_HEADER = "UR-Connection-ID";
+    private HttpClient httpClient;
     private @Nullable String connectionID;
     private @Nullable String connectionGUID;
 
-    private final String MOUSE_REMOTE = "Relmtech.Basic Input";
-    private final String NAVIGATION_REMOTE = "Unified.Navigation";
-    private final String POWER_REMOTE = "Unified.Power";
-    private final String MEDIA_REMOTE = "Unified.Media";
-    private final String MONITOR_REMOTE = "Unified.Monitor";
-
-    public UnifiedRemoteConnection(String host) {
+    public UnifiedRemoteConnection(HttpClient httpClient, String host) {
+        this.httpClient = httpClient;
         url = "http://" + host + ":" + WEB_CLIENT_PORT + "/client/";
     }
 
-    public void authenticate() throws Exception {
+    public void authenticate() throws InterruptedException, ExecutionException, TimeoutException {
         ContentResponse response = null;
         connectionGUID = "web-" + UUID.randomUUID().toString();
-        if (!http.isStarted()) {
-            http.start();
-        }
-        response = http.GET(getPath("connect"));
+        response = httpClient.newRequest(getPath("connect")).method(HttpMethod.GET)
+                .timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
         JsonObject responseBody = jsonParser.parse(response.getContentAsString()).getAsJsonObject();
         connectionID = responseBody.get("id").getAsString();
 
@@ -219,6 +221,7 @@ public class UnifiedRemoteConnection implements Closeable {
     private ContentResponse execRemoteAction(String remoteID, String name, @Nullable JsonElement values)
             throws InterruptedException, ExecutionException, TimeoutException {
         JsonObject payload = new JsonObject();
+
         JsonObject runInnerPayload = new JsonObject();
         JsonObject extrasInnerPayload = new JsonObject();
         if (values != null) {
@@ -236,7 +239,8 @@ public class UnifiedRemoteConnection implements Closeable {
 
     private ContentResponse request(JsonObject content)
             throws InterruptedException, ExecutionException, TimeoutException {
-        Request request = http.POST(getPath("request"));
+        Request request = httpClient.newRequest(getPath("request")).method(HttpMethod.POST).timeout(TIMEOUT_SEC,
+                TimeUnit.SECONDS);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
         if (connectionID != null)
             request.header(CONNECTION_ID_HEADER, connectionID);
@@ -258,15 +262,5 @@ public class UnifiedRemoteConnection implements Closeable {
 
     private String getPath(String path) {
         return url + path;
-    }
-
-    @Override
-    public void close() {
-        if (http.isStarted()) {
-            try {
-                http.stop();
-            } catch (Exception e) {
-            }
-        }
     }
 }

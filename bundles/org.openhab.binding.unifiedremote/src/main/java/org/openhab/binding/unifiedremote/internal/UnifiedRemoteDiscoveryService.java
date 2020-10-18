@@ -41,9 +41,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UnifiedRemoteDiscoveryService.class);
+    private Logger logger = LoggerFactory.getLogger(UnifiedRemoteDiscoveryService.class);
     static final int TIMEOUT_MS = 20000;
-    private static final long DISCOVERY_RESULT_TTL = TimeUnit.MINUTES.toSeconds(5);
+    private static final long DISCOVERY_RESULT_TTL_SEC = TimeUnit.MINUTES.toSeconds(5);
 
     public UnifiedRemoteDiscoveryService() {
         super(SUPPORTED_THING_TYPES, TIMEOUT_MS, false);
@@ -52,7 +52,7 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         UnifiedRemoteUdpDiscovery client = new UnifiedRemoteUdpDiscovery();
-        client.call(serverInfo -> addNewServer(serverInfo));
+        client.call(this::addNewServer);
     }
 
     private void addNewServer(UnifiedRemoteUdpDiscovery.ServerInfo serverInfo) {
@@ -62,7 +62,8 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
         properties.put(PARAMETER_UDP_PORT, serverInfo.udpPort);
         thingDiscovered(
                 DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_UNIFIED_REMOTE_SERVER, serverInfo.macAddress))
-                        .withTTL(DISCOVERY_RESULT_TTL).withProperties(properties).withLabel(serverInfo.name).build());
+                        .withTTL(DISCOVERY_RESULT_TTL_SEC).withRepresentationProperty(serverInfo.macAddress)
+                        .withProperties(properties).withLabel(serverInfo.name).build());
     }
 
     private class UnifiedRemoteUdpDiscovery {
@@ -87,7 +88,7 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
         /**
          * maximum time to wait for a reply, in milliseconds.
          */
-        private static final int TIMEOUT = 3000; // milliseonds
+        private static final int TIMEOUT_MS = 3000;
 
         public class ServerInfo {
             String name;
@@ -117,7 +118,7 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
             DatagramSocket socket;
             socket = new DatagramSocket();
             socket.setBroadcast(true);
-            socket.setSoTimeout(TIMEOUT);
+            socket.setSoTimeout(TIMEOUT_MS);
             return socket;
         }
 
@@ -154,7 +155,7 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
             try {
                 socket = createSocket();
             } catch (SocketException e) {
-                logger.error("Error creating socket: {}", e.getMessage());
+                logger.debug("Error creating discovery socket: {}", e.getMessage());
                 return;
             }
             byte[] packetData = DISCOVERY_REQUEST.getBytes();
@@ -172,16 +173,17 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
                     try {
                         ServerInfo serverInfo = tryParseServerDiscovery(receivePacket);
                         listener.accept(serverInfo);
-                    } catch (Exception ex) {
-                        logger.error("Exception parsing server discovery response from {}: {}", host, ex.getMessage());
+                    } catch (ParseException ex) {
+                        logger.debug("Unable to parse server discovery response from {}: {}", host, ex.getMessage());
                     }
                 }
             } catch (SocketTimeoutException ste) {
                 logger.debug("SocketTimeoutException during socket operation: {}", ste.getMessage());
             } catch (IOException ioe) {
-                logger.error("IOException during socket operation: {}", ioe.getMessage());
+                logger.debug("IOException during socket operation: {}", ioe.getMessage());
+            } finally {
+                socket.close();
             }
-            socket.close();
         }
     }
 }
