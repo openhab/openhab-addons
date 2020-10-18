@@ -165,3 +165,7 @@ Command tags in a calendar event (in the case that configuration parameter `auth
 BEGIN:Calendar_Test_Switch:ON
 END:Calendar_Test_Switch:OFF
 ```
+
+## Breaking changes
+
+In version 3.0 `calendar` was changed from Thing to Bridge. You need to recreate calendars (or replace `Thing` by `Bridge` in your `.things` file).
