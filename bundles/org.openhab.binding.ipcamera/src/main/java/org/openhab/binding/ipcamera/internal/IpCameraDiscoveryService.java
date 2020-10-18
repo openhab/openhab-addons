@@ -42,7 +42,7 @@ public class IpCameraDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(IpCameraDiscoveryService.class);
 
     public IpCameraDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, 30, false);
+        super(SUPPORTED_THING_TYPES, 0, false);
     }
 
     @Override
@@ -69,10 +69,10 @@ public class IpCameraDiscoveryService extends AbstractDiscoveryService {
         OnvifDiscovery onvifDiscovery = new OnvifDiscovery(this);
         try {
             onvifDiscovery.discoverCameras(3702);// WS discovery
-            onvifDiscovery.discoverCameras(1900);// SSDP
         } catch (UnknownHostException | InterruptedException e) {
             logger.warn(
                     "IpCamera Discovery has an issue discovering the network settings to find cameras with. Try setting up the camera manually.");
         }
+        stopScan();
     }
 }
