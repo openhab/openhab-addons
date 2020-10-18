@@ -177,12 +177,13 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics);
         properties = handlerConfig.appendToProperties(properties);
         properties = config.appendToProperties(properties);
+        properties.put("deviceId", thingID);
 
         // Because we need the new properties map with the updated "components" list
         results.put(thingUID.getAsString(),
-                DiscoveryResultBuilder.create(thingUID).withProperties(properties).withRepresentationProperty(thingID)
-                        .withBridge(connectionBridge).withLabel(config.getThingName() + " (" + componentNames + ")")
-                        .build());
+                DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withRepresentationProperty("deviceId").withBridge(connectionBridge)
+                        .withLabel(config.getThingName() + " (" + componentNames + ")").build());
     }
 
     protected void publishResults() {
