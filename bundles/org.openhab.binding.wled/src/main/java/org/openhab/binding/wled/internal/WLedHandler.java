@@ -99,6 +99,7 @@ public class WLedHandler extends BaseThingHandler {
         } catch (ExecutionException e) {
             errorReason = String.format("ExecutionException: %s", e.getMessage());
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             errorReason = String.format("InterruptedException: %s", e.getMessage());
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
@@ -235,11 +236,7 @@ public class WLedHandler extends BaseThingHandler {
      * @return WLED needs the letter h followed by 2 digit HEX code for RRGGBB
      */
     private String createColorHex(HSBType hsb) {
-        String hex = Integer.toHexString(hsb.getRGB() & 0xffffff);
-        while (hex.length() < 6) {
-            hex = "0" + hex;
-        }
-        return "h" + hex;
+        return String.format("h%06X", hsb.getRGB());
     }
 
     @Override
@@ -266,22 +263,22 @@ public class WLedHandler extends BaseThingHandler {
             case CHANNEL_MASTER_CONTROLS:
                 if (command instanceof OnOffType) {
                     if (OnOffType.OFF.equals(command)) {
-                        sendGetRequest("/win&TT=500&T=0");
+                        sendGetRequest("/win&TT=250&T=0");
                     } else {
-                        sendGetRequest("/win&TT=2000&T=1");
+                        sendGetRequest("/win&TT=1000&T=1");
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (IncreaseDecreaseType.INCREASE.equals(command)) {
                         if (masterBrightness.intValue() < 240) {
-                            sendGetRequest("/win&TT=2000&A=~15"); // 255 divided by 15 = 17 different levels
+                            sendGetRequest("/win&TT=1000&A=~15"); // 255 divided by 15 = 17 different levels
                         } else {
-                            sendGetRequest("/win&TT=2000&A=255");
+                            sendGetRequest("/win&TT=1000&A=255");
                         }
                     } else {
                         if (masterBrightness.intValue() > 15) {
-                            sendGetRequest("/win&TT=2000&A=~-15");
+                            sendGetRequest("/win&TT=1000&A=~-15");
                         } else {
-                            sendGetRequest("/win&TT=2000&A=0");
+                            sendGetRequest("/win&TT=1000&A=0");
                         }
                     }
                 } else if (command instanceof HSBType) {
@@ -303,7 +300,7 @@ public class WLedHandler extends BaseThingHandler {
                     }
                 } else {// should only be PercentType left
                     masterBrightness = new BigDecimal(command.toString()).multiply(new BigDecimal(2.55));
-                    sendGetRequest("/win&TT=2000&A=" + masterBrightness);
+                    sendGetRequest("/win&TT=1000&A=" + masterBrightness);
                 }
                 return;
             case CHANNEL_PRIMARY_COLOR:
