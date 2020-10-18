@@ -248,7 +248,8 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      *            from the device.
      * @param affectedChannels Channels which are affected by the state of this
      *            service.
-     * @throws BoschSHCException
+     * @throws BoschSHCException If bridge for handler is not set or an invalid bridge is set.
+     * @throws BoschSHCException If no device id is set.
      */
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void registerService(
             TService service, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels)
@@ -257,7 +258,8 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
         String deviceId = this.getBoschID();
         if (deviceId == null) {
-            throw new Error(String.format("Could not register service for {}, no device id set", this.getThing()));
+            throw new BoschSHCException(
+                    String.format("Could not register service for %s, no device id set", this.getThing()));
         }
 
         service.initialize(bridgeHandler, deviceId, stateUpdateListener);
