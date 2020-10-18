@@ -46,9 +46,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class BoschHttpClient extends HttpClient {
-
-    private static final int MAX_PAIR_TRIES = 12;
-
     private final Logger logger = LoggerFactory.getLogger(BoschHttpClient.class);
 
     private String ipAddress;

@@ -103,11 +103,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
 
         // Instantiate HttpClient with the SslContextFactory
-        this.httpClient = new BoschHttpClient(config.ipAddress, config.password, factory);
+        BoschHttpClient httpClient = this.httpClient = new BoschHttpClient(config.ipAddress, config.password, factory);
 
         // Initialize bridge in the background.
         // Start initial access the first time
-        scheduleInitialAccess();
+        scheduleInitialAccess(httpClient);
     }
 
     @Override
@@ -127,8 +127,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * Schedule the initial access.
      * Use a delay if pairing fails and next retry is scheduled.
      */
-    private void scheduleInitialAccess() {
-        scheduler.schedule(() -> initialAccess(), 15, TimeUnit.SECONDS);
+    private void scheduleInitialAccess(BoschHttpClient httpClient) {
+        scheduler.schedule(() -> initialAccess(httpClient), 15, TimeUnit.SECONDS);
     }
 
     /**
@@ -138,28 +138,20 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * pairs this Bosch SHC Bridge with the SHC if necessary
      * and starts the first log poll.
      */
-    private void initialAccess() {
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.warn("Failed to start Bosch SHC Bridge", e);
-        }
-        // this.httpClient is null we fail with the above exception
-        BoschHttpClient nonNullHttpClient = this.httpClient;
-
+    private void initialAccess(BoschHttpClient httpClient) {
         logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05", config.ipAddress,
-                nonNullHttpClient);
+                httpClient);
 
         // check access and pair if necessary
-        if (!nonNullHttpClient.isAccessPossible()) {
+        if (!httpClient.isAccessPossible()) {
             // update status already if access is not possible
             this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE, "@text/offline.conf-error-pairing");
-            if (!nonNullHttpClient.doPairing()) {
+            if (!httpClient.doPairing()) {
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-pairing");
             }
             // restart initial access - needed also in case of successful pairing to check access again
-            scheduleInitialAccess();
+            scheduleInitialAccess(httpClient);
         } else {
             // print rooms and devices if things are reachable
             boolean thingReachable = true;
@@ -171,7 +163,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 // Start long polling
                 try {
-                    this.longPolling.start(nonNullHttpClient);
+                    this.longPolling.start(httpClient);
                 } catch (LongPollingFailedException e) {
                     this.handleLongPollFailure(e);
                 }
@@ -179,7 +171,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "@text/offline.not-reachable");
                 // restart initial access
-                scheduleInitialAccess();
+                scheduleInitialAccess(httpClient);
             }
         }
     }
