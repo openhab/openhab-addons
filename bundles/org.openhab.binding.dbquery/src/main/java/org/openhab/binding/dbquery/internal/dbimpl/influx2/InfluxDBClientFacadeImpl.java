@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.dbquery.internal.dbimpl.influx2;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dbquery.internal.config.InfluxDB2BridgeConfiguration;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import com.influxdb.query.FluxRecord;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public class InfluxDBClientFacadeImpl implements InfluxDBClientFacade {
     private static final Logger logger = LoggerFactory.getLogger(InfluxDBClientFacadeImpl.class);
 
@@ -103,6 +105,10 @@ public class InfluxDBClientFacadeImpl implements InfluxDBClientFacade {
     @Override
     public void query(String query, BiConsumer<Cancellable, FluxRecord> onNext, Consumer<? super Throwable> onError,
             Runnable onComplete) {
-        queryAPI.query(query, onNext, onError, onComplete);
+        var currentQueryAPI = queryAPI;
+        if (currentQueryAPI != null)
+            currentQueryAPI.query(query, onNext, onError, onComplete);
+        else
+            logger.warn("Query ignored as current queryAPI is null");
     }
 }

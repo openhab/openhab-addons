@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.dbquery.internal.config;
 
 import java.util.StringJoiner;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,14 +23,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InfluxDB2BridgeConfiguration {
-    private @NonNull final String url;
-    private @NonNull final String user;
-    private @NonNull final String token;
-    private @NonNull final String organization;
-    private @NonNull final String bucket;
+    private String url;
+    private String user;
+    private String token;
+    private String bucket;
+    private String organization;
 
-    public InfluxDB2BridgeConfiguration(@NonNull String url, @NonNull String user, @NonNull String token,
-            @NonNull String organization, @NonNull String bucket) {
+    public InfluxDB2BridgeConfiguration(String url, String user, String token, String organization, String bucket) {
         this.url = url;
         this.user = user;
         this.token = token;

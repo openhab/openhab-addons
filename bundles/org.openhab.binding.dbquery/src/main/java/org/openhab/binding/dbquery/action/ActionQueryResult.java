@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,9 +27,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ActionQueryResult {
     private final boolean correct;
-    private List<Map<String, Object>> data = Collections.emptyList();
+    private List<Map<String, @Nullable Object>> data = Collections.emptyList();
 
-    public ActionQueryResult(boolean correct, @Nullable List<Map<String, Object>> data) {
+    public ActionQueryResult(boolean correct, @Nullable List<Map<String, @Nullable Object>> data) {
         this.correct = correct;
         if (data != null)
             this.data = data;
@@ -39,7 +39,7 @@ public class ActionQueryResult {
         return correct;
     }
 
-    public List<Map<String, Object>> getData() {
+    public List<Map<String, @Nullable Object>> getData() {
         return data;
     }
 

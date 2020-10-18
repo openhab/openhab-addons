@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,6 +69,10 @@ public class MockDatabase implements Database {
     }
 }
 
+/**
+ * @author Joan Pujol Espinar - Initial contribution
+ */
+@NonNullByDefault
 class MockQueryFactory implements QueryFactory {
 
     @Override
@@ -83,6 +87,10 @@ class MockQueryFactory implements QueryFactory {
     }
 }
 
+/**
+ * @author Joan Pujol Espinar - Initial contribution
+ */
+@NonNullByDefault
 class MockQuery implements Query {
     private final String query;
 

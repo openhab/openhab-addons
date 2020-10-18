@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.equalTo;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dbquery.internal.domain.QueryParameters;
@@ -26,6 +27,7 @@ import org.openhab.binding.dbquery.internal.domain.QueryParameters;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public class StringSubstitutionParamsParserTest {
 
     @Test

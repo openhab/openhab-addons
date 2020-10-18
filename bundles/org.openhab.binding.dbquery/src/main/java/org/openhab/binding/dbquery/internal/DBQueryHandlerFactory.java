@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * DBQuery binding factory that is responsible for creating things and thing handlers.
  *
- * @author Joan Pujol Espinar- Initial contribution
+ * @author Joan Pujol Espinar - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.dbquery", service = ThingHandlerFactory.class)

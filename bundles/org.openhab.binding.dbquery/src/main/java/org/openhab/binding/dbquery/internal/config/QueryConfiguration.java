@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.dbquery.internal.config;
 
 import java.util.StringJoiner;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -21,10 +22,11 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public class QueryConfiguration {
     public static final int NO_INTERVAL = 0;
 
-    private String query;
+    private String query = "";
     private int interval;
     private int timeout;
     private boolean scalarResult;
@@ -35,8 +37,8 @@ public class QueryConfiguration {
         // Used only when configuration is created by reflection using ConfigMapper
     }
 
-    public QueryConfiguration(String query, int interval, int timeout, boolean scalarResult, String scalarColumn,
-            boolean hasParameters) {
+    public QueryConfiguration(String query, int interval, int timeout, boolean scalarResult,
+            @Nullable String scalarColumn, boolean hasParameters) {
         this.query = query;
         this.interval = interval;
         this.timeout = timeout;
@@ -61,7 +63,7 @@ public class QueryConfiguration {
         return scalarResult;
     }
 
-    public String getScalarColumn() {
+    public @Nullable String getScalarColumn() {
         var currentScalarColumn = scalarColumn;
         return currentScalarColumn != null ? currentScalarColumn : "";
     }

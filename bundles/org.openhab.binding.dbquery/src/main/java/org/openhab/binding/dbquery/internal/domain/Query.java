@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.dbquery.internal.domain;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Marker interface for queries
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public interface Query {
     Query EMPTY = new Query() {
     };

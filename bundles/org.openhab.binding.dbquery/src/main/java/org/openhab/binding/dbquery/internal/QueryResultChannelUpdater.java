@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dbquery.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dbquery.internal.error.UnnexpectedCondition;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public class QueryResultChannelUpdater {
     private final Logger logger = LoggerFactory.getLogger(QueryResultChannelUpdater.class);
 
@@ -50,7 +53,7 @@ public class QueryResultChannelUpdater {
         }
     }
 
-    public void updateChannelResults(Object extractedResult) {
+    public void updateChannelResults(@Nullable Object extractedResult) {
         for (Channel channel : channels2Update.getChannels()) {
             Class<? extends State> targetType = calculateItemType(channel);
             State state = value2StateConverter.convertValue(extractedResult, targetType);

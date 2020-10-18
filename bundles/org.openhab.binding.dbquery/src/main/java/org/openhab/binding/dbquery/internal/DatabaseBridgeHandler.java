@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dbquery.action.DBQueryActions;
 import org.openhab.binding.dbquery.internal.domain.Database;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
     private static final long RETRY_CONNECTION_ATTEMPT_TIME_SECONDS = 60;
     private final Logger logger = LoggerFactory.getLogger(DatabaseBridgeHandler.class);
@@ -76,7 +78,7 @@ public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
 
     protected void scheduleRetryConnectionAttempt() {
         logger.trace("Scheduled retry connection attempt every {}", RETRY_CONNECTION_ATTEMPT_TIME_SECONDS);
-        retryConnectionAttemptFuture = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+        retryConnectionAttemptFuture = Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
                 this::connectDatabase, RETRY_CONNECTION_ATTEMPT_TIME_SECONDS, RETRY_CONNECTION_ATTEMPT_TIME_SECONDS,
                 TimeUnit.SECONDS);
     }
@@ -99,11 +101,12 @@ public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
         var completable = database.disconnect();
         updateStatus(ThingStatus.UNKNOWN);
         completable.thenAccept(result -> {
+            Bridge bridge = getBridge();
             if (result) {
-                logger.trace("Successfully disconnected to database {}", getBridge().getUID());
+                logger.trace("Successfully disconnected to database {}", bridge != null ? bridge.getUID() : "null");
                 updateStatus(ThingStatus.OFFLINE);
             } else {
-                logger.trace("Disconnect to database {} failed", getBridge().getUID());
+                logger.trace("Disconnect to database {} failed", bridge != null ? bridge.getUID() : "null");
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         });

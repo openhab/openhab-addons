@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dbquery.internal.error.DatabaseException;
 
 import com.influxdb.Cancellable;
@@ -27,6 +28,7 @@ import com.influxdb.query.FluxRecord;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public class InfluxDBClientFacadeMock implements InfluxDBClientFacade {
     public static final String INVALID_QUERY = "invalid";
     public static final String EMPTY_QUERY = "empty";

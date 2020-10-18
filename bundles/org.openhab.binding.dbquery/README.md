@@ -6,6 +6,7 @@ It currently supports InfluxDB 2.0 and will support major relational databases t
 You can use the addon in any situation where you want to create an item from a native SQL query, the source of the query can
 be any supported database, and don't need to be the one you use as persistence service in InfluxDB.
 Some use cases can be:
+
 - Integrate a device that stores it's data in a database
 - Query derived data from you OpenHAB persistence, for example with Influx2 tasks you can process your data to create a new one   
 - Bypass limitations of current OpenHAb persistence queries
@@ -18,6 +19,7 @@ For each different database, you want to connect you must define a `Bridge` thin
 Then each `Bridge` can define as much as wanted `Query` things you want to execute.
 
 Current supported `Bridge` is:
+
 - `Influx2Bridge`
 
 ## Thing Configuration
@@ -25,6 +27,7 @@ Current supported `Bridge` is:
 ### Bridges
 
 #### Influx2Bridge
+
 Defines a connection to an Influx2 database and allows creating queries on it.
 
 | Parameter    | Required | Description                               |
@@ -40,6 +43,7 @@ Defines a connection to an Influx2 database and allows creating queries on it.
 The `Query` thing defines a native query that provides several channels that you can bind to items. 
 
 #### Query parameters
+
 The query items support the following parameters:
 
 | Parameter    | Required | Default  | Description                                                           |
@@ -52,30 +56,38 @@ The query items support the following parameters:
 | scalarColumn | false    |          | In case of multiple columns, it indicates which to use for scalarResult|
 
 that are described further in the following subsections
+
 ##### query  
+
 The query the items represents in the native language of your database:
+
  - Flux for `Influx2Bridge`
  - SQL for `JDBCBridge`
  
 #### hasParameters
- If `hasParameters=true` you can use parameters in the query string that can be dynamically set with the `setQueryParameters` action.
+
+If `hasParameters=true` you can use parameters in the query string that can be dynamically set with the `setQueryParameters` action.
  
  For InfluxDB use the `${paramName}` syntax for each parameter, and keep in mind that the values from that parameters must be from a trusted source as current
  parameter substitution is subject to query injection attacks.
  
- #### timeout
+#### timeout
+
 A time-out in seconds to wait for the query result, if it's exceeded, result will be discarded and the addon will do it's best effort to cancel the query.
 Currently it's ignored and it will be implemented in a future version.
 
 #### scalarResult 
+
 If `true` the query is expected to return a single scalar value that will be available to `result` channels as string, number, boolean,...
 If the query can return several rows and/or several columns per row then it needs to be set to `false` and the result can be retrieved in `resultString`
 channel as JSON or using the `getLastQueryResult` action.   
 
 #### scalarColumn
+
 In case `scalarResult` is `true` and the select returns multiple columns you can use that parameter to choose which column to use to extract the result.
 
 ## Channels
+
 Query items offer the following channels to be able to query / bind them to items:
 
 | Channel Type ID | Item Type | Description                                                                                                                        |
@@ -107,7 +119,9 @@ The `resultString` channel is the only valid one if `scalarResult=false`, and in
     }
     
 ### Channel Triggers
+
 #### calculateParameters
+
 Triggers when there's a need to calculate parameters before query execution.
 When a query has `hasParameters=true` it fires the `calculateParameters` channel trigger and pause the execution until `setQueryParameters` action is call in
  that query.
@@ -120,14 +134,17 @@ In the case a query has parameters it's expected that there is some rule that ca
 ### For DatabaseBridge
 
 #### executeQuery 
+
 It allows executing a query synchronously from a script/rule without defining it in a Thing.
 
 To execute the action you need to pass the following parameters:
+
 - String query: The query to execute
 - Map<String,Object>: Query parameters (empty map if not needed)
 - int timeout: Query timeout in seconds
 
 And it returns an `ActionQueryResult` that has the following properties:
+
 - correct (boolean) : True if the query was executed correctly, false otherwise
 - data (List<Map<String,Object>>): A list where each element is a row that is stored in a map with (columnName,value) entries  
 - isScalarResult: It returns if the result is scalar one (only one row with one column)
@@ -149,6 +166,7 @@ Use this action with care, because as the query is executed synchronously is not
 ### For Queries
 
 #### setQueryParameters
+
 It's used for queries with parameters to set them. To execute the action you need to pass the parameters as a Map.
 
 Example (using Jython script):
@@ -158,6 +176,7 @@ Example (using Jython script):
     dbquery.setQueryParameters(params)
 
 #### getLastQueryResult
+
 It can be used in scripts to get the last query result. It doesn't have any parameters and returns an `ActionQueryResult` as defined in `executeQuery` action.
 
 Example (using Jython script):
@@ -169,6 +188,7 @@ Example (using Jython script):
 ## Examples
 
 ### The Simplest case 
+
 Define a InfluxDB2 database thing and a query with an interval execution. That executes the query every 15 seconds and punts the result in `myItem`
 
     # Bridge Thing definition
@@ -181,9 +201,11 @@ Define a InfluxDB2 database thing and a query with an interval execution. That e
     Number myItem "QueryResult" {channel="dbquery:query:myquery:resultNumber"}
 
 ### A query with parameters
+
 Using the previous example you change the `range(start:-1h)` for `range(start:${time})`
 
 Create a rule that is fired 
+
  - **When** `calculateParameters` is triggered in `myquery`
  - **Then** executes the following script action (in that example Jython):
       

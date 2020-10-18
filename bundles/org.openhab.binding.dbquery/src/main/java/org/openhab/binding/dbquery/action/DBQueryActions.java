@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dbquery.internal.DatabaseBridgeHandler;
 import org.openhab.binding.dbquery.internal.QueryHandler;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Joan Pujol - Initial contribution
  */
 @ThingActionsScope(name = "dbquery")
+@NonNullByDefault
 public class DBQueryActions implements IDBQueryActions, ThingActions {
     private final Logger logger = LoggerFactory.getLogger(DBQueryActions.class);
 
@@ -57,10 +59,16 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
     public ActionQueryResult executeQuery(String query, Map<String, @Nullable Object> parameters,
             int timeoutInSeconds) {
         logger.debug("executeQuery from action {} params={}", query, parameters);
-        QueryResult queryResult = new ExecuteNonConfiguredQuery(databaseBridgeHandler.getDatabase())
-                .executeSynchronously(query, parameters, Duration.ofSeconds(timeoutInSeconds));
-        logger.debug("executeQuery from action result {}", queryResult);
-        return queryResult2ActionQueryResult(queryResult);
+        var currentDatabaseBridgeHandler = databaseBridgeHandler;
+        if (currentDatabaseBridgeHandler != null) {
+            QueryResult queryResult = new ExecuteNonConfiguredQuery(currentDatabaseBridgeHandler.getDatabase())
+                    .executeSynchronously(query, parameters, Duration.ofSeconds(timeoutInSeconds));
+            logger.debug("executeQuery from action result {}", queryResult);
+            return queryResult2ActionQueryResult(queryResult);
+        } else {
+            logger.warn("Execute queried ignored as databaseBridgeHandler is null");
+            return new ActionQueryResult(false, null);
+        }
     }
 
     private ActionQueryResult queryResult2ActionQueryResult(QueryResult queryResult) {
@@ -68,8 +76,8 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
                 queryResult.getData().stream().map(DBQueryActions::resultRow2Map).collect(Collectors.toList()));
     }
 
-    private static Map<String, Object> resultRow2Map(ResultRow resultRow) {
-        Map<String, Object> map = new HashMap<>();
+    private static Map<String, @Nullable Object> resultRow2Map(ResultRow resultRow) {
+        Map<String, @Nullable Object> map = new HashMap<>();
         for (String column : resultRow.getColumnNames()) {
             map.put(column, resultRow.getValue(column));
         }
@@ -91,7 +99,13 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
     @Override
     @RuleAction(label = "Get last query result", description = "Get last result from a query")
     public ActionQueryResult getLastQueryResult() {
-        return queryResult2ActionQueryResult(queryHandler.getLastQueryResult());
+        var currentQueryHandler = queryHandler;
+        if (currentQueryHandler != null) {
+            return queryResult2ActionQueryResult(queryHandler.getLastQueryResult());
+        } else {
+            logger.warn("getLastQueryResult ignored as queryHandler is null");
+            return new ActionQueryResult(false, null);
+        }
     }
 
     @Override

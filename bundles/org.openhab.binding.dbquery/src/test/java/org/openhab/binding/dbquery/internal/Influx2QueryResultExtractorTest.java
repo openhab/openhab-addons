@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dbquery.internal.config.QueryConfiguration;
 import org.openhab.binding.dbquery.internal.domain.QueryResult;
@@ -28,6 +29,7 @@ import org.openhab.binding.dbquery.internal.domain.ResultRow;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 class Influx2QueryResultExtractorTest {
     public static final QueryResult ONE_ROW_ONE_COLUMN_RESULT = QueryResult.ofSingleValue("AnyValueName", "value");
     public static final QueryResult SEVERAL_ROWS_COLUMNS_RESULT = QueryResult.of(

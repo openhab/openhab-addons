@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.dbquery.internal.domain;
+
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,7 +53,7 @@ public class QueryResultExtractor {
             @Nullable
             Object value;
             if (config.isScalarColumnDefined())
-                value = row.getValue(config.getScalarColumn());
+                value = row.getValue(Objects.requireNonNull(config.getScalarColumn()));
             else
                 value = row.getValue(row.getColumnNames().iterator().next());
             return ResultValue.of(value);

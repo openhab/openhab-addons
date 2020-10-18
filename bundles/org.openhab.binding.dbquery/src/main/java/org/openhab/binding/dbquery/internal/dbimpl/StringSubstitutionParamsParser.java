@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.dbquery.internal.dbimpl;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dbquery.internal.domain.QueryParameters;
 
 /**
@@ -23,6 +24,7 @@ import org.openhab.binding.dbquery.internal.domain.QueryParameters;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public class StringSubstitutionParamsParser {
     private final Pattern paramPattern = Pattern.compile("\\$\\{([\\w_]*?)}");
     private final String query;

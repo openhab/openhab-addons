@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
@@ -34,6 +35,7 @@ import com.google.gson.JsonSerializer;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public class DBQueryJSONEncoder {
     private final Gson gson;
 
@@ -51,7 +53,44 @@ public class DBQueryJSONEncoder {
         return gson.toJson(parameters);
     }
 
-    private JsonElement convertValueToJsonPrimitive(Object value) {
+    @NonNullByDefault({})
+    private static class QueryResultGSONSerializer implements JsonSerializer<QueryResult> {
+        @Override
+        public JsonElement serialize(QueryResult src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("correct", src.isCorrect());
+            if (src.getErrorMessage() != null)
+                jsonObject.addProperty("errorMessage", src.getErrorMessage());
+            jsonObject.add("data", context.serialize(src.getData()));
+            return jsonObject;
+        }
+    }
+
+    @NonNullByDefault({})
+    private static class ResultRowGSONSerializer implements JsonSerializer<ResultRow> {
+        @Override
+        public JsonElement serialize(ResultRow src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject jsonObject = new JsonObject();
+            for (String columnName : src.getColumnNames()) {
+                jsonObject.add(columnName, convertValueToJsonPrimitive(src.getValue(columnName)));
+            }
+            return jsonObject;
+        }
+    }
+
+    @NonNullByDefault({})
+    private static class QueryParametersGSONSerializer implements JsonSerializer<QueryParameters> {
+        @Override
+        public JsonElement serialize(QueryParameters src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject jsonObject = new JsonObject();
+            for (Map.Entry<String, @Nullable Object> param : src.getAll().entrySet()) {
+                jsonObject.add(param.getKey(), convertValueToJsonPrimitive(param.getValue()));
+            }
+            return jsonObject;
+        }
+    }
+
+    private static JsonElement convertValueToJsonPrimitive(@Nullable Object value) {
         if (value instanceof Number)
             return new JsonPrimitive((Number) value);
         else if (value instanceof Boolean)
@@ -66,40 +105,6 @@ public class DBQueryJSONEncoder {
             return new JsonPrimitive(value.toString());
         } else {
             return JsonNull.INSTANCE;
-        }
-    }
-
-    private class QueryResultGSONSerializer implements JsonSerializer<QueryResult> {
-        @Override
-        public JsonElement serialize(QueryResult src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("correct", src.isCorrect());
-            if (src.getErrorMessage() != null)
-                jsonObject.addProperty("errorMessage", src.getErrorMessage());
-            jsonObject.add("data", context.serialize(src.getData()));
-            return jsonObject;
-        }
-    }
-
-    private class ResultRowGSONSerializer implements JsonSerializer<ResultRow> {
-        @Override
-        public JsonElement serialize(ResultRow src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject jsonObject = new JsonObject();
-            for (String columnName : src.getColumnNames()) {
-                jsonObject.add(columnName, convertValueToJsonPrimitive(src.getValue(columnName)));
-            }
-            return jsonObject;
-        }
-    }
-
-    private class QueryParametersGSONSerializer implements JsonSerializer<QueryParameters> {
-        @Override
-        public JsonElement serialize(QueryParameters src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject jsonObject = new JsonObject();
-            for (Map.Entry<String, @Nullable Object> param : src.getAll().entrySet()) {
-                jsonObject.add(param.getKey(), convertValueToJsonPrimitive(param.getValue()));
-            }
-            return jsonObject;
         }
     }
 }

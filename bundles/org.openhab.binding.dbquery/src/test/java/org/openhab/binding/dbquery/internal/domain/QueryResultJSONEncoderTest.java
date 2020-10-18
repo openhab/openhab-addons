@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,7 @@ import com.google.gson.JsonParser;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 class QueryResultJSONEncoderTest {
     public static final double TOLERANCE = 0.001d;
     private final DBQueryJSONEncoder instance = new DBQueryJSONEncoder();
@@ -46,7 +48,7 @@ class QueryResultJSONEncoderTest {
     private final JsonParser jsonParser = new JsonParser();
 
     @Test
-    public void given_query_result_is_serialized_to_json() {
+    void given_query_result_is_serialized_to_json() {
         String json = instance.encode(givenQueryResultWithResults());
 
         assertThat(jsonParser.parse(json), notNullValue());
@@ -54,7 +56,7 @@ class QueryResultJSONEncoderTest {
 
     @Test
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void given_query_result_its_content_is_correctly_serialized_to_json() {
+    void given_query_result_its_content_is_correctly_serialized_to_json() {
         String json = instance.encode(givenQueryResultWithResults());
 
         Map<String, Object> map = gson.fromJson(json, Map.class);
@@ -67,7 +69,7 @@ class QueryResultJSONEncoderTest {
         assertReadGivenValuesDecodedFromJson(firstRow);
     }
 
-    private void assertReadGivenValuesDecodedFromJson(Map firstRow) {
+    private void assertReadGivenValuesDecodedFromJson(Map<?, ?> firstRow) {
         assertThat(firstRow.get("strValue"), is("an string"));
 
         Object doubleValue = firstRow.get("doubleValue");
@@ -97,8 +99,8 @@ class QueryResultJSONEncoderTest {
     }
 
     @Test
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void given_query_result_with_incorrect_result_its_content_is_correctly_serialized_to_json() {
+    @SuppressWarnings({ "unchecked" })
+    void given_query_result_with_incorrect_result_its_content_is_correctly_serialized_to_json() {
         String json = instance.encode(QueryResult.ofIncorrectResult("Incorrect"));
 
         Map<String, Object> map = gson.fromJson(json, Map.class);
@@ -107,12 +109,12 @@ class QueryResultJSONEncoderTest {
     }
 
     @Test
-    public void given_query_parameters_are_correctly_serialized_to_json() {
+    void given_query_parameters_are_correctly_serialized_to_json() {
         QueryParameters queryParameters = new QueryParameters(givenRowValues());
 
         String json = instance.encode(queryParameters);
 
-        Map<String, Object> map = gson.fromJson(json, Map.class);
+        Map<?, ?> map = gson.fromJson(json, Map.class);
         assertReadGivenValuesDecodedFromJson(map);
     }
 

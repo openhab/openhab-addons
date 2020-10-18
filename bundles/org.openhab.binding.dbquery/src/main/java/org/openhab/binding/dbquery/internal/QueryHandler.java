@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2020-2020 Contributors to the openHAB project
- * <p>
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.dbquery.internal;
@@ -47,6 +47,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -150,11 +151,11 @@ public class QueryHandler extends BaseThingHandler {
 
             if (config.isHasParameters()) {
                 logger.trace("{} triggered to set parameters for {}", TRIGGER_CHANNEL_CALCULATE_PARAMETERS,
-                        currentQueryExecution);
+                        queryExecution);
                 updateParametersChannel(QueryParameters.EMPTY);
                 triggerChannel(TRIGGER_CHANNEL_CALCULATE_PARAMETERS);
             } else {
-                currentQueryExecution.execute();
+                queryExecution.execute();
             }
         } else {
             logger.debug("Execute query ignored because thing status is {}", getThing().getStatus());
@@ -172,18 +173,20 @@ public class QueryHandler extends BaseThingHandler {
 
     private void updateStateWithQueryResult(QueryResult queryResult) {
         var currentQueryResultChannelUpdater = queryResultChannelUpdater;
+        var localCurrentQueryExecution = this.currentQueryExecution;
         lastQueryResult = queryResult;
-        if (currentQueryResultChannelUpdater != null) {
+        if (currentQueryResultChannelUpdater != null && localCurrentQueryExecution != null) {
             ResultValue resultValue = queryResultExtractor.extractResult(queryResult);
             updateCorrectChannel(resultValue.isCorrect());
-            updateParametersChannel(currentQueryExecution.getQueryParameters());
+            updateParametersChannel(localCurrentQueryExecution.getQueryParameters());
             if (resultValue.isCorrect()) {
                 currentQueryResultChannelUpdater.updateChannelResults(resultValue.getResult());
             } else {
                 currentQueryResultChannelUpdater.clearChannelResults();
             }
         } else {
-            logger.warn("QueryResult discarded as queryResultChannelUpdater is not expected to be null");
+            logger.warn(
+                    "QueryResult discarded as queryResultChannelUpdater nor currentQueryExecution are not expected to be null");
         }
     }
 
@@ -267,6 +270,8 @@ public class QueryHandler extends BaseThingHandler {
     }
 
     private boolean isResultChannel(Channel channel) {
-        return channel.getChannelTypeUID().getId().startsWith("result");
+        @Nullable
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        return channelTypeUID != null && channelTypeUID.getId().startsWith("result");
     }
 }
