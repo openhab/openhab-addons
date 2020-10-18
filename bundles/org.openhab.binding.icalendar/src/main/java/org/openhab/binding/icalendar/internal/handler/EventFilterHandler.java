@@ -107,8 +107,8 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
 
         Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
-            logger.warn("This thing requires a bridge configured to work.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "This thing requires a bridge configured to work.");
             return;
         }
 
@@ -270,9 +270,11 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
             updateStatus(ThingStatus.ONLINE);
 
             Instant reference = Instant.now();
-            TimeMultiplicator multiplicator;
+            TimeMultiplicator multiplicator = null;
             EventTextFilter filter = null;
             int maxEvents;
+            Instant begin = Instant.EPOCH;
+            Instant end = Instant.ofEpochMilli(Long.MAX_VALUE);
 
             try {
                 String textFilterValue = config.textEventValue;
@@ -290,11 +292,6 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                     }
                 }
 
-                if (config.datetimeUnit == null) {
-                    throw new ConfigBrokenException("datetimeUnit is not set.");
-                }
-                multiplicator = TimeMultiplicator.valueOf(config.datetimeUnit);
-
                 if (config.maxEvents == null) {
                     throw new ConfigBrokenException("maxEvents is not set.");
                 }
@@ -302,33 +299,48 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                 if (maxEvents < 0) {
                     throw new ConfigBrokenException("maxEvents is less than 0. This is not allowed.");
                 }
+
+                try {
+                    if (config.datetimeUnit != null) {
+                        multiplicator = TimeMultiplicator.valueOf(config.datetimeUnit);
+                    }
+                } catch (IllegalArgumentException e) {
+                    throw new ConfigBrokenException("datetimeUnit is not set properly.");
+                }
+
+                if (config.datetimeRound != null && config.datetimeRound.booleanValue()) {
+                    if (multiplicator == null) {
+                        throw new ConfigBrokenException("datetimeUnit is missing but required for datetimeRound.");
+                    }
+                    ZonedDateTime refDT = reference.atZone(tzProvider.getTimeZone());
+                    switch (multiplicator) {
+                        case WEEK:
+                            refDT = refDT.with(ChronoField.DAY_OF_WEEK, 1);
+                        case DAY:
+                            refDT = refDT.with(ChronoField.HOUR_OF_DAY, 0);
+                        case HOUR:
+                            refDT = refDT.with(ChronoField.MINUTE_OF_HOUR, 0);
+                        case MINUTE:
+                            refDT = refDT.with(ChronoField.SECOND_OF_MINUTE, 0);
+                    }
+                    reference = refDT.toInstant();
+                }
+
+                if (config.datetimeStart != null) {
+                    if (multiplicator == null) {
+                        throw new ConfigBrokenException("datetimeUnit is missing but required for datetimeStart.");
+                    }
+                    begin = reference.plusSeconds(config.datetimeStart.longValue() * multiplicator.getMultiplier());
+                }
+                if (config.datetimeEnd != null) {
+                    if (multiplicator == null) {
+                        throw new ConfigBrokenException("datetimeUnit is missing but required for datetimeEnd.");
+                    }
+                    end = reference.plusSeconds(config.datetimeEnd.longValue() * multiplicator.getMultiplier());
+                }
             } catch (ConfigBrokenException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
-            }
-
-            if (config.datetimeRound != null && config.datetimeRound.booleanValue()) {
-                ZonedDateTime refDT = reference.atZone(tzProvider.getTimeZone());
-                switch (multiplicator) {
-                    case WEEK:
-                        refDT = refDT.with(ChronoField.DAY_OF_WEEK, 1);
-                    case DAY:
-                        refDT = refDT.with(ChronoField.HOUR_OF_DAY, 0);
-                    case HOUR:
-                        refDT = refDT.with(ChronoField.MINUTE_OF_HOUR, 0);
-                    case MINUTE:
-                        refDT = refDT.with(ChronoField.SECOND_OF_MINUTE, 0);
-                }
-                reference = refDT.toInstant();
-            }
-            Instant begin = Instant.EPOCH;
-            Instant end = Instant.ofEpochMilli(Long.MAX_VALUE);
-
-            if (config.datetimeStart != null) {
-                begin = reference.plusSeconds(config.datetimeStart.longValue() * multiplicator.getMultiplier());
-            }
-            if (config.datetimeEnd != null) {
-                end = reference.plusSeconds(config.datetimeEnd.longValue() * multiplicator.getMultiplier());
             }
 
             List<Event> results = cal.getFilteredEventsBetween(begin, end, filter, maxEvents);
