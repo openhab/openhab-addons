@@ -15,6 +15,8 @@ package org.openhab.binding.wled.internal;
 
 import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -54,8 +56,13 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         ThingTypeUID thingtypeuid = new ThingTypeUID("wled", "wled");
         ThingUID thingUID = new ThingUID(thingtypeuid,
                 address[0].substring(7, address[0].length() - 3).replace(".", "-"));
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("address", address[0]);
+
         return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0])
-                .withLabel("WLED @" + address[0]).build();
+                .withLabel("WLED @" + address[0]).withProperties(properties).withRepresentationProperty("address")
+                .build();
     }
 
     @Override
