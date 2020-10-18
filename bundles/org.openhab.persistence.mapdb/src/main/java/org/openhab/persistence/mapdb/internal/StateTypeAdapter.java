@@ -43,11 +43,12 @@ public class StateTypeAdapter extends TypeAdapter<State> {
             return null;
         }
         String value = reader.nextString();
-        String[] parts = value.split(TYPE_SEPARATOR);
-        String valueTypeName = parts[0];
-        String valueAsString = parts[1];
 
         try {
+            String[] parts = value.split(TYPE_SEPARATOR);
+            String valueTypeName = parts[0];
+            String valueAsString = parts[1];
+
             @SuppressWarnings("unchecked")
             Class<? extends State> valueType = (Class<? extends State>) Class.forName(valueTypeName);
             List<Class<? extends State>> types = Collections.singletonList(valueType);
