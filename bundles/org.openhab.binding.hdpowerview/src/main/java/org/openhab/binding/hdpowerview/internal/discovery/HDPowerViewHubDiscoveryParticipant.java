@@ -75,7 +75,9 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
-            return new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+            if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
+                return new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+            }
         }
         return null;
     }
