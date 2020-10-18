@@ -79,7 +79,7 @@
 				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/etc/openhab2/html/camera1/</default>
+				<default>/etc/openhab/html/camera1/</default>
 			</parameter>
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
@@ -151,6 +151,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -220,7 +221,7 @@
 				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/etc/openhab2/html/camera1/</default>
+				<default>/etc/openhab/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -391,6 +392,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -440,7 +442,7 @@
 				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/etc/openhab2/html/camera1/</default>
+				<default>/etc/openhab/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -683,7 +685,7 @@
 				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/etc/openhab2/html/camera1/</default>
+				<default>/etc/openhab/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -767,6 +769,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -966,7 +969,7 @@
 				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/etc/openhab2/html/camera1/</default>
+				<default>/etc/openhab/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1034,6 +1037,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -1231,7 +1235,7 @@
 				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/etc/openhab2/html/camera1/</default>
+				<default>/etc/openhab/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1315,6 +1319,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -1493,7 +1498,7 @@
 				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/etc/openhab2/html/camera1/</default>
+				<default>/etc/openhab/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1577,6 +1582,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -1780,7 +1786,7 @@
 				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/etc/openhab2/html/camera1/</default>
+				<default>/etc/openhab/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1864,6 +1870,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -2054,7 +2061,7 @@
 				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/etc/openhab2/html/camera1/</default>
+				<default>/etc/openhab/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -2138,6 +2145,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -2225,14 +2233,14 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="image">
+	<channel-type id="image" advanced="true">
 		<item-type>Image</item-type>
 		<label>Image</label>
 		<description>Low frame rate image from your camera. Recommend this is NOT used unless you have large pollTime.</description>
 		<category>Camera</category>
 	</channel-type>
 
-	<channel-type id="pollImage">
+	<channel-type id="pollImage" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Poll Image</label>
 		<description>This can be used to trigger snapshot updates when an external PIR, button or other form of sensor turns
@@ -2241,7 +2249,7 @@
 
 	<channel-type id="recordingGif">
 		<item-type>Number</item-type>
-		<label>GIF Recording (Seconds)</label>
+		<label>GIF Recording</label>
 		<description>Indicates how long the recording will occur for and when the file is created, the channel will
 			change to 0
 			by itself.</description>
@@ -2249,13 +2257,13 @@
 		<state min="0" max="10800" step="1" pattern="%.1f Seconds" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="gifHistory">
+	<channel-type id="gifHistory" advanced="true">
 		<item-type>String</item-type>
-		<label>Gif Filename History</label>
+		<label>GIF History</label>
 		<description>A history of the last GIFs created in a CSV formatted string.</description>
 	</channel-type>
 
-	<channel-type id="gifHistoryLength">
+	<channel-type id="gifHistoryLength" advanced="true">
 		<item-type>Number</item-type>
 		<label>GIF History Length</label>
 		<description>How many GIFs are stored in the history.</description>
@@ -2263,7 +2271,7 @@
 
 	<channel-type id="recordingMp4">
 		<item-type>Number</item-type>
-		<label>MP4 Recording (Seconds)</label>
+		<label>MP4 Recording</label>
 		<description>Indicates how long the recording will occur for and when the file is created, the channel will
 			change to 0
 			by itself.</description>
@@ -2271,15 +2279,15 @@
 		<state min="0" max="10800" step="1" pattern="%.1f Seconds" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="mp4History">
+	<channel-type id="mp4History" advanced="true">
 		<item-type>String</item-type>
-		<label>Mp4 Filename History</label>
+		<label>MP4 History</label>
 		<description>A history of the last mp4 recordings created in a CSV formatted string.</description>
 	</channel-type>
 
-	<channel-type id="mp4HistoryLength">
+	<channel-type id="mp4HistoryLength" advanced="true">
 		<item-type>Number</item-type>
-		<label>mp4HistoryLength</label>
+		<label>MP4 History Length</label>
 		<description>How many mp4 recordings are stored in the history.</description>
 	</channel-type>
 
@@ -2291,7 +2299,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="rtspUrl">
+	<channel-type id="rtspUrl" advanced="true">
 		<item-type>String</item-type>
 		<label>RTSP URL</label>
 		<description>A link that the camera uses for RTSP.</description>
@@ -2309,34 +2317,34 @@
 
 	<channel-type id="hlsUrl">
 		<item-type>String</item-type>
-		<label>HLS URL (m3u8)</label>
+		<label>HLS URL</label>
 		<description>A link you can use in openHAB to cast video feeds.</description>
 		<category>Camera</category>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pan">
+	<channel-type id="pan" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Pan</label>
 		<description>Pan the camera to a new position.</description>
 		<category>MoveControl</category>
 	</channel-type>
 
-	<channel-type id="tilt">
+	<channel-type id="tilt" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Tilt</label>
 		<description>Tilt the camera to a new position.</description>
 		<category>MoveControl</category>
 	</channel-type>
 
-	<channel-type id="zoom">
+	<channel-type id="zoom" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Zoom</label>
 		<description>Zoom the camera to a new value.</description>
 		<category>Zoom</category>
 	</channel-type>
 
-	<channel-type id="lastMotionType">
+	<channel-type id="lastMotionType" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Motion Type</label>
 		<description>A string that contains the type of motion alarm that was last triggered.</description>
@@ -2351,36 +2359,36 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="fieldDetectionAlarm">
+	<channel-type id="fieldDetectionAlarm" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Intrusion/Field Alarm ON/OFF</label>
+		<label>Field Alarm</label>
 		<description>Intrusion has detected movement. AKA Field Detection Alarm.</description>
 		<category>Motion</category>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="enableFieldDetectionAlarm">
+	<channel-type id="enableFieldDetectionAlarm" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Intrusion/Field Alarm</label>
+		<label>Enable Field Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 	</channel-type>
 
-	<channel-type id="enablePirAlarm">
+	<channel-type id="enablePirAlarm" advanced="true">
 		<item-type>Switch</item-type>
-		<label>PIR Alarm ON/OFF</label>
+		<label>Enable PIR Alarm</label>
 		<description>Enable/Disable the PIR Alarm.</description>
 		<category>Motion</category>
 	</channel-type>
 
 	<channel-type id="cellMotionAlarm">
 		<item-type>Switch</item-type>
-		<label>Cell Motion Detection Alarm</label>
+		<label>Cell Motion Alarm</label>
 		<description>Cell based motion has been detected.</description>
 		<category>Motion</category>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pirAlarm">
+	<channel-type id="pirAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>PIR Alarm</label>
 		<description>PIR motion has been detected.</description>
@@ -2388,7 +2396,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="tamperAlarm">
+	<channel-type id="tamperAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Tamper Alarm</label>
 		<description>Camera may be stolen or damaged.</description>
@@ -2396,7 +2404,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="tooDarkAlarm">
+	<channel-type id="tooDarkAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Too Dark Alarm</label>
 		<description>Image is too dark.</description>
@@ -2404,7 +2412,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="sceneChangeAlarm">
+	<channel-type id="sceneChangeAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Scene Change Alarm</label>
 		<description>Camera may have been moved.</description>
@@ -2412,7 +2420,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="tooBrightAlarm">
+	<channel-type id="tooBrightAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Too Bright Alarm</label>
 		<description>Image is too bright.</description>
@@ -2420,7 +2428,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="tooBlurryAlarm">
+	<channel-type id="tooBlurryAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Too Blurry Alarm</label>
 		<description>Image is out of focus.</description>
@@ -2428,7 +2436,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="storageAlarm">
+	<channel-type id="storageAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Storage Alarm</label>
 		<description>An issue with the cameras storage has been reported.</description>
@@ -2436,7 +2444,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="ffmpegMotionAlarm">
+	<channel-type id="ffmpegMotionAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>FFmpeg Motion Alarm</label>
 		<description>FFmpeg has detected motion.</description>
@@ -2452,7 +2460,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="faceDetected">
+	<channel-type id="faceDetected" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Face Detected Alarm</label>
 		<description>A face has been detected.</description>
@@ -2460,7 +2468,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="itemLeft">
+	<channel-type id="itemLeft" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Item Left Alarm</label>
 		<description>An item has been left.</description>
@@ -2468,15 +2476,15 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="parkingAlarm">
+	<channel-type id="parkingAlarm" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Car Parking Alarm</label>
-		<description>A car has triggered the ParkingDetection.</description>
+		<label>Parking Alarm</label>
+		<description>A car has triggered the Parking Detection.</description>
 		<category>Alarm</category>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="itemTaken">
+	<channel-type id="itemTaken" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Item Taken Alarm</label>
 		<description>An item may have been stolen.</description>
@@ -2484,7 +2492,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="audioAlarm">
+	<channel-type id="audioAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Audio Alarm</label>
 		<description>Audio has triggered an Alarm.</description>
@@ -2492,29 +2500,29 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="enableExternalAlarmInput">
+	<channel-type id="enableExternalAlarmInput" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Alarm In 1 ON/OFF</label>
+		<label>Enable Alarm Input 1</label>
 		<description>Turn the External Alarm Input feature on and off.</description>
 	</channel-type>
 
-	<channel-type id="triggerExternalAlarmInput">
+	<channel-type id="triggerExternalAlarmInput" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm In 1 TRIGGER high ON/low OFF</label>
 		<description>Change the External Alarm Input to trigger on high or low states.</description>
 	</channel-type>
 
-	<channel-type id="externalAlarmInput">
+	<channel-type id="externalAlarmInput" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Alarm In 1</label>
+		<label>Alarm Input 1</label>
 		<description>Some cameras have alarm input wires which can be used to connect to door bells or external PIR sensors.</description>
 		<category>Alarm</category>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="externalAlarmInput2">
+	<channel-type id="externalAlarmInput2" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Alarm In 2</label>
+		<label>Alarm Input 2</label>
 		<description>Some cameras have alarm input wires which can be used to connect to door bells or external PIR sensors.</description>
 		<category>Alarm</category>
 		<state readOnly="true"/>
@@ -2522,56 +2530,56 @@
 
 	<channel-type id="enableMotionAlarm">
 		<item-type>Switch</item-type>
-		<label>Motion Alarm ON/OFF</label>
+		<label>Enable Motion Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
 	</channel-type>
 
-	<channel-type id="externalMotion">
+	<channel-type id="externalMotion" advanced="true">
 		<item-type>Switch</item-type>
-		<label>External Motion Sensor Input</label>
-		<description>Use other sensors external to the camera like a ZWave PIR sensor to flag that the camera has motion in
+		<label>External Motion</label>
+		<description>Use any external sensor like a ZWave PIR sensor to flag that the camera has motion in
 			its field of view.</description>
 		<category>Motion</category>
 	</channel-type>
 
-	<channel-type id="ffmpegMotionControl">
+	<channel-type id="ffmpegMotionControl" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>FFmpeg Motion Alarm ON/OFF/DIMMER</label>
+		<label>Control FFmpeg Motion Alarm</label>
 		<description>Enable/Disable the motion alarm and control the sensitivity.</description>
 		<category>Motion</category>
 	</channel-type>
 
 	<channel-type id="enableLineCrossingAlarm">
 		<item-type>Switch</item-type>
-		<label>Line Crossing ON/OFF</label>
+		<label>Enable Line Crossing Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
 	</channel-type>
 
-	<channel-type id="enableAudioAlarm">
+	<channel-type id="enableAudioAlarm" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Audio Alarm ON/OFF</label>
+		<label>Enable Audio Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are having a party.</description>
 		<category>SoundVolume</category>
 	</channel-type>
 
-	<channel-type id="thresholdAudioAlarm">
+	<channel-type id="thresholdAudioAlarm" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>Audio Alarm Threshold ON/OFF/DIMMER</label>
+		<label>Audio Alarm Threshold</label>
 		<description>By moving this control you should be able to change how sensitive the audio alarm is to soft or loud
 			noises.</description>
 		<category>SoundVolume</category>
 	</channel-type>
 
-	<channel-type id="activateAlarmOutput">
+	<channel-type id="activateAlarmOutput" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Output 1 ON/OFF</label>
 		<description>You can use the cameras output to trigger a device like a burglar alarm.</description>
 		<category>Alarm</category>
 	</channel-type>
 
-	<channel-type id="activateAlarmOutput2">
+	<channel-type id="activateAlarmOutput2" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Output 2 ON/OFF</label>
 		<description>You can use the cameras output 2 to trigger a device like a burglar alarm.</description>
@@ -2580,46 +2588,46 @@
 
 	<channel-type id="startStream">
 		<item-type>Switch</item-type>
-		<label>Start Stream (HLS .m3u8)</label>
+		<label>Start HLS Stream</label>
 		<description>Lower the delay to start casting the camera by creating the files non stop in case they are needed.</description>
 	</channel-type>
 
-	<channel-type id="enableLED">
+	<channel-type id="enableLED" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>LED ON/OFF/Dimmer controls.</label>
-		<description>Turn the LED on and off and if supported allow Dimming.</description>
+		<label>LED Controls</label>
+		<description>Turn the LED ON and OFF and if supported also 0-100% dimming.</description>
 		<category>Light</category>
 	</channel-type>
 
-	<channel-type id="autoLED">
+	<channel-type id="autoLED" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Auto LED ON/OFF</label>
-		<description>Turn automatic mode for the LED on and off.</description>
+		<label>Auto LED</label>
+		<description>Turn the automatic mode for the LED ON and OFF.</description>
 	</channel-type>
 
-	<channel-type id="externalLight">
+	<channel-type id="externalLight" advanced="true">
 		<item-type>Switch</item-type>
-		<label>External Light ON/OFF</label>
-		<description>Turn the lights on and off.</description>
+		<label>External Light</label>
+		<description>Turn the relay for external lights ON and OFF.</description>
 		<category>Light</category>
 	</channel-type>
 
-	<channel-type id="doorBell">
+	<channel-type id="doorBell" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Doorbell Pushed</label>
+		<label>Door Bell</label>
 		<description>The button has been pushed.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="textOverlay">
+	<channel-type id="textOverlay" advanced="true">
 		<item-type>String</item-type>
 		<label>Text Overlay</label>
-		<description>Some custom text you wish to overlay over the cameras snapshot and video streams.</description>
+		<description>Enter some text you wish to overlay on top of the cameras snapshot and video streams.</description>
 	</channel-type>
 
-	<channel-type id="gotoPreset">
+	<channel-type id="gotoPreset" advanced="true">
 		<item-type>String</item-type>
-		<label>gotoPreset</label>
+		<label>Go To Preset</label>
 		<description>Move a P.T.Z camera to this ONVIF preset location.</description>
 		<state readOnly="false">
 			<options>

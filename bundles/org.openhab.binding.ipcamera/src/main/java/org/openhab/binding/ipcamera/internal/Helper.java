@@ -110,7 +110,6 @@ public class Helper {
         try {
             processed = URLEncoder.encode(text, "UTF-8").replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
-
         }
         return processed;
     }
