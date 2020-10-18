@@ -247,7 +247,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     }
 
     /**
-     * Updates all states and channels.
+     * Updates all states and channels. Reschedules an update if no error occurs.
      */
     private void updateStates() {
         final Bridge iCalendarBridge = getBridge();
@@ -269,39 +269,45 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
         if (cal != null) {
             updateStatus(ThingStatus.ONLINE);
 
-            String textFilterValue = config.textEventValue;
-            EventTextFilter filter = null;
-            if (textFilterValue != null) {
-                try {
-                    if (config.textEventField == null || config.textValueType == null) {
-                        throw new IllegalArgumentException("Config is broken.");
-                    }
-                    EventTextFilter.Field textFilterField = EventTextFilter.Field.valueOf(config.textEventField);
-                    EventTextFilter.Type textFilterType = EventTextFilter.Type.valueOf(config.textValueType);
-
-                    filter = new EventTextFilter(textFilterField, textFilterValue, textFilterType);
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Text-filter settings are not set properly.");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-                    return;
-                }
-            }
-
             Instant reference = Instant.now();
             TimeMultiplicator multiplicator;
+            EventTextFilter filter = null;
+            int maxEvents;
 
             try {
+                String textFilterValue = config.textEventValue;
+                if (textFilterValue != null) {
+                    if (config.textEventField == null || config.textValueType == null) {
+                        throw new ConfigBrokenException("Text filter settings are not set properly.");
+                    }
+                    try {
+                        EventTextFilter.Field textFilterField = EventTextFilter.Field.valueOf(config.textEventField);
+                        EventTextFilter.Type textFilterType = EventTextFilter.Type.valueOf(config.textValueType);
+
+                        filter = new EventTextFilter(textFilterField, textFilterValue, textFilterType);
+                    } catch (IllegalArgumentException e2) {
+                        throw new ConfigBrokenException("textEventField or textValueType are not set properly.");
+                    }
+                }
+
                 if (config.datetimeUnit == null) {
-                    throw new IllegalArgumentException("Config is broken.");
+                    throw new ConfigBrokenException("datetimeUnit is not set.");
                 }
                 multiplicator = TimeMultiplicator.valueOf(config.datetimeUnit);
-            } catch (IllegalArgumentException e) {
-                logger.warn("Time-filter settings are not set properly.");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+
+                if (config.maxEvents == null) {
+                    throw new ConfigBrokenException("maxEvents is not set.");
+                }
+                maxEvents = config.maxEvents.intValue();
+                if (maxEvents < 0) {
+                    throw new ConfigBrokenException("maxEvents is less than 0. This is not allowed.");
+                }
+            } catch (ConfigBrokenException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
             }
 
-            if (config.datetimeRound) {
+            if (config.datetimeRound != null && config.datetimeRound.booleanValue()) {
                 ZonedDateTime refDT = reference.atZone(tzProvider.getTimeZone());
                 switch (multiplicator) {
                     case WEEK:
@@ -325,7 +331,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                 end = reference.plusSeconds(config.datetimeEnd.longValue() * multiplicator.getMultiplier());
             }
 
-            List<Event> results = cal.getFilteredEventsBetween(begin, end, filter, config.maxEvents.intValue());
+            List<Event> results = cal.getFilteredEventsBetween(begin, end, filter, maxEvents);
             for (int position = 0; position < config.maxEvents.intValue(); position++) {
                 ResultChannelSet channels = resultChannels.get(position);
                 if (position < results.size()) {
@@ -339,14 +345,18 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                     updateState(channels.endChannel, UnDefType.UNDEF);
                 }
             }
-
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Calendar has not been retrieved yet.");
         }
 
         int refreshTime = DEFAULT_FILTER_REFRESH;
         if (config.refreshTime != null) {
             refreshTime = config.refreshTime.intValue();
+            if (refreshTime < 1) {
+                logger.debug("refreshTime is set to invalid value. Using default.");
+                refreshTime = DEFAULT_FILTER_REFRESH;
+            }
         }
         ScheduledFuture<?> currentUpdateFuture = updateFuture;
         if (currentUpdateFuture != null) {
