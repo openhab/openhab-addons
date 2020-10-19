@@ -120,7 +120,6 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 throw new OpenUVException(uvResponse.getError());
             }
         } catch (IOException e) {
-            logger.error("Error occured during API query : {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OpenUVException e) {
             if (e.isQuotaError()) {
