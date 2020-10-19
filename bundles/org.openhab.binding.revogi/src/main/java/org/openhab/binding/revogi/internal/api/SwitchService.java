@@ -58,7 +58,7 @@ public class SwitchService {
         CompletableFuture<List<UdpResponse>> responses;
         if (ipAddress.trim().isEmpty()) {
             responses = udpSenderService
-                    .broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state));
+                    .broadcastUdpDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state));
         } else {
             responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state),
                     ipAddress);

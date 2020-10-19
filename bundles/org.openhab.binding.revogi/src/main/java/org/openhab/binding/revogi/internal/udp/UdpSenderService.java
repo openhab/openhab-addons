@@ -60,7 +60,7 @@ public class UdpSenderService {
         this.datagramSocketWrapper = datagramSocketWrapper;
     }
 
-    public CompletableFuture<List<UdpResponse>> broadcastUpdDatagram(String content) {
+    public CompletableFuture<List<UdpResponse>> broadcastUdpDatagram(String content) {
         List<String> allBroadcastAddresses = NetUtil.getAllBroadcastAddresses();
         CompletableFuture<List<UdpResponse>> future = new CompletableFuture<>();
         Executors.newCachedThreadPool().submit(() -> future.complete(allBroadcastAddresses.stream().map(address -> {

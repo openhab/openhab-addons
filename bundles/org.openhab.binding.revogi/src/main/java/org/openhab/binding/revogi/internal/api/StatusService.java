@@ -48,7 +48,7 @@ public class StatusService {
     public CompletableFuture<Status> queryStatus(String serialNumber, String ipAddress) {
         CompletableFuture<List<UdpResponse>> responses;
         if (ipAddress.trim().isEmpty()) {
-            responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber));
+            responses = udpSenderService.broadcastUdpDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber));
         } else {
             responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber), ipAddress);
         }

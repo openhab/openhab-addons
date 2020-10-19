@@ -44,7 +44,7 @@ public class RevogiDiscoveryService {
     }
 
     public CompletableFuture<List<DiscoveryRawResponse>> discoverSmartStrips() {
-        CompletableFuture<List<UdpResponse>> responses = udpSenderService.broadcastUpdDatagram(UDP_DISCOVERY_QUERY);
+        CompletableFuture<List<UdpResponse>> responses = udpSenderService.broadcastUdpDatagram(UDP_DISCOVERY_QUERY);
         return responses.thenApply(futureList -> {
             futureList.forEach(response -> logger.info("Received: {}", response));
             return futureList.stream().filter(response -> !response.getAnswer().isEmpty()).map(this::deserializeString)

@@ -44,7 +44,7 @@ public class RevogiDiscoveryServiceTest {
         List<UdpResponse> discoveryString = Collections.singletonList(new UdpResponse(
                 "{\"response\":0,\"data\":{\"sn\":\"1234\",\"regid\":\"reg\",\"sak\":\"sak\",\"name\":\"Strip\",\"mac\":\"mac\",\"ver\":\"5.11\"}}",
                 "127.0.0.1"));
-        when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;"))
+        when(udpSenderService.broadcastUdpDatagram("00sw=all,,,;"))
                 .thenReturn(CompletableFuture.completedFuture(discoveryString));
 
         // when
@@ -62,7 +62,7 @@ public class RevogiDiscoveryServiceTest {
     public void invalidUdpResponse() throws ExecutionException, InterruptedException {
         // given
         List<UdpResponse> discoveryString = Collections.singletonList(new UdpResponse("something invalid", "12345"));
-        when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;"))
+        when(udpSenderService.broadcastUdpDatagram("00sw=all,,,;"))
                 .thenReturn(CompletableFuture.completedFuture(discoveryString));
 
         // when

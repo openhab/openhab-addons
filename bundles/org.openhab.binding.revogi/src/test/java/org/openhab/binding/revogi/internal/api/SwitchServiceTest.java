@@ -56,7 +56,7 @@ public class SwitchServiceTest {
         // given
         List<UdpResponse> response = Collections
                 .singletonList(new UdpResponse("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
-        when(udpSenderService.broadcastUpdDatagram("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}"))
+        when(udpSenderService.broadcastUdpDatagram("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}"))
                 .thenReturn(CompletableFuture.completedFuture(response));
 
         // when
