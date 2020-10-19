@@ -88,13 +88,14 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     }
 
     private void switchPlug(Command command, int port) {
-        if (config == null) {
+        @Nullable RevogiSmartStripControlConfiguration localConfig = this.config;
+        if (localConfig == null) {
             logger.warn("No config available, config object was null");
             return;
         }
         if (command instanceof OnOffType) {
             int state = convertOnOffTypeToState(command);
-            switchService.switchPort(config.getSerialNumber(), config.ipAddress, port, state);
+            switchService.switchPort(localConfig.getSerialNumber(), localConfig.ipAddress, port, state);
         }
     }
 
@@ -117,7 +118,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         super.dispose();
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        if (pollingJob != null) {
             pollingJob.cancel(true);
             pollingJob = null;
         }
