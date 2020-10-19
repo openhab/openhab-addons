@@ -15,15 +15,15 @@ package org.openhab.binding.touchwand.internal.discovery;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -58,12 +58,12 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
     private static final int SEARCH_TIME_SEC = 10;
     private static final int SCAN_INTERVAL_SEC = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC = 5;
-    private static final String[] CONNECTIVITY_OPTIONS = { "zwave", "knx" };
+    private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE };
     private @NonNullByDefault({}) TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> scanningJob;
-    private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
+    private CopyOnWriteArraySet<TouchWandUnitStatusUpdateListener> listeners = new CopyOnWriteArraySet<>();
 
     public TouchWandUnitDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
@@ -141,7 +141,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    protected synchronized void stopScan() {
+    protected void stopScan() {
         removeOlderResults(getTimestampOfLastScan());
         super.stopScan();
     }
@@ -154,7 +154,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void deactivate() {
-        removeOlderResults(System.currentTimeMillis(), touchWandBridgeHandler.getThing().getUID());
+        removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
         super.deactivate();
     }
 
@@ -176,14 +176,14 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    public synchronized void registerListener(TouchWandUnitStatusUpdateListener listener) {
+    public void registerListener(TouchWandUnitStatusUpdateListener listener) {
         if (!listeners.contains(listener)) {
             logger.debug("Adding TouchWandWebSocket listener {}", listener);
             listeners.add(listener);
         }
     }
 
-    public synchronized void unregisterListener(TouchWandUnitStatusUpdateListener listener) {
+    public void unregisterListener(TouchWandUnitStatusUpdateListener listener) {
         logger.debug("Removing TouchWandWebSocket listener {}", listener);
         listeners.remove(listener);
     }
@@ -197,15 +197,15 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
         ThingUID bridgeUID = touchWandBridgeHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(typeUID, bridgeUID, unit.getId().toString());
         Map<String, Object> properties = new HashMap<>();
-        properties.put("id", unit.getId().toString());
-        properties.put("name", unit.getName());
+        properties.put(HANDLER_PROPERTIES_ID, unit.getId().toString());
+        properties.put(HANDLER_PROPERTIES_NAME, unit.getName());
         // @formatter:off
         thingDiscovered(DiscoveryResultBuilder.create(thingUID)
                 .withThingType(typeUID)
                 .withLabel(unit.getName())
                 .withBridge(bridgeUID)
                 .withProperties(properties)
-                .withRepresentationProperty("id")
+                .withRepresentationProperty(HANDLER_PROPERTIES_ID)
                 .build()
         );
         // @formatter:on
@@ -220,7 +220,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public ThingHandler getThingHandler() {
+    public @NonNull ThingHandler getThingHandler() {
         return touchWandBridgeHandler;
     }
 }

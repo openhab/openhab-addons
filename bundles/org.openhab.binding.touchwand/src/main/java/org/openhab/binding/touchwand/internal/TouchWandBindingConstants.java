@@ -56,6 +56,16 @@ public class TouchWandBindingConstants {
     public static final String STATUS_REFRESH_TIME = "statusrefresh";
     public static final String ADD_SECONDARY_UNITS = "addSecondaryUnits";
 
+    // Unit handler properties
+
+    public static final String HANDLER_PROPERTIES_ID = "id";
+    public static final String HANDLER_PROPERTIES_NAME = "name";
+
+    // Connectivity options
+
+    public static final String CONNECTIVITY_KNX = "knx";
+    public static final String CONNECTIVITY_ZWAVE = "zwave";
+
     // commands
     public static final String SWITCH_STATUS_ON = "255";
     public static final String SWITCH_STATUS_OFF = "0";
@@ -67,7 +77,7 @@ public class TouchWandBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHUTTER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WALLCONTROLLER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DIMMER);
-        // SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ALARMSENSOR); // not implemented yet
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ALARMSENSOR); // not implemented yet
     }
 
     public static final String TYPE_WALLCONTROLLER = "WallController";

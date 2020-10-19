@@ -15,9 +15,11 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
+import java.io.UnsupportedEncodingException;
 import java.net.CookieManager;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,10 +52,6 @@ public class TouchWandRestClient {
 
     static CookieManager cookieManager = new CookieManager();
 
-    private String touchWandIpAddr = "";
-    private String touchWandPort = "";
-    private boolean isConnected = false;
-
     private static final HttpMethod METHOD_GET = HttpMethod.GET;
     private static final HttpMethod METHOD_POST = HttpMethod.POST;
 
@@ -84,6 +82,9 @@ public class TouchWandRestClient {
         COMMAND_MAP.put(CMD_GET_UNIT_BY_ID, "/units/getUnitByID?");
     }
 
+    private String touchWandIpAddr = "";
+    private String touchWandPort = "";
+    private boolean isConnected = false;
     private HttpClient httpClient;
 
     public TouchWandRestClient(HttpClient httpClient) {
@@ -99,8 +100,18 @@ public class TouchWandRestClient {
     }
 
     private final boolean cmdLogin(String user, String pass, String ipAddr) {
-        String command = buildUrl(CMD_LOGIN) + "user=" + user + "&" + "psw=" + pass;
-        String response = sendCommand(command, METHOD_GET, "");
+        String encodedUser;
+        String encodedPass;
+        String response = "";
+
+        try {
+            encodedUser = URLEncoder.encode(user, StandardCharsets.UTF_8.toString());
+            encodedPass = URLEncoder.encode(pass, StandardCharsets.UTF_8.toString());
+            String command = buildUrl(CMD_LOGIN) + "user=" + encodedUser + "&" + "psw=" + encodedPass;
+            response = sendCommand(command, METHOD_GET, "");
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Error url encoding username or password : {}", e.getMessage());
+        }
 
         return !response.equals("Unauthorized");
     }
@@ -190,7 +201,7 @@ public class TouchWandRestClient {
             response = request.send();
             return response.getContentAsString();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error open connecton to {} : {} ", touchWandIpAddr, e.getMessage());
+            logger.warn("Error opening connecton to {} : {} ", touchWandIpAddr, e.getMessage());
         }
         return "";
     }

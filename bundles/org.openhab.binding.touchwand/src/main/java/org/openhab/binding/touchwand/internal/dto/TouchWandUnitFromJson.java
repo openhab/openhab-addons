@@ -56,6 +56,9 @@ public class TouchWandUnitFromJson {
             case TYPE_SHUTTER:
                 touchWandUnit = gson.fromJson(jsonUnit, TouchWandShutterSwitchUnitData.class);
                 break;
+            case TYPE_ALARMSENSOR:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandUnitDataAlarmSensor.class);
+                break;
             default:
                 return null;
         }

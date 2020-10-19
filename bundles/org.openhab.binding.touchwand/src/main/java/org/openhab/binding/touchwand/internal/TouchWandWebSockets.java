@@ -17,9 +17,8 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.S
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -61,11 +60,11 @@ public class TouchWandWebSockets {
     private String controllerAddress;
     private TouchWandSocket touchWandSocket;
     private boolean isShutDown = false;
-    private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
+    private CopyOnWriteArraySet<TouchWandUnitStatusUpdateListener> listeners = new CopyOnWriteArraySet<>();
     private @Nullable ScheduledFuture<?> socketReconnect;
     private @Nullable URI uri;
 
-    ScheduledExecutorService scheduler;
+    private ScheduledExecutorService scheduler;
 
     public TouchWandWebSockets(String ipAddress, ScheduledExecutorService scheduler) {
         client = new WebSocketClient();
@@ -100,28 +99,29 @@ public class TouchWandWebSockets {
         isShutDown = true;
         try {
             client.stop();
+            ScheduledFuture<?> mySocketReconnect = socketReconnect;
+            if (mySocketReconnect != null) {
+                mySocketReconnect.cancel(true);
+            }
         } catch (Exception e) {
             logger.warn("Could not stop webSocketClient,  message {}", e.getMessage());
         }
     }
 
-    public synchronized void registerListener(TouchWandUnitStatusUpdateListener listener) {
+    public void registerListener(TouchWandUnitStatusUpdateListener listener) {
         if (!listeners.contains(listener)) {
             logger.debug("Adding TouchWandWebSocket listener {}", listener);
             listeners.add(listener);
         }
     }
 
-    public synchronized void unregisterListener(TouchWandUnitStatusUpdateListener listener) {
+    public void unregisterListener(TouchWandUnitStatusUpdateListener listener) {
         logger.debug("Removing TouchWandWebSocket listener {}", listener);
         listeners.remove(listener);
     }
 
     @WebSocket(maxIdleTime = WEBSOCKET_IDLE_TIMEOUT_MS)
     public class TouchWandSocket {
-
-        public TouchWandSocket() {
-        }
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {

@@ -51,6 +51,7 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     private boolean addSecondaryUnits;
     private @Nullable TouchWandWebSockets touchWandWebSockets;
     private Map<String, TouchWandUnitUpdateListener> unitUpdateListeners = new ConcurrentHashMap<>();
+    private volatile boolean isRunning = false;
 
     public TouchWandRestClient touchWandClient;
 
@@ -61,7 +62,7 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     }
 
     @Override
-    public void initialize() {
+    public synchronized void initialize() {
         String host;
         Integer port;
         TouchwandBridgeConfiguration config;
@@ -75,6 +76,8 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
         statusRefreshRateSec = config.statusrefresh;
         addSecondaryUnits = config.addSecondaryUnits;
 
+        isRunning = true;
+
         scheduler.execute(() -> {
             boolean thingReachable = false;
             String password = config.password;
@@ -82,9 +85,15 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
             thingReachable = touchWandClient.connect(username, password, host, port.toString());
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
-                TouchWandWebSockets localSockets = touchWandWebSockets = new TouchWandWebSockets(host, scheduler);
-                localSockets.registerListener(this);
-                localSockets.connect();
+                synchronized (this) {
+                    if (isRunning) {
+                        TouchWandWebSockets localSockets = touchWandWebSockets = new TouchWandWebSockets(host,
+                                scheduler);
+                        localSockets.registerListener(this);
+                        localSockets.connect();
+                    }
+                }
+
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -104,7 +113,8 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
+        isRunning = false;
         TouchWandWebSockets myTouchWandWebSockets = touchWandWebSockets;
         if (myTouchWandWebSockets != null) {
             myTouchWandWebSockets.unregisterListener(this);
