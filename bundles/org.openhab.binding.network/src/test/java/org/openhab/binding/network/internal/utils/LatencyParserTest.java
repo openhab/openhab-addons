@@ -68,7 +68,7 @@ public class LatencyParserTest {
         Optional<Double> resultLatency = latencyParser.parseLatency(input);
 
         // Assert
-        assertTrue(resultLatency.isPresent());
-        assertEquals(2, resultLatency.get(), 0);
+        Assert.assertTrue(resultLatency.isPresent());
+        Assert.assertEquals(2, resultLatency.get(), 0);
     }
 }
