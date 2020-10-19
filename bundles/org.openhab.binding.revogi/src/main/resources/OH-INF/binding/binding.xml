@@ -4,7 +4,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Revogi Binding</name>
-	<description>This is the binding for Revogi devices.</description>
+	<description>This is the binding for Revogi devices. Revogi is a vendor of several smart home devices like light bulbs,
+		power strips and sensors.
+	</description>
 	<author>Andi Bräu</author>
 
 </binding:binding>
