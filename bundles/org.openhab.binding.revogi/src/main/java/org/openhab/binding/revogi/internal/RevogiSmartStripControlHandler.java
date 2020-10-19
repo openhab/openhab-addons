@@ -111,7 +111,6 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         config = getConfigAs(RevogiSmartStripControlConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
         scheduler.execute(this::updateStripInformation);
         Runnable runnable = RevogiSmartStripControlHandler.this::updateStripInformation;
 
