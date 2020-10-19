@@ -57,7 +57,6 @@ public class StatusService {
 
     @NotNull
     private StatusDTO getStatus(final List<UdpResponseDTO> singleResponse) {
-        singleResponse.forEach(response -> logger.info("Received: {}", response.getAnswer()));
         return singleResponse.stream()
                 .filter(response -> !response.getAnswer().isEmpty() && response.getAnswer().contains(VERSION_STRING))
                 .map(response -> deserializeString(response.getAnswer()))

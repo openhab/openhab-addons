@@ -45,12 +45,9 @@ public class RevogiDiscoveryService {
 
     public CompletableFuture<List<DiscoveryRawResponseDTO>> discoverSmartStrips() {
         CompletableFuture<List<UdpResponseDTO>> responses = udpSenderService.broadcastUdpDatagram(UDP_DISCOVERY_QUERY);
-        return responses.thenApply(futureList -> {
-            futureList.forEach(response -> logger.info("Received: {}", response));
-            return futureList.stream().filter(response -> !response.getAnswer().isEmpty()).map(this::deserializeString)
-                    .filter(discoveryRawResponse -> discoveryRawResponse.getResponse() == 0)
-                    .collect(Collectors.toList());
-        });
+        return responses.thenApply(futureList -> futureList.stream().filter(response -> !response.getAnswer().isEmpty()).map(this::deserializeString)
+                .filter(discoveryRawResponse -> discoveryRawResponse.getResponse() == 0)
+                .collect(Collectors.toList()));
     }
 
     private DiscoveryRawResponseDTO deserializeString(UdpResponseDTO response) {

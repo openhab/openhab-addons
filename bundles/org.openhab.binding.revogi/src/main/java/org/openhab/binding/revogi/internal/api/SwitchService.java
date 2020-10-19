@@ -47,11 +47,9 @@ public class SwitchService {
 
     public CompletableFuture<SwitchResponseDTO> switchPort(String serialNumber, String ipAddress, int port, int state) {
         if (state < 0 || state > 1) {
-            logger.warn("state value is not valid: {}", state);
             throw new IllegalArgumentException("state has to be 0 or 1");
         }
         if (port < 0) {
-            logger.warn("port doesn't exist on device: {}", port);
             throw new IllegalArgumentException("Given port doesn't exist");
         }
 
@@ -69,7 +67,6 @@ public class SwitchService {
 
     @NotNull
     private SwitchResponseDTO getSwitchResponse(final List<UdpResponseDTO> singleResponse) {
-        singleResponse.forEach(response -> logger.info("Reveived {}", response.getAnswer()));
         return singleResponse.stream().filter(response -> !response.getAnswer().isEmpty())
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(switchResponse -> switchResponse.getCode() == 200 && switchResponse.getResponse() == 20)

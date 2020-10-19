@@ -96,7 +96,7 @@ public class UdpSenderService {
             datagramSocketWrapper.sendPacket(packet);
             responses = getUdpResponses();
         } catch (IOException e) {
-            logger.warn("Error sending message or reading anwser {}", e.getMessage(), e);
+            logger.warn("Error sending message or reading anwser {}", e.getMessage());
         } finally {
             datagramSocketWrapper.closeSocket();
         }
@@ -113,7 +113,6 @@ public class UdpSenderService {
                 datagramSocketWrapper.receiveAnswer(answer);
             } catch (SocketTimeoutException | SocketException e) {
                 timeoutCounter++;
-                logger.info("Socket receive time no. {}", timeoutCounter);
                 try {
                     TimeUnit.MILLISECONDS.sleep(timeoutCounter * TIMEOUT_BASE_VALUE);
                 } catch (InterruptedException ex) {
@@ -122,7 +121,7 @@ public class UdpSenderService {
                 }
                 continue;
             } catch (IOException e) {
-                logger.warn("Error sending message or reading anwser {}", e.getMessage(), e);
+                logger.warn("Error sending message or reading anwser {}", e.getMessage());
             }
 
             if (answer.getAddress() != null && answer.getLength() > 0) {
