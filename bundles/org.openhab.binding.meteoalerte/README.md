@@ -27,7 +27,8 @@ The Météo Alerte information that are retrieved is available as these channels
 
 | Channel ID            | Item Type | Description                                   |
 |-----------------------|-----------|-----------------------------------------------|
-| observation-time      | DateTime  | Date and time of alert creation               |
+| observation-time      | DateTime  | Date and time of report validity start        |
+| end-time              | DateTime  | Date and time of report validity end          |
 | comment               | String    | General comments on alerts for the department |
 | vent                  | String    | Wind alert level (*)                          |
 | pluie-inondation      | String    | Rain alert level (*)                          |
@@ -37,6 +38,7 @@ The Météo Alerte information that are retrieved is available as these channels
 | canicule              | String    | Heat alert level (*)                          |
 | grand-froid           | String    | Cold alert level (*)                          |
 | avalanches            | String    | Avalanche alert level (*)                     |
+| vague-submersion      | String    | Wave submersion alert level (*)               |
 | pluie-inondation-icon | Image     | Pictogram of the Rain alert level             |
 | vent-icon             | Image     | Pictogram of the Wind alert level             |
 | orage-icon            | Image     | Pictogram of Storm alert level                |
@@ -45,6 +47,7 @@ The Météo Alerte information that are retrieved is available as these channels
 | canicule-icon         | Image     | Pictogram of Heat alert level                 |
 | grand-froid-icon      | Image     | Pictogram of Cold alert level                 |
 | avalanches-icon       | Image     | Pictogram of Avalanche alert level            |
+| vague-submersion-icon | Image     | Pictogram of Wave Submersion alert level      |
 
 (*) Each alert level is described by a color : 
 

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.meteoalerte.internal;
 
-import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
+import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.THING_TYPE_METEO_ALERT;
 
 import java.time.ZonedDateTime;
 
@@ -43,31 +43,25 @@ import com.google.gson.JsonDeserializer;
 @NonNullByDefault
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     private final Gson gson;
-    // Needed for converting UTC time to local time
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-        this.gson = new GsonBuilder()
-                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
-                        jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
+        this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
+                (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                        .parse(json.getAsJsonPrimitive().getAsString())
+                        .withZoneSameInstant(timeZoneProvider.getTimeZone()))
                 .create();
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return THING_TYPE_METEO_ALERT.equals(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_METEO_ALERT)) {
-            return new MeteoAlerteHandler(thing, timeZoneProvider, gson);
-        }
-
-        return null;
+        return supportsThingType(thingTypeUID) ? new MeteoAlerteHandler(thing, gson) : null;
     }
 }
