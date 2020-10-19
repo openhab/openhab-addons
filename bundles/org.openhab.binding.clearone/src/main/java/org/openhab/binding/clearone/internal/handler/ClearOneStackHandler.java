@@ -27,12 +27,14 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.clearone.internal.ClearOneStackDiscoveryService;
 import org.openhab.binding.clearone.internal.Message;
 import org.openhab.binding.clearone.internal.config.StackConfiguration;
@@ -350,11 +352,33 @@ public class ClearOneStackHandler extends BaseBridgeHandler implements SerialPor
         return thing;
     }
 
+    /**
+     * Gets a serial port identifier for a given name.
+     * Workaround for getIdentifier in SerialPortManager class, because it doesn't detected correctly that the device is
+     * unplugged.
+     *
+     * @param the name
+     * @return a serial port identifier or null
+     */
+    private @Nullable SerialPortIdentifier getSerialPortIdentifier(final String name) {
+        if (name.startsWith("rfc2217://")) {
+            return serialPortManagerSupplier.get().getIdentifier(name);
+        }
+
+        Optional<SerialPortIdentifier> opt = serialPortManagerSupplier.get().getIdentifiers()
+                .filter(id -> id.getName().equals(name)).findFirst();
+        if (opt.isPresent()) {
+            return opt.get();
+        } else {
+            return null;
+        }
+    }
+
     public void openConnection() {
         try {
             logger.debug("openConnection(): Connecting to Stack ");
 
-            SerialPortIdentifier portIdentifier = serialPortManagerSupplier.get().getIdentifier(serialPortName);
+            SerialPortIdentifier portIdentifier = getSerialPortIdentifier(serialPortName);
             if (portIdentifier == null) {
                 logger.error("openConnection();: No Such Port");
                 setConnected(false);
@@ -362,11 +386,21 @@ public class ClearOneStackHandler extends BaseBridgeHandler implements SerialPor
             }
             serialPort = portIdentifier.open(this.getClass().getName(), 2000);
 
+            logger.debug("Setting baud rate");
             serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
+            // Add property for enabling/disabling flow control
+            logger.debug("Setting flow control");
             serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+            logger.debug("Setting RTS");
             serialPort.setRTS(true);
-            serialPort.enableReceiveThreshold(1);
+            try {
+                logger.debug("Enabling receive threshold");
+                serialPort.enableReceiveThreshold(1);
+            } catch (UnsupportedCommOperationException e) {
+                logger.debug("Enabling receive threshold is unsupported");
+            }
+            logger.debug("Disabling Receive Timeout");
             serialPort.disableReceiveTimeout();
 
             serialOutput = new OutputStreamWriter(serialPort.getOutputStream(), "US-ASCII");
