@@ -26,10 +26,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.net.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +51,12 @@ public class UdpSenderService {
      * 800ms in the 1st loop, 1600ms in the 2nd loop and 2400ms in the third loop.
      */
     private static final int MAX_TIMEOUT_COUNT = 2;
-    public static final long TIMEOUT_BASE_VALUE = 800L;
+    static final long TIMEOUT_BASE_VALUE_SEC = 800L;
     private static final int REVOGI_PORT = 8888;
 
     private final Logger logger = LoggerFactory.getLogger(UdpSenderService.class);
     private final DatagramSocketWrapper datagramSocketWrapper;
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("thingHandler");
 
     public UdpSenderService(DatagramSocketWrapper datagramSocketWrapper) {
         this.datagramSocketWrapper = datagramSocketWrapper;
@@ -63,7 +65,7 @@ public class UdpSenderService {
     public CompletableFuture<List<UdpResponseDTO>> broadcastUdpDatagram(String content) {
         List<String> allBroadcastAddresses = NetUtil.getAllBroadcastAddresses();
         CompletableFuture<List<UdpResponseDTO>> future = new CompletableFuture<>();
-        Executors.newCachedThreadPool().submit(() -> future.complete(allBroadcastAddresses.stream().map(address -> {
+        scheduler.submit(() -> future.complete(allBroadcastAddresses.stream().map(address -> {
             try {
                 return sendMessage(content, InetAddress.getByName(address));
             } catch (UnknownHostException e) {
@@ -78,7 +80,7 @@ public class UdpSenderService {
         try {
             CompletableFuture<List<UdpResponseDTO>> future = new CompletableFuture<>();
             InetAddress inetAddress = InetAddress.getByName(ipAddress);
-            Executors.newCachedThreadPool().submit(() -> future.complete(sendMessage(content, inetAddress)));
+            scheduler.submit(() -> future.complete(sendMessage(content, inetAddress)));
             return future;
         } catch (UnknownHostException e) {
             logger.warn("Could not find host with IP {}", ipAddress);
@@ -114,7 +116,7 @@ public class UdpSenderService {
             } catch (SocketTimeoutException | SocketException e) {
                 timeoutCounter++;
                 try {
-                    TimeUnit.MILLISECONDS.sleep(timeoutCounter * TIMEOUT_BASE_VALUE);
+                    TimeUnit.MILLISECONDS.sleep(timeoutCounter * TIMEOUT_BASE_VALUE_SEC);
                 } catch (InterruptedException ex) {
                     logger.debug("Interrupted sleep");
                     Thread.currentThread().interrupt();
