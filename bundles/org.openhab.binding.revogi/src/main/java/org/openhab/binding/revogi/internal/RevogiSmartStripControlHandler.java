@@ -33,6 +33,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +98,9 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         if (command instanceof OnOffType) {
             int state = convertOnOffTypeToState(command);
             switchService.switchPort(localConfig.getSerialNumber(), localConfig.ipAddress, port, state);
+        }
+        if (command instanceof RefreshType) {
+            updateStripInformation();
         }
     }
 
