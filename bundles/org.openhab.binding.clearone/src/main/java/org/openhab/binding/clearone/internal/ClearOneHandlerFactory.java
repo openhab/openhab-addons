@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.clearone.internal;
 
-import static org.openhab.binding.clearone.internal.ClearOneBindingConstants.*;
-
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
