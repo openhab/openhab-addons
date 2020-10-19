@@ -163,23 +163,17 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
     public void updateAlert(String channelId, AlertLevel value) {
         String channelIcon = channelId + "-icon";
-        if (value != AlertLevel.UNKNOWN) {
-            if (isLinked(channelId)) {
-                updateState(channelId, new StringType(value.name()));
-            }
-            if (isLinked(channelIcon)) {
-                String resource = getResource(String.format("picto/%s.svg", channelId));
-                if (resource != null) {
-                    resource = resource.replaceAll(ALERT_COLORS.get(AlertLevel.UNKNOWN), ALERT_COLORS.get(value));
-                }
-                updateState(channelIcon,
-                        resource != null ? new RawType(resource.getBytes(), "image/svg+xml") : UnDefType.NULL);
-            }
-            return;
+        if (isLinked(channelId)) {
+            updateState(channelId, value != AlertLevel.UNKNOWN ? new StringType(value.name()) : UnDefType.UNDEF);
         }
-        updateState(channelId, UnDefType.UNDEF);
-        updateState(channelIcon, UnDefType.UNDEF);
-        logger.warn("Value {} is not a valid alert level for channel {}", value, channelId);
+        if (isLinked(channelIcon)) {
+            String resource = getResource(String.format("picto/%s.svg", channelId));
+            if (resource != null) {
+                resource = resource.replaceAll(ALERT_COLORS.get(AlertLevel.UNKNOWN), ALERT_COLORS.get(value));
+            }
+            updateState(channelIcon,
+                    resource != null ? new RawType(resource.getBytes(), "image/svg+xml") : UnDefType.UNDEF);
+        }
     }
 
     public void updateDate(String channelId, ZonedDateTime zonedDateTime) {
