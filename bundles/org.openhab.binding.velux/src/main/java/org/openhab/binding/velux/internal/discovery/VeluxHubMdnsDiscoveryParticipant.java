@@ -14,6 +14,7 @@ package org.openhab.binding.velux.internal.discovery;
 
 import static org.openhab.binding.velux.internal.VeluxBindingConstants.THING_TYPE_BRIDGE;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -34,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers Velux KLF200 hubs by means of mDNS-SD lookup services
+ * Discovers Velux KLF200 gateways by means of mDNS-SD lookup services
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -44,31 +45,54 @@ public class VeluxHubMdnsDiscoveryParticipant implements MDNSDiscoveryParticipan
 
     private final Logger logger = LoggerFactory.getLogger(VeluxHubMdnsDiscoveryParticipant.class);
 
-    private static final String VELUX_KLF_LAN = "VELUX_KLF_LAN";
+    private static final String VELUX_KLF = "VELUX_KLF_";
+    private static final String VELUX_KLF_LAN = VELUX_KLF + "LAN";
     private static final String HTTP_TCP_LOCAL = "_http._tcp.local.";
 
     /**
-     * Checks if the passed {@link ServiceInfo} refers to a Velux hub, and if so tries to resolve and return its ipv4
-     * address
+     * Checks if the passed {@link ServiceInfo} refers to a Velux gateway, and if so returns its ipv4 address.
+     *
+     * Note: the KLF200 gateway has a sub-standard mDNS implementation, so we try two different ways to resolve its ipv4
+     * addresses.
      *
      * @param serviceInfo contains an mDNS discovered service info
-     * @return returns the ipv4 address if the passed serviceInfo relates to a Velux hub whose host name can be resolved
-     *         to an ipv4 address (i.e. if it is online); otherwise returns null
+     * @return returns the ipv4 address if the passed serviceInfo relates to a Velux hub, and its host name can be
+     *         resolved to an ipv4 address on a LAN connection (i.e. if it is online); otherwise returns null
      */
-    private @Nullable String getIpAddressIfOnlineVeluxHub(ServiceInfo serviceInfo) {
-        String name = serviceInfo.getName();
-        logger.trace("getIpAddressIfOnlineVeluxHub(): valid hub check for '{}'", name);
-        if (name.startsWith(VELUX_KLF_LAN)) {
+    private String getIpAddress(ServiceInfo serviceInfo) {
+        String svcName = serviceInfo.getName();
+        logger.trace("getIpAddress(): called for device '{}'", svcName);
+        if (svcName.startsWith(VELUX_KLF_LAN)) {
+            String ipv4;
+
+            /*
+             * if the serviceInfo has provided ipv4 addresses, return the first one
+             */
+            for (Inet4Address ipAddr : serviceInfo.getInet4Addresses()) {
+                ipv4 = ipAddr.getHostAddress();
+                logger.trace("getIpAddress(): gateway '{}' found on '{}' (resolved by mDNS)", svcName, ipv4);
+                return ipv4;
+            }
+
+            /*
+             * but if there was no ipv4 in serviceInfo, try to resolve the host using plain DNS
+             */
             try {
-                String addr = InetAddress.getByName(name + "." + serviceInfo.getDomain()).getHostAddress();
-                logger.trace("getIpAddressIfOnlineVeluxHub(): valid hub '{}' on ip '{}'", name, addr);
-                return addr;
-            } catch (UnknownHostException e) {
+                for (InetAddress ipAddr : InetAddress.getAllByName(svcName + "." + serviceInfo.getDomain())) {
+                    if (ipAddr instanceof Inet4Address) {
+                        ipv4 = ipAddr.getHostAddress();
+                        logger.trace("getIpAddress(): gateway '{}' found on '{}' (resolved by DNS)", svcName, ipv4);
+                        return ipv4;
+                    }
+                }
+            } catch (UnknownHostException e1) {
                 // fall through
             }
+            logger.trace("getIpAddress(): gateway '{}' ignored (no ip address)", svcName);
+        } else if (svcName.startsWith(VELUX_KLF)) {
+            logger.trace("getIpAddress(): gateway '{}' ignored (not ethernet)", svcName);
         }
-        logger.trace("getIpAddressIfOnlineVeluxHub(): device '{}' is not a hub", name);
-        return null;
+        return "";
     }
 
     @Override
@@ -84,14 +108,14 @@ public class VeluxHubMdnsDiscoveryParticipant implements MDNSDiscoveryParticipan
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo serviceInfo) {
         logger.trace("createResult(): called..");
-        String ipAddr = getIpAddressIfOnlineVeluxHub(serviceInfo);
-        if (ipAddr != null) {
+        String ipAddr = getIpAddress(serviceInfo);
+        if (!ipAddr.isEmpty()) {
             ThingUID thingUID = new ThingUID(THING_TYPE_BRIDGE, ipAddr.replace(".", "_"));
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_BRIDGE)
                     .withProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS, ipAddr)
                     .withRepresentationProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS)
-                    .withLabel(String.format("Velux Hub (%s)", ipAddr)).build();
-            logger.trace("createResult(): return discovered hub uid '{}' on ip '{}'", thingUID, ipAddr);
+                    .withLabel(String.format("Velux Bridge (%s)", ipAddr)).build();
+            logger.debug("createResult(): returning discovered gateway uid '{}' on ip '{}'", thingUID, ipAddr);
             return result;
         }
         return null;
@@ -100,10 +124,10 @@ public class VeluxHubMdnsDiscoveryParticipant implements MDNSDiscoveryParticipan
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo serviceInfo) {
         logger.trace("getThingUID(): called..");
-        String ipAddr = getIpAddressIfOnlineVeluxHub(serviceInfo);
-        if (ipAddr != null) {
+        String ipAddr = getIpAddress(serviceInfo);
+        if (!ipAddr.isEmpty()) {
             ThingUID thingUID = new ThingUID(THING_TYPE_BRIDGE, ipAddr.replace(".", "_"));
-            logger.trace("getThingUID(): return uid '{}' for hub on ip '{}'", thingUID, ipAddr);
+            logger.debug("getThingUID(): returning uid '{}' for gateway on ip '{}'", thingUID, ipAddr);
             return thingUID;
         }
         return null;
