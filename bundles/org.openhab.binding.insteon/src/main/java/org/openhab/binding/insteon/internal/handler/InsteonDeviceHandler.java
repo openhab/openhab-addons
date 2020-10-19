@@ -314,6 +314,12 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
                 getInsteonNetworkHandler().initialized(getThing().getUID(), msg);
 
+                channels.forEach(channel -> {
+                    if (isLinked(channel.getUID())) {
+                        channelLinked(channel.getUID());
+                    }
+                });
+
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 String msg = "Product key '" + productKey
@@ -358,6 +364,10 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
+        if (getInsteonNetworkHandler().isChannelLinked(channelUID)) {
+            return;
+        }
+
         Map<String, @Nullable String> params = new HashMap<>();
         Channel channel = getThing().getChannel(channelUID.getId());
 
