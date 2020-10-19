@@ -51,14 +51,21 @@ public class UdpSenderService {
      * 800ms in the 1st loop, 1600ms in the 2nd loop and 2400ms in the third loop.
      */
     private static final int MAX_TIMEOUT_COUNT = 2;
-    static final long TIMEOUT_BASE_VALUE_SEC = 800L;
+    private static final long TIMEOUT_BASE_VALUE_SEC = 800L;
     private static final int REVOGI_PORT = 8888;
 
     private final Logger logger = LoggerFactory.getLogger(UdpSenderService.class);
     private final DatagramSocketWrapper datagramSocketWrapper;
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("thingHandler");
+    private final long timeoutBaseValue;
 
     public UdpSenderService(DatagramSocketWrapper datagramSocketWrapper) {
+        this.timeoutBaseValue = TIMEOUT_BASE_VALUE_SEC;
+        this.datagramSocketWrapper = datagramSocketWrapper;
+    }
+
+    public UdpSenderService(DatagramSocketWrapper datagramSocketWrapper, long timeout) {
+        this.timeoutBaseValue = timeout;
         this.datagramSocketWrapper = datagramSocketWrapper;
     }
 
@@ -116,7 +123,7 @@ public class UdpSenderService {
             } catch (SocketTimeoutException | SocketException e) {
                 timeoutCounter++;
                 try {
-                    TimeUnit.MILLISECONDS.sleep(timeoutCounter * TIMEOUT_BASE_VALUE_SEC);
+                    TimeUnit.MILLISECONDS.sleep(timeoutCounter * timeoutBaseValue);
                 } catch (InterruptedException ex) {
                     logger.debug("Interrupted sleep");
                     Thread.currentThread().interrupt();

@@ -43,7 +43,7 @@ public class UdpSenderServiceTest {
 
     private final DatagramSocketWrapper datagramSocketWrapper = mock(DatagramSocketWrapper.class);
 
-    private final UdpSenderService udpSenderService = new UdpSenderService(datagramSocketWrapper);
+    private final UdpSenderService udpSenderService = new UdpSenderService(datagramSocketWrapper, 1L);
 
     private final int numberOfInterfaces = NetUtil.getAllBroadcastAddresses().size();
 
