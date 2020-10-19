@@ -10,18 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.intesis.internal;
+package org.openhab.binding.intesis.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link IntesisConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link IntesisBoxConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Hans-Jörg Merk - Initial contribution
  */
 @NonNullByDefault
-public class IntesisConfiguration {
+public class IntesisBoxConfiguration {
     public String ipAddress = "";
-    public String password = "";
     public int port;
 }

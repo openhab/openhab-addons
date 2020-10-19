@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class IntesisBoxIdentity {
 
-    public HashMap<String, String> value = new HashMap<String, String>();
+    public HashMap<String, String> value = new HashMap<>();
 
     public IntesisBoxIdentity(String data) {
         String[] value = data.substring(3).split(",");

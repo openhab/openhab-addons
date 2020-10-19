@@ -30,16 +30,16 @@ The binding uses the following configuration parameters.
 
 ## Channels
 
-| Channel ID         | Item Type          | Description                                 | Possible Values             |
-|--------------------|--------------------|---------------------------------------------|-----------------------------|
-| power              | Switch             | Turns power on/off for your climate system. | ON, OFF                     |
-| mode               | String             | The heating/cooling mode.                   | AUTO,HEAT,DRY,FAN,COOL      |
-| fanSpeed           | String             | Fan speed (if applicable)                   | AUTO,1-10                   |
-| vanesUpDown        | String             | Control of up/down vanes (if applicable)    | AUTO,1-9,SWING,SWIRL,WIDE   |
-| vanesUpDown        | String             | Control of left/right vanes (if applicable) | AUTO,1-9,SWING,SWIRL,WIDE   |
-| targetTemperature  | Number:Temperature | The currently set target temperature.       | range between 18°C and 30°C |
-| ambientTemperature | Number:Temperature | (Readonly) The ambient air temperature.     |                             |
-| outdoorTemperature | Number:Temperature | (Readonly) The outdoor air temperature.     |                             |
+| Channel ID         | Item Type          | Description                                            | Possible Values             |
+|--------------------|--------------------|--------------------------------------------------------|-----------------------------|
+| power              | Switch             | Turns power on/off for your climate system.            | ON, OFF                     |
+| mode               | String             | The heating/cooling mode.                              | AUTO,HEAT,DRY,FAN,COOL      |
+| fanSpeed           | String             | Fan speed (if applicable)                              | AUTO,1-10                   |
+| vanesUpDown        | String             | Control of up/down vanes (if applicable)               | AUTO,1-9,SWING,SWIRL,WIDE   |
+| vanesUpDown        | String             | Control of left/right vanes (if applicable)            | AUTO,1-9,SWING,SWIRL,WIDE   |
+| targetTemperature  | Number:Temperature | The currently set target temperature (if applicable)   | range between 18°C and 30°C |
+| ambientTemperature | Number:Temperature | (Readonly) The ambient air temperature (if applicable) |                             |
+| outdoorTemperature | Number:Temperature | (Readonly) The outdoor air temperature (if applicable) |                             |
 
 Note that individual A/C units may not support all channels, or all possible values for those channels.
 

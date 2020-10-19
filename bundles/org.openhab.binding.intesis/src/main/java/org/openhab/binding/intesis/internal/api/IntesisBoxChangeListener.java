@@ -13,6 +13,7 @@
 package org.openhab.binding.intesis.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingStatus;
 
 /**
@@ -32,5 +33,5 @@ public interface IntesisBoxChangeListener {
      * This method will be called in case the connection status has changed.
      *
      */
-    void connectionStatusChanged(ThingStatus status);
+    void connectionStatusChanged(ThingStatus status, @Nullable String message);
 }

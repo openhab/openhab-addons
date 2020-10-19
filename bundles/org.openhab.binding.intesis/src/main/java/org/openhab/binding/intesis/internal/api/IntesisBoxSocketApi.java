@@ -68,51 +68,38 @@ public class IntesisBoxSocketApi {
         }
     }
 
-    @SuppressWarnings("null")
     public void openConnection() throws IOException {
         closeConnection();
 
-        logger.debug("openConnection(): Connecting to IntesisBox ");
-
         IntesisBoxChangeListener listener = this.changeListener;
-        if (listener != null) {
-            logger.debug("IntesisBox listener added");
-        }
-
-        tcpSocket = new IntesisSocket();
-        tcpOutput = new OutputStreamWriter(tcpSocket.socket.getOutputStream(), "US-ASCII");
-        tcpInput = new BufferedReader(new InputStreamReader(tcpSocket.socket.getInputStream()));
+        IntesisSocket localSocket = tcpSocket = new IntesisSocket();
+        tcpOutput = new OutputStreamWriter(localSocket.socket.getOutputStream(), "US-ASCII");
+        tcpInput = new BufferedReader(new InputStreamReader(localSocket.socket.getInputStream()));
 
         Thread tcpListener = new Thread(new TCPListener());
         tcpListener.start();
 
         setConnected(true);
         if (listener != null) {
-            listener.connectionStatusChanged(ThingStatus.ONLINE);
+            listener.connectionStatusChanged(ThingStatus.ONLINE, null);
         }
     }
 
-    @SuppressWarnings("null")
     public void closeConnection() {
         try {
             if (tcpSocket != null) {
-                logger.debug("closeConnection(): Closing Socket!");
                 tcpSocket.close();
                 tcpSocket = null;
             }
             if (tcpInput != null) {
-                logger.debug("closeConnection(): Closing Output Writer!");
                 tcpInput.close();
                 tcpInput = null;
             }
             if (tcpOutput != null) {
-                logger.debug("closeConnection(): Closing Input Reader!");
                 tcpOutput.close();
                 tcpOutput = null;
             }
-
             setConnected(false);
-            logger.debug("closeConnection(): Closed TCP Connection!");
         } catch (IOException ioException) {
             logger.debug("closeConnection(): Unable to close connection - {}", ioException.getMessage());
         } catch (Exception exception) {
@@ -121,27 +108,15 @@ public class IntesisBoxSocketApi {
     }
 
     private class TCPListener implements Runnable {
-        private final Logger logger = LoggerFactory.getLogger(TCPListener.class);
 
         /**
          * Run method. Runs the MessageListener thread
          */
         @Override
         public void run() {
-            try {
-                while (isConnected()) {
-                    String message = read();
-                    try {
-                        logger.trace("Calling readMessage()");
-                        readMessage(message);
-                    } catch (Exception e) {
-                        logger.debug("TCPListener(): Message not handled by thing: {}", e.getMessage());
-                        closeConnection();
-                    }
-                }
-            } catch (Exception e) {
-                logger.debug("TCPListener(): Unable to read message: {} ", e.getMessage(), e);
-                closeConnection();
+            while (isConnected()) {
+                String message = read();
+                readMessage(message);
             }
         }
     }
@@ -153,6 +128,7 @@ public class IntesisBoxSocketApi {
     }
 
     private void write(String data) {
+        IntesisBoxChangeListener listener = this.changeListener;
         try {
             if (tcpOutput != null) {
                 tcpOutput.write(data);
@@ -163,9 +139,9 @@ public class IntesisBoxSocketApi {
         } catch (IOException ioException) {
             logger.debug("write(): {}", ioException.getMessage());
             setConnected(false);
-        } catch (Exception exception) {
-            logger.debug("write(): Unable to write to socket: {} ", exception.getMessage(), exception);
-            setConnected(false);
+            if (listener != null) {
+                listener.connectionStatusChanged(ThingStatus.OFFLINE, ioException.getMessage());
+            }
         }
     }
 
@@ -179,9 +155,6 @@ public class IntesisBoxSocketApi {
         } catch (IOException ioException) {
             logger.debug("read(): IO Exception: {}", ioException.getMessage());
             setConnected(false);
-        } catch (Exception exception) {
-            logger.debug("read(): Exception: {} ", exception.getMessage(), exception);
-            setConnected(false);
         }
         return message;
     }
@@ -190,36 +163,30 @@ public class IntesisBoxSocketApi {
         IntesisBoxChangeListener listener = this.changeListener;
 
         if (listener != null && !message.isEmpty()) {
-            logger.trace("readMessage(): Inform listener with message: {}", message);
             listener.messageReceived(message);
         }
     }
 
     public void sendAlive() {
         write("GET,1:*\r\n");
-        logger.trace("Keep alive sent");
     }
 
     public void sendId() {
         write("ID\r\n");
-        logger.trace("Id request sent");
     }
 
     public void sendLimitsQuery() {
         write("LIMITS:*\r\n");
-        logger.trace("Limits request sent");
     }
 
     public void sendCommand(String function, String value) {
         String data = String.format("SET,1:%s,%s\r\n", function, value);
         write(data);
-        logger.trace("sendCommand(): '{}' Command Sent - {}", function, value);
     }
 
     public void sendQuery(String function) {
         String data = String.format("GET,1:%s\r\n", function);
         write(data);
-        logger.trace("sendQuery(): '{}' Command Sent", function);
     }
 
     public boolean isConnected() {

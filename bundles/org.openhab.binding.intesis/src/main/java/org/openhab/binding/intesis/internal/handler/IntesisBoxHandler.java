@@ -29,12 +29,12 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.intesis.internal.IntesisConfiguration;
 import org.openhab.binding.intesis.internal.IntesisDynamicStateDescriptionProvider;
 import org.openhab.binding.intesis.internal.api.IntesisBoxChangeListener;
 import org.openhab.binding.intesis.internal.api.IntesisBoxIdentity;
 import org.openhab.binding.intesis.internal.api.IntesisBoxMessage;
 import org.openhab.binding.intesis.internal.api.IntesisBoxSocketApi;
+import org.openhab.binding.intesis.internal.config.IntesisBoxConfiguration;
 import org.openhab.binding.intesis.internal.enums.IntesisBoxFunctionEnum;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -76,9 +76,9 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
 
     private final IntesisDynamicStateDescriptionProvider intesisStateDescriptionProvider;
 
-    private IntesisConfiguration config = new IntesisConfiguration();
+    private IntesisBoxConfiguration config = new IntesisBoxConfiguration();
 
-    private double minTemp = 0.0d, maxTemp = 0.0d;
+    private double minTemp = 0.0, maxTemp = 0.0;
 
     private @Nullable ScheduledFuture<?> pollingTask;
 
@@ -89,7 +89,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
 
     @Override
     public void initialize() {
-        config = getConfigAs(IntesisConfiguration.class);
+        config = getConfigAs(IntesisBoxConfiguration.class);
 
         if (!config.ipAddress.isEmpty()) {
             intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress, config.port);
@@ -98,10 +98,18 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.submit(() -> {
                 try {
-                    intesisBoxSocketApi.openConnection();
-                    intesisBoxSocketApi.sendId();
-                    intesisBoxSocketApi.sendLimitsQuery();
-                    intesisBoxSocketApi.sendAlive();
+                    if (intesisBoxSocketApi != null) {
+                        intesisBoxSocketApi.openConnection();
+                    }
+                    if (intesisBoxSocketApi != null) {
+                        intesisBoxSocketApi.sendId();
+                    }
+                    if (intesisBoxSocketApi != null) {
+                        intesisBoxSocketApi.sendLimitsQuery();
+                    }
+                    if (intesisBoxSocketApi != null) {
+                        intesisBoxSocketApi.sendAlive();
+                    }
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
@@ -140,7 +148,6 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 }
             }
             api.sendAlive();
-            ;
         }
     }
 
@@ -153,7 +160,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 return;
             }
             if (command instanceof RefreshType) {
-                logger.warn("Refresh channel {}", channelUID.getId());
+                logger.trace("Refresh channel {}", channelUID.getId());
                 api.sendQuery(channelUID.getId());
                 return;
             }
@@ -162,7 +169,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
         switch (channelUID.getId()) {
             case CHANNEL_TYPE_POWER:
                 if (command instanceof OnOffType) {
-                    value = ((OnOffType) command == OnOffType.ON) ? "ON" : "OFF";
+                    value = command == OnOffType.ON ? "ON" : "OFF";
                 }
                 break;
             case CHANNEL_TYPE_TARGETTEMP:
@@ -171,12 +178,10 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                     celsiusTemperature = celsiusTemperature.toUnit(SIUnits.CELSIUS);
                     if (celsiusTemperature != null) {
                         double doubleValue = celsiusTemperature.doubleValue();
-                        if (doubleValue < minTemp) {
-                            doubleValue = minTemp;
-                        } else if (doubleValue > maxTemp) {
-                            doubleValue = maxTemp;
-                        }
-                        value = String.valueOf((int) Math.round(doubleValue * 10));
+                        logger.trace("targetTemp double value = {}", doubleValue);
+                        doubleValue = Math.max(minTemp, Math.min(maxTemp, doubleValue));
+                        value = String.format("%.0f", doubleValue * 10);
+                        logger.trace("targetTemp raw string = {}", value);
                     }
                 }
                 break;
@@ -193,7 +198,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 logger.trace("Sending command {} to function {}", value, function);
                 api.sendCommand(function, value);
             } else {
-                logger.trace("Sending command failed, could not get API");
+                logger.warn("Sending command failed, could not get API");
             }
         }
     }
@@ -223,9 +228,11 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 properties.put("hostname", value);
                 break;
         }
+        logger.trace("Update Properties for ID : {}", properties);
     }
 
-    private void receivedUpdate(String function, String value) {
+    private void receivedUpdate(String function, String receivedValue) {
+        String value = receivedValue;
         logger.trace("receivedUpdate(): {} {}", function, value);
         switch (function) {
             case "ONOFF":
@@ -275,7 +282,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
 
     @SuppressWarnings("null")
     private void handleMessage(String data) {
-        logger.trace("handleMessage(): Message received - {}", data);
+        logger.debug("handleMessage(): Message received - {}", data);
         if (data.equals("ACK") || data.equals("")) {
             return;
         }
@@ -286,53 +293,55 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
             }
         }
         IntesisBoxMessage message = IntesisBoxMessage.parse(data);
-        switch (message.getCommand()) {
-            case LIMITS:
-                logger.trace("handleMessage(): Limits received - {}", data);
-                synchronized (this) {
-                    String function = message.getFunction();
-                    if (function.equals("SETPTEMP")) {
-                        List<Double> limits = message.getLimitsValue().stream().map(l -> Double.valueOf(l) / 10.0d)
-                                .collect(Collectors.toList());
-                        if (limits.size() == 2) {
-                            minTemp = limits.get(0);
-                            maxTemp = limits.get(1);
+        if (message.getCommand() != null) {
+            switch (message.getCommand()) {
+                case LIMITS:
+                    logger.debug("handleMessage(): Limits received - {}", data);
+                    synchronized (this) {
+                        String function = message.getFunction();
+                        if (function.equals("SETPTEMP")) {
+                            List<Double> limits = message.getLimitsValue().stream().map(l -> Double.valueOf(l) / 10.0d)
+                                    .collect(Collectors.toList());
+                            if (limits.size() == 2) {
+                                minTemp = limits.get(0);
+                                maxTemp = limits.get(1);
+                            }
+                            logger.trace("Property target temperatures {} added", message.getValue());
+                            properties.put("targetTemperature limits", "[" + minTemp + "," + maxTemp + "]");
+                            addChannel(CHANNEL_TYPE_TARGETTEMP, "Number:Temperature");
+                        } else {
+                            switch (function) {
+                                case "MODE":
+                                    properties.put("supported modes", message.getValue());
+                                    limits.put(CHANNEL_TYPE_MODE, message.getLimitsValue());
+                                    addChannel(CHANNEL_TYPE_MODE, "String");
+                                    break;
+                                case "FANSP":
+                                    properties.put("supported fan levels", message.getValue());
+                                    limits.put(CHANNEL_TYPE_FANSPEED, message.getLimitsValue());
+                                    addChannel(CHANNEL_TYPE_FANSPEED, "String");
+                                    break;
+                                case "VANEUD":
+                                    properties.put("supported vane up/down modes", message.getValue());
+                                    limits.put(CHANNEL_TYPE_VANESUD, message.getLimitsValue());
+                                    addChannel(CHANNEL_TYPE_VANESUD, "String");
+                                    break;
+                                case "VANELR":
+                                    properties.put("supported vane left/right modes", message.getValue());
+                                    limits.put(CHANNEL_TYPE_VANESLR, message.getLimitsValue());
+                                    addChannel(CHANNEL_TYPE_VANESLR, "String");
+                                    break;
+                            }
                         }
-                        logger.trace("Property target temperatures {} added", message.getValue());
-                        properties.put("targetTemperature limits", "[" + minTemp + "," + maxTemp + "]");
-                        addChannel(CHANNEL_TYPE_TARGETTEMP, "Number:Temperature");
-                    } else {
-                        switch (function) {
-                            case "MODE":
-                                properties.put("supported modes", message.getValue());
-                                limits.put(CHANNEL_TYPE_MODE, message.getLimitsValue());
-                                addChannel(CHANNEL_TYPE_MODE, "String");
-                                break;
-                            case "FANSP":
-                                properties.put("supported fan levels", message.getValue());
-                                limits.put(CHANNEL_TYPE_FANSPEED, message.getLimitsValue());
-                                addChannel(CHANNEL_TYPE_FANSPEED, "String");
-                                break;
-                            case "VANEUD":
-                                properties.put("supported vane up/down modes", message.getValue());
-                                limits.put(CHANNEL_TYPE_VANESUD, message.getLimitsValue());
-                                addChannel(CHANNEL_TYPE_VANESUD, "String");
-                                break;
-                            case "VANELR":
-                                properties.put("supported vane left/right modes", message.getValue());
-                                limits.put(CHANNEL_TYPE_VANESLR, message.getLimitsValue());
-                                addChannel(CHANNEL_TYPE_VANESLR, "String");
-                                break;
-                        }
-                    }
-                    addChannel(CHANNEL_TYPE_AMBIENTTEMP, "Number:Temperature");
+                        addChannel(CHANNEL_TYPE_AMBIENTTEMP, "Number:Temperature");
 
-                }
-                updateProperties(properties);
-                break;
-            case CHN:
-                receivedUpdate(message.getFunction(), message.getValue());
-                break;
+                    }
+                    updateProperties(properties);
+                    break;
+                case CHN:
+                    receivedUpdate(message.getFunction(), message.getValue());
+                    break;
+            }
         }
     }
 
@@ -350,7 +359,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 List<StateOption> options = new ArrayList<>();
                 for (String mode : limits.get(channelId)) {
                     options.add(new StateOption(mode,
-                            (mode.substring(0, 1).toUpperCase() + mode.substring(1).toLowerCase())));
+                            mode.substring(0, 1).toUpperCase() + mode.substring(1).toLowerCase()));
                 }
                 intesisStateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId),
                         options);
@@ -365,7 +374,10 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
     }
 
     @Override
-    public void connectionStatusChanged(ThingStatus status) {
+    public void connectionStatusChanged(ThingStatus status, @Nullable String message) {
+        if (message != null) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        }
         this.updateStatus(status);
     }
 }
