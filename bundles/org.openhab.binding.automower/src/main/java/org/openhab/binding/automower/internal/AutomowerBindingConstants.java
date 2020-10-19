@@ -20,10 +20,10 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Markus Pfleger - Initial contribution
+ * @author Marcin Czeczko - Added support for planner & calendar data
  */
 @NonNullByDefault
 public class AutomowerBindingConstants {
-
     private static final String BINDING_ID = "automower";
 
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
@@ -32,14 +32,24 @@ public class AutomowerBindingConstants {
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "automower");
 
     // List of all Channel ids
-    public static final String CHANNEL_MOWER_NAME = "name";
-    public static final String CHANNEL_STATUS_MODE = "mode";
-    public static final String CHANNEL_STATUS_ACTIVITY = "activity";
-    public static final String CHANNEL_STATUS_STATE = "state";
-    public static final String CHANNEL_STATUS_LAST_UPDATE = "last-update";
-    public static final String CHANNEL_STATUS_BATTERY = "battery";
-    public static final String CHANNEL_STATUS_ERROR_CODE = "error-code";
-    public static final String CHANNEL_STATUS_ERROR_TIMESTAMP = "error-timestamp";
+    public static final String CHANNEL_STATUS_MODE = "mower-status#mode";
+    public static final String CHANNEL_STATUS_ACTIVITY = "mower-status#activity";
+    public static final String CHANNEL_STATUS_STATE = "mower-status#state";
+    public static final String CHANNEL_STATUS_LAST_UPDATE = "mower-status#last-update";
+    public static final String CHANNEL_STATUS_BATTERY = "mower-status#battery";
+    public static final String CHANNEL_STATUS_ERROR_CODE = "mower-status#error-code";
+    public static final String CHANNEL_STATUS_ERROR_TIMESTAMP = "mower-status#error-timestamp";
+    public static final String CHANNEL_PLANNER_NEXT_START = "mower-status#planner-next-start";
+    public static final String CHANNEL_PLANNER_OVERRIDE_ACTION = "mower-status#planner-override-action";
+    public static final String CHANNEL_CALENDAR_TASKS = "mower-status#calendar-tasks";
+
+    // Command channels
+    public static final String CHANNEL_COMMAND_START = "mower#start";
+    public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = "mower#resume_schedule";
+    public static final String CHANNEL_COMMAND_PAUSE = "mower#pause";
+    public static final String CHANNEL_COMMAND_PARK = "mower#park";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = "mower#park_until_next_schedule";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = "mower#park_until_further_notice";
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
