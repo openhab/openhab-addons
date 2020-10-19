@@ -49,10 +49,10 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
 
     private final RevogiDiscoveryService revogiDiscoveryService;
 
-    private static final int SEARCH_TIME = 10;
+    private static final int SEARCH_TIMEOUT_SEC = 10;
 
     public RevogiSmartStripDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(SUPPORTED_THING_TYPES, SEARCH_TIMEOUT_SEC);
         revogiDiscoveryService = new RevogiDiscoveryService(new UdpSenderService(new DatagramSocketWrapper()));
     }
 
@@ -80,7 +80,7 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                         .withThingType(RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE)
                         .withProperties(properties)
-                        .withRepresentationProperty(RevogiSmartStripControlBindingConstants.SERIAL_NUMBER).build();
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
                 thingDiscovered(discoveryResult);
             }
         });
