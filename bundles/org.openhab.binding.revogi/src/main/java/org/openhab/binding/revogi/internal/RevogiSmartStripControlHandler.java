@@ -83,7 +83,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
                 switchPlug(command, 0);
                 break;
             default:
-                logger.info("Something went wrong, we've got a message for {}", channelUID.getId());
+                logger.debug("Something went wrong, we've got a message for {}", channelUID.getId());
         }
     }
 
