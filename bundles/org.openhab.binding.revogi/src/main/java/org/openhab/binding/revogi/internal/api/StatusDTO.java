@@ -18,12 +18,12 @@ import java.util.Objects;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * {@link Status} is the internal data model used to control Revogi's SmartStrip
+ * {@link StatusDTO} is the internal data model used to control Revogi's SmartStrip
  *
  * @author Andi Bräu - Initial contribution
  *
  */
-public class Status {
+public class StatusDTO {
     private final boolean online;
     private final int responseCode;
     @SerializedName("switch")
@@ -31,7 +31,7 @@ public class Status {
     private final List<Integer> watt;
     private final List<Integer> amp;
 
-    public Status() {
+    public StatusDTO() {
         online = false;
         responseCode = 0;
         switchValue = null;
@@ -39,7 +39,8 @@ public class Status {
         amp = null;
     }
 
-    public Status(boolean online, int responseCode, List<Integer> switchValue, List<Integer> watt, List<Integer> amp) {
+    public StatusDTO(boolean online, int responseCode, List<Integer> switchValue, List<Integer> watt,
+            List<Integer> amp) {
         this.online = online;
         this.responseCode = responseCode;
         this.switchValue = switchValue;
@@ -75,7 +76,7 @@ public class Status {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Status status = (Status) o;
+        StatusDTO status = (StatusDTO) o;
         return online == status.online && responseCode == status.responseCode
                 && Objects.equals(switchValue, status.switchValue) && Objects.equals(watt, status.watt)
                 && Objects.equals(amp, status.amp);

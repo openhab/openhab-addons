@@ -60,23 +60,23 @@ public class UdpSenderService {
         this.datagramSocketWrapper = datagramSocketWrapper;
     }
 
-    public CompletableFuture<List<UdpResponse>> broadcastUdpDatagram(String content) {
+    public CompletableFuture<List<UdpResponseDTO>> broadcastUdpDatagram(String content) {
         List<String> allBroadcastAddresses = NetUtil.getAllBroadcastAddresses();
-        CompletableFuture<List<UdpResponse>> future = new CompletableFuture<>();
+        CompletableFuture<List<UdpResponseDTO>> future = new CompletableFuture<>();
         Executors.newCachedThreadPool().submit(() -> future.complete(allBroadcastAddresses.stream().map(address -> {
             try {
                 return sendMessage(content, InetAddress.getByName(address));
             } catch (UnknownHostException e) {
                 logger.warn("Could not find host with IP {}", address);
-                return new ArrayList<UdpResponse>();
+                return new ArrayList<UdpResponseDTO>();
             }
         }).flatMap(Collection::stream).distinct().collect(toList())));
         return future;
     }
 
-    public CompletableFuture<List<UdpResponse>> sendMessage(String content, String ipAddress) {
+    public CompletableFuture<List<UdpResponseDTO>> sendMessage(String content, String ipAddress) {
         try {
-            CompletableFuture<List<UdpResponse>> future = new CompletableFuture<>();
+            CompletableFuture<List<UdpResponseDTO>> future = new CompletableFuture<>();
             InetAddress inetAddress = InetAddress.getByName(ipAddress);
             Executors.newCachedThreadPool().submit(() -> future.complete(sendMessage(content, inetAddress)));
             return future;
@@ -86,11 +86,11 @@ public class UdpSenderService {
         }
     }
 
-    private List<UdpResponse> sendMessage(String content, InetAddress inetAddress) {
+    private List<UdpResponseDTO> sendMessage(String content, InetAddress inetAddress) {
         logger.debug("Using address {}", inetAddress);
         byte[] buf = content.getBytes(Charset.defaultCharset());
         DatagramPacket packet = new DatagramPacket(buf, buf.length, inetAddress, REVOGI_PORT);
-        List<UdpResponse> responses = Collections.emptyList();
+        List<UdpResponseDTO> responses = Collections.emptyList();
         try {
             datagramSocketWrapper.initSocket();
             datagramSocketWrapper.sendPacket(packet);
@@ -103,9 +103,9 @@ public class UdpSenderService {
         return responses;
     }
 
-    private List<UdpResponse> getUdpResponses() {
+    private List<UdpResponseDTO> getUdpResponses() {
         int timeoutCounter = 0;
-        List<UdpResponse> list = new ArrayList<>();
+        List<UdpResponseDTO> list = new ArrayList<>();
         while (timeoutCounter < MAX_TIMEOUT_COUNT) {
             byte[] receivedBuf = new byte[512];
             DatagramPacket answer = new DatagramPacket(receivedBuf, receivedBuf.length);
@@ -126,7 +126,7 @@ public class UdpSenderService {
             }
 
             if (answer.getAddress() != null && answer.getLength() > 0) {
-                list.add(new UdpResponse(new String(answer.getData(), 0, answer.getLength()),
+                list.add(new UdpResponseDTO(new String(answer.getData(), 0, answer.getLength()),
                         answer.getAddress().getHostAddress()));
             }
         }

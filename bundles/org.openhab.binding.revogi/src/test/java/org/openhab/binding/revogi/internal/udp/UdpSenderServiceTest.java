@@ -53,7 +53,7 @@ public class UdpSenderServiceTest {
         doThrow(new SocketTimeoutException()).when(datagramSocketWrapper).receiveAnswer(any());
 
         // when
-        CompletableFuture<List<UdpResponse>> list = udpSenderService.broadcastUdpDatagram("send something");
+        CompletableFuture<List<UdpResponseDTO>> list = udpSenderService.broadcastUdpDatagram("send something");
 
         // then
         assertThat(list.get(), equalTo(Collections.emptyList()));
@@ -72,10 +72,10 @@ public class UdpSenderServiceTest {
         }).doThrow(new SocketTimeoutException()).when(datagramSocketWrapper).receiveAnswer(any());
 
         // when
-        CompletableFuture<List<UdpResponse>> future = udpSenderService.broadcastUdpDatagram("send something");
+        CompletableFuture<List<UdpResponseDTO>> future = udpSenderService.broadcastUdpDatagram("send something");
 
         // then
-        List<UdpResponse> udpResponses = future.get();
+        List<UdpResponseDTO> udpResponses = future.get();
         assertThat(udpResponses.get(0).getAnswer(), is("valid answer"));
         verify(datagramSocketWrapper, times(1 + 2 * numberOfInterfaces)).receiveAnswer(any());
     }

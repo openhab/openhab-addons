@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.jetbrains.annotations.NotNull;
-import org.openhab.binding.revogi.internal.udp.UdpResponse;
+import org.openhab.binding.revogi.internal.udp.UdpResponseDTO;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class SwitchService {
         this.udpSenderService = udpSenderService;
     }
 
-    public CompletableFuture<SwitchResponse> switchPort(String serialNumber, String ipAddress, int port, int state) {
+    public CompletableFuture<SwitchResponseDTO> switchPort(String serialNumber, String ipAddress, int port, int state) {
         if (state < 0 || state > 1) {
             logger.warn("state value is not valid: {}", state);
             throw new IllegalArgumentException("state has to be 0 or 1");
@@ -55,7 +55,7 @@ public class SwitchService {
             throw new IllegalArgumentException("Given port doesn't exist");
         }
 
-        CompletableFuture<List<UdpResponse>> responses;
+        CompletableFuture<List<UdpResponseDTO>> responses;
         if (ipAddress.trim().isEmpty()) {
             responses = udpSenderService
                     .broadcastUdpDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state));
@@ -68,21 +68,21 @@ public class SwitchService {
     }
 
     @NotNull
-    private SwitchResponse getSwitchResponse(final List<UdpResponse> singleResponse) {
+    private SwitchResponseDTO getSwitchResponse(final List<UdpResponseDTO> singleResponse) {
         singleResponse.forEach(response -> logger.info("Reveived {}", response.getAnswer()));
         return singleResponse.stream().filter(response -> !response.getAnswer().isEmpty())
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(switchResponse -> switchResponse.getCode() == 200 && switchResponse.getResponse() == 20)
-                .findFirst().orElse(new SwitchResponse(0, 503));
+                .findFirst().orElse(new SwitchResponseDTO(0, 503));
     }
 
-    private SwitchResponse deserializeString(String response) {
+    private SwitchResponseDTO deserializeString(String response) {
         String extractedJsonResponse = response.substring(response.lastIndexOf(VERSION_STRING) + 2);
         try {
-            return gson.fromJson(extractedJsonResponse, SwitchResponse.class);
+            return gson.fromJson(extractedJsonResponse, SwitchResponseDTO.class);
         } catch (JsonSyntaxException e) {
             logger.warn("Could not parse string \"{}\" to SwitchResponse", response);
-            return new SwitchResponse(0, 503);
+            return new SwitchResponseDTO(0, 503);
         }
     }
 }

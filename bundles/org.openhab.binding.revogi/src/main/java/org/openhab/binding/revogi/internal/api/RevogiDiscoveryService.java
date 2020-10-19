@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.revogi.internal.udp.UdpResponse;
+import org.openhab.binding.revogi.internal.udp.UdpResponseDTO;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +43,8 @@ public class RevogiDiscoveryService {
         this.udpSenderService = udpSenderService;
     }
 
-    public CompletableFuture<List<DiscoveryRawResponse>> discoverSmartStrips() {
-        CompletableFuture<List<UdpResponse>> responses = udpSenderService.broadcastUdpDatagram(UDP_DISCOVERY_QUERY);
+    public CompletableFuture<List<DiscoveryRawResponseDTO>> discoverSmartStrips() {
+        CompletableFuture<List<UdpResponseDTO>> responses = udpSenderService.broadcastUdpDatagram(UDP_DISCOVERY_QUERY);
         return responses.thenApply(futureList -> {
             futureList.forEach(response -> logger.info("Received: {}", response));
             return futureList.stream().filter(response -> !response.getAnswer().isEmpty()).map(this::deserializeString)
@@ -53,14 +53,15 @@ public class RevogiDiscoveryService {
         });
     }
 
-    private DiscoveryRawResponse deserializeString(UdpResponse response) {
+    private DiscoveryRawResponseDTO deserializeString(UdpResponseDTO response) {
         try {
-            DiscoveryRawResponse discoveryRawResponse = gson.fromJson(response.getAnswer(), DiscoveryRawResponse.class);
+            DiscoveryRawResponseDTO discoveryRawResponse = gson.fromJson(response.getAnswer(),
+                    DiscoveryRawResponseDTO.class);
             discoveryRawResponse.setIpAddress(response.getIpAddress());
             return discoveryRawResponse;
         } catch (JsonSyntaxException e) {
             logger.warn("Could not parse string \"{}\" to DiscoveryRawResponse", response, e);
-            return new DiscoveryRawResponse(503, new DiscoveryResponse());
+            return new DiscoveryRawResponseDTO(503, new DiscoveryResponseDTO());
         }
     }
 }

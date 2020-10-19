@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.revogi.internal.udp.UdpResponse;
+import org.openhab.binding.revogi.internal.udp.UdpResponseDTO;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 
 /**
@@ -38,33 +38,33 @@ public class StatusServiceTest {
     @Test
     public void getStatusSuccessfully() {
         // given
-        Status status = new Status(true, 200, Arrays.asList(0, 0, 0, 0, 0, 0), Arrays.asList(0, 0, 0, 0, 0, 0),
+        StatusDTO status = new StatusDTO(true, 200, Arrays.asList(0, 0, 0, 0, 0, 0), Arrays.asList(0, 0, 0, 0, 0, 0),
                 Arrays.asList(0, 0, 0, 0, 0, 0));
-        List<UdpResponse> statusString = Collections.singletonList(new UdpResponse(
+        List<UdpResponseDTO> statusString = Collections.singletonList(new UdpResponseDTO(
                 "V3{\"response\":90,\"code\":200,\"data\":{\"switch\":[0,0,0,0,0,0],\"watt\":[0,0,0,0,0,0],\"amp\":[0,0,0,0,0,0]}}",
                 "127.0.0.1"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1"))
                 .thenReturn(CompletableFuture.completedFuture(statusString));
 
         // when
-        CompletableFuture<Status> statusResponse = statusService.queryStatus("serial", "127.0.0.1");
+        CompletableFuture<StatusDTO> statusResponse = statusService.queryStatus("serial", "127.0.0.1");
 
         // then
-        assertEquals(status, statusResponse.getNow(new Status()));
+        assertEquals(status, statusResponse.getNow(new StatusDTO()));
     }
 
     @Test
     public void invalidUdpResponse() {
         // given
-        List<UdpResponse> statusString = Collections.singletonList(new UdpResponse("something invalid", "12345"));
+        List<UdpResponseDTO> statusString = Collections.singletonList(new UdpResponseDTO("something invalid", "12345"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1"))
                 .thenReturn(CompletableFuture.completedFuture(statusString));
 
         // when
-        CompletableFuture<Status> futureStatus = statusService.queryStatus("serial", "127.0.0.1");
+        CompletableFuture<StatusDTO> futureStatus = statusService.queryStatus("serial", "127.0.0.1");
 
         // then
-        Status status = futureStatus.getNow(new Status());
+        StatusDTO status = futureStatus.getNow(new StatusDTO());
         assertEquals(503, status.getResponseCode());
     }
 }

@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @author Andi Bräu - Initial contribution
  */
-public class DiscoveryResponse {
+public class DiscoveryResponseDTO {
     @SerializedName("sn")
     private final String serialNumber;
     @SerializedName("regid")
@@ -31,7 +31,7 @@ public class DiscoveryResponse {
     @SerializedName("ver")
     private final String version;
 
-    public DiscoveryResponse(String serialNumber, String regId, String sak, String name, String macAddress,
+    public DiscoveryResponseDTO(String serialNumber, String regId, String sak, String name, String macAddress,
             String version) {
         this.serialNumber = serialNumber;
         this.regId = regId;
@@ -41,7 +41,7 @@ public class DiscoveryResponse {
         this.version = version;
     }
 
-    public DiscoveryResponse() {
+    public DiscoveryResponseDTO() {
         serialNumber = "";
         regId = "";
         sak = "";
@@ -80,7 +80,7 @@ public class DiscoveryResponse {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        DiscoveryResponse that = (DiscoveryResponse) o;
+        DiscoveryResponseDTO that = (DiscoveryResponseDTO) o;
         return serialNumber.equals(that.serialNumber) && regId.equals(that.regId) && sak.equals(that.sak)
                 && name.equals(that.name) && macAddress.equals(that.macAddress) && version.equals(that.version);
     }

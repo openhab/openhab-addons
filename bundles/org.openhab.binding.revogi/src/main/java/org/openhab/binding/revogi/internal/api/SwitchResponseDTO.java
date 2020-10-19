@@ -12,20 +12,20 @@
  */
 package org.openhab.binding.revogi.internal.api;
 
+import java.util.Objects;
+
 /**
- * The class {@link StatusRaw} represents the raw data received from Revogi's SmartStrip
+ * The class {@link SwitchResponseDTO} describes the response when you switch a plug
  *
  * @author Andi Bräu - Initial contribution
  */
-public class StatusRaw {
+public class SwitchResponseDTO {
     private final int response;
     private final int code;
-    private final Status data;
 
-    public StatusRaw(int response, int code, Status data) {
+    public SwitchResponseDTO(int response, int code) {
         this.response = response;
         this.code = code;
-        this.data = data;
     }
 
     public int getResponse() {
@@ -36,7 +36,18 @@ public class StatusRaw {
         return code;
     }
 
-    public Status getData() {
-        return data;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        SwitchResponseDTO that = (SwitchResponseDTO) o;
+        return response == that.response && code == that.code;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(response, code);
     }
 }

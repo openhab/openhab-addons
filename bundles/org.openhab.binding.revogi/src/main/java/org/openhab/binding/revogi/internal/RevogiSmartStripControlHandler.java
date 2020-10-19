@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.revogi.internal.api.Status;
+import org.openhab.binding.revogi.internal.api.StatusDTO;
 import org.openhab.binding.revogi.internal.api.StatusService;
 import org.openhab.binding.revogi.internal.api.SwitchService;
 import org.openhab.core.library.types.OnOffType;
@@ -88,7 +88,8 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     }
 
     private void switchPlug(Command command, int port) {
-        @Nullable RevogiSmartStripControlConfiguration localConfig = this.config;
+        @Nullable
+        RevogiSmartStripControlConfiguration localConfig = this.config;
         if (localConfig == null) {
             logger.warn("No config available, config object was null");
             return;
@@ -112,7 +113,8 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         config = getConfigAs(RevogiSmartStripControlConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateStripInformation, 0, config.getPollInterval(), TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateStripInformation, 0, config.getPollInterval(),
+                TimeUnit.SECONDS);
     }
 
     @Override
@@ -129,12 +131,12 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
             logger.warn("No config available, config object was null");
             return;
         }
-        CompletableFuture<Status> futureStatus = statusService.queryStatus(config.getSerialNumber(),
+        CompletableFuture<StatusDTO> futureStatus = statusService.queryStatus(config.getSerialNumber(),
                 config.getIpAddress());
         futureStatus.thenAccept(this::updatePlugStatus);
     }
 
-    private void updatePlugStatus(Status status) {
+    private void updatePlugStatus(StatusDTO status) {
         if (status.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
             handleAllPlugsInformation(status);
@@ -145,7 +147,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         }
     }
 
-    private void handleSinglePlugInformation(Status status) {
+    private void handleSinglePlugInformation(StatusDTO status) {
         for (int i = 0; i < status.getSwitchValue().size(); i++) {
             int plugNumber = i + 1;
             updateState("plug" + plugNumber + "#switch", OnOffType.from(status.getSwitchValue().get(i).toString()));
@@ -154,7 +156,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         }
     }
 
-    private void handleAllPlugsInformation(Status status) {
+    private void handleAllPlugsInformation(StatusDTO status) {
         long onCount = status.getSwitchValue().stream().filter(statusValue -> statusValue == 1).count();
         if (onCount == 6) {
             updateState(RevogiSmartStripControlBindingConstants.ALL_PLUGS, OnOffType.ON);

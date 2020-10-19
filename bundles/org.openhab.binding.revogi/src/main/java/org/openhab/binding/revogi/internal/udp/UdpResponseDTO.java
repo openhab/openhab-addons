@@ -15,15 +15,15 @@ package org.openhab.binding.revogi.internal.udp;
 import java.util.Objects;
 
 /**
- * The class {@link UdpResponse} represents udp reponse we expect
+ * The class {@link UdpResponseDTO} represents udp reponse we expect
  *
  * @author Andi Bräu - Initial contribution
  */
-public class UdpResponse {
+public class UdpResponseDTO {
     private final String answer;
     private final String ipAddress;
 
-    public UdpResponse(String answer, String ipAddress) {
+    public UdpResponseDTO(String answer, String ipAddress) {
         this.answer = answer;
         this.ipAddress = ipAddress;
     }
@@ -42,7 +42,7 @@ public class UdpResponse {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        UdpResponse that = (UdpResponse) o;
+        UdpResponseDTO that = (UdpResponseDTO) o;
         return answer.equals(that.answer) && ipAddress.equals(that.ipAddress);
     }
 

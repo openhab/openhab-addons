@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.revogi.internal.udp.UdpResponse;
+import org.openhab.binding.revogi.internal.udp.UdpResponseDTO;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 
 /**
@@ -39,45 +39,45 @@ public class SwitchServiceTest {
     @Test
     public void getStatusSuccesfully() {
         // given
-        List<UdpResponse> response = Collections
-                .singletonList(new UdpResponse("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
+        List<UdpResponseDTO> response = Collections
+                .singletonList(new UdpResponseDTO("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}", "127.0.0.1"))
                 .thenReturn(CompletableFuture.completedFuture(response));
 
         // when
-        CompletableFuture<SwitchResponse> switchResponse = switchService.switchPort("serial", "127.0.0.1", 1, 1);
+        CompletableFuture<SwitchResponseDTO> switchResponse = switchService.switchPort("serial", "127.0.0.1", 1, 1);
 
         // then
-        assertThat(switchResponse.getNow(new SwitchResponse(0, 0)), equalTo(new SwitchResponse(20, 200)));
+        assertThat(switchResponse.getNow(new SwitchResponseDTO(0, 0)), equalTo(new SwitchResponseDTO(20, 200)));
     }
 
     @Test
     public void getStatusSuccesfullyWithBroadcast() {
         // given
-        List<UdpResponse> response = Collections
-                .singletonList(new UdpResponse("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
+        List<UdpResponseDTO> response = Collections
+                .singletonList(new UdpResponseDTO("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
         when(udpSenderService.broadcastUdpDatagram("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}"))
                 .thenReturn(CompletableFuture.completedFuture(response));
 
         // when
-        CompletableFuture<SwitchResponse> switchResponse = switchService.switchPort("serial", "", 1, 1);
+        CompletableFuture<SwitchResponseDTO> switchResponse = switchService.switchPort("serial", "", 1, 1);
 
         // then
-        assertThat(switchResponse.getNow(new SwitchResponse(0, 0)), equalTo(new SwitchResponse(20, 200)));
+        assertThat(switchResponse.getNow(new SwitchResponseDTO(0, 0)), equalTo(new SwitchResponseDTO(20, 200)));
     }
 
     @Test
     public void invalidUdpResponse() {
         // given
-        List<UdpResponse> response = Collections.singletonList(new UdpResponse("something invalid", "12345"));
+        List<UdpResponseDTO> response = Collections.singletonList(new UdpResponseDTO("something invalid", "12345"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}", "127.0.0.1"))
                 .thenReturn(CompletableFuture.completedFuture(response));
 
         // when
-        CompletableFuture<SwitchResponse> switchResponse = switchService.switchPort("serial", "127.0.0.1", 1, 1);
+        CompletableFuture<SwitchResponseDTO> switchResponse = switchService.switchPort("serial", "127.0.0.1", 1, 1);
 
         // then
-        assertThat(switchResponse.getNow(new SwitchResponse(0, 0)), equalTo(new SwitchResponse(0, 503)));
+        assertThat(switchResponse.getNow(new SwitchResponseDTO(0, 0)), equalTo(new SwitchResponseDTO(0, 503)));
     }
 
     @Test

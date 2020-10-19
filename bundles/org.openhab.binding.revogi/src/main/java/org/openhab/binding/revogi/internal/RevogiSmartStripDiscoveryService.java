@@ -22,8 +22,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.revogi.internal.api.DiscoveryRawResponse;
-import org.openhab.binding.revogi.internal.api.DiscoveryResponse;
+import org.openhab.binding.revogi.internal.api.DiscoveryRawResponseDTO;
+import org.openhab.binding.revogi.internal.api.DiscoveryResponseDTO;
 import org.openhab.binding.revogi.internal.api.RevogiDiscoveryService;
 import org.openhab.binding.revogi.internal.udp.DatagramSocketWrapper;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
@@ -63,11 +63,12 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        CompletableFuture<List<DiscoveryRawResponse>> discoveryResponses = revogiDiscoveryService.discoverSmartStrips();
+        CompletableFuture<List<DiscoveryRawResponseDTO>> discoveryResponses = revogiDiscoveryService
+                .discoverSmartStrips();
         discoveryResponses.thenAccept(this::applyDiscoveryResults);
     }
 
-    private void applyDiscoveryResults(final List<DiscoveryRawResponse> discoveryRawResponses) {
+    private void applyDiscoveryResults(final List<DiscoveryRawResponseDTO> discoveryRawResponses) {
         discoveryRawResponses.forEach(response -> {
             ThingUID thingUID = getThingUID(response.getData());
             if (thingUID != null) {
@@ -79,14 +80,13 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
                 properties.put("ipAddress", response.getIpAddress());
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                         .withThingType(RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE)
-                        .withProperties(properties)
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
+                        .withProperties(properties).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
                 thingDiscovered(discoveryResult);
             }
         });
     }
 
-    private @Nullable ThingUID getThingUID(DiscoveryResponse response) {
+    private @Nullable ThingUID getThingUID(DiscoveryResponseDTO response) {
 
         if (getSupportedThingTypes().contains(RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE)) {
             return new ThingUID(RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE,

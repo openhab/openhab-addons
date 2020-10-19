@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.revogi.internal.udp.UdpResponse;
+import org.openhab.binding.revogi.internal.udp.UdpResponseDTO;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 
 /**
@@ -40,19 +40,19 @@ public class RevogiDiscoveryServiceTest {
     @Test
     public void discoverSmartStripSuccesfully() {
         // given
-        DiscoveryResponse discoveryResponse = new DiscoveryResponse("1234", "reg", "sak", "Strip", "mac", "5.11");
-        List<UdpResponse> discoveryString = Collections.singletonList(new UdpResponse(
+        DiscoveryResponseDTO discoveryResponse = new DiscoveryResponseDTO("1234", "reg", "sak", "Strip", "mac", "5.11");
+        List<UdpResponseDTO> discoveryString = Collections.singletonList(new UdpResponseDTO(
                 "{\"response\":0,\"data\":{\"sn\":\"1234\",\"regid\":\"reg\",\"sak\":\"sak\",\"name\":\"Strip\",\"mac\":\"mac\",\"ver\":\"5.11\"}}",
                 "127.0.0.1"));
         when(udpSenderService.broadcastUdpDatagram("00sw=all,,,;"))
                 .thenReturn(CompletableFuture.completedFuture(discoveryString));
 
         // when
-        CompletableFuture<List<DiscoveryRawResponse>> discoverSmartStripsFutures = revogiDiscoveryService
+        CompletableFuture<List<DiscoveryRawResponseDTO>> discoverSmartStripsFutures = revogiDiscoveryService
                 .discoverSmartStrips();
 
         // then
-        List<DiscoveryRawResponse> discoverSmartStrips = discoverSmartStripsFutures.getNow(Collections.emptyList());
+        List<DiscoveryRawResponseDTO> discoverSmartStrips = discoverSmartStripsFutures.getNow(Collections.emptyList());
         assertThat(discoverSmartStrips.size(), equalTo(1));
         assertThat(discoverSmartStrips.get(0).getData(), equalTo(discoveryResponse));
         assertThat(discoverSmartStrips.get(0).getIpAddress(), equalTo("127.0.0.1"));
@@ -61,15 +61,16 @@ public class RevogiDiscoveryServiceTest {
     @Test
     public void invalidUdpResponse() throws ExecutionException, InterruptedException {
         // given
-        List<UdpResponse> discoveryString = Collections.singletonList(new UdpResponse("something invalid", "12345"));
+        List<UdpResponseDTO> discoveryString = Collections
+                .singletonList(new UdpResponseDTO("something invalid", "12345"));
         when(udpSenderService.broadcastUdpDatagram("00sw=all,,,;"))
                 .thenReturn(CompletableFuture.completedFuture(discoveryString));
 
         // when
-        CompletableFuture<List<DiscoveryRawResponse>> futureList = revogiDiscoveryService.discoverSmartStrips();
+        CompletableFuture<List<DiscoveryRawResponseDTO>> futureList = revogiDiscoveryService.discoverSmartStrips();
 
         // then
-        List<DiscoveryRawResponse> discoverSmartStrips = futureList.get();
+        List<DiscoveryRawResponseDTO> discoverSmartStrips = futureList.get();
         assertThat(discoverSmartStrips.isEmpty(), is(true));
     }
 }

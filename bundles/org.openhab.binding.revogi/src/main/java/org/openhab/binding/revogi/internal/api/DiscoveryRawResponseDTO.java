@@ -17,13 +17,13 @@ import java.util.Objects;
 /**
  * @author Andi Bräu - Initial contribution
  */
-public class DiscoveryRawResponse {
+public class DiscoveryRawResponseDTO {
 
     private final int response;
-    private final DiscoveryResponse data;
+    private final DiscoveryResponseDTO data;
     private String ipAddress;
 
-    public DiscoveryRawResponse(int response, DiscoveryResponse data) {
+    public DiscoveryRawResponseDTO(int response, DiscoveryResponseDTO data) {
         this.response = response;
         this.data = data;
     }
@@ -32,7 +32,7 @@ public class DiscoveryRawResponse {
         return response;
     }
 
-    public DiscoveryResponse getData() {
+    public DiscoveryResponseDTO getData() {
         return data;
     }
 
@@ -50,7 +50,7 @@ public class DiscoveryRawResponse {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        DiscoveryRawResponse that = (DiscoveryRawResponse) o;
+        DiscoveryRawResponseDTO that = (DiscoveryRawResponseDTO) o;
         return response == that.response && data.equals(that.data) && Objects.equals(ipAddress, that.ipAddress);
     }
 
