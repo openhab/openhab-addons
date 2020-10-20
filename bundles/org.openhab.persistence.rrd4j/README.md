@@ -12,6 +12,14 @@ This service cannot be directly queried, because of its data compression, which 
 
 NOTE: rrd4j is for storing numerical data only.
 It cannot store complex data types.
+The supported item types are therefore only `Switch` (internally mapped to 0/1), `Dimmer`, `Number`, `Contact` (internally mapped to 0/1) and `Rollershutter`.
+
+## Configuration
+
+The rrd4j persistence services comes with a default persistence strategy which persists every Item on every state change and at least once a minute.
+Additionally, it restores the last stored value at system startup.
+
+If you want to define a custom behavior, you will need to create a `rrd4j.persist` file in the `persistence` configuration folder.
 
 ## Persistence Process
 
@@ -25,32 +33,19 @@ The service starts by storing samples in the leftmost box in the drawer.
 Once the leftmost box is full, the service starts filling the next box to the right; and so on.
 Once the rightmost box in the drawer is full, the leftmost box is emptied, the content of all boxes is moved one box to the left, and new content is added to the rightmost box.
 
-An example is shown below.
-Whereby the values indicated in the example may vary as chosen by the user..
-
-- Samples are taken at intervals of `60` seconds
-- They are consolidated by the `AVERAGE` function, over `10` samples, into boxes i.e. a box covers `10 X 60` seconds
-- The full archive contains `250` boxes i.e. the archive/drawer covers `60 X 10 X 250` seconds
-
-## Configuration
-
-Two things must be done in order for an Item to get persisted:
-
-1. it must have a persistence strategy defined in the `rrd4j.persist` file.
-2. it must have a `datasource` defined as follows..
-
 ## Datasources
 
-The database comprises at least one datasource.
-The rrd4j service automatically creates one internal _**default**_ datasource for you.
-Other datasources **may** be configured in addition, in the `services/rrd4j.cfg` file.
+For every persisted Item, a separate database file is created in the `userdata/persistence/rrd4j` folder.
+These database files are called datasources, which contain the archives of different granularities.
 
 By default, if `services/rrd4j.cfg` does not exist, or if an Item is not explicitly listed in a `<dsName>.items` property value in it, then the respective Item will be persisted according to the [default datasource settings](#default-datasource).
 
-By constrast if an Item **is** explicitly listed in a `<dsName>.items` property value, then it will be persisted according to those respective datasource settings.
+Other datasources **may** be configured in addition.
+This is done in a `services/rrd4j.cfg` configuration file.
 
-Each datasource is defined by three property values (`def`, `archives`, `items`).
-Whereby each `archives` property can comprise settings for one or more archives.
+If an Item **is** explicitly listed in a `<dsName>.items` property value, then it is persisted according to those respective datasource settings.
+
+Each datasource is defined by three property values (`def`, `archives`, `items`), where each `archives` property can comprise settings for one or more archives.
 
 The various datasource property values are explained in the table below.
 
@@ -167,31 +162,70 @@ So it covers `144 X 10 X 60` seconds of data (24 hours) at a granularity of ten 
 
 ## Default Datasource
 
-The service always automatically creates an internal default datasource with the properties below.
+The service automatically creates three default datasources with the properties below.
+
+There is no `.items` parameter for the default datasources.
+This means that any Item with an allocated strategy in the `rrd4j.persist` file is persisted using the default settingswith the only exception if the Item is explicitly listed in an `.items` property value of a datasource in the `rrd4j.cfg` file.
+
+
+#### default_numeric
+
+This datasource is used for plain `Number` items. 
+It does not build averages over values, so that it is ensured that discrete values are kept when being read (e.g. an Item which has only states 0 and 1 will not be set to 0.5).
 
 ```
-defaultNumeric.def=GAUGE,60,U,U,60
-defaultNumeric.archives=AVERAGE,0.5,1,480:AVERAGE,0.5,4,360:AVERAGE,0.5,14,644:AVERAGE,0.5,60,720:AVERAGE,0.5,720,730:AVERAGE,0.5,10080,520
+default_numeric.def=GAUGE,600,U,U,10
+default_numeric.archives=LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,360,43800:LAST,0.5,8640,3650
 ```
 
-The default datasource type is GAUGE, the heartbeat is 60s, minimum and maximum values are unlimited, and the sample interval is 60s.
+It uses 10 seconds as a step size for numeric values and allows a 10 minute silence between updates.
 
-The default archives are:
+It defines 5 archives:
 
-| Archive | Boxes | Samples per Box | Period covered |
-|:---------:|:---------:|:--------:|:-------------:|
-| 1 | 480 | 1 | 8 hrs |
-| 2 | 360 | 4 | 24 hrs |
-| 3 | 644 | 14 | 6.26 days |
-| 4 | 720 | 60 | 30 days |
-| 5 | 730 | 720 | 365 days |
-| 6 | 520 | 10080 | 10 years |
+1. granularity of 10s for the last hour
+2. granularity of 1m for the last week
+3. granularity of 15m for the last year
+4. granularity of 1h for the last 5 years
+5. granularity of 1d for the last 10 years
 
-There is no `.items` parameter for the default datasource.
-Implicitly this means that any Item with an allocated strategy in the `rrd4j.persist` file will be persisted using the above-mentioned default settings -
-_**exception**:_ the Item is explicitly listed in the `.items` property value of a datasource in the `rrd4j.cfg` file.
+#### default_quantifiable
 
----
+This datasource is used for `Number` items with dimensions - it is therefore assumed that the values are measurement values that exist on a continuum.
+It thus builds averages over values, so that graphs can be smooth, even if there is only a coarse granularity available.
+
+```
+default_quantifiable.def=GAUGE,600,U,U,10
+default_quantifiable.archives=AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:AVERAGE,0.5,90,36500:AVERAGE,0.5,360,43800:AVERAGE,0.5,8640,3650
+```
+
+It uses 10 seconds as a step size for numeric values and allows a 10 minute silence between updates.
+
+It defines 5 archives:
+
+1. granularity of 10s for the last hour
+2. granularity of 1m for the last week
+3. granularity of 15m for the last year
+4. granularity of 1h for the last 5 years
+5. granularity of 1d for the last 10 years
+
+#### default_other
+
+This datasource is used for any other items.
+Their values are considered to be discrete, similar to the `default_numeric` datasource, but it keeps the data in more fine-granular archives.
+
+```
+default_other.def=GAUGE,3600,U,U,5
+default_other.archives=LAST,0.5,1,720:LAST,0.5,12,10080:LAST,0.5,180,35040:LAST,0.5,2880,21900
+```
+
+It uses 5 seconds as a step size for discrete values and allows a 1h silence between updates.
+
+It defines 4 archives:
+
+1. granularity of 5s for the last hour
+2. granularity of 1m for the last week
+3. granularity of 15m for the last year
+4. granularity of 4h for the last 10 years
 
 ## Examples
 
@@ -222,12 +256,12 @@ Items {
 
 **IMPORTANT:**
 The strategy `everyMinute` (60 seconds) **must** be used, otherwise no data will be persisted (stored).
-Other strategies can be used too.
+Other strategies can be used, too.
 
 ---
 
 ## Troubleshooting
 
-From time to time, you may find that if you change the Item type of a persisted data point, you may experience charting or other problems. To resolve this issue, remove the old `<item_name>`.rrd file in the `${openhab_home}/etc/rrd4j` folder or `/var/lib/openhab/persistence/rrd4j` folder for apt-get installed openHABs.
+From time to time, you may find that if you change the Item type of a persisted data point, you may experience charting or other problems. To resolve this issue, remove the old `<item_name>`.rrd file in the `${openhab_home}/userdata/persistence/rrd4j` folder or `/var/lib/openhab/persistence/rrd4j` folder for apt-get installed openHABs.
 
 Restoring Item values after startup takes some time. Rules may already have started to run in parallel. Especially in rules that are started via the "System started" trigger, it may happen that the restore has not yet completed resulting in non-defined Item values. In these cases the use of restored Item values should be delayed by a couple of seconds. This delay has to be determined experimentally.
