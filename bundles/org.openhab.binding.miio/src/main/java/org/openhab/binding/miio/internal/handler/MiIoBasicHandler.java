@@ -83,7 +83,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     });
 
     List<MiIoBasicChannel> refreshList = new ArrayList<>();
-    Map<String, MiIoBasicChannel> refreshListCustomCommands = new HashMap<>();
+    private Map<String, MiIoBasicChannel> refreshListCustomCommands = new HashMap<>();
 
     private @Nullable MiIoBasicDevice miioDevice;
     private Map<ChannelUID, MiIoBasicChannel> actions = new HashMap<>();
