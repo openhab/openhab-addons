@@ -209,12 +209,13 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
 
         final List<Channel> currentChannels = getThing().getChannels();
         final ThingBuilder thingBuilder = editThing();
-        if (config.maxEvents == null || config.maxEvents.compareTo(BigDecimal.ZERO) < 1) {
+        BigDecimal maxEvents = config.maxEvents;
+        if (maxEvents == null || maxEvents.compareTo(BigDecimal.ZERO) < 1) {
             thingBuilder.withoutChannels(currentChannels);
             updateThing(thingBuilder.build());
             return;
         }
-        generateExpectedChannelList(config.maxEvents.intValue());
+        generateExpectedChannelList(maxEvents.intValue());
 
         currentChannels.stream().filter((Channel current) -> {
             String currentGroupId = current.getUID().getGroupId();
@@ -279,12 +280,14 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
             try {
                 String textFilterValue = config.textEventValue;
                 if (textFilterValue != null) {
-                    if (config.textEventField == null || config.textValueType == null) {
+                    String textEventField = config.textEventField;
+                    String textValueType = config.textValueType;
+                    if (textEventField == null || textValueType == null) {
                         throw new ConfigBrokenException("Text filter settings are not set properly.");
                     }
                     try {
-                        EventTextFilter.Field textFilterField = EventTextFilter.Field.valueOf(config.textEventField);
-                        EventTextFilter.Type textFilterType = EventTextFilter.Type.valueOf(config.textValueType);
+                        EventTextFilter.Field textFilterField = EventTextFilter.Field.valueOf(textEventField);
+                        EventTextFilter.Type textFilterType = EventTextFilter.Type.valueOf(textValueType);
 
                         filter = new EventTextFilter(textFilterField, textFilterValue, textFilterType);
                     } catch (IllegalArgumentException e2) {
@@ -292,23 +295,26 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                     }
                 }
 
-                if (config.maxEvents == null) {
+                BigDecimal maxEventsBD = config.maxEvents;
+                if (maxEventsBD == null) {
                     throw new ConfigBrokenException("maxEvents is not set.");
                 }
-                maxEvents = config.maxEvents.intValue();
+                maxEvents = maxEventsBD.intValue();
                 if (maxEvents < 0) {
                     throw new ConfigBrokenException("maxEvents is less than 0. This is not allowed.");
                 }
 
                 try {
-                    if (config.datetimeUnit != null) {
-                        multiplicator = TimeMultiplicator.valueOf(config.datetimeUnit);
+                    final String datetimeUnit = config.datetimeUnit;
+                    if (datetimeUnit != null) {
+                        multiplicator = TimeMultiplicator.valueOf(datetimeUnit);
                     }
                 } catch (IllegalArgumentException e) {
                     throw new ConfigBrokenException("datetimeUnit is not set properly.");
                 }
 
-                if (config.datetimeRound != null && config.datetimeRound.booleanValue()) {
+                final Boolean datetimeRound = config.datetimeRound;
+                if (datetimeRound != null && datetimeRound.booleanValue()) {
                     if (multiplicator == null) {
                         throw new ConfigBrokenException("datetimeUnit is missing but required for datetimeRound.");
                     }
@@ -326,17 +332,19 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                     reference = refDT.toInstant();
                 }
 
-                if (config.datetimeStart != null) {
+                BigDecimal datetimeStart = config.datetimeStart;
+                if (datetimeStart != null) {
                     if (multiplicator == null) {
                         throw new ConfigBrokenException("datetimeUnit is missing but required for datetimeStart.");
                     }
-                    begin = reference.plusSeconds(config.datetimeStart.longValue() * multiplicator.getMultiplier());
+                    begin = reference.plusSeconds(datetimeStart.longValue() * multiplicator.getMultiplier());
                 }
-                if (config.datetimeEnd != null) {
+                BigDecimal datetimeEnd = config.datetimeEnd;
+                if (datetimeEnd != null) {
                     if (multiplicator == null) {
                         throw new ConfigBrokenException("datetimeUnit is missing but required for datetimeEnd.");
                     }
-                    end = reference.plusSeconds(config.datetimeEnd.longValue() * multiplicator.getMultiplier());
+                    end = reference.plusSeconds(datetimeEnd.longValue() * multiplicator.getMultiplier());
                 }
             } catch (ConfigBrokenException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -344,7 +352,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
             }
 
             List<Event> results = cal.getFilteredEventsBetween(begin, end, filter, maxEvents);
-            for (int position = 0; position < config.maxEvents.intValue(); position++) {
+            for (int position = 0; position < maxEvents; position++) {
                 ResultChannelSet channels = resultChannels.get(position);
                 if (position < results.size()) {
                     Event result = results.get(position);

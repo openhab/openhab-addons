@@ -17,6 +17,7 @@ import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -124,42 +125,53 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
         final ICalendarConfiguration currentConfiguration = getConfigAs(ICalendarConfiguration.class);
         configuration = currentConfiguration;
 
-        if ((currentConfiguration.username == null && currentConfiguration.password != null)
-                || (currentConfiguration.username != null && currentConfiguration.password == null)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Only one of username and password was set. This is invalid.");
-            return;
-        }
-
-        PullJob regularPull;
         try {
-            regularPull = new PullJob(httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
-                    currentConfiguration.password, calendarFile, currentConfiguration.maxSize * 1048576, this);
-        } catch (URISyntaxException e) {
-            logger.warn(
-                    "The URI '{}' for downloading the calendar contains syntax errors. This will result in no downloads/updates.",
-                    currentConfiguration.url, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            return;
-        }
-
-        if (calendarFile.isFile()) {
-            if (reloadCalendar()) {
-                updateStatus(ThingStatus.ONLINE);
-                updateStates();
-                rescheduleCalendarStateUpdate();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "The calendar seems to be configured correctly, but the local copy of calendar could not be loaded.");
+            if ((currentConfiguration.username == null && currentConfiguration.password != null)
+                    || (currentConfiguration.username != null && currentConfiguration.password == null)) {
+                throw new ConfigBrokenException("Only one of username and password was set. This is invalid.");
             }
-            pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, currentConfiguration.refreshTime.longValue(),
-                    currentConfiguration.refreshTime.longValue(), TimeUnit.MINUTES);
-        } else {
-            updateStatus(ThingStatus.OFFLINE);
-            logger.debug(
-                    "The calendar is currently offline as no local copy exists. It will go online as soon as a valid valid calendar is retrieved.");
-            pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, 0,
-                    currentConfiguration.refreshTime.longValue(), TimeUnit.MINUTES);
+
+            PullJob regularPull;
+            final BigDecimal maxSizeBD = currentConfiguration.maxSize;
+            if (maxSizeBD == null || maxSizeBD.intValue() < 1) {
+                throw new ConfigBrokenException(
+                        "maxSize is either not set or less than 1 (mebibyte), which is not allowed.");
+            }
+            final int maxSize = maxSizeBD.intValue();
+            try {
+                regularPull = new PullJob(httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
+                        currentConfiguration.password, calendarFile, maxSize * 1048576, this);
+            } catch (URISyntaxException e) {
+                throw new ConfigBrokenException(String.format(
+                        "The URI '%s' for downloading the calendar contains syntax errors.", currentConfiguration.url));
+
+            }
+
+            final BigDecimal refreshTimeBD = currentConfiguration.refreshTime;
+            if (refreshTimeBD == null || refreshTimeBD.longValue() < 1) {
+                throw new ConfigBrokenException(
+                        "refreshTime is either not set or less than 1 (minute), which is not allowed.");
+            }
+            final long refreshTime = refreshTimeBD.longValue();
+            if (calendarFile.isFile()) {
+                if (reloadCalendar()) {
+                    updateStatus(ThingStatus.ONLINE);
+                    updateStates();
+                    rescheduleCalendarStateUpdate();
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "The calendar seems to be configured correctly, but the local copy of calendar could not be loaded.");
+                }
+                pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, refreshTime, refreshTime,
+                        TimeUnit.MINUTES);
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+                logger.debug(
+                        "The calendar is currently offline as no local copy exists. It will go online as soon as a valid valid calendar is retrieved.");
+                pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, 0, refreshTime, TimeUnit.MINUTES);
+            }
+        } catch (ConfigBrokenException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 

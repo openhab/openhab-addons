@@ -14,19 +14,32 @@ package org.openhab.binding.icalendar.internal.config;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The EventFilterConfiguration holds configuration for the Event Filter Item Type.
  *
  * @author Michael Wodniok - Initial contribution
  */
+@NonNullByDefault
 public class EventFilterConfiguration {
+    @Nullable
     public BigDecimal maxEvents;
+    @Nullable
     public BigDecimal refreshTime;
+    @Nullable
     public String datetimeUnit;
+    @Nullable
     public BigDecimal datetimeStart;
+    @Nullable
     public BigDecimal datetimeEnd;
+    @Nullable
     public Boolean datetimeRound;
+    @Nullable
     public String textEventField;
+    @Nullable
     public String textEventValue;
+    @Nullable
     public String textValueType;
 }
