@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.bluez.handler;
+package org.openhab.binding.bluetooth.bluez.internal;
 
 import org.openhab.binding.bluetooth.BaseBluetoothBridgeHandlerConfiguration;
 
 /**
- * Configuration properties class.
+ * Configuration properties for a bridge.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Benjamin Lafois - Initial contribution
  */
 public class BlueZAdapterConfiguration extends BaseBluetoothBridgeHandlerConfiguration {
 

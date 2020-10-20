@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.bluez;
+package org.openhab.binding.bluetooth.bluez.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
@@ -20,7 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link BlueZAdapterConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Kai Kreuzer - Initial contribution and API
+ * @author Benjamin Lafois - Initial contribution and API
  */
 @NonNullByDefault
 public class BlueZAdapterConstants {
@@ -30,4 +30,7 @@ public class BlueZAdapterConstants {
 
     // Properties
     public static final String PROPERTY_ADDRESS = "address";
+
+    private BlueZAdapterConstants() {
+    }
 }
