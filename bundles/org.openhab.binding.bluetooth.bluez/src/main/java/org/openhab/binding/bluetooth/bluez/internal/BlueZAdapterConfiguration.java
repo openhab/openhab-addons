@@ -17,6 +17,7 @@ import org.openhab.binding.bluetooth.BaseBluetoothBridgeHandlerConfiguration;
 /**
  * Configuration properties for a bridge.
  *
+ * @author Hilbrand Bouwkamp - Initial contribution
  * @author Benjamin Lafois - Initial contribution
  */
 public class BlueZAdapterConfiguration extends BaseBluetoothBridgeHandlerConfiguration {

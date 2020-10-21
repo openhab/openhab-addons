@@ -86,7 +86,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     public synchronized void updateBlueZDevice(@Nullable BluetoothDevice blueZDevice) {
         if (this.device != null && this.device == blueZDevice) {
-            // logger.debug("Objects representing the BT device {} has not changed. Exiting function.", address);
             return;
         }
         logger.debug("updateBlueZDevice({})", blueZDevice);
@@ -176,7 +175,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     // Catch "software caused connection abort"
                     return false;
                 } catch (Exception e) {
-                    logger.error("error occured while trying to connect", e);
+                    logger.warn("error occured while trying to connect", e);
                 }
 
             } else {

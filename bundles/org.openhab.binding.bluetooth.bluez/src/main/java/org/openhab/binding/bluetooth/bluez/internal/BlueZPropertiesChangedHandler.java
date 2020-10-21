@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-
 public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BlueZPropertiesChangedHandler.class);

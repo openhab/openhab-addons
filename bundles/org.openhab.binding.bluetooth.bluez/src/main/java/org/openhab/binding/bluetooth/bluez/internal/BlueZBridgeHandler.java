@@ -56,8 +56,6 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
     // Our BT address
     private @Nullable BluetoothAddress adapterAddress;
 
-    // private final ReentrantLock lockDiscoveryJob = new ReentrantLock();
-
     private @Nullable ScheduledFuture<?> discoveryJob;
 
     private final DeviceManagerFactory deviceManagerFactory;
@@ -230,9 +228,6 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         }
         String localName = localAdapter.getDeviceName();
 
-        // logger.debug("Received event {}. Adapter={}. AdapterBridge={}", event.getClass().getSimpleName(),
-        // adapterName,
-        // localName);
         if (!adapterName.equals(localName)) {
             // does not concern this adapter
             return;

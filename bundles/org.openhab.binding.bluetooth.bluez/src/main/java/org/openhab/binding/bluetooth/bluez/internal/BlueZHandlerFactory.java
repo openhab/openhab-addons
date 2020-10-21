@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * The {@link BlueZHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
+ * @author Kai Kreuzer - Initial contribution and API
  * @author Benjamin Lafois - Initial contribution and API
  */
 @NonNullByDefault

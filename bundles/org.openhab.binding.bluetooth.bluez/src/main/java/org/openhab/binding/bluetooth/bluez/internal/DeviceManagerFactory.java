@@ -38,7 +38,7 @@ import com.github.hypfvieh.bluetooth.DeviceManager;
  *
  */
 @NonNullByDefault
-@Component(service = DeviceManagerFactory.class, immediate = true)
+@Component(service = DeviceManagerFactory.class)
 public class DeviceManagerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceManagerFactory.class);
