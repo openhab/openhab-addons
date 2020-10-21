@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.feed.internal;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -86,11 +84,11 @@ public class FeedBindingConstants {
     /**
      * The default auto refresh time in minutes.
      */
-    public static final BigDecimal DEFAULT_REFRESH_TIME = new BigDecimal(20);
+    public static final long DEFAULT_REFRESH_TIME = 20;
 
     /**
      * The minimum refresh time in milliseconds. Any REFRESH command send to a Thing, before this time has expired, will
-     * not trigger an attempt to dowload new data form the server.
+     * not trigger an attempt to download new data from the server.
      **/
     public static final int MINIMUM_REFRESH_TIME = 3000;
 }
