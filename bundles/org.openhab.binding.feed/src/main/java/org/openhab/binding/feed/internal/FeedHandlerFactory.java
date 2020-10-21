@@ -14,9 +14,10 @@ package org.openhab.binding.feed.internal;
 
 import static org.openhab.binding.feed.internal.FeedBindingConstants.FEED_THING_TYPE_UID;
 
-import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.feed.internal.handler.FeedHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -32,9 +33,10 @@ import org.osgi.service.component.annotations.Component;
  * @author Svilen Valkanov - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.feed")
+@NonNullByDefault
 public class FeedHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(FEED_THING_TYPE_UID);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(FEED_THING_TYPE_UID);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -42,7 +44,7 @@ public class FeedHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(FEED_THING_TYPE_UID)) {
