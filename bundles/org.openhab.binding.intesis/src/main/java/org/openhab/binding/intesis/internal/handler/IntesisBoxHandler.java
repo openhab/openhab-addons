@@ -31,11 +31,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.intesis.internal.IntesisDynamicStateDescriptionProvider;
 import org.openhab.binding.intesis.internal.api.IntesisBoxChangeListener;
-import org.openhab.binding.intesis.internal.api.IntesisBoxIdentity;
 import org.openhab.binding.intesis.internal.api.IntesisBoxMessage;
 import org.openhab.binding.intesis.internal.api.IntesisBoxSocketApi;
 import org.openhab.binding.intesis.internal.config.IntesisBoxConfiguration;
-import org.openhab.binding.intesis.internal.enums.IntesisBoxFunctionEnum;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -92,11 +90,15 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
         config = getConfigAs(IntesisBoxConfiguration.class);
 
         if (!config.ipAddress.isEmpty()) {
-            intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress, config.port);
-            intesisBoxSocketApi.addIntesisBoxChangeListener(this);
 
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.submit(() -> {
+                addChannel(CHANNEL_TYPE_AMBIENTTEMP, "Number:Temperature");
+                addChannel(CHANNEL_TYPE_ERRORCODE, "String");
+                addChannel(CHANNEL_TYPE_ERRORSTATUS, "String");
+
+                intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress, config.port);
+                intesisBoxSocketApi.addIntesisBoxChangeListener(this);
                 try {
                     if (intesisBoxSocketApi != null) {
                         intesisBoxSocketApi.openConnection();
@@ -166,9 +168,11 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
             }
         }
         String value = "";
+        String function = "";
         switch (channelUID.getId()) {
             case CHANNEL_TYPE_POWER:
                 if (command instanceof OnOffType) {
+                    function = "ONOFF";
                     value = command == OnOffType.ON ? "ON" : "OFF";
                 }
                 break;
@@ -181,19 +185,29 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                         logger.trace("targetTemp double value = {}", doubleValue);
                         doubleValue = Math.max(minTemp, Math.min(maxTemp, doubleValue));
                         value = String.format("%.0f", doubleValue * 10);
+                        function = "SETPTEMP";
                         logger.trace("targetTemp raw string = {}", value);
                     }
                 }
                 break;
             case CHANNEL_TYPE_MODE:
+                function = "MODE";
+                value = command.toString();
+                break;
             case CHANNEL_TYPE_FANSPEED:
+                function = "FANSP";
+                value = command.toString();
+                break;
             case CHANNEL_TYPE_VANESUD:
+                function = "VANEUD";
+                value = command.toString();
+                break;
             case CHANNEL_TYPE_VANESLR:
+                function = "VANELR";
                 value = command.toString();
                 break;
         }
-        if (!value.isEmpty()) {
-            String function = IntesisBoxFunctionEnum.valueOf(channelUID.getId()).getFunction();
+        if (!value.isEmpty() || function.isEmpty()) {
             if (api != null) {
                 logger.trace("Sending command {} to function {}", value, function);
                 api.sendCommand(function, value);
@@ -203,32 +217,17 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
         }
     }
 
-    private void receivedId(String function, String value) {
-        logger.trace("receivedID(): {} {}", function, value);
+    private void populateProperties(String data) {
+        String[] value = data.substring(3).split(",");
         properties.put(PROPERTY_VENDOR, "Intesis");
-        switch (function) {
-            case "MODEL":
-                properties.put(PROPERTY_MODEL_ID, value);
-                break;
-            case "MAC":
-                properties.put(PROPERTY_MAC_ADDRESS, value);
-                break;
-            case "IP":
-                properties.put("ipAddress", value);
-            case "PROTOCOL":
-                properties.put("protocol", value);
-                break;
-            case "VERSION":
-                properties.put(PROPERTY_FIRMWARE_VERSION, value);
-                break;
-            case "RSSI":
-                properties.put("rssi", value);
-                break;
-            case "NAME":
-                properties.put("hostname", value);
-                break;
-        }
-        logger.trace("Update Properties for ID : {}", properties);
+        properties.put(PROPERTY_MODEL_ID, value[0]);
+        properties.put(PROPERTY_MAC_ADDRESS, value[1]);
+        properties.put("ipAddress", value[2]);
+        properties.put("protocol", value[3]);
+        properties.put(PROPERTY_FIRMWARE_VERSION, value[4]);
+        properties.put("rssi", value[5]);
+        properties.put("hostname", value[6]);
+        updateProperties(properties);
     }
 
     private void receivedUpdate(String function, String receivedValue) {
@@ -287,54 +286,48 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
             return;
         }
         if (data.startsWith(ID + ':')) {
-            synchronized (this) {
-                new IntesisBoxIdentity(data).value.forEach((name, value) -> receivedId(name, value));
-                return;
-            }
+            populateProperties(data);
+            return;
         }
         IntesisBoxMessage message = IntesisBoxMessage.parse(data);
         if (message.getCommand() != null) {
             switch (message.getCommand()) {
                 case LIMITS:
                     logger.debug("handleMessage(): Limits received - {}", data);
-                    synchronized (this) {
-                        String function = message.getFunction();
-                        if (function.equals("SETPTEMP")) {
-                            List<Double> limits = message.getLimitsValue().stream().map(l -> Double.valueOf(l) / 10.0d)
-                                    .collect(Collectors.toList());
-                            if (limits.size() == 2) {
-                                minTemp = limits.get(0);
-                                maxTemp = limits.get(1);
-                            }
-                            logger.trace("Property target temperatures {} added", message.getValue());
-                            properties.put("targetTemperature limits", "[" + minTemp + "," + maxTemp + "]");
-                            addChannel(CHANNEL_TYPE_TARGETTEMP, "Number:Temperature");
-                        } else {
-                            switch (function) {
-                                case "MODE":
-                                    properties.put("supported modes", message.getValue());
-                                    limits.put(CHANNEL_TYPE_MODE, message.getLimitsValue());
-                                    addChannel(CHANNEL_TYPE_MODE, "String");
-                                    break;
-                                case "FANSP":
-                                    properties.put("supported fan levels", message.getValue());
-                                    limits.put(CHANNEL_TYPE_FANSPEED, message.getLimitsValue());
-                                    addChannel(CHANNEL_TYPE_FANSPEED, "String");
-                                    break;
-                                case "VANEUD":
-                                    properties.put("supported vane up/down modes", message.getValue());
-                                    limits.put(CHANNEL_TYPE_VANESUD, message.getLimitsValue());
-                                    addChannel(CHANNEL_TYPE_VANESUD, "String");
-                                    break;
-                                case "VANELR":
-                                    properties.put("supported vane left/right modes", message.getValue());
-                                    limits.put(CHANNEL_TYPE_VANESLR, message.getLimitsValue());
-                                    addChannel(CHANNEL_TYPE_VANESLR, "String");
-                                    break;
-                            }
+                    String function = message.getFunction();
+                    if (function.equals("SETPTEMP")) {
+                        List<Double> limits = message.getLimitsValue().stream().map(l -> Double.valueOf(l) / 10.0d)
+                                .collect(Collectors.toList());
+                        if (limits.size() == 2) {
+                            minTemp = limits.get(0);
+                            maxTemp = limits.get(1);
                         }
-                        addChannel(CHANNEL_TYPE_AMBIENTTEMP, "Number:Temperature");
-
+                        logger.trace("Property target temperatures {} added", message.getValue());
+                        properties.put("targetTemperature limits", "[" + minTemp + "," + maxTemp + "]");
+                        addChannel(CHANNEL_TYPE_TARGETTEMP, "Number:Temperature");
+                    } else {
+                        switch (function) {
+                            case "MODE":
+                                properties.put("supported modes", message.getValue());
+                                limits.put(CHANNEL_TYPE_MODE, message.getLimitsValue());
+                                addChannel(CHANNEL_TYPE_MODE, "String");
+                                break;
+                            case "FANSP":
+                                properties.put("supported fan levels", message.getValue());
+                                limits.put(CHANNEL_TYPE_FANSPEED, message.getLimitsValue());
+                                addChannel(CHANNEL_TYPE_FANSPEED, "String");
+                                break;
+                            case "VANEUD":
+                                properties.put("supported vane up/down modes", message.getValue());
+                                limits.put(CHANNEL_TYPE_VANESUD, message.getLimitsValue());
+                                addChannel(CHANNEL_TYPE_VANESUD, "String");
+                                break;
+                            case "VANELR":
+                                properties.put("supported vane left/right modes", message.getValue());
+                                limits.put(CHANNEL_TYPE_VANESLR, message.getLimitsValue());
+                                addChannel(CHANNEL_TYPE_VANESLR, "String");
+                                break;
+                        }
                     }
                     updateProperties(properties);
                     break;

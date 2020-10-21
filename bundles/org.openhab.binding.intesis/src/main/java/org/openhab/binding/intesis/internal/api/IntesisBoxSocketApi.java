@@ -74,9 +74,11 @@ public class IntesisBoxSocketApi {
         IntesisBoxChangeListener listener = this.changeListener;
         IntesisSocket localSocket = tcpSocket = new IntesisSocket();
         tcpOutput = new OutputStreamWriter(localSocket.socket.getOutputStream(), "US-ASCII");
-        tcpInput = new BufferedReader(new InputStreamReader(localSocket.socket.getInputStream()));
+        tcpInput = new BufferedReader(new InputStreamReader(localSocket.socket.getInputStream(), "US-ASCII"));
 
         Thread tcpListener = new Thread(new TCPListener());
+        tcpListener.setName("IntesisBoxTCPListener");
+        tcpListener.setDaemon(true);
         tcpListener.start();
 
         setConnected(true);
@@ -134,7 +136,6 @@ public class IntesisBoxSocketApi {
                 tcpOutput.write(data);
             }
             if (tcpOutput != null) {
-                tcpOutput.flush();
             }
         } catch (IOException ioException) {
             logger.debug("write(): {}", ioException.getMessage());

@@ -36,8 +36,7 @@ public class IntesisBoxMessage {
     public static final String LIMITS = "LIMITS";
     public static final String DISCOVER = "DISCOVER";
 
-    private static final Pattern REGEX = Pattern.compile(
-            "^(ID|INFO|SET|CHN|GET|LOGIN|LOGOUT|CFG|LIMITS)(?:,(\\d+))?:(APPVERSION|RUNVERSION|CFGVERSION|HASH|ONOFF|MODE|SETPTEMP|FANSP|VANEUD|VANELR|AMBTEMP|ERRSTATUS|ERRCODE),([A-Z0-9.,\\[\\]]+)$");
+    private static final Pattern REGEX = Pattern.compile("^([^,]+)(?:,(\\d+))?:([^,]+),([A-Z0-9.,\\[\\]]+)$");
 
     @SuppressWarnings("unused")
     private final String acNum;
