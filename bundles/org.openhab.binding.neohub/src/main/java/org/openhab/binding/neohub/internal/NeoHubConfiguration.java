@@ -22,6 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class NeoHubConfiguration {
+
+    public static final String HOST_NAME = "hostName";
+
     public String hostName = "";
     public int portNumber;
     public int pollingInterval;
