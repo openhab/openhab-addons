@@ -93,7 +93,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
     /**
      * It is updated from mocked {@link StateChangeListener#stateUpdated() }
      */
-    private StringType currentItemState = null;
+    private StringType currentItemState;
 
     // Required services for the test
     private ManagedThingProvider managedThingProvider;
