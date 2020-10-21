@@ -56,7 +56,7 @@ public class CloudConnector {
 
     private String username = "";
     private String password = "";
-    private String country = "ru,us,tw,sg,cn,de";
+    private String country = "ru,us,tw,sg,cn,de,i2";
     private List<CloudDeviceDTO> deviceList = new ArrayList<>();
     private boolean connected;
     private final HttpClient httpClient;
