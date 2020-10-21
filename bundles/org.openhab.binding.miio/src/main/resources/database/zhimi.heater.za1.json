@@ -10,6 +10,7 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -23,7 +24,7 @@
 				"property": "target_temperature",
 				"friendlyName": "Target Temperature",
 				"channel": "target_temperature",
-                "type": "Number",
+				"type": "Number",
 				"refresh": true,
 				"actions": [
 					{
@@ -36,6 +37,7 @@
 				"property": "brightness",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
+				"channelType": "brightness",
 				"type": "Number",
 				"refresh": true,
 				"actions": [
@@ -49,6 +51,7 @@
 				"property": "buzzer",
 				"friendlyName": "Buzzer Status",
 				"channel": "buzzer",
+				"channelType": "buzzer",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -59,17 +62,18 @@
 				]
 			},
 			{
-                "property": "relative_humidity",
-                "friendlyName": "Relative Humidity",
-                "channel": "relative_humidity",
-                "type": "Number",
-                "refresh": true,
-                "actions": []
-            },
+				"property": "relative_humidity",
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
 			{
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
 				"channel": "childlock",
+				"channelType": "childlock",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -96,6 +100,7 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
+				"channelType": "temperature",
 				"type": "Number",
 				"refresh": true,
 				"actions": []
@@ -104,6 +109,7 @@
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
+				"channelType": "usedhours",
 				"type": "Number",
 				"refresh": true,
 				"transformation": "SecondsToHours",

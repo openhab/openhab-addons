@@ -56,6 +56,9 @@ public class MiIoBasicChannel {
     @SerializedName("refresh")
     @Expose
     private @Nullable Boolean refresh;
+    @SerializedName("customRefreshCommand")
+    @Expose
+    private @Nullable String channelCustomRefreshCommand;
     @SerializedName("transformation")
     @Expose
     private @Nullable String transfortmation;
@@ -133,7 +136,7 @@ public class MiIoBasicChannel {
     public String getChannelType() {
         final @Nullable String ct = channelType;
         if (ct == null || ct.isEmpty()) {
-            return BINDING_ID + ":" + getChannel();
+            return "";
         } else {
             return (ct.startsWith("system") ? ct : BINDING_ID + ":" + ct);
         }
@@ -159,6 +162,15 @@ public class MiIoBasicChannel {
 
     public void setRefresh(Boolean refresh) {
         this.refresh = refresh;
+    }
+
+    public String getChannelCustomRefreshCommand() {
+        final @Nullable String channelCustomRefreshCommand = this.channelCustomRefreshCommand;
+        return channelCustomRefreshCommand != null ? channelCustomRefreshCommand : "";
+    }
+
+    public void setChannelCustomRefreshCommand(String channelCustomRefreshCommand) {
+        this.channelCustomRefreshCommand = channelCustomRefreshCommand;
     }
 
     public String getChannelGroup() {

@@ -11,21 +11,23 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "",
-				"readmeComment": "If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware",
 				"actions": [
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"readmeComment": "If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware"
 			},
 			{
 				"property": "usb_on",
 				"friendlyName": "USB",
 				"channel": "usb",
+				"channelType": "usb",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -40,6 +42,7 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
+				"channelType": "temperature",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "",
@@ -49,6 +52,7 @@
 				"property": "wifi_led",
 				"friendlyName": "Wifi LED",
 				"channel": "led",
+				"channelType": "led",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
