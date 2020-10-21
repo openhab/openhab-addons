@@ -6,7 +6,7 @@
 
 	<bridge-type id="ipbridge">
 		<label>Lutron IP Access Point</label>
-		<description>A Lutron controller using Lutron Integration Protocol (LIP) over TCP/IP</description>
+		<description>Lutron controller using Lutron Integration Protocol (LIP) over TCP/IP</description>
 		<properties>
 			<property name="vendor">Lutron</property>
 		</properties>
@@ -59,7 +59,7 @@
 
 	<bridge-type id="leapbridge">
 		<label>Lutron LEAP Access Point</label>
-		<description>A Lutron controller using LEAP protocol over TCP/IP</description>
+		<description>Lutron controller using LEAP protocol over TCP/IP</description>
 
 		<channels>
 			<channel id="command" typeId="command-type"/>
@@ -132,8 +132,9 @@
 			<bridge-type-ref id="leapbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Maestro Dimmer</label>
+		<label>Lutron Dimmer</label>
 		<description>Controls dimmable loads</description>
+		<category>Lightbulb</category>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
@@ -202,8 +203,9 @@
 			<bridge-type-ref id="leapbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Sivoia QS Shade</label>
-		<description>Controls roller shades</description>
+		<label>Lutron Shade</label>
+		<description>Controls roller shades, drapes, and motor controllers</description>
+		<category>Blinds</category>
 
 		<channels>
 			<channel id="shadelevel" typeId="shadeControl"/>
@@ -258,8 +260,9 @@
 			<bridge-type-ref id="leapbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Maestro Switch</label>
+		<label>Lutron Switch</label>
 		<description>On/off switch</description>
+		<category>WallSwitch</category>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -368,6 +371,7 @@
 
 		<label>Radio Powr Savr Sensor</label>
 		<description>Motion sensor to detect occupancy status</description>
+		<category>MotionDetector</category>
 
 		<channels>
 			<channel id="occupancystatus" typeId="occupiedState"/>
@@ -411,6 +415,7 @@
 
 		<label>Occupancy Group</label>
 		<description>Shows state of occupancy sensor group</description>
+		<category>MotionDetector</category>
 
 		<channels>
 			<channel id="groupstate" typeId="groupState"/>
@@ -642,7 +647,7 @@
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>GRAFIK Eye QS</label>
+		<label>GRAFIK Eye QS Keypad</label>
 		<description>Lutron GRAFIK Eye QS for RadioRA 2/HomeWorks QS</description>
 
 		<representation-property>integrationId</representation-property>
@@ -716,7 +721,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
 
 	<thing-type id="virtualkeypad">
 		<supported-bridge-type-refs>
@@ -838,7 +842,7 @@
 
 	<bridge-type id="prgbridge">
 		<label>Lutron GRX-PRG or GRX-CI-PRG Bridge</label>
-		<description>Ethernet access point to Lutron Grafik Eye 3x/4x Systems</description>
+		<description>Ethernet access point to Lutron GRAFIK Eye 3x/4x Systems</description>
 
 		<channels>
 			<channel id="buttonpress" typeId="buttonpress"/>
@@ -912,8 +916,8 @@
 			<bridge-type-ref id="prgbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Grafik Eye</label>
-		<description>Controls a Grafik Eye</description>
+		<label>GRAFIK Eye</label>
+		<description>Controls a GRAFIK Eye</description>
 
 		<channels>
 			<channel id="scene" typeId="scene"/>
@@ -1082,7 +1086,7 @@
 
 	<bridge-type id="hwserialbridge">
 		<label>Lutron HomeWorks RS232 Bridge</label>
-		<description>RS232 access point to Lutron HomeWorks lighting control system</description>
+		<description>RS232 access point to Legacy Lutron HomeWorks lighting control system</description>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
@@ -1138,8 +1142,9 @@
 			<bridge-type-ref id="hwserialbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>HomeWorks Dimmer</label>
-		<description>Controls dimmable loads</description>
+		<label>Lutron Dimmer (Legacy HomeWorks)</label>
+		<description>Controls dimmable loads for legacy HomeWorks systems</description>
+		<category>Lightbulb</category>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
@@ -1165,7 +1170,7 @@
 
 	<bridge-type id="ra-rs232">
 		<label>Lutron RadioRA RS232</label>
-		<description>RS-232 access to Lutron RadioRA</description>
+		<description>RS-232 access to legacy Lutron RadioRA systems</description>
 
 		<config-description>
 			<parameter name="portName" type="text" required="true">
@@ -1185,8 +1190,9 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ra-rs232"/>
 		</supported-bridge-type-refs>
-		<label>RadioRA Dimmer</label>
-		<description>RadioRA Dimmer</description>
+		<label>Lutron Dimmer (Legacy RadioRA)</label>
+		<description>Controls dimmable loads for legacy RadioRA systems</description>
+		<category>Lightbulb</category>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
@@ -1212,8 +1218,9 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ra-rs232"/>
 		</supported-bridge-type-refs>
-		<label>RadioRA Switch</label>
-		<description>RadioRA Switch</description>
+		<label>Lutron Switch (Legacy RadioRA)</label>
+		<description>On/off switch for Legacy RadioRA systems</description>
+		<category>WallSwitch</category>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -1231,8 +1238,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ra-rs232"/>
 		</supported-bridge-type-refs>
-		<label>RadioRA Phantom Button</label>
-		<description>RadioRA Phantom Button</description>
+		<label>Phantom Button (Legacy RadioRA)</label>
+		<description>Phantom Button for Legacy RadioRA systems</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
