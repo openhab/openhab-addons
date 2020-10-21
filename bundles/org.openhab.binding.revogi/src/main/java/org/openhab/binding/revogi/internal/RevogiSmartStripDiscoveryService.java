@@ -53,7 +53,8 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
 
     public RevogiSmartStripDiscoveryService() {
         super(SUPPORTED_THING_TYPES, SEARCH_TIMEOUT_SEC);
-        revogiDiscoveryService = new RevogiDiscoveryService(new UdpSenderService(new DatagramSocketWrapper()));
+        revogiDiscoveryService = new RevogiDiscoveryService(
+                new UdpSenderService(new DatagramSocketWrapper(), scheduler));
     }
 
     @Override

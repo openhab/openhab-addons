@@ -17,10 +17,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.revogi.internal.api.StatusService;
-import org.openhab.binding.revogi.internal.api.SwitchService;
-import org.openhab.binding.revogi.internal.udp.DatagramSocketWrapper;
-import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -51,10 +47,7 @@ public class RevogiSmartStripControlHandlerFactory extends BaseThingHandlerFacto
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE.equals(thingTypeUID)) {
-            UdpSenderService udpSenderService = new UdpSenderService(new DatagramSocketWrapper());
-            StatusService statusService = new StatusService(udpSenderService);
-            SwitchService switchService = new SwitchService(udpSenderService);
-            return new RevogiSmartStripControlHandler(thing, statusService, switchService);
+            return new RevogiSmartStripControlHandler(thing);
         }
 
         return null;

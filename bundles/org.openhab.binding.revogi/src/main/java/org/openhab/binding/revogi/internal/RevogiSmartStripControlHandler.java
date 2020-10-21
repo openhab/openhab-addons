@@ -25,6 +25,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.revogi.internal.api.StatusDTO;
 import org.openhab.binding.revogi.internal.api.StatusService;
 import org.openhab.binding.revogi.internal.api.SwitchService;
+import org.openhab.binding.revogi.internal.udp.DatagramSocketWrapper;
+import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
@@ -53,10 +55,11 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
     private @Nullable RevogiSmartStripControlConfiguration config;
 
-    public RevogiSmartStripControlHandler(Thing thing, StatusService statusService, SwitchService switchService) {
+    public RevogiSmartStripControlHandler(Thing thing) {
         super(thing);
-        this.statusService = statusService;
-        this.switchService = switchService;
+        UdpSenderService udpSenderService = new UdpSenderService(new DatagramSocketWrapper(), scheduler);
+        this.statusService = new StatusService(udpSenderService);
+        this.switchService = new SwitchService(udpSenderService);
     }
 
     @Override

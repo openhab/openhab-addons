@@ -56,17 +56,19 @@ public class UdpSenderService {
 
     private final Logger logger = LoggerFactory.getLogger(UdpSenderService.class);
     private final DatagramSocketWrapper datagramSocketWrapper;
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("thingHandler");
+    private final ScheduledExecutorService scheduler;
     private final long timeoutBaseValue;
 
-    public UdpSenderService(DatagramSocketWrapper datagramSocketWrapper) {
+    public UdpSenderService(DatagramSocketWrapper datagramSocketWrapper, ScheduledExecutorService scheduler) {
         this.timeoutBaseValue = TIMEOUT_BASE_VALUE_SEC;
         this.datagramSocketWrapper = datagramSocketWrapper;
+        this.scheduler = scheduler;
     }
 
     public UdpSenderService(DatagramSocketWrapper datagramSocketWrapper, long timeout) {
         this.timeoutBaseValue = timeout;
         this.datagramSocketWrapper = datagramSocketWrapper;
+        this.scheduler = ThreadPoolManager.getScheduledPool("test pool");
     }
 
     public CompletableFuture<List<UdpResponseDTO>> broadcastUdpDatagram(String content) {
