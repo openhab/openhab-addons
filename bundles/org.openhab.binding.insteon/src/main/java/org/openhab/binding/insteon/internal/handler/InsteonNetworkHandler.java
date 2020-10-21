@@ -201,6 +201,10 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         deviceInfo.remove(uid.getAsString());
     }
 
+    public boolean isChannelLinked(ChannelUID uid) {
+        return channelInfo.containsKey(uid.getAsString());
+    }
+
     public void linked(ChannelUID uid, String msg) {
         channelInfo.put(uid.getAsString(), msg);
     }
