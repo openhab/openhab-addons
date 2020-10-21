@@ -14,21 +14,37 @@
 package org.openhab.binding.touchwand.internal.dto;
 
 /**
- * The {@link TouchWandUnitDataAlarmSensor} implements WallController unit
- * property.
+ * The {@link TouchWandUnitDataAlarmSensor} implements Alarm Sensor unit
+ * data property.
  *
  * @author Roie Geron - Initial contribution
  */
 public class TouchWandUnitDataAlarmSensor extends TouchWandUnitData {
+	
+    public TouchWandAlarmSensorCurrentStatus currStatus = new TouchWandAlarmSensorCurrentStatus();
 
-    private Object currStatus;
+    public void setCurrStatus(TouchWandAlarmSensorCurrentStatus currStatus) {
+		this.currStatus = currStatus;
+	}
 
-    @Override
-    public Object getCurrStatus() {
+
+	@Override
+    public TouchWandAlarmSensorCurrentStatus getCurrStatus() {
         return this.currStatus;
     }
+    
+//	public List<Sensor> getSensors() {
+//		return sensors;
+//	}
 
-    public void setCurrStatus(Object currStatus) {
-        this.currStatus = currStatus;
+    public class AlarmEventType{
+    	public int eventsNum;
+    	public String description;
     }
+    
+
+    public class SensorType{
+    	public Integer type;
+    	public String description;
+    }    
 }

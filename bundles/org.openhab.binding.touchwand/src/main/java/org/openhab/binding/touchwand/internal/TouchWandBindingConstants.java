@@ -85,7 +85,14 @@ public class TouchWandBindingConstants {
     public static final String TYPE_SHUTTER = "shutter";
     public static final String TYPE_DIMMER = "dimmer";
     public static final String TYPE_ALARMSENSOR = "AlarmSensor";
-
+    
+    
+    public static final Integer SENSOR_TYPE_TEMPRATURE 		= 1;
+    public static final Integer SENSOR_TYPE_LUMINACE 		= 3;
+    public static final Integer SENSOR_TYPE_LEAK 			= 6;
+    public static final Integer SENSOR_TYPE_DOOR_WINDOW 	= 10;
+    public static final Integer SENSOR_TYPE_MOTION			= 12;
+    
     public static final String[] SUPPORTED_TOUCHWAND_TYPES = { TYPE_WALLCONTROLLER, TYPE_SWITCH, TYPE_SHUTTER,
             TYPE_DIMMER, TYPE_ALARMSENSOR };
 }
