@@ -1,12 +1,9 @@
 {
 	"deviceMapping": {
 		"id": [
-			"philips.light.bceiling1",
-			"philips.light.bceiling2",
-			"philips.light.lnblight1",
-			"philips.light.lnblight2",
-			"philips.light.lnlrlight",
-			"philips.light.lrceiling"
+			"philips.light.cbulb",
+			"philips.light.cbulbs",
+			"philips.light.dcolor"
 		],
 		"channels": [
 			{
@@ -16,6 +13,7 @@
 				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
+				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
@@ -30,6 +28,7 @@
 				"channelType": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_bright",
@@ -54,6 +53,7 @@
 				"channelType": "cct",
 				"type": "Dimmer",
 				"refresh": true,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_cct",
@@ -68,71 +68,52 @@
 				"channelType": "scene",
 				"type": "Number",
 				"refresh": true,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "apply_fixed_scene",
+						"command": "apply_scene",
 						"parameterType": "NUMBER"
 					}
 				]
 			},
 			{
-				"property": "dv",
-				"friendlyName": "DV",
-				"channel": "dv",
-				"channelType": "dv",
-				"type": "Number",
+				"property": "cid",
+				"friendlyName": "Color",
+				"channel": "cid",
+				"type": "Color",
 				"refresh": true,
 				"ChannelGroup": "actions",
-				"actions": []
-			},
-			{
-				"property": "sw",
-				"friendlyName": "Switch",
-				"channel": "sw",
-				"type": "Switch",
-				"refresh": true,
 				"actions": [
 					{
-						"command": "set_scene_switch",
-						"parameterType": "NUMBER"
+						"command": "set_cid",
+						"parameterType": "COLOR"
 					}
 				]
 			},
 			{
-				"property": "bl",
-				"friendlyName": "Night Light",
-				"channel": "bl",
+				"property": "",
+				"friendlyName": "Switch Scene",
+				"channel": "switchscene",
 				"type": "Switch",
-				"refresh": true,
+				"refresh": false,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "enable_bl",
-						"parameterType": "NUMBER"
+						"command": "switch_the_scene",
+						"parameterType": "EMPTY"
 					}
 				]
 			},
 			{
-				"property": "ms",
-				"friendlyName": "MiBand Notifications",
-				"channel": "ms",
+				"property": "get_switch_en",
+				"friendlyName": "Switch Enabled",
+				"channel": "switch_en",
 				"type": "Switch",
-				"refresh": true,
+				"refresh": false,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "enable_mibs",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "ac",
-				"friendlyName": "Auto Ambiance",
-				"channel": "ac",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "enable_ac",
+						"command": "set_switch_en",
 						"parameterType": "NUMBER"
 					}
 				]
@@ -151,21 +132,7 @@
 						"parameterType": "NUMBER"
 					}
 				]
-			},
-			{
-				"property": "mb",
-				"friendlyName": "MiBand",
-				"channel": "mb",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "enable_mb",
-						"parameterType": "NUMBER"
-					}
-				]
 			}
-		],
-		"experimental": true
+		]
 	}
 }

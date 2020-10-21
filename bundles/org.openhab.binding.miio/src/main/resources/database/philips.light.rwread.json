@@ -1,7 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"philips.light.mono1"
+			"philips.light.rwread"
 		],
 		"channels": [
 			{
@@ -45,7 +45,7 @@
 				]
 			},
 			{
-				"property": "scene_num",
+				"property": "snm",
 				"friendlyName": "Scene",
 				"channel": "scene",
 				"channelType": "scene",
@@ -54,8 +54,35 @@
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_user_scene",
+						"command": "apply_scene",
 						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "flm",
+				"friendlyName": "Follow Me",
+				"channel": "flm",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_flmvalue",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "dv",
+				"friendlyName": "DV",
+				"channel": "dv",
+				"channelType": "dv",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"parameterType": "EMPTY"
 					}
 				]
 			}

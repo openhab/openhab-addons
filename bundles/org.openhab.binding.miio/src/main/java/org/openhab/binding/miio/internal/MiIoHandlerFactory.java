@@ -82,7 +82,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
             return new MiIoGenericHandler(thing, miIoDatabaseWatchService);
         }
         if (thingTypeUID.equals(THING_TYPE_BASIC)) {
-            return new MiIoBasicHandler(thing, miIoDatabaseWatchService);
+            return new MiIoBasicHandler(thing, miIoDatabaseWatchService, channelTypeRegistry);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
