@@ -281,8 +281,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid port number");
             return;
         } catch (InterruptedIOException e) {
-            Thread.currentThread().interrupt();
             logger.debug("Interrupted while establishing connection");
+            Thread.currentThread().interrupt();
             return;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -337,9 +337,6 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private synchronized void disconnect(boolean interruptAll) {
         logger.debug("Disconnecting");
 
-        Thread senderThread = this.senderThread;
-        Thread readerThread = this.readerThread;
-
         ScheduledFuture<?> connectRetryJob = this.connectRetryJob;
         if (connectRetryJob != null) {
             connectRetryJob.cancel(true);
@@ -351,9 +348,12 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         reconnectTaskCancel(interruptAll); // May be called from keepAliveReconnectJob thread
 
+        Thread senderThread = this.senderThread;
         if (senderThread != null && senderThread.isAlive()) {
             senderThread.interrupt();
         }
+
+        Thread readerThread = this.readerThread;
         if (readerThread != null && readerThread.isAlive()) {
             readerThread.interrupt();
         }

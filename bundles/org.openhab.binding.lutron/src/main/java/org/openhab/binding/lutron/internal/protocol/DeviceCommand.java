@@ -102,7 +102,10 @@ public class DeviceCommand extends LutronCommandNew {
         } else if (targetType == TargetType.VIRTUALKEYPAD) {
             if (action.equals(DeviceCommand.ACTION_PRESS)) {
                 return new LeapCommand(Request.virtualButtonCommand(component, CommandType.PRESSANDRELEASE));
-            } else if (!action.equals(DeviceCommand.ACTION_RELEASE)) {
+            } else if (action.equals(DeviceCommand.ACTION_RELEASE)) {
+                logger.trace("Ignoring release command for virtual keypad button.");
+                return null;
+            } else {
                 logger.debug("Ignoring device command with unsupported action.");
                 return null;
             }
