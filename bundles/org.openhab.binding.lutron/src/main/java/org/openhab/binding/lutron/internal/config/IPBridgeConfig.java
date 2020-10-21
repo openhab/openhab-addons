@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lutron.internal.config;
 
-import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.lutron.internal.StringUtils;
 
 /**
  * Configuration settings for an {@link org.openhab.binding.lutron.internal.handler.IPBridgeHandler}.
