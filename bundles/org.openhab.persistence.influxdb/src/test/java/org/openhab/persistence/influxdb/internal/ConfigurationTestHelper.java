@@ -32,7 +32,7 @@ public class ConfigurationTestHelper {
 
     public static Map<String, @Nullable Object> createValidConfigurationParameters() {
         Map<String, @Nullable Object> config = new HashMap<>();
-        config.put(URL_PARAM, "http://localhost:9999");
+        config.put(URL_PARAM, "http://localhost:8086");
         config.put(VERSION_PARAM, InfluxDBVersion.V2.name());
         config.put(TOKEN_PARAM, "sampletoken");
         config.put(DATABASE_PARAM, "openhab");
