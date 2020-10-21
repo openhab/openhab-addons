@@ -39,6 +39,7 @@ import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
@@ -59,6 +60,8 @@ import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.DsType;
@@ -81,12 +84,15 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j")
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.rrd4j", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private static final String DEFAULT_OTHER = "default_other";
     private static final String DEFAULT_NUMERIC = "default_numeric";
     private static final String DEFAULT_QUANTIFIABLE = "default_quantifiable";
+
+    private static final Set<String> SUPPORTED_TYPES = Set.of(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT,
+            CoreItemFactory.DIMMER, CoreItemFactory.NUMBER, CoreItemFactory.ROLLERSHUTTER);
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3,
             new NamedThreadFactory("RRD4j"));
@@ -120,6 +126,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @Override
     public synchronized void store(final Item item, @Nullable final String alias) {
+        if (!isSupportedItemType(item)) {
+            logger.trace("Ignoring item '{}' since its type {} is not supported", item.getName(), item.getType());
+            return;
+        }
         final String name = alias == null ? item.getName() : alias;
         RrdDb db = getDB(name);
         if (db != null) {
@@ -271,8 +281,15 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (!folder.exists()) {
                     folder.mkdirs();
                 }
-                // create a new database file
-                db = new RrdDb(getRrdDef(alias, file));
+                RrdDef rrdDef = getRrdDef(alias, file);
+                if (rrdDef != null) {
+                    // create a new database file
+                    db = new RrdDb(rrdDef);
+                } else {
+                    logger.debug(
+                            "Did not create rrd4j database for item '{}' since no rrd definition could be determined. This is likely due to an unsupported item type.",
+                            alias);
+                }
             }
         } catch (IOException e) {
             logger.error("Could not create rrd4j database file '{}': {}", file.getAbsolutePath(), e.getMessage());
@@ -296,19 +313,26 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         if (useRdc == null) { // not defined, use defaults
             try {
                 Item item = itemRegistry.getItem(itemName);
+                if (!isSupportedItemType(item)) {
+                    return null;
+                }
                 if (item instanceof NumberItem) {
                     NumberItem numberItem = (NumberItem) item;
-                    return numberItem.getDimension() != null ? rrdDefs.get(DEFAULT_QUANTIFIABLE)
+                    useRdc = numberItem.getDimension() != null ? rrdDefs.get(DEFAULT_QUANTIFIABLE)
                             : rrdDefs.get(DEFAULT_NUMERIC);
+                } else {
+                    useRdc = rrdDefs.get(DEFAULT_OTHER);
                 }
             } catch (ItemNotFoundException e) {
                 logger.debug("Could not find item '{}' in registry", itemName);
+                return null;
             }
         }
-        return rrdDefs.get(DEFAULT_OTHER);
+        logger.trace("Using rrd definition '{}' for item '{}'.", useRdc, itemName);
+        return useRdc;
     }
 
-    private RrdDef getRrdDef(String itemName, File file) {
+    private @Nullable RrdDef getRrdDef(String itemName, File file) {
         RrdDef rrdDef = new RrdDef(file.getAbsolutePath());
         RrdDefConfig useRdc = getRrdDefConfig(itemName);
         if (useRdc != null) {
@@ -318,8 +342,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             for (RrdArchiveDef rad : useRdc.archives) {
                 rrdDef.addArchive(rad.fcn, rad.xff, rad.steps, rad.rows);
             }
+            return rrdDef;
+        } else {
+            return null;
         }
-        return rrdDef;
     }
 
     public ConsolFun getConsolidationFunction(RrdDb db) {
@@ -348,14 +374,24 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         return new DecimalType(value);
     }
 
+    private boolean isSupportedItemType(Item item) {
+        return SUPPORTED_TYPES.contains(item.getType());
+    }
+
     private static String getUserPersistenceDataFolder() {
         return OpenHAB.getUserDataFolder() + File.separator + "persistence";
     }
 
-    /**
-     * @{inheritDoc
-     */
-    public void activate(final Map<String, Object> config) {
+    @Activate
+    protected void activate(final Map<String, Object> config) {
+        modified(config);
+    }
+
+    @Modified
+    protected void modified(final Map<String, Object> config) {
+        // clean existing definitions
+        rrdDefs.clear();
+
         // add default configurations
 
         RrdDefConfig defaultNumeric = new RrdDefConfig(DEFAULT_NUMERIC);
