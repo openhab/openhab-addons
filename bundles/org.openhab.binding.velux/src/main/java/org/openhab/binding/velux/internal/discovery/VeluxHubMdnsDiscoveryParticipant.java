@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component
 public class VeluxHubMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(VeluxHubMdnsDiscoveryParticipant.class);
@@ -115,7 +115,6 @@ public class VeluxHubMdnsDiscoveryParticipant implements MDNSDiscoveryParticipan
                     .withProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS, ipAddr)
                     .withRepresentationProperty(VeluxBridgeConfiguration.BRIDGE_IPADDRESS)
                     .withLabel(String.format("Velux Bridge (%s)", ipAddr)).build();
-            logger.debug("createResult(): returning discovered gateway uid '{}' on ip '{}'", thingUID, ipAddr);
             return result;
         }
         return null;
