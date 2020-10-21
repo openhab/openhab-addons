@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lutron.internal;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -25,13 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class StringUtils {
 
     public static boolean equals(@Nullable String s1, @Nullable String s2) {
-        if (s1 == null && s2 == null) {
-            return true;
-        } else if (s1 == null || s2 == null) {
-            return false;
-        } else {
-            return s1.equals(s2);
-        }
+        return Objects.equals(s1, s2);
     }
 
     public static boolean isEmpty(@Nullable String s1) {
