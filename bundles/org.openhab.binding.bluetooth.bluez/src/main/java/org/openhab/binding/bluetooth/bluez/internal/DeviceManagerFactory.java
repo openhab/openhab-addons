@@ -46,15 +46,15 @@ public class DeviceManagerFactory {
     private final BlueZPropertiesChangedHandler changeHandler = new BlueZPropertiesChangedHandler();
 
     private @Nullable DeviceManager deviceManager;
-    private @Nullable CompletableFuture<DeviceManager> deviceManagerFuture;
+    private @Nullable CompletableFuture<DeviceManagerWrapper> deviceManagerFuture;
 
     public BlueZPropertiesChangedHandler getPropertiesChangedHandler() {
         return changeHandler;
     }
 
-    public @Nullable DeviceManager getDeviceManager() {
+    public @Nullable DeviceManagerWrapper getDeviceManager() {
         // we can cheat the null checker with casting here
-        CompletableFuture<@Nullable DeviceManager> future = (CompletableFuture<@Nullable DeviceManager>) this.deviceManagerFuture;
+        var future = (CompletableFuture<@Nullable DeviceManagerWrapper>) this.deviceManagerFuture;
         if (future != null) {
             return future.getNow(null);
         }
@@ -87,6 +87,7 @@ public class DeviceManagerFactory {
                     this.deviceManager = devManager;
                     return devManager;
                 }).thenCompose(devManager -> registerPropertyHandler(devManager, scheduler))//
+                .thenApply(DeviceManagerWrapper::new)//
                 .whenComplete((devManager, th) -> {
                     if (th != null) {
                         logger.warn("Failed to initialize DeviceManager: {}", th.getMessage());

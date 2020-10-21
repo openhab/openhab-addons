@@ -29,7 +29,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.hypfvieh.bluetooth.DeviceManager;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter;
 
 /**
@@ -65,7 +64,7 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         backgroundScan = scheduler.scheduleWithFixedDelay(() -> {
-            DeviceManager deviceManager = deviceManagerFactory.getDeviceManager();
+            DeviceManagerWrapper deviceManager = deviceManagerFactory.getDeviceManager();
             if (deviceManager == null) {
                 return;
             }
@@ -81,7 +80,7 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        DeviceManager deviceManager = deviceManagerFactory.getDeviceManager();
+        DeviceManagerWrapper deviceManager = deviceManagerFactory.getDeviceManager();
         if (deviceManager == null) {
             logger.warn("The DeviceManager is not available");
             return;

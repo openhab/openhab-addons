@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -56,7 +55,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
 /**
  * Implementation of BluetoothDevice for BlueZ via DBus-BlueZ API
  *
- *
+ * @author Kai Kreuzer - Initial contribution and API
  * @author Benjamin Lafois - Initial contribution and API
  *
  */
@@ -69,8 +68,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     private @Nullable BluetoothDevice device = null;
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
-
-    protected final Map<UUID, BluetoothService> supportedServices = new HashMap<>();
 
     /**
      * Constructor

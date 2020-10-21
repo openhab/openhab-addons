@@ -60,7 +60,7 @@ Additionally, the parameter `backgroundDiscovery` can be set to true/false.When 
 This is how an BlueZ adapter can be configured textually in a *.things file:
 
 ```
-Bridge bluetooth:bluez:hci0 [ address="12:34:56:78:90:AB" ]
+Bridge bluetooth:bluez:hci0 [ address="12:34:56:78:90:AB", backgroundDiscovery=false ]
 ```
 
 ##Troubleshooting

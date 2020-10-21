@@ -17,7 +17,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
@@ -32,7 +31,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.hypfvieh.bluetooth.DeviceManager;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
 
@@ -105,43 +103,31 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             discoveryJob = null;
         }
 
-        if (this.adapter != null) {
-            ((@NonNull BluetoothAdapter) this.adapter).stopDiscovery();
+        BluetoothAdapter localAdatper = this.adapter;
+        if (localAdatper != null) {
+            localAdatper.stopDiscovery();
             this.adapter = null;
         }
 
         super.dispose();
     }
 
-    private static @Nullable BluetoothAdapter findAdapter(DeviceManager deviceManager, String address) {
-        List<BluetoothAdapter> adapters = deviceManager.getAdapters();
-        if (adapters != null) {
-            for (BluetoothAdapter btAdapter : adapters) {
-                if (btAdapter.getAddress() != null && btAdapter.getAddress().equalsIgnoreCase(address)) {
-                    return btAdapter;
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean validateAdapter(DeviceManager deviceManager) {
-
+    private @Nullable BluetoothAdapter prepareAdapter(DeviceManagerWrapper deviceManager) {
         // next lets check if we can find our adapter in the manager.
         BluetoothAdapter localAdapter = adapter;
         if (localAdapter == null) {
-            if (adapterAddress != null) {
-                localAdapter = adapter = findAdapter(deviceManager,
-                        ((@NonNull BluetoothAddress) adapterAddress).toString());
+            BluetoothAddress localAddress = adapterAddress;
+            if (localAddress != null) {
+                localAdapter = adapter = deviceManager.getAdapter(localAddress);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No adapter address provided");
-                return false;
+                return null;
             }
         }
         if (localAdapter == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Native adapter could not be found for address '" + adapterAddress + "'");
-            return false;
+            return null;
         }
         // now lets confirm that the adapter is powered
         if (!localAdapter.isPowered()) {
@@ -149,7 +135,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             // give the device some time to power on
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
                     "Adapter is not powered, attempting to turn on...");
-            return false;
+            return null;
         }
 
         // now lets make sure that discovery is turned on
@@ -157,9 +143,9 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             // we will check for devices next time around
             localAdapter.startDiscovery();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Starting discovery");
-            return false;
+            return null;
         }
-        return true;
+        return localAdapter;
     }
 
     private void initializeAndRefreshDevices() {
@@ -167,24 +153,21 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
 
         try {
             // first check if the device manager is ready
-            DeviceManager deviceManager = deviceManagerFactory.getDeviceManager();
+            DeviceManagerWrapper deviceManager = deviceManagerFactory.getDeviceManager();
             if (deviceManager == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Bluez DeviceManager not available yet.");
                 return;
             }
 
-            if (!validateAdapter(deviceManager)) {
+            BluetoothAdapter adapter = prepareAdapter(deviceManager);
+            if (adapter == null) {
+                // adapter isn't prepared yet
                 return;
             }
 
-            // as we have already validated the adapteraddress in {@link #validateAdapter(DeviceAdapter)}, we can safely
-            // assume that adapterAddress is not null.
-            @NonNull
-            BluetoothAddress adapterAddress = (@NonNull BluetoothAddress) this.adapterAddress;
-
             // now lets refresh devices
-            List<BluetoothDevice> bluezDevices = deviceManager.getDevices(adapterAddress.toString(), true);
+            List<BluetoothDevice> bluezDevices = deviceManager.getDevices(adapter);
             logger.debug("Found {} Bluetooth devices.", bluezDevices.size());
             for (BluetoothDevice bluezDevice : bluezDevices) {
                 // logger.debug("discovered device {}", bluezDevice);
