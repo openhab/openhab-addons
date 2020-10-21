@@ -21,7 +21,7 @@ import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEvent;
 /**
  *
  * @author Benjamin Lafois - Initial Contribution
- *
+ * @author Connor Petty - Added additional test cases
  */
 public class BlueZEventTest {
 
@@ -45,5 +45,33 @@ public class BlueZEventTest {
                 BlueZEvent.EventType.NAME);
         assertEquals("hci0", event.getAdapterName());
         assertEquals(new BluetoothAddress("A4:34:D9:ED:D3:74"), event.getDevice());
+    }
+
+    @Test
+    public void testDbusPathParser3() {
+        BlueZEvent event = new BlueZEvent("/org/bluez/hci0/dev_00_CC_3F_B2_7E_60/", BlueZEvent.EventType.NAME);
+        assertEquals("hci0", event.getAdapterName());
+        assertEquals(new BluetoothAddress("00:CC:3F:B2:7E:60"), event.getDevice());
+    }
+
+    @Test
+    public void testDbusPathParser4() {
+        BlueZEvent event = new BlueZEvent("/org/bluez/hci0/dev_", BlueZEvent.EventType.NAME);
+        assertEquals("hci0", event.getAdapterName());
+        assertNull(event.getDevice());
+    }
+
+    @Test
+    public void testDbusPathParser5() {
+        BlueZEvent event = new BlueZEvent("/org/bluez/hci0/dev_/", BlueZEvent.EventType.NAME);
+        assertEquals("hci0", event.getAdapterName());
+        assertNull(event.getDevice());
+    }
+
+    @Test
+    public void testDbusPathParser6() {
+        BlueZEvent event = new BlueZEvent("/org/bluez/hci0", BlueZEvent.EventType.NAME);
+        assertEquals("hci0", event.getAdapterName());
+        assertNull(event.getDevice());
     }
 }

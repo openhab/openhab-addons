@@ -12,23 +12,19 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal.events;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 
 /**
+ * The {@link BlueZEvent} class represents an event from dbus due to
+ * changes in the properties of a bluetooth device.
  *
  * @author Benjamin Lafois - Initial Contribution
  *
  */
 @NonNullByDefault
 public class BlueZEvent {
-
-    private static final Pattern PATTERN_ADAPTER_MAC = Pattern
-            .compile("/org/bluez/(?<adapterName>[^/]+)(/dev_(?<deviceMac>[^/]+).*)?");
 
     public enum EventType {
         RSSI_UPDATE,
@@ -52,14 +48,32 @@ public class BlueZEvent {
         this.dbusPath = dbusPath;
         this.eventType = eventType;
 
-        Matcher matcher = PATTERN_ADAPTER_MAC.matcher(dbusPath);
-        if (matcher.find()) {
-            this.adapterName = matcher.group("adapterName");
-
-            String mac = matcher.group("deviceMac");
-            if (mac != null) {
-                this.device = new BluetoothAddress(mac.replace('_', ':'));
-            }
+        // the rest of the code should be equivalent to parsing with the following regex:
+        // "/org/bluez/(?<adapterName>[^/]+)(/dev_(?<deviceMac>[^/]+).*)?"
+        if (!dbusPath.startsWith("/org/bluez/")) {
+            return;
+        }
+        int start = dbusPath.indexOf('/', 11);
+        if (start == -1) {
+            this.adapterName = dbusPath.substring(11);
+            return;
+        } else {
+            this.adapterName = dbusPath.substring(11, start);
+        }
+        start++;
+        int end = dbusPath.indexOf('/', start);
+        String mac;
+        if (end == -1) {
+            mac = dbusPath.substring(start);
+        } else {
+            mac = dbusPath.substring(start, end);
+        }
+        if (!mac.startsWith("dev_")) {
+            return;
+        }
+        mac = mac.substring(4); // trim off the "dev_" prefix
+        if (!mac.isEmpty()) {
+            this.device = new BluetoothAddress(mac.replace('_', ':').toUpperCase());
         }
     }
 
