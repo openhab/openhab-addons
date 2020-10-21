@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.feed.test;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This interface is used to mark tests that take too much time
  *
- * @author Svilen Valkanov
+ * @author Svilen Valkanov - Initial contribution
  */
+@NonNullByDefault
 public interface SlowTests {
-
 }
