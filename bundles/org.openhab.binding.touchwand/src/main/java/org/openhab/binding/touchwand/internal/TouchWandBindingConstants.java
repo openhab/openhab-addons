@@ -46,6 +46,10 @@ public class TouchWandBindingConstants {
     public static final String CHANNEL_WALLCONTROLLER_ACTION = "wallaction";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
+    public static final String CHANNEL_LEAK = "leak";
+    public static final String CHANNEL_MOTION = "motion";
+    public static final String CHANNEL_ILLUMINATION = "illumination";
+    public static final String CHANNEL_DOORWINDOW = "isOpen";
 
     // List of configuration parameters
 
@@ -85,14 +89,13 @@ public class TouchWandBindingConstants {
     public static final String TYPE_SHUTTER = "shutter";
     public static final String TYPE_DIMMER = "dimmer";
     public static final String TYPE_ALARMSENSOR = "AlarmSensor";
-    
-    
-    public static final Integer SENSOR_TYPE_TEMPRATURE 		= 1;
-    public static final Integer SENSOR_TYPE_LUMINACE 		= 3;
-    public static final Integer SENSOR_TYPE_LEAK 			= 6;
-    public static final Integer SENSOR_TYPE_DOOR_WINDOW 	= 10;
-    public static final Integer SENSOR_TYPE_MOTION			= 12;
-    
+
+    public static final Integer SENSOR_TYPE_TEMPRATURE = 1;
+    public static final Integer SENSOR_TYPE_LUMINACE = 3;
+    public static final Integer SENSOR_TYPE_LEAK = 6;
+    public static final Integer SENSOR_TYPE_DOOR_WINDOW = 10;
+    public static final Integer SENSOR_TYPE_MOTION = 12;
+
     public static final String[] SUPPORTED_TOUCHWAND_TYPES = { TYPE_WALLCONTROLLER, TYPE_SWITCH, TYPE_SHUTTER,
             TYPE_DIMMER, TYPE_ALARMSENSOR };
 }
