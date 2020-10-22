@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.bluez.internal.events;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This is the listener interface for BlueZEvents.
  *
  * @author Benjamin Lafois - Initial Contribution
  *

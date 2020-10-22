@@ -40,7 +40,11 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
  * It provides a private interface for {@link BlueZBluetoothDevice}s to access the stack and provides top
  * level adaptor functionality for scanning and arbitration.
  *
- * @author Benjamin Lafois - Initial contribution and API
+ * @author Kai Kreuzer - Initial contribution and API
+ * @author Hilbrand Bouwkamp - Simplified calling scan and better handling manual scanning
+ * @author Connor Petty - Simplified device scan logic
+ * @author Benjamin Lafois - Replaced tinyB with bluezDbus
+ *
  */
 @NonNullByDefault
 public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBluetoothDevice>

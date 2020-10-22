@@ -33,6 +33,12 @@ import org.slf4j.LoggerFactory;
 import com.github.hypfvieh.bluetooth.DeviceManager;
 
 /**
+ * This service handles the lifecycle of the {@link DeviceManager} singleton instance.
+ * In addition, this class is responsible for managing the BlueZPropertiesChangedHandler instance
+ * used by the binding for listening and dispatching dbus events from the DeviceManager.
+ *
+ * Creation of the DeviceManager is asynchronous and thus attempts to retrieve the DeviceManager
+ * through 'getDeviceManager' may initially fail.
  *
  * @author Connor Petty - Initial Contribution
  *
@@ -42,9 +48,9 @@ import com.github.hypfvieh.bluetooth.DeviceManager;
 public class DeviceManagerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceManagerFactory.class);
-    private @Nullable ScheduledExecutorService scheduler;
     private final BlueZPropertiesChangedHandler changeHandler = new BlueZPropertiesChangedHandler();
 
+    private @Nullable ScheduledExecutorService scheduler;
     private @Nullable DeviceManager deviceManager;
     private @Nullable CompletableFuture<DeviceManagerWrapper> deviceManagerFuture;
 

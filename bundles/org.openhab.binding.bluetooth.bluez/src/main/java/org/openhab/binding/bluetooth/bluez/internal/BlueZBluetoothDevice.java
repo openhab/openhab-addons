@@ -56,7 +56,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothGattService;
  * Implementation of BluetoothDevice for BlueZ via DBus-BlueZ API
  *
  * @author Kai Kreuzer - Initial contribution and API
- * @author Benjamin Lafois - Initial contribution and API
+ * @author Benjamin Lafois - Replaced tinyB with bluezDbus
  *
  */
 @NonNullByDefault
@@ -64,10 +64,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     private final Logger logger = LoggerFactory.getLogger(BlueZBluetoothDevice.class);
 
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
+
     // Device from native lib
     private @Nullable BluetoothDevice device = null;
-
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
     /**
      * Constructor

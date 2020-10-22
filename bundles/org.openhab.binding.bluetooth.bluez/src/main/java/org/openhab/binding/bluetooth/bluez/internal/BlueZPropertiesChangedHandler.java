@@ -41,10 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * This is the PropertiesChangedHandler subclass used by the binding to handle/dispatch property change events
+ * from bluez.
  *
  * @author Benjamin Lafois - Initial contribution and API
- *
+ * @author Connor Petty - Code cleanup
  */
 @NonNullByDefault
 public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHandler {

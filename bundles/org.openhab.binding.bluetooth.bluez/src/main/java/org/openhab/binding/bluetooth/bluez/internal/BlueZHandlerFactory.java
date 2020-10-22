@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Kai Kreuzer - Initial contribution and API
- * @author Benjamin Lafois - Initial contribution and API
+ * @author Connor Petty - Added DeviceManagerFactory
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluetooth.bluez")
