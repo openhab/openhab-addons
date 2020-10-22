@@ -27,7 +27,7 @@
 		<parameter name="url" type="text" required="true" groupName="connection">
 			<context>url</context>
 			<label>Database URL</label>
-			<description>The database URL, e.g. http://127.0.0.1:8086 or http://127.0.0.1:9999</description>
+			<description>The database URL, e.g. http://127.0.0.1:8086</description>
 			<default>http://127.0.0.1:8086</default>
 		</parameter>
 
