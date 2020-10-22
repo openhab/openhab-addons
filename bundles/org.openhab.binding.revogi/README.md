@@ -2,7 +2,7 @@
 
 This binding is written to control Revogi devices. The first thing implemented is the [Revogi Smart Power Strip](https://www.revogi.com/smart-power/smart-power-strip-eu/#section6). The device has 6 power plugs that can be switched independently, or all together.
 
-It was hard to find out how to control it without internet access, but there's a way to use UDP packets. See the following [support document](https://github.com/andibraeu/revogismartstripcontrol/blob/master/doc/LAN%20UDP%20Control.pdf). This was the only document the Revogi support provided.
+It was hard to find out how to control it without internet access, but there's a way to use UDP packets. See the following [support document](https://github.com/andibraeu/revogismartstripcontrol/blob/master/doc/LAN%20UDP%20Control.pdf) for details. This was the only document the Revogi support provided.
 
 ## Supported Things
 
