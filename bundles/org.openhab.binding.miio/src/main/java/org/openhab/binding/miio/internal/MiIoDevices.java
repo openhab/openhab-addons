@@ -195,6 +195,7 @@ public enum MiIoDevices {
     ROCKROBO_VACUUM_S6("rockrobo.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_S6("roborock.vacuum.s6", "Roborock S6", THING_TYPE_VACUUM),
     ROBOROCK_VACUUM_E2("roborock.vacuum.e2", "Roborock Xiaowa E Series Vacuum v2", THING_TYPE_UNSUPPORTED),
+    VIOMI_WATERHEATER_E1("viomi.waterheater.e1", "VIOMI Internet electric water heater 1A (60L)", THING_TYPE_BASIC),
     VIOMI_VACUUM_V6("viomi.vacuum.v6", "Viomi Cleaning Robot V-RVCLM21B", THING_TYPE_BASIC),
     VIOMI_VACUUM_V7("viomi.vacuum.v7", "Mi Robot Vacuum-Mop P", THING_TYPE_BASIC),
     VIOMI_VACUUM_V8("viomi.vacuum.v8", "Mi Robot Vacuum-Mop P", THING_TYPE_BASIC),
