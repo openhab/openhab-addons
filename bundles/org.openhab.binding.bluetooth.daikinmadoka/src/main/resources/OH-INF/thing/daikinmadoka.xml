@@ -6,13 +6,14 @@
 
 	<thing-type id="brc1h">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bluez"/>
+			<bridge-type-ref id="dbusbluez"/>
 		</supported-bridge-type-refs>
 
 		<label>Daikin BRC1H Thermostat</label>
 		<description>A Daikin Madoka BRC1H Thermostat (BLE)</description>
 
 		<channels>
+			<channel id="rssi" typeId="rssi"/>
 			<channel id="onOffStatus" typeId="brc1h_onOffStatus"/>
 			<channel id="indoorTemperature" typeId="brc1h_indoorTemperature"/>
 			<channel id="outdoorTemperature" typeId="brc1h_outdoorTemperature"/>
