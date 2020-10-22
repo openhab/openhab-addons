@@ -360,7 +360,7 @@ public class WLedHandler extends BaseThingHandler {
                 break;
             case CHANNEL_SLEEP:
                 if (OnOffType.ON.equals(command)) {
-                    sendGetRequest("/win&ND");
+                    sendGetRequest("/win&NL=1");// was &ND
                 } else {
                     sendGetRequest("/win&NL=0");
                 }
@@ -370,23 +370,24 @@ public class WLedHandler extends BaseThingHandler {
                 break;
             case CHANNEL_PRESET_DURATION:
                 if (OnOffType.OFF.equals(command)) {
-                    bigTemp = BigDecimal.ZERO;
+                    bigTemp = new BigDecimal(50);
                 } else if (OnOffType.ON.equals(command)) {
-                    bigTemp = new BigDecimal(255);
+                    bigTemp = new BigDecimal(65000);
                 } else {
-                    bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(600)).add(new BigDecimal(500));
+                    bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(1000));
                 }
-                sendGetRequest("/win&PT=" + bigTemp);
+                sendGetRequest("/win&PT=" + bigTemp.intValue());
                 break;
             case CHANNEL_TRANS_TIME:
+                logger.warn("Command is {}", command);
                 if (OnOffType.OFF.equals(command)) {
                     bigTemp = BigDecimal.ZERO;
                 } else if (OnOffType.ON.equals(command)) {
-                    bigTemp = new BigDecimal(255);
+                    bigTemp = new BigDecimal(65000);
                 } else {
-                    bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(600)).add(new BigDecimal(500));
+                    bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(1000));
                 }
-                sendGetRequest("/win&TT=" + bigTemp);
+                sendGetRequest("/win&TT=" + bigTemp.intValue());
                 break;
             case CHANNEL_PRESET_CYCLE:
                 if (OnOffType.ON.equals(command)) {

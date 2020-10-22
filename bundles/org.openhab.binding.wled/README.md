@@ -37,9 +37,9 @@ If it fails to find your WLED, you can manually add a `wled` thing by using the 
 | `intensity` | Dimmer | Changes the intensity of the loaded effect. |
 | `presets` | String |  A list of presets that you can select from.  |
 | `presetCycle` | Switch | Turns ON/OFF the automatic changing from one preset to the next. |
-| `presetDuration` | Dimmer | How long it will display a preset for, before it begins to change from one preset to the next with `presetCycle` turned ON. |
-| `transformTime` | Dimmer | How long it takes to transform/morph from one look to the next. |
-| `sleep` | Switch | Turns on the sleep timer. |
+| `presetDuration` | Number:Time | How long in seconds it will display a preset for, before it begins to change from one preset to the next with `presetCycle` turned ON. |
+| `transformTime` | Number:Time | How long in seconds it takes to transform/morph from one look to the next. |
+| `sleep` | Switch | Turns on the sleep or 'night light' timer which can be configured to work in many different ways. Refer to WLED documentation for how this can be setup. The default action is the light will fade to OFF over the next 60 minutes. |
 
 ## Rule Actions
 
@@ -59,7 +59,7 @@ If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the
 *.sitemap
 
 ```
-Text label="XmasLights" icon="rgb"{
+        Text label="XmasLights" icon="rgb"{
             Switch item=XmasTree_MasterControls
             Slider item=XmasTree_MasterControls
             Colorpicker item=XmasTree_MasterControls
@@ -72,8 +72,8 @@ Text label="XmasLights" icon="rgb"{
             Default item=XmasTree_FXSpeed
             Default item=XmasTree_FXIntensity
             Default item=XmasTree_PresetCycle
-            Default item=XmasTree_PresetDuration
-            Default item=XmasTree_TransformTime
+            Selection item=XmasTree_PresetDuration mappings=[2 ='2 seconds', 10='10 seconds', 30='30 seconds', 60='1 minute']
+            Selection item=XmasTree_TransformTime mappings=[0='0 seconds', 2 ='2 seconds', 10='10 seconds', 30='30 seconds', 60='1 minute']
         }
         
 ```
