@@ -78,8 +78,9 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
 
         // Load configuration
         final BlueZAdapterConfiguration configuration = getConfigAs(BlueZAdapterConfiguration.class);
-        if (configuration.address != null) {
-            this.adapterAddress = new BluetoothAddress(configuration.address.toUpperCase());
+        String addr = configuration.address;
+        if (addr != null) {
+            this.adapterAddress = new BluetoothAddress(addr.toUpperCase());
         } else {
             // If configuration does not contain adapter address to use, exit with error.
             logger.info("Adapter MAC address not provided");

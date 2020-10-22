@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BaseBluetoothBridgeHandlerConfiguration;
 
 /**
@@ -19,7 +21,8 @@ import org.openhab.binding.bluetooth.BaseBluetoothBridgeHandlerConfiguration;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class BlueZAdapterConfiguration extends BaseBluetoothBridgeHandlerConfiguration {
 
-    public String address;
+    public @Nullable String address;
 }

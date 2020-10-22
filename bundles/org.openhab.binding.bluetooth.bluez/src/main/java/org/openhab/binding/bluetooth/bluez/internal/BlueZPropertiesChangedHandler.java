@@ -76,7 +76,7 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
             logger.debug("Null properties. Skipping.");
             return;
         }
-        Map<String, Variant<?>> changedProperties = properties.getPropertiesChanged();
+        Map<@Nullable String, @Nullable Variant<?>> changedProperties = properties.getPropertiesChanged();
         if (changedProperties == null) {
             logger.debug("Null properties changed. Skipping.");
             return;
@@ -87,39 +87,42 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
 
             String dbusPath = properties.getPath();
             changedProperties.forEach((key, variant) -> {
+                if (key == null || variant == null) {
+                    return;
+                }
                 switch (key) {
                     case "RSSI":
                         // Signal Update
-                        notifyListeners(new RssiEvent(dbusPath, (Short) variant.getValue()));
+                        onRSSIUpdate(dbusPath, variant);
                         break;
                     case "TxPower":
                         // TxPower
-                        notifyListeners(new TXPowerEvent(dbusPath, (Short) variant.getValue()));
+                        onTXPowerUpdate(dbusPath, variant);
                         break;
                     case "Value":
                         // Characteristc value updated
-                        notifyListeners(new CharacteristicUpdateEvent(dbusPath, (byte[]) variant.getValue()));
+                        onValueUpdate(dbusPath, variant);
                         break;
                     case "Connected":
-                        notifyListeners(new ConnectedEvent(dbusPath, (boolean) variant.getValue()));
+                        onConnectedUpdate(dbusPath, variant);
                         break;
                     case "Name":
-                        notifyListeners(new NameEvent(dbusPath, (String) variant.getValue()));
+                        onNameUpdate(dbusPath, variant);
                         break;
                     case "Alias":
                         // TODO
                         break;
                     case "ManufacturerData":
-                        notifyListeners(new ManufacturerDataEvent(dbusPath, getManufacturerData(variant)));
+                        onManufacturerDataUpdate(dbusPath, variant);
                         break;
                     case "Powered":
-                        notifyListeners(new AdapterPoweredChangedEvent(dbusPath, (boolean) variant.getValue()));
+                        onPoweredUpdate(dbusPath, variant);
                         break;
                     case "Discovering":
-                        notifyListeners(new AdapterDiscoveringChangedEvent(dbusPath, (boolean) variant.getValue()));
+                        onDiscoveringUpdate(dbusPath, variant);
                         break;
                     case "ServicesResolved":
-                        notifyListeners(new ServicesResolvedEvent(dbusPath, (boolean) variant.getValue()));
+                        onServicesResolved(dbusPath, variant);
                         break;
                 }
             });
@@ -129,14 +132,81 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
         });
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<Short, byte[]> getManufacturerData(Variant<?> v) {
-        Map<Short, byte[]> eventData = new HashMap<>();
-        DBusMap<UInt16, Variant<?>> dbm = (DBusMap<UInt16, Variant<?>>) v.getValue();
-        for (Map.Entry<UInt16, Variant<?>> entry : dbm.entrySet()) {
-            byte[] bytes = (byte[]) entry.getValue().getValue();
-            eventData.put(entry.getKey().shortValue(), bytes);
+    private void onDiscoveringUpdate(String dbusPath, Variant<?> variant) {
+        Object discovered = variant.getValue();
+        if (discovered instanceof Boolean) {
+            notifyListeners(new AdapterDiscoveringChangedEvent(dbusPath, (boolean) discovered));
         }
-        return eventData;
+    }
+
+    private void onPoweredUpdate(String dbusPath, Variant<?> variant) {
+        Object powered = variant.getValue();
+        if (powered instanceof Boolean) {
+            notifyListeners(new AdapterPoweredChangedEvent(dbusPath, (boolean) powered));
+        }
+    }
+
+    private void onServicesResolved(String dbusPath, Variant<?> variant) {
+        Object resolved = variant.getValue();
+        if (resolved instanceof Boolean) {
+            notifyListeners(new ServicesResolvedEvent(dbusPath, (boolean) resolved));
+        }
+    }
+
+    private void onNameUpdate(String dbusPath, Variant<?> variant) {
+        Object name = variant.getValue();
+        if (name instanceof String) {
+            notifyListeners(new NameEvent(dbusPath, (String) name));
+        }
+    }
+
+    private void onTXPowerUpdate(String dbusPath, Variant<?> variant) {
+        Object txPower = variant.getValue();
+        if (txPower instanceof Short) {
+            notifyListeners(new TXPowerEvent(dbusPath, (short) txPower));
+        }
+    }
+
+    private void onConnectedUpdate(String dbusPath, Variant<?> variant) {
+        Object connected = variant.getValue();
+        if (connected instanceof Boolean) {
+            notifyListeners(new ConnectedEvent(dbusPath, (boolean) connected));
+        }
+    }
+
+    private void onManufacturerDataUpdate(String dbusPath, Variant<?> variant) {
+        Map<Short, byte[]> eventData = new HashMap<>();
+
+        Object map = variant.getValue();
+        if (map instanceof DBusMap) {
+            DBusMap<?, ?> dbm = (DBusMap<?, ?>) map;
+            for (Map.Entry<?, ?> entry : dbm.entrySet()) {
+                Object key = entry.getKey();
+                Object value = entry.getValue();
+                if (key instanceof UInt16 && value instanceof Variant<?>) {
+                    value = ((Variant<?>) value).getValue();
+                    if (value instanceof byte[]) {
+                        eventData.put(((UInt16) key).shortValue(), ((byte[]) value));
+                    }
+                }
+            }
+        }
+        if (!eventData.isEmpty()) {
+            notifyListeners(new ManufacturerDataEvent(dbusPath, eventData));
+        }
+    }
+
+    private void onValueUpdate(String dbusPath, Variant<?> variant) {
+        Object value = variant.getValue();
+        if (value instanceof byte[]) {
+            notifyListeners(new CharacteristicUpdateEvent(dbusPath, (byte[]) value));
+        }
+    }
+
+    private void onRSSIUpdate(String dbusPath, Variant<?> variant) {
+        Object rssi = variant.getValue();
+        if (rssi instanceof Short) {
+            notifyListeners(new RssiEvent(dbusPath, (short) rssi));
+        }
     }
 }
