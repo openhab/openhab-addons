@@ -90,38 +90,38 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
                 if (key == null || variant == null) {
                     return;
                 }
-                switch (key) {
-                    case "RSSI":
+                switch (key.toLowerCase()) {
+                    case "rssi":
                         // Signal Update
                         onRSSIUpdate(dbusPath, variant);
                         break;
-                    case "TxPower":
+                    case "txpower":
                         // TxPower
                         onTXPowerUpdate(dbusPath, variant);
                         break;
-                    case "Value":
+                    case "value":
                         // Characteristc value updated
                         onValueUpdate(dbusPath, variant);
                         break;
-                    case "Connected":
+                    case "connected":
                         onConnectedUpdate(dbusPath, variant);
                         break;
-                    case "Name":
+                    case "name":
                         onNameUpdate(dbusPath, variant);
                         break;
-                    case "Alias":
+                    case "alias":
                         // TODO
                         break;
-                    case "ManufacturerData":
+                    case "manufacturerdata":
                         onManufacturerDataUpdate(dbusPath, variant);
                         break;
-                    case "Powered":
+                    case "powered":
                         onPoweredUpdate(dbusPath, variant);
                         break;
-                    case "Discovering":
+                    case "discovering":
                         onDiscoveringUpdate(dbusPath, variant);
                         break;
-                    case "ServicesResolved":
+                    case "servicesresolved":
                         onServicesResolved(dbusPath, variant);
                         break;
                 }

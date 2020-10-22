@@ -14,16 +14,15 @@ package org.openhab.binding.bluetooth.bluez.internal;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.freedesktop.dbus.exceptions.DBusException;
-import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.common.ThreadPoolManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -50,9 +49,10 @@ public class DeviceManagerFactory {
     private final Logger logger = LoggerFactory.getLogger(DeviceManagerFactory.class);
     private final BlueZPropertiesChangedHandler changeHandler = new BlueZPropertiesChangedHandler();
 
-    private @Nullable ScheduledExecutorService scheduler;
-    private @Nullable DeviceManager deviceManager;
-    private @Nullable CompletableFuture<DeviceManagerWrapper> deviceManagerFuture;
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
+
+    private @Nullable CompletableFuture<DeviceManager> deviceManagerFuture;
+    private @Nullable CompletableFuture<DeviceManagerWrapper> deviceManagerWrapperFuture;
 
     public BlueZPropertiesChangedHandler getPropertiesChangedHandler() {
         return changeHandler;
@@ -60,7 +60,7 @@ public class DeviceManagerFactory {
 
     public @Nullable DeviceManagerWrapper getDeviceManager() {
         // we can cheat the null checker with casting here
-        var future = (CompletableFuture<@Nullable DeviceManagerWrapper>) this.deviceManagerFuture;
+        var future = (CompletableFuture<@Nullable DeviceManagerWrapper>) deviceManagerWrapperFuture;
         if (future != null) {
             return future.getNow(null);
         }
@@ -70,15 +70,8 @@ public class DeviceManagerFactory {
     @Activate
     public void initialize() {
         logger.debug("initializing DeviceManagerFactory");
-        ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(1,
-                new NamedThreadFactory("bluetooth.bluez-init", true));
 
-        scheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
-        scheduler.setRemoveOnCancelPolicy(true);
-
-        this.scheduler = scheduler;
-
-        this.deviceManagerFuture = callAsync(() -> {
+        var stage1 = deviceManagerFuture = callAsync(() -> {
             try {
                 // if this is the first call to the library, this call
                 // should throw an exception (that we are catching)
@@ -88,87 +81,105 @@ public class DeviceManagerFactory {
                 // Exception caused by first call to the library
                 return DeviceManager.createInstance(false);
             }
-        }, scheduler)//
-                .thenApply(devManager -> {
-                    this.deviceManager = devManager;
-                    return devManager;
-                }).thenCompose(devManager -> registerPropertyHandler(devManager, scheduler))//
-                .thenApply(DeviceManagerWrapper::new)//
-                .whenComplete((devManager, th) -> {
-                    if (th != null) {
-                        logger.warn("Failed to initialize DeviceManager: {}", th.getMessage());
+        }, scheduler);
+
+        stage1.thenCompose(devManager -> {
+            // lambdas can't modify outside variables due to scoping, so instead we use an AtomicInteger.
+            AtomicInteger tryCount = new AtomicInteger();
+            // We need to set deviceManagerWrapperFuture here since we want to be able to cancel the underlying
+            // AsyncCompletableFuture instance
+            return deviceManagerWrapperFuture = callAsync(() -> {
+                int count = tryCount.incrementAndGet();
+                try {
+                    logger.debug("Registering property handler attempt: {}", count);
+                    devManager.registerPropertyHandler(changeHandler);
+                    logger.debug("Successfully registered property handler");
+                    return new DeviceManagerWrapper(devManager);
+                } catch (DBusException e) {
+                    if (count < 3) {
+                        throw new RetryException(5, TimeUnit.SECONDS);
+                    } else {
+                        throw e;
                     }
-                });
+                }
+            }, scheduler);
+        }).whenComplete((devManagerWrapper, th) -> {
+            if (th != null) {
+                logger.warn("Failed to initialize DeviceManager: {}", th.getMessage());
+            }
+        });
     }
 
     @Deactivate
     public void dispose() {
-        DeviceManager manager = deviceManager;
-        if (manager != null) {
-            manager.closeConnection();
-        }
-        deviceManager = null;
-
-        ExecutorService executor = scheduler;
-        if (executor != null) {
-            executor.shutdownNow();
-        }
-    }
-
-    private CompletableFuture<DeviceManager> registerPropertyHandler(DeviceManager deviceManager,
-            ScheduledExecutorService scheduler) {
-
-        class RegisterHandlerTask implements Runnable {
-
-            private CompletableFuture<DeviceManager> future = new CompletableFuture<>();
-            private int retryCount = 0;
-
-            @Override
-            public void run() {
-                try {
-                    logger.debug("Registering property handler attempt: {}", retryCount + 1);
-                    deviceManager.registerPropertyHandler(changeHandler);
-                    future.complete(deviceManager);
-                    logger.debug("Successfully registered property handler");
-                } catch (DBusException e) {
-                    if (retryCount < 3) {
-                        retryCount++;
-                        scheduler.schedule(this, 5, TimeUnit.SECONDS);
-                    } else {
-                        future.completeExceptionally(e);
-                    }
-                }
+        var stage1 = deviceManagerFuture;
+        if (stage1 != null) {
+            if (!stage1.cancel(true)) {
+                // a failure to cancel means that the stage completed normally
+                stage1.thenAccept(DeviceManager::closeConnection);
             }
         }
-        RegisterHandlerTask task = new RegisterHandlerTask();
-        task.run();
-        return task.future;
+        deviceManagerFuture = null;
+
+        var stage2 = deviceManagerWrapperFuture;
+        if (stage2 != null) {
+            stage2.cancel(true);
+        }
+        deviceManagerWrapperFuture = null;
     }
 
-    private static <T> CompletableFuture<T> callAsync(Callable<T> callable, ExecutorService executor) {
-        return new AsyncCompletableFuture<>(callable, executor);
+    private static <T> CompletableFuture<T> callAsync(Callable<T> callable, ScheduledExecutorService scheduler) {
+        return new AsyncCompletableFuture<>(callable, scheduler);
     }
 
     // this is a utility class that allows use of Callable with CompletableFutures in a way such that the
     // async future is cancellable thru this CompletableFuture instance.
-    private static class AsyncCompletableFuture<T> extends CompletableFuture<T> {
+    private static class AsyncCompletableFuture<T> extends CompletableFuture<T> implements Runnable {
 
+        private final Callable<T> callable;
+        private final ScheduledExecutorService scheduler;
+        private final Object futureLock = new Object();
         private Future<?> future;
 
-        public AsyncCompletableFuture(Callable<T> callable, ExecutorService executor) {
-            future = executor.submit(() -> {
-                try {
-                    complete(callable.call());
-                } catch (Exception e) {
-                    completeExceptionally(e);
-                }
-            });
+        public AsyncCompletableFuture(Callable<T> callable, ScheduledExecutorService scheduler) {
+            this.callable = callable;
+            this.scheduler = scheduler;
+            future = scheduler.submit(this);
         }
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            future.cancel(mayInterruptIfRunning);
+            synchronized (futureLock) {
+                future.cancel(mayInterruptIfRunning);
+            }
             return super.cancel(mayInterruptIfRunning);
+        }
+
+        @Override
+        public void run() {
+            try {
+                complete(callable.call());
+            } catch (RetryException e) {
+                synchronized (futureLock) {
+                    if (!future.isCancelled()) {
+                        future = scheduler.schedule(this, e.delay, e.unit);
+                    }
+                }
+            } catch (Exception e) {
+                completeExceptionally(e);
+            }
+        }
+    }
+
+    // this is a special exception to indicate to a AsyncCompletableFuture that the task needs to be retryed.
+    private static class RetryException extends Exception {
+
+        private long delay;
+        private TimeUnit unit;
+
+        public RetryException(long delay, TimeUnit unit) {
+            this.delay = delay;
+            this.unit = unit;
         }
     }
 }
