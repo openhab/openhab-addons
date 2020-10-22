@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="serial"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<bridge-type id="serialBridge">
+		<label>Serial Bridge</label>
+		<description>Serial port which can send and receive data</description>
+
+		<channels>
+			<channel id="input" typeId="input-channel"/>
+			<channel id="data" typeId="system.rawbutton"/>
+		</channels>
+
+		<config-description>
+			<parameter name="serialPort" type="text">
+				<label>Serial Port</label>
+				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
+				<required>true</required>
+				<description>The serial port that the button is connected to</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="serialDevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serialBridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Serial Device</label>
+		<description>Sample thing for Serial Binding</description>
+
+		<channels>
+			<channel id="string" typeId="string"/>
+		</channels>
+
+		<config-description>
+			<parameter name="patternMatch" type="text">
+				<label>Patern Match</label>
+				<context>pattern-match</context>
+				<limitToOptions>false</limitToOptions>
+				<required>true</required>
+				<description>Pattern used to identify device from received data</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="input-channel">
+		<item-type>string</item-type>
+		<label>Serial Binding Channel</label>
+		<description>Sample channel for Serial Binding</description>
+	</channel-type>
+
+</thing:thing-descriptions>
