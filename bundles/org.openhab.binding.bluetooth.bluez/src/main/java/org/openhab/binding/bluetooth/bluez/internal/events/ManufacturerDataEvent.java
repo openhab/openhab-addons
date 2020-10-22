@@ -27,11 +27,16 @@ public class ManufacturerDataEvent extends BlueZEvent {
     private Map<Short, byte[]> data;
 
     public ManufacturerDataEvent(String dbusPath, Map<Short, byte[]> data) {
-        super(dbusPath, EventType.MANUFACTURER_DATA);
+        super(dbusPath);
         this.data = data;
     }
 
     public Map<Short, byte[]> getData() {
         return data;
+    }
+
+    @Override
+    public void dispatch(BlueZEventListener listener) {
+        listener.onManufacturerDataUpdate(this);
     }
 }

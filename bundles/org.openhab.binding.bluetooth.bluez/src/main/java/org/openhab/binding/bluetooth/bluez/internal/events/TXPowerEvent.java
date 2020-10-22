@@ -25,11 +25,16 @@ public class TXPowerEvent extends BlueZEvent {
     private short txPower;
 
     public TXPowerEvent(String dbusPath, short txpower) {
-        super(dbusPath, EventType.TXPOWER);
+        super(dbusPath);
         this.txPower = txpower;
     }
 
     public short getTxPower() {
         return this.txPower;
+    }
+
+    @Override
+    public void dispatch(BlueZEventListener listener) {
+        listener.onTxPowerUpdate(this);
     }
 }

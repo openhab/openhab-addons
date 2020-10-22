@@ -307,52 +307,25 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public void onDBusBlueZEvent(BlueZEvent event) {
-        logger.debug("onDBusBlueZEvent(): {}", event);
-        if (!this.address.equals(event.getDevice())) {
-            return;
-        }
-
-        switch (event.getEventType()) {
-            case RSSI_UPDATE:
-                onRssiUpdate((RssiEvent) event);
-                break;
-            case TXPOWER:
-                onTxPowerUpdate((TXPowerEvent) event);
-                break;
-            case CHARACTERISTIC_NOTIFY:
-                onCharacteristicNotify((CharacteristicUpdateEvent) event);
-                break;
-            case MANUFACTURER_DATA:
-                onManufacturerDataUpdate((ManufacturerDataEvent) event);
-                break;
-            case CONNECTED:
-                onConnectedStatusUpdate((ConnectedEvent) event);
-                break;
-            case NAME:
-                onNameUpdate((NameEvent) event);
-                break;
-            case SERVICES_RESOLVED:
-                onServicesResolved((ServicesResolvedEvent) event);
-                break;
-            default:
-                logger.debug("Unsupported event: {}", event.getEventType());
-                break;
-        }
+        logger.debug("Unsupported event: {}", event);
     }
 
-    private void onServicesResolved(ServicesResolvedEvent event) {
+    @Override
+    public void onServicesResolved(ServicesResolvedEvent event) {
         if (event.isResolved()) {
             notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
         }
     }
 
-    private void onNameUpdate(NameEvent event) {
+    @Override
+    public void onNameUpdate(NameEvent event) {
         BluetoothScanNotification notification = new BluetoothScanNotification();
         notification.setDeviceName(event.getName());
         notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
     }
 
-    private void onManufacturerDataUpdate(ManufacturerDataEvent event) {
+    @Override
+    public void onManufacturerDataUpdate(ManufacturerDataEvent event) {
         for (Map.Entry<Short, byte[]> entry : event.getData().entrySet()) {
             BluetoothScanNotification notification = new BluetoothScanNotification();
             byte[] data = new byte[entry.getValue().length + 2];
@@ -370,11 +343,13 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         }
     }
 
-    private void onTxPowerUpdate(TXPowerEvent event) {
+    @Override
+    public void onTxPowerUpdate(TXPowerEvent event) {
         this.txPower = (int) event.getTxPower();
     }
 
-    private void onCharacteristicNotify(CharacteristicUpdateEvent event) {
+    @Override
+    public void onCharacteristicNotify(CharacteristicUpdateEvent event) {
         // Here it is a bit special - as the event is linked to the DBUS path, not characteristic UUID.
         // So we need to find the characteristic by its DBUS path.
         BluetoothGattCharacteristic characteristic = getDBusBlueZCharacteristicByDBusPath(event.getDbusPath());
@@ -390,7 +365,8 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         }
     }
 
-    private void onRssiUpdate(RssiEvent event) {
+    @Override
+    public void onRssiUpdate(RssiEvent event) {
         int rssiTmp = event.getRssi();
         this.rssi = rssiTmp;
         BluetoothScanNotification notification = new BluetoothScanNotification();
@@ -398,7 +374,8 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
     }
 
-    private void onConnectedStatusUpdate(ConnectedEvent event) {
+    @Override
+    public void onConnectedStatusUpdate(ConnectedEvent event) {
         this.connectionState = event.isConnected() ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
         notifyListeners(BluetoothEventType.CONNECTION_STATE,
                 new BluetoothConnectionStatusNotification(connectionState));

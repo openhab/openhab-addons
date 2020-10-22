@@ -202,7 +202,6 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
 
     @Override
     public void onDBusBlueZEvent(BlueZEvent event) {
-
         BluetoothAdapter localAdapter = this.adapter;
         String adapterName = event.getAdapterName();
         if (adapterName == null || localAdapter == null) {
@@ -221,24 +220,17 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         if (address != null) {
             // this event is for a device, so see if we contain that particular device
             BlueZBluetoothDevice device = getDevice(address);
-            device.onDBusBlueZEvent(event);
-        } else {
-            switch (event.getEventType()) {
-                case ADAPTER_POWERED_CHANGED:
-                    onPoweredChange((AdapterPoweredChangedEvent) event);
-                    break;
-                case ADAPTER_DISCOVERING_CHANGED:
-                    onDiscoveringChanged((AdapterDiscoveringChangedEvent) event);
-                    break;
-                default:
-                    break;
-            }
+            event.dispatch(device);
         }
     }
 
-    private void onDiscoveringChanged(AdapterDiscoveringChangedEvent event) {
+    @Override
+    public void onDiscoveringChanged(AdapterDiscoveringChangedEvent event) {
+        // do nothing for now
     }
 
-    private void onPoweredChange(AdapterPoweredChangedEvent event) {
+    @Override
+    public void onPoweredChange(AdapterPoweredChangedEvent event) {
+        // do nothing for now
     }
 }

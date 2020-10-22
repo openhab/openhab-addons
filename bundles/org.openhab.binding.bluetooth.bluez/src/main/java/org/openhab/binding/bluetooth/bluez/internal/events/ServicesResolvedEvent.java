@@ -25,11 +25,16 @@ public class ServicesResolvedEvent extends BlueZEvent {
     private boolean resolved;
 
     public ServicesResolvedEvent(String dbusPath, boolean resolved) {
-        super(dbusPath, EventType.SERVICES_RESOLVED);
+        super(dbusPath);
         this.resolved = resolved;
     }
 
     public boolean isResolved() {
         return resolved;
+    }
+
+    @Override
+    public void dispatch(BlueZEventListener listener) {
+        listener.onServicesResolved(this);
     }
 }

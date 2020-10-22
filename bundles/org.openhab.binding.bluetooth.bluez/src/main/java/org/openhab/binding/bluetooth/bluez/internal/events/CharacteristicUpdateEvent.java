@@ -25,11 +25,16 @@ public class CharacteristicUpdateEvent extends BlueZEvent {
     private byte[] data;
 
     public CharacteristicUpdateEvent(String dbusPath, byte[] data) {
-        super(dbusPath, EventType.CHARACTERISTIC_NOTIFY);
+        super(dbusPath);
         this.data = data;
     }
 
     public byte[] getData() {
         return data;
+    }
+
+    @Override
+    public void dispatch(BlueZEventListener listener) {
+        listener.onCharacteristicNotify(this);
     }
 }

@@ -23,4 +23,40 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface BlueZEventListener {
 
     public void onDBusBlueZEvent(BlueZEvent event);
+
+    public default void onDiscoveringChanged(AdapterDiscoveringChangedEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
+    public default void onPoweredChange(AdapterPoweredChangedEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
+    public default void onRssiUpdate(RssiEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
+    public default void onTxPowerUpdate(TXPowerEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
+    public default void onCharacteristicNotify(CharacteristicUpdateEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
+    public default void onManufacturerDataUpdate(ManufacturerDataEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
+    public default void onConnectedStatusUpdate(ConnectedEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
+    public default void onNameUpdate(NameEvent event) {
+        onDBusBlueZEvent(event);
+    }
+
+    public default void onServicesResolved(ServicesResolvedEvent event) {
+        onDBusBlueZEvent(event);
+    }
 }

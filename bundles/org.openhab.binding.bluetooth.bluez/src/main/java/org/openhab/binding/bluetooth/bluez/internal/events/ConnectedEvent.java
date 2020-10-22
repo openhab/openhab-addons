@@ -25,11 +25,16 @@ public class ConnectedEvent extends BlueZEvent {
     private boolean connected;
 
     public ConnectedEvent(String dbusPath, boolean connected) {
-        super(dbusPath, EventType.CONNECTED);
+        super(dbusPath);
         this.connected = connected;
     }
 
     public boolean isConnected() {
         return connected;
+    }
+
+    @Override
+    public void dispatch(BlueZEventListener listener) {
+        listener.onConnectedStatusUpdate(this);
     }
 }

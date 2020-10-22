@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.freedesktop.dbus.DBusMap;
@@ -26,7 +25,6 @@ import org.freedesktop.dbus.handlers.AbstractPropertiesChangedHandler;
 import org.freedesktop.dbus.interfaces.Properties.PropertiesChanged;
 import org.freedesktop.dbus.types.UInt16;
 import org.freedesktop.dbus.types.Variant;
-import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.bluez.internal.events.AdapterDiscoveringChangedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.AdapterPoweredChangedEvent;
 import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEvent;
@@ -67,7 +65,7 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
 
     private void notifyListeners(BlueZEvent event) {
         for (BlueZEventListener listener : this.listeners) {
-            listener.onDBusBlueZEvent(event);
+            event.dispatch(listener);
         }
     }
 
@@ -86,129 +84,58 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
         // do this asynchronously so that we don't slow things down for the dbus event dispatcher
         scheduler.execute(() -> {
 
+            String dbusPath = properties.getPath();
             changedProperties.forEach((key, variant) -> {
                 switch (key) {
                     case "RSSI":
                         // Signal Update
-                        onRSSIUpdate(properties.getPath(), (@NonNull Short) variant.getValue());
+                        notifyListeners(new RssiEvent(dbusPath, (Short) variant.getValue()));
                         break;
                     case "TxPower":
                         // TxPower
-                        onTXPowerUpdate(properties.getPath(), (@NonNull Short) variant.getValue());
+                        notifyListeners(new TXPowerEvent(dbusPath, (Short) variant.getValue()));
                         break;
                     case "Value":
                         // Characteristc value updated
-                        onValueUpdate(properties.getPath(), (byte @NonNull []) variant.getValue());
+                        notifyListeners(new CharacteristicUpdateEvent(dbusPath, (byte[]) variant.getValue()));
                         break;
                     case "Connected":
-                        onConnectedUpdate(properties.getPath(), ((@NonNull Boolean) variant.getValue()).booleanValue());
+                        notifyListeners(new ConnectedEvent(dbusPath, (boolean) variant.getValue()));
                         break;
                     case "Name":
-                        onNameUpdate(properties.getPath(), (@NonNull String) variant.getValue());
+                        notifyListeners(new NameEvent(dbusPath, (String) variant.getValue()));
                         break;
                     case "Alias":
                         // TODO
                         break;
                     case "ManufacturerData":
-                        onManufacturerDataUpdate(properties.getPath(), variant);
+                        notifyListeners(new ManufacturerDataEvent(dbusPath, getManufacturerData(variant)));
                         break;
                     case "Powered":
-                        onPoweredUpdate(properties.getPath(), ((@NonNull Boolean) variant.getValue()).booleanValue());
+                        notifyListeners(new AdapterPoweredChangedEvent(dbusPath, (boolean) variant.getValue()));
                         break;
                     case "Discovering":
-                        onDiscoveringUpdate(properties.getPath(),
-                                ((@NonNull Boolean) variant.getValue()).booleanValue());
+                        notifyListeners(new AdapterDiscoveringChangedEvent(dbusPath, (boolean) variant.getValue()));
                         break;
                     case "ServicesResolved":
-                        onServicesResolved(properties.getPath(),
-                                ((@NonNull Boolean) variant.getValue()).booleanValue());
+                        notifyListeners(new ServicesResolvedEvent(dbusPath, (boolean) variant.getValue()));
                         break;
                 }
             });
 
-            logger.debug("PropertiesPath: {}", properties.getPath());
-            logger.debug("PropertiesChanged: {}", properties.getPropertiesChanged());
+            logger.debug("PropertiesPath: {}", dbusPath);
+            logger.debug("PropertiesChanged: {}", changedProperties);
         });
     }
 
-    private void onDiscoveringUpdate(String dbusPath, boolean discovering) {
-        AdapterDiscoveringChangedEvent event = new AdapterDiscoveringChangedEvent(dbusPath, discovering);
-        String adapter = event.getAdapterName();
-        if (adapter != null) {
-            notifyListeners(event);
-        }
-    }
-
-    private void onPoweredUpdate(String dbusPath, boolean powered) {
-        AdapterPoweredChangedEvent event = new AdapterPoweredChangedEvent(dbusPath, powered);
-        String adapter = event.getAdapterName();
-        if (adapter != null) {
-            notifyListeners(event);
-        }
-    }
-
-    private void onServicesResolved(String dbusPath, boolean resolved) {
-        ServicesResolvedEvent event = new ServicesResolvedEvent(dbusPath, resolved);
-        BluetoothAddress addr = event.getDevice();
-        if (addr != null) {
-            notifyListeners(event);
-        }
-    }
-
-    private void onNameUpdate(String dbusPath, String value) {
-        NameEvent event = new NameEvent(dbusPath, value);
-        BluetoothAddress addr = event.getDevice();
-        if (addr != null) {
-            notifyListeners(event);
-        }
-    }
-
-    private void onTXPowerUpdate(String dbusPath, Short txPower) {
-        TXPowerEvent event = new TXPowerEvent(dbusPath, txPower);
-        BluetoothAddress addr = event.getDevice();
-        if (addr != null) {
-            notifyListeners(event);
-        }
-    }
-
-    private void onConnectedUpdate(String dbusPath, boolean connected) {
-        ConnectedEvent event = new ConnectedEvent(dbusPath, connected);
-        BluetoothAddress addr = event.getDevice();
-        if (addr != null) {
-            notifyListeners(event);
-        }
-    }
-
     @SuppressWarnings("unchecked")
-    private void onManufacturerDataUpdate(String dbusPath, Variant<?> v) {
+    private Map<Short, byte[]> getManufacturerData(Variant<?> v) {
         Map<Short, byte[]> eventData = new HashMap<>();
-
-        DBusMap<UInt16, Variant<?>> dbm = (@NonNull DBusMap<UInt16, Variant<?>>) v.getValue();
-
+        DBusMap<UInt16, Variant<?>> dbm = (DBusMap<UInt16, Variant<?>>) v.getValue();
         for (Map.Entry<UInt16, Variant<?>> entry : dbm.entrySet()) {
-            byte @NonNull [] bytes = (byte @NonNull []) entry.getValue().getValue();
+            byte[] bytes = (byte[]) entry.getValue().getValue();
             eventData.put(entry.getKey().shortValue(), bytes);
         }
-        ManufacturerDataEvent event = new ManufacturerDataEvent(dbusPath, eventData);
-        BluetoothAddress addr = event.getDevice();
-        if (addr != null) {
-            notifyListeners(event);
-        }
-    }
-
-    private void onValueUpdate(String dbusPath, byte[] value) {
-        CharacteristicUpdateEvent event = new CharacteristicUpdateEvent(dbusPath, value);
-        BluetoothAddress addr = event.getDevice();
-        if (addr != null) {
-            notifyListeners(event);
-        }
-    }
-
-    private void onRSSIUpdate(String dbusPath, Short rssi) {
-        RssiEvent event = new RssiEvent(dbusPath, rssi);
-        BluetoothAddress addr = event.getDevice();
-        if (addr != null) {
-            notifyListeners(event);
-        }
+        return eventData;
     }
 }

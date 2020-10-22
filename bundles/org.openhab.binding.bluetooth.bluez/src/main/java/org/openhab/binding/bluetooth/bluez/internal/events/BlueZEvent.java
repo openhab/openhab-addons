@@ -24,29 +24,15 @@ import org.openhab.binding.bluetooth.BluetoothAddress;
  *
  */
 @NonNullByDefault
-public class BlueZEvent {
-
-    public enum EventType {
-        RSSI_UPDATE,
-        CHARACTERISTIC_NOTIFY,
-        MANUFACTURER_DATA,
-        CONNECTED,
-        TXPOWER,
-        NAME,
-        SERVICES_RESOLVED,
-        ADAPTER_POWERED_CHANGED,
-        ADAPTER_DISCOVERING_CHANGED
-    }
+public abstract class BlueZEvent {
 
     private String dbusPath;
-    private EventType eventType;
 
     private @Nullable BluetoothAddress device;
     private @Nullable String adapterName;
 
-    public BlueZEvent(String dbusPath, EventType eventType) {
+    public BlueZEvent(String dbusPath) {
         this.dbusPath = dbusPath;
-        this.eventType = eventType;
 
         // the rest of the code should be equivalent to parsing with the following regex:
         // "/org/bluez/(?<adapterName>[^/]+)(/dev_(?<deviceMac>[^/]+).*)?"
@@ -81,10 +67,6 @@ public class BlueZEvent {
         return dbusPath;
     }
 
-    public EventType getEventType() {
-        return eventType;
-    }
-
     public @Nullable BluetoothAddress getDevice() {
         return device;
     }
@@ -93,8 +75,10 @@ public class BlueZEvent {
         return adapterName;
     }
 
+    public abstract void dispatch(BlueZEventListener listener);
+
     @Override
     public String toString() {
-        return "EventType: " + eventType + ", Device: " + device;
+        return getClass().getSimpleName() + ": " + dbusPath;
     }
 }

@@ -25,11 +25,16 @@ public class RssiEvent extends BlueZEvent {
     private short rssi;
 
     public RssiEvent(String dbusPath, short rssi) {
-        super(dbusPath, EventType.RSSI_UPDATE);
+        super(dbusPath);
         this.rssi = rssi;
     }
 
     public short getRssi() {
         return rssi;
+    }
+
+    @Override
+    public void dispatch(BlueZEventListener listener) {
+        listener.onRssiUpdate(this);
     }
 }

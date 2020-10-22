@@ -25,11 +25,16 @@ public class NameEvent extends BlueZEvent {
     private String name;
 
     public NameEvent(String dbusPath, String name) {
-        super(dbusPath, EventType.NAME);
+        super(dbusPath);
         this.name = name;
     }
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void dispatch(BlueZEventListener listener) {
+        listener.onNameUpdate(this);
     }
 }
