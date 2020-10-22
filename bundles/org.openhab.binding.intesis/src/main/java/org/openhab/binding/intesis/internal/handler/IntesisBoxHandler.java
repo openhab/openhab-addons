@@ -100,17 +100,12 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress, config.port);
                 intesisBoxSocketApi.addIntesisBoxChangeListener(this);
                 try {
-                    if (intesisBoxSocketApi != null) {
-                        intesisBoxSocketApi.openConnection();
-                    }
-                    if (intesisBoxSocketApi != null) {
-                        intesisBoxSocketApi.sendId();
-                    }
-                    if (intesisBoxSocketApi != null) {
-                        intesisBoxSocketApi.sendLimitsQuery();
-                    }
-                    if (intesisBoxSocketApi != null) {
-                        intesisBoxSocketApi.sendAlive();
+                    IntesisBoxSocketApi intesisLocalApi = intesisBoxSocketApi;
+                    if (intesisLocalApi != null) {
+                        intesisLocalApi.openConnection();
+                        intesisLocalApi.sendId();
+                        intesisLocalApi.sendLimitsQuery();
+                        intesisLocalApi.sendAlive();
                     }
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -279,7 +274,6 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
         }
     }
 
-    @SuppressWarnings("null")
     private void handleMessage(String data) {
         logger.debug("handleMessage(): Message received - {}", data);
         if (data.equals("ACK") || data.equals("")) {
@@ -290,7 +284,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
             return;
         }
         IntesisBoxMessage message = IntesisBoxMessage.parse(data);
-        if (message.getCommand() != null) {
+        if (message != null) {
             switch (message.getCommand()) {
                 case LIMITS:
                     logger.debug("handleMessage(): Limits received - {}", data);

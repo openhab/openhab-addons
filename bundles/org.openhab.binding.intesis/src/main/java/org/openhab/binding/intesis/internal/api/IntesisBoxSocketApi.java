@@ -89,17 +89,21 @@ public class IntesisBoxSocketApi {
 
     public void closeConnection() {
         try {
-            if (tcpSocket != null) {
-                tcpSocket.close();
-                tcpSocket = null;
+            IntesisSocket localSocket = tcpSocket;
+            OutputStreamWriter localOutput = tcpOutput;
+            BufferedReader localInput = tcpInput;
+
+            if (localSocket != null) {
+                localSocket.close();
+                localSocket = null;
             }
-            if (tcpInput != null) {
-                tcpInput.close();
-                tcpInput = null;
+            if (localInput != null) {
+                localInput.close();
+                localInput = null;
             }
-            if (tcpOutput != null) {
-                tcpOutput.close();
-                tcpOutput = null;
+            if (localOutput != null) {
+                localOutput.close();
+                localOutput = null;
             }
             setConnected(false);
         } catch (IOException ioException) {
@@ -132,13 +136,13 @@ public class IntesisBoxSocketApi {
     private void write(String data) {
         IntesisBoxChangeListener listener = this.changeListener;
         try {
-            if (tcpOutput != null) {
-                tcpOutput.write(data);
-            }
-            if (tcpOutput != null) {
+            OutputStreamWriter localOutput = tcpOutput;
+
+            if (localOutput != null) {
+                localOutput.write(data);
+                localOutput.flush();
             }
         } catch (IOException ioException) {
-            logger.debug("write(): {}", ioException.getMessage());
             setConnected(false);
             if (listener != null) {
                 listener.connectionStatusChanged(ThingStatus.OFFLINE, ioException.getMessage());
@@ -149,12 +153,11 @@ public class IntesisBoxSocketApi {
     public String read() {
         String message = "";
         try {
-            if (tcpInput != null) {
-                message = tcpInput.readLine();
-                logger.debug("read(): Message Received: {}", message);
+            BufferedReader localInput = tcpInput;
+            if (localInput != null) {
+                message = localInput.readLine();
             }
         } catch (IOException ioException) {
-            logger.debug("read(): IO Exception: {}", ioException.getMessage());
             setConnected(false);
         }
         return message;
