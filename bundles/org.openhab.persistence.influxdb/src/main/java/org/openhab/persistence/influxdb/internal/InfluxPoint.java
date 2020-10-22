@@ -88,4 +88,10 @@ public class InfluxPoint {
             return new InfluxPoint(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "InfluxPoint{" + "measurementName='" + measurementName + '\'' + ", time=" + time + ", value=" + value
+                + ", tags=" + tags + '}';
+    }
 }
