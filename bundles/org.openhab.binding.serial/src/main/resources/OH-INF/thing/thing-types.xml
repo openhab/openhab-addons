@@ -34,7 +34,7 @@
 		<description>Sample thing for Serial Binding</description>
 
 		<channels>
-			<channel id="string" typeId="string"/>
+			<channel id="test" typeId="string-channel"/>
 		</channels>
 
 		<config-description>
@@ -50,9 +50,14 @@
 
 	<!-- Sample Channel Type -->
 	<channel-type id="input-channel">
-		<item-type>string</item-type>
+		<item-type>String</item-type>
 		<label>Serial Binding Channel</label>
 		<description>Sample channel for Serial Binding</description>
 	</channel-type>
 
+	<channel-type id="string-channel">
+		<item-type>String</item-type>
+		<label>String Data</label>
+		<description>Device data as a string</description>
+	</channel-type>
 </thing:thing-descriptions>

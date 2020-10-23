@@ -82,6 +82,9 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
          * // "Could not control device at IP address x.x.x.x");
          * }
          */
+
+        // sudo socat PTY,raw,echo=0,link=/dev/ttyUSB01,user=openhab,group=openhab,mode=777
+        // PTY,raw,echo=0,link=/dev/ttyS11
     }
 
     @Override
@@ -184,6 +187,8 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                         }
                         // TODO do I need an event
                         triggerChannel(SerialBindingConstants.TRIGGER_CHANNEL);
+
+                        getThing().getThings().forEach(t -> ((SerialDeviceHandler) t.getHandler()).handleData(data));
                     }
                 } catch (IOException e) {
                     logger.debug("Error reading from serial port: {}", e.getMessage(), e);

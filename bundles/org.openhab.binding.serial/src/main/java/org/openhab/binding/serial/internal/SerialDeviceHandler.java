@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.serial.internal;
 
-import static org.openhab.binding.serial.internal.SerialBindingConstants.*;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SerialDeviceHandler} is responsible for handling commands, which are
@@ -33,9 +37,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SerialDeviceHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SerialDeviceHandler.class);
-
     private @Nullable SerialDeviceConfiguration config;
+
+    private @Nullable Pattern devicePattern;
 
     public SerialDeviceHandler(Thing thing) {
         super(thing);
@@ -43,59 +47,55 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        /*
-         * if (CHANNEL_1.equals(channelUID.getId())) {
-         * if (command instanceof RefreshType) {
-         * // TODO: handle data refresh
-         * }
-         * 
-         * // TODO: handle command
-         * 
-         * // Note: if communication with thing fails for some reason,
-         * // indicate that by setting the status with detail information:
-         * // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-         * // "Could not control device at IP address x.x.x.x");
-         * }
-         */
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(SerialDeviceConfiguration.class);
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
+        try {
+            devicePattern = Pattern.compile(config.patternMatch);
+        } catch (PatternSyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Invalid device pattern" + e.getMessage());
+            return;
+        }
 
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
+        bridgeStatusChanged(getBridgeStatus());
+    }
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
+    public void handleData(String data) {
+        if (devicePattern.matcher(StringUtils.chomp(data)).matches()) {
+            if (isLinked(SerialBindingConstants.STRING_CHANNEL)) {
+                updateState(SerialBindingConstants.STRING_CHANNEL, new StringType(StringUtils.chomp(data)));
             }
-        });
+        }
+    }
 
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
+            return;
+        }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && getThing().getStatus() == ThingStatus.UNKNOWN) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            return;
+        }
+
+        super.bridgeStatusChanged(bridgeStatusInfo);
+    }
+
+    /**
+     * Return the bridge status.
+     */
+    public ThingStatusInfo getBridgeStatus() {
+        Bridge b = getBridge();
+        if (b != null) {
+            return b.getStatusInfo();
+        } else {
+            return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
+        }
     }
 }
