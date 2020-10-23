@@ -283,7 +283,7 @@ The binding provides the following properties:
 
 ```
 Bridge modbus:tcp:modbus-gateway "Modbus TCP/IP Gateway" [ host="192.168.47.11", port=502, id=180, enableDiscovery=true ] {
-    Thing helios-ventilation-easycontrols kwl "KWL"
+    Thing helios-easycontrols kwl "KWL"
 }
 ```
 
@@ -291,38 +291,50 @@ Bridge modbus:tcp:modbus-gateway "Modbus TCP/IP Gateway" [ host="192.168.47.11",
 
 ```
 // Manual operation
-Number KWL_Manual                        "Manual operation"                          <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#operatingMode"}
-Number KWL_Stage                         "KWL fan stage"                             <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#fanStage"}
-Number:Dimensionless KWL_Stage_Percent   "KWL fan stage [%d %unit%]"                 <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#percentageFanStage"}
+Number KWL_Manual                        "Manual operation"                          <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#operatingMode"}
+Number KWL_Stage                         "KWL fan stage"                             <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#fanStage"}
+Number:Dimensionless KWL_Stage_Percent   "KWL fan stage [%d %unit%]"                 <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#percentageFanStage"}
 
 // Party mode
-Switch KWL_Party_Mode                    "Party mode"                                <parents>     (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeStatus"}
-Number KWL_Party_Mode_Duration           "Party mode duration"                       <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeDuration"}
-Number KWL_Party_Mode_Stage              "Party mode fan stage"                      <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeFanStage"}
+Switch KWL_Party_Mode                    "Party mode"                                <parents>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeStatus"}
+Number KWL_Party_Mode_Duration           "Party mode duration"                       <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeDuration"}
+Number KWL_Party_Mode_Stage              "Party mode fan stage"                      <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeFanStage"}
 Number KWL_Party_Mode_Remaining          "Party mode remaining time [%d min]"        <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeRemainingTime"}
 
 // Standby mode
-Switch KWL_Standby_Mode                  "Standby mode"                              <fan_off>     (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#standbyModeStatus"}
-Number KWL_Standby_Mode_Duration         "Standby mode duration"                     <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#standbyModeDuration"}
-Number KWL_Standby_Mode_Stage            "Standby mode fan stage"                    <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#standbyModeFanStage"}
-Number KWL_Standby_Mode_Remaining        "Standby mode remaining time [%d min]"      <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#standbyModeRemainingTime"}
+Switch KWL_Standby_Mode                  "Standby mode"                              <fan_off>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeStatus"}
+Number KWL_Standby_Mode_Duration         "Standby mode duration"                     <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeDuration"}
+Number KWL_Standby_Mode_Stage            "Standby mode fan stage"                    <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeFanStage"}
+Number KWL_Standby_Mode_Remaining        "Standby mode remaining time [%d min]"      <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeRemainingTime"}
 
 // Status infos
-Number:Temperature KWL_Temp_Outide_Air   "Temperature outside air [%.1f °C]"         <temperature> (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#temperatureOutsideAir"}
-Number:Temperature KWL_Temp_Supply_Air   "Temperature supply air [%.1f °C]"          <temperature> (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#temperatureSupplyAir"}
-Number:Temperature KWL_Temp_Outgoing_Air "Temperature outgoing air [%.1f °C]"        <temperature> (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#temperatureOutgoingAir"}
-Number:Temperature KWL_Temp_Extract_Air  "Temperature extract air [%.1f °C]"         <temperature> (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#temperatureExtractAir"}
-Number KWL_Supply_Air_RPM                "RPM supply air [%d]"                       <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#supplyAirRpm"}
-Number KWL_Extract_Air_RPM               "RPM extract air [%d]"                      <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#extractAirRpm"}
-Number KWL_Filter_Change                 "Filter change [MAP(helios_yes_no.map):%s]" <none>        (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:unitConfig#filterChange"}
-Number KWL_Filter_Change_Remaining       "Filter change [%d %unit%]"                    <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
+Number:Temperature KWL_Temp_Outide_Air   "Temperature outside air [%.1f °C]"         <temperature> (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureOutsideAir"}
+Number:Temperature KWL_Temp_Supply_Air   "Temperature supply air [%.1f °C]"          <temperature> (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureSupplyAir"}
+Number:Temperature KWL_Temp_Outgoing_Air "Temperature outgoing air [%.1f °C]"        <temperature> (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureOutgoingAir"}
+Number:Temperature KWL_Temp_Extract_Air  "Temperature extract air [%.1f °C]"         <temperature> (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureExtractAir"}
+Number KWL_Supply_Air_RPM                "RPM supply air [%d]"                       <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#supplyAirRpm"}
+Number KWL_Extract_Air_RPM               "RPM extract air [%d]"                      <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#extractAirRpm"}
+Number KWL_Filter_Change                 "Filter change [MAP(helios_yes_no.map):%s]" <none>        (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:unitConfig#filterChange"}
+Number KWL_Filter_Change_Remaining       "Filter change [%d %unit%]"                    <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
 
-Number KWL_Errors                        "Number errors [%d]"                        <error>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#noOfErrors"}
-String KWL_Errors_String                 "Error messages [%s]"                       <error>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#errorsMsg"}
-Number KWL_Warnings                      "Number warnings [%d]"                      <warning>     (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#noOfWarnings"}
-String KWL_Warnings_String               "Warning messages [%s]"                     <warning>     (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#warningsMsg"}
-Number KWL_Infos                         "Number infos [%d]"                         <info>        (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#noOfInfos"}
-String KWL_Infos_String                  "Info messages [%s]"                        <info>        (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#infosMsg"}
+Number KWL_Errors                        "Number errors [%d]"                        <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfErrors"}
+String KWL_Errors_String                 "Error messages [%s]"                       <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#errorsMsg"}
+Number KWL_Warnings                      "Number warnings [%d]"                      <warning>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfWarnings"}
+String KWL_Warnings_String               "Warning messages [%s]"                     <warning>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#warningsMsg"}
+Number KWL_Infos                         "Number infos [%d]"                         <info>        (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfInfos"}
+String KWL_Infos_String                  "Info messages [%s]"                        <info>        (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#infosMsg"}
+```
+
+### Rule
+
+```
+rule "Rest filter change remaining time"
+    when
+        Item Rem_KWL_Filter received command OFF
+    then
+        val kwlActions = getActions("modbus.helioseasycontrols", "modbus:helios-easycontrols:modbus-gateway:kwl")
+        kwlActions.resetFilterChangeTimer()
+end
 ```
 
 ### Transformation
