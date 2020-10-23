@@ -31,8 +31,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link UnifiedRemoteHandler} is responsible for handling commands, which are
@@ -42,10 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class UnifiedRemoteHandler extends BaseThingHandler {
-
-    private Logger logger = LoggerFactory.getLogger(UnifiedRemoteHandler.class);
-
-    private @Nullable UnifiedRemoteConfiguration config;
 
     private @Nullable UnifiedRemoteConnection connection;
     private @Nullable ScheduledFuture<?> connectionCheckerSchedule;
@@ -62,29 +56,30 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
         if (!isLinked(channelId))
             return;
         String stringCommand = command.toFullString();
+        UnifiedRemoteConnection urConnection = connection;
         try {
-            if (connection != null) {
+            if (urConnection != null) {
                 ContentResponse response;
                 switch (channelId) {
                     case MOUSE_CHANNEL:
-                        response = connection.mouseMove(stringCommand);
+                        response = urConnection.mouseMove(stringCommand);
                         break;
                     case SEND_KEY_CHANNEL:
-                        response = connection.sendKey(stringCommand);
+                        response = urConnection.sendKey(stringCommand);
                         break;
                     default:
                         return;
                 }
                 if (isErrorResponse(response)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Session expired");
-                    connection.authenticate();
+                    urConnection.authenticate();
                     updateStatus(ThingStatus.ONLINE);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection not initialized");
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            if (e.getCause() instanceof ConnectException) {
+            if (e instanceof TimeoutException || e.getCause() instanceof ConnectException) {
                 // we assume thing is offline
                 updateStatus(ThingStatus.OFFLINE);
             } else {
@@ -102,25 +97,28 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
     }
 
     private UnifiedRemoteConnection getNewConnection() {
-        config = getConfigAs(UnifiedRemoteConfiguration.class);
-        return new UnifiedRemoteConnection(this.httpClient, config.host);
+        UnifiedRemoteConfiguration currentConfiguration = getConfigAs(UnifiedRemoteConfiguration.class);
+        return new UnifiedRemoteConnection(this.httpClient, currentConfiguration.host);
     }
 
     private void initConnectionChecker() {
         stopConnectionChecker();
         connectionCheckerSchedule = scheduler.scheduleWithFixedDelay(() -> {
             try {
+                UnifiedRemoteConnection urConnection = connection;
+                if (urConnection == null)
+                    return;
                 ThingStatus status = thing.getStatus();
                 if ((status == ThingStatus.OFFLINE || status == ThingStatus.UNKNOWN) && connection != null) {
-                    connection.authenticate();
+                    urConnection.authenticate();
                     updateStatus(ThingStatus.ONLINE);
                 } else if (status == ThingStatus.ONLINE) {
-                    if (isErrorResponse(connection.keepAlive())) {
+                    if (isErrorResponse(urConnection.keepAlive())) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Keep alive failed");
                     }
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                if (e.getCause() instanceof ConnectException) {
+                if (e instanceof TimeoutException || e.getCause() instanceof ConnectException) {
                     // we assume thing is offline
                     updateStatus(ThingStatus.OFFLINE);
                 } else {
@@ -132,10 +130,11 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
     }
 
     private void stopConnectionChecker() {
-        if (connectionCheckerSchedule != null) {
-            connectionCheckerSchedule.cancel(true);
+        var schedule = connectionCheckerSchedule;
+        if (schedule != null) {
+            schedule.cancel(true);
+            connectionCheckerSchedule = null;
         }
-        connectionCheckerSchedule = null;
     }
 
     @Override

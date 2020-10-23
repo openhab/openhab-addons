@@ -97,15 +97,13 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
             int udpPort;
             String host;
             String macAddress;
-            String publicIp;
 
-            ServerInfo(String host, int tcpPort, int udpPort, String name, String macAddress, String publicIp) {
+            ServerInfo(String host, int tcpPort, int udpPort, String name, String macAddress) {
                 this.name = name;
                 this.tcpPort = tcpPort;
                 this.udpPort = udpPort;
                 this.host = host;
                 this.macAddress = macAddress;
-                this.publicIp = publicIp;
             }
         }
 
@@ -136,8 +134,7 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
             int tcpPort = Integer.parseInt(parts[1]);
             int udpPort = Integer.parseInt(parts[3]);
             String macAddress = parts[2];
-            String publicIp = parts[4];
-            return new ServerInfo(host, tcpPort, udpPort, name, macAddress, publicIp);
+            return new ServerInfo(host, tcpPort, udpPort, name, macAddress);
         }
 
         /**
