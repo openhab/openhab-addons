@@ -91,6 +91,7 @@ public enum MiIoDevices {
     MRBOND_AIRER_M1PRO("mrbond.airer.m1pro", "Mr Bond M1 Pro Smart Clothes Dryer", THING_TYPE_BASIC),
     MRBOND_AIRER_M1S("mrbond.airer.m1s", "Mr Bond M1 Smart Clothes Dryer", THING_TYPE_BASIC),
     MRBOND_AIRER_M1SUPER("mrbond.airer.m1super", "Mr Bond M1 Super Smart Clothes Dryer", THING_TYPE_BASIC),
+    PHILIPS_R1("philips.light.sread1", "Xiaomi Philips Eyecare Smart Lamp 2", THING_TYPE_BASIC),
     PHILIPS_SR1("philips.light.sread1", "Xiaomi Philips Eyecare Smart Lamp 2", THING_TYPE_BASIC),
     PHILIPS_SR2("philips.light.sread2", "Xiaomi Philips Eyecare Smart Lamp 2", THING_TYPE_BASIC),
     PHILIPS_C("philips.light.ceiling", "Xiaomi Philips LED Ceiling Lamp", THING_TYPE_BASIC),
