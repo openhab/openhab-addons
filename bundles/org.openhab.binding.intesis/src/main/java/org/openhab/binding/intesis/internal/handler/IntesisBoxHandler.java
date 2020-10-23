@@ -97,22 +97,22 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 addChannel(CHANNEL_TYPE_ERRORCODE, "String");
                 addChannel(CHANNEL_TYPE_ERRORSTATUS, "String");
 
-                intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress, config.port);
-                intesisBoxSocketApi.addIntesisBoxChangeListener(this);
+                IntesisBoxSocketApi intesisLocalApi = intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress,
+                        config.port);
+                intesisLocalApi.addIntesisBoxChangeListener(this);
                 try {
-                    IntesisBoxSocketApi intesisLocalApi = intesisBoxSocketApi;
-                    if (intesisLocalApi != null) {
-                        intesisLocalApi.openConnection();
-                        intesisLocalApi.sendId();
-                        intesisLocalApi.sendLimitsQuery();
-                        intesisLocalApi.sendAlive();
-                    }
+                    intesisLocalApi.openConnection();
+                    intesisLocalApi.sendId();
+                    intesisLocalApi.sendLimitsQuery();
+                    intesisLocalApi.sendAlive();
+
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    return;
                 }
-                pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 3, 45, TimeUnit.SECONDS);
                 updateStatus(ThingStatus.ONLINE);
             });
+            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 3, 45, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address specified)");
         }
@@ -130,6 +130,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
         }
         if (api != null) {
             api.closeConnection();
+            api.removeIntesisBoxChangeListener(this);
         }
         super.dispose();
     }

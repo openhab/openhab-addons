@@ -23,6 +23,7 @@ import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.intesis.internal.handler.IntesisBoxHandler;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,5 +200,11 @@ public class IntesisBoxSocketApi {
 
     public void setConnected(boolean connected) {
         this.connected = connected;
+    }
+
+    public void removeIntesisBoxChangeListener(IntesisBoxHandler intesisBoxHandler) {
+        if (this.changeListener != null) {
+            this.changeListener = null;
+        }
     }
 }
