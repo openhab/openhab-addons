@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ public class SEMPXmlTools {
         try {
             icBuilder = icFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            logger.error("{}", e);
+            logger.error("{}", e.toString());
             return null;
         }
         org.w3c.dom.Document doc = icBuilder.newDocument();
@@ -261,7 +261,7 @@ public class SEMPXmlTools {
         try {
             transformer = TransformerFactory.newInstance().newTransformer();
         } catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
-            logger.error("{}", e);
+            logger.error("{}", e.toString());
             return null;
         }
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -275,7 +275,7 @@ public class SEMPXmlTools {
         try {
             transformer.transform(source, new StreamResult(writer));
         } catch (TransformerException e) {
-            logger.error("{}", e);
+            logger.error("{}", e.toString());
             return null;
         }
         return writer.toString();
@@ -295,13 +295,13 @@ public class SEMPXmlTools {
         try {//
             icBuilder = icFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            logger.error("{}", e);
+            logger.error("{}", e.toString());
             return null;
         }
         try {
             doc = icBuilder.parse(xmlStream);
         } catch (SAXException | IOException e) {
-            logger.error("{}", e);
+            logger.error("{}", e.toString());
             return null;
         }
         XPathFactory factory = XPathFactory.newInstance();
@@ -309,7 +309,7 @@ public class SEMPXmlTools {
         try {
             value = (String) xpath.evaluate(xPath, doc, XPathConstants.STRING);
         } catch (XPathExpressionException e) {
-            logger.error("{}", e);
+            logger.error("{}", e.toString());
             return null;
         }
         return value;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,7 +65,6 @@ public class SEMPUpnpServer extends Thread {
         logger.debug("Starting send and receive executor");
         NotifyRunnable notifyRunnable = new NotifyRunnable();
         executor.scheduleWithFixedDelay(notifyRunnable, 15, SEMPConstants.SSDP_VALIDITY_PERIOD / 6, TimeUnit.SECONDS);
-
     }
 
     public void shutdown() {
@@ -296,7 +295,5 @@ public class SEMPUpnpServer extends Thread {
             logger.debug("NotifyRunnable");
             sendNotify(true);
         }
-
     }
-
 }
