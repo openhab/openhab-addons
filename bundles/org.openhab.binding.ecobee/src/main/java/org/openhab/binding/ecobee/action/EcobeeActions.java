@@ -341,9 +341,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("coolHoldTemp", coolHoldTemp);
         params.put("heatHoldTemp", heatHoldTemp);
-        params.put("holdType", HoldType.HOLD_HOURS);
-        params.put("holdHours", Integer.valueOf(holdHours.intValue()));
-        return setHold(params, null, null, null, null);
+        return setHold(params, HoldType.HOLD_HOURS.toString(), holdHours, null, null);
     }
 
     public static boolean setHold(@Nullable ThingActions actions, @Nullable QuantityType<Temperature> coolHoldTemp,
@@ -396,9 +394,7 @@ public class EcobeeActions implements ThingActions, IEcobeeActions {
         }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("holdClimateRef", holdClimateRef);
-        params.put("holdType", HoldType.HOLD_HOURS);
-        params.put("holdHours", Integer.valueOf(holdHours.intValue()));
-        return setHold(params, null, null, null, null);
+        return setHold(params, HoldType.HOLD_HOURS.toString(), holdHours, null, null);
     }
 
     public static boolean setHold(@Nullable ThingActions actions, @Nullable String holdClimateRef,
