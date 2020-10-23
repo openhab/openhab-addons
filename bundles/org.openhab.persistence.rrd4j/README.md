@@ -258,7 +258,7 @@ Items {
 ```
 
 **IMPORTANT:**
-When creating a custom datasource in the `rrd4j.cfg` file the used <[sample Intervall](#`<sampleInterval>`) should be 20 seconds or less in order to keep the granularity. The selection of the used strategy has no effect on the granularity.  
+When creating a custom datasource in the `rrd4j.cfg` file the used [sample Intervall](#sampleinterval-sample-interval) should be 20 seconds or less in order to keep the granularity. The selection of the used strategy has no effect on the granularity.  
 
 ---
 
