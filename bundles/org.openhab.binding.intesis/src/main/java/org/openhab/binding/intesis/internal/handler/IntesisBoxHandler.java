@@ -34,6 +34,7 @@ import org.openhab.binding.intesis.internal.api.IntesisBoxChangeListener;
 import org.openhab.binding.intesis.internal.api.IntesisBoxMessage;
 import org.openhab.binding.intesis.internal.api.IntesisBoxSocketApi;
 import org.openhab.binding.intesis.internal.config.IntesisBoxConfiguration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -77,6 +78,8 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
     private IntesisBoxConfiguration config = new IntesisBoxConfiguration();
 
     private double minTemp = 0.0, maxTemp = 0.0;
+
+    private boolean hasProperties = false;
 
     private @Nullable ScheduledFuture<?> pollingTask;
 
@@ -146,6 +149,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 }
             }
             api.sendAlive();
+            api.sendId();
         }
     }
 
@@ -213,17 +217,16 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
         }
     }
 
-    private void populateProperties(String data) {
-        String[] value = data.substring(3).split(",");
+    private void populateProperties(String[] value) {
         properties.put(PROPERTY_VENDOR, "Intesis");
         properties.put(PROPERTY_MODEL_ID, value[0]);
         properties.put(PROPERTY_MAC_ADDRESS, value[1]);
         properties.put("ipAddress", value[2]);
         properties.put("protocol", value[3]);
         properties.put(PROPERTY_FIRMWARE_VERSION, value[4]);
-        properties.put("rssi", value[5]);
         properties.put("hostname", value[6]);
         updateProperties(properties);
+        hasProperties = true;
     }
 
     private void receivedUpdate(String function, String receivedValue) {
@@ -281,7 +284,12 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
             return;
         }
         if (data.startsWith(ID + ':')) {
-            populateProperties(data);
+            String[] value = data.substring(3).split(",");
+            if (!hasProperties) {
+                populateProperties(value);
+            }
+            DecimalType signalStrength = mapSignalStrength(Integer.parseInt(value[5]));
+            updateState(CHANNEL_TYPE_RSSI, signalStrength);
             return;
         }
         IntesisBoxMessage message = IntesisBoxMessage.parse(data);
@@ -367,5 +375,21 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
         this.updateStatus(status);
+    }
+
+    public static DecimalType mapSignalStrength(int dbm) {
+        int strength = -1;
+        if (dbm > -60) {
+            strength = 4;
+        } else if (dbm > -70) {
+            strength = 3;
+        } else if (dbm > -80) {
+            strength = 2;
+        } else if (dbm > -90) {
+            strength = 1;
+        } else {
+            strength = 0;
+        }
+        return new DecimalType(strength);
     }
 }
