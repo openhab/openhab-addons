@@ -51,7 +51,7 @@ public class UdpSenderService {
      * 800ms in the 1st loop, 1600ms in the 2nd loop and 2400ms in the third loop.
      */
     private static final int MAX_TIMEOUT_COUNT = 2;
-    private static final long TIMEOUT_BASE_VALUE_SEC = 800L;
+    private static final long TIMEOUT_BASE_VALUE_MS = 800L;
     private static final int REVOGI_PORT = 8888;
 
     private final Logger logger = LoggerFactory.getLogger(UdpSenderService.class);
@@ -60,7 +60,7 @@ public class UdpSenderService {
     private final long timeoutBaseValue;
 
     public UdpSenderService(DatagramSocketWrapper datagramSocketWrapper, ScheduledExecutorService scheduler) {
-        this.timeoutBaseValue = TIMEOUT_BASE_VALUE_SEC;
+        this.timeoutBaseValue = TIMEOUT_BASE_VALUE_MS;
         this.datagramSocketWrapper = datagramSocketWrapper;
         this.scheduler = scheduler;
     }
