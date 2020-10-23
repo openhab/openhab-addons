@@ -368,7 +368,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
     private static class MessageParseException extends Exception {
         private static final long serialVersionUID = 1L;
 
-        public MessageParseException(String msg) {
+        public MessageParseException(@Nullable String msg) {
             super(msg);
         }
     }

@@ -207,7 +207,12 @@ public class UpnpServerHandler extends UpnpHandler {
                                 // No parent found, so make it the root directory
                                 browseTarget = DIRECTORY_ROOT;
                             }
-                            currentEntry = parentMap.get(browseTarget);
+                            UpnpEntry entry = parentMap.get(browseTarget);
+                            if (entry == null) {
+                                return;
+                            }
+                            currentEntry = entry;
+
                         }
                         updateState(CURRENTID, StringType.valueOf(currentEntry.getId()));
                         logger.debug("Browse target {}", browseTarget);

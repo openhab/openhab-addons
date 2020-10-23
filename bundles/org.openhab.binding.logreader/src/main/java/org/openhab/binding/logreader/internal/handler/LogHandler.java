@@ -81,9 +81,9 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
     @Override
     public void initialize() {
         configuration = getConfigAs(LogReaderConfiguration.class);
-
+        String logDir = System.getProperty("openhab.logdir");
         configuration.filePath = configuration.filePath.replaceFirst("\\$\\{OPENHAB_LOGDIR\\}",
-                System.getProperty("openhab.logdir"));
+                logDir != null ? logDir : "");
 
         logger.debug("Using configuration: {}", configuration);
 

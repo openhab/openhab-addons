@@ -17,6 +17,7 @@ import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstan
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -74,7 +75,9 @@ public class TripDetail {
     }
 
     public long getDurationInMinutes() {
-        return Duration.between(startTime, endTime).toMinutes();
+        Temporal start = startTime;
+        Temporal end = endTime;
+        return (start == null || end == null) ? 0 : Duration.between(start, end).toMinutes();
     }
 
     public Optional<Integer> getFuelConsumption() {

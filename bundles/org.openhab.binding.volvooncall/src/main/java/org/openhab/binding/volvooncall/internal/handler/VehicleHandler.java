@@ -131,8 +131,9 @@ public class VehicleHandler extends BaseThingHandler {
                                 thing.getProperties().entrySet().stream().filter(p -> "true".equals(p.getValue()))
                                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
-                        if (thing.getProperties().containsKey(LAST_TRIP_ID)) {
-                            lastTripId = Long.parseLong(thing.getProperties().get(LAST_TRIP_ID));
+                        String lastTripIdString = thing.getProperties().get(LAST_TRIP_ID);
+                        if (lastTripIdString != null) {
+                            lastTripId = Long.parseLong(lastTripIdString);
                         }
 
                         updateStatus(ThingStatus.ONLINE);

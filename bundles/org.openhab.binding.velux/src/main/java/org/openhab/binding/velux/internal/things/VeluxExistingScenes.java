@@ -84,7 +84,7 @@ public class VeluxExistingScenes {
         if (!isRegistered(sceneName)) {
             return VeluxScene.UNKNOWN;
         }
-        return existingScenesBySceneName.get(sceneName.toString());
+        return existingScenesBySceneName.getOrDefault(sceneName.toString(), VeluxScene.UNKNOWN);
     }
 
     public VeluxScene[] values() {

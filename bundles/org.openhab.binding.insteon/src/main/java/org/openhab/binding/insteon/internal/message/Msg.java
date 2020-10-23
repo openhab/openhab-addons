@@ -280,12 +280,13 @@ public class Msg {
      * @param len the length to copy from the src byte array
      */
     private void initialize(byte[] newData, int offset, int len) {
-        data = new byte[len];
+        byte[] data = new byte[len];
         if (offset >= 0 && offset < newData.length) {
             System.arraycopy(newData, offset, data, 0, len);
         } else {
             logger.warn("intialize(): Offset out of bounds!");
         }
+        this.data = data;
     }
 
     /**
@@ -344,7 +345,10 @@ public class Msg {
             throw new FieldException("data index out of bounds!");
         }
         byte[] section = new byte[numBytes];
-        System.arraycopy(data, offset, section, 0, numBytes);
+        byte[] data = this.data;
+        if (data != null) {
+            System.arraycopy(data, offset, section, 0, numBytes);
+        }
         return section;
     }
 

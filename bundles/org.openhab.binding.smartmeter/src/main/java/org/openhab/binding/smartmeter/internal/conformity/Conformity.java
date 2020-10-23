@@ -113,8 +113,8 @@ public enum Conformity {
         boolean shouldNegateState = NegateHandler.shouldNegateState(negateProperty, channelId -> {
             Channel negateChannel = thing.getChannel(channelId);
             if (negateChannel != null) {
-                return device.getMeterValue(
-                        negateChannel.getProperties().get(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS));
+                String property = negateChannel.getProperties().get(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS);
+                return property != null ? device.getMeterValue(property) : null;
             }
             return null;
         });

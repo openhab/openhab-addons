@@ -58,8 +58,7 @@ public class ShellyApiException extends Exception {
         apiResult = result;
     }
 
-    @Override
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return isEmpty() ? "" : nonNullString(super.getMessage());
     }
 

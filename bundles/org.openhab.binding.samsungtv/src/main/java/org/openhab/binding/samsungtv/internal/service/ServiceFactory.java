@@ -86,7 +86,7 @@ public class ServiceFactory {
      * @param serviceName Name of the service
      * @return Class of the service
      */
-    public static Class<? extends SamsungTvService> getClassByServiceName(String serviceName) {
+    public static @Nullable Class<? extends SamsungTvService> getClassByServiceName(String serviceName) {
         return SERVICEMAP.get(serviceName);
     }
 }

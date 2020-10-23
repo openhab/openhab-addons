@@ -163,7 +163,7 @@ public class DarkSkyConnection {
     }
 
     private String buildURL(String url, Map<String, String> requestParams) {
-        return requestParams.keySet().stream().map(key -> key + "=" + encodeParam(requestParams.get(key)))
+        return requestParams.entrySet().stream().map(e -> e.getKey() + "=" + encodeParam(e.getValue()))
                 .collect(joining("&", url + "?", ""));
     }
 

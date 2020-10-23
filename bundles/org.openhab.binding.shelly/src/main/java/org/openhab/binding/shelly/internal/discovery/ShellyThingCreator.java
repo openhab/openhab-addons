@@ -124,12 +124,13 @@ public class ShellyThingCreator {
         }
 
         // Check general mapping
-        if (!deviceType.isEmpty() && THING_TYPE_MAPPING.containsKey(deviceType)) {
-            return THING_TYPE_MAPPING.get(deviceType);
+        if (!deviceType.isEmpty()) {
+            String str = THING_TYPE_MAPPING.get(deviceType);
+            if (str != null) {
+                return str;
+            }
         }
-        if (THING_TYPE_MAPPING.containsKey(type)) {
-            return THING_TYPE_MAPPING.get(type);
-        }
-        return THING_TYPE_SHELLYUNKNOWN_STR;
+
+        return THING_TYPE_MAPPING.getOrDefault(type, THING_TYPE_SHELLYUNKNOWN_STR);
     }
 }

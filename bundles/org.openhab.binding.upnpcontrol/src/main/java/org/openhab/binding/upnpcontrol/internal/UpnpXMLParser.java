@@ -262,7 +262,7 @@ public class UpnpXMLParser {
         @Override
         public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
             Element el = element;
-            if (el == null) {
+            if (el == null || ch == null) {
                 return;
             }
             switch (el) {

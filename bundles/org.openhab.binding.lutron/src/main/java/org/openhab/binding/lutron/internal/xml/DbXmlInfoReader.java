@@ -50,7 +50,11 @@ public class DbXmlInfoReader {
         xstream = new XStream(driver);
 
         configureSecurity(xstream);
-        setClassLoader(Project.class.getClassLoader());
+        ClassLoader classLoader = Project.class.getClassLoader();
+        if (classLoader == null) {
+            throw new IllegalStateException("Cannot find classloader");
+        }
+        setClassLoader(classLoader);
         registerAliases(xstream);
     }
 

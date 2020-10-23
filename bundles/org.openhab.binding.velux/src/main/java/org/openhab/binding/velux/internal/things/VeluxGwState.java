@@ -135,11 +135,7 @@ public class VeluxGwState {
         }
 
         public static VeluxGatewaySubState get(int stateValue) {
-            if (LOOKUPTYPEID2ENUM.containsKey(stateValue)) {
-                return LOOKUPTYPEID2ENUM.get(stateValue);
-            } else {
-                return VeluxGatewaySubState.UNDEFTYPE;
-            }
+            return LOOKUPTYPEID2ENUM.getOrDefault(stateValue, VeluxGatewaySubState.UNDEFTYPE);
         }
     }
 

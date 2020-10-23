@@ -322,7 +322,9 @@ public class Rules implements RegistryChangeListener<Rule> {
 
             ruleRegistry.add(builder.build());
         } catch (IllegalStateException e) {
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
+            String message = e.getMessage();
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
+                    message != null ? message : "");
         }
 
         return NetworkUtils.successList(cs.gson, Arrays.asList( //
@@ -364,7 +366,9 @@ public class Rules implements RegistryChangeListener<Rule> {
                     Collections.emptyList(), itemRegistry);
             ruleRegistry.add(builder.withTags(RULES_TAG).build());
         } catch (IllegalStateException e) {
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
+            String message = e.getMessage();
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
+                    message != null ? message : "");
         }
 
         return NetworkUtils.singleSuccess(cs.gson, uid, "id");

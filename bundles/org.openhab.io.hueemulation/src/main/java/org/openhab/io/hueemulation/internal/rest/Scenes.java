@@ -305,13 +305,16 @@ public class Scenes implements RegistryChangeListener<Rule> {
         try {
             ruleRegistry.add(builder.build());
         } catch (IllegalStateException e) {
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
+            String message = e.getMessage();
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
+                    message != null ? message : "");
         }
 
+        List<String> lightsList = changeRequest.lights;
         return NetworkUtils.successList(cs.gson, Arrays.asList( //
                 new HueSuccessGeneric(changeRequest.name, "/scenes/" + id + "/name"), //
                 new HueSuccessGeneric(changeRequest.description, "/scenes/" + id + "/description"), //
-                new HueSuccessGeneric(changeRequest.lights != null ? String.join(",", changeRequest.lights) : null,
+                new HueSuccessGeneric(lightsList != null ? String.join(",", lightsList) : null,
                         "/scenes/" + id + "/lights") //
         ));
     }
@@ -365,7 +368,9 @@ public class Scenes implements RegistryChangeListener<Rule> {
         try {
             ruleRegistry.add(builder.build());
         } catch (IllegalStateException e) {
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
+            String message = e.getMessage();
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
+                    message != null ? message : "");
         }
 
         return NetworkUtils.singleSuccess(cs.gson, uid, "id");
@@ -408,7 +413,9 @@ public class Scenes implements RegistryChangeListener<Rule> {
         try {
             ruleRegistry.add(builder.build());
         } catch (IllegalStateException e) {
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
+            String message = e.getMessage();
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
+                    message != null ? message : "");
         }
 
         return NetworkUtils.successList(cs.gson, Arrays.asList( //

@@ -486,9 +486,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
 
         if (dimmerProperty.isPresent()) {
-            action.setState(Integer.parseInt(dimmerProperty.get().brightness));
-            logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
-                    dimmerProperty.get().brightness);
+            String brightness = dimmerProperty.get().brightness;
+            if (brightness != null) {
+                action.setState(Integer.parseInt(brightness));
+                logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
+                        dimmerProperty.get().brightness);
+            }
         }
     }
 
@@ -507,15 +510,15 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         Optional<Boolean> overruleActiveProperty = deviceProperties.stream().map(p -> p.overruleActive)
                 .filter(Objects::nonNull).map(t -> Boolean.parseBoolean(t)).findFirst();
         Optional<Integer> overruleSetpointProperty = deviceProperties.stream().map(p -> p.overruleSetpoint)
-                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null).findFirst();
         Optional<Integer> overruleTimeProperty = deviceProperties.stream().map(p -> p.overruleTime)
-                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t))).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null).findFirst();
         Optional<Integer> setpointTemperatureProperty = deviceProperties.stream().map(p -> p.setpointTemperature)
-                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
-        Optional<Boolean> ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave).filter(Objects::nonNull)
-                .map(t -> Boolean.parseBoolean(t)).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null).findFirst();
+        Optional<Boolean> ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave)
+                .map(s -> s != null ? Boolean.parseBoolean(s) : null).findFirst();
         Optional<Integer> ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
-                .filter(s -> !(s == null || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null).findFirst();
         Optional<@Nullable String> demandProperty = deviceProperties.stream().map(p -> p.demand)
                 .filter(Objects::nonNull).findFirst();
         Optional<@Nullable String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)

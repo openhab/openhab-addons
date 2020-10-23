@@ -531,8 +531,9 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             channels.addAll(getThing().getChannels());
         }
         channels.sort((c1, c2) -> {
-            String label = c1.getLabel();
-            return label == null ? 1 : label.compareTo(c2.getLabel());
+            String label1 = c1.getLabel();
+            String label2 = c2.getLabel();
+            return (label1 == null || label2 == null) ? 1 : label1.compareTo(label2);
         });
         ThingBuilder builder = editThing();
         builder.withChannels(channels);

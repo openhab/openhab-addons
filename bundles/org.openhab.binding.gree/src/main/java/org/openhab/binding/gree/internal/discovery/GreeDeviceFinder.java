@@ -142,7 +142,7 @@ public class GreeDeviceFinder {
         deviceTable.put(newDevice.getId(), newDevice);
     }
 
-    public GreeAirDevice getDevice(String id) {
+    public @Nullable GreeAirDevice getDevice(String id) {
         return deviceTable.get(id);
     }
 
