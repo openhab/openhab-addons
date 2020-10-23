@@ -102,7 +102,7 @@ The time interval (seconds) between reading consecutive samples from the OpenHAB
 It must be a positive integer value.
 
 Relation between the sample intervall and openHABs persistence strategy. 
-The persistence strategy determines on which events (time, change, startUp) a new value is provided to the persistence service, the sample intervall determines at which time steps the actually provided value is being stored (i.e an everyMinute strategy provides a new value at every full minute, a sample intervall of 10 seconds would use such a provided value 6 times).
+The persistence strategy determines on which events (time, change, startUp) a new value is provided to the persistence service, the sample intervall determines at which time steps the actually provided value is being read (i.e an everyMinute strategy provides a new value at every full minute, a sample intervall of 10 seconds would use such a provided value 6 times).
 
 ### `<consolidationFunction>` (Consolidation Function)
 
@@ -257,6 +257,8 @@ Items {
 }
 ```
 
+**IMPORTANT:**
+When creating a custom datasource in the `rrd4j.cfg` file the used <[sample Intervall](#`<sampleInterval>`) should be 20 seconds or less in order to keep the granularity. The selection of the used strategy has no effect on the granularity.  
 
 ---
 
