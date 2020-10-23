@@ -37,4 +37,13 @@ public class SenecHomeBindingConstants {
     public static final String CHANNEL_SENEC_GRID_POWER = "gridPower";
     public static final String CHANNEL_SENEC_GRID_POWER_SUPPLY = "gridPowerSupply";
     public static final String CHANNEL_SENEC_GRID_POWER_DRAW = "gridPowerDraw";
+    public static final String CHANNEL_SENEC_GRID_POWER_PH1 = "gridPowerPhase1";
+    public static final String CHANNEL_SENEC_GRID_POWER_PH2 = "gridPowerPhase2";
+    public static final String CHANNEL_SENEC_GRID_POWER_PH3 = "gridPowerPhase3";
+    public static final String CHANNEL_SENEC_GRID_CURRENT_PH1 = "gridCurrentPhase1";
+    public static final String CHANNEL_SENEC_GRID_CURRENT_PH2 = "gridCurrentPhase2";
+    public static final String CHANNEL_SENEC_GRID_CURRENT_PH3 = "gridCurrentPhase3";
+    public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH1 = "gridVoltagePhase1";
+    public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH2 = "gridVoltagePhase2";
+    public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH3 = "gridVoltagePhase3";
 }
