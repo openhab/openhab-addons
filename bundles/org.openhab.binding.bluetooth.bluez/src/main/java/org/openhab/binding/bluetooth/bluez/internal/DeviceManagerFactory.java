@@ -36,8 +36,8 @@ import com.github.hypfvieh.bluetooth.DeviceManager;
  * In addition, this class is responsible for managing the BlueZPropertiesChangedHandler instance
  * used by the binding for listening and dispatching dbus events from the DeviceManager.
  *
- * Creation of the DeviceManager is asynchronous and thus attempts to retrieve the DeviceManager
- * through 'getDeviceManager' may initially fail.
+ * Creation of the DeviceManagerWrapper is asynchronous and thus attempts to retrieve the
+ * DeviceManagerWrapper through 'getDeviceManager' may initially fail.
  *
  * @author Connor Petty - Initial Contribution
  *
