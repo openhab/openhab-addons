@@ -47,9 +47,9 @@ import com.github.hypfvieh.bluetooth.DeviceManager;
 public class DeviceManagerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DeviceManagerFactory.class);
-    private final BlueZPropertiesChangedHandler changeHandler = new BlueZPropertiesChangedHandler();
-
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
+
+    private final BlueZPropertiesChangedHandler changeHandler = new BlueZPropertiesChangedHandler();
 
     private @Nullable CompletableFuture<DeviceManager> deviceManagerFuture;
     private @Nullable CompletableFuture<DeviceManagerWrapper> deviceManagerWrapperFuture;
@@ -71,7 +71,7 @@ public class DeviceManagerFactory {
     public void initialize() {
         logger.debug("initializing DeviceManagerFactory");
 
-        var stage1 = deviceManagerFuture = callAsync(() -> {
+        var stage1 = this.deviceManagerFuture = callAsync(() -> {
             try {
                 // if this is the first call to the library, this call
                 // should throw an exception (that we are catching)
@@ -88,7 +88,7 @@ public class DeviceManagerFactory {
             AtomicInteger tryCount = new AtomicInteger();
             // We need to set deviceManagerWrapperFuture here since we want to be able to cancel the underlying
             // AsyncCompletableFuture instance
-            return deviceManagerWrapperFuture = callAsync(() -> {
+            return this.deviceManagerWrapperFuture = callAsync(() -> {
                 int count = tryCount.incrementAndGet();
                 try {
                     logger.debug("Registering property handler attempt: {}", count);
@@ -112,20 +112,20 @@ public class DeviceManagerFactory {
 
     @Deactivate
     public void dispose() {
-        var stage1 = deviceManagerFuture;
+        var stage1 = this.deviceManagerFuture;
         if (stage1 != null) {
             if (!stage1.cancel(true)) {
                 // a failure to cancel means that the stage completed normally
                 stage1.thenAccept(DeviceManager::closeConnection);
             }
         }
-        deviceManagerFuture = null;
+        this.deviceManagerFuture = null;
 
-        var stage2 = deviceManagerWrapperFuture;
+        var stage2 = this.deviceManagerWrapperFuture;
         if (stage2 != null) {
             stage2.cancel(true);
         }
-        deviceManagerWrapperFuture = null;
+        this.deviceManagerWrapperFuture = null;
     }
 
     private static <T> CompletableFuture<T> callAsync(Callable<T> callable, ScheduledExecutorService scheduler) {
@@ -171,9 +171,10 @@ public class DeviceManagerFactory {
         }
     }
 
-    // this is a special exception to indicate to a AsyncCompletableFuture that the task needs to be retryed.
+    // this is a special exception to indicate to a AsyncCompletableFuture that the task needs to be retried.
     private static class RetryException extends Exception {
 
+        private static final long serialVersionUID = 8512275408512109328L;
         private long delay;
         private TimeUnit unit;
 

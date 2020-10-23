@@ -33,8 +33,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BlueZHandlerFactory} is responsible for creating things and thing
@@ -47,12 +45,10 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluetooth.bluez")
 public class BlueZHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(BlueZHandlerFactory.class);
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(BlueZAdapterConstants.THING_TYPE_BLUEZ);
 
-    private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
     private final DeviceManagerFactory deviceManagerFactory;
 
@@ -80,8 +76,8 @@ public class BlueZHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerBluetoothAdapter(BluetoothAdapter adapter) {
-        this.serviceRegs.put(adapter.getUID(), bundleContext.registerService(BluetoothAdapter.class.getName(), adapter,
-                new Hashtable<String, Object>()));
+        this.serviceRegs.put(adapter.getUID(),
+                bundleContext.registerService(BluetoothAdapter.class.getName(), adapter, new Hashtable<>()));
     }
 
     @Override
@@ -89,7 +85,9 @@ public class BlueZHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof BluetoothAdapter) {
             UID uid = ((BluetoothAdapter) thingHandler).getUID();
             ServiceRegistration<?> serviceReg = this.serviceRegs.remove(uid);
-            serviceReg.unregister();
+            if (serviceReg != null) {
+                serviceReg.unregister();
+            }
         }
     }
 }
