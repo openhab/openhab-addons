@@ -217,7 +217,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 }
             }
             updateDataCache.invalidateValue();
-            updateData();
+            scheduler.schedule(() -> {
+                updateData();
+            }, 3000, TimeUnit.MILLISECONDS);
         } else {
             logger.debug("Actions not loaded yet");
         }
