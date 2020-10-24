@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
  * {@link CalendarUpdateListener#onCalendarUpdated()} after successful update.
  *
  * @author Michael Wodniok - Initial contribution
+ * @author Michael Wodniok - Added better descriptions for some errors while
+ *         downloading calendar
  */
 @NonNullByDefault
 class PullJob implements Runnable {
@@ -100,8 +102,17 @@ class PullJob implements Runnable {
         Response response;
         try {
             response = asyncListener.get(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
-        } catch (InterruptedException | TimeoutException | ExecutionException e1) {
-            logger.warn("Response for calendar request could not be retrieved. Error message is: {}", e1.getMessage());
+        } catch (InterruptedException e1) {
+            logger.warn("Download of calendar was interrupted.");
+            logger.debug("InterruptedException message is: {}", e1.getMessage());
+            return;
+        } catch (TimeoutException e1) {
+            logger.warn("Download of calendar timed out (waited too long for headers).");
+            logger.debug("TimeoutException message is: {}", e1.getMessage());
+            return;
+        } catch (ExecutionException e1) {
+            logger.warn("Download of calendar failed.");
+            logger.debug("ExecutionException message is: {}", e1.getCause().getMessage());
             return;
         }
 
