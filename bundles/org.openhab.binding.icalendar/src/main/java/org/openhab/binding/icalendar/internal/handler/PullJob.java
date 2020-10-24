@@ -111,8 +111,8 @@ class PullJob implements Runnable {
             logger.debug("TimeoutException message is: {}", e1.getMessage());
             return;
         } catch (ExecutionException e1) {
-            logger.warn("Download of calendar failed while execution.");
-            logger.warn("ExecutionException message is: {}", e1.getMessage());
+            logger.warn("Download of calendar failed.");
+            logger.debug("ExecutionException message is: {}", e1.getCause().getMessage());
             return;
         }
 
