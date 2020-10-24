@@ -10,30 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.intesis.internal;
+package org.openhab.binding.intesis.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link IntesisModeEnum) contains informations for translating device modes into internally used numbers.
+ * The {@link IntesisHomeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Hans-Jörg Merk - Initial contribution
  */
 @NonNullByDefault
-public enum IntesisHomeModeEnum {
-    AUTO(0),
-    HEAT(1),
-    DRY(2),
-    FAN(3),
-    COOL(4);
-
-    private final int mode;
-
-    private IntesisHomeModeEnum(int mode) {
-        this.mode = mode;
-    }
-
-    public int getMode() {
-        return mode;
-    }
+public class IntesisHomeConfiguration {
+    public String ipAddress = "";
+    public String password = "";
 }
