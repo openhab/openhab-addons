@@ -216,7 +216,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         BluetoothAddress address = event.getDevice();
 
         if (address != null) {
-            // this event is for a device, so see if we contain that particular device
+            // now lets forward the event to the corresponding bluetooth device
             BlueZBluetoothDevice device = getDevice(address);
             event.dispatch(device);
         }
