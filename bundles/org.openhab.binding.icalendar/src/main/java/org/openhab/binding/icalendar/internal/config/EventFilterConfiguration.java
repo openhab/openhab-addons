@@ -18,24 +18,28 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ICalendarConfiguration} class contains fields mapping thing configuration parameters.
+ * The EventFilterConfiguration holds configuration for the Event Filter Item Type.
  *
  * @author Michael Wodniok - Initial contribution
- * @author Andrew Fiddian-Green - Support for authorizationCode
- * @author Michael Wodniok - Added Nullable annotations for conformity
  */
 @NonNullByDefault
-public class ICalendarConfiguration {
+public class EventFilterConfiguration {
     @Nullable
-    public String authorizationCode;
-    @Nullable
-    public BigDecimal maxSize;
-    @Nullable
-    public String password;
+    public BigDecimal maxEvents;
     @Nullable
     public BigDecimal refreshTime;
     @Nullable
-    public String url;
+    public String datetimeUnit;
     @Nullable
-    public String username;
+    public BigDecimal datetimeStart;
+    @Nullable
+    public BigDecimal datetimeEnd;
+    @Nullable
+    public Boolean datetimeRound;
+    @Nullable
+    public String textEventField;
+    @Nullable
+    public String textEventValue;
+    @Nullable
+    public String textValueType;
 }

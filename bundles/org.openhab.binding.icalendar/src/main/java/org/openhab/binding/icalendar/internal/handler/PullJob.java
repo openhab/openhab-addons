@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class PullJob implements Runnable {
-    private final static String TMP_FILE_PREFIX = "icalendardld";
+    private static final String TMP_FILE_PREFIX = "icalendardld";
 
     private final Authentication.@Nullable Result authentication;
     private final File destination;
@@ -91,7 +91,7 @@ class PullJob implements Runnable {
     @Override
     public void run() {
         final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET);
-        final Authentication.@Nullable Result currentAuthentication = authentication;
+        final Authentication.Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);
         }
