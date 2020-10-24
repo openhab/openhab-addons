@@ -27,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -217,6 +218,13 @@ public class SenecHomeHandler extends BaseThingHandler {
                     new QuantityType<ElectricPotential>(
                             getSenecValue(response.grid.gridVoltagePerPhase[2]).setScale(2, RoundingMode.HALF_UP),
                             SmartHomeUnits.VOLT));
+
+            Channel channelGridFrequency = getThing()
+                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_FREQUENCY);
+            updateState(channelGridFrequency.getUID(),
+                    new QuantityType<Frequency>(
+                            getSenecValue(response.grid.currentGridFrequency).setScale(2, RoundingMode.HALF_UP),
+                            SmartHomeUnits.HERTZ));
 
             Channel channelBatteryState = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_STATE);
             updateBatteryState(channelBatteryState, getSenecValue(response.energy.batteryState).intValue());

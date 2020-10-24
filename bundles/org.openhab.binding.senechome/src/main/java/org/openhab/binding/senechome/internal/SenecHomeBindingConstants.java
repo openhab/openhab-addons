@@ -46,4 +46,5 @@ public class SenecHomeBindingConstants {
     public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH1 = "gridVoltagePhase1";
     public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH2 = "gridVoltagePhase2";
     public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH3 = "gridVoltagePhase3";
+    public static final String CHANNEL_SENEC_GRID_FREQUENCY = "gridFrequency";
 }
