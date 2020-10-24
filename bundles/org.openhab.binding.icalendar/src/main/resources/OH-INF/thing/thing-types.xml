@@ -165,7 +165,7 @@
 					<option value="DAY">day</option>
 					<option value="WEEK">week</option>
 				</options>
-				<default>hour</default>
+				<default>HOUR</default>
 				<label>Date or Time Unit for Start and End</label>
 			</parameter>
 			<parameter name="datetimeStart" type="integer" groupName="datetime_based">
@@ -202,7 +202,7 @@
 					<option value="REGEX">Regular Expression</option>
 					<option value="TEXT">Text</option>
 				</options>
-				<default>text</default>
+				<default>TEXT</default>
 				<label>Value Type</label>
 				<description>"text" checks the value for containment, "regular expression" matches whole value</description>
 			</parameter>
