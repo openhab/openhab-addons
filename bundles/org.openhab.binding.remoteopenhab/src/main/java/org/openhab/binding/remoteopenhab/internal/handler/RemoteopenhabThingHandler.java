@@ -333,16 +333,19 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
     }
 
     private void restartStreamingUpdates() {
-        synchronized (this) {
-            stopStreamingUpdates();
-            startStreamingUpdates();
+        RemoteopenhabRestClient client = restClient;
+        if (client != null) {
+            synchronized (client) {
+                stopStreamingUpdates();
+                startStreamingUpdates();
+            }
         }
     }
 
     private void startStreamingUpdates() {
         RemoteopenhabRestClient client = restClient;
         if (client != null) {
-            synchronized (this) {
+            synchronized (client) {
                 client.addStreamingDataListener(this);
                 client.start();
             }
@@ -352,7 +355,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
     private void stopStreamingUpdates() {
         RemoteopenhabRestClient client = restClient;
         if (client != null) {
-            synchronized (this) {
+            synchronized (client) {
                 client.stop();
                 client.removeStreamingDataListener(this);
             }
