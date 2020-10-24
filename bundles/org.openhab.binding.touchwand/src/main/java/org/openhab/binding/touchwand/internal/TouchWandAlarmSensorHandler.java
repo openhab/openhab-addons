@@ -89,7 +89,6 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
             bSensorEvent mySensor = iter.next();
             if (mySensor.getSensorType() == SENSOR_TYPE_LEAK) {
                 boolean isLeak = mySensor.getSensor().state;
-                logger.warn("updateChannelLeak open :  {}", isLeak);
                 updateState(CHANNEL_LEAK, OnOffType.from(isLeak));
             }
         }

@@ -41,7 +41,6 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
             throws JsonParseException {
 
         JsonObject jsonObject = json.getAsJsonObject();
-
         TouchWandUnitDataAlarmSensor touchWandUnitDataAlarmSensor = new TouchWandUnitDataAlarmSensor();
         touchWandUnitDataAlarmSensor.setId(jsonObject.get("id").getAsInt());
         touchWandUnitDataAlarmSensor.setName(jsonObject.get("name").getAsString());
