@@ -412,9 +412,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
     @Override
     public void onItemUpdated(Item newItem, Item oldItem) {
         if (!newItem.type.equals(oldItem.type)) {
-            List<Item> items = new ArrayList<>();
-            items.add(newItem);
-            createChannels(items, false);
+            createChannels(List.of(newItem), false);
         } else {
             logger.trace("Updated remote item {} ignored because item type {} is unchanged", newItem.name,
                     newItem.type);
