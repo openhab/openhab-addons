@@ -17,6 +17,7 @@ import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -132,7 +133,7 @@ public class PulseaudioClient {
     }
 
     public boolean isConnected() {
-        return client.isConnected();
+        return client != null ? client.isConnected() : false;
     }
 
     /**
@@ -539,14 +540,16 @@ public class PulseaudioClient {
 
     private void sendRawCommand(String command) {
         checkConnection();
-        try {
-            PrintStream out = new PrintStream(client.getOutputStream(), true);
-            logger.trace("sending command {} to pa-server {}", command, host);
-            out.print(command + "\r\n");
-            out.close();
-            client.close();
-        } catch (IOException e) {
-            logger.error("{}", e.getLocalizedMessage(), e);
+        if (client != null) {
+            try {
+                PrintStream out = new PrintStream(client.getOutputStream(), true);
+                logger.trace("sending command {} to pa-server {}", command, host);
+                out.print(command + "\r\n");
+                out.close();
+                client.close();
+            } catch (IOException e) {
+                logger.error("{}", e.getLocalizedMessage(), e);
+            }
         }
     }
 
@@ -554,41 +557,43 @@ public class PulseaudioClient {
         logger.trace("_sendRawRequest({})", command);
         checkConnection();
         String result = "";
-        try {
-            PrintStream out = new PrintStream(client.getOutputStream(), true);
-            out.print(command + "\r\n");
-
-            InputStream instr = client.getInputStream();
-
+        if (client != null) {
             try {
-                byte[] buff = new byte[1024];
-                int retRead = 0;
-                int lc = 0;
-                do {
-                    retRead = instr.read(buff);
-                    lc++;
-                    if (retRead > 0) {
-                        String line = new String(buff, 0, retRead);
-                        // System.out.println("'"+line+"'");
-                        if (line.endsWith(">>> ") && lc > 1) {
-                            result += line.substring(0, line.length() - 4);
-                            break;
+                PrintStream out = new PrintStream(client.getOutputStream(), true);
+                out.print(command + "\r\n");
+
+                InputStream instr = client.getInputStream();
+
+                try {
+                    byte[] buff = new byte[1024];
+                    int retRead = 0;
+                    int lc = 0;
+                    do {
+                        retRead = instr.read(buff);
+                        lc++;
+                        if (retRead > 0) {
+                            String line = new String(buff, 0, retRead);
+                            // System.out.println("'"+line+"'");
+                            if (line.endsWith(">>> ") && lc > 1) {
+                                result += line.substring(0, line.length() - 4);
+                                break;
+                            }
+                            result += line.trim();
                         }
-                        result += line.trim();
-                    }
-                } while (retRead > 0);
-            } catch (SocketTimeoutException e) {
-                // Timeout -> as newer PA versions (>=5.0) do not send the >>> we have no chance
-                // to detect the end of the answer, except by this timeout
+                    } while (retRead > 0);
+                } catch (SocketTimeoutException e) {
+                    // Timeout -> as newer PA versions (>=5.0) do not send the >>> we have no chance
+                    // to detect the end of the answer, except by this timeout
+                } catch (IOException e) {
+                    logger.error("Exception while reading socket: {}", e.getMessage());
+                }
+                instr.close();
+                out.close();
+                client.close();
+                return result;
             } catch (IOException e) {
-                logger.error("Exception while reading socket: {}", e.getMessage());
+                logger.error("{}", e.getLocalizedMessage(), e);
             }
-            instr.close();
-            out.close();
-            client.close();
-            return result;
-        } catch (IOException e) {
-            logger.error("{}", e.getLocalizedMessage(), e);
         }
         return result;
     }
@@ -612,6 +617,8 @@ public class PulseaudioClient {
             client.setSoTimeout(500);
         } catch (UnknownHostException e) {
             logger.error("unknown socket host {}", host);
+        } catch (NoRouteToHostException e) {
+            logger.error("no route to host {}", host);
         } catch (SocketException e) {
             logger.error("{}", e.getLocalizedMessage(), e);
         }
