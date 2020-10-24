@@ -36,5 +36,6 @@ public class SerialBindingConstants {
     // List of all Channel ids
     public static final String TRIGGER_CHANNEL = "data";
     public static final String INPUT_CHANNEL = "input";
+    public static final String BINARY_CHANNEL = "binary";
     public static final String STRING_CHANNEL = "test";
 }

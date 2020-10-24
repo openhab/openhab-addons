@@ -14,6 +14,7 @@ package org.openhab.binding.serial.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.TooManyListenersException;
 
@@ -26,6 +27,7 @@ import org.openhab.core.io.transport.serial.SerialPortEventListener;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -33,6 +35,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +56,11 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     private @Nullable SerialPort serialPort;
 
     private @Nullable InputStream inputStream;
+    private @Nullable OutputStream outputStream;
 
     private @Nullable Charset charset;
+
+    private @NonNullByDefault StringType data;
 
     /**
      * Serial Port Manager.
@@ -64,10 +70,34 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     public SerialBridgeHandler(final Bridge bridge, final SerialPortManager serialPortManager) {
         super(bridge);
         this.serialPortManager = serialPortManager;
+        this.data = new StringType();
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        if (command instanceof RefreshType) {
+            switch (channelUID.getId()) {
+                case SerialBindingConstants.INPUT_CHANNEL:
+                    if (data != null) {
+                        updateState(channelUID, data);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            switch (channelUID.getId()) {
+                case SerialBindingConstants.INPUT_CHANNEL:
+                    writeString(command);
+                    break;
+                case SerialBindingConstants.BINARY_CHANNEL:
+                    writeString(command);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         /*
          * if (CHANNEL_1.equals(channelUID.getId())) {
          * if (command instanceof RefreshType) {
@@ -85,6 +115,32 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
         // sudo socat PTY,raw,echo=0,link=/dev/ttyUSB01,user=openhab,group=openhab,mode=777
         // PTY,raw,echo=0,link=/dev/ttyS11
+    }
+
+    /**
+     * Sends a string to the serial port of this device
+     *
+     * @param msg the string to send
+     */
+    public void writeString(Command msg) {
+        if (msg == null) {
+            return;
+        }
+
+        logger.debug("Writing '{}' to serial port {}", msg.toFullString(), config.serialPort);
+
+        try {
+            // write string to serial port
+            if (msg instanceof RawType) {
+                outputStream.write(((RawType) msg).getBytes());
+            } else {
+                outputStream.write(msg.toFullString().getBytes(charset));
+            }
+
+            outputStream.flush();
+        } catch (IOException e) {
+            logger.warn("Error writing '{}' to serial port {}: {}", msg, config.serialPort, e.getMessage());
+        }
     }
 
     @Override
@@ -127,6 +183,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             // activate the DATA_AVAILABLE notifier
             serialPort.notifyOnDataAvailable(true);
             inputStream = serialPort.getInputStream();
+            outputStream = serialPort.getOutputStream();
 
             updateStatus(ThingStatus.ONLINE);
         } catch (final IOException ex) {
@@ -149,6 +206,13 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                 inputStream.close();
             } catch (IOException e) {
                 logger.debug("Error while closing the input stream: {}", e.getMessage());
+            }
+        }
+        if (outputStream != null) {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
             }
         }
         if (serialPort != null) {
@@ -182,8 +246,14 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                     String data = sb.toString();
 
                     if (!data.isEmpty()) {
+                        this.data = StringType.valueOf(data);
+
                         if (isLinked(SerialBindingConstants.INPUT_CHANNEL)) {
-                            updateState(SerialBindingConstants.INPUT_CHANNEL, new StringType(data));
+                            updateState(SerialBindingConstants.INPUT_CHANNEL, this.data);
+                        }
+                        if (isLinked(SerialBindingConstants.BINARY_CHANNEL)) {
+                            updateState(SerialBindingConstants.BINARY_CHANNEL,
+                                    new RawType(data.getBytes(charset), RawType.DEFAULT_MIME_TYPE));
                         }
                         // TODO do I need an event
                         triggerChannel(SerialBindingConstants.TRIGGER_CHANNEL);

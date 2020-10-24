@@ -11,6 +11,7 @@
 
 		<channels>
 			<channel id="input" typeId="input-channel"/>
+			<channel id="binary" typeId="binary-channel"/>
 			<channel id="data" typeId="system.rawbutton"/>
 		</channels>
 
@@ -53,6 +54,12 @@
 		<item-type>String</item-type>
 		<label>Serial Binding Channel</label>
 		<description>Sample channel for Serial Binding</description>
+	</channel-type>
+
+	<channel-type id="binary-channel">
+		<item-type>Image</item-type>
+		<label>Base64 Serial Binding Channel</label>
+		<description>Send/Receive base66 encoded data</description>
 	</channel-type>
 
 	<channel-type id="string-channel">
