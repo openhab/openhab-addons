@@ -12,17 +12,22 @@
  */
 package org.openhab.binding.icalendar.internal;
 
-import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.THING_TYPE_CALENDAR;
+import static org.openhab.binding.icalendar.internal.ICalendarBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.icalendar.internal.handler.EventFilterHandler;
 import org.openhab.binding.icalendar.internal.handler.ICalendarHandler;
 import org.openhab.core.events.EventPublisher;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -31,6 +36,8 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ICalendarHandlerFactory} is responsible for creating things and thing
@@ -38,21 +45,27 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - EventPublisher code
+ * @author Michael Wodniok - Added FilteredEvent item type/handler
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.icalendar", service = ThingHandlerFactory.class)
 public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CALENDAR);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(Collections.singleton(THING_TYPE_CALENDAR), Collections.singleton(THING_TYPE_FILTERED_EVENTS))
+            .flatMap(Set::stream).collect(Collectors.toSet());
+    private final Logger logger = LoggerFactory.getLogger(ICalendarHandlerFactory.class);
 
     private final HttpClient sharedHttpClient;
     private final EventPublisher eventPublisher;
+    private final TimeZoneProvider tzProvider;
 
     @Activate
     public ICalendarHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference EventPublisher eventPublisher) {
+            @Reference EventPublisher eventPublisher, @Reference TimeZoneProvider tzProvider) {
         this.eventPublisher = eventPublisher;
         sharedHttpClient = httpClientFactory.getCommonHttpClient();
+        this.tzProvider = tzProvider;
     }
 
     @Override
@@ -67,6 +80,16 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
         if (!supportsThingType(thingTypeUID)) {
             return null;
         }
-        return new ICalendarHandler(thing, sharedHttpClient, eventPublisher);
+        if (thingTypeUID.equals(THING_TYPE_CALENDAR)) {
+            if (thing instanceof Bridge) {
+                return new ICalendarHandler((Bridge) thing, sharedHttpClient, eventPublisher, tzProvider);
+            } else {
+                logger.warn(
+                        "The API of iCalendar has changed. You have to recreate the calendar according to the docs.");
+            }
+        } else if (thingTypeUID.equals(THING_TYPE_FILTERED_EVENTS)) {
+            return new EventFilterHandler(thing, tzProvider);
+        }
+        return null;
     }
 }

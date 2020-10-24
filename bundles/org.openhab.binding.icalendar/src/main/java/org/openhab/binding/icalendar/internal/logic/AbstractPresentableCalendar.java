@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
+ * @author Michael Wodniok - Added getFilteredEventsBetween()
  */
 @NonNullByDefault
 public abstract class AbstractPresentableCalendar {
@@ -86,4 +87,16 @@ public abstract class AbstractPresentableCalendar {
      * @return True if an event is present.
      */
     public abstract boolean isEventPresent(Instant instant);
+
+    /**
+     * Return a filtered List of events with a maximum count, ordered by start.
+     *
+     * @param begin The begin of the time range where to search for events
+     * @param end The end of the time range where to search for events
+     * @param filter A filter for contents, if set to null, all events will be returned
+     * @param maximumCount The maximum of events returned here.
+     * @return A list with the filtered results.
+     */
+    public abstract List<Event> getFilteredEventsBetween(Instant begin, Instant end, @Nullable EventTextFilter filter,
+            int maximumCount);
 }
