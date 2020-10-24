@@ -13,13 +13,6 @@
 
 package org.openhab.binding.touchwand.internal.dto;
 
-/**
- * The {@link AlarmSensorUnitDataDeserializer} implements AlarmSensorUnitData unit
- * Json De-serializer.
- *
- * @author Roie Geron - Initial contribution
- */
-
 import java.lang.reflect.Type;
 import java.util.Map.Entry;
 
@@ -33,6 +26,13 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+
+/**
+ * The {@link AlarmSensorUnitDataDeserializer} implements AlarmSensorUnitData unit
+ * Json De-serializer.
+ *
+ * @author Roie Geron - Initial contribution
+ */
 
 public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWandUnitDataAlarmSensor> {
 

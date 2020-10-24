@@ -13,15 +13,15 @@
 
 package org.openhab.binding.touchwand.internal.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The {@link TouchWandAlarmSensorCurrentStatus} implements Alarm Sensor unit
  * CurrentStatus data property.
  *
  * @author Roie Geron - Initial contribution
  */
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TouchWandAlarmSensorCurrentStatus {
 
