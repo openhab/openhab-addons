@@ -143,8 +143,7 @@ public class MiIoAsyncCommunication {
             fullCommand.addProperty("id", cmdId);
             fullCommand.addProperty("method", command);
             fullCommand.add("params", parser.parse(params));
-            MiIoSendCommand sendCmd = new MiIoSendCommand(cmdId, MiIoCommand.getCommand(command),
-                    fullCommand.toString());
+            MiIoSendCommand sendCmd = new MiIoSendCommand(cmdId, MiIoCommand.getCommand(command), fullCommand);
             concurrentLinkedQueue.add(sendCmd);
             if (logger.isDebugEnabled()) {
                 // Obfuscate part of the token to allow sharing of the logfiles
