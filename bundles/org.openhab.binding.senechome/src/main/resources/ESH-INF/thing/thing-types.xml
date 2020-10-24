@@ -29,6 +29,7 @@
 			<channel id="gridVoltagePhase1" typeId="gridVoltagePhase1"/>
 			<channel id="gridVoltagePhase2" typeId="gridVoltagePhase2"/>
 			<channel id="gridVoltagePhase3" typeId="gridVoltagePhase3"/>
+			<channel id="gridFrequency" typeId="gridFrequency"/>
 		</channels>
 
 		<config-description>
@@ -179,6 +180,13 @@
 		<item-type>Number:Current</item-type>
 		<label>Grid Voltage Phase 3</label>
 		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridFrequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Grid Frequency</label>
+		<category>Frequency</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
