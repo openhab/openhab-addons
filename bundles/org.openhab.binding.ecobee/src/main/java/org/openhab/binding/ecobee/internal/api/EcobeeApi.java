@@ -172,9 +172,20 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         } catch (OAuthResponseException e) {
             logger.info("API: Exception getting access token: error='{}', description='{}'", e.getError(),
                     e.getErrorDescription());
-            // How to handle the possible error codes?
+            handleOAuthException(e);
         }
         return isAuthorized;
+    }
+
+    private void handleOAuthException(OAuthResponseException e) {
+        if ("invalid_grant".equalsIgnoreCase(e.getError())) {
+            logger.warn("API: Received invalid_grant error response. User needs to reauthorize with Ecobee");
+            deleteOAuthClientService();
+            createOAuthClientService();
+        } else {
+            // How to handle other possible error codes?
+            logger.warn("API: Don't know how to handle '{}' error response", e.getError());
+        }
     }
 
     @Override
@@ -308,10 +319,8 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     }
 
     private boolean isSuccess(@Nullable AbstractResponseDTO response) {
-        boolean success = true;
         if (response == null) {
             logger.info("API: Ecobee API returned null response");
-            success = false;
         } else if (response.status.code.intValue() != 0) {
             logger.info("API: Ecobee API returned unsuccessful status: code={}, message={}", response.status.code,
                     response.status.message);
@@ -323,13 +332,16 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             } else if (response.status.code == ECOBEE_TOKEN_EXPIRED) {
                 // Check isAuthorized again to see if we can get a valid token
                 logger.info("API: Unable to complete API call because token is expired");
-                if (!isAuthorized()) {
+                if (isAuthorized()) {
+                    return true;
+                } else {
                     logger.warn("API: isAuthorized was NOT successful on second try");
                 }
             }
-            success = false;
+        } else {
+            return true;
         }
-        return success;
+        return false;
     }
 
     private Properties setHeaders() throws EcobeeAuthException {
