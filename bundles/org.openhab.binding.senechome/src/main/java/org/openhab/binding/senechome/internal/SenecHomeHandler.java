@@ -160,65 +160,62 @@ public class SenecHomeHandler extends BaseThingHandler {
 
             Channel channelGridCurrentPhase1 = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_CURRENT_PH1);
-            updateState(channelGridCurrentPhase1.getUID(),
-                    new QuantityType<ElectricCurrent>(
-                            getSenecValue(response.grid.currentGridCurrentPh1).setScale(2, RoundingMode.HALF_UP),
-                            SmartHomeUnits.AMPERE));
+            updateState(channelGridCurrentPhase1.getUID(), new QuantityType<ElectricCurrent>(
+                    getSenecValue(response.grid.currentGridCurrentPerPhase[0]).setScale(2, RoundingMode.HALF_UP),
+                    SmartHomeUnits.AMPERE));
 
             Channel channelGridCurrentPhase2 = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_CURRENT_PH2);
-            updateState(channelGridCurrentPhase2.getUID(),
-                    new QuantityType<ElectricCurrent>(
-                            getSenecValue(response.grid.currentGridCurrentPh2).setScale(2, RoundingMode.HALF_UP),
-                            SmartHomeUnits.AMPERE));
+            updateState(channelGridCurrentPhase2.getUID(), new QuantityType<ElectricCurrent>(
+                    getSenecValue(response.grid.currentGridCurrentPerPhase[1]).setScale(2, RoundingMode.HALF_UP),
+                    SmartHomeUnits.AMPERE));
 
             Channel channelGridCurrentPhase3 = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_CURRENT_PH3);
-            updateState(channelGridCurrentPhase3.getUID(),
-                    new QuantityType<ElectricCurrent>(
-                            getSenecValue(response.grid.currentGridCurrentPh3).setScale(2, RoundingMode.HALF_UP),
-                            SmartHomeUnits.AMPERE));
+            updateState(channelGridCurrentPhase3.getUID(), new QuantityType<ElectricCurrent>(
+                    getSenecValue(response.grid.currentGridCurrentPerPhase[2]).setScale(2, RoundingMode.HALF_UP),
+                    SmartHomeUnits.AMPERE));
 
             Channel channelGridPowerPhase1 = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER_PH1);
             updateState(channelGridPowerPhase1.getUID(),
                     new QuantityType<Power>(
-                            getSenecValue(response.grid.currentGridPowerPh1).setScale(2, RoundingMode.HALF_UP),
+                            getSenecValue(response.grid.currentGridPowerPerPhase[0]).setScale(2, RoundingMode.HALF_UP),
                             SmartHomeUnits.WATT));
 
             Channel channelGridPowerPhase2 = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER_PH2);
             updateState(channelGridPowerPhase2.getUID(),
                     new QuantityType<Power>(
-                            getSenecValue(response.grid.currentGridPowerPh2).setScale(2, RoundingMode.HALF_UP),
+                            getSenecValue(response.grid.currentGridPowerPerPhase[1]).setScale(2, RoundingMode.HALF_UP),
                             SmartHomeUnits.WATT));
 
             Channel channelGridPowerPhase3 = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER_PH3);
             updateState(channelGridPowerPhase3.getUID(),
                     new QuantityType<Power>(
-                            getSenecValue(response.grid.currentGridPowerPh3).setScale(2, RoundingMode.HALF_UP),
+                            getSenecValue(response.grid.currentGridPowerPerPhase[2]).setScale(2, RoundingMode.HALF_UP),
                             SmartHomeUnits.WATT));
 
             Channel channelGridVoltagePhase1 = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_VOLTAGE_PH1);
             updateState(channelGridVoltagePhase1.getUID(),
                     new QuantityType<ElectricPotential>(
-                            getSenecValue(response.grid.currentGridVoltagePh1).setScale(2, RoundingMode.HALF_UP),
+                            getSenecValue(response.grid.gridVoltagePerPhase[0]).setScale(2, RoundingMode.HALF_UP),
                             SmartHomeUnits.VOLT));
 
             Channel channelGridVoltagePhase2 = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_VOLTAGE_PH2);
             updateState(channelGridVoltagePhase2.getUID(),
                     new QuantityType<ElectricPotential>(
-                            getSenecValue(response.grid.currentGridVoltagePh2).setScale(2, RoundingMode.HALF_UP),
+                            getSenecValue(response.grid.gridVoltagePerPhase[1]).setScale(2, RoundingMode.HALF_UP),
                             SmartHomeUnits.VOLT));
 
             Channel channelGridVoltagePhase3 = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_VOLTAGE_PH3);
             updateState(channelGridVoltagePhase3.getUID(),
                     new QuantityType<ElectricPotential>(
-                            getSenecValue(response.grid.currentGridVoltagePh3).setScale(2, RoundingMode.HALF_UP),
+                            getSenecValue(response.grid.gridVoltagePerPhase[2]).setScale(2, RoundingMode.HALF_UP),
                             SmartHomeUnits.VOLT));
 
             Channel channelBatteryState = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_STATE);
