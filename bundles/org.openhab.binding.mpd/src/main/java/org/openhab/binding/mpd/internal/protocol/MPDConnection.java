@@ -193,6 +193,7 @@ public class MPDConnection implements MPDResponseListener {
                 switch (line) {
                     case "player":
                         updateStatus = true;
+                        updateCurrentSong = true;
                         break;
                     case "mixer":
                         updateStatus = true;
