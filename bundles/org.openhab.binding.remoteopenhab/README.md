@@ -60,5 +60,5 @@ Bridge remoteopenhab:server:oh2 "OH2 server" [ restUrl="http://192.168.0.100:808
 ### demo.items:
 
 ```
-DateTime Date "Date [%1$tA %1$td %1$tR]" <calendar> { channel="remoteopenhab:server:oh2:Date" }
+DateTime MyDate "Date [%1$tA %1$td %1$tR]" <calendar> { channel="remoteopenhab:server:oh2:MyDate" }
 ```
