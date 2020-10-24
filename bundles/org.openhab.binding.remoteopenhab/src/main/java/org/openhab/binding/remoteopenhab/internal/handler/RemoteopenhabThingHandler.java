@@ -74,9 +74,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * This bridge handler connects to Nest and handles all the API requests. It pulls down the
- * updated data, polls the system and does all the co-ordination with the other handlers
- * to get the data updated to the correct things.
+ * The {@link RemoteopenhabThingHandler} is responsible for handling commands and updating states
+ * using the REST API of the remote openHAB server.
  *
  * @author Laurent Garnier - Initial contribution
  */
