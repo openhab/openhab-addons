@@ -376,16 +376,12 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
 
     @Override
     public void onItemAdded(Item item) {
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-        createChannels(items, false);
+        createChannels(List.of(item), false);
     }
 
     @Override
     public void onItemRemoved(Item item) {
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-        removeChannels(items);
+        removeChannels(List.of(item));
     }
 
     @Override
