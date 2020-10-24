@@ -56,5 +56,5 @@
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
-	</channel-type>		
+	</channel-type>
 </thing:thing-descriptions>
