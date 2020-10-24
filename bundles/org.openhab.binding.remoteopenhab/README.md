@@ -15,7 +15,7 @@ A third usage is for users that would like to keep unchanged an existing openHAB
 
 ## Supported Things
 
-There is one unique supported thing : the `server` thing 
+There is one unique supported thing : the `server` bridge thing 
 
 ## Discovery
 
@@ -32,10 +32,10 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has the following configuration parameters:
 
-| Parameter | Description                                                                                            |
-|-----------|--------------------------------------------------------------------------------------------------------|
-| restUrl   | The REST URL of the remote openHAB server.                                                             |
-| token     | The token to use when the remote openHAB server is setup to require authorization to run its REST API. |
+| Parameter | Required | Description                                                                                            |
+|-----------|-------------------------------------------------------------------------------------------------------------------|
+| restUrl   | yes      | The REST URL of the remote openHAB server.                                                             |
+| token     | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API. |
 
 ## Channels
 
@@ -54,7 +54,7 @@ The channel id of the built channel corresponds to the name of the item on the r
 ### demo.things:
 
 ```
-Thing remoteopenhab:server:oh2 "OH2 server" [ restUrl="http://192.168.0.100:8080/rest" ]
+Bridge remoteopenhab:server:oh2 "OH2 server" [ restUrl="http://192.168.0.100:8080/rest" ]
 ```
 
 ### demo.items:

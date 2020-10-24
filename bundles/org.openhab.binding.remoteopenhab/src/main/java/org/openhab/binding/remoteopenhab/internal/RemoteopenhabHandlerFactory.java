@@ -18,7 +18,8 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.remoteopenhab.internal.handler.RemoteopenhabThingHandler;
+import org.openhab.binding.remoteopenhab.internal.handler.RemoteopenhabBridgeHandler;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -76,8 +77,8 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return THING_TYPE_SERVER.equals(thingTypeUID)
-                ? new RemoteopenhabThingHandler(thing, clientBuilder, eventSourceFactory, channelTypeProvider,
+        return BRIDGE_TYPE_SERVER.equals(thingTypeUID)
+                ? new RemoteopenhabBridgeHandler((Bridge) thing, clientBuilder, eventSourceFactory, channelTypeProvider,
                         stateDescriptionProvider, jsonParser)
                 : null;
     }

@@ -61,7 +61,7 @@ public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipa
         // We use the first host address as thing ID
         if (getServiceType().equals(service.getType()) && service.getHostAddresses() != null
                 && service.getHostAddresses().length > 0 && !service.getHostAddresses()[0].isEmpty()) {
-            return new ThingUID(THING_TYPE_SERVER, service.getHostAddresses()[0].replaceAll("[^A-Za-z0-9_]", "_"));
+            return new ThingUID(BRIDGE_TYPE_SERVER, service.getHostAddresses()[0].replaceAll("[^A-Za-z0-9_]", "_"));
         }
         return null;
     }

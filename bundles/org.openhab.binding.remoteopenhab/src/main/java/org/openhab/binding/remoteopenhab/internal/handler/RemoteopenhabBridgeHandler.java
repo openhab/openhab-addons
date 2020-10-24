@@ -48,12 +48,12 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
@@ -74,20 +74,20 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link RemoteopenhabThingHandler} is responsible for handling commands and updating states
+ * The {@link RemoteopenhabBridgeHandler} is responsible for handling commands and updating states
  * using the REST API of the remote openHAB server.
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class RemoteopenhabThingHandler extends BaseThingHandler implements RemoteopenhabStreamingDataListener {
+public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements RemoteopenhabStreamingDataListener {
 
     private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
 
     private static final long CONNECTION_TIMEOUT_MILLIS = TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES);
 
-    private final Logger logger = LoggerFactory.getLogger(RemoteopenhabThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RemoteopenhabBridgeHandler.class);
 
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
@@ -102,10 +102,10 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
     private @Nullable ScheduledFuture<?> checkConnectionJob;
     private @Nullable RemoteopenhabRestClient restClient;
 
-    public RemoteopenhabThingHandler(Thing thing, ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
-            RemoteopenhabChannelTypeProvider channelTypeProvider,
+    public RemoteopenhabBridgeHandler(Bridge bridge, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory, RemoteopenhabChannelTypeProvider channelTypeProvider,
             RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider, final Gson jsonParser) {
-        super(thing);
+        super(bridge);
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
         this.channelTypeProvider = channelTypeProvider;
@@ -115,7 +115,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
 
     @Override
     public void initialize() {
-        logger.debug("Initializing remote openHAB thing handler");
+        logger.debug("Initializing remote openHAB handler for bridge {}", getThing().getUID());
 
         config = getConfigAs(RemoteopenhabInstanceConfiguration.class);
 
@@ -138,7 +138,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
 
     @Override
     public void dispose() {
-        logger.debug("Disposing remote openHAB thing handler");
+        logger.debug("Disposing remote openHAB handler for bridge {}", getThing().getUID());
         stopStreamingUpdates();
         stopCheckConnectionJob();
         this.restClient = null;
