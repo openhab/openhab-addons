@@ -42,15 +42,5 @@
 		<description>@text/channel-type.intesis.outdoorTemperature.description</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="errorCode">
-		<item-type>String</item-type>
-		<label>@text/channel-type.intesis.errorCode.label</label>
-		<description>@text/channel-type.intesis.errorCode.description</description>
-	</channel-type>
-	<channel-type id="errorStatus">
-		<item-type>String</item-type>
-		<label>@text/channel-type.intesis.errorStatus.label</label>
-		<description>@text/channel-type.intesis.errorStatus.description</description>
-	</channel-type>
 
 </thing:thing-descriptions>

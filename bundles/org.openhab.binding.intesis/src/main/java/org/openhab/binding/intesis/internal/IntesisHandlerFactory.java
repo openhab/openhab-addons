@@ -73,12 +73,10 @@ public class IntesisHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_INTESISHOME.equals(thingTypeUID)) {
-            logger.debug("Creating a IntesisHomeHandler for thing '{}'", thing.getUID());
             return new IntesisHomeHandler(thing, httpClient, intesisStateDescriptionProvider);
         }
 
         if (THING_TYPE_INTESISBOX.equals(thingTypeUID)) {
-            logger.debug("Creating a IntesisBoxHandler for thing '{}'", thing.getUID());
             return new IntesisBoxHandler(thing, intesisStateDescriptionProvider);
         }
 

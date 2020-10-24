@@ -71,7 +71,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
     private @Nullable IntesisBoxSocketApi intesisBoxSocketApi;
 
     private final Map<String, String> properties = new HashMap<>();
-    private final Map<String, List<String>> limits = new HashMap<String, List<String>>();
+    private final Map<String, List<String>> limits = new HashMap<>();
 
     private final IntesisDynamicStateDescriptionProvider intesisStateDescriptionProvider;
 
@@ -96,12 +96,11 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
 
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.submit(() -> {
-                addChannel(CHANNEL_TYPE_AMBIENTTEMP, "Number:Temperature");
-                addChannel(CHANNEL_TYPE_ERRORCODE, "String");
-                addChannel(CHANNEL_TYPE_ERRORSTATUS, "String");
+
+                String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
 
                 IntesisBoxSocketApi intesisLocalApi = intesisBoxSocketApi = new IntesisBoxSocketApi(config.ipAddress,
-                        config.port);
+                        config.port, readerThreadName);
                 intesisLocalApi.addIntesisBoxChangeListener(this);
                 try {
                     intesisLocalApi.openConnection();

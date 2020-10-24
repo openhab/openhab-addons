@@ -30,6 +30,9 @@
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
+			<channel id="ambientTemperature" typeId="ambientTemperature"/>
+			<channel id="errorCode" typeId="errorCode"/>
+			<channel id="errorStatus" typeId="errorStatus"/>
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -44,5 +47,24 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<channel-type id="ambientTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.intesis.ambientTemperature.label</label>
+		<description>@text/channel-type.intesis.ambientTemperature.description</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="errorCode">
+		<item-type>String</item-type>
+		<label>@text/channel-type.intesis.errorCode.label</label>
+		<description>@text/channel-type.intesis.errorCode.description</description>
+	</channel-type>
+
+	<channel-type id="errorStatus">
+		<item-type>String</item-type>
+		<label>@text/channel-type.intesis.errorStatus.label</label>
+		<description>@text/channel-type.intesis.errorStatus.description</description>
+	</channel-type>
 
 </thing:thing-descriptions>

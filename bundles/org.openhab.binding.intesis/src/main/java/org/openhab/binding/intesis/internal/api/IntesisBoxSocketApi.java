@@ -20,6 +20,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,6 +42,7 @@ public class IntesisBoxSocketApi {
 
     private final String ipAddress;
     private final int port;
+    private final String readerThreadName;
 
     private @Nullable IntesisSocket tcpSocket = null;
     private @Nullable OutputStreamWriter tcpOutput = null;
@@ -50,9 +52,10 @@ public class IntesisBoxSocketApi {
 
     private boolean connected = false;
 
-    public IntesisBoxSocketApi(final String ipAddress, final int port) {
+    public IntesisBoxSocketApi(final String ipAddress, final int port, final String readerThreadName) {
         this.ipAddress = ipAddress;
         this.port = port;
+        this.readerThreadName = readerThreadName;
     }
 
     private class IntesisSocket {
@@ -74,11 +77,12 @@ public class IntesisBoxSocketApi {
 
         IntesisBoxChangeListener listener = this.changeListener;
         IntesisSocket localSocket = tcpSocket = new IntesisSocket();
-        tcpOutput = new OutputStreamWriter(localSocket.socket.getOutputStream(), "US-ASCII");
-        tcpInput = new BufferedReader(new InputStreamReader(localSocket.socket.getInputStream(), "US-ASCII"));
+        tcpOutput = new OutputStreamWriter(localSocket.socket.getOutputStream(), StandardCharsets.US_ASCII);
+        tcpInput = new BufferedReader(
+                new InputStreamReader(localSocket.socket.getInputStream(), StandardCharsets.US_ASCII));
 
         Thread tcpListener = new Thread(new TCPListener());
-        tcpListener.setName("IntesisBoxTCPListener");
+        tcpListener.setName(readerThreadName);
         tcpListener.setDaemon(true);
         tcpListener.start();
 
