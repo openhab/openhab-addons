@@ -161,9 +161,9 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                 updateChannelState(channelUID.getId(), null, state);
             } else if (isLinked(channelUID)) {
                 client.sendCommandToRemoteItem(channelUID.getId(), command);
+                String commandStr = command.toFullString();
                 logger.debug("Sending command {} to remote item {} succeeded",
-                        command.toFullString().length() < 50 ? command.toFullString()
-                                : command.toFullString().substring(0, 50) + "...",
+                        commandStr.length() < 50 ? commandStr : commandStr.substring(0, 50) + "...",
                         channelUID.getId());
             }
         } catch (RemoteopenhabException e) {
@@ -516,9 +516,9 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
         }
         if (channelState != null) {
             updateState(channel.getUID(), channelState);
+            String channelStateStr = channelState.toFullString();
             logger.debug("updateState {} with {}", channel.getUID(),
-                    channelState.toFullString().length() < 50 ? channelState.toFullString()
-                            : channelState.toFullString().substring(0, 50) + "...");
+                    channelStateStr.length() < 50 ? channelStateStr : channelStateStr.substring(0, 50) + "...");
 
         }
     }
