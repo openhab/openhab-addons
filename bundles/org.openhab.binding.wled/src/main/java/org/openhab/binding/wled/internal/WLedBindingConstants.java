@@ -39,6 +39,7 @@ public class WLedBindingConstants {
     // Configs
     public static final String CONFIG_ADDRESS = "address";
     public static final String CONFIG_POLL_TIME = "pollTime";
+    public static final String CONFIG_SEGMENT_INDEX = "segmentIndex";
     public static final String CONFIG_SAT_THRESHOLD = "saturationThreshold";
 
     // Channels

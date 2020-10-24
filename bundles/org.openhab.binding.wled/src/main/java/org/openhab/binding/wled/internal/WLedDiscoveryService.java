@@ -18,17 +18,29 @@ import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +53,30 @@ import org.slf4j.LoggerFactory;
 @Component(service = MDNSDiscoveryParticipant.class)
 public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(WLedDiscoveryService.class);
+    private final HttpClient httpClient;
+
+    @Activate
+    public WLedDiscoveryService(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    private String sendGetRequest(String address, String url) {
+        Request request = httpClient.newRequest(address + url);
+        request.timeout(3, TimeUnit.SECONDS);
+        request.method(HttpMethod.GET);
+        request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
+        logger.trace("Sending WLED GET:{}", url);
+        try {
+            ContentResponse contentResponse = request.send();
+            if (contentResponse.getStatus() == 200) {
+                return contentResponse.getContentAsString();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException | ExecutionException e) {
+        }
+        return "";
+    }
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
@@ -52,17 +88,23 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         if ((address == null) || address.length < 1) {
             logger.debug("WLED discovered with empty IP address-{}", service);
             return null;
+        } else {
+            String response = sendGetRequest(address[0], "/json");
+            String label = WLedHelper.getValue(response, "\"name\":\"", "\"");
+            if (label.isEmpty()) {
+                label = "WLED Segment 0 @ " + address[0];
+            }
+            String macAddress = WLedHelper.getValue(response, "\"mac\":\"", "\"");
+            String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
+            ThingTypeUID thingtypeuid = new ThingTypeUID("wled", "wled");
+            ThingUID thingUID = new ThingUID(thingtypeuid, macAddress);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware);
+            return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0])
+                    .withProperty(CONFIG_SEGMENT_INDEX, 0).withLabel(label).withProperties(properties)
+                    .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
         }
-        ThingTypeUID thingtypeuid = new ThingTypeUID("wled", "wled");
-        ThingUID thingUID = new ThingUID(thingtypeuid,
-                address[0].substring(7, address[0].length() - 3).replace(".", "-"));
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("address", address[0]);
-
-        return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0])
-                .withLabel("WLED @" + address[0]).withProperties(properties).withRepresentationProperty("address")
-                .build();
     }
 
     @Override

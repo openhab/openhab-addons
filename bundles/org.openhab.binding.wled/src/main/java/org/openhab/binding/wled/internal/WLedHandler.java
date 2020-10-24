@@ -79,7 +79,12 @@ public class WLedHandler extends BaseThingHandler {
     }
 
     private void sendGetRequest(String url) {
-        Request request = httpClient.newRequest(config.address + url);
+        Request request;
+        if (url.contains("json")) {
+            request = httpClient.newRequest(config.address + url);
+        } else {
+            request = httpClient.newRequest(config.address + url + "&SM=" + config.segmentIndex);
+        }
         request.timeout(3, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
         request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
@@ -140,12 +145,12 @@ public class WLedHandler extends BaseThingHandler {
         secondaryColor = parseToHSBType(message, "<cs>");
         updateState(CHANNEL_SECONDARY_COLOR, secondaryColor);
         try {
-            primaryWhite = new BigDecimal(getValue(message, "<wv>", "<"));
+            primaryWhite = new BigDecimal(WLedHelper.getValue(message, "<wv>", "<"));
             if (primaryWhite.intValue() > -1) {
                 hasWhite = true;
                 updateState(CHANNEL_PRIMARY_WHITE,
                         new PercentType(primaryWhite.divide(new BigDecimal(2.55), RoundingMode.HALF_UP)));
-                secondaryWhite = new BigDecimal(getValue(message, "<ws>", "<"));
+                secondaryWhite = new BigDecimal(WLedHelper.getValue(message, "<ws>", "<"));
                 updateState(CHANNEL_SECONDARY_WHITE,
                         new PercentType(secondaryWhite.divide(new BigDecimal(2.55), RoundingMode.HALF_UP)));
             }
@@ -163,12 +168,12 @@ public class WLedHandler extends BaseThingHandler {
         List<StateOption> fxOptions = new ArrayList<>();
         List<StateOption> palleteOptions = new ArrayList<>();
         int counter = 0;
-        for (String value : getValue(message, "\"effects\":[", "]").replace("\"", "").split(",")) {
+        for (String value : WLedHelper.getValue(message, "\"effects\":[", "]").replace("\"", "").split(",")) {
             fxOptions.add(new StateOption(Integer.toString(counter++), value));
         }
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FX), fxOptions);
         counter = 0;
-        for (String value : (getValue(message, "\"palettes\":[", "]").replace("\"", "")).split(",")) {
+        for (String value : (WLedHelper.getValue(message, "\"palettes\":[", "]").replace("\"", "")).split(",")) {
             palleteOptions.add(new StateOption("" + counter++, value));
         }
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), palleteOptions);
@@ -187,14 +192,14 @@ public class WLedHandler extends BaseThingHandler {
         if (message.contains("<ac>0</ac>")) {
             updateState(CHANNEL_MASTER_CONTROLS, OnOffType.OFF);
         } else {
-            masterBrightness = new BigDecimal(getValue(message, "<ac>", "<"));
+            masterBrightness = new BigDecimal(WLedHelper.getValue(message, "<ac>", "<"));
             updateState(CHANNEL_MASTER_CONTROLS,
                     new PercentType(masterBrightness.divide(new BigDecimal(2.55), RoundingMode.HALF_UP)));
         }
         if (message.contains("<ix>0</ix>")) {
             updateState(CHANNEL_INTENSITY, OnOffType.OFF);
         } else {
-            BigDecimal bigTemp = new BigDecimal(getValue(message, "<ix>", "<")).divide(new BigDecimal(2.55),
+            BigDecimal bigTemp = new BigDecimal(WLedHelper.getValue(message, "<ix>", "<")).divide(new BigDecimal(2.55),
                     RoundingMode.HALF_UP);
             updateState(CHANNEL_INTENSITY, new PercentType(bigTemp));
         }
@@ -209,15 +214,15 @@ public class WLedHandler extends BaseThingHandler {
             updateState(CHANNEL_SLEEP, OnOffType.OFF);
         }
         if (message.contains("<fx>")) {
-            updateState(CHANNEL_FX, new StringType(getValue(message, "<fx>", "<")));
+            updateState(CHANNEL_FX, new StringType(WLedHelper.getValue(message, "<fx>", "<")));
         }
         if (message.contains("<sx>")) {
-            BigDecimal bigTemp = new BigDecimal(getValue(message, "<sx>", "<")).divide(new BigDecimal(2.55),
+            BigDecimal bigTemp = new BigDecimal(WLedHelper.getValue(message, "<sx>", "<")).divide(new BigDecimal(2.55),
                     RoundingMode.HALF_UP);
             updateState(CHANNEL_SPEED, new PercentType(bigTemp));
         }
         if (message.contains("<fp>")) {
-            updateState(CHANNEL_PALETTES, new StringType(getValue(message, "<fp>", "<")));
+            updateState(CHANNEL_PALETTES, new StringType(WLedHelper.getValue(message, "<fp>", "<")));
         }
         parseColours(message);
     }
@@ -431,21 +436,5 @@ public class WLedHandler extends BaseThingHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(WLedActions.class);
-    }
-
-    /**
-     * @return A string that starts after finding the element and terminates when it finds the first occurrence of the
-     *         end string after the element.
-     */
-    static String getValue(String message, String element, String end) {
-        int startIndex = message.indexOf(element);
-        if (startIndex != -1) // -1 means "not found"
-        {
-            int endIndex = message.indexOf(end, startIndex + element.length());
-            if (endIndex != -1) {
-                return message.substring(startIndex + element.length(), endIndex);
-            }
-        }
-        return "";
     }
 }
