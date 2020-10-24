@@ -86,7 +86,6 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
             } else {
                 logger.warn(
                         "The API of iCalendar has changed. You have to recreate the calendar according to the docs.");
-                return null;
             }
         } else if (thingTypeUID.equals(THING_TYPE_FILTERED_EVENTS)) {
             return new EventFilterHandler(thing, tzProvider);
