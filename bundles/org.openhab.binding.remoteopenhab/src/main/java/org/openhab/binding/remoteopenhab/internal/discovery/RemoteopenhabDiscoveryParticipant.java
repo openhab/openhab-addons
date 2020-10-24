@@ -90,7 +90,7 @@ public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipa
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null && url != null && restPath != null) {
             String label = "openHAB server IP " + service.getHostAddresses()[0];
-            logger.info("Created a DiscoveryResult for remote openHAB server {} with REST URL {}", thingUID,
+            logger.debug("Created a DiscoveryResult for remote openHAB server {} with REST URL {}", thingUID,
                     url + restPath);
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(RemoteopenhabInstanceConfiguration.REST_URL, url + restPath);
