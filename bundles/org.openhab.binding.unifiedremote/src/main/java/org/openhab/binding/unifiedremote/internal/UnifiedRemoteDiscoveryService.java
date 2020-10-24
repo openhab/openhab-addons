@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Miguel Alvarez - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.unifiedremote")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.unifiedremote")
 @NonNullByDefault
 public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
 
@@ -45,17 +45,39 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
     static final int TIMEOUT_MS = 20000;
     private static final long DISCOVERY_RESULT_TTL_SEC = TimeUnit.MINUTES.toSeconds(5);
 
+    /**
+     * Port used for broadcast and listening.
+     */
+    public static final int DISCOVERY_PORT = 9511;
+    /**
+     * String the client sends, to disambiguate packets on this port.
+     */
+    public static final String DISCOVERY_REQUEST = "6N T|-Ar-A6N T|-Ar-A6N T|-Ar-A";
+    /**
+     * String the client sends, to disambiguate packets on this port.
+     */
+    public static final String DISCOVERY_RESPONSE_PREFIX = ")-b@ h): :)i)-b@ h): :)i)-b@ h): :)";
+    /**
+     * String used to replace non printable characters on service response
+     */
+    public static final String NON_PRINTABLE_CHARTS_REPLACEMENT = ": :";
+
+    private static final int MAX_PACKET_SIZE = 2048;
+    /**
+     * maximum time to wait for a reply, in milliseconds.
+     */
+    private static final int SOCKET_TIMEOUT_MS = 3000;
+
     public UnifiedRemoteDiscoveryService() {
         super(SUPPORTED_THING_TYPES, TIMEOUT_MS, false);
     }
 
     @Override
     protected void startScan() {
-        UnifiedRemoteUdpDiscovery client = new UnifiedRemoteUdpDiscovery();
-        client.call(this::addNewServer);
+        sendBroadcast(this::addNewServer);
     }
 
-    private void addNewServer(UnifiedRemoteUdpDiscovery.ServerInfo serverInfo) {
+    private void addNewServer(ServerInfo serverInfo) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(PARAMETER_MAC_ADDRESS, serverInfo.macAddress);
         properties.put(PARAMETER_HOSTNAME, serverInfo.host);
@@ -67,121 +89,95 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
                         .withProperties(properties).withLabel(serverInfo.name).build());
     }
 
-    private class UnifiedRemoteUdpDiscovery {
-        /**
-         * Port used for broadcast and listening.
-         */
-        public static final int DISCOVERY_PORT = 9511;
-        /**
-         * String the client sends, to disambiguate packets on this port.
-         */
-        public static final String DISCOVERY_REQUEST = "6N T|-Ar-A6N T|-Ar-A6N T|-Ar-A";
-        /**
-         * String the client sends, to disambiguate packets on this port.
-         */
-        public static final String DISCOVERY_RESPONSE_PREFIX = ")-b@ h): :)i)-b@ h): :)i)-b@ h): :)";
-        /**
-         * String used to replace non printable characters on service response
-         */
-        public static final String NON_PRINTABLE_CHARTS_REPLACEMENT = ": :";
+    /**
+     * Create a UDP socket on the service discovery broadcast port.
+     *
+     * @return open DatagramSocket if successful
+     * @throws RuntimeException if cannot create the socket
+     */
+    public DatagramSocket createSocket() throws SocketException {
+        DatagramSocket socket;
+        socket = new DatagramSocket();
+        socket.setBroadcast(true);
+        socket.setSoTimeout(TIMEOUT_MS);
+        return socket;
+    }
 
-        private static final int MAX_PACKET_SIZE = 2048;
-        /**
-         * maximum time to wait for a reply, in milliseconds.
-         */
-        private static final int TIMEOUT_MS = 3000;
+    private ServerInfo tryParseServerDiscovery(DatagramPacket receivePacket) throws ParseException {
+        String host = receivePacket.getAddress().getHostAddress();
+        String reply = new String(receivePacket.getData()).replaceAll("[\\p{C}]", NON_PRINTABLE_CHARTS_REPLACEMENT)
+                .replaceAll("[^\\x00-\\x7F]", NON_PRINTABLE_CHARTS_REPLACEMENT);
+        if (!reply.startsWith(DISCOVERY_RESPONSE_PREFIX))
+            throw new ParseException("Bad discovery response prefix", 0);
+        String[] parts = Arrays
+                .stream(reply.replace(DISCOVERY_RESPONSE_PREFIX, "").split(NON_PRINTABLE_CHARTS_REPLACEMENT))
+                .filter((String e) -> e.length() != 0).toArray(String[]::new);
+        String name = parts[0];
+        int tcpPort = Integer.parseInt(parts[1]);
+        int udpPort = Integer.parseInt(parts[3]);
+        String macAddress = parts[2];
+        return new ServerInfo(host, tcpPort, udpPort, name, macAddress);
+    }
 
-        public class ServerInfo {
-            String name;
-            int tcpPort;
-            int udpPort;
-            String host;
-            String macAddress;
+    /**
+     * Send broadcast packets with service request string until a response
+     * is received. Return the response as String (even though it should
+     * contain an internet address).
+     *
+     * @return String received from server. Should be server IP address.
+     *         Returns empty string if failed to get valid reply.
+     */
+    public void sendBroadcast(Consumer<ServerInfo> listener) {
+        byte[] receiveBuffer = new byte[MAX_PACKET_SIZE];
+        DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
 
-            ServerInfo(String host, int tcpPort, int udpPort, String name, String macAddress) {
-                this.name = name;
-                this.tcpPort = tcpPort;
-                this.udpPort = udpPort;
-                this.host = host;
-                this.macAddress = macAddress;
-            }
+        DatagramSocket socket = null;
+        try {
+            socket = createSocket();
+        } catch (SocketException e) {
+            logger.debug("Error creating discovery socket: {}", e.getMessage());
+            return;
         }
-
-        /**
-         * Create a UDP socket on the service discovery broadcast port.
-         *
-         * @return open DatagramSocket if successful
-         * @throws RuntimeException if cannot create the socket
-         */
-        public DatagramSocket createSocket() throws SocketException {
-            DatagramSocket socket;
-            socket = new DatagramSocket();
-            socket.setBroadcast(true);
-            socket.setSoTimeout(TIMEOUT_MS);
-            return socket;
-        }
-
-        private ServerInfo tryParseServerDiscovery(DatagramPacket receivePacket) throws ParseException {
-            String host = receivePacket.getAddress().getHostAddress();
-            String reply = new String(receivePacket.getData()).replaceAll("[\\p{C}]", NON_PRINTABLE_CHARTS_REPLACEMENT)
-                    .replaceAll("[^\\x00-\\x7F]", NON_PRINTABLE_CHARTS_REPLACEMENT);
-            if (!reply.startsWith(DISCOVERY_RESPONSE_PREFIX))
-                throw new ParseException("Bad discovery response prefix", 0);
-            String[] parts = Arrays
-                    .stream(reply.replace(DISCOVERY_RESPONSE_PREFIX, "").split(NON_PRINTABLE_CHARTS_REPLACEMENT))
-                    .filter((String e) -> e.length() != 0).toArray(String[]::new);
-            String name = parts[0];
-            int tcpPort = Integer.parseInt(parts[1]);
-            int udpPort = Integer.parseInt(parts[3]);
-            String macAddress = parts[2];
-            return new ServerInfo(host, tcpPort, udpPort, name, macAddress);
-        }
-
-        /**
-         * Send broadcast packets with service request string until a response
-         * is received. Return the response as String (even though it should
-         * contain an internet address).
-         *
-         * @return String received from server. Should be server IP address.
-         *         Returns empty string if failed to get valid reply.
-         */
-        public void call(Consumer<ServerInfo> listener) {
-            byte[] receiveBuffer = new byte[MAX_PACKET_SIZE];
-            DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-
-            DatagramSocket socket = null;
-            try {
-                socket = createSocket();
-            } catch (SocketException e) {
-                logger.debug("Error creating discovery socket: {}", e.getMessage());
-                return;
-            }
-            byte[] packetData = DISCOVERY_REQUEST.getBytes();
-            try {
-                InetAddress broadcastAddress = InetAddress.getByName("255.255.255.255");
-                int servicePort = DISCOVERY_PORT;
-                DatagramPacket packet = new DatagramPacket(packetData, packetData.length, broadcastAddress,
-                        servicePort);
-                socket.send(packet);
-                logger.debug("Sent packet to {}:{}", broadcastAddress.getHostAddress(), servicePort);
-                for (int i = 0; i < 20; i++) {
-                    socket.receive(receivePacket);
-                    String host = receivePacket.getAddress().getHostAddress();
-                    logger.debug("Received reply from {}", host);
-                    try {
-                        ServerInfo serverInfo = tryParseServerDiscovery(receivePacket);
-                        listener.accept(serverInfo);
-                    } catch (ParseException ex) {
-                        logger.debug("Unable to parse server discovery response from {}: {}", host, ex.getMessage());
-                    }
+        byte[] packetData = DISCOVERY_REQUEST.getBytes();
+        try {
+            InetAddress broadcastAddress = InetAddress.getByName("255.255.255.255");
+            int servicePort = DISCOVERY_PORT;
+            DatagramPacket packet = new DatagramPacket(packetData, packetData.length, broadcastAddress, servicePort);
+            socket.send(packet);
+            logger.debug("Sent packet to {}:{}", broadcastAddress.getHostAddress(), servicePort);
+            for (int i = 0; i < 20; i++) {
+                socket.receive(receivePacket);
+                String host = receivePacket.getAddress().getHostAddress();
+                logger.debug("Received reply from {}", host);
+                try {
+                    ServerInfo serverInfo = tryParseServerDiscovery(receivePacket);
+                    listener.accept(serverInfo);
+                } catch (ParseException ex) {
+                    logger.debug("Unable to parse server discovery response from {}: {}", host, ex.getMessage());
                 }
-            } catch (SocketTimeoutException ste) {
-                logger.debug("SocketTimeoutException during socket operation: {}", ste.getMessage());
-            } catch (IOException ioe) {
-                logger.debug("IOException during socket operation: {}", ioe.getMessage());
-            } finally {
-                socket.close();
             }
+        } catch (SocketTimeoutException ste) {
+            logger.debug("SocketTimeoutException during socket operation: {}", ste.getMessage());
+        } catch (IOException ioe) {
+            logger.debug("IOException during socket operation: {}", ioe.getMessage());
+        } finally {
+            socket.close();
+        }
+    }
+
+    public class ServerInfo {
+        String name;
+        int tcpPort;
+        int udpPort;
+        String host;
+        String macAddress;
+
+        ServerInfo(String host, int tcpPort, int udpPort, String name, String macAddress) {
+            this.name = name;
+            this.tcpPort = tcpPort;
+            this.udpPort = udpPort;
+            this.host = host;
+            this.macAddress = macAddress;
         }
     }
 }

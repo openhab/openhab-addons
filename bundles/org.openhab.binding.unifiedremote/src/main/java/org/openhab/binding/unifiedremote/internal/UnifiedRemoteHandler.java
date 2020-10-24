@@ -16,6 +16,7 @@ import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingCon
 import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingConstants.SEND_KEY_CHANNEL;
 
 import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +80,7 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection not initialized");
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            if (e instanceof TimeoutException || e.getCause() instanceof ConnectException) {
+            if (isThingOfflineException(e)) {
                 // we assume thing is offline
                 updateStatus(ThingStatus.OFFLINE);
             } else {
@@ -118,7 +119,7 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
                     }
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                if (e instanceof TimeoutException || e.getCause() instanceof ConnectException) {
+                if (isThingOfflineException(e)) {
                     // we assume thing is offline
                     updateStatus(ThingStatus.OFFLINE);
                 } else {
@@ -127,6 +128,11 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
                 }
             }
         }, 0, 40, TimeUnit.SECONDS);
+    }
+
+    private boolean isThingOfflineException(Exception e) {
+        return e instanceof TimeoutException || e.getCause() instanceof ConnectException
+                || e.getCause() instanceof NoRouteToHostException;
     }
 
     private void stopConnectionChecker() {
