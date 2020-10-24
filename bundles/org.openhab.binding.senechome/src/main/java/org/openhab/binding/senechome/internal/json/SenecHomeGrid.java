@@ -33,10 +33,10 @@ public class SenecHomeGrid implements Serializable {
     /**
      * grid voltage for each phase
      */
-    public @SerializedName("U_AC") String[] gridVoltagePerPhase;
+    public @SerializedName("U_AC") String[] currentGridVoltagePerPhase;
 
     /**
-     * grid current for each phase, draw (for values larger zero) or supply (for negative values)
+     * grid current for each phase
      */
     public @SerializedName("I_AC") String[] currentGridCurrentPerPhase;
 
@@ -52,8 +52,9 @@ public class SenecHomeGrid implements Serializable {
 
     @Override
     public String toString() {
-        return "SenecHomeGrid [currentGridValue=" + currentGridValue + ", gridVoltagePerPhase= " + gridVoltagePerPhase
-                + ", currentGridCurrentPerPhase= " + currentGridCurrentPerPhase + ", currentGridPowerPerPhase= "
-                + currentGridPowerPerPhase + ", currentGridFrequency=" + currentGridFrequency + "]";
+        return "SenecHomeGrid [currentGridValue=" + currentGridValue + ", gridVoltagePerPhase= "
+                + currentGridVoltagePerPhase + ", currentGridCurrentPerPhase= " + currentGridCurrentPerPhase
+                + ", currentGridPowerPerPhase= " + currentGridPowerPerPhase + ", currentGridFrequency="
+                + currentGridFrequency + "]";
     }
 }
