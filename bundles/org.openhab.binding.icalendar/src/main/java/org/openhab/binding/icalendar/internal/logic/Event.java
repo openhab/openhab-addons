@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Andrew Fiddian-Green - Added support for event description
  */
 @NonNullByDefault
-public class Event {
+public class Event implements Comparable<Event> {
     public final List<CommandTag> commandTags = new ArrayList<CommandTag>();
     public final Instant end;
     public final Instant start;
@@ -68,5 +68,10 @@ public class Event {
         final Event otherEvent = (Event) other;
         return (this.title.equals(otherEvent.title) && this.start.equals(otherEvent.start)
                 && this.end.equals(otherEvent.end));
+    }
+
+    @Override
+    public int compareTo(Event o) {
+        return start.compareTo(o.start);
     }
 }

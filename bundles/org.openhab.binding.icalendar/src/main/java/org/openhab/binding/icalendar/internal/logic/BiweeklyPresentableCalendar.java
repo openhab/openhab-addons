@@ -227,15 +227,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             results.add(eventWPeriod.toEvent());
         }
 
-        Collections.sort(results, (Event o1, Event o2) -> {
-            if (o1.start.equals(o2.start)) {
-                return 0;
-            } else if (o1.start.isBefore(o2.start)) {
-                return -1;
-            } else {
-                return 1;
-            }
-        });
+        Collections.sort(results);
 
         return results.subList(0, (maximumCount > results.size() ? results.size() : maximumCount));
     }
