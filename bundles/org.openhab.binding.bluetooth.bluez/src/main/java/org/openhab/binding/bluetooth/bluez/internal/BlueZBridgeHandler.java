@@ -88,7 +88,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         }
 
         logger.debug("Creating BlueZ adapter with address '{}'", adapterAddress);
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Initializing");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
         deviceManagerFactory.getPropertiesChangedHandler().addListener(this);
         discoveryJob = scheduler.scheduleWithFixedDelay(this::initializeAndRefreshDevices, 5, 10, TimeUnit.SECONDS);
     }
