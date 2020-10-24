@@ -86,7 +86,8 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
                 case "sensor":
                     TouchWandAlarmSensorCurrentStatus.Sensor sensor = touchWandUnitDataAlarmSensorCurrentStatus.new Sensor();
                     sensor.value = entry.getValue().getAsFloat();
-                    sensor.index = index;
+                    sensor.type = index;
+                    touchWandUnitDataAlarmSensor.currStatus.getSensorsStatus().add(sensor);
                     break;
                 case "bsensor":
                     bSensor bsensor = gson.fromJson(entry.getValue().getAsJsonObject(), bSensor.class);

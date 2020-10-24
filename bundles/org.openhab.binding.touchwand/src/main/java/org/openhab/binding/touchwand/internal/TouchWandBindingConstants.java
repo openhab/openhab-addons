@@ -50,6 +50,7 @@ public class TouchWandBindingConstants {
     public static final String CHANNEL_MOTION = "motion";
     public static final String CHANNEL_ILLUMINATION = "illumination";
     public static final String CHANNEL_DOORWINDOW = "isOpen";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
 
     // List of configuration parameters
 
@@ -90,7 +91,7 @@ public class TouchWandBindingConstants {
     public static final String TYPE_DIMMER = "dimmer";
     public static final String TYPE_ALARMSENSOR = "AlarmSensor";
 
-    public static final Integer SENSOR_TYPE_TEMPRATURE = 1;
+    public static final Integer SENSOR_TYPE_TEMPERATURE = 1;
     public static final Integer SENSOR_TYPE_LUMINACE = 3;
     public static final Integer SENSOR_TYPE_LEAK = 6;
     public static final Integer SENSOR_TYPE_DOOR_WINDOW = 10;

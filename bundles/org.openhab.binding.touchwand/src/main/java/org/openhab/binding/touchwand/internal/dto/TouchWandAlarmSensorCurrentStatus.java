@@ -73,17 +73,25 @@ public class TouchWandAlarmSensorCurrentStatus {
     }
 
     public class Sensor {
-        public Integer index;
+        public Integer type;
         public Float value;
     }
 
     public class bSensor {
         public long ts;
-        public boolean active;
+        public boolean state;
     }
 
     public class bSensorEvent {
-        Integer sensorType;
-        bSensor sensor;
+        public Integer sensorType;
+        public bSensor sensor;
+
+        public Integer getSensorType() {
+            return sensorType;
+        }
+
+        public bSensor getSensor() {
+            return sensor;
+        }
     }
 }

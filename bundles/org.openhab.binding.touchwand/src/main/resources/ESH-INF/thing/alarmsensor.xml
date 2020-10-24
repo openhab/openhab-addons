@@ -9,20 +9,15 @@
 		</supported-bridge-type-refs>
 		<label>TouchWand Alarm Sensor Unit</label>
 		<channels>
-			<channel id="alarm" typeId="sensor_alarm"/>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
 			<channel id="leak" typeId="leak"></channel>
 			<channel id="motion" typeId="motion"/>
 			<channel id="illumination" typeId="illumination"/>
 			<channel id="isOpen" typeId="isOpen"/>
+			<channel id="temperature" typeId="temperature"/>
 		</channels>
 	</thing-type>
-	<channel-type id="sensor_alarm">
-		<item-type>Switch</item-type>
-		<label>Alarm sensor trigger</label>
-		<state readOnly="true"></state>
-	</channel-type>
 	<channel-type id="leak">
 		<item-type>Switch</item-type>
 		<label>Leak Detected</label>
@@ -39,7 +34,7 @@
 		<item-type>Number</item-type>
 		<label>Illumination</label>
 		<description>
-			This channel shows the brightness of the environment of the device.
+			This channel shows the brightness of the environment of the device in Lux.
 		</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -54,5 +49,12 @@
 		<label>Motion Status</label>
 		<category>Motion</category>
 		<state readOnly="true"></state>
-	</channel-type>	
+	</channel-type>
+	   <channel-type id="temperature">
+        <item-type>Number:Temperature</item-type>
+        <label>Temperature</label>
+        <category>Temperature</category>
+        <state pattern="%.1f %unit%" readOnly="true">
+        </state>
+    </channel-type>		
 </thing:thing-descriptions>
