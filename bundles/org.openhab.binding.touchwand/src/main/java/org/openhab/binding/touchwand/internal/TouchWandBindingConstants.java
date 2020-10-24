@@ -82,7 +82,7 @@ public class TouchWandBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHUTTER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WALLCONTROLLER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DIMMER);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ALARMSENSOR); // not implemented yet
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ALARMSENSOR);
     }
 
     public static final String TYPE_WALLCONTROLLER = "WallController";
