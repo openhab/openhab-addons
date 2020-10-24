@@ -90,6 +90,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
     private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
 
     private static final long CONNECTION_TIMEOUT_MILLIS = TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES);
+    private static final int MAX_STATE_SIZE_FOR_LOGGING = 50;
 
     private final Logger logger = LoggerFactory.getLogger(RemoteopenhabBridgeHandler.class);
 
@@ -191,7 +192,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
                 client.sendCommandToRemoteItem(channelUID.getId(), command);
                 String commandStr = command.toFullString();
                 logger.debug("Sending command {} to remote item {} succeeded",
-                        commandStr.length() < 50 ? commandStr : commandStr.substring(0, 50) + "...",
+                        commandStr.length() < MAX_STATE_SIZE_FOR_LOGGING ? commandStr
+                                : commandStr.substring(0, MAX_STATE_SIZE_FOR_LOGGING) + "...",
                         channelUID.getId());
             }
         } catch (RemoteopenhabException e) {
@@ -538,7 +540,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
             updateState(channel.getUID(), channelState);
             String channelStateStr = channelState.toFullString();
             logger.debug("updateState {} with {}", channel.getUID(),
-                    channelStateStr.length() < 50 ? channelStateStr : channelStateStr.substring(0, 50) + "...");
+                    channelStateStr.length() < MAX_STATE_SIZE_FOR_LOGGING ? channelStateStr
+                            : channelStateStr.substring(0, MAX_STATE_SIZE_FOR_LOGGING) + "...");
 
         }
     }
