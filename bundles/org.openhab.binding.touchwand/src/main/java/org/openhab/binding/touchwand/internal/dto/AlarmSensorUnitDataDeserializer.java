@@ -101,5 +101,4 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
         }
         return touchWandUnitDataAlarmSensor;
     }
-
 }

@@ -27,6 +27,7 @@ import com.google.gson.JsonParser;
  *
  * @author Roie Geron - Initial contribution
  */
+
 public class TouchWandUnitFromJson {
 
     public TouchWandUnitFromJson() {
@@ -58,8 +59,9 @@ public class TouchWandUnitFromJson {
                 touchWandUnit = gson.fromJson(jsonUnit, TouchWandShutterSwitchUnitData.class);
                 break;
             case TYPE_ALARMSENSOR:
-                Gson builder = new GsonBuilder().registerTypeAdapter(TouchWandUnitDataAlarmSensor.class, new AlarmSensorUnitDataDeserializer())
-                .create();
+                Gson builder = new GsonBuilder()
+                        .registerTypeAdapter(TouchWandUnitDataAlarmSensor.class, new AlarmSensorUnitDataDeserializer())
+                        .create();
                 touchWandUnit = builder.fromJson(jsonUnit, TouchWandUnitDataAlarmSensor.class);
                 break;
             default:
