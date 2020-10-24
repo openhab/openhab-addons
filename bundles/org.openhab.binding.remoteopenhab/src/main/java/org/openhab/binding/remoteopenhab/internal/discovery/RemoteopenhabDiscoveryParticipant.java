@@ -15,8 +15,10 @@ package org.openhab.binding.remoteopenhab.internal.discovery;
 import static org.openhab.binding.remoteopenhab.internal.RemoteopenhabBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.jmdns.ServiceInfo;
 
@@ -26,6 +28,7 @@ import org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabInstanceCo
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -42,9 +45,9 @@ import org.slf4j.LoggerFactory;
 @Component(service = MDNSDiscoveryParticipant.class, configurationPid = "mdnsdiscovery.remoteopenhab")
 public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private final Logger logger = LoggerFactory.getLogger(RemoteopenhabDiscoveryParticipant.class);
-
     private static final String SERVICE_TYPE = "_openhab-server._tcp.local.";
+
+    private final Logger logger = LoggerFactory.getLogger(RemoteopenhabDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -59,11 +62,20 @@ public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipa
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         // We use the first host address as thing ID
+        // Host address matching a local IP address are ignored
         if (getServiceType().equals(service.getType()) && service.getHostAddresses() != null
-                && service.getHostAddresses().length > 0 && !service.getHostAddresses()[0].isEmpty()) {
+                && service.getHostAddresses().length > 0 && !service.getHostAddresses()[0].isEmpty()
+                && !matchLocalIpAddress(service.getHostAddresses()[0])) {
             return new ThingUID(BRIDGE_TYPE_SERVER, service.getHostAddresses()[0].replaceAll("[^A-Za-z0-9_]", "_"));
         }
         return null;
+    }
+
+    private boolean matchLocalIpAddress(String serviceHostAddress) {
+        List<String> localIpAddresses = NetUtil.getAllInterfaceAddresses().stream()
+                .filter(a -> !a.getAddress().isLinkLocalAddress())
+                .map(a -> a.getAddress().getHostAddress().split("%")[0]).collect(Collectors.toList());
+        return localIpAddresses.contains(serviceHostAddress.replaceAll("\\[|\\]", ""));
     }
 
     @Override

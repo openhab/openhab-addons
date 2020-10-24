@@ -14,6 +14,8 @@ package org.openhab.binding.remoteopenhab.internal.handler;
 
 import static org.openhab.binding.remoteopenhab.internal.RemoteopenhabBindingConstants.BINDING_ID;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -22,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.ClientBuilder;
 
@@ -48,6 +51,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -119,21 +123,46 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
 
         config = getConfigAs(RemoteopenhabInstanceConfiguration.class);
 
-        String url = getRestUrl();
-        if (url.length() == 0 || !url.startsWith("http:")) {
+        if (config.restUrl.trim().length() == 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Please setup a HTTP REST URL in the thing configuration");
-        } else {
-            logger.debug("REST URL = {}", url);
-
-            RemoteopenhabRestClient client = new RemoteopenhabRestClient(clientBuilder, eventSourceFactory, jsonParser,
-                    config.token, url);
-            restClient = client;
-
-            updateStatus(ThingStatus.UNKNOWN);
-
-            startCheckConnectionJob(client);
+                    "Undefined REST URL setting in the thing configuration");
+            return;
         }
+        URL url;
+        try {
+            url = new URL(config.restUrl.trim());
+        } catch (MalformedURLException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Invalid REST URL setting in the thing configuration");
+            return;
+        }
+        if (!"http".equals(url.getProtocol())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Use HTTP protocol for the REST URL setting in the thing configuration");
+            return;
+        }
+        List<String> localIpAddresses = NetUtil.getAllInterfaceAddresses().stream()
+                .filter(a -> !a.getAddress().isLinkLocalAddress())
+                .map(a -> a.getAddress().getHostAddress().split("%")[0]).collect(Collectors.toList());
+        if (localIpAddresses.contains(url.getHost().replaceAll("\\[|\\]", ""))) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Do not link the local server with the REST URL setting in the thing configuration");
+            return;
+        }
+
+        String urlStr = url.toString();
+        if (urlStr.endsWith("/")) {
+            urlStr = urlStr.substring(0, urlStr.length() - 1);
+        }
+        logger.debug("REST URL = {}", urlStr);
+
+        RemoteopenhabRestClient client = new RemoteopenhabRestClient(clientBuilder, eventSourceFactory, jsonParser,
+                config.token, urlStr);
+        restClient = client;
+
+        updateStatus(ThingStatus.UNKNOWN);
+
+        startCheckConnectionJob(client);
     }
 
     @Override
@@ -168,14 +197,6 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
         } catch (RemoteopenhabException e) {
             logger.debug("{}", e.getMessage());
         }
-    }
-
-    private String getRestUrl() {
-        String url = config.restUrl.trim();
-        if (url.endsWith("/")) {
-            url = url.substring(0, url.length() - 1);
-        }
-        return url;
     }
 
     private void createChannels(List<Item> items, boolean replace) {
