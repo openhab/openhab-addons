@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.bluez.internal.events;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This is triggered when a bluetooth adapter's 'Discovering' property changes
  *
  * @author Benjamin Lafois - Initial Contribution
  *

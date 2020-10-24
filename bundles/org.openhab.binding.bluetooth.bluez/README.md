@@ -62,10 +62,3 @@ This is how an BlueZ adapter can be configured textually in a *.things file:
 ```
 Bridge bluetooth:bluez:hci0 [ address="12:34:56:78:90:AB", backgroundDiscovery=false ]
 ```
-
-##Troubleshooting
-If you are unable to install this binding due to the `bluez-dbus` bundle missing, try running this in the openhab-cli to fix the issue:
-
-```
-bundle:install -s https://repo1.maven.org/maven2/com/github/hypfvieh/bluez-dbus-osgi/0.1.3/bluez-dbus-osgi-0.1.3.jar
-```

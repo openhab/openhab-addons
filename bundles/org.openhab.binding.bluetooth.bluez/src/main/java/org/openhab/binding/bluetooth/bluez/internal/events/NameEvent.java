@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.bluez.internal.events;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This event is triggered when a device's 'Name' bluez property changes
  *
  * @author Benjamin Lafois - Initial Contribution
  *

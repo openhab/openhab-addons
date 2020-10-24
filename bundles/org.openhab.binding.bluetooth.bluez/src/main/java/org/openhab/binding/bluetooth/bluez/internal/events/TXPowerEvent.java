@@ -15,6 +15,8 @@ package org.openhab.binding.bluetooth.bluez.internal.events;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This event is triggered when a device's 'TxPower' property is changed, typically due to receiving an advertisement
+ * packet from the device.
  *
  * @author Benjamin Lafois - Initial Contribution
  *

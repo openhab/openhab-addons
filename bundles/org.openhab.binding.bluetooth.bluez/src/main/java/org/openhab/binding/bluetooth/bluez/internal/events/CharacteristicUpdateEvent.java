@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.bluez.internal.events;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This event is triggered when a update notification is received for a characteristic.
  *
  * @author Benjamin Lafois - Initial Contribution
  *

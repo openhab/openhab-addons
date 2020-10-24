@@ -83,17 +83,13 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             this.adapterAddress = new BluetoothAddress(addr.toUpperCase());
         } else {
             // If configuration does not contain adapter address to use, exit with error.
-            logger.info("Adapter MAC address not provided");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
             return;
         }
 
         logger.debug("Creating BlueZ adapter with address '{}'", adapterAddress);
-
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Initializing");
-
         deviceManagerFactory.getPropertiesChangedHandler().addListener(this);
-
         discoveryJob = scheduler.scheduleWithFixedDelay(this::initializeAndRefreshDevices, 5, 10, TimeUnit.SECONDS);
     }
 
@@ -138,16 +134,14 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         if (!localAdapter.isPowered()) {
             localAdapter.setPowered(true);
             // give the device some time to power on
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     "Adapter is not powered, attempting to turn on...");
             return null;
         }
 
         // now lets make sure that discovery is turned on
-        if (!Boolean.TRUE.equals(localAdapter.isDiscovering())) {
-            // we will check for devices next time around
-            localAdapter.startDiscovery();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Starting discovery");
+        if (!localAdapter.startDiscovery()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting discovery");
             return null;
         }
         return localAdapter;
@@ -175,7 +169,6 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             List<BluetoothDevice> bluezDevices = deviceManager.getDevices(adapter);
             logger.debug("Found {} Bluetooth devices.", bluezDevices.size());
             for (BluetoothDevice bluezDevice : bluezDevices) {
-                // logger.debug("discovered device {}", bluezDevice);
                 if (bluezDevice.getAddress() == null) {
                     // For some reasons, sometimes the address is null..
                     continue;

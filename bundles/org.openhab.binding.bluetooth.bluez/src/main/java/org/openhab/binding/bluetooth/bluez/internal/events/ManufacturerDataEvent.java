@@ -17,6 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This event is triggered when an update to a device's manufacturer data is received.
  *
  * @author Benjamin Lafois - Initial Contribution
  *

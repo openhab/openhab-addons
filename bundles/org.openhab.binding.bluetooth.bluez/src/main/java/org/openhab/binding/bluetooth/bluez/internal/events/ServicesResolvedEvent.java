@@ -15,6 +15,10 @@ package org.openhab.binding.bluetooth.bluez.internal.events;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This event is triggered when a device's GATT services get resovled/unresolved.
+ * Services become resolved after connecting to a device and become unresolved
+ * either due to error or connection issues.
+ *
  *
  * @author Benjamin Lafois - Initial Contribution
  *

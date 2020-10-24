@@ -354,14 +354,13 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         // So we need to find the characteristic by its DBUS path.
         BluetoothGattCharacteristic characteristic = getDBusBlueZCharacteristicByDBusPath(event.getDbusPath());
         if (characteristic == null) {
-            logger.info("Received a notification for a characteristic not found on device.");
+            logger.debug("Received a notification for a characteristic not found on device.");
             return;
         }
         BluetoothCharacteristic c = getCharacteristic(UUID.fromString(characteristic.getUuid()));
         if (c != null) {
             c.setValue(event.getData());
             notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, c, BluetoothCompletionStatus.SUCCESS);
-            logger.debug("Has notified that a characteristic has been updated");
         }
     }
 
@@ -388,11 +387,9 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             return false;
         }
         if (dev.getGattServices().size() > getServices().size()) {
-
             for (BluetoothGattService dBusBlueZService : dev.getGattServices()) {
                 BluetoothService service = new BluetoothService(UUID.fromString(dBusBlueZService.getUuid()),
                         dBusBlueZService.isPrimary());
-
                 for (BluetoothGattCharacteristic dBusBlueZCharacteristic : dBusBlueZService.getGattCharacteristics()) {
                     BluetoothCharacteristic characteristic = new BluetoothCharacteristic(
                             UUID.fromString(dBusBlueZCharacteristic.getUuid()), 0);
@@ -402,13 +399,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                                 UUID.fromString(dBusBlueZDescriptor.getUuid()));
                         characteristic.addDescriptor(descriptor);
                     }
-
                     service.addCharacteristic(characteristic);
                 }
-
                 addService(service);
             }
-
             notifyListeners(BluetoothEventType.SERVICES_DISCOVERED);
         }
         return true;
@@ -441,7 +435,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public boolean disableNotifications(BluetoothCharacteristic characteristic) {
         BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
-
         if (c != null) {
             try {
                 c.stopNotify();

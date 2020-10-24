@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.bluez.internal.events;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This event is triggered when bluetooth advertisement packet is picked up from a device.
  *
  * @author Benjamin Lafois - Initial Contribution
  *
