@@ -184,15 +184,19 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
      * @param resultCount The required amount of results.
      */
     private void generateExpectedChannelList(int resultCount) {
-        if (resultChannels.size() == resultCount) {
-            return;
-        }
-        resultChannels.clear();
-        for (int position = 0; position < resultCount; position++) {
-            ChannelGroupUID currentGroup = new ChannelGroupUID(getThing().getUID(), RESULT_GROUP_ID_PREFIX + position);
-            ResultChannelSet current = new ResultChannelSet(currentGroup, new ChannelUID(currentGroup, RESULT_BEGIN_ID),
-                    new ChannelUID(currentGroup, RESULT_END_ID), new ChannelUID(currentGroup, RESULT_TITLE_ID));
-            resultChannels.add(current);
+        synchronized (resultChannels) {
+            if (resultChannels.size() == resultCount) {
+                return;
+            }
+            resultChannels.clear();
+            for (int position = 0; position < resultCount; position++) {
+                ChannelGroupUID currentGroup = new ChannelGroupUID(getThing().getUID(),
+                        RESULT_GROUP_ID_PREFIX + position);
+                ResultChannelSet current = new ResultChannelSet(currentGroup,
+                        new ChannelUID(currentGroup, RESULT_BEGIN_ID), new ChannelUID(currentGroup, RESULT_END_ID),
+                        new ChannelUID(currentGroup, RESULT_TITLE_ID));
+                resultChannels.add(current);
+            }
         }
     }
 
@@ -217,33 +221,35 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
         }
         generateExpectedChannelList(maxEvents.intValue());
 
-        currentChannels.stream().filter((Channel current) -> {
-            String currentGroupId = current.getUID().getGroupId();
-            if (currentGroupId == null) {
+        synchronized (resultChannels) {
+            currentChannels.stream().filter((Channel current) -> {
+                String currentGroupId = current.getUID().getGroupId();
+                if (currentGroupId == null) {
+                    return true;
+                }
+                for (ResultChannelSet channelSet : resultChannels) {
+                    if (channelSet.resultGroup.getId().contentEquals(currentGroupId)) {
+                        return false;
+                    }
+                }
                 return true;
-            }
-            for (ResultChannelSet channelSet : resultChannels) {
-                if (channelSet.resultGroup.getId().contentEquals(currentGroupId)) {
-                    return false;
-                }
-            }
-            return true;
-        }).forEach((Channel toDelete) -> {
-            thingBuilder.withoutChannel(toDelete.getUID());
-        });
+            }).forEach((Channel toDelete) -> {
+                thingBuilder.withoutChannel(toDelete.getUID());
+            });
 
-        resultChannels.stream().filter((ResultChannelSet current) -> {
-            return (getThing().getChannelsOfGroup(current.resultGroup.toString()).size() == 0);
-        }).forEach((ResultChannelSet current) -> {
-            for (ChannelBuilder builder : handlerCallback.createChannelBuilders(current.resultGroup, GROUP_TYPE_UID)) {
-                Channel currentChannel = builder.build();
-                Channel existingChannel = getThing().getChannel(currentChannel.getUID());
-                if (existingChannel == null) {
-                    thingBuilder.withChannel(currentChannel);
+            resultChannels.stream().filter((ResultChannelSet current) -> {
+                return (getThing().getChannelsOfGroup(current.resultGroup.toString()).size() == 0);
+            }).forEach((ResultChannelSet current) -> {
+                for (ChannelBuilder builder : handlerCallback.createChannelBuilders(current.resultGroup,
+                        GROUP_TYPE_UID)) {
+                    Channel currentChannel = builder.build();
+                    Channel existingChannel = getThing().getChannel(currentChannel.getUID());
+                    if (existingChannel == null) {
+                        thingBuilder.withChannel(currentChannel);
+                    }
                 }
-            }
-        });
-
+            });
+        }
         updateThing(thingBuilder.build());
     }
 
@@ -351,18 +357,21 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                 return;
             }
 
-            List<Event> results = cal.getFilteredEventsBetween(begin, end, filter, maxEvents);
-            for (int position = 0; position < maxEvents; position++) {
-                ResultChannelSet channels = resultChannels.get(position);
-                if (position < results.size()) {
-                    Event result = results.get(position);
-                    updateState(channels.titleChannel, new StringType(result.title));
-                    updateState(channels.beginChannel, new DateTimeType(result.start.atZone(tzProvider.getTimeZone())));
-                    updateState(channels.endChannel, new DateTimeType(result.end.atZone(tzProvider.getTimeZone())));
-                } else {
-                    updateState(channels.titleChannel, UnDefType.UNDEF);
-                    updateState(channels.beginChannel, UnDefType.UNDEF);
-                    updateState(channels.endChannel, UnDefType.UNDEF);
+            synchronized (resultChannels) {
+                List<Event> results = cal.getFilteredEventsBetween(begin, end, filter, maxEvents);
+                for (int position = 0; position < resultChannels.size(); position++) {
+                    ResultChannelSet channels = resultChannels.get(position);
+                    if (position < results.size()) {
+                        Event result = results.get(position);
+                        updateState(channels.titleChannel, new StringType(result.title));
+                        updateState(channels.beginChannel,
+                                new DateTimeType(result.start.atZone(tzProvider.getTimeZone())));
+                        updateState(channels.endChannel, new DateTimeType(result.end.atZone(tzProvider.getTimeZone())));
+                    } else {
+                        updateState(channels.titleChannel, UnDefType.UNDEF);
+                        updateState(channels.beginChannel, UnDefType.UNDEF);
+                        updateState(channels.endChannel, UnDefType.UNDEF);
+                    }
                 }
             }
         } else {
