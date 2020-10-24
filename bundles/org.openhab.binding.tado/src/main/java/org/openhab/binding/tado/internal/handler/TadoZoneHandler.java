@@ -218,6 +218,11 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
     }
 
     private void updateZoneState(boolean forceUpdate) {
+        TadoHomeHandler home = getHomeHandler();
+        if (home != null) {
+            home.updateHomeState();
+        }
+
         // No update during HVAC change debounce
         if (!forceUpdate && scheduledHvacChange != null && !scheduledHvacChange.isDone()) {
             return;
@@ -258,7 +263,6 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
                     "Could not connect to server due to " + e.getMessage());
         }
 
-        TadoHomeHandler home = getHomeHandler();
         if (home != null) {
             updateState(TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM, home.getBatteryLowAlarm(getZoneId()));
         }
