@@ -480,7 +480,7 @@
             <configuration>
               <includeScope>runtime</includeScope>
               <includeTypes>jar</includeTypes>
-              <excludeGroupIds>javax.activation,org.apache.karaf.features</excludeGroupIds>
+              <excludeGroupIds>javax.activation,org.apache.karaf.features,org.lastnpe.eea</excludeGroupIds>
               <excludeArtifactIds>${dep.noembedding}</excludeArtifactIds>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
               <overWriteReleases>true</overWriteReleases>
