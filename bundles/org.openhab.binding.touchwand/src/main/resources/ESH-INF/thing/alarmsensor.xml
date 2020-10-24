@@ -44,17 +44,17 @@
 		<category>Contact</category>
 		<state readOnly="true"></state>
 	</channel-type>
-		<channel-type id="motion">
+	<channel-type id="motion">
 		<item-type>Switch</item-type>
 		<label>Motion Status</label>
 		<category>Motion</category>
 		<state readOnly="true"></state>
 	</channel-type>
-	   <channel-type id="temperature">
-        <item-type>Number:Temperature</item-type>
-        <label>Temperature</label>
-        <category>Temperature</category>
-        <state pattern="%.1f %unit%" readOnly="true">
-        </state>
-    </channel-type>		
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>		
 </thing:thing-descriptions>
