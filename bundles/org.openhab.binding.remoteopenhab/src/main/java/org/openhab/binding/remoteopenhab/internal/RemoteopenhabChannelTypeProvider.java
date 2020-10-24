@@ -25,6 +25,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
+ * Channel type provider used for all the channel types built by the binding when building dynamically the channels.
+ * One different channel type is built for each different item type found on the remote openHAB server.
  *
  * @author Laurent Garnier - Initial contribution
  */
