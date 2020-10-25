@@ -68,6 +68,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.TypeParser;
 import org.openhab.core.types.UnDefType;
@@ -209,6 +210,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
             List<Channel> channels = new ArrayList<>();
             for (Item item : items) {
                 String itemType = item.type;
+                boolean readOnly = false;
                 if ("Group".equals(itemType)) {
                     if (item.groupType.isEmpty()) {
                         // Standard groups are ignored
@@ -217,8 +219,12 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
                     } else {
                         itemType = item.groupType;
                     }
+                } else {
+                    if (item.stateDescription != null && item.stateDescription.readOnly) {
+                        readOnly = true;
+                    }
                 }
-                String channelTypeId = String.format("item%s", itemType.replace(":", ""));
+                String channelTypeId = String.format("item%s%s", itemType.replace(":", ""), readOnly ? "RO" : "");
                 ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelTypeId);
                 ChannelType channelType = channelTypeProvider.getChannelType(channelTypeUID, null);
                 String label;
@@ -228,12 +234,14 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
                     label = String.format("Remote %s Item", itemType);
                     description = String.format("An item of type %s from the remote server.", itemType);
                     channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType).withDescription(description)
+                            .withStateDescriptionFragment(
+                                    StateDescriptionFragmentBuilder.create().withReadOnly(readOnly).build())
                             .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
                     channelTypeProvider.addChannelType(channelType);
                 }
                 ChannelUID channelUID = new ChannelUID(getThing().getUID(), item.name);
                 logger.trace("Create the channel {} of type {}", channelUID, channelTypeUID);
-                label = item.name;
+                label = "Item " + item.name;
                 description = String.format("Item %s from the remote server.", item.name);
                 channels.add(ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID)
                         .withKind(ChannelKind.STATE).withLabel(label).withDescription(description).build());
