@@ -200,9 +200,9 @@ public class ComfoAirHandler extends BaseThingHandler {
                         preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_STATES;
                         preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_STATES;
                         break;
-                    case ComfoAirCommandType.Constants.REQUEST_SET_EWT:
-                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_EWT;
-                        preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_EWT;
+                    case ComfoAirCommandType.Constants.REQUEST_SET_GHX:
+                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_GHX;
+                        preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_GHX;
                         break;
                     default:
                         preRequestCmd = requestCmd;
