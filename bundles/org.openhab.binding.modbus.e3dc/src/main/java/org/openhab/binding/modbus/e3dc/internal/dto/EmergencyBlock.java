@@ -14,13 +14,13 @@ package org.openhab.binding.modbus.e3dc.internal.dto;
 
 import static org.openhab.binding.modbus.e3dc.internal.modbus.E3DCModbusConstans.*;
 
-import java.nio.ByteBuffer;
 import java.util.BitSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.io.transport.modbus.ModbusBitUtilities;
 
 /**
  * The {@link EmergencyBlock} Data object for E3DC Info Block
@@ -55,7 +55,7 @@ public class EmergencyBlock implements Data {
      */
     public EmergencyBlock(byte[] bArray) {
         // uint16 status register 40084 - possible Status Strings are defined in Constants above
-        int status = DataConverter.getUInt16Value(ByteBuffer.wrap(bArray));
+        int status = ModbusBitUtilities.extractUInt16(bArray, 0);
         if (status >= 0 && status < 5) {
             epStatus = EP_STATUS_ARRAY[status];
         } else {
