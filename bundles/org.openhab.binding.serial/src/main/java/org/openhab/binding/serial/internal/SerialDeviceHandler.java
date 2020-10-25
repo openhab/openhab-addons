@@ -15,7 +15,7 @@ package org.openhab.binding.serial.internal;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.StringType;
@@ -27,6 +27,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 
 /**
  * The {@link SerialDeviceHandler} is responsible for handling commands, which are
@@ -41,12 +42,17 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     private @Nullable Pattern devicePattern;
 
+    private @NonNull StringType deviceData = new StringType();
+
     public SerialDeviceHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            refresh();
+        }
     }
 
     @Override
@@ -65,11 +71,16 @@ public class SerialDeviceHandler extends BaseThingHandler {
         bridgeStatusChanged(getBridgeStatus());
     }
 
+    public void refresh() {
+        if (isLinked(SerialBindingConstants.DEVICE_CHANNEL)) {
+            updateState(SerialBindingConstants.DEVICE_CHANNEL, deviceData);
+        }
+    }
+
     public void handleData(String data) {
-        if (devicePattern.matcher(StringUtils.chomp(data)).matches()) {
-            if (isLinked(SerialBindingConstants.STRING_CHANNEL)) {
-                updateState(SerialBindingConstants.STRING_CHANNEL, new StringType(StringUtils.chomp(data)));
-            }
+        if (devicePattern.matcher(data).matches()) {
+            this.deviceData = StringType.valueOf(data);
+            refresh();
         }
     }
 

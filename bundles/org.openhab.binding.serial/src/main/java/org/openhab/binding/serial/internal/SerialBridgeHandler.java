@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.TooManyListenersException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,8 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SerialBridgeHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link SerialBridgeHandler} is responsible for handling commands, which
+ * are sent to one of the channels.
  *
  * @author Mike Major - Initial contribution
  */
@@ -77,7 +78,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
-                case SerialBindingConstants.INPUT_CHANNEL:
+                case SerialBindingConstants.STRING_CHANNEL:
                     if (data != null) {
                         updateState(channelUID, data);
                     }
@@ -87,7 +88,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             }
         } else {
             switch (channelUID.getId()) {
-                case SerialBindingConstants.INPUT_CHANNEL:
+                case SerialBindingConstants.STRING_CHANNEL:
                     writeString(command);
                     break;
                 case SerialBindingConstants.BINARY_CHANNEL:
@@ -99,21 +100,19 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         }
 
         /*
-         * if (CHANNEL_1.equals(channelUID.getId())) {
-         * if (command instanceof RefreshType) {
-         * // TODO: handle data refresh
-         * }
+         * if (CHANNEL_1.equals(channelUID.getId())) { if (command instanceof
+         * RefreshType) { // TODO: handle data refresh }
          * 
          * // TODO: handle command
          * 
-         * // Note: if communication with thing fails for some reason,
-         * // indicate that by setting the status with detail information:
-         * // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-         * // "Could not control device at IP address x.x.x.x");
-         * }
+         * // Note: if communication with thing fails for some reason, // indicate that
+         * by setting the status with detail information: //
+         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, //
+         * "Could not control device at IP address x.x.x.x"); }
          */
 
-        // sudo socat PTY,raw,echo=0,link=/dev/ttyUSB01,user=openhab,group=openhab,mode=777
+        // sudo socat
+        // PTY,raw,echo=0,link=/dev/ttyUSB01,user=openhab,group=openhab,mode=777
         // PTY,raw,echo=0,link=/dev/ttyS11
     }
 
@@ -149,9 +148,6 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
         // TODO validate config
 
-        // TODO set from config
-        charset = Charset.defaultCharset();
-
         if (config.serialPort == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return;
@@ -168,15 +164,8 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         try {
             serialPort = portId.open(getThing().getUID().toString(), 2000);
 
-            // TODO set serial port parameters
-            try {
-                serialPort.setSerialPortParams(57600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                        SerialPort.PARITY_NONE);
-            } catch (UnsupportedCommOperationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            // portSettings.getStopbits(), portSettings.getParity());
+            serialPort.setSerialPortParams(config.baudrate, config.databits, config.getStopBitsAsInt(),
+                    config.getParityAsInt());
 
             serialPort.addEventListener(this);
 
@@ -193,6 +182,20 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         } catch (final TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Cannot attach listener to port!");
+        } catch (UnsupportedCommOperationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Unsupported parameters!");
+        }
+
+        try {
+            if (config.charset == null) {
+                charset = Charset.defaultCharset();
+            } else {
+                charset = Charset.forName(config.charset);
+            }
+            logger.debug("Serial port '{}' charset '{}' set.", config.serialPort, charset);
+        } catch (IllegalCharsetNameException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invalid charset!");
+            return;
         }
     }
 
@@ -236,7 +239,8 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                             sb.append(new String(readBuffer, 0, bytes, charset));
                         }
                         try {
-                            // add wait states around reading the stream, so that interrupted transmissions are merged
+                            // add wait states around reading the stream, so that interrupted transmissions
+                            // are merged
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
                             // ignore interruption
@@ -248,17 +252,18 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                     if (!data.isEmpty()) {
                         this.data = StringType.valueOf(data);
 
-                        if (isLinked(SerialBindingConstants.INPUT_CHANNEL)) {
-                            updateState(SerialBindingConstants.INPUT_CHANNEL, this.data);
+                        if (isLinked(SerialBindingConstants.STRING_CHANNEL)) {
+                            updateState(SerialBindingConstants.STRING_CHANNEL, this.data);
                         }
                         if (isLinked(SerialBindingConstants.BINARY_CHANNEL)) {
                             updateState(SerialBindingConstants.BINARY_CHANNEL,
                                     new RawType(data.getBytes(charset), RawType.DEFAULT_MIME_TYPE));
                         }
-                        // TODO do I need an event
+
                         triggerChannel(SerialBindingConstants.TRIGGER_CHANNEL);
 
-                        getThing().getThings().forEach(t -> ((SerialDeviceHandler) t.getHandler()).handleData(data));
+                        data.lines().forEach(l -> getThing().getThings()
+                                .forEach(t -> ((SerialDeviceHandler) t.getHandler()).handleData(l)));
                     }
                 } catch (IOException e) {
                     logger.debug("Error reading from serial port: {}", e.getMessage(), e);

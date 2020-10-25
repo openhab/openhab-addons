@@ -4,24 +4,78 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
+	<!-- Thing Types -->
 	<bridge-type id="serialBridge">
 		<label>Serial Bridge</label>
 		<description>Serial port which can send and receive data</description>
 
 		<channels>
-			<channel id="input" typeId="input-channel"/>
-			<channel id="binary" typeId="binary-channel"/>
-			<channel id="data" typeId="system.rawbutton"/>
+			<channel id="string" typeId="stringData"/>
+			<channel id="binary" typeId="binaryData"/>
+			<channel id="data" typeId="system.trigger"/>
 		</channels>
 
 		<config-description>
-			<parameter name="serialPort" type="text">
-				<label>Serial Port</label>
+			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
-				<required>true</required>
-				<description>The serial port that the button is connected to</description>
+				<label>Serial Port</label>
+				<description>The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
+			</parameter>
+			<parameter name="baudrate" type="integer">
+				<advanced>true</advanced>
+				<label>Baud Rate</label>
+				<description>Set the baud rate</description>
+				<default>9600</default>
+				<options>
+					<option value="4800">4800</option>
+					<option value="9600">9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="57600">57600</option>
+					<option value="115200">115200</option>
+				</options>
+			</parameter>
+			<parameter name="databits" type="integer">
+				<advanced>true</advanced>
+				<label>Data Bits</label>
+				<description>Set the data bits in case auto detect fails.</description>
+				<default>8</default>
+				<options>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+				</options>
+			</parameter>
+			<parameter name="parity" type="text">
+				<advanced>true</advanced>
+				<label>Parity</label>
+				<description>Set the parity</description>
+				<default>N</default>
+				<options>
+					<option value="N">N(one)</option>
+					<option value="O">O(dd)</option>
+					<option value="E">E(even)</option>
+					<option value="M">M(ark)</option>
+					<option value="S">S(pace)</option>
+				</options>
+			</parameter>
+			<parameter name="stopbits" type="text">
+				<advanced>true</advanced>
+				<label>Stop Bits</label>
+				<description>Set the stop bits</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="1.5">1.5</option>
+					<option value="2">2</option>
+				</options>
+			</parameter>
+			<parameter name="charset" type="text">
+				<advanced>true</advanced>
+				<label>Charset</label>
+				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1, etc.)</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -32,10 +86,10 @@
 		</supported-bridge-type-refs>
 
 		<label>Serial Device</label>
-		<description>Sample thing for Serial Binding</description>
+		<description>Represents a device</description>
 
 		<channels>
-			<channel id="test" typeId="string-channel"/>
+			<channel id="device" typeId="deviceData"/>
 		</channels>
 
 		<config-description>
@@ -49,22 +103,22 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="input-channel">
-		<item-type>String</item-type>
-		<label>Serial Binding Channel</label>
-		<description>Sample channel for Serial Binding</description>
-	</channel-type>
-
-	<channel-type id="binary-channel">
-		<item-type>Image</item-type>
-		<label>Base64 Serial Binding Channel</label>
-		<description>Send/Receive base66 encoded data</description>
-	</channel-type>
-
-	<channel-type id="string-channel">
+	<!-- Channel Types -->
+	<channel-type id="stringData">
 		<item-type>String</item-type>
 		<label>String Data</label>
-		<description>Device data as a string</description>
+		<description>Channel for sending/receiving data as a string to/from the serial port</description>
+	</channel-type>
+
+	<channel-type id="binaryData">
+		<item-type>Image</item-type>
+		<label>Binary Data</label>
+		<description>Channel for sending/receiving data encoded as base64 to/from the serial port</description>
+	</channel-type>
+
+	<channel-type id="deviceData">
+		<item-type>String</item-type>
+		<label>Device Data</label>
+		<description>Channel for receiving data as a string from the device</description>
 	</channel-type>
 </thing:thing-descriptions>

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.serial.internal;
 
+import org.openhab.core.io.transport.serial.SerialPort;
+
 /**
  * Class describing the serial bridge user configuration
  *
@@ -43,9 +45,62 @@ public class SerialBridgeConfiguration {
      */
     public String stopbits;
 
+    /**
+     * Charset
+     */
+    public String charset;
+
     @Override
     public String toString() {
         return "SerialBridgeConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudrate + ", Databits="
                 + databits + ", Parity=" + parity + ", Stopbits=" + stopbits + "]";
+    }
+
+    public int getParityAsInt() {
+        int parityInt;
+
+        switch (parity) {
+            case "N":
+                parityInt = SerialPort.PARITY_NONE;
+                break;
+            case "O":
+                parityInt = SerialPort.PARITY_ODD;
+                break;
+            case "E":
+                parityInt = SerialPort.PARITY_EVEN;
+                break;
+            case "M":
+                parityInt = SerialPort.PARITY_MARK;
+                break;
+            case "S":
+                parityInt = SerialPort.PARITY_SPACE;
+                break;
+            default:
+                parityInt = SerialPort.PARITY_NONE;
+                break;
+        }
+
+        return parityInt;
+    }
+
+    public int getStopBitsAsInt() {
+        int stopbitsAsInt;
+
+        switch (stopbits) {
+            case "1":
+                stopbitsAsInt = SerialPort.STOPBITS_1;
+                break;
+            case "1.5":
+                stopbitsAsInt = SerialPort.STOPBITS_1_5;
+                break;
+            case "2":
+                stopbitsAsInt = SerialPort.STOPBITS_2;
+                break;
+            default:
+                stopbitsAsInt = SerialPort.STOPBITS_1;
+                break;
+        }
+
+        return stopbitsAsInt;
     }
 }

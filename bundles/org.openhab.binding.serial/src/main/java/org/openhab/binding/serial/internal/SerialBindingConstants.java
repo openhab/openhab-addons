@@ -30,12 +30,9 @@ public class SerialBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "serialBridge");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "serialDevice");
 
-    // List of all trigger events
-    public static final String DATA_AVAILABLE_EVENT = "available";
-
     // List of all Channel ids
     public static final String TRIGGER_CHANNEL = "data";
-    public static final String INPUT_CHANNEL = "input";
+    public static final String STRING_CHANNEL = "string";
     public static final String BINARY_CHANNEL = "binary";
-    public static final String STRING_CHANNEL = "test";
+    public static final String DEVICE_CHANNEL = "device";
 }
