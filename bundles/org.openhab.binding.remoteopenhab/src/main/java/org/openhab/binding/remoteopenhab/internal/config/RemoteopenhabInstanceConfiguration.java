@@ -23,8 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class RemoteopenhabInstanceConfiguration {
-    public static final String REST_URL = "restUrl";
+    public static final String HOST = "host";
+    public static final String PORT = "port";
+    public static final String REST_PATH = "restPath";
 
-    public String restUrl = "";
+    public String host = "";
+    public int port = 8080;
+    public String restPath = "/rest";
     public String token = "";
 }

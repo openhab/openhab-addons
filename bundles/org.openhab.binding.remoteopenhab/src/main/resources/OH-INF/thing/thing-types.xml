@@ -9,10 +9,27 @@
 		<description>A remote openHAB server.</description>
 
 		<config-description>
-			<parameter name="restUrl" type="text">
-				<label>Server REST URL</label>
-				<description>The REST URL of the remote openHAB server.</description>
+			<parameter name="host" type="text">
+				<context>network-address</context>
+				<label>Server Address</label>
+				<description>The host name or IP address of the remote openHAB server.</description>
 				<required>true</required>
+			</parameter>
+
+			<parameter name="port" type="integer">
+				<label>Server HTTP Port</label>
+				<description>The HTTP port to be used to communicate with the remote openHAB server.</description>
+				<required>true</required>
+				<default>8080</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="restPath" type="text">
+				<label>REST API Path</label>
+				<description>The subpath of the REST API on the remote openHAB server.</description>
+				<required>true</required>
+				<default>/rest</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="token" type="text">

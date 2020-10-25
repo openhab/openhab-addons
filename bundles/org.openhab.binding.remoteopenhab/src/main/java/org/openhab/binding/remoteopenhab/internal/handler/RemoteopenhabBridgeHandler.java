@@ -124,30 +124,32 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler implements Rem
 
         config = getConfigAs(RemoteopenhabInstanceConfiguration.class);
 
-        if (config.restUrl.trim().length() == 0) {
+        String host = config.host.trim();
+        if (host.length() == 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Undefined REST URL setting in the thing configuration");
-            return;
-        }
-        URL url;
-        try {
-            url = new URL(config.restUrl.trim());
-        } catch (MalformedURLException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid REST URL setting in the thing configuration");
-            return;
-        }
-        if (!"http".equals(url.getProtocol())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Use HTTP protocol for the REST URL setting in the thing configuration");
+                    "Undefined server address setting in the thing configuration");
             return;
         }
         List<String> localIpAddresses = NetUtil.getAllInterfaceAddresses().stream()
                 .filter(a -> !a.getAddress().isLinkLocalAddress())
                 .map(a -> a.getAddress().getHostAddress().split("%")[0]).collect(Collectors.toList());
-        if (localIpAddresses.contains(url.getHost().replaceAll("\\[|\\]", ""))) {
+        if (localIpAddresses.contains(host)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Do not link the local server with the REST URL setting in the thing configuration");
+                    "Do not use the local server as a remote server in the thing configuration");
+            return;
+        }
+        String path = config.restPath.trim();
+        if (path.length() == 0 || !path.startsWith("/")) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Invalid REST API path setting in the thing configuration");
+            return;
+        }
+        URL url;
+        try {
+            url = new URL("http", host, config.port, path);
+        } catch (MalformedURLException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Invalid REST URL built from the settings in the thing configuration");
             return;
         }
 

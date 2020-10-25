@@ -93,6 +93,9 @@ public class RemoteopenhabRestClient {
             }
             httpHeaders.put(HttpHeaders.ACCEPT, "application/json");
             String jsonResponse = HttpUtil.executeUrl("GET", restUrl, httpHeaders, null, null, REQUEST_TIMEOUT);
+            if (jsonResponse.isEmpty()) {
+                throw new RemoteopenhabException("Failed to execute the root REST API");
+            }
             RestApi restApi = jsonParser.fromJson(jsonResponse, RestApi.class);
             restApiVersion = restApi.version;
             logger.debug("REST API version = {}", restApiVersion);
@@ -108,6 +111,8 @@ public class RemoteopenhabRestClient {
             logger.debug("REST API events = {}", restApiEvents);
             topicNamespace = restApi.runtimeInfo != null ? "openhab" : "smarthome";
             logger.debug("topic namespace = {}", topicNamespace);
+        } catch (RemoteopenhabException e) {
+            throw new RemoteopenhabException(e.getMessage());
         } catch (JsonSyntaxException e) {
             throw new RemoteopenhabException("Failed to parse the result of the root REST API", e);
         } catch (IOException e) {

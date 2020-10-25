@@ -14,6 +14,7 @@ package org.openhab.binding.remoteopenhab.internal.discovery;
 
 import static org.openhab.binding.remoteopenhab.internal.RemoteopenhabBindingConstants.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,37 +62,38 @@ public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipa
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         // We use the first host address as thing ID
+        String ip = (service.getHostAddresses() != null && service.getHostAddresses().length > 0
+                && !service.getHostAddresses()[0].isEmpty()) ? service.getHostAddresses()[0].replaceAll("\\[|\\]", "")
+                        : null;
         // Host address matching a local IP address are ignored
-        if (getServiceType().equals(service.getType()) && service.getHostAddresses() != null
-                && service.getHostAddresses().length > 0 && !service.getHostAddresses()[0].isEmpty()
-                && !matchLocalIpAddress(service.getHostAddresses()[0])) {
-            return new ThingUID(BRIDGE_TYPE_SERVER, service.getHostAddresses()[0].replaceAll("[^A-Za-z0-9_]", "_"));
+        if (getServiceType().equals(service.getType()) && ip != null && !matchLocalIpAddress(ip)) {
+            return new ThingUID(BRIDGE_TYPE_SERVER, ip.replaceAll("[^A-Za-z0-9_]", "_"));
         }
         return null;
     }
 
-    private boolean matchLocalIpAddress(String serviceHostAddress) {
+    private boolean matchLocalIpAddress(String ipAddress) {
         List<String> localIpAddresses = NetUtil.getAllInterfaceAddresses().stream()
                 .filter(a -> !a.getAddress().isLinkLocalAddress())
                 .map(a -> a.getAddress().getHostAddress().split("%")[0]).collect(Collectors.toList());
-        return localIpAddresses.contains(serviceHostAddress.replaceAll("\\[|\\]", ""));
+        return localIpAddresses.contains(ipAddress);
     }
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         logger.debug("createResult ServiceInfo: {}", service);
         DiscoveryResult result = null;
-        String url = null;
-        if (service.getURLs() != null && service.getURLs().length > 0 && !service.getURLs()[0].isEmpty()) {
-            url = service.getURLs()[0];
-        }
+        String ip = (service.getHostAddresses() != null && service.getHostAddresses().length > 0
+                && !service.getHostAddresses()[0].isEmpty()) ? service.getHostAddresses()[0].replaceAll("\\[|\\]", "")
+                        : null;
         String restPath = service.getPropertyString("uri");
         ThingUID thingUID = getThingUID(service);
-        if (thingUID != null && url != null && restPath != null) {
-            String label = "openHAB server IP " + service.getHostAddresses()[0];
-            logger.debug("Created a DiscoveryResult for remote openHAB server {} with REST URL {}", thingUID,
-                    url + restPath);
-            Map<String, Object> properties = Map.of(RemoteopenhabInstanceConfiguration.REST_URL, url + restPath);
+        if (thingUID != null && ip != null && restPath != null) {
+            String label = "openHAB server IP " + ip;
+            logger.debug("Created a DiscoveryResult for remote openHAB server {} with IP {}", thingUID, ip);
+            Map<String, Object> properties = new HashMap<>(1);
+            properties.put(RemoteopenhabInstanceConfiguration.HOST, ip);
+            properties.put(RemoteopenhabInstanceConfiguration.REST_PATH, restPath);
             result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(label).build();
         }
         return result;

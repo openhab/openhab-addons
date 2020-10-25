@@ -34,7 +34,9 @@ The thing has the following configuration parameters:
 
 | Parameter | Required | Description                                                                                            |
 |-----------|-------------------------------------------------------------------------------------------------------------------|
-| restUrl   | yes      | The REST URL of the remote openHAB server.                                                             |
+| host      | yes      | The host name or IP address of the remote openHAB server.                                              |
+| port      | yes      | The HTTP port to be used to communicate with the remote openHAB server. Default is 8080.               |
+| restPath  | yes      | The subpath of the REST API on the remote openHAB server. Default is /rest                             |
 | token     | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API. |
 
 ## Channels
@@ -54,7 +56,7 @@ The channel id of the built channel corresponds to the name of the item on the r
 ### demo.things:
 
 ```
-Bridge remoteopenhab:server:oh2 "OH2 server" [ restUrl="http://192.168.0.100:8080/rest" ]
+Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100" ]
 ```
 
 ### demo.items:
