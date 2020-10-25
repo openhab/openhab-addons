@@ -14,12 +14,12 @@ package org.openhab.binding.modbus.e3dc.util;
 
 import static org.junit.Assert.assertEquals;
 
-import java.nio.ByteBuffer;
 import java.util.BitSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.modbus.e3dc.internal.dto.DataConverter;
+import org.openhab.io.transport.modbus.ValueBuffer;
 
 /**
  * The {@link DataConverterTest} Test data conversions
@@ -30,17 +30,58 @@ import org.openhab.binding.modbus.e3dc.internal.dto.DataConverter;
 public class DataConverterTest {
 
     @Test
-    public void testE3DCSwapValueNegative() {
-        // Reg 69 value 65098 bytes [-2, 74]
-        // Reg 70 value 65535 bytes [-1, -1]
-        byte[] b = new byte[] { -2, -74, -1, -1 };
-        assertEquals("Negative Value", -330, DataConverter.getInt32Swap(ByteBuffer.wrap(b)));
+    public void testRoundPositive() {
+        assertEquals(2.3, DataConverter.round(2.34, 1), 0.01);
     }
 
     @Test
-    public void testBitset() {
+    public void testRoundPositive2() {
+        assertEquals(2.4, DataConverter.round(2.37, 1), 0.01);
+    }
+
+    @Test
+    public void testRoundPositive3() {
+        assertEquals(2.4, DataConverter.round(2.35, 1), 0.01);
+    }
+
+    @Test
+    public void testRoundNegative() {
+        assertEquals(-2.3, DataConverter.round(-2.34, 1), 0.01);
+    }
+
+    @Test
+    public void testRoundNegative2() {
+        assertEquals(-2.4, DataConverter.round(-2.37, 1), 0.01);
+    }
+
+    @Test
+    public void testRoundNegative3() {
+        // rounding towards positive infinity. Note difference to testRoundPositive3
+        assertEquals(-2.3, DataConverter.round(-2.35, 1), 0.01);
+    }
+
+    @Test
+    public void testUDoubleValue() {
+        assertEquals(0.5, DataConverter.getUDoubleValue(ValueBuffer.wrap(new byte[] { 0, 5 }), 0.1), 0.01);
+    }
+
+    @Test
+    public void testUDoubleValue2() {
+        assertEquals(6159.9,
+                DataConverter.getUDoubleValue(ValueBuffer.wrap(new byte[] { (byte) 0xf0, (byte) 0x9f }), 0.1), 0.01);
+    }
+
+    @Test
+    public void testUDoubleValue3() {
+        assertEquals(123198,
+                DataConverter.getUDoubleValue(ValueBuffer.wrap(new byte[] { (byte) 0xf0, (byte) 0x9f }), 2), 0.01);
+    }
+
+    @Test
+    public void testBitsetToInt() {
         byte[] b = new byte[] { 3, 16 };
         BitSet s = BitSet.valueOf(b);
+        // Bit0 is the least significant bit to DataConverter.toInt
         assertEquals("Bit0", true, s.get(0));
         assertEquals("Bit1", true, s.get(1));
         assertEquals("Bit2", false, s.get(2));
@@ -57,5 +98,10 @@ public class DataConverterTest {
         assertEquals("Bit13", false, s.get(13));
         assertEquals("Bit14", false, s.get(14));
         assertEquals("Bit15", false, s.get(15));
+
+        int bitsAsInt = DataConverter.toInt(s);
+        int expected = 0b0001000000000011;
+        assertEquals(Integer.toBinaryString(expected), Integer.toBinaryString(bitsAsInt));
+        assertEquals(expected, bitsAsInt);
     }
 }
