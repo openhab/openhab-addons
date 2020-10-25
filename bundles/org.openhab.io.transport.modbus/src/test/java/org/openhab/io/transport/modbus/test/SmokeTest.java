@@ -119,16 +119,16 @@ public class SmokeTest extends IntegrationTestSupport {
     private void testHoldingValues(ModbusRegisterArray registers, int offsetInRegisters) {
         for (int i = 0; i < registers.size(); i++) {
             int expected = (i + offsetInRegisters) * HOLDING_REGISTER_MULTIPLIER;
-            assertThat(String.format("i=%d, expecting %d, got %d", i, registers.getRegister(i).toUnsignedShort(),
-                    expected), registers.getRegister(i).toUnsignedShort(), is(equalTo(expected)));
+            assertThat(String.format("i=%d, expecting %d, got %d", i, registers.getRegister(i), expected),
+                    registers.getRegister(i), is(equalTo(expected)));
         }
     }
 
     private void testInputValues(ModbusRegisterArray registers, int offsetInRegisters) {
         for (int i = 0; i < registers.size(); i++) {
             int expected = (i + offsetInRegisters) * INPUT_REGISTER_MULTIPLIER;
-            assertThat(String.format("i=%d, expecting %d, got %d", i, registers.getRegister(i).toUnsignedShort(),
-                    expected), registers.getRegister(i).toUnsignedShort(), is(equalTo(expected)));
+            assertThat(String.format("i=%d, expecting %d, got %d", i, registers.getRegister(i), expected),
+                    registers.getRegister(i), is(equalTo(expected)));
         }
     }
 

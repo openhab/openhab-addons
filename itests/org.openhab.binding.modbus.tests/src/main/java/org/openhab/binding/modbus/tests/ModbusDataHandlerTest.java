@@ -73,7 +73,6 @@ import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusResponse;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
@@ -522,7 +521,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     public void testOnRegistersInt16StaticTransformation() {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "-3", ModbusConstants.ValueType.INT16, null,
-                new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }), null);
+                new ModbusRegisterArray(new byte[] { (byte) 0xff, (byte) 0xfd }), null);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
@@ -543,8 +542,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         mockTransformation("MULTIPLY", new MultiplyTransformation());
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
-                new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }), null,
-                bundleContext);
+                new ModbusRegisterArray(new byte[] { (byte) 0xff, (byte) 0xfd }), null, bundleContext);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
@@ -566,8 +564,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "default", ModbusConstants.ValueType.FLOAT32, null, new ModbusRegisterArray(
                         // equivalent of floating point NaN
-                        new ModbusRegister[] { new ModbusRegister((byte) 0x7f, (byte) 0xc0),
-                                new ModbusRegister((byte) 0x00, (byte) 0x00) }),
+                        new byte[] { (byte) 0x7f, (byte) 0xc0, (byte) 0x00, (byte) 0x00 }),
                 null, bundleContext);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
@@ -593,8 +590,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         });
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "ONOFF(10)", ModbusConstants.ValueType.INT16, null,
-                new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }), null,
-                bundleContext);
+                new ModbusRegisterArray(new byte[] { (byte) 0xff, (byte) 0xfd }), null, bundleContext);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
@@ -672,8 +668,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER)));
         assertThat(writeRequest.getReference(), is(equalTo(50)));
         assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), is(equalTo(1)));
-        assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0).getValue(),
-                is(equalTo(5)));
+        assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0), is(equalTo(5)));
     }
 
     @Test
@@ -707,11 +702,11 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
             assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_MULTIPLE_REGISTERS)));
             assertThat(writeRequest.getReference(), is(equalTo(5412)));
             assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), is(equalTo(3)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0).getValue(),
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0),
                     is(equalTo(1)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(1).getValue(),
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(1),
                     is(equalTo(0)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(2).getValue(),
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(2),
                     is(equalTo(5)));
         }
         {
@@ -719,7 +714,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
             assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER)));
             assertThat(writeRequest.getReference(), is(equalTo(555)));
             assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), is(equalTo(1)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0).getValue(),
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0),
                     is(equalTo(3)));
         }
     }
