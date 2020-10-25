@@ -2,6 +2,7 @@
 	<feature name="openhab-binding-bluetooth" description="Bluetooth Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-serial</feature>
+		<bundle dependency="true">mvn:com.github.hypfvieh/bluez-dbus-osgi/0.1.3</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.airthings/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.am43/${project.version}</bundle>
