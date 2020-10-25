@@ -40,6 +40,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -200,6 +201,9 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             return;
         }
         timeoutCounter = 0;
+        if (ThingHandlerHelper.isHandlerInitialized(this)) {
+            updateStatus(ThingStatus.ONLINE);
+        }
         logger.trace("{} received {}", thing.getUID(), response);
 
         response.getVariableBindings().forEach(variable -> {
@@ -423,7 +427,6 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         try {
             target.setAddress(new UdpAddress(InetAddress.getByName(config.hostname), config.port));
             targetAddressString = ((UdpAddress) target.getAddress()).getInetAddress().getHostAddress();
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             return true;
         } catch (UnknownHostException e) {
             target.setAddress(null);
