@@ -51,17 +51,17 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
     private final Logger logger = LoggerFactory.getLogger(SerialBridgeHandler.class);
 
-    private @Nullable SerialBridgeConfiguration config;
+    private @NonNullByDefault({}) SerialBridgeConfiguration config;
 
-    private @Nullable SerialPortIdentifier portId;
-    private @Nullable SerialPort serialPort;
+    private @NonNullByDefault({}) SerialPortIdentifier portId;
+    private @NonNullByDefault({}) SerialPort serialPort;
 
     private @Nullable InputStream inputStream;
     private @Nullable OutputStream outputStream;
 
-    private @Nullable Charset charset;
+    private @NonNullByDefault({}) Charset charset;
 
-    private @NonNullByDefault StringType data;
+    private StringType data;
 
     /**
      * Serial Port Manager.
@@ -79,9 +79,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SerialBindingConstants.STRING_CHANNEL:
-                    if (data != null) {
-                        updateState(channelUID, data);
-                    }
+                    updateState(channelUID, data);
                     break;
                 default:
                     break;
@@ -121,24 +119,24 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
      *
      * @param msg the string to send
      */
-    public void writeString(Command msg) {
-        if (msg == null) {
-            return;
-        }
+    public void writeString(final Command msg) {
+        final OutputStream outputStream = this.outputStream;
 
-        logger.debug("Writing '{}' to serial port {}", msg.toFullString(), config.serialPort);
+        if (outputStream != null) {
+            logger.debug("Writing '{}' to serial port {}", msg.toFullString(), config.serialPort);
 
-        try {
-            // write string to serial port
-            if (msg instanceof RawType) {
-                outputStream.write(((RawType) msg).getBytes());
-            } else {
-                outputStream.write(msg.toFullString().getBytes(charset));
+            try {
+                // write string to serial port
+                if (msg instanceof RawType) {
+                    outputStream.write(((RawType) msg).getBytes());
+                } else {
+                    outputStream.write(msg.toFullString().getBytes(charset));
+                }
+
+                outputStream.flush();
+            } catch (final IOException e) {
+                logger.warn("Error writing '{}' to serial port {}: {}", msg, config.serialPort, e.getMessage());
             }
-
-            outputStream.flush();
-        } catch (IOException e) {
-            logger.warn("Error writing '{}' to serial port {}: {}", msg, config.serialPort, e.getMessage());
         }
     }
 
@@ -182,7 +180,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         } catch (final TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Cannot attach listener to port!");
-        } catch (UnsupportedCommOperationException e) {
+        } catch (final UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Unsupported parameters!");
         }
 
@@ -193,7 +191,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                 charset = Charset.forName(config.charset);
             }
             logger.debug("Serial port '{}' charset '{}' set.", config.serialPort, charset);
-        } catch (IllegalCharsetNameException e) {
+        } catch (final IllegalCharsetNameException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invalid charset!");
             return;
         }
@@ -204,50 +202,62 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         if (serialPort != null) {
             serialPort.removeEventListener();
         }
+
+        final InputStream inputStream = this.inputStream;
         if (inputStream != null) {
             try {
                 inputStream.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.debug("Error while closing the input stream: {}", e.getMessage());
             }
         }
+        this.inputStream = null;
+
+        final OutputStream outputStream = this.outputStream;
         if (outputStream != null) {
             try {
                 outputStream.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.debug("Error while closing the output stream: {}", e.getMessage());
             }
         }
+        this.outputStream = null;
+
         if (serialPort != null) {
             serialPort.close();
         }
-        inputStream = null;
         serialPort = null;
     }
 
     @Override
     public void serialEvent(final SerialPortEvent event) {
+        final InputStream inputStream = this.inputStream;
+
+        if (inputStream == null) {
+            return;
+        }
+
         switch (event.getEventType()) {
             case SerialPortEvent.DATA_AVAILABLE:
-                StringBuilder sb = new StringBuilder();
-                byte[] readBuffer = new byte[20];
+                final StringBuilder sb = new StringBuilder();
+                final byte[] readBuffer = new byte[20];
                 try {
                     do {
                         // read data from serial device
                         while (inputStream.available() > 0) {
-                            int bytes = inputStream.read(readBuffer);
+                            final int bytes = inputStream.read(readBuffer);
                             sb.append(new String(readBuffer, 0, bytes, charset));
                         }
                         try {
                             // add wait states around reading the stream, so that interrupted transmissions
                             // are merged
                             Thread.sleep(100);
-                        } catch (InterruptedException e) {
+                        } catch (final InterruptedException e) {
                             // ignore interruption
                         }
                     } while (inputStream.available() > 0);
 
-                    String data = sb.toString();
+                    final String data = sb.toString();
 
                     if (!data.isEmpty()) {
                         this.data = StringType.valueOf(data);
@@ -262,10 +272,14 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
                         triggerChannel(SerialBindingConstants.TRIGGER_CHANNEL);
 
-                        data.lines().forEach(l -> getThing().getThings()
-                                .forEach(t -> ((SerialDeviceHandler) t.getHandler()).handleData(l)));
+                        data.lines().forEach(l -> getThing().getThings().forEach(t -> {
+                            SerialDeviceHandler device = (SerialDeviceHandler) t.getHandler();
+                            if (device != null) {
+                                device.handleData(l);
+                            }
+                        }));
                     }
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     logger.debug("Error reading from serial port: {}", e.getMessage(), e);
                 }
                 break;

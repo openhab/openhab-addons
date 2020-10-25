@@ -15,9 +15,7 @@ package org.openhab.binding.serial.internal;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -38,14 +36,13 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class SerialDeviceHandler extends BaseThingHandler {
 
-    private @Nullable SerialDeviceConfiguration config;
+    private @NonNullByDefault({}) Pattern devicePattern;
 
-    private @Nullable Pattern devicePattern;
-
-    private @NonNull StringType deviceData = new StringType();
+    private StringType deviceData;
 
     public SerialDeviceHandler(Thing thing) {
         super(thing);
+        deviceData = new StringType();
     }
 
     @Override
@@ -57,7 +54,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(SerialDeviceConfiguration.class);
+        SerialDeviceConfiguration config = getConfigAs(SerialDeviceConfiguration.class);
 
         try {
             devicePattern = Pattern.compile(config.patternMatch);
