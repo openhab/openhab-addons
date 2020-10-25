@@ -25,21 +25,47 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  */
 public enum ResourceType {
-    GROUPS("groups"),
-    LIGHTS("lights"),
-    SENSORS("sensors"),
-    UNKNOWN("");
+    GROUPS("groups", "action"),
+    LIGHTS("lights", "state"),
+    SENSORS("sensors", ""),
+    UNKNOWN("", "");
 
     private static final Map<String, ResourceType> MAPPING = Arrays.stream(ResourceType.values())
-            .collect(Collectors.toMap(v -> v.type, v -> v));
+            .collect(Collectors.toMap(v -> v.identifier, v -> v));
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceType.class);
 
-    private String type;
+    private String identifier;
+    private String commandUrl;
 
-    ResourceType(String type) {
-        this.type = type;
+    ResourceType(String identifier, String commandUrl) {
+        this.identifier = identifier;
+        this.commandUrl = commandUrl;
     }
 
+    /**
+     * get the identifier string of this resource type
+     *
+     * @return
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * get the commandUrl part for this resource type
+     *
+     * @return
+     */
+    public String getCommandUrl() {
+        return commandUrl;
+    }
+
+    /**
+     * get the resource type from a string
+     *
+     * @param s the string
+     * @return the corresponding resource type (or UNKNOWN)
+     */
     public static ResourceType fromString(String s) {
         ResourceType lightType = MAPPING.getOrDefault(s, UNKNOWN);
         if (lightType == UNKNOWN) {

@@ -81,11 +81,6 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
     }
 
     @Override
-    protected void requestState() {
-        requestState("sensors");
-    }
-
-    @Override
     public void dispose() {
         ScheduledFuture<?> lastSeenPollingJob = this.lastSeenPollingJob;
         if (lastSeenPollingJob != null) {

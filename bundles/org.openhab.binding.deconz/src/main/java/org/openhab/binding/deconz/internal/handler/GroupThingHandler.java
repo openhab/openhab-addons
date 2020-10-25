@@ -13,7 +13,6 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
-import static org.openhab.binding.deconz.internal.Util.buildUrl;
 
 import java.util.Set;
 
@@ -70,11 +69,6 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
     }
 
     @Override
-    protected void requestState() {
-        requestState("groups");
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
 
@@ -128,22 +122,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
             newGroupAction.on = true;
         }
 
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
-            return;
-        }
-                "action");
-
-        String json = gson.toJson(newGroupAction);
-        logger.trace("Sending {} to group {} via {}", json, config.id, url);
-
-        asyncHttpClient.put(url, json, bridgeConfig.timeout)
-                .thenAccept(v -> logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody()))
-                .exceptionally(e -> {
-                    logger.debug("Sending command {} to channel {} failed: {} - {}", command, channelUID, e.getClass(),
-                            e.getMessage());
-                    return null;
-                });
+        sendCommand(newGroupAction, command, channelUID, null);
     }
 
     @Override

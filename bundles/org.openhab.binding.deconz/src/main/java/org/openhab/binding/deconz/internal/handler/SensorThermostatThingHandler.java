@@ -13,7 +13,6 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
-import static org.openhab.binding.deconz.internal.Util.buildUrl;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.SmartHomeUnits.PERCENT;
 
@@ -28,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.dto.ThermostatConfig;
-import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -121,26 +119,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
 
         }
 
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
-            return;
-        }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "sensors", config.id,
-                "config");
-
-        String json = gson.toJson(newConfig);
-        logger.trace("Sending {} to sensor {} via {}", json, config.id, url);
-        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
-            String bodyContent = v.getBody();
-            logger.trace("Result code={}, body={}", v.getResponseCode(), bodyContent);
-            if (!bodyContent.contains("success")) {
-                logger.debug("Sending command {} to channel {} failed: {}", command, channelUID, bodyContent);
-            }
-
-        }).exceptionally(e -> {
-            logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
-            return null;
-        });
+        sendCommand(newConfig, command, channelUID, null);
     }
 
     @Override

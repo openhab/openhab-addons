@@ -121,11 +121,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     }
 
     @Override
-    protected void requestState() {
-        requestState("lights");
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             valueUpdated(channelUID.getId(), lightStateCache);
@@ -230,32 +225,17 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 return;
         }
 
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
-            return;
-        }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id,
-                "state");
-
         if (newLightState.on != null && !newLightState.on) {
             // if light shall be off, no other commands are allowed, so reset the new light state
             newLightState.clear();
             newLightState.on = false;
         }
 
-        String json = gson.toJson(newLightState);
-        logger.trace("Sending {} to light {} via {}", json, config.id, url);
-
-        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
+        sendCommand(newLightState, command, channelUID, () -> {
             lastCommandExpireTimestamp = System.currentTimeMillis()
                     + (newLightState.transitiontime != null ? newLightState.transitiontime
                             : DEFAULT_COMMAND_EXPIRY_TIME);
             lastCommand = newLightState;
-            logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
-        }).exceptionally(e -> {
-            logger.debug("Sending command {} to channel {} failed: {} - {}", command, channelUID, e.getClass(),
-                    e.getMessage());
-            return null;
         });
     }
 
