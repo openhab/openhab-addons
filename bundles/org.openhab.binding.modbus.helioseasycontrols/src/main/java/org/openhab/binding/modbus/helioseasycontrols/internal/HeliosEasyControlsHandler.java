@@ -54,7 +54,6 @@ import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
@@ -398,9 +397,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                             lock.acquire();
                             comms.submitOneTimeWrite(
                                     new ModbusWriteRegisterRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
-                                            HeliosEasyControlsBindingConstants.START_ADDRESS,
-                                            new ModbusRegisterArray(preparePayload(payload)), true,
-                                            HeliosEasyControlsBindingConstants.MAX_TRIES),
+                                            HeliosEasyControlsBindingConstants.START_ADDRESS, preparePayload(payload),
+                                            true, HeliosEasyControlsBindingConstants.MAX_TRIES),
                                     result -> {
                                         lock.release();
                                         updateStatus(ThingStatus.ONLINE);
@@ -446,8 +444,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 String payload = v.getVariableString();
                 comms.submitOneTimeWrite(new ModbusWriteRegisterRequestBlueprint(
                         HeliosEasyControlsBindingConstants.UNIT_ID, HeliosEasyControlsBindingConstants.START_ADDRESS,
-                        new ModbusRegisterArray(preparePayload(payload)), true,
-                        HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
+                        preparePayload(payload), true, HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
                             comms.submitOneTimePoll(
                                     new ModbusReadRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
                                             ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
@@ -656,25 +653,21 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @param payload The String representation of the payload
      * @return The Register representation of the payload
      */
-    private ModbusRegister[] preparePayload(String payload) {
-
+    private static ModbusRegisterArray preparePayload(String payload) {
         // determine number of registers
-        int l = (payload.length() + 1) / 2; // +1 because we need to include at least one termination symbol 0x00
-        if ((payload.length() + 1) % 2 != 0) {
-            l++;
-        }
+        byte[] asciiBytes = payload.getBytes(StandardCharsets.US_ASCII);
+        int bufferLength = asciiBytes.length // ascii characters
+                + 1 // NUL byte
+                + ((asciiBytes.length % 2 == 0) ? 1 : 0); // to have even number of bytes
+        assert bufferLength % 2 == 0; // Invariant, ensured above
 
-        ModbusRegister reg[] = new ModbusRegister[l];
-        byte[] b = payload.getBytes();
-        int ch = 0;
-        for (int i = 0; i < reg.length; i++) {
-            byte b1 = ch < b.length ? b[ch] : (byte) 0x00; // terminate with 0x00 if at the end of the payload
-            ch++;
-            byte b2 = ch < b.length ? b[ch] : (byte) 0x00;
-            ch++;
-            reg[i] = new ModbusRegister(b1, b2);
+        byte[] buffer = new byte[bufferLength];
+        System.arraycopy(asciiBytes, 0, buffer, 0, asciiBytes.length);
+        // Fill in rest of bytes with NUL bytes
+        for (int i = asciiBytes.length; i < buffer.length; i++) {
+            buffer[i] = '\0';
         }
-        return reg;
+        return new ModbusRegisterArray(buffer);
     }
 
     /**
@@ -684,8 +677,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @return The value or <tt>null</tt> if an error occurred
      */
     private void processResponse(HeliosVariable v, ModbusRegisterArray registers) {
-        String r = ModbusBitUtilities
-                .extractStringFromRegisters(registers, 0, registers.size() * 2, StandardCharsets.US_ASCII).toString();
+        String r = ModbusBitUtilities.extractStringFromRegisters(registers, 0, registers.size() * 2,
+                StandardCharsets.US_ASCII);
         String[] parts = r.split("=", 2); // remove the part "vXXXX=" from the string
         // making sure we have a proper response and the response matches the requested variable
         if ((parts.length == 2) && (v.getVariableString().equals(parts[0]))) {
