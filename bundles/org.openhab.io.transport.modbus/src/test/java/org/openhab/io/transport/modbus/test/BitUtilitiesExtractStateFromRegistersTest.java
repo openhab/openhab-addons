@@ -390,5 +390,4 @@ public class BitUtilitiesExtractStateFromRegistersTest {
         assertThat(String.format("registers=%s, index=%d, type=%s", registers, index, type), actualState,
                 is(equalTo(expectedStateWrapped)));
     }
-
 }
