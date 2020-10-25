@@ -141,7 +141,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
 
         // now lets make sure that discovery is turned on
         if (!localAdapter.startDiscovery()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Starting discovery");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Trying to start discovery");
             return null;
         }
         return localAdapter;
