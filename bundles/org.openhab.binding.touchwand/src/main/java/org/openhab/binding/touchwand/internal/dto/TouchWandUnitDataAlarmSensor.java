@@ -21,20 +21,12 @@ package org.openhab.binding.touchwand.internal.dto;
  */
 public class TouchWandUnitDataAlarmSensor extends TouchWandUnitData {
 
-    public TouchWandAlarmSensorCurrentStatus currStatus = new TouchWandAlarmSensorCurrentStatus();
-
-    public void setCurrStatus(TouchWandAlarmSensorCurrentStatus currStatus) {
-        this.currStatus = currStatus;
-    }
+    private TouchWandAlarmSensorCurrentStatus currStatus = new TouchWandAlarmSensorCurrentStatus();
 
     @Override
     public TouchWandAlarmSensorCurrentStatus getCurrStatus() {
         return this.currStatus;
     }
-
-    // public List<Sensor> getSensors() {
-    // return sensors;
-    // }
 
     public class AlarmEventType {
         public int eventsNum;

@@ -58,7 +58,7 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
 
         for (Entry<String, JsonElement> entry : currentStatusObj.entrySet()) {
             String key = entry.getKey();
-            String splits[] = key.split("_");
+            String splits[] = key.split("_"); // the key is xxxx_n where xxx is sensor type and n is
             String keyName = splits[0];
             Integer index = null;
 
@@ -80,20 +80,20 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
                     TouchWandAlarmSensorCurrentStatus.AlarmEvent alarmEvent = touchWandUnitDataAlarmSensorCurrentStatus.new AlarmEvent();
                     alarmEvent.alarm = alarm;
                     alarmEvent.alarmType = index;
-                    touchWandUnitDataAlarmSensor.currStatus.getAlarmsStatus().add(alarmEvent);
+                    touchWandUnitDataAlarmSensor.getCurrStatus().getAlarmsStatus().add(alarmEvent);
                     break;
                 case "sensor":
                     TouchWandAlarmSensorCurrentStatus.Sensor sensor = touchWandUnitDataAlarmSensorCurrentStatus.new Sensor();
                     sensor.value = entry.getValue().getAsFloat();
                     sensor.type = index;
-                    touchWandUnitDataAlarmSensor.currStatus.getSensorsStatus().add(sensor);
+                    touchWandUnitDataAlarmSensor.getCurrStatus().getSensorsStatus().add(sensor);
                     break;
                 case "bsensor":
                     bSensor bsensor = gson.fromJson(entry.getValue().getAsJsonObject(), bSensor.class);
                     TouchWandAlarmSensorCurrentStatus.bSensorEvent bsensorevent = touchWandUnitDataAlarmSensorCurrentStatus.new bSensorEvent();
                     bsensorevent.sensor = bsensor;
                     bsensorevent.sensorType = index;
-                    touchWandUnitDataAlarmSensor.currStatus.getbSensorsStatus().add(bsensorevent);
+                    touchWandUnitDataAlarmSensor.getCurrStatus().getbSensorsStatus().add(bsensorevent);
                     break;
                 default:
                     break;

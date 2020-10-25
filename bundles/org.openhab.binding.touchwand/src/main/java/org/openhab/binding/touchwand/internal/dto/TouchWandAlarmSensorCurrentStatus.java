@@ -25,8 +25,8 @@ import java.util.List;
 
 public class TouchWandAlarmSensorCurrentStatus {
 
-    public Integer batt;
-    public List<Sensor> sensorsStatus = new ArrayList<Sensor>();
+    private Integer batt;
+    private List<Sensor> sensorsStatus = new ArrayList<Sensor>();
     private List<AlarmEvent> alarmsStatus = new ArrayList<AlarmEvent>();
     private List<bSensorEvent> bSensorsStatus = new ArrayList<bSensorEvent>();
 
@@ -85,13 +85,5 @@ public class TouchWandAlarmSensorCurrentStatus {
     public class bSensorEvent {
         public Integer sensorType;
         public bSensor sensor;
-
-        public Integer getSensorType() {
-            return sensorType;
-        }
-
-        public bSensor getSensor() {
-            return sensor;
-        }
     }
 }

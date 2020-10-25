@@ -87,8 +87,8 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
         Iterator<bSensorEvent> iter = unitData.getCurrStatus().getbSensorsStatus().iterator();
         while (iter.hasNext()) {
             bSensorEvent mySensor = iter.next();
-            if (mySensor.getSensorType() == SENSOR_TYPE_LEAK) {
-                boolean isLeak = mySensor.getSensor().state;
+            if (mySensor.sensorType == SENSOR_TYPE_LEAK) {
+                boolean isLeak = mySensor.sensor.state;
                 updateState(CHANNEL_LEAK, OnOffType.from(isLeak));
             }
         }
@@ -98,8 +98,8 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
         Iterator<bSensorEvent> iter = unitData.getCurrStatus().getbSensorsStatus().iterator();
         while (iter.hasNext()) {
             bSensorEvent mySensor = iter.next();
-            if (mySensor.getSensorType() == SENSOR_TYPE_DOOR_WINDOW) {
-                boolean isOpen = mySensor.getSensor().state;
+            if (mySensor.sensorType == SENSOR_TYPE_DOOR_WINDOW) {
+                boolean isOpen = mySensor.sensor.state;
                 OpenClosedType myOpenClose;
                 myOpenClose = isOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 updateState(CHANNEL_DOORWINDOW, myOpenClose);
@@ -111,8 +111,8 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
         Iterator<bSensorEvent> iter = unitData.getCurrStatus().getbSensorsStatus().iterator();
         while (iter.hasNext()) {
             bSensorEvent mySensor = iter.next();
-            if (mySensor.getSensorType() == SENSOR_TYPE_MOTION) {
-                boolean hasMotion = mySensor.getSensor().state;
+            if (mySensor.sensorType == SENSOR_TYPE_MOTION) {
+                boolean hasMotion = mySensor.sensor.state;
                 updateState(CHANNEL_MOTION, OnOffType.from(hasMotion));
             }
         }

@@ -137,7 +137,7 @@ public class TouchWandWebSockets {
         public void onConnect(Session session) {
             logger.debug("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
             try {
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // need unique id
                 String controllerIdStr = String.format("{\"contId\": \"openhab%d\"}", timestamp.getTime());
                 session.getRemote().sendString(controllerIdStr);
             } catch (IOException e) {
