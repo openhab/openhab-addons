@@ -68,7 +68,7 @@ If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the
             Switch item=XmasTree_MasterControls
             Slider item=XmasTree_MasterControls
             Colorpicker item=XmasTree_MasterControls
-            Switch item=XmasTree_Sleep
+            Switch item=XmasTree_SleepTimer
             Colorpicker item=XmasTree_PrimaryColor
             Colorpicker item=XmasTree_SecondaryColor
             Selection item=XmasTree_Effect
@@ -77,8 +77,8 @@ If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the
             Default item=XmasTree_FXSpeed
             Default item=XmasTree_FXIntensity
             Default item=XmasTree_PresetCycle
-            Selection item=XmasTree_PresetDuration mappings=[2 ='2 seconds', 10='10 seconds', 30='30 seconds', 60='1 minute']
-            Selection item=XmasTree_TransformTime mappings=[0='0 seconds', 2 ='2 seconds', 10='10 seconds', 30='30 seconds', 60='1 minute']
+            Selection item=XmasTree_PresetDuration mappings=[2 ='2 seconds', 10='10 seconds', 30='30 seconds', 60='60 seconds']
+            Selection item=XmasTree_TransformTime mappings=[0='0 seconds', 2 ='2 seconds', 10='10 seconds', 30='30 seconds', 60='60 seconds']
         }
         
 ```
