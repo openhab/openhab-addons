@@ -32,6 +32,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
@@ -39,6 +42,7 @@ import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.ItemUtil;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DimmerItem;
@@ -49,6 +53,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
@@ -160,16 +165,38 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 Sample sample = db.createSample();
                 sample.setTime(now);
 
-                DecimalType state = item.getStateAs(DecimalType.class);
-                if (state != null) {
-                    double value = state.toBigDecimal().doubleValue();
+                Double value = null;
+
+                if (item instanceof NumberItem && item.getState() instanceof QuantityType) {
+                    NumberItem nItem = (NumberItem) item;
+                    QuantityType<?> qState = (QuantityType<?>) item.getState();
+                    Unit<? extends Quantity<?>> unit = nItem.getUnit();
+                    if (unit != null) {
+                        QuantityType<?> convertedState = qState.toUnit(unit);
+                        if (convertedState != null) {
+                            value = convertedState.doubleValue();
+                        } else {
+                            logger.warn(
+                                    "Failed to convert state '{}' to unit '{}'. Please check your item definition for correctness.",
+                                    qState, unit);
+                        }
+                    } else {
+                        value = qState.doubleValue();
+                    }
+                } else {
+                    DecimalType state = item.getStateAs(DecimalType.class);
+                    if (state != null) {
+                        value = state.toBigDecimal().doubleValue();
+                    }
+                }
+                if (value != null) {
                     if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) { // counter values must be
                                                                                           // adjusted by stepsize
                         value = value * db.getRrdDef().getStep();
                     }
                     sample.setValue(DATASOURCE_STATE, value);
                     sample.update();
-                    logger.debug("Stored '{}' with state '{}' in rrd4j database", name, state);
+                    logger.debug("Stored '{}' with state '{}' in rrd4j database", name, value);
                 }
             } catch (IllegalArgumentException e) {
                 if (e.getMessage().contains("at least one second step is required")) {
@@ -193,6 +220,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 logger.debug("Error closing rrd4j database: {}", e.getMessage());
             }
         }
+
     }
 
     @Override
@@ -356,6 +384,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private State mapToState(double value, String itemName) {
         try {
             Item item = itemRegistry.getItem(itemName);
@@ -366,6 +395,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
                 // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
                 return new PercentType((int) Math.round(value * 100));
+            } else if (item instanceof NumberItem) {
+                Unit<? extends Quantity<?>> unit = ((NumberItem) item).getUnit();
+                if (unit != null) {
+                    return new QuantityType(value, unit);
+                } else {
+                    return new DecimalType(value);
+                }
             }
         } catch (ItemNotFoundException e) {
             logger.debug("Could not find item '{}' in registry", itemName);
@@ -375,7 +411,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private boolean isSupportedItemType(Item item) {
-        return SUPPORTED_TYPES.contains(item.getType());
+        return SUPPORTED_TYPES.contains(ItemUtil.getMainItemType(item.getType()));
     }
 
     private static String getUserPersistenceDataFolder() {
