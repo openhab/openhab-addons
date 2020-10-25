@@ -15,7 +15,6 @@ package org.openhab.binding.remoteopenhab.internal.discovery;
 import static org.openhab.binding.remoteopenhab.internal.RemoteopenhabBindingConstants.*;
 import static org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabInstanceConfiguration.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,9 +90,7 @@ public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipa
         if (thingUID != null && ip != null && restPath != null) {
             String label = "openHAB server";
             logger.debug("Created a DiscoveryResult for remote openHAB server {} with IP {}", thingUID, ip);
-            Map<String, Object> properties = new HashMap<>(1);
-            properties.put(HOST, ip);
-            properties.put(REST_PATH, restPath);
+            Map<String, Object> properties = Map.of(HOST, ip, REST_PATH, restPath);
             result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withRepresentationProperty(HOST)
                     .withLabel(label).build();
         }
