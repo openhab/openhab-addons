@@ -94,15 +94,13 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private ExpiringCache<String> map;
     private String lastHistoryId = "";
     private String lastMap = "";
-    private CloudConnector cloudConnector;
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCababilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
 
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry) {
-        super(thing, miIoDatabaseWatchService);
-        this.cloudConnector = cloudConnector;
+        super(thing, miIoDatabaseWatchService, cloudConnector);
         this.channelTypeRegistry = channelTypeRegistry;
         mapChannelUid = new ChannelUID(thing.getUID(), CHANNEL_VACUUM_MAP);
         status = new ExpiringCache<>(CACHE_EXPIRY, () -> {
@@ -177,6 +175,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return;
         }
+        if (handleCommandsChannels(channelUID, command)) {
+            return;
+        }
         if (channelUID.getId().equals(CHANNEL_VACUUM)) {
             if (command instanceof OnOffType) {
                 if (command.equals(OnOffType.ON)) {
@@ -240,14 +241,13 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             sendCommand(MiIoCommand.CONSUMABLES_RESET, "[" + command.toString() + "]");
             updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
         }
-        if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString()), command.toString());
-        }
     }
 
     private void forceStatusUpdate() {
         status.invalidateValue();
-        status.getValue();
+        scheduler.schedule(() -> {
+            status.getValue();
+        }, 3000, TimeUnit.MILLISECONDS);
     }
 
     private void safeUpdateState(String channelID, @Nullable Integer state) {
@@ -518,9 +518,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                         scheduler.submit(() -> updateState(CHANNEL_VACUUM_MAP, getMap(mapresponse)));
                     }
                 }
-                break;
-            case UNKNOWN:
-                updateState(CHANNEL_COMMAND, new StringType(response.getResponse().toString()));
                 break;
             default:
                 break;

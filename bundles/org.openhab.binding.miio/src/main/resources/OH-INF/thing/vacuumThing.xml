@@ -8,90 +8,91 @@
 		<label>Xiaomi Robot Vacuum</label>
 
 		<channel-groups>
-			<channel-group id="actions" typeId="actions"/>
-			<channel-group id="status" typeId="status"/>
-			<channel-group id="consumables" typeId="consumables"/>
-			<channel-group id="dnd" typeId="dnd"/>
-			<channel-group id="history" typeId="history"/>
-			<channel-group id="cleaning" typeId="cleaning"/>
-			<channel-group id="network" typeId="network"/>
+			<channel-group id="actions" typeId="actions" />
+			<channel-group id="status" typeId="status" />
+			<channel-group id="consumables" typeId="consumables" />
+			<channel-group id="dnd" typeId="dnd" />
+			<channel-group id="history" typeId="history" />
+			<channel-group id="cleaning" typeId="cleaning" />
+			<channel-group id="network" typeId="network" />
 		</channel-groups>
 
 		<properties>
 			<property name="vendor">Xiaomi</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:miio:config"/>
+		<config-description-ref uri="thing-type:miio:config" />
 
 	</thing-type>
 	<channel-group-type id="actions">
 		<label>Action</label>
 		<channels>
-			<channel id="control" typeId="control"/>
-			<channel id="commands" typeId="commands"/>
-			<channel id="fan" typeId="fan"/>
-			<channel id="vacuum" typeId="vacuum"/>
-			<channel id="segment" typeId="segment"/>
+			<channel id="control" typeId="control" />
+			<channel id="commands" typeId="commands" />
+			<channel id="rpc" typeId="rpc" />
+			<channel id="fan" typeId="fan" />
+			<channel id="vacuum" typeId="vacuum" />
+			<channel id="segment" typeId="segment" />
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="status">
 		<label>Status</label>
 		<channels>
-			<channel id="battery" typeId="system.battery-level"/>
-			<channel id="clean_area" typeId="clean_area"/>
-			<channel id="clean_time" typeId="clean_time"/>
-			<channel id="error_code" typeId="error_code"/>
-			<channel id="error_id" typeId="error_id"/>
-			<channel id="fan_power" typeId="fan_power"/>
-			<channel id="in_cleaning" typeId="in_cleaning"/>
-			<channel id="dnd_enabled" typeId="dnd_enabled"/>
-			<channel id="map_present" typeId="map_present"/>
-			<channel id="state" typeId="state"/>
-			<channel id="state_id" typeId="state_id"/>
+			<channel id="battery" typeId="system.battery-level" />
+			<channel id="clean_area" typeId="clean_area" />
+			<channel id="clean_time" typeId="clean_time" />
+			<channel id="error_code" typeId="error_code" />
+			<channel id="error_id" typeId="error_id" />
+			<channel id="fan_power" typeId="fan_power" />
+			<channel id="in_cleaning" typeId="in_cleaning" />
+			<channel id="dnd_enabled" typeId="dnd_enabled" />
+			<channel id="map_present" typeId="map_present" />
+			<channel id="state" typeId="state" />
+			<channel id="state_id" typeId="state_id" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
 		<label>Consumables</label>
 		<channels>
-			<channel id="main_brush_percent" typeId="main_brush_percent"/>
-			<channel id="side_brush_percent" typeId="side_brush_percent"/>
-			<channel id="filter_percent" typeId="filter_percent"/>
-			<channel id="sensor_dirt_percent" typeId="sensor_dirt_percent"/>
-			<channel id="main_brush_time" typeId="main_brush_time"/>
-			<channel id="side_brush_time" typeId="side_brush_time"/>
-			<channel id="filter_time" typeId="filter_time"/>
-			<channel id="sensor_dirt_time" typeId="sensor_dirt_time"/>
-			<channel id="consumable_reset" typeId="consumable_reset"/>
+			<channel id="main_brush_percent" typeId="main_brush_percent" />
+			<channel id="side_brush_percent" typeId="side_brush_percent" />
+			<channel id="filter_percent" typeId="filter_percent" />
+			<channel id="sensor_dirt_percent" typeId="sensor_dirt_percent" />
+			<channel id="main_brush_time" typeId="main_brush_time" />
+			<channel id="side_brush_time" typeId="side_brush_time" />
+			<channel id="filter_time" typeId="filter_time" />
+			<channel id="sensor_dirt_time" typeId="sensor_dirt_time" />
+			<channel id="consumable_reset" typeId="consumable_reset" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="dnd">
 		<label>Do Not Disturb</label>
 		<channels>
-			<channel id="dnd_function" typeId="dnd_function"/>
-			<channel id="dnd_start" typeId="dnd_start"/>
-			<channel id="dnd_end" typeId="dnd_end"/>
+			<channel id="dnd_function" typeId="dnd_function" />
+			<channel id="dnd_start" typeId="dnd_start" />
+			<channel id="dnd_end" typeId="dnd_end" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="cleaning">
 		<label>Last Cleaning Details</label>
 		<channels>
-			<channel id="last_clean_start_time" typeId="last_clean_start_time"/>
-			<channel id="last_clean_end_time" typeId="last_clean_end_time"/>
-			<channel id="last_clean_area" typeId="last_clean_area"/>
-			<channel id="last_clean_duration" typeId="last_clean_duration"/>
-			<channel id="last_clean_error" typeId="last_clean_error"/>
-			<channel id="last_clean_finish" typeId="last_clean_finish"/>
-			<channel id="last_clean_record" typeId="last_clean_record"/>
-			<channel id="map" typeId="map"/>
+			<channel id="last_clean_start_time" typeId="last_clean_start_time" />
+			<channel id="last_clean_end_time" typeId="last_clean_end_time" />
+			<channel id="last_clean_area" typeId="last_clean_area" />
+			<channel id="last_clean_duration" typeId="last_clean_duration" />
+			<channel id="last_clean_error" typeId="last_clean_error" />
+			<channel id="last_clean_finish" typeId="last_clean_finish" />
+			<channel id="last_clean_record" typeId="last_clean_record" />
+			<channel id="map" typeId="map" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="history">
 		<label>History</label>
 		<channels>
-			<channel id="total_clean_area" typeId="total_clean_area"/>
-			<channel id="total_clean_time" typeId="total_clean_time"/>
-			<channel id="total_clean_count" typeId="total_clean_count"/>
+			<channel id="total_clean_area" typeId="total_clean_area" />
+			<channel id="total_clean_time" typeId="total_clean_time" />
+			<channel id="total_clean_count" typeId="total_clean_count" />
 		</channels>
 	</channel-group-type>
 
@@ -99,12 +100,12 @@
 	<channel-type id="clean_area">
 		<item-type>Number</item-type>
 		<label>Cleaning Area</label>
-		<state pattern="%.2f m²" readOnly="true"/>
+		<state pattern="%.2f m²" readOnly="true" />
 	</channel-type>
 	<channel-type id="clean_time">
 		<item-type>Number</item-type>
 		<label>Cleaning Time</label>
-		<state pattern="%.0f'" readOnly="true"/>
+		<state pattern="%.0f'" readOnly="true" />
 	</channel-type>
 	<channel-type id="dnd_enabled">
 		<item-type>Switch</item-type>
@@ -113,112 +114,112 @@
 	<channel-type id="error_code">
 		<item-type>String</item-type>
 		<label>Error Code</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="error_id">
 		<item-type>Number</item-type>
 		<label>Error ID</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="fan_power">
 		<item-type>Number</item-type>
 		<label>Fan Power</label>
-		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
+		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false" />
 	</channel-type>
 	<channel-type id="in_cleaning" advanced="true">
 		<item-type>Number</item-type>
 		<label>In Cleaning</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f" readOnly="true" />
 	</channel-type>
 	<channel-type id="map_present" advanced="true">
 		<item-type>Number</item-type>
 		<label>Map Present</label>
 		<category>Energy</category>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f" readOnly="true" />
 	</channel-type>
 	<channel-type id="msg_seq" advanced="true">
 		<item-type>Number</item-type>
 		<label>Msg Seq</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="state">
 		<item-type>String</item-type>
 		<label>State</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="state_id">
 		<item-type>Number</item-type>
 		<label>State ID</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!-- Dynamic Status Channels -->
 	<channel-type id="water_box_mode">
 		<item-type>Number</item-type>
 		<label>Water Box Mode</label>
-		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false"/>
+		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false" />
 	</channel-type>
 	<channel-type id="water_box_status">
 		<item-type>Switch</item-type>
 		<label>Water Box State</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="water_box_carriage_status">
 		<item-type>Switch</item-type>
 		<label>Water Box Carriage State</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="lock_status">
 		<item-type>Switch</item-type>
 		<label>Lock Status</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="mop_forbidden_enable">
 		<item-type>Switch</item-type>
 		<label>Mop Forbidden</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 
 	<!-- Consumables channels -->
 	<channel-type id="main_brush_percent">
 		<item-type>Number</item-type>
 		<label>Main Brush Remaining</label>
-		<state pattern="%.0f%%" readOnly="true"/>
+		<state pattern="%.0f%%" readOnly="true" />
 	</channel-type>
 	<channel-type id="side_brush_percent">
 		<item-type>Number</item-type>
 		<label>Side Brush Remaining</label>
-		<state pattern="%.0f%%" readOnly="true"/>
+		<state pattern="%.0f%%" readOnly="true" />
 	</channel-type>
 	<channel-type id="filter_percent">
 		<item-type>Number</item-type>
 		<label>Filter Usage Remaining</label>
-		<state pattern="%.0f%%" readOnly="true"/>
+		<state pattern="%.0f%%" readOnly="true" />
 	</channel-type>
 	<channel-type id="sensor_dirt_percent">
 		<item-type>Number</item-type>
 		<label>Sensor Dirt Remaining</label>
-		<state pattern="%.0f%%" readOnly="true"/>
+		<state pattern="%.0f%%" readOnly="true" />
 	</channel-type>
 	<channel-type id="main_brush_time" advanced="true">
 		<item-type>Number</item-type>
 		<label>Main Brush Hours till Replacement</label>
-		<state pattern="%.0fh" readOnly="true"/>
+		<state pattern="%.0fh" readOnly="true" />
 	</channel-type>
 	<channel-type id="side_brush_time" advanced="true">
 		<item-type>Number</item-type>
 		<label>Side Brush Hours till Replacement</label>
-		<state pattern="%.0fh" readOnly="true"/>
+		<state pattern="%.0fh" readOnly="true" />
 	</channel-type>
 	<channel-type id="filter_time" advanced="true">
 		<item-type>Number</item-type>
 		<label>Filter Hours till Replacement</label>
-		<state pattern="%.0fh" readOnly="true"/>
+		<state pattern="%.0fh" readOnly="true" />
 	</channel-type>
 	<channel-type id="sensor_dirt_time" advanced="true">
 		<item-type>Number</item-type>
 		<label>Sensor Dirt Time till Cleaning</label>
-		<state pattern="%.0fh" readOnly="true"/>
+		<state pattern="%.0fh" readOnly="true" />
 	</channel-type>
 
 	<!-- actions -->
@@ -295,17 +296,17 @@
 		<item-type>Number</item-type>
 		<label>Total Cleaning Time</label>
 		<description>Total Cleaning Time in minutes</description>
-		<state pattern="%.0f'" readOnly="true"/>
+		<state pattern="%.0f'" readOnly="true" />
 	</channel-type>
 	<channel-type id="total_clean_area">
 		<item-type>Number</item-type>
 		<label>Total Cleaning Area</label>
-		<state pattern="%.1f m²" readOnly="true"/>
+		<state pattern="%.1f m²" readOnly="true" />
 	</channel-type>
 	<channel-type id="total_clean_count">
 		<item-type>Number</item-type>
 		<label>Total Cleanings</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f" readOnly="true" />
 	</channel-type>
 
 	<!-- Clean Record -->
@@ -314,44 +315,44 @@
 		<label>Cleaning Start</label>
 		<description>Last Cleaning Start Time</description>
 		<category>Date</category>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="last_clean_end_time">
 		<item-type>DateTime</item-type>
 		<label>Cleaning End</label>
 		<description>Last Cleaning End Time</description>
 		<category>Date</category>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="last_clean_duration">
 		<item-type>Number</item-type>
 		<label>Cleaning Duration</label>
 		<description>Cleaning Duration in minutes</description>
-		<state pattern="%.0f'" readOnly="true"/>
+		<state pattern="%.0f'" readOnly="true" />
 	</channel-type>
 	<channel-type id="last_clean_area">
 		<item-type>Number</item-type>
 		<label>Cleaning Area</label>
-		<state pattern="%.1f m²" readOnly="true"/>
+		<state pattern="%.1f m²" readOnly="true" />
 	</channel-type>
 	<channel-type id="last_clean_error">
 		<item-type>Number</item-type>
 		<label>Error</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f" readOnly="true" />
 	</channel-type>
 	<channel-type id="last_clean_finish">
 		<item-type>Number</item-type>
 		<label>Cleaning Finished</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="last_clean_record" advanced="true">
 		<item-type>String</item-type>
 		<label>Cleaning Record</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="map" advanced="false">
 		<item-type>Image</item-type>
 		<label>Cleaning Map</label>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

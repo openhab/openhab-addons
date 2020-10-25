@@ -42,6 +42,7 @@ import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceActionCondition;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DecimalType;
@@ -97,8 +98,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private ChannelTypeRegistry channelTypeRegistry;
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
-            ChannelTypeRegistry channelTypeRegistry) {
-        super(thing, miIoDatabaseWatchService);
+            CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry) {
+        super(thing, miIoDatabaseWatchService, cloudConnector);
         this.channelTypeRegistry = channelTypeRegistry;
     }
 
@@ -288,7 +289,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             checkChannelStructure();
             if (!isIdentified) {
-                miioCom.queueCommand(MiIoCommand.MIIO_INFO);
+                sendCommand(MiIoCommand.MIIO_INFO);
             }
             final MiIoBasicDevice midevice = miioDevice;
             if (midevice != null) {
@@ -335,14 +336,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     private void sendRefreshProperties(MiIoCommand command, JsonArray getPropString) {
-        try {
-            final MiIoAsyncCommunication miioCom = this.miioCom;
-            if (miioCom != null) {
-                miioCom.queueCommand(command, getPropString.toString());
-            }
-        } catch (MiIoCryptoException | IOException e) {
-            logger.debug("Send refresh failed {}", e.getMessage(), e);
-        }
+        sendCommand(command, getPropString.toString());
     }
 
     /**

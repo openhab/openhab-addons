@@ -184,6 +184,28 @@ public class MiCloudConnector {
         return response;
     }
 
+    public String sendRPCCommand(String device, String country, String command) throws MiCloudException {
+        if (device.length() != 8) {
+            logger.debug("Device ID ('{}') incorrect or missing. Command not send: {}", device, command);
+        }
+        if (country.length() > 3 || country.length() < 2) {
+            logger.debug("Country ('{}') incorrect or missing. Command not send: {}", device, command);
+        }
+        String id = "";
+        try {
+            id = String.valueOf(Long.parseUnsignedLong(device, 16));
+        } catch (NumberFormatException e) {
+            logger.debug("Could not parse device ID ('{}')", device);
+            throw new MiCloudException();
+        }
+        String url = getApiUrl(country) + "/home/rpc/" + id;
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("data", command);
+        final String response = request(url, map);
+        logger.debug("response: {}", response);
+        return response;
+    }
+
     public List<CloudDeviceDTO> getDevices(String country) {
         final String response = getDeviceString(country);
         List<CloudDeviceDTO> devicesList = new ArrayList<>();
@@ -276,7 +298,8 @@ public class MiCloudConnector {
 
             logger.trace("fieldcontent: {}", fields.toString());
             final ContentResponse response = request.send();
-            if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
+            if (response.getStatus() >= HttpStatus.BAD_REQUEST_400
+                    && response.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR_500) {
                 this.serviceToken = "";
             }
             return response.getContentAsString();

@@ -8,23 +8,24 @@
 		<label>Unsupported Xiaomi Mi Device</label>
 
 		<channel-groups>
-			<channel-group id="network" typeId="network"/>
-			<channel-group id="actions" typeId="miioactions"/>
+			<channel-group id="network" typeId="network" />
+			<channel-group id="actions" typeId="miioactions" />
 		</channel-groups>
 
 		<properties>
 			<property name="vendor">Xiaomi</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:miio:config"/>
+		<config-description-ref uri="thing-type:miio:config" />
 	</thing-type>
 
 	<channel-group-type id="miioactions">
 		<label>Actions</label>
 		<channels>
-			<channel id="power" typeId="power"/>
-			<channel id="commands" typeId="commands"/>
-			<channel id="testcommands" typeId="testcommands"/>
+			<channel id="power" typeId="power" />
+			<channel id="commands" typeId="commands" />
+			<channel id="rpc" typeId="rpc" />
+			<channel id="testcommands" typeId="testcommands" />
 		</channels>
 	</channel-group-type>
 

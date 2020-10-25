@@ -40,6 +40,7 @@ import org.openhab.binding.miio.internal.basic.DeviceMapping;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -82,8 +83,9 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         return true;
     });
 
-    public MiIoUnsupportedHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
-        super(thing, miIoDatabaseWatchService);
+    public MiIoUnsupportedHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
+            CloudConnector cloudConnector) {
+        super(thing, miIoDatabaseWatchService, cloudConnector);
     }
 
     @Override
@@ -104,8 +106,8 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
                 sendCommand("set_power[\"off\"]");
             }
         }
-        if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString()), command.toString());
+        if (handleCommandsChannels(channelUID, command)) {
+            return;
         }
         if (channelUID.getId().equals(CHANNEL_TESTCOMMANDS)) {
             executeExperimentalCommands();
