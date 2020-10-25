@@ -8,6 +8,8 @@
 		<label>Remote openHAB Server</label>
 		<description>A remote openHAB server.</description>
 
+		<representation-property>host</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text">
 				<context>network-address</context>

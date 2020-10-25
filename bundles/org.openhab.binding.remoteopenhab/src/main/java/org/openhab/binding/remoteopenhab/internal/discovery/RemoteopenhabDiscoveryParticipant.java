@@ -13,6 +13,7 @@
 package org.openhab.binding.remoteopenhab.internal.discovery;
 
 import static org.openhab.binding.remoteopenhab.internal.RemoteopenhabBindingConstants.*;
+import static org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabInstanceConfiguration.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,6 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabInstanceConfiguration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -89,12 +89,13 @@ public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipa
         String restPath = service.getPropertyString("uri");
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null && ip != null && restPath != null) {
-            String label = "openHAB server IP " + ip;
+            String label = "openHAB server";
             logger.debug("Created a DiscoveryResult for remote openHAB server {} with IP {}", thingUID, ip);
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put(RemoteopenhabInstanceConfiguration.HOST, ip);
-            properties.put(RemoteopenhabInstanceConfiguration.REST_PATH, restPath);
-            result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(label).build();
+            properties.put(HOST, ip);
+            properties.put(REST_PATH, restPath);
+            result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withRepresentationProperty(HOST)
+                    .withLabel(label).build();
         }
         return result;
     }
