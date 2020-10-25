@@ -36,7 +36,9 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -374,25 +376,22 @@ public class WLedHandler extends BaseThingHandler {
                 sendGetRequest("/win&PL=" + command);
                 break;
             case CHANNEL_PRESET_DURATION:
-                if (OnOffType.OFF.equals(command)) {
-                    bigTemp = new BigDecimal(50);
-                } else if (OnOffType.ON.equals(command)) {
-                    bigTemp = new BigDecimal(65000);
-                } else {
-                    bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(1000));
+                if (command instanceof QuantityType) {
+                    QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(SmartHomeUnits.SECOND);
+                    if (seconds != null) {
+                        bigTemp = new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000));
+                        sendGetRequest("/win&PT=" + bigTemp.intValue());
+                    }
                 }
-                sendGetRequest("/win&PT=" + bigTemp.intValue());
                 break;
             case CHANNEL_TRANS_TIME:
-                logger.warn("Command is {}", command);
-                if (OnOffType.OFF.equals(command)) {
-                    bigTemp = BigDecimal.ZERO;
-                } else if (OnOffType.ON.equals(command)) {
-                    bigTemp = new BigDecimal(65000);
-                } else {
-                    bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(1000));
+                if (command instanceof QuantityType) {
+                    QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(SmartHomeUnits.SECOND);
+                    if (seconds != null) {
+                        bigTemp = new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000));
+                        sendGetRequest("/win&TT=" + bigTemp.intValue());
+                    }
                 }
-                sendGetRequest("/win&TT=" + bigTemp.intValue());
                 break;
             case CHANNEL_PRESET_CYCLE:
                 if (OnOffType.ON.equals(command)) {
