@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.bluez;
+package org.openhab.binding.bluetooth.bluez.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
@@ -30,4 +30,7 @@ public class BlueZAdapterConstants {
 
     // Properties
     public static final String PROPERTY_ADDRESS = "address";
+
+    private BlueZAdapterConstants() {
+    }
 }
