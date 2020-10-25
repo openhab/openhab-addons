@@ -44,13 +44,13 @@ public class SerialHandlerFactory extends BaseThingHandlerFactory {
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
     @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+    protected @Nullable ThingHandler createHandler(final Thing thing) {
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new SerialBridgeHandler((Bridge) thing, serialPortManager);

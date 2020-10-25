@@ -50,12 +50,9 @@ public class SerialBridgeConfiguration {
      */
     public String charset;
 
-    @Override
-    public String toString() {
-        return "SerialBridgeConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudrate + ", Databits="
-                + databits + ", Parity=" + parity + ", Stopbits=" + stopbits + "]";
-    }
-
+    /**
+     * Convert the config parity value to an int required for serial port configuration
+     */
     public int getParityAsInt() {
         int parityInt;
 
@@ -83,6 +80,9 @@ public class SerialBridgeConfiguration {
         return parityInt;
     }
 
+    /**
+     * Convert the config stop bits value to an int required for serial port configuration
+     */
     public int getStopBitsAsInt() {
         int stopbitsAsInt;
 
@@ -102,5 +102,11 @@ public class SerialBridgeConfiguration {
         }
 
         return stopbitsAsInt;
+    }
+
+    @Override
+    public String toString() {
+        return "SerialBridgeConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudrate + ", Databits="
+                + databits + ", Parity=" + parity + ", Stopbits=" + stopbits + "]";
     }
 }

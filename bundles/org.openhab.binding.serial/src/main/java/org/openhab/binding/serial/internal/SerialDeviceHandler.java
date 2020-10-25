@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -38,29 +39,28 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) Pattern devicePattern;
 
-    private StringType deviceData;
+    private @Nullable String data;
 
-    public SerialDeviceHandler(Thing thing) {
+    public SerialDeviceHandler(final Thing thing) {
         super(thing);
-        deviceData = new StringType();
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
-            refresh();
+            refresh(channelUID.getId());
         }
     }
 
     @Override
     public void initialize() {
-        SerialDeviceConfiguration config = getConfigAs(SerialDeviceConfiguration.class);
+        final SerialDeviceConfiguration config = getConfigAs(SerialDeviceConfiguration.class);
 
         try {
             devicePattern = Pattern.compile(config.patternMatch);
-        } catch (PatternSyntaxException e) {
+        } catch (final PatternSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid device pattern" + e.getMessage());
+                    "Invalid device pattern: " + e.getMessage());
             return;
         }
 
@@ -68,21 +68,20 @@ public class SerialDeviceHandler extends BaseThingHandler {
         bridgeStatusChanged(getBridgeStatus());
     }
 
-    public void refresh() {
-        if (isLinked(SerialBindingConstants.DEVICE_CHANNEL)) {
-            updateState(SerialBindingConstants.DEVICE_CHANNEL, deviceData);
-        }
-    }
-
-    public void handleData(String data) {
+    /**
+     * Handle a line of data received from the bridge
+     *
+     * @param data the line of data
+     */
+    public void handleData(final String data) {
         if (devicePattern.matcher(data).matches()) {
-            this.deviceData = StringType.valueOf(data);
-            refresh();
+            this.data = data;
+            refresh(SerialBindingConstants.DEVICE_CHANNEL);
         }
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+    public void bridgeStatusChanged(final ThingStatusInfo bridgeStatusInfo) {
         if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
             return;
         }
@@ -98,12 +97,33 @@ public class SerialDeviceHandler extends BaseThingHandler {
     /**
      * Return the bridge status.
      */
-    public ThingStatusInfo getBridgeStatus() {
-        Bridge b = getBridge();
+    private ThingStatusInfo getBridgeStatus() {
+        final Bridge b = getBridge();
         if (b != null) {
             return b.getStatusInfo();
         } else {
             return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
+        }
+    }
+
+    /**
+     * Refreshes the channel with the last received data
+     *
+     * @param channelId the channel to refresh
+     */
+    private void refresh(final String channelId) {
+        final String data = this.data;
+
+        if (data == null || !isLinked(channelId)) {
+            return;
+        }
+
+        switch (channelId) {
+            case SerialBindingConstants.DEVICE_CHANNEL:
+                updateState(channelId, new StringType(data));
+                break;
+            default:
+                break;
         }
     }
 }
