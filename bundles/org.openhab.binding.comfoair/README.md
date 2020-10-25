@@ -76,10 +76,10 @@ The ComfoAir binding supports the following channels.
 | temperatures#isT2Sensor            | Switch                   | Sensor T2 Available             | Availability of temperature sensor T2 (indoor in)                                           | true      | yes      |
 | temperatures#isT3Sensor            | Switch                   | Sensor T3 Available             | Availability of temperature sensor T3 (indoor out)                                          | true      | yes      |
 | temperatures#isT4Sensor            | Switch                   | Sensor T4 Available             | Availability of temperature sensor T4 (outdoor out)                                         | true      | yes      |
-| temperatures#isGHXSensor           | Switch                   | GHX Sensor Available            | Availability of geothermal heat exchanger temperature sensor                                | true      | yes      |
+| temperatures#isEWTSensor           | Switch                   | GHX Sensor Available            | Availability of geothermal heat exchanger temperature sensor                                | true      | yes      |
 | temperatures#isHeaterSensor        | Switch                   | Heater Sensor Available         | Availability of heater temperature sensor                                                   | true      | yes      |
 | temperatures#isCookerhoodSensor    | Switch                   | Cookerhood Sensor Available     | Availability of cookerhood temperature sensor                                               | true      | yes      |
-| temperatures#ghxTemperature        | Number:Temperature       | GHX Temperature                 | Temperature of geothermal heat exchanger sensor                                             | true      | yes      |
+| temperatures#ewtTemperature        | Number:Temperature       | GHX Temperature                 | Temperature of geothermal heat exchanger sensor                                             | true      | yes      |
 | temperatures#heaterTemperature     | Number:Temperature       | Heater Temperature              | Temperature of heater sensor                                                                | true      | yes      |
 | temperatures#cookerhoodTemperature | Number:Temperature       | Cookerhood Temperature          | Temperature of cookerhood sensor                                                            | true      | yes      |
 | **Uptimes**                        |                          |                                 |                                                                                             |           |          |
@@ -114,7 +114,7 @@ The ComfoAir binding supports the following channels.
 | **Menu P9: Option States**         |                          |                                 |                                                                                             |           |          |
 | menuP9#chimneyState                | Switch                   | Chimney Control State           | State of the chimney control                                                                | true      | yes      |
 | menuP9#bypassState                 | Switch                   | Bypass State                    | State of the bypass (ON = open / OFF = closed)                                              | true      | yes      |
-| menuP9#ghxState                    | Switch                   | GHX State                       | State of the geothermal heat exchanger valve (ON = open / OFF = closed)                     | true      | yes      |
+| menuP9#ewtState                    | Switch                   | GHX State                       | State of the geothermal heat exchanger valve (ON = open / OFF = closed)                     | true      | yes      |
 | menuP9#heaterState                 | Switch                   | Heater State                    | State of the heater                                                                         | true      | yes      |
 | menuP9#vControlState               | Switch                   | 0-10V Control State             | State of the 0-10V control                                                                  | true      | yes      |
 | menuP9#frostState                  | Switch                   | Antifrost State                 | State of the antifrost control                                                              | true      | yes      |
@@ -138,9 +138,9 @@ The ComfoAir binding supports the following channels.
 | preheater#preheaterFrostTime       | Number                   | Preheater Frost Time            | Frost minutes                                                                               | true      | yes      |
 | preheater#preheaterSafety          | Number                   | Preheater Frost Safety          | Frost safety setting                                                                        | true      | yes      |
 | **GHX Values**                     |                          |                                 |                                                                                             |           |          |
-| ghx#ghxTemperatureLow              | Number:Temperature       | GHX Temperature (low)           | Lower temperature of the geothermal heat exchanger                                          | true      | yes      |
-| ghx#ghxTemperatureHigh             | Number:Temperature       | GHX Temperature (high)          | Upper temperature of the geothermal heat exchanger                                          | true      | yes      |
-| ghx#ghxSpeed                       | Number                   | GHX Speed Up (%)                | Speed up of the geothermal heat exchanger                                                   | true      | yes      |
+| ewt#ewtTemperatureLow              | Number:Temperature       | GHX Temperature (low)           | Lower temperature of the geothermal heat exchanger                                          | true      | yes      |
+| ewt#ewtTemperatureHigh             | Number:Temperature       | GHX Temperature (high)          | Upper temperature of the geothermal heat exchanger                                          | true      | yes      |
+| ewt#ewtSpeed                       | Number                   | GHX Speed Up (%)                | Speed up of the geothermal heat exchanger                                                   | true      | yes      |
 | **Heater Values**                  |                          |                                 |                                                                                             |           |          |
 | heater#heaterPower                 | Number                   | Heater Power                    | Heater power value                                                                          | true      | yes      |
 | heater#heaterPowerI                | Number                   | Heater Power I-parameter        | Heater power I-parameter value                                                              | true      | yes      |
@@ -161,7 +161,7 @@ The ComfoAir binding supports the following channels.
 | options#isCookerhood               | Switch                   | Cookerhood                      | Cookerhood option installed                                                                 | true      | yes      |
 | options#isHeater                   | Switch                   | Heater                          | Heater option installed                                                                     | true      | yes      |
 | options#isEnthalpy                 | Number                   | Enthalpy                        | Enthalpy option installed                                                                   | true      | yes      |
-| options#isGHX                      | Number                   | Geothermal Heat Exchanger       | Geothermal heat exchanger option installed                                                  | true      | yes      |
+| options#isEWT                      | Number                   | Geothermal Heat Exchanger       | Geothermal heat exchanger option installed                                                  | true      | yes      |
 | options#analogPriority             | Number                   | Analog Priority                 | Priority of analog inputs for highest fan level                                             | true      | yes      |
 | **Inputs**                         |                          |                                 |                                                                                             |           |          |
 | inputs#isL1Switch                  | Switch                   | L1 Switch                       | Availability of L1 step switch                                                              | true      | yes      |
@@ -223,7 +223,7 @@ Number	comfoairOutgoingFan			"Exhaust capacity [%d %%]"			<fan_out>	(ComfoAir)		
 Number	comfoairFanIn0				"Supply capacity - level 0 [%d %%]"		<fan_in>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanIn0"}
 Number	comfoairFanOut0				"Exhaust capacity - level 0 [%d %%]"		<fan_out>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanOut0"}
 Switch	comfoairBypassMode			"Bypass [MAP(comfoair_bypass.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#bypassState"}
-Switch	comfoairGHXMode 			"GHX [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#ghxState"}
+Switch	comfoairGHXMode 			"GHX [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#ewtState"}
 Switch	comfoairChimneyMode			"Fire programme [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#chimneyState"}
 Switch	comfoairHeaterMode			"Heater [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#heaterState"}
 Switch	comfoairCookerHoodMode			"Extractor hood [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#cookerhoodState"}

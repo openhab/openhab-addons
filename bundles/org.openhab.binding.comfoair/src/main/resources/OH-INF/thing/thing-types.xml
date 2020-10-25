@@ -15,7 +15,7 @@
 			<channel-group id="times" typeId="times"/>
 			<channel-group id="bypass" typeId="bypass"/>
 			<channel-group id="preheater" typeId="preheater"/>
-			<channel-group id="ghx" typeId="ghx"/>
+			<channel-group id="ewt" typeId="ghx"/>
 			<channel-group id="heater" typeId="heater"/>
 			<channel-group id="cookerhood" typeId="cookerhood"/>
 			<channel-group id="enthalpy" typeId="enthalpy"/>
@@ -94,10 +94,10 @@
 			<channel id="isT2Sensor" typeId="is_T2_sensor"/>
 			<channel id="isT3Sensor" typeId="is_T3_sensor"/>
 			<channel id="isT4Sensor" typeId="is_T4_sensor"/>
-			<channel id="isGHXSensor" typeId="is_ghx_sensor"/>
+			<channel id="isEWTSensor" typeId="is_ghx_sensor"/>
 			<channel id="isHeaterSensor" typeId="is_heater_sensor"/>
 			<channel id="isCookerhoodSensor" typeId="is_cookerhood_sensor"/>
-			<channel id="ghxTemperature" typeId="ghx_temperature"/>
+			<channel id="ewtTemperature" typeId="ghx_temperature"/>
 			<channel id="heaterTemperature" typeId="heater_temperature"/>
 			<channel id="cookerhoodTemperature" typeId="cookerhood_temperature"/>
 		</channels>
@@ -141,9 +141,9 @@
 	<channel-group-type id="ghx">
 		<label>Geothermal Heat Exchanger Values</label>
 		<channels>
-			<channel id="ghxTemperatureLow" typeId="ghx_temperature_low"/>
-			<channel id="ghxTemperatureHigh" typeId="ghx_temperature_high"/>
-			<channel id="ghxSpeed" typeId="ghx_speed"/>
+			<channel id="ewtTemperatureLow" typeId="ghx_temperature_low"/>
+			<channel id="ewtTemperatureHigh" typeId="ghx_temperature_high"/>
+			<channel id="ewtSpeed" typeId="ghx_speed"/>
 		</channels>
 	</channel-group-type>
 
@@ -184,7 +184,7 @@
 			<channel id="isCookerhood" typeId="is_cookerhood"/>
 			<channel id="isHeater" typeId="is_heater"/>
 			<channel id="isEnthalpy" typeId="is_enthalpy"/>
-			<channel id="isGHX" typeId="is_ghx"/>
+			<channel id="isEWT" typeId="is_ghx"/>
 			<channel id="analogPriority" typeId="analog_priority"/>
 		</channels>
 	</channel-group-type>
@@ -224,7 +224,7 @@
 		<channels>
 			<channel id="chimneyState" typeId="chimney_state"/>
 			<channel id="bypassState" typeId="bypass_state"/>
-			<channel id="ghxState" typeId="ghx_state"/>
+			<channel id="ewtState" typeId="ghx_state"/>
 			<channel id="heaterState" typeId="heater_state"/>
 			<channel id="vControlState" typeId="v_control_state"/>
 			<channel id="frostState" typeId="frost_state"/>

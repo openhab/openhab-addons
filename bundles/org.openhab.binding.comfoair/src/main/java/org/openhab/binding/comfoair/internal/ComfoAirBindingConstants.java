@@ -40,7 +40,7 @@ public class ComfoAirBindingConstants {
     public static final String CG_TIMES_PREFIX = "times#";
     public static final String CG_BYPASS_PREFIX = "bypass#";
     public static final String CG_PREHEATER_PREFIX = "preheater#";
-    public static final String CG_GHX_PREFIX = "ghx#";
+    public static final String CG_GHX_PREFIX = "ewt#";
     public static final String CG_HEATER_PREFIX = "heater#";
     public static final String CG_COOKERHOOD_PREFIX = "cookerhood#";
     public static final String CG_ENTHALPY_PREFIX = "enthalpy#";
@@ -84,10 +84,10 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_IS_SENSOR_T2 = "isT2Sensor";
     public static final String CHANNEL_IS_SENSOR_T3 = "isT3Sensor";
     public static final String CHANNEL_IS_SENSOR_T4 = "isT4Sensor";
-    public static final String CHANNEL_IS_SENSOR_GHX = "isGHXSensor";
+    public static final String CHANNEL_IS_SENSOR_GHX = "isEWTSensor";
     public static final String CHANNEL_IS_SENSOR_HEATER = "isHeaterSensor";
     public static final String CHANNEL_IS_SENSOR_COOKERHOOD = "isCookerhoodSensor";
-    public static final String CHANNEL_TEMP_GHX = "ghxTemperature";
+    public static final String CHANNEL_TEMP_GHX = "ewtTemperature";
     public static final String CHANNEL_TEMP_HEATER = "heaterTemperature";
     public static final String CHANNEL_TEMP_COOKERHOOD = "cookerhoodTemperature";
     // Time channels
@@ -111,9 +111,9 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_PREHEATER_FROST_TIME = "preheaterFrostTime";
     public static final String CHANNEL_PREHEATER_SAFETY = "preheaterSafety";
     // GHX channels
-    public static final String CHANNEL_GHX_TEMP_LOW = "ghxTemperatureLow";
-    public static final String CHANNEL_GHX_TEMP_HIGH = "ghxTemperatureHigh";
-    public static final String CHANNEL_GHX_SPEED = "ghxSpeed";
+    public static final String CHANNEL_GHX_TEMP_LOW = "ewtTemperatureLow";
+    public static final String CHANNEL_GHX_TEMP_HIGH = "ewtTemperatureHigh";
+    public static final String CHANNEL_GHX_SPEED = "ewtSpeed";
     // Heater channels
     public static final String CHANNEL_HEATER_POWER = "heaterPower";
     public static final String CHANNEL_HEATER_POWER_I = "heaterPowerI";
@@ -134,7 +134,7 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_OPTION_COOKERHOOD = "isCookerhood";
     public static final String CHANNEL_OPTION_HEATER = "isHeater";
     public static final String CHANNEL_OPTION_ENTHALPY = "isEnthalpy";
-    public static final String CHANNEL_OPTION_GHX = "isGHX";
+    public static final String CHANNEL_OPTION_GHX = "isEWT";
     public static final String CHANNEL_OPTION_PRIORITY = "analogPriority";
     // Menu P1 channels
     public static final String CHANNEL_MENU20_MODE = "menu20Mode";
@@ -159,7 +159,7 @@ public class ComfoAirBindingConstants {
     // Menu P9 channels
     public static final String CHANNEL_CHIMNEY_STATE = "chimneyState";
     public static final String CHANNEL_BYPASS_STATE = "bypassState";
-    public static final String CHANNEL_GHX_STATE = "ghxState";
+    public static final String CHANNEL_GHX_STATE = "ewtState";
     public static final String CHANNEL_HEATER_STATE = "heaterState";
     public static final String CHANNEL_VCONTROL_STATE = "vControlState";
     public static final String CHANNEL_FROST_STATE = "frostState";
