@@ -998,7 +998,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>      
-      <artifactId>org.openhab.binding.remoteopenhab
+      <artifactId>org.openhab.binding.remoteopenhab</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
