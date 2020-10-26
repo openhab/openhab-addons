@@ -33,9 +33,9 @@ The binding supports the following types of Thing.
 
 ## Discovery
 
-To simplify the initial provisioning, the binding provides one thing which can be found by autodiscovery.
-Unfortunately there is no way to discover Velux bridges themselves within the local network.
-But after configuring a Velux Bridge, it is possible to discover all scenes and actuators like windows and rollershutters in that hub.
+To simplify the initial provisioning, the binding provides one thing which is found by autodiscovery.
+The binding then automatically discovers Velux bridges on the local network and places them in the Inbox.
+Once a Velux bridge has been instantiated from the Inbox, the binding then interrogates it to discover all its respective scenes and actuators (e.g. windows and rollershutters).
 
 ## Thing Configuration
 
