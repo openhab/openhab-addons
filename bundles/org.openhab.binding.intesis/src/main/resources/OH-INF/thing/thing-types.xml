@@ -59,12 +59,14 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.intesis.errorCode.label</label>
 		<description>@text/channel-type.intesis.errorCode.description</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="errorStatus">
 		<item-type>String</item-type>
 		<label>@text/channel-type.intesis.errorStatus.label</label>
 		<description>@text/channel-type.intesis.errorStatus.description</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>
