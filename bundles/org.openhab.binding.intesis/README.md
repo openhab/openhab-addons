@@ -68,14 +68,17 @@ Thing intesis:intesisBox:acOffice  "AC Unit Adapter" @ "AC" [ipAddress="192.168.
 **Items**
 
 ```intesishome.items
-Switch              ac              "Power"                                 { channel="intesis:intesisHome:acOffice:power" }
-String              acMode          "Mode"                                  { channel="intesis:intesisHome:acOffice:mode" }
-String              acFanSpeed      "Fan Speed"             <fan>           { channel="intesis:intesisHome:acOffice:fanSpeed" }
-String              acVanesUpDown   "Vanes Up/Ddown Position"               { channel="intesis:intesisHome:acOffice:vanesUpDown" }
-String              acVanesLeftRight "Vanes Left/Right Position"            { channel="intesis:intesisHome:acOffice:vanesLeftRight" }
-Number:Temperature  acSetPoint      "Target Temperature"    <heating>       { channel="intesis:intesisHome:acOffice:targetTemperature" }
-Number:Temperature  acAmbientTemp   "Ambient Temperature"   <temperature>   { channel="intesis:intesisHome:acOffice:ambientTemperature" }
-Number:Temperature  acOutdoorTemp   "Outdoor Temperature"   <temperature>   { channel="intesis:intesisHome:acOffice:outdoorTemperature" }
+Switch              ac               "Power"                                        { channel="intesis:intesisHome:acOffice:power" }
+String              acMode           "Mode"                                         { channel="intesis:intesisHome:acOffice:mode" }
+String              acFanSpeed       "Fan Speed"             <fan>                  { channel="intesis:intesisHome:acOffice:fanSpeed" }
+String              acVanesUpDown    "Vanes Up/Ddown Position"                      { channel="intesis:intesisHome:acOffice:vanesUpDown" }
+String              acVanesLeftRight "Vanes Left/Right Position"                    { channel="intesis:intesisHome:acOffice:vanesLeftRight" }
+Number:Temperature  acSetPoint       "Target Temperature"    <heating>              { channel="intesis:intesisHome:acOffice:targetTemperature" }
+Number:Temperature  acAmbientTemp    "Ambient Temperature"   <temperature>          { channel="intesis:intesisHome:acOffice:ambientTemperature" }
+Number:Temperature  acOutdoorTemp    "Outdoor Temperature"   <temperature>          { channel="intesis:intesisHome:acOffice:outdoorTemperature" }
+String              acErrorStatus    "Errorstatus"                                  { channel="intesis:intesisBox:acOffice:errorStatus" }
+String              acErrorCode      "Errorcode"                                    { channel="intesis:intesisBox:acOffice:errorCode" }
+String              acWifiSignal     "Wifi Signal Quality"   <qualityofservice>     { channel="intesis:intesisBox:acOffice:wifiSignal" }
 ```
 
 **Sitemap**
@@ -85,13 +88,17 @@ sitemap intesishome label="My AC control" {
 
     Frame label="Climate" {
           Switch item=ac
-          Switch item=acMode        icon="heating"          mappings=[AUTO="Auto", HEAT="Heat", DRY="Dry", FAN="Fan", COOL="Cool"]
-          Switch item=acFanSpeed    icon="qualityofservice" mappings=[AUTO="Auto", 1="Low", 2="Med", 3="MedHigh", 4="High"]
-          Switch item=acVanesUpDown icon="movecontrol"      mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
-          Switch item=acVanesLeftRight icon="movecontrol"   mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
-          Setpoint item=acSetPoint  icon="temperature"      minValue=16 maxValue=28 step=1
-          Text item=acAmbientTemp   icon="temperature" 
-          Text item=acOutdoorTemp   icon="temperature" 
+          Switch item=acMode           icon="heating"          mappings=[AUTO="Auto", HEAT="Heat", DRY="Dry", FAN="Fan", COOL="Cool"]
+          Switch item=acFanSpeed       icon="qualityofservice" mappings=[AUTO="Auto", 1="Low", 2="Med", 3="MedHigh", 4="High"]
+          Switch item=acVanesUpDown    icon="movecontrol"      mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
+          Switch item=acVanesLeftRight icon="movecontrol"      mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
+          Setpoint item=acSetPoint     icon="temperature"      minValue=16 maxValue=28 step=1
+          Text item=acAmbientTemp      icon="temperature" 
+          Text item=acOutdoorTemp      icon="temperature"
+          Text item=acErrorStatus
+          Text item=acErrorCode
+          Text item=acWifiSignal       icon="qualityofservice"
+           
     }
 }
 ```

@@ -263,12 +263,10 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 updateState(CHANNEL_TYPE_VANESLR, new StringType(value));
                 break;
             case "ERRCODE":
-                properties.put("errorCode", value);
-                updateProperties(properties);
+                updateState(CHANNEL_TYPE_ERRORCODE, new StringType(value));
                 break;
             case "ERRSTATUS":
-                properties.put("errorStatus", value);
-                updateProperties(properties);
+                updateState(CHANNEL_TYPE_ERRORSTATUS, new StringType(value));
                 if ("ERR".equals(value)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "device reported an error");
