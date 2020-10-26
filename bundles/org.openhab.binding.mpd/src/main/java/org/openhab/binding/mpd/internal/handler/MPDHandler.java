@@ -29,13 +29,8 @@ import org.openhab.binding.mpd.internal.action.MPDActions;
 import org.openhab.binding.mpd.internal.protocol.MPDConnection;
 import org.openhab.binding.mpd.internal.protocol.MPDSong;
 import org.openhab.binding.mpd.internal.protocol.MPDStatus;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.IncreaseDecreaseType;
-import org.openhab.core.library.types.NextPreviousType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.PlayPauseType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.*;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -65,8 +60,11 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
     private final MPDConnection connection;
     private int volume = 0;
 
+    private final static long POLL_INTERVAL = 1; // 5 Second polling
+
     private @Nullable ScheduledFuture<?> futureUpdateStatus;
     private @Nullable ScheduledFuture<?> futureUpdateCurrentSong;
+    private @Nullable ScheduledFuture<?> scheduledPolling = null;
 
     public MPDHandler(Thing thing) {
         super(thing);
@@ -95,15 +93,9 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> future = this.futureUpdateStatus;
-        if (future != null) {
-            future.cancel(true);
-        }
-
-        future = this.futureUpdateCurrentSong;
-        if (future != null) {
-            future.cancel(true);
-        }
+        cancelFuture(scheduledPolling);
+        cancelFuture(futureUpdateStatus);
+        cancelFuture(futureUpdateCurrentSong);
 
         connection.dispose();
         super.dispose();
@@ -148,8 +140,30 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
         }
     }
 
+    private synchronized void cancelFuture(@Nullable ScheduledFuture<?> future) {
+        if (future != null && !future.isDone()) {
+            future.cancel(false);
+        }
+    }
+
+    private synchronized void cancelPolling() {
+        logger.debug("Cancelling polling for MPD");
+        cancelFuture(scheduledPolling);
+    }
+
+    private synchronized void schedulePolling() {
+        @Nullable
+        ScheduledFuture<?> future = this.scheduledPolling;
+        if (future == null || future.isDone()) {
+            logger.debug("Scheduling status polling for MPD");
+            this.scheduledPolling = super.scheduler.scheduleWithFixedDelay(this::doUpdateStatus, POLL_INTERVAL,
+                    POLL_INTERVAL, TimeUnit.SECONDS);
+        }
+    }
+
     private synchronized void scheduleUpdateStatus() {
         logger.debug("scheduleUpdateStatus");
+        @Nullable
         ScheduledFuture<?> future = this.futureUpdateStatus;
         if (future == null || future.isCancelled() || future.isDone()) {
             this.futureUpdateStatus = scheduler.schedule(this::doUpdateStatus, 100, TimeUnit.MILLISECONDS);
@@ -260,10 +274,12 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
         switch (status.getState()) {
             case PLAY:
                 newControlState = PlayPauseType.PLAY;
+                schedulePolling();
                 break;
             case STOP:
             case PAUSE:
                 newControlState = PlayPauseType.PAUSE;
+                cancelPolling();
                 break;
         }
         updateChannel(CHANNEL_CONTROL, newControlState);
@@ -273,6 +289,9 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
             newStopState = OnOffType.ON;
         }
         updateChannel(CHANNEL_STOP, newStopState);
+
+        updateChannel(CHANNEL_CURRENT_ELAPSED, status.getElapsed()
+                .map(elapsed -> (State) new QuantityType<>(elapsed, SmartHomeUnits.SECOND)).orElse(UnDefType.UNDEF));
     }
 
     @Override
@@ -284,6 +303,8 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
         updateChannel(CHANNEL_CURRENT_SONG_ID, new DecimalType(song.getSongId()));
         updateChannel(CHANNEL_CURRENT_TITLE, new StringType(song.getTitle()));
         updateChannel(CHANNEL_CURRENT_TRACK, new DecimalType(song.getTrack()));
+        updateChannel(CHANNEL_CURRENT_DURATION, song.getDuration()
+                .map(duration -> (State) new QuantityType<>(duration, SmartHomeUnits.SECOND)).orElse(UnDefType.UNDEF));
     }
 
     @Override

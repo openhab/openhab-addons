@@ -29,19 +29,22 @@ The ThingType mpd requires the following configuration parameters:
 
 The following channels are currently available:
 
-| Channel Type ID | Item Type | Description               |
-|-----------------|-----------|---------------------------|
-| control         | Player    | Start/Pause/Next/Previous |
-| volume          | Dimmer    | Volume in percent         |
-| stop            | Switch    | Stop playback             |
-| currentalbum    | String    | Current album             |
-| currentartist   | String    | Current artist            |
-| currentname     | String    | Current name              |
-| currentsong     | Number    | Current song              |
-| currentsongid   | Number    | Current song id           |
-| currenttitle    | String    | Current title             |
-| currenttrack    | Number    | Current track             |
+| Channel Type ID   | Item Type     | Description                   |
+|-------------------|---------------|-------------------------------|
+| control           | Player        | Start/Pause/Next/Previous     |
+| volume            | Dimmer        | Volume in percent             |
+| stop              | Switch        | Stop playback                 |
+| currentalbum      | String        | Current album                 |
+| currentartist     | String        | Current artist                |
+| currentname       | String        | Current name                  |
+| currentsong       | Number        | Current song                  |
+| currentsongid     | Number        | Current song id               |
+| currenttitle      | String        | Current title                 |
+| currenttrack      | Number        | Current track                 |
+| currentduration   | Number:Time   | Duration of current track*    |
+| currentelapsed    | Number:Time   | Elapsed time of current track*|
 
+* Values for these channels are optional depending on MPD server implementation
 
 ## Full Example
 
@@ -66,6 +69,8 @@ Number mpd_music_song "Song [%d]" { channel = "mpd:mpd:music:currentsong" }
 Number mpd_music_song_id "Song Id [%d]" { channel = "mpd:mpd:music:currentsongid" }
 String mpd_music_title "Title [%s]" { channel = "mpd:mpd:music:currenttitle" }
 Number mpd_music_track "Track [%d]" { channel = "mpd:mpd:music:currenttrack" }
+Number:Time mpd_music_duration "Track Duration [%d ]" { channel = "mpd:mpd:music:currenttrack" }
+Number:Time mpd_music_elapsed "Elasped Time [%d ]" { channel = "mpd:mpd:music:currenttrack" }
 ```
 
 #### Sitemap
@@ -82,6 +87,8 @@ Frame label="Music" {
     Text item=mpd_music_song_id
     Text item=mpd_music_title
     Text item=mpd_music_track
+    Text item=mpd_music_elapsed
+    Text item=mpd_music_duration
 }
 ```
 

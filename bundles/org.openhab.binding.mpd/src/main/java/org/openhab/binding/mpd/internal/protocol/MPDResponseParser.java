@@ -14,8 +14,11 @@ package org.openhab.binding.mpd.internal.protocol;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for parsing a response from a Music Player Daemon.
@@ -24,6 +27,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MPDResponseParser {
+
+    private final static Logger logger = LoggerFactory.getLogger(MPDResponseParser.class);
 
     static Map<String, String> responseToMap(MPDResponse response) {
         Map<String, String> map = new HashMap<String, String>();
@@ -39,5 +44,23 @@ public class MPDResponseParser {
         }
 
         return map;
+    }
+
+    static int parseInteger(String value, int aDefault) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            logger.debug("parseInt of {} failed", value);
+        }
+        return aDefault;
+    }
+
+    static Optional<Integer> parseInteger(String value) {
+        try {
+            return Optional.of(Integer.parseInt(value));
+        } catch (NumberFormatException e) {
+            logger.debug("parseInt of {} failed", value);
+            return Optional.empty();
+        }
     }
 }
