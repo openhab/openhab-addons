@@ -99,7 +99,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         }
         if (command instanceof OnOffType) {
             int state = convertOnOffTypeToState(command);
-            switchService.switchPort(localConfig.getSerialNumber(), localConfig.ipAddress, port, state);
+            switchService.switchPort(localConfig.serialNumber, localConfig.ipAddress, port, state);
         }
         if (command instanceof RefreshType) {
             updateStripInformation();
@@ -119,7 +119,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         config = getConfigAs(RevogiSmartStripControlConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateStripInformation, 0, config.getPollInterval(),
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateStripInformation, 0, config.pollInterval,
                 TimeUnit.SECONDS);
     }
 
@@ -137,8 +137,7 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
             logger.warn("No config available, config object was null");
             return;
         }
-        CompletableFuture<StatusDTO> futureStatus = statusService.queryStatus(config.getSerialNumber(),
-                config.getIpAddress());
+        CompletableFuture<StatusDTO> futureStatus = statusService.queryStatus(config.serialNumber, config.ipAddress);
         futureStatus.thenAccept(this::updatePlugStatus);
     }
 

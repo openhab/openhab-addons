@@ -28,16 +28,4 @@ public class RevogiSmartStripControlConfiguration {
     public int pollInterval = 60;
 
     public String ipAddress = "127.0.0.1";
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public int getPollInterval() {
-        return pollInterval;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
 }
