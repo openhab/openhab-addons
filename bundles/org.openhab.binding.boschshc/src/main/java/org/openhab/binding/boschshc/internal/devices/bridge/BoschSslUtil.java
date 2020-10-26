@@ -110,7 +110,7 @@ public class BoschSslUtil {
         } catch (OperatorCreationException | GeneralSecurityException | IOException e) {
             logger.debug("Exception during keystore creation {}", e.getMessage());
             throw new PairingFailedException("Can not create or load keystore file: " + keystorePath
-                    + ". Check path, write access and JKS content.");
+                    + ". Check path, write access and JKS content.", e);
         }
     }
 

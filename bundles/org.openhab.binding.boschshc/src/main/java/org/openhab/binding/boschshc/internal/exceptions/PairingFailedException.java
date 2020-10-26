@@ -28,4 +28,8 @@ public class PairingFailedException extends BoschSHCException {
     public PairingFailedException(String message) {
         super(message);
     }
+
+    public PairingFailedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
