@@ -92,7 +92,6 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     }
 
     private void switchPlug(Command command, int port) {
-        @Nullable
         RevogiSmartStripControlConfiguration localConfig = this.config;
         if (localConfig == null) {
             logger.warn("No config available, config object was null");

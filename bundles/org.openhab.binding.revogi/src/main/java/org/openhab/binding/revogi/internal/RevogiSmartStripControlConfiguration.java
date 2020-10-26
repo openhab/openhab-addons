@@ -12,18 +12,22 @@
  */
 package org.openhab.binding.revogi.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RevogiSmartStripControlConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Andi Bräu - Initial contribution
  */
+
+@NonNullByDefault
 public class RevogiSmartStripControlConfiguration {
 
-    public String serialNumber;
+    public String serialNumber = "Serial Number";
 
-    public int pollInterval;
+    public int pollInterval = 60;
 
-    public String ipAddress;
+    public String ipAddress = "127.0.0.1";
 
     public String getSerialNumber() {
         return serialNumber;
