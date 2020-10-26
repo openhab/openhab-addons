@@ -31,14 +31,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class BimmerConstants {
 
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/country_selector.py
+    public static final String REGION_NORTH_AMERICA = "NORTH_AMERICA";
+    public static final String REGION_CHINA = "CHINA";
+    public static final String REGION_ROW = "ROW";
+
     public static final String SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us";
     public static final String SERVER_CHINA = "b2vapi.bmwgroup.cn:8592";
     public static final String SERVER_ROW = "b2vapi.bmwgroup.com";
     public static final Map<String, String> SERVER_MAP = new HashMap<String, String>() {
         {
-            put("NORTH_AMERICA", SERVER_NORTH_AMERICA);
-            put("CHINA", SERVER_CHINA);
-            put("ROW", SERVER_ROW);
+            put(REGION_NORTH_AMERICA, SERVER_NORTH_AMERICA);
+            put(REGION_CHINA, SERVER_CHINA);
+            put(REGION_ROW, SERVER_ROW);
         }
     };
 
