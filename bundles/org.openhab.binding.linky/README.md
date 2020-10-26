@@ -40,7 +40,8 @@ Instructions given for Firefox :
 4. Clic on "Suivant".
 5. In the login page, prefilled with your mail address, enter your Enedis account password and click on "Connexion à Espace Client Enedis".
 6. You will be directed to your Enedis account environment. Get back to previous page in you browser.
-7. Open the developper tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You should see an entry named "internalAuthId", copy this value in your Openhab configuration.
+7. Disconnect from your Enedis account
+8. Repeat steps 1, 2. You should arrive directly on step 5, then open the developer tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You'll find an entry named "internalAuthId", copy this value in your Openhab configuration.
 
 ## Channels
 
