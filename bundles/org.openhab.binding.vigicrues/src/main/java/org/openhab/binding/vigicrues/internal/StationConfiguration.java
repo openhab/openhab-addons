@@ -10,24 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigicrues.internal.json;
+package org.openhab.binding.vigicrues.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * The {@link Refine} is the Java class used to map the JSON
- * response to the webservice request.
+ * The {@link StationConfiguration} is the class used to match the
+ * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Refine {
-    @SerializedName("nom_dept")
-    private String departmentName = "";
+public class StationConfiguration {
+    public static String ID = "id";
 
-    public String getDepartmentName() {
-        return departmentName;
-    }
+    public String id = "";
+    public int refresh = 30;
 }

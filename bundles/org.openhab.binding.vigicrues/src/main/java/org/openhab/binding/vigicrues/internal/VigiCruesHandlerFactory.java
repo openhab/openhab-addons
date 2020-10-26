@@ -12,26 +12,28 @@
  */
 package org.openhab.binding.vigicrues.internal;
 
-import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*;
+import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
-import java.time.ZonedDateTime;
+import java.util.Hashtable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.vigicrues.internal.api.ApiHandler;
+import org.openhab.binding.vigicrues.internal.discovery.VigiCruesDiscoveryService;
 import org.openhab.binding.vigicrues.internal.handler.VigiCruesHandler;
+import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 
 /**
  * The {@link VigiCruesHandlerFactory} is responsible for creating things and thing
@@ -42,17 +44,23 @@ import com.google.gson.JsonDeserializer;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.vigicrues")
 @NonNullByDefault
 public class VigiCruesHandlerFactory extends BaseThingHandlerFactory {
-    private final Gson gson;
-    // Needed for converting UTC time to local time
-    private final TimeZoneProvider timeZoneProvider;
+    private final LocationProvider locationProvider;
+    private final ApiHandler apiHandler;
+    private @Nullable ServiceRegistration<?> serviceReg;
 
     @Activate
-    public VigiCruesHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
-        this.timeZoneProvider = timeZoneProvider;
-        this.gson = new GsonBuilder()
-                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type,
-                        jsonDeserializationContext) -> ZonedDateTime.parse(json.getAsJsonPrimitive().getAsString()))
-                .create();
+    public VigiCruesHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
+            @Reference LocationProvider locationProvider) {
+        this.locationProvider = locationProvider;
+        this.apiHandler = new ApiHandler(timeZoneProvider);
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        VigiCruesDiscoveryService discoveryService = new VigiCruesDiscoveryService(apiHandler, locationProvider);
+        serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                new Hashtable<>());
     }
 
     @Override
@@ -64,10 +72,13 @@ public class VigiCruesHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_VIGI_CRUES)) {
-            return new VigiCruesHandler(thing, timeZoneProvider, gson);
-        }
+        return supportsThingType(thingTypeUID) ? new VigiCruesHandler(thing, locationProvider, apiHandler) : null;
+    }
 
-        return null;
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (serviceReg != null) {
+            serviceReg.unregister();
+        }
     }
 }
