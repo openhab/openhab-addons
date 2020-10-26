@@ -122,17 +122,6 @@ public class Connection {
                         logger.info("io() on {}: raised an error during sending: {}.", host, e.getMessage());
                         break;
                     }
-
-                    // Give the bridge some time to breathe
-                    if (bridgeInstance.veluxBridgeConfiguration().timeoutMsecs > 0) {
-                        logger.trace("io() on {}: wait time {} msecs.", host,
-                                bridgeInstance.veluxBridgeConfiguration().timeoutMsecs);
-                        try {
-                            Thread.sleep(bridgeInstance.veluxBridgeConfiguration().timeoutMsecs);
-                        } catch (InterruptedException ie) {
-                            logger.trace("io() on {}: wait interrupted.", host);
-                        }
-                    }
                 }
                 byte[] packet = new byte[0];
                 logger.trace("io() on {}: receiving bytes.", host);
