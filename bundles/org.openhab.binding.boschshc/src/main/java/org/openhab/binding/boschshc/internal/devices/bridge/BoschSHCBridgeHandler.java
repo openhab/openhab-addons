@@ -105,6 +105,15 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         // Instantiate HttpClient with the SslContextFactory
         BoschHttpClient httpClient = this.httpClient = new BoschHttpClient(config.ipAddress, config.password, factory);
 
+        // Start http client
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Could not create http connection to controller");
+            return;
+        }
+
         // Initialize bridge in the background.
         // Start initial access the first time
         scheduleInitialAccess(httpClient);
