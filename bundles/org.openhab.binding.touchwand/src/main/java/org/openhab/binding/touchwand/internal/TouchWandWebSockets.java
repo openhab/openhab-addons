@@ -52,6 +52,7 @@ import com.google.gson.JsonSyntaxException;
 public class TouchWandWebSockets {
 
     private static final int CONNECT_TIMEOUT_SEC = 15;
+    private static final int CONNECT_TIMEOUT_MS = CONNECT_TIMEOUT_SEC * 1000;
     private static final int WEBSOCKET_RECONNECT_INTERVAL_SEC = CONNECT_TIMEOUT_SEC * 2;
     private static final int WEBSOCKET_IDLE_TIMEOUT_MS = CONNECT_TIMEOUT_SEC * 10 * 1000;
     private final Logger logger = LoggerFactory.getLogger(TouchWandWebSockets.class);
@@ -83,7 +84,7 @@ public class TouchWandWebSockets {
             return;
         }
 
-        client.setConnectTimeout(CONNECT_TIMEOUT_SEC);
+        client.setConnectTimeout(CONNECT_TIMEOUT_MS);
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setSubProtocols("relay_protocol");
 
