@@ -105,7 +105,7 @@ public class BoschHttpClient extends HttpClient {
             logger.trace("Pairing response complete: {} - return code: {}", contentResponse.getContentAsString(),
                     contentResponse.getStatus());
             if (201 == contentResponse.getStatus()) {
-                logger.info("Pairing successful.");
+                logger.debug("Pairing successful.");
                 return true;
             } else {
                 logger.info("Pairing failed with response status {}.", contentResponse.getStatus());
