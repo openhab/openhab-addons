@@ -14,6 +14,7 @@ package org.openhab.binding.mpd.internal.handler;
 
 import static org.openhab.binding.mpd.internal.MPDBindingConstants.*;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,7 +61,7 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
     private final MPDConnection connection;
     private int volume = 0;
 
-    private final static long POLL_INTERVAL = 1; // 5 Second polling
+    private final static Duration POLL_INTERVAL = Duration.ofSeconds(1);
 
     private @Nullable ScheduledFuture<?> futureUpdateStatus;
     private @Nullable ScheduledFuture<?> futureUpdateCurrentSong;
@@ -156,8 +157,8 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
         ScheduledFuture<?> future = this.scheduledPolling;
         if (future == null || future.isDone()) {
             logger.debug("Scheduling status polling for MPD");
-            this.scheduledPolling = super.scheduler.scheduleWithFixedDelay(this::doUpdateStatus, POLL_INTERVAL,
-                    POLL_INTERVAL, TimeUnit.SECONDS);
+            this.scheduledPolling = super.scheduler.scheduleWithFixedDelay(this::doUpdateStatus, POLL_INTERVAL.toSeconds(),
+                    POLL_INTERVAL.toSeconds(), TimeUnit.SECONDS);
         }
     }
 
