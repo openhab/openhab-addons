@@ -117,7 +117,7 @@ public class UdpSenderService {
     private List<UdpResponseDTO> getUdpResponses() {
         int timeoutCounter = 0;
         List<UdpResponseDTO> list = new ArrayList<>();
-        while (timeoutCounter < MAX_TIMEOUT_COUNT) {
+        while (timeoutCounter < MAX_TIMEOUT_COUNT && !Thread.interrupted()) {
             byte[] receivedBuf = new byte[512];
             DatagramPacket answer = new DatagramPacket(receivedBuf, receivedBuf.length);
             try {
