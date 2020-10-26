@@ -17,7 +17,6 @@ package org.openhab.binding.gardena.internal.handler;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
 public class GardenaDeviceConfig {
     public String deviceId;
 }
