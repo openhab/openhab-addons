@@ -14,14 +14,14 @@ package org.openhab.binding.velux.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.types.Command;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeSetSceneVelocity;
 import org.openhab.binding.velux.internal.handler.utils.ThingConfiguration;
 import org.openhab.binding.velux.internal.things.VeluxScene;
 import org.openhab.binding.velux.internal.things.VeluxScene.SceneName;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

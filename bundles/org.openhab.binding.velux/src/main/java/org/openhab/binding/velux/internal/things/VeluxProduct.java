@@ -33,7 +33,6 @@ public class VeluxProduct {
 
     // Type definitions
 
-    @NonNullByDefault
     public static class ProductBridgeIndex {
 
         // Public definition

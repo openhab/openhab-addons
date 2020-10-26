@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Add support for LMS authentication
  *
  */
-@Component(immediate = true)
+@Component
 public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerDiscoveryParticipant.class);
 

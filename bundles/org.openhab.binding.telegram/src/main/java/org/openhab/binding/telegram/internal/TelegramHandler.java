@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.telegram.bot.TelegramActions;
+import org.openhab.binding.telegram.internal.action.TelegramActions;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;

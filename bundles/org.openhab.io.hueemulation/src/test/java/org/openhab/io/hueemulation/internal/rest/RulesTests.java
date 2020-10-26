@@ -61,6 +61,7 @@ import com.google.gson.reflect.TypeToken;
  */
 @NonNullByDefault
 public class RulesTests {
+
     protected @NonNullByDefault({}) CommonSetup commonSetup;
     protected @NonNullByDefault({}) ConfigStore cs;
     protected @NonNullByDefault({}) ItemRegistry itemRegistry;
@@ -106,7 +107,7 @@ public class RulesTests {
     }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws Exception {
         RuleUtils.random = new Random();
         commonSetup.dispose();
     }

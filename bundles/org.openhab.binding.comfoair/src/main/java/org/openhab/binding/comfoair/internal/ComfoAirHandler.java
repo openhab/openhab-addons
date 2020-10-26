@@ -429,7 +429,8 @@ public class ComfoAirHandler extends BaseThingHandler {
 
                     for (ComfoAirCommandType commandType : commandTypes) {
                         String commandKey = commandType.getKey();
-                        sendCommand(readCommand, commandKey);
+                        State state = sendCommand(readCommand, commandKey);
+                        updateState(commandKey, state);
                     }
                 }
             }

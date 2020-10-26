@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Mattias Markehed - Initial contribution
  */
-@Component(immediate = true)
+@Component
 public class MinecraftMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override

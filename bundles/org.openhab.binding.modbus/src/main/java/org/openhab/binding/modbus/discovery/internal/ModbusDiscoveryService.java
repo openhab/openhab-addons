@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Nagy Attila Gabor - initial contribution
  *
  */
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.modbus")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.modbus")
 @NonNullByDefault
 public class ModbusDiscoveryService extends AbstractDiscoveryService {
 

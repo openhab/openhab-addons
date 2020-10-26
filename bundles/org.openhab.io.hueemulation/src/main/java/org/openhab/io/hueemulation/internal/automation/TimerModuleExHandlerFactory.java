@@ -17,12 +17,12 @@ import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.automation.Module;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.handler.BaseModuleHandlerFactory;
 import org.openhab.core.automation.handler.ModuleHandler;
 import org.openhab.core.automation.handler.ModuleHandlerFactory;
+import org.openhab.core.scheduler.Scheduler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = ModuleHandlerFactory.class)
+@Component(service = ModuleHandlerFactory.class)
 public class TimerModuleExHandlerFactory extends BaseModuleHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(TimerModuleExHandlerFactory.class);

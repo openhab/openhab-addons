@@ -19,8 +19,9 @@
 		</channel-groups>
 		<properties>
 			<property name="vendor">HP</property>
+			<property name="uuid"></property>
 		</properties>
-		<representation-property>serialNumber</representation-property>
+		<representation-property>uuid</representation-property>
 		<config-description-ref uri="thing-type:hpprinter:config"/>
 	</thing-type>
 

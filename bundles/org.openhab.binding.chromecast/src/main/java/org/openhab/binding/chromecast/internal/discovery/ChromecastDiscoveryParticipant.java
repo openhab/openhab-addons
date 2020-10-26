@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution
  * @author Daniel Walters - Change discovery protocol to mDNS
  */
-@Component(immediate = true)
+@Component
 @NonNullByDefault
 public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(ChromecastDiscoveryParticipant.class);

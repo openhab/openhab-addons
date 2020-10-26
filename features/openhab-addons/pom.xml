@@ -10,7 +10,7 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.addons.features.karaf.openhab-addons3</artifactId>
+  <artifactId>org.openhab.addons.features.karaf.openhab-addons</artifactId>
   <packaging>feature</packaging>
 
   <name>openHAB Add-ons :: Features :: Karaf :: Add-ons</name>
@@ -19,7 +19,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>org.openhab.addons.features.karaf.openhab-addons-external3</artifactId>
+      <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -46,6 +46,9 @@
                   <header file="src/main/resources/header.xml" filtering="no"/>
                   <fileset dir="${basedirRoot}/bundles">
                     <include name="*/src/main/feature/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.modbus*/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
@@ -67,6 +70,9 @@
             <id>karaf-feature-verification</id>
             <configuration>
               <features>
+                <feature>openhab-binding-bluetooth</feature>
+                <feature>openhab-binding-modbus</feature>
+                <feature>openhab-binding-mqtt</feature>
               </features>
             </configuration>
           </execution>

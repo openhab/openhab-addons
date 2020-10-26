@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author Karel Goderis - Rewrite for Firmware V2, and remove dependency on external libraries
  * @author Wouter Born - Discover light labels, improve locking, optimize packet handling
  */
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.lifx")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.lifx")
 @NonNullByDefault
 public class LifxLightDiscovery extends AbstractDiscoveryService {
 

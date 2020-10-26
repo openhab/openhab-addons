@@ -16,6 +16,10 @@ import static org.openhab.binding.velux.internal.VeluxBindingConstants.CHANNEL_A
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
+import org.openhab.binding.velux.internal.bridge.common.GetProduct;
+import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
+import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
@@ -23,10 +27,6 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
-import org.openhab.binding.velux.internal.bridge.common.GetProduct;
-import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
-import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

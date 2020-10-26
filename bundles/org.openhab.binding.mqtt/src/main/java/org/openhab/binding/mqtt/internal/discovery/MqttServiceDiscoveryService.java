@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.systemmqttbroker")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.systemmqttbroker")
 public class MqttServiceDiscoveryService extends AbstractDiscoveryService implements MqttServiceObserver {
     private final Logger logger = LoggerFactory.getLogger(MqttServiceDiscoveryService.class);
     MqttService mqttService;

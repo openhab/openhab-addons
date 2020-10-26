@@ -61,11 +61,9 @@ import com.google.gson.GsonBuilder;
  *
  * @author Pepijn de Geus - Initial contribution
  */
-@Component(immediate = true, service = HttpServlet.class, configurationPid = "org.openhab.imperihome", property = {
-        Constants.SERVICE_PID + "=org.openhab.imperihome",
-        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:imperihome",
-        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
-        ConfigurableService.SERVICE_PROPERTY_LABEL + "=ImperiHome Integration" })
+@Component(service = HttpServlet.class, configurationPid = "org.openhab.imperihome", //
+        property = Constants.SERVICE_PID + "=org.openhab.imperihome")
+@ConfigurableService(category = "io", label = "ImperiHome Integration", description_uri = "io:imperihome")
 public class ImperiHomeApiServlet extends HttpServlet {
 
     private static final long serialVersionUID = -1966364789075448441L;

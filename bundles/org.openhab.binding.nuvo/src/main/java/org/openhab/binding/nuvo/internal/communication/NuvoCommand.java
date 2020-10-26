@@ -40,6 +40,7 @@ public enum NuvoCommand {
     ON("ON"),
     OFF("OFF"),
     SOURCE("SRC"),
+    FAVORITE("FAV"),
     VOLUME("VOL"),
     MUTE_ON("MUTEON"),
     MUTE_OFF("MUTEOFF"),

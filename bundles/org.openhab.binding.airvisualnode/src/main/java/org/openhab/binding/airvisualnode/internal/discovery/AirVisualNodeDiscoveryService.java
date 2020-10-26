@@ -39,7 +39,7 @@ import jcifs.smb.SmbFile;
  *
  * @author Victor Antonovich - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true)
+@Component(service = DiscoveryService.class)
 public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(AirVisualNodeDiscoveryService.class);

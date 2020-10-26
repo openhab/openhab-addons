@@ -45,7 +45,6 @@ public class VeluxScene {
 
     // Type definitions
 
-    @NonNullByDefault
     public static class SceneName {
 
         private static final SceneName UNKNOWN = new SceneName(VeluxBindingConstants.UNKNOWN);
@@ -66,7 +65,6 @@ public class VeluxScene {
         }
     }
 
-    @NonNullByDefault
     public static class SceneBridgeIndex {
 
         private static final SceneBridgeIndex UNKNOWN = new SceneBridgeIndex(0);

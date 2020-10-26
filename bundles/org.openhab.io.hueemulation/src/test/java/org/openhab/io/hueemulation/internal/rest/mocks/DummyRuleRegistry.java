@@ -22,9 +22,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.automation.Rule;
 import org.openhab.core.automation.RuleRegistry;
+import org.openhab.core.common.registry.RegistryChangeListener;
 
 /**
  * @author David Graeff - Initial contribution
@@ -44,7 +44,6 @@ public class DummyRuleRegistry implements RuleRegistry {
         return items.values();
     }
 
-    @NonNullByDefault({})
     @Override
     public Stream<Rule> stream() {
         return items.values().stream();
@@ -87,13 +86,11 @@ public class DummyRuleRegistry implements RuleRegistry {
         return put;
     }
 
-    @NonNullByDefault({})
     @Override
-    public Collection<Rule> getByTag(String tag) {
+    public Collection<Rule> getByTag(@Nullable String tag) {
         return Collections.emptyList();
     }
 
-    @NonNullByDefault({})
     @Override
     public Collection<Rule> getByTags(String... tags) {
         return Collections.emptyList();

@@ -18,7 +18,8 @@
 		</parameter>
 		<parameter name="country" type="text">
 			<label>Xiaomi server country</label>
-			<description>Xiaomi server country(s) (e.g. sg,de). Separate multiple servers with comma</description>
+			<description>Xiaomi server country(s) (e.g. sg,de). Separate multiple servers with comma. Leave empty for all. See
+				binding readme for country to server mapping</description>
 			<required>false</required>
 		</parameter>
 	</config-description>

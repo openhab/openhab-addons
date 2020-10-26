@@ -21,9 +21,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mqtt.action.MQTTActions;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryParticipant;
 import org.openhab.binding.mqtt.discovery.TopicSubscribe;
+import org.openhab.binding.mqtt.internal.action.MQTTActions;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;

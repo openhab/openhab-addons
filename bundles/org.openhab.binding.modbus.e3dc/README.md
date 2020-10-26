@@ -1,4 +1,4 @@
-# E3DC Binding
+# E3DC
 
 <img align="right" src="./doc/E3DC_logo.png"/>
 

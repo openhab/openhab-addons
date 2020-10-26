@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
-import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,8 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.channelhelper.BatteryHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.RadioHelper;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.unit.SIUnits;
@@ -46,8 +48,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.netatmo.internal.channelhelper.BatteryHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.RadioHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

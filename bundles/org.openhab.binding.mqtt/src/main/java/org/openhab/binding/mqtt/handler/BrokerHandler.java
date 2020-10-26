@@ -223,8 +223,6 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             connection.setTimeoutExecutor(scheduler, TIMEOUT_DEFAULT);
         }
 
-        connection.setRetain(config.retainMessages);
-
         return connection;
     }
 

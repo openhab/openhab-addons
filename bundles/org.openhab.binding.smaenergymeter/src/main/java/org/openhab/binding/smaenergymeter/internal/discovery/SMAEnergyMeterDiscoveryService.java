@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osman Basha - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.smaenergymeter")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.smaenergymeter")
 public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterDiscoveryService.class);

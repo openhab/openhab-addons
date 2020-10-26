@@ -6,9 +6,9 @@
 
 	<!-- Oppo Blu-ray disc player Thing -->
 	<thing-type id="player">
-		<label>Oppo</label>
+		<label>Oppo Blu-ray Disc Player</label>
 		<description>
-			An Oppo Blu-ray Disc Player
+			Controls an Oppo Blu-ray Disc Player
 		</description>
 
 		<channels>

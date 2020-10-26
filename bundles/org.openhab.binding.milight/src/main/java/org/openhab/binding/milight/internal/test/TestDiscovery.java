@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, enabled = false)
+@Component(service = DiscoveryService.class, enabled = false)
 public class TestDiscovery extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(TestDiscovery.class);
 

@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
  *
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class AM43DiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     @Override

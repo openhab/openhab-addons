@@ -21,6 +21,8 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.snmp4j.PDU;
 import org.snmp4j.event.ResponseEvent;
@@ -63,7 +65,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
                 Collections.singletonList(new VariableBinding(new OID(TEST_OID), new OctetString("on"))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
-        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(OnOffType.ON));
+        verifyResponse(OnOffType.ON);
     }
 
     @Test
@@ -73,7 +75,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
                 Collections.singletonList(new VariableBinding(new OID(TEST_OID), new Integer32(3))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
-        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(OnOffType.OFF));
+        verifyResponse(OnOffType.OFF);
     }
 
     @Test
@@ -84,7 +86,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
                 .singletonList(new VariableBinding(new OID(TEST_OID), OctetString.fromHexStringPairs("aabb11"))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
-        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(OnOffType.ON));
+        verifyResponse(OnOffType.ON);
     }
 
     @Test
@@ -95,6 +97,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, never()).stateUpdated(eq(CHANNEL_UID), any());
+        verifyStatus(ThingStatus.ONLINE);
     }
 
     @Test
@@ -104,7 +107,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
                 Collections.singletonList(new VariableBinding(new OID(TEST_OID), Null.noSuchInstance)));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
-        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(UnDefType.UNDEF));
+        verifyResponse(UnDefType.UNDEF);
     }
 
     @Test
@@ -115,6 +118,11 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
                 Collections.singletonList(new VariableBinding(new OID(TEST_OID), Null.noSuchInstance)));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
-        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(OnOffType.OFF));
+        verifyResponse(OnOffType.OFF);
+    }
+
+    private void verifyResponse(State expectedState) {
+        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(expectedState));
+        verifyStatus(ThingStatus.ONLINE);
     }
 }

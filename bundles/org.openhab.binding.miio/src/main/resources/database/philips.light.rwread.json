@@ -1,0 +1,91 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.rwread"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"channelType": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"channelType": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
+					}
+				]
+			},
+			{
+				"property": "snm",
+				"friendlyName": "Scene",
+				"channel": "scene",
+				"channelType": "scene",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "apply_scene",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "flm",
+				"friendlyName": "Follow Me",
+				"channel": "flm",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_flmvalue",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "dv",
+				"friendlyName": "DV",
+				"channel": "dv",
+				"channelType": "dv",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"parameterType": "EMPTY"
+					}
+				]
+			}
+		]
+	}
+}

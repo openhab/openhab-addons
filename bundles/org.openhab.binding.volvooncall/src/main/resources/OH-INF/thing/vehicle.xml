@@ -32,10 +32,11 @@
 				<description>VIN of the vehicle associated with this Thing</description>
 			</parameter>
 
-			<parameter name="refresh" type="integer" min="5" required="false">
+			<parameter name="refresh" type="integer" min="5" required="true">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in minutes.</description>
-				<default>5</default>
+				<default>10</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -51,6 +52,7 @@
 			<channel id="washerFluidLevel" typeId="washerFluidLevel"/>
 			<channel id="serviceWarningStatus" typeId="serviceWarningStatus"/>
 			<channel id="bulbFailure" typeId="bulbFailure"/>
+			<channel id="carEvent" typeId="carEvent"/>
 		</channels>
 	</channel-group-type>
 
@@ -58,34 +60,34 @@
 		<label>Last Trip</label>
 		<channels>
 			<channel id="tripConsumption" typeId="fuelQuantity">
-				<label>Consumption</label>
+				<label>Trip Consumption</label>
 				<description>Indicates the quantity of fuel consumed by the trip</description>
 			</channel>
 			<channel id="tripDistance" typeId="odometer">
-				<label>Distance</label>
+				<label>Trip Distance</label>
 				<description>Distance traveled</description>
 			</channel>
 			<channel id="tripStartTime" typeId="timestamp">
-				<label>Start Time</label>
+				<label>Trip Start Time</label>
 				<description>Trip start time</description>
 			</channel>
 			<channel id="tripEndTime" typeId="timestamp">
-				<label>End Time</label>
+				<label>Trip End Time</label>
 				<description>Trip end time</description>
 			</channel>
 			<channel id="tripDuration" typeId="tripDuration"/>
 			<channel id="tripStartOdometer" typeId="odometer">
-				<label>Start Odometer</label>
+				<label>Trip Start Odometer</label>
 			</channel>
 			<channel id="tripStopOdometer" typeId="odometer">
-				<label>Stop Odometer</label>
+				<label>Trip Stop Odometer</label>
 			</channel>
 			<channel id="startPosition" typeId="location">
-				<label>From</label>
+				<label>Trip From</label>
 				<description>Starting location of the car</description>
 			</channel>
 			<channel id="endPosition" typeId="location">
-				<label>To</label>
+				<label>Trip To</label>
 				<description>Stopping location of the car</description>
 			</channel>
 		</channels>
@@ -95,16 +97,16 @@
 		<label>Doors Opening Status</label>
 		<channels>
 			<channel id="frontLeft" typeId="door">
-				<label>Front Left</label>
+				<label>Front Left Door</label>
 			</channel>
 			<channel id="frontRight" typeId="door">
-				<label>Front Right</label>
+				<label>Front Right Door</label>
 			</channel>
 			<channel id="rearLeft" typeId="door">
-				<label>Rear Left</label>
+				<label>Rear Left Door</label>
 			</channel>
 			<channel id="rearRight" typeId="door">
-				<label>Rear Right</label>
+				<label>Rear Right Door</label>
 			</channel>
 			<channel id="hood" typeId="door">
 				<label>Hood</label>
@@ -120,16 +122,16 @@
 		<label>Windows Opening Status</label>
 		<channels>
 			<channel id="frontLeftWnd" typeId="window">
-				<label>Front Left</label>
+				<label>Front Left Window</label>
 			</channel>
 			<channel id="frontRightWnd" typeId="window">
-				<label>Front Right</label>
+				<label>Front Right Window</label>
 			</channel>
 			<channel id="rearLeftWnd" typeId="window">
-				<label>Rear Left</label>
+				<label>Rear Left Window</label>
 			</channel>
 			<channel id="rearRightWnd" typeId="window">
-				<label>Rear Right</label>
+				<label>Rear Right Window</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -138,16 +140,16 @@
 		<label>Tyre pressure status</label>
 		<channels>
 			<channel id="frontLeftTyre" typeId="tyrePressure">
-				<label>Front Left</label>
+				<label>Front Left Tyre</label>
 			</channel>
 			<channel id="frontRightTyre" typeId="tyrePressure">
-				<label>Front Right</label>
+				<label>Front Right Tyre</label>
 			</channel>
 			<channel id="rearLeftTyre" typeId="tyrePressure">
-				<label>Rear Left</label>
+				<label>Rear Left Tyre</label>
 			</channel>
 			<channel id="rearRightTyre" typeId="tyrePressure">
-				<label>Rear Right</label>
+				<label>Rear Right Tyre</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -186,7 +188,7 @@
 		<label>Location Info</label>
 		<channels>
 			<channel id="location" typeId="location">
-				<label>Location</label>
+				<label>Current Location</label>
 				<description>The position of the vehicle</description>
 			</channel>
 			<channel id="calculatedLocation" typeId="calculatedLocation"/>
@@ -245,7 +247,7 @@
 		<item-type>Number:Speed</item-type>
 		<label>Average speed</label>
 		<description>Average speed of the vehicle</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="fuelQuantity">
@@ -264,8 +266,8 @@
 	<channel-type id="fuelConsumption" advanced="true">
 		<item-type>Number</item-type>
 		<label>Average Consumption</label>
-		<description>Indicates the average fuel consumption in L/100km</description>
-		<state pattern="%.1f L/100km" readOnly="true"></state>
+		<description>Indicates the average fuel consumption in l/100km</description>
+		<state pattern="%.1f l/100km" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="location">
@@ -386,6 +388,18 @@
 		<label>Fuel Alarm</label>
 		<description>set to 'ON' when the tank level is low</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="carEvent">
+		<kind>trigger</kind>
+		<label>Car Event</label>
+		<event>
+			<options>
+				<option value="CAR_STOPPED">Car stopped</option>
+				<option value="CAR_STARTED">Car started</option>
+				<option value="CAR_MOVED">Car has moved</option>
+			</options>
+		</event>
 	</channel-type>
 
 </thing:thing-descriptions>

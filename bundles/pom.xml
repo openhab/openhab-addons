@@ -17,12 +17,15 @@
   <name>openHAB Add-ons :: Bundles</name>
 
   <modules>
+    <!-- automation -->
+    <module>org.openhab.automation.groovyscripting</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
+    <module>org.openhab.io.hueemulation</module>
+    <module>org.openhab.io.imperihome</module>
     <module>org.openhab.io.neeo</module>
     <module>org.openhab.io.openhabcloud</module>
     <module>org.openhab.io.transport.modbus</module>
-    <module>org.openhab.io.mqttembeddedbroker</module>
     <!-- transformations -->
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
@@ -189,6 +192,7 @@
     <module>org.openhab.binding.neeo</module>
     <module>org.openhab.binding.neohub</module>
     <module>org.openhab.binding.nest</module>
+    <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.networkupstools</module>
     <module>org.openhab.binding.nibeheatpump</module>
@@ -229,6 +233,7 @@
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.revogi</module>
+    <module>org.openhab.binding.remoteopenhab</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
@@ -271,15 +276,18 @@
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.tibber</module>
+    <module>org.openhab.binding.touchwand</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>
+    <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.upnpcontrol</module>
     <module>org.openhab.binding.upb</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.vektiva</module>
     <module>org.openhab.binding.velbus</module>
+    <module>org.openhab.binding.velux</module>
     <module>org.openhab.binding.venstarthermostat</module>
     <module>org.openhab.binding.verisure</module>
     <module>org.openhab.binding.vigicrues</module>
@@ -483,47 +491,6 @@
   </build>
 
   <profiles>
-    <!-- remove unused classes / shrink jar -->
-    <profile>
-      <id>shrink-bundle</id>
-      <activation>
-        <file>
-          <exists>shrinkBundle.profile</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.wvengen</groupId>
-            <artifactId>proguard-maven-plugin</artifactId>
-            <version>2.1.1</version>
-            <executions>
-              <execution>
-                <id>shrink-bundle</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>proguard</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <obfuscate>false</obfuscate>
-              <injarNotExistsSkip>true</injarNotExistsSkip>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <libs>
-                <lib>${java.home}/lib/rt.jar</lib>
-              </libs>
-              <options>
-                <option>-dontwarn</option>
-                <option>-dontnote</option>
-                <option>-keep,includedescriptorclasses public class org.openhab.** { *; }</option>
-                <option>-printusage ${project.build.directory}/shrink_log.txt</option>
-              </options>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <!-- suppress embedding of dependencies -->
     <profile>
       <id>no-embed-dependencies</id>

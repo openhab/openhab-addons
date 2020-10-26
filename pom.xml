@@ -281,7 +281,7 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.8.1</version>
           <configuration>
             <compilerId>eclipse</compilerId>
             <compilerArgs>
@@ -295,12 +295,12 @@ Import-Package: \\
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-compiler-eclipse</artifactId>
-              <version>2.8.5</version>
+              <version>2.8.8</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.jdt</groupId>
               <artifactId>ecj</artifactId>
-              <version>3.16.0</version>
+              <version>3.23.0</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -547,8 +547,8 @@ Import-Package: \\
                   <exclude>**/pom.xml</exclude>
                   <exclude>**/feature.xml</exclude>
                   <exclude>src/main/history/**/*.xml</exclude>
-                  <exclude>features/openhab-addons/src/main/resources/header.xml</exclude>
-                  <exclude>features/openhab-addons/src/main/resources/footer.xml</exclude>
+                  <exclude>src/main/resources/header.xml</exclude>
+                  <exclude>src/main/resources/footer.xml</exclude>
                   <exclude>src/main/resources/input/rss*.xml</exclude>
                   <exclude>src/test/resources/**/*.xml</exclude>
                 </excludes>
@@ -710,89 +710,6 @@ Import-Package: \\
             <artifactId>sat-plugin</artifactId>
           </plugin>
         </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>add-libraries-cli</id>
-      <activation>
-        <property>
-          <name>!m2e.version</name>
-        </property>
-        <file>
-          <exists>lib/</exists>
-        </file>
-      </activation>
-      <properties>
-        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/;filter:=*.jar;lib:=true</bnd.includeresource>
-        <feature.directory>../../src/main/feature/feature.xml</feature.directory>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.googlecode.addjars-maven-plugin</groupId>
-            <artifactId>addjars-maven-plugin</artifactId>
-            <version>1.0.5</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>add-jars</goal>
-                </goals>
-                <configuration>
-                  <resources>
-                    <resource>
-                      <directory>${project.basedir}/lib</directory>
-                      <includes>
-                        <include>**/*.jar</include>
-                      </includes>
-                      <scope>provided</scope>
-                    </resource>
-                  </resources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>add-libraries-eclipse</id>
-      <activation>
-        <property>
-          <name>m2e.version</name>
-        </property>
-        <file>
-          <exists>lib/</exists>
-        </file>
-      </activation>
-      <properties>
-        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/;filter:=*.jar;lib:=true</bnd.includeresource>
-      </properties>
-    </profile>
-    <profile>
-      <id>with-bnd-resolver-resolve</id>
-      <activation>
-        <property>
-          <name>withResolver</name>
-        </property>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>biz.aQute.bnd</groupId>
-              <artifactId>bnd-resolver-maven-plugin</artifactId>
-              <version>${bnd.version}</version>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>resolve</goal>
-                  </goals>
-                  <phase>package</phase>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
       </build>
     </profile>
   </profiles>

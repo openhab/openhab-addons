@@ -15,7 +15,6 @@ package org.openhab.binding.lutron.internal.grxprg;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -332,12 +331,12 @@ public class GrafikEyeHandler extends BaseThingHandler {
     private PrgProtocolHandler getProtocolHandler() {
         final Bridge bridge = getBridge();
         if (bridge == null || !(bridge.getHandler() instanceof PrgBridgeHandler)) {
-            throw new NullArgumentException("Cannot have a Grafix Eye thing outside of the PRG bridge");
+            throw new IllegalArgumentException("Cannot have a Grafix Eye thing outside of the PRG bridge");
         }
 
         final PrgProtocolHandler handler = ((PrgBridgeHandler) bridge.getHandler()).getProtocolHandler();
         if (handler == null) {
-            throw new NullArgumentException("No protocol handler set in the PrgBridgeHandler!");
+            throw new IllegalArgumentException("No protocol handler set in the PrgBridgeHandler!");
         }
         return handler;
     }

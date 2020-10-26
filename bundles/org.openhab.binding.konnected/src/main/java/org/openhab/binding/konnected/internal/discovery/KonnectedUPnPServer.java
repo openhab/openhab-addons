@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(service = UpnpDiscoveryParticipant.class)
 public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
     private Logger logger = LoggerFactory.getLogger(KonnectedUPnPServer.class);
 

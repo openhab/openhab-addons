@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Linky Thing -->
 	<thing-type id="linky">
 		<label>Linky</label>
 		<description>
@@ -31,6 +30,10 @@
 				<context>password</context>
 				<description>Your Enedis Password</description>
 			</parameter>
+			<parameter name="internalAuthId" type="text" required="true">
+				<label>Auth ID</label>
+				<description>Authentication ID delivered after the captcha (see documentation).</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -40,6 +43,8 @@
 			<channel id="yesterday" typeId="consumption">
 				<label>Yesterday Consumption</label>
 			</channel>
+			<channel id="power" typeId="power"/>
+			<channel id="timestamp" typeId="timestamp"/>
 		</channels>
 	</channel-group-type>
 
@@ -47,10 +52,10 @@
 		<label>Weekly consumption</label>
 		<channels>
 			<channel id="thisWeek" typeId="consumption">
-				<label>Current Week Consumption</label>
+				<label>This Week Consumption</label>
 			</channel>
 			<channel id="lastWeek" typeId="consumption">
-				<label>Last Week Consumption</label>
+				<label>Maximum power usage yesterday</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -59,7 +64,7 @@
 		<label>Monthly consumption</label>
 		<channels>
 			<channel id="thisMonth" typeId="consumption">
-				<label>Current Month Consumption</label>
+				<label>This Month Consumption</label>
 			</channel>
 			<channel id="lastMonth" typeId="consumption">
 				<label>Last Month Consumption</label>
@@ -71,14 +76,13 @@
 		<label>Yearly consumption</label>
 		<channels>
 			<channel id="thisYear" typeId="consumption">
-				<label>Current Year Consumption</label>
+				<label>This Year Consumption</label>
 			</channel>
 			<channel id="lastYear" typeId="consumption">
 				<label>Last Year Consumption</label>
 			</channel>
 		</channels>
 	</channel-group-type>
-
 
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
@@ -87,4 +91,18 @@
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
 
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Peak Power</label>
+		<description>Maximum power usage yesterday</description>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Peak Timestamp</label>
+		<description>Maximum power usage timestamp</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

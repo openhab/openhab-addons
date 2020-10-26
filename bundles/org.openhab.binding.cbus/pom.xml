@@ -13,6 +13,14 @@
 
   <artifactId>org.openhab.binding.cbus</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: CBUs Binding</name>
+  <name>openHAB Add-ons :: Bundles :: CBus Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.github.jpharvey</groupId>
+      <artifactId>cgateinterface</artifactId>
+      <version>1.1.0-JH-dev</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>

@@ -229,7 +229,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
         if (isConnected()) {
             logger.debug("Niko Home Control: publish {}, {}", topic, payload);
-            connection.publish(topic, payload.getBytes());
+            connection.publish(topic, payload.getBytes(), connection.getQos(), false);
         } else {
             logger.debug("Niko Home Control: cannot publish, not subscribed to connection messages");
         }

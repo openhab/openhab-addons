@@ -53,7 +53,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Matthias Siegele - Initial contribution
  *
  */
-@Component(service = ChannelTypeProvider.class, immediate = true)
+@Component(service = ChannelTypeProvider.class)
 public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProvider {
 
     // channelID building (effect group type + (nothing || SEPERATOR + item type || SEPERATOR + extended item type) e.g.

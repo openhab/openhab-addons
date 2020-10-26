@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Introduced config object, migrated to newer UPnP api
  */
-@Component(immediate = true)
+@Component
 @NonNullByDefault
 public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
 

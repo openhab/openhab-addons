@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Eckhardt - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, configurationPid = "binding.km200")
+@Component(configurationPid = "binding.km200")
 public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryParticipant.class);

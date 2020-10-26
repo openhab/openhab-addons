@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin Lepsy - Added check for Miele gateway for cleaner discovery
  *
  */
-@Component(immediate = true)
+@Component
 public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(MieleMDNSDiscoveryParticipant.class);

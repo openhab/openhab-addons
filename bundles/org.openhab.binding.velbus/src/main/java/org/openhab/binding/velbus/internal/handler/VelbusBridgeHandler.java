@@ -253,8 +253,9 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
             int reconnectionInterval = bridgeConfig.reconnectionInterval;
             if (reconnectionInterval > 0) {
                 this.reconnectionHandler = scheduler.scheduleWithFixedDelay(() -> {
-                    if (connect() && reconnectionHandler != null) {
-                        reconnectionHandler.cancel(false);
+                    final ScheduledFuture<?> currentReconnectionHandler = this.reconnectionHandler;
+                    if (connect() && currentReconnectionHandler != null) {
+                        currentReconnectionHandler.cancel(false);
                     }
                 }, reconnectionInterval, reconnectionInterval, TimeUnit.SECONDS);
             }

@@ -31,15 +31,16 @@ These sensors are supported:
 
 Additionally lights, window coverings (blinds) and thermostats are supported:
 
-| Device type                          | Resource Type                                 | Thing type           |
-|--------------------------------------|-----------------------------------------------|----------------------|
-| Dimmable Light                       | Dimmable light, Dimmable plug-in unit         | `dimmablelight`      |
-| On/Off Light                         | On/Off light, On/Off plug-in unit, Smart plug | `onofflight`         |
-| Color Light (w/o temperature)        | Color dimmable light                          | `colorlight`         |
-| Extended Color Light (w/temperature) | Extended color light                          | `extendedcolorlight` |
-| Blind / Window Covering              | Window covering device                        | `windowcovering`     |
-| Thermostat                           | ZHAThermostat                                 | `thermostat`         |
-| Warning Device (Siren)               | Warning device                                | `warningdevice`      |
+| Device type                          | Resource Type                                 | Thing type              |
+|--------------------------------------|-----------------------------------------------|-------------------------|
+| Dimmable Light                       | Dimmable light, Dimmable plug-in unit         | `dimmablelight`         |
+| On/Off Light                         | On/Off light, On/Off plug-in unit, Smart plug | `onofflight`            |
+| Color Temperature Light              | Color temperature light                       | `colortemperaturelight` |
+| Color Light (w/o temperature)        | Color dimmable light                          | `colorlight`            |
+| Extended Color Light (w/temperature) | Extended color light                          | `extendedcolorlight`    |
+| Blind / Window Covering              | Window covering device                        | `windowcovering`        |
+| Thermostat                           | ZHAThermostat                                 | `thermostat`            |
+| Warning Device (Siren)               | Warning device                                | `warningdevice`         |
 
 ## Discovery
 
@@ -155,7 +156,7 @@ Other devices support
 
 | Channel Type ID   | Item Type                | Access Mode | Description                           | Thing types                                   |
 |-------------------|--------------------------|:-----------:|---------------------------------------|-----------------------------------------------|
-| brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`                               |                                 
+| brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`, `colortemperaturelight`      |                                 
 | switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                  |
 | color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`            |
 | color_temperature | Number                   |     R/W     | Color temperature in kelvin. The value range is determined by each individual light          | `colortemperaturelight`, `extendedcolorlight` |

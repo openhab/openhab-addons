@@ -70,9 +70,9 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = EventSubscriber.class, immediate = true, property = {
-        "service.pid=org.openhab.io.neeo.NeeoService", "service.config.description.uri=io:neeo",
-        "service.config.label=NEEO Integration", "service.config.category=io" })
+@Component(service = EventSubscriber.class, property = { "service.pid=org.openhab.io.neeo.NeeoService",
+        "service.config.description.uri=io:neeo", "service.config.label=NEEO Integration",
+        "service.config.category=io" })
 public class NeeoService implements EventSubscriber, NetworkAddressChangeListener {
 
     /** The logger */

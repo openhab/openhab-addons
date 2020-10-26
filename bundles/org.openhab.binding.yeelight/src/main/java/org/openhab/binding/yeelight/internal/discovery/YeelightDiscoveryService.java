@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Coaster Li - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.yeelight")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.yeelight")
 public class YeelightDiscoveryService extends AbstractDiscoveryService implements DeviceListener {
 
     private final Logger logger = LoggerFactory.getLogger(YeelightDiscoveryService.class.getSimpleName());

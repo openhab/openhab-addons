@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Arjan Mels - Changed to upnp.UpnpDiscoveryParticipant
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(SamsungTvDiscoveryParticipant.class);
 

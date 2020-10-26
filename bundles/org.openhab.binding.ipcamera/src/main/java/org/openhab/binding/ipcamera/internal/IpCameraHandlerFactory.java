@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Matthew Skinner - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.ipcamera")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.ipcamera")
 @NonNullByDefault
 public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
     private final @Nullable String openhabIpAddress;

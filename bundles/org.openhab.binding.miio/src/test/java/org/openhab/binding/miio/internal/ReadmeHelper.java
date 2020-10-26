@@ -18,11 +18,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Disabled;
@@ -52,6 +54,7 @@ import com.google.gson.JsonParser;
 public class ReadmeHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadmeHelper.class);
     private static final String BASEFILE = "./README.base.md";
+    private static final String OUTPUTFILE = "./README.md";
 
     @Disabled
     public static void main(String[] args) {
@@ -65,14 +68,11 @@ public class ReadmeHelper {
         StringWriter itemFileExamples = rm.itemFileExamples();
         LOGGER.info("## Done");
         try {
-            File file = new File(BASEFILE);
-            String baseDoc = FileUtils.readFileToString(file, "UTF-8");
-            String nw = baseDoc.replaceAll("!!!devices", deviceList.toString())
+            String baseDoc = new String(Files.readAllBytes(Paths.get(BASEFILE)), StandardCharsets.UTF_8);
+            String newDoc = baseDoc.replaceAll("!!!devices", deviceList.toString())
                     .replaceAll("!!!channelList", channelList.toString())
                     .replaceAll("!!!itemFileExamples", itemFileExamples.toString());
-
-            File newDocfile = new File("README.md");
-            FileUtils.writeStringToFile(newDocfile, nw, "UTF-8");
+            Files.write(Paths.get(OUTPUTFILE), newDoc.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             LOGGER.warn("IO exception", e);
         }
@@ -90,6 +90,18 @@ public class ReadmeHelper {
             if (!device.getModel().equals("unknown")) {
                 String link = device.getModel().replace(".", "-");
                 boolean isSupported = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED);
+                String remark = "";
+                if (device.getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+                    MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
+                    if (dev != null) {
+                        remark = dev.getDevice().getReadmeComment();
+                        final Boolean experimental = dev.getDevice().getExperimental();
+                        if (experimental != null && experimental.booleanValue()) {
+                            remark += (remark.isBlank() ? "" : " ")
+                                    + "Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses";
+                        }
+                    }
+                }
                 sw.write("| ");
                 sw.write(minLengthString(device.getDescription(), 28));
                 sw.write(" | ");
@@ -99,7 +111,9 @@ public class ReadmeHelper {
                 sw.write(minLengthString(model, 22));
                 sw.write(" | ");
                 sw.write(isSupported ? "No       " : "Yes      ");
-                sw.write(" |            |\r\n");
+                sw.write(" | ");
+                sw.write(minLengthString(remark, 10));
+                sw.write(" |\r\n");
             }
         });
         return sw;
@@ -115,12 +129,13 @@ public class ReadmeHelper {
                     String link = device.getModel().replace(".", "-");
                     sw.write("### " + device.getDescription() + " (" + "<a name=\"" + link + "\">" + device.getModel()
                             + "</a>" + ") Channels\r\n" + "\r\n");
-                    sw.write("| Channel          | Type    | Description                         |\r\n");
-                    sw.write("|------------------|---------|-------------------------------------|\r\n");
+                    sw.write("| Channel          | Type    | Description                         | Comment    |\r\n");
+                    sw.write("|------------------|---------|-------------------------------------|------------|\r\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
                         sw.write("| " + minLengthString(ch.getChannel(), 16) + " | " + minLengthString(ch.getType(), 7)
-                                + " | " + minLengthString(ch.getFriendlyName(), 35) + " |\r\n");
+                                + " | " + minLengthString(ch.getFriendlyName(), 35) + " | "
+                                + minLengthString(ch.getReadmeComment(), 10) + " |\r\n");
                     }
                     sw.write("\r\n");
 
@@ -196,8 +211,7 @@ public class ReadmeHelper {
                         arrayList.add(devdb);
                     }
                 } catch (Exception e) {
-                    LOGGER.debug("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
-                    LOGGER.info(e.getMessage());
+                    LOGGER.info("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
                 }
             }
         }

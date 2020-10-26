@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Jaime Vaz - Initial contribution
  *
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.silvercrestwifisocket")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.silvercrestwifisocket")
 public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SilvercrestWifiSocketDiscoveryService.class);

@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component
 public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
 
     /** The logger */

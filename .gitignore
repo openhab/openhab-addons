@@ -1,5 +1,7 @@
 .antlr*
+.classpath
 .idea
+.project
 .DS_Store
 *.iml
 npm-debug.log

@@ -1,0 +1,138 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.cbulb",
+			"philips.light.cbulbs",
+			"philips.light.dcolor"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"channelType": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"channelType": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
+					}
+				]
+			},
+			{
+				"property": "cct",
+				"friendlyName": "Correlated Color Temperature",
+				"channel": "cct",
+				"channelType": "cct",
+				"type": "Dimmer",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_cct",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "snm",
+				"friendlyName": "Scene",
+				"channel": "scene",
+				"channelType": "scene",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "apply_scene",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "cid",
+				"friendlyName": "Color",
+				"channel": "cid",
+				"type": "Color",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_cid",
+						"parameterType": "COLOR"
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Switch Scene",
+				"channel": "switchscene",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "switch_the_scene",
+						"parameterType": "EMPTY"
+					}
+				]
+			},
+			{
+				"property": "get_switch_en",
+				"friendlyName": "Switch Enabled",
+				"channel": "switch_en",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_switch_en",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Delay Off",
+				"channel": "delayoff",
+				"channelType": "delayoff",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "delay_off",
+						"parameterType": "NUMBER"
+					}
+				]
+			}
+		]
+	}
+}

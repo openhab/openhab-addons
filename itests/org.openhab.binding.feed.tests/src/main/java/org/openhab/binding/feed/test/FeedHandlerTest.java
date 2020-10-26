@@ -19,13 +19,13 @@ import static org.openhab.core.thing.ThingStatus.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,7 +93,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
     /**
      * It is updated from mocked {@link StateChangeListener#stateUpdated() }
      */
-    private StringType currentItemState = null;
+    private StringType currentItemState;
 
     // Required services for the test
     private ManagedThingProvider managedThingProvider;
@@ -138,7 +138,8 @@ public class FeedHandlerTest extends JavaOSGiTest {
 
         public void setFeedContent(String feedContentFile) throws IOException {
             String path = "input/" + feedContentFile;
-            feedContent = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(path));
+            feedContent = new String(getClass().getClassLoader().getResourceAsStream(path).readAllBytes(),
+                    StandardCharsets.UTF_8);
         }
     }
 

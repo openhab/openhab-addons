@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Stefan Andres - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.vitotronic")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.vitotronic")
 public class VitotronicBridgeDiscovery extends AbstractDiscoveryService {
 
     private int adapterPort = 31113;
