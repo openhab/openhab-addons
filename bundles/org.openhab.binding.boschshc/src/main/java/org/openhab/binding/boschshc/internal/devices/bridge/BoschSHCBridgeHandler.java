@@ -62,8 +62,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable BoschHttpClient httpClient;
 
-    private BoschSHCBridgeConfiguration config;
-
     private final Gson gson = new Gson();
 
     /**
@@ -74,20 +72,20 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     public BoschSHCBridgeHandler(Bridge bridge) {
         super(bridge);
 
-        // Read configuration
-        this.config = getConfigAs(BoschSHCBridgeConfiguration.class);
-
         this.longPolling = new LongPolling(this.scheduler, this::handleLongPollResult, this::handleLongPollFailure);
     }
 
     @Override
     public void initialize() {
-        if (this.config.ipAddress.isEmpty()) {
+        // Read configuration
+        BoschSHCBridgeConfiguration config = getConfigAs(BoschSHCBridgeConfiguration.class);
+
+        if (config.ipAddress.isEmpty()) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address set");
             return;
         }
 
-        if (this.config.password.isEmpty()) {
+        if (config.password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No system password set");
             return;
         }
@@ -129,7 +127,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Handle command on bridge: {}", config.ipAddress);
     }
 
     /**
@@ -148,8 +145,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * and starts the first log poll.
      */
     private void initialAccess(BoschHttpClient httpClient) {
-        logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05", config.ipAddress,
-                httpClient);
+        logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05", this, httpClient);
 
         // check access and pair if necessary
         if (!httpClient.isAccessPossible()) {
@@ -195,7 +191,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
 
         try {
-            logger.debug("Sending http request to Bosch to request clients: {}", config.ipAddress);
+            logger.debug("Sending http request to Bosch to request clients: {}", httpClient);
             String url = httpClient.createSmartHomeUrl("devices");
             ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
 
