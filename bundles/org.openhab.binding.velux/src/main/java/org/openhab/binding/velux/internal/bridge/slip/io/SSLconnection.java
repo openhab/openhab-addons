@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.velux.internal.bridge.slip.io;
 
+import java.io.Closeable;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Guenther Schreiner - Initial contribution.
  */
 @NonNullByDefault
-class SSLconnection {
+class SSLconnection implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(SSLconnection.class);
 
     // Public definition
@@ -63,8 +64,6 @@ class SSLconnection {
      * ***************************
      * ***** Private Objects *****
      */
-
-    private static final int CONNECTION_BUFFER_SIZE = 4096;
 
     private boolean ready = false;
     private @Nullable SSLSocket socket;
@@ -161,7 +160,7 @@ class SSLconnection {
      *
      * @return <b>ready</b> as boolean for an established connection.
      */
-    synchronized boolean isReady() {
+    public synchronized boolean isReady() {
         return ready;
     }
 
@@ -181,19 +180,17 @@ class SSLconnection {
      * @param packet as Array of bytes to be transmitted towards the bridge via the established connection.
      * @throws java.io.IOException in case of a communication I/O failure, and sets 'ready' = false
      */
-    @SuppressWarnings("null")
-    synchronized void send(byte[] packet) throws IOException {
+    public synchronized void send(byte[] packet) throws IOException {
         logger.trace("send() called, writing {} bytes.", packet.length);
         try {
-            if (!ready || (dOut == null) || (dIn == null)) {
+            DataOutputStream dOutX = dOut;
+            if (!ready || (dOutX == null)) {
                 throw new IOException();
             }
-            // flush the read buffer if (exceptionally) there is orphan response data in it
-            flushReadBufffer();
             // copy packet data to the write buffer
-            dOut.write(packet, 0, packet.length);
+            dOutX.write(packet, 0, packet.length);
             // force the write buffer data to be written to the socket
-            dOut.flush();
+            dOutX.flush();
             if (logger.isTraceEnabled()) {
                 StringBuilder sb = new StringBuilder();
                 for (byte b : packet) {
@@ -208,45 +205,42 @@ class SSLconnection {
     }
 
     /**
-     * Method to verify that there is message from the bridge.
+     * Method to verify that there is a message from the bridge.
      *
-     * @return <b>true</b> if there are any bytes ready to be queried using {@link SSLconnection#receive}.
+     * @return <b>true</b> if there are any messages ready to be queried using {@link SSLconnection#receive}.
      * @throws java.io.IOException in case of a communication I/O failure.
      */
-    synchronized boolean available() throws IOException {
+    public synchronized boolean available() throws IOException {
         logger.trace("available() called.");
-        if (!ready || (dIn == null)) {
+        DataInputStreamWithTimeout dInX = dIn;
+        if (!ready || (dInX == null)) {
             throw new IOException();
         }
-        @SuppressWarnings("null")
-        int availableBytes = dIn.available();
-        logger.trace("available(): found {} bytes ready to be read (> 0 means true).", availableBytes);
-        return availableBytes > 0;
+        int availableMessages = dInX.available();
+        logger.trace("available(): found {} messages ready to be read (> 0 means true).", availableMessages);
+        return availableMessages > 0;
     }
 
     /**
      * Method to get a message from the bridge.
      *
      * @return <b>packet</b> as Array of bytes as received from the bridge via the established connection.
-     * @throws java.io.IOException in case of a communication I/O failure, and sets 'ready' = false
+     * @throws java.io.IOException in case of a communication I/O failure.
      */
-    synchronized byte[] receive() throws IOException {
+    public synchronized byte[] receive() throws IOException {
         logger.trace("receive() called.");
         try {
-            if (!ready || (dIn == null)) {
+            DataInputStreamWithTimeout dInX = dIn;
+            if (!ready || (dInX == null)) {
                 throw new IOException();
             }
-            byte[] message = new byte[CONNECTION_BUFFER_SIZE];
-            @SuppressWarnings("null")
-            int messageLength = dIn.read(message, 0, message.length, ioTimeoutMSecs);
-            byte[] packet = new byte[messageLength];
-            System.arraycopy(message, 0, packet, 0, messageLength);
+            byte[] packet = dInX.readSlipMessage(ioTimeoutMSecs);
             if (logger.isTraceEnabled()) {
                 StringBuilder sb = new StringBuilder();
                 for (byte b : packet) {
                     sb.append(String.format("%02X ", b));
                 }
-                logger.trace("receive() finished after having read {} bytes: {}", messageLength, sb.toString());
+                logger.trace("receive() finished after having read {} bytes: {}", packet.length, sb.toString());
             }
             return packet;
         } catch (IOException e) {
@@ -256,11 +250,12 @@ class SSLconnection {
     }
 
     /**
-     * Destructor to tear down a connection.
+     * Destructor to tear down a connection. Overridden method of {@link Closeable} interface. Closes the sockets.
      *
      * @throws java.io.IOException in case of a communication I/O failure.
      */
-    synchronized void close() throws IOException {
+    @Override
+    public synchronized void close() throws IOException {
         logger.debug("close() called.");
         ready = false;
         logger.info("Shutting down Velux bridge connection.");
@@ -286,46 +281,18 @@ class SSLconnection {
     }
 
     /**
-     * Parameter modification.
+     * Set the socket read time out.
      *
-     * @param timeoutMSecs the maximum duration in milliseconds for read operations.
+     * @param timeoutMSecs the maximum allowed duration in milliseconds for read operations.
      * @throws SocketException
      */
-    void setTimeout(int timeoutMSecs) throws SocketException {
+    public void setTimeout(int timeoutMSecs) throws SocketException {
         logger.debug("setTimeout() set timeout to {} milliseconds.", timeoutMSecs);
         ioTimeoutMSecs = timeoutMSecs;
         SSLSocket socketX = socket;
         if (socketX != null) {
             socketX.setSoTimeout(ioTimeoutMSecs);
             logger.trace("setTimeout() confirmed {} milliseconds.", socketX.getSoTimeout());
-        }
-    }
-
-    /**
-     * Method to flush the input buffer.
-     *
-     * @throws java.io.IOException in case of a communication I/O failure.
-     */
-    private void flushReadBufffer() throws IOException {
-        logger.trace("flushReadBuffer() called.");
-        DataInputStreamWithTimeout dInX = dIn;
-        if (!ready || (dInX == null)) {
-            throw new IOException();
-        }
-        int byteCount = dInX.available();
-        if (byteCount > 0) {
-            byte[] byteArray = new byte[byteCount];
-            dInX.readFully(byteArray);
-            if (logger.isTraceEnabled()) {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (byte currByte : byteArray) {
-                    stringBuilder.append(String.format("%02X ", currByte));
-                }
-                logger.trace("flushReadBuffer(): discarded {} unexpected bytes in the input buffer: {}", byteCount,
-                        stringBuilder.toString());
-            } else {
-                logger.warn("flushReadBuffer(): discarded {} unexpected bytes in the input buffer", byteCount);
-            }
         }
     }
 }
