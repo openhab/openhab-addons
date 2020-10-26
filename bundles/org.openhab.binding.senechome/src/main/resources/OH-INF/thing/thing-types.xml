@@ -17,6 +17,7 @@
 			<channel id="batteryPower" typeId="batteryPower"/>
 			<channel id="batteryFuelCharge" typeId="batteryFuelCharge"/>
 			<channel id="batteryState" typeId="system.battery-level"/>
+			<channel id="batteryStateValue" typeId="batteryStateValue"/>
 			<channel id="gridPower" typeId="gridPower"/>
 			<channel id="gridPowerSupply" typeId="gridPowerSupply"/>
 			<channel id="gridPowerDraw" typeId="gridPowerDraw"/>
@@ -90,6 +91,13 @@
 		<label>Battery Fuel</label>
 		<category>Battery</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="batteryStateValue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery State Value</label>
+		<category>Battery</category>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="energyProduction">
