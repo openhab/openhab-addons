@@ -256,7 +256,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     }
 
     private void handleLongPollFailure(Throwable e) {
-        logger.error("Long polling failed", e);
+        logger.warn("Long polling failed", e);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Long polling failed");
     }
 
