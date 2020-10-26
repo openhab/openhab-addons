@@ -23,6 +23,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +38,7 @@ import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContact
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -47,58 +49,43 @@ import org.osgi.service.component.annotations.Component;
  * thing handlers.
  *
  * @author Stefan Kästle - Initial contribution
- * @author Christian Oeing - added Shutter Control and ThermostatHandler
+ * @author Christian Oeing - Added Shutter Control and ThermostatHandler; refactored handler mapping
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.boschshc", service = ThingHandlerFactory.class)
 public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
-    // List of all supported Bosch devices.
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SHC,
-            THING_TYPE_INWALL_SWITCH, THING_TYPE_TWINGUARD, THING_TYPE_WINDOW_CONTACT, THING_TYPE_MOTION_DETECTOR,
-            THING_TYPE_SHUTTER_CONTROL, THING_TYPE_THERMOSTAT, THING_TYPE_CLIMATE_CONTROL);
+    private static class ThingTypeHandlerMapping {
+        public ThingTypeUID thingTypeUID;
+        public Function<Thing, BaseThingHandler> handlerSupplier;
+
+        public ThingTypeHandlerMapping(ThingTypeUID thingTypeUID, Function<Thing, BaseThingHandler> handlerSupplier) {
+            this.thingTypeUID = thingTypeUID;
+            this.handlerSupplier = handlerSupplier;
+        }
+    }
+
+    private static final Collection<ThingTypeHandlerMapping> supportedThingTypes = Arrays.asList(
+            new ThingTypeHandlerMapping(THING_TYPE_SHC, thing -> new BoschSHCBridgeHandler((Bridge) thing)),
+            new ThingTypeHandlerMapping(THING_TYPE_INWALL_SWITCH, BoschInWallSwitchHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_TWINGUARD, BoschTwinguardHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT, WindowContactHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_MOTION_DETECTOR, MotionDetectorHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT, ThermostatHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_CLIMATE_CONTROL, ClimateControlHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return supportedThingTypes.stream().anyMatch(mapping -> mapping.thingTypeUID.equals(thingTypeUID));
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SHC.equals(thingTypeUID)) {
-            return new BoschSHCBridgeHandler((Bridge) thing);
-        }
-
-        else if (THING_TYPE_INWALL_SWITCH.equals(thingTypeUID)) {
-            return new BoschInWallSwitchHandler(thing);
-        }
-
-        else if (THING_TYPE_TWINGUARD.equals(thingTypeUID)) {
-            return new BoschTwinguardHandler(thing);
-        }
-
-        else if (THING_TYPE_WINDOW_CONTACT.equals(thingTypeUID)) {
-            return new WindowContactHandler(thing);
-        }
-
-        else if (THING_TYPE_MOTION_DETECTOR.equals(thingTypeUID)) {
-            return new MotionDetectorHandler(thing);
-        }
-
-        else if (THING_TYPE_SHUTTER_CONTROL.equals(thingTypeUID)) {
-            return new ShutterControlHandler(thing);
-        }
-
-        else if (THING_TYPE_THERMOSTAT.equals(thingTypeUID)) {
-            return new ThermostatHandler(thing);
-        }
-
-        else if (THING_TYPE_CLIMATE_CONTROL.equals(thingTypeUID)) {
-            return new ClimateControlHandler(thing);
-        }
-
-        return null;
+        // Search for mapping for thing type and return handler for it if found. Otherwise return null.
+        return supportedThingTypes.stream().filter(mapping -> mapping.thingTypeUID.equals(thingTypeUID)).findFirst()
+                .<@Nullable BaseThingHandler> map(mapping -> mapping.handlerSupplier.apply(thing)).orElse(null);
     }
 }
