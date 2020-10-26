@@ -175,7 +175,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
                 // send on/off state together with brightness if not already set or unknown
                 Integer newBri = newLightState.bri;
-                if ((newBri != null) && ((currentOn == null) || ((newBri > 0) != currentOn))) {
+                if (newBri != null) {
                     newLightState.on = (newBri > 0);
                 }
 
@@ -194,13 +194,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 if (command instanceof DecimalType) {
                     int miredValue = kelvinToMired(((DecimalType) command).intValue());
                     newLightState.ct = constrainToRange(miredValue, ctMin, ctMax);
-
-                    if (currentOn != null && !currentOn) {
-                        // sending new color temperature is only allowed when light is on
-                        newLightState.on = true;
-                    }
-                } else {
-                    return;
+                    newLightState.on = true;
                 }
                 break;
             case CHANNEL_POSITION:
