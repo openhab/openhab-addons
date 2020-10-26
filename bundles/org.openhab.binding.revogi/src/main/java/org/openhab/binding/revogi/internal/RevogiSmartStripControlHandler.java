@@ -53,10 +53,11 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     private final SwitchService switchService;
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    private @Nullable RevogiSmartStripControlConfiguration config;
+    private RevogiSmartStripControlConfiguration config;
 
     public RevogiSmartStripControlHandler(Thing thing) {
         super(thing);
+        config = getConfigAs(RevogiSmartStripControlConfiguration.class);
         UdpSenderService udpSenderService = new UdpSenderService(new DatagramSocketWrapper(), scheduler);
         this.statusService = new StatusService(udpSenderService);
         this.switchService = new SwitchService(udpSenderService);
@@ -93,10 +94,6 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
 
     private void switchPlug(Command command, int port) {
         RevogiSmartStripControlConfiguration localConfig = this.config;
-        if (localConfig == null) {
-            logger.warn("No config available, config object was null");
-            return;
-        }
         if (command instanceof OnOffType) {
             int state = convertOnOffTypeToState(command);
             switchService.switchPort(localConfig.serialNumber, localConfig.ipAddress, port, state);
@@ -126,17 +123,14 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         super.dispose();
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            pollingJob = null;
+        ScheduledFuture<?> localPollingJob = this.pollingJob;
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+            this.pollingJob = null;
         }
     }
 
     private void updateStripInformation() {
-        if (config == null) {
-            logger.warn("No config available, config object was null");
-            return;
-        }
         CompletableFuture<StatusDTO> futureStatus = statusService.queryStatus(config.serialNumber, config.ipAddress);
         futureStatus.thenAccept(this::updatePlugStatus);
     }

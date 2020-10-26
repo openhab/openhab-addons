@@ -34,28 +34,32 @@ public class DatagramSocketWrapper {
 
     public void initSocket() throws SocketException {
         closeSocket();
-        datagramSocket = new DatagramSocket();
-        datagramSocket.setBroadcast(true);
-        datagramSocket.setSoTimeout(3);
+        DatagramSocket localDatagramSocket = new DatagramSocket();
+        localDatagramSocket.setBroadcast(true);
+        localDatagramSocket.setSoTimeout(3);
+        datagramSocket = localDatagramSocket;
     }
 
     public void closeSocket() {
-        if (datagramSocket != null && !datagramSocket.isClosed()) {
-            datagramSocket.close();
+        DatagramSocket localDatagramSocket = this.datagramSocket;
+        if (localDatagramSocket != null && !localDatagramSocket.isClosed()) {
+            localDatagramSocket.close();
         }
     }
 
     public void sendPacket(DatagramPacket datagramPacket) throws IOException {
-        if (datagramSocket != null && !datagramSocket.isClosed()) {
-            datagramSocket.send(datagramPacket);
+        DatagramSocket localDatagramSocket = this.datagramSocket;
+        if (localDatagramSocket != null && !localDatagramSocket.isClosed()) {
+            localDatagramSocket.send(datagramPacket);
         } else {
             throw new SocketException("Datagram Socket closed or not initialized");
         }
     }
 
     public void receiveAnswer(DatagramPacket datagramPacket) throws IOException {
-        if (datagramSocket != null && !datagramSocket.isClosed()) {
-            datagramSocket.receive(datagramPacket);
+        DatagramSocket localDatagramSocket = this.datagramSocket;
+        if (localDatagramSocket != null && !localDatagramSocket.isClosed()) {
+            localDatagramSocket.receive(datagramPacket);
         } else {
             throw new SocketException("Datagram Socket closed or not initialized");
         }
