@@ -157,8 +157,8 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
         ScheduledFuture<?> future = this.scheduledPolling;
         if (future == null || future.isDone()) {
             logger.debug("Scheduling status polling for MPD");
-            this.scheduledPolling = super.scheduler.scheduleWithFixedDelay(this::doUpdateStatus, POLL_INTERVAL.toSeconds(),
-                    POLL_INTERVAL.toSeconds(), TimeUnit.SECONDS);
+            this.scheduledPolling = super.scheduler.scheduleWithFixedDelay(this::doUpdateStatus,
+                    POLL_INTERVAL.toSeconds(), POLL_INTERVAL.toSeconds(), TimeUnit.SECONDS);
         }
     }
 
