@@ -58,15 +58,6 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
-    public BoschSHCBridgeHandler(Bridge bridge) {
-        super(bridge);
-
-        // Read configuration
-        this.config = getConfigAs(BoschSHCBridgeConfiguration.class);
-
-        this.longPolling = new LongPolling(this.scheduler, this::handleLongPollResult, this::handleLongPollFailure);
-    }
-
     private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
 
     private @Nullable BoschHttpClient httpClient;
@@ -79,6 +70,15 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * Handler to do long polling.
      */
     private final LongPolling longPolling;
+
+    public BoschSHCBridgeHandler(Bridge bridge) {
+        super(bridge);
+
+        // Read configuration
+        this.config = getConfigAs(BoschSHCBridgeConfiguration.class);
+
+        this.longPolling = new LongPolling(this.scheduler, this::handleLongPollResult, this::handleLongPollFailure);
+    }
 
     @Override
     public void initialize() {
