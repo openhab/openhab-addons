@@ -40,7 +40,7 @@ import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.model.KodiUniqueID;
 import org.openhab.binding.kodi.internal.model.KodiVideoStream;
-import org.openhab.binding.kodi.internal.utils.ByteArrayFileCache;
+import org.openhab.core.cache.ByteArrayFileCache;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.RawType;
@@ -891,10 +891,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private @Nullable RawType downloadImageFromCache(String url) {
         if (IMAGE_CACHE.containsKey(url)) {
-            byte[] bytes = IMAGE_CACHE.get(url);
-            String contentType = HttpUtil.guessContentTypeFromData(bytes);
-            return new RawType(bytes,
-                    contentType == null || contentType.isEmpty() ? RawType.DEFAULT_MIME_TYPE : contentType);
+            try {
+                byte[] bytes = IMAGE_CACHE.get(url);
+                String contentType = HttpUtil.guessContentTypeFromData(bytes);
+                return new RawType(bytes,
+                        contentType == null || contentType.isEmpty() ? RawType.DEFAULT_MIME_TYPE : contentType);
+            } catch (IOException e) {
+                logger.trace("Failed to download the content of URL '{}'", url, e);
+            }
         } else {
             RawType image = downloadImage(url);
             if (image != null) {
