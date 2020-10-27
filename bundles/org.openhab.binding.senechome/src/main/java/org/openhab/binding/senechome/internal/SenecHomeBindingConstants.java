@@ -48,4 +48,9 @@ public class SenecHomeBindingConstants {
     public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH2 = "gridVoltagePhase2";
     public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH3 = "gridVoltagePhase3";
     public static final String CHANNEL_SENEC_GRID_FREQUENCY = "gridFrequency";
+    public static final String CHANNEL_SENEC_LIVE_BAT_CHARGE = "liveBatCharge";
+    public static final String CHANNEL_SENEC_LIVE_BAT_DISCHARGE = "liveBatDischarge";
+    public static final String CHANNEL_SENEC_LIVE_GRID_IMPORT = "liveGridImport";
+    public static final String CHANNEL_SENEC_LIVE_GRID_EXPORT = "liveGridExport";
+    public static final String CHANNEL_SENEC_BATTERY_VOLTAGE = "batteryVoltage";
 }

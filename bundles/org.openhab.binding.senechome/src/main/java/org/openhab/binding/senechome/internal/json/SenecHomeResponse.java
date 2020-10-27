@@ -28,9 +28,11 @@ public class SenecHomeResponse implements Serializable {
     public @SerializedName("PV1") SenecHomeLimitation limitation = new SenecHomeLimitation();
     public @SerializedName("ENERGY") SenecHomeEnergy energy = new SenecHomeEnergy();
     public @SerializedName("PM1OBJ1") SenecHomeGrid grid = new SenecHomeGrid();
+    public @SerializedName("STATISTIC") SenecHomeStatistics statistics = new SenecHomeStatistics();
 
     @Override
     public String toString() {
-        return "SenecHomeResponse [limitation=" + limitation + ", energy=" + energy + ", grid=" + grid + "]";
+        return "SenecHomeResponse [limitation=" + limitation + ", energy=" + energy + ", grid=" + grid + ", statistics="
+                + statistics + "]";
     }
 }

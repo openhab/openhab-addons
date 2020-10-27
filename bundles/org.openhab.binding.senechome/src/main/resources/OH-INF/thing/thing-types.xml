@@ -31,6 +31,11 @@
 			<channel id="gridVoltagePhase2" typeId="gridVoltagePhase2"/>
 			<channel id="gridVoltagePhase3" typeId="gridVoltagePhase3"/>
 			<channel id="gridFrequency" typeId="gridFrequency"/>
+			<channel id="batteryVoltage" typeId="batteryVoltage"/>
+			<channel id="liveBatCharge" typeId="liveBatCharge"/>
+			<channel id="liveBatDischarge" typeId="liveBatDischarge"/>
+			<channel id="liveGridImport" typeId="liveGridImport"/>
+			<channel id="liveGridExport" typeId="liveGridExport"/>
 		</channels>
 
 		<config-description>
@@ -198,4 +203,38 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
+	<channel-type id="liveBatCharge">
+		<item-type>Number:Energy</item-type>
+		<label>Live Bat Charge</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="liveBatDischarge">
+		<item-type>Number:Energy</item-type>
+		<label>Live Bat Discharge</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="liveGridImport">
+		<item-type>Number:Energy</item-type>
+		<label>Live Grid Import</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="liveGridExport">
+		<item-type>Number:Energy</item-type>
+		<label>Live Grid Export</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="batteryVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 </thing:thing-descriptions>

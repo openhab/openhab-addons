@@ -27,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Energy;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Power;
 
@@ -228,6 +229,41 @@ public class SenecHomeHandler extends BaseThingHandler {
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_STATE_VALUE);
             updateState(channelBatteryStateValue.getUID(),
                     new DecimalType(getSenecValue(response.energy.batteryState).intValue()));
+
+            Channel channelLiveBatCharge = getThing()
+                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_BAT_CHARGE);
+            updateState(channelLiveBatCharge.getUID(),
+                    new QuantityType<Energy>(
+                            getSenecValue(response.statistics.liveBatCharge).setScale(2, RoundingMode.HALF_UP),
+                            SmartHomeUnits.WATT_HOUR));
+
+            Channel channelLiveBatDischarge = getThing()
+                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_BAT_DISCHARGE);
+            updateState(channelLiveBatDischarge.getUID(),
+                    new QuantityType<Energy>(
+                            getSenecValue(response.statistics.liveBatDischarge).setScale(2, RoundingMode.HALF_UP),
+                            SmartHomeUnits.WATT_HOUR));
+
+            Channel channelLiveGridImport = getThing()
+                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_GRID_IMPORT);
+            updateState(channelLiveGridImport.getUID(),
+                    new QuantityType<Energy>(
+                            getSenecValue(response.statistics.liveGridImport).setScale(2, RoundingMode.HALF_UP),
+                            SmartHomeUnits.WATT_HOUR));
+
+            Channel channelLiveGridExport = getThing()
+                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_GRID_EXPORT);
+            updateState(channelLiveGridExport.getUID(),
+                    new QuantityType<Energy>(
+                            getSenecValue(response.statistics.liveGridExport).setScale(2, RoundingMode.HALF_UP),
+                            SmartHomeUnits.WATT_HOUR));
+
+            Channel channelBatteryVoltage = getThing()
+                    .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_VOLTAGE);
+            updateState(channelBatteryVoltage.getUID(),
+                    new QuantityType<ElectricPotential>(
+                            getSenecValue(response.energy.batteryVoltage).setScale(2, RoundingMode.HALF_UP),
+                            SmartHomeUnits.VOLT));
 
             Channel channelBatteryState = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_STATE);
             updateBatteryState(channelBatteryState, getSenecValue(response.energy.batteryState).intValue());
