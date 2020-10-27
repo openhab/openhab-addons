@@ -26,11 +26,6 @@ import org.openhab.core.thing.ThingTypeUID;
 public class MieleBindingConstants {
 
     public static final String BINDING_ID = "miele";
-    public static final String APPLIANCE_ID = "uid";
-    public static final String DEVICE_CLASS = "dc";
-    public static final String HDM_LAN = "hdm:LAN:";
-    public static final String HDM_ZIGBEE = "hdm:ZigBee:";
-    public static final String PROTOCOL_PROPERTY_NAME = "protocol";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_XGW3000 = new ThingTypeUID(BINDING_ID, "xgw3000");
@@ -45,8 +40,16 @@ public class MieleBindingConstants {
     public static final ThingTypeUID THING_TYPE_COFFEEMACHINE = new ThingTypeUID(BINDING_ID, "coffeemachine");
 
     // Bridge config properties
-    public static final String HOST = "ipAddress";
+    public static final String IP_ADDRESS = "ipAddress";
     public static final String INTERFACE = "interface";
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
+
+    // Thing config properties
+    public static final String APPLIANCE_ID = "uid";
+    public static final String PROTOCOL_NAME = "protocol";
+
+    // Binding constants
+    public static final String PROTOCOL_LAN = "LAN";
+    public static final String PROTOCOL_WIFI = "WiFi";
 }

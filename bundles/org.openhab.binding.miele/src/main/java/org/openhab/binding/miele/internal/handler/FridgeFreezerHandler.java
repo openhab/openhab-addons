@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -45,6 +45,8 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
 
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String protocol = (String) getThing().getConfiguration().getProperties().get(PROTOCOL_NAME);
+        protocol = protocol == PROTOCOL_WIFI ? PROTOCOL_LAN : protocol;
 
         FridgeFreezerChannelSelector selector = (FridgeFreezerChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -54,17 +56,17 @@ public class FridgeFreezerHandler extends MieleApplianceHandler<FridgeFreezerCha
                 switch (selector) {
                     case SUPERCOOL: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "startSuperCooling");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "startSuperCooling");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperCooling");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "stopSuperCooling");
                         }
                         break;
                     }
                     case SUPERFREEZE: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "startSuperFreezing");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "startSuperFreezing");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperFreezing");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "stopSuperFreezing");
                         }
                         break;
                     }

@@ -69,7 +69,7 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
                 InetAddress[] addresses = service.getInetAddresses();
                 if (addresses.length > 0 && addresses[0] != null) {
-                    properties.put(MieleBindingConstants.HOST, addresses[0].getHostAddress());
+                    properties.put(MieleBindingConstants.IP_ADDRESS, addresses[0].getHostAddress());
 
                     Socket socket = null;
                     try {
@@ -83,7 +83,8 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 }
 
                 return DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty(uid.getId()).withLabel("Miele XGW3000 Gateway").build();
+                        .withRepresentationProperty(MieleBindingConstants.IP_ADDRESS).withLabel("Miele XGW3000")
+                        .build();
             }
         }
         return null;
