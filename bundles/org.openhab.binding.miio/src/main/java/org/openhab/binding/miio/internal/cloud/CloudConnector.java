@@ -142,7 +142,6 @@ public class CloudConnector {
             return null;
         }
         try {
-            @Nullable
             RawType mapData = HttpUtil.downloadData(mapUrl, null, false, -1);
             if (mapData != null) {
                 return mapData;
