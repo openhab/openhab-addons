@@ -88,7 +88,6 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
     }
 
     private @Nullable ThingUID getThingUID(DiscoveryResponseDTO response) {
-
         if (getSupportedThingTypes().contains(RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE)) {
             return new ThingUID(RevogiSmartStripControlBindingConstants.SMART_STRIP_THING_TYPE,
                     response.getSerialNumber());
