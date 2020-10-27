@@ -33,23 +33,13 @@ public class MPDStatus {
 
     private final State state;
     private final int volume;
-    private final Optional<Integer> elapsed;
+    private final Optional<Float> elapsed;
 
     public MPDStatus(MPDResponse response) {
         Map<String, String> values = MPDResponseParser.responseToMap(response);
         state = parseState(values.getOrDefault("state", ""));
         volume = MPDResponseParser.parseInteger(values.getOrDefault("volume", "0"), 0);
-        if (values.containsKey("elapsed")) {
-            String elapsedString = values.get("elapsed");
-            // If supplied time has a decimal component, remove.
-            int index = elapsedString.lastIndexOf('.');
-            if (index > 0) {
-                elapsedString = elapsedString.substring(0, index);
-            }
-            elapsed = MPDResponseParser.parseInteger(elapsedString);
-        } else {
-            elapsed = Optional.empty();
-        }
+        elapsed = MPDResponseParser.parseFloat(values.get("elapsed"));
     }
 
     public State getState() {
@@ -60,7 +50,7 @@ public class MPDStatus {
         return volume;
     }
 
-    public Optional<Integer> getElapsed() {
+    public Optional<Float> getElapsed() {
         return elapsed;
     }
 

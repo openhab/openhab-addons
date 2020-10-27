@@ -69,8 +69,8 @@ Number mpd_music_song "Song [%d]" { channel = "mpd:mpd:music:currentsong" }
 Number mpd_music_song_id "Song Id [%d]" { channel = "mpd:mpd:music:currentsongid" }
 String mpd_music_title "Title [%s]" { channel = "mpd:mpd:music:currenttitle" }
 Number mpd_music_track "Track [%d]" { channel = "mpd:mpd:music:currenttrack" }
-Number:Time mpd_music_duration "Track Duration [%d ]" { channel = "mpd:mpd:music:currenttrack" }
-Number:Time mpd_music_elapsed "Elasped Time [%d ]" { channel = "mpd:mpd:music:currenttrack" }
+Number:Time mpd_music_duration "Track Duration [%d ]" { channel = "mpd:mpd:music:currentduration" }
+Number:Time mpd_music_elapsed "Elasped Time [%d ]" { channel = "mpd:mpd:music:currentelapsed" }
 ```
 
 #### Sitemap

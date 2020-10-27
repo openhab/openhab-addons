@@ -45,7 +45,7 @@ public class MPDSong {
         songId = MPDResponseParser.parseInteger(values.getOrDefault("Id", "0"), 0);
         title = values.getOrDefault("Title", "");
         track = MPDResponseParser.parseInteger(values.getOrDefault("Track", "-1"), -1);
-        duration = MPDResponseParser.parseInteger(values.get("Time"));
+        duration = MPDResponseParser.parseInteger(values.get("Duration"));
     }
 
     public String getFilename() {

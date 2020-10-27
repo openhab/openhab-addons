@@ -56,10 +56,25 @@ public class MPDResponseParser {
     }
 
     static Optional<Integer> parseInteger(String value) {
+       if( value == null){
+           return Optional.empty();
+       }
         try {
             return Optional.of(Integer.parseInt(value));
         } catch (NumberFormatException e) {
             logger.debug("parseInt of {} failed", value);
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<Float> parseFloat(String value) {
+        if (value == null){
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(Float.parseFloat(value));
+        } catch (NumberFormatException e) {
+            logger.debug("parseFloat of {} failed", value);
             return Optional.empty();
         }
     }
