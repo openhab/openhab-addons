@@ -98,8 +98,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     // Data structures to de-JSONify whatever Miele appliances are sending us
     public class HomeDevice {
 
-        private static final String PROTOCOL_LAN = "LAN";
-
         public String Name;
         public String Status;
         public String ParentUID;
@@ -116,17 +114,16 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         HomeDevice() {
         }
 
-        public String getId() {
-            return getApplianceId().replaceAll("[^a-zA-Z0-9_]", "_");
-        }
-
         public String getProtocol() {
-            return ProtocolAdapterName.equals(PROTOCOL_LAN) ? HDM_LAN : HDM_ZIGBEE;
+            return ProtocolAdapterName;
         }
 
         public String getApplianceId() {
-            return ProtocolAdapterName.equals(PROTOCOL_LAN) ? StringUtils.right(UID, UID.length() - HDM_LAN.length())
-                    : StringUtils.right(UID, UID.length() - HDM_ZIGBEE.length());
+            return StringUtils.right(UID, UID.length() - ("hdm:" + ProtocolAdapterName + ":").length());
+        }
+
+        public String getId() {
+            return getApplianceId().replaceAll("[^a-zA-Z0-9_]", "_");
         }
     }
 
@@ -176,11 +173,11 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing the Miele bridge handler.");
 
-        if (getConfig().get(HOST) != null && getConfig().get(INTERFACE) != null) {
-            if (IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()
+        if (getConfig().get(IP_ADDRESS) != null && getConfig().get(INTERFACE) != null) {
+            if (IP_PATTERN.matcher((String) getConfig().get(IP_ADDRESS)).matches()
                     && IP_PATTERN.matcher((String) getConfig().get(INTERFACE)).matches()) {
                 try {
-                    url = new URL("http://" + (String) getConfig().get(HOST) + "/remote/json-rpc");
+                    url = new URL("http://" + (String) getConfig().get(IP_ADDRESS) + "/remote/json-rpc");
                 } catch (MalformedURLException e) {
                     logger.debug("An exception occurred while defining an URL :'{}'", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
@@ -194,7 +191,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.UNKNOWN);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Invalid IP address for the Miele@Home gateway or multicast interface:" + getConfig().get(HOST)
+                        "Invalid IP address for the Miele@Home gateway or multicast interface:" + getConfig().get(IP_ADDRESS)
                                 + "/" + getConfig().get(INTERFACE));
             }
         } else {
@@ -206,9 +203,9 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
-            if (IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()) {
+            if (IP_PATTERN.matcher((String) getConfig().get(IP_ADDRESS)).matches()) {
                 try {
-                    if (isReachable((String) getConfig().get(HOST))) {
+                    if (isReachable((String) getConfig().get(IP_ADDRESS))) {
                         currentBridgeConnectionState = true;
                     } else {
                         currentBridgeConnectionState = false;
@@ -217,7 +214,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     }
 
                     if (!lastBridgeConnectionState && currentBridgeConnectionState) {
-                        logger.debug("Connection to Miele Gateway {} established.", getConfig().get(HOST));
+                        logger.debug("Connection to Miele Gateway {} established.", getConfig().get(IP_ADDRESS));
                         lastBridgeConnectionState = true;
                         onConnectionResumed();
                     }
@@ -261,11 +258,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
                             for (Thing appliance : getThing().getThings()) {
                                 if (appliance.getStatus() == ThingStatus.ONLINE) {
-                                    String UID = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME)
-                                            + (String) appliance.getConfiguration().getProperties().get(APPLIANCE_ID);
+                                    String uid = (String) appliance.getConfiguration().getProperties()
+                                            .get(APPLIANCE_ID);
+                                    String protocol = (String) appliance.getConfiguration().getProperties()
+                                            .get(PROTOCOL_NAME);
+                                    String protocolHeader = "hdm:" + protocol + ":" + uid;
 
                                     Object[] args = new Object[2];
-                                    args[0] = UID;
+                                    args[0] = protocolHeader;
                                     args[1] = true;
                                     JsonElement result = invokeRPC("HDAccess/getDeviceClassObjects", args);
 
@@ -275,7 +275,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                                 DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
 
                                                 for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                                    listener.onApplianceStateChanged(UID, dco);
+                                                    listener.onApplianceStateChanged(uid, dco);
                                                 }
                                             } catch (Exception e) {
                                                 logger.debug("An exception occurred while quering an appliance : '{}'",
@@ -291,7 +291,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     logger.debug("An exception occurred while polling an appliance :'{}'", e.getMessage());
                 }
             } else {
-                logger.debug("Invalid IP address for the Miele@Home gateway : '{}'", getConfig().get(HOST));
+                logger.debug("Invalid IP address for the Miele@Home gateway : '{}'", getConfig().get(IP_ADDRESS));
             }
         }
 
@@ -388,7 +388,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                             break;
                                         }
                                         case "id": {
-                                            uid = subparts[1];
+                                            String[] protocolHeaderParts = StringUtils.split(subparts[1], ":");
+                                            uid = protocolHeaderParts[2];
                                             break;
                                         }
                                     }
@@ -424,14 +425,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    public JsonElement invokeOperation(String UID, String modelID, String methodName) {
-        return invokeOperation(UID, modelID, methodName, HDM_ZIGBEE);
-    }
-
-    public JsonElement invokeOperation(String UID, String modelID, String methodName, String protocol) {
+    public JsonElement invokeOperation(String protocol, String UID, String modelID, String methodName) {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             Object[] args = new Object[4];
-            args[0] = protocol + UID;
+            args[0] = "hdm:" + protocol + ":" + UID;
             args[1] = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele" + modelID;
             args[2] = methodName;
             args[3] = null;

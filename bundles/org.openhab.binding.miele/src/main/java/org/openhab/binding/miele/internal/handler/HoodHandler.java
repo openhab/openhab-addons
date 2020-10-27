@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -45,6 +45,7 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
 
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String protocol = (String) getThing().getConfiguration().getProperties().get(PROTOCOL_NAME);
 
         HoodChannelSelector selector = (HoodChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -54,15 +55,15 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
                 switch (selector) {
                     case LIGHT: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "startLighting");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "startLighting");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stopLighting");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "stopLighting");
                         }
                         break;
                     }
                     case STOP: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stop");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "stop");
                         }
                         break;
                     }

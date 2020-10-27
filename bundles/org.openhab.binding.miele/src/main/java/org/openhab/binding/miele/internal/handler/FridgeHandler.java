@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -45,6 +45,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
 
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String protocol = (String) getThing().getConfiguration().getProperties().get(PROTOCOL_NAME);
 
         FridgeChannelSelector selector = (FridgeChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -54,15 +55,15 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
                 switch (selector) {
                     case SUPERCOOL: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "startSuperCooling");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "startSuperCooling");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stopSuperCooling");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "stopSuperCooling");
                         }
                         break;
                     }
                     case START: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "start");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "start");
                         }
                         break;
                     }

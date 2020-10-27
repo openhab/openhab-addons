@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -46,6 +46,7 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
 
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String protocol = (String) getThing().getConfiguration().getProperties().get(PROTOCOL_NAME);
 
         WashingMachineChannelSelector selector = (WashingMachineChannelSelector) getValueSelectorFromChannelID(
                 channelID);
@@ -56,9 +57,9 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "start");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "start");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stop");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "stop");
                         }
                         break;
                     }

@@ -31,6 +31,15 @@
 				<description>The identifier identifies one certain appliance on the ZigBee network.</description>
 				<required>true</required>
 			</parameter>
+			<parameter name="protocol" type="text">
+                <label>Protocol</label>
+                <description>The protocol used to communicate with the appliance</description>
+                <required>true</required>
+                <options>
+                    <option value="LAN">LAN</option>
+                    <option value="ZigBee">ZigBee</option>
+                </options>
+            </parameter>
 		</config-description>
 
 	</thing-type>

@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -47,7 +46,7 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
 
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String protocol = (String) getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
+        String protocol = (String) getThing().getConfiguration().getProperties().get(PROTOCOL_NAME);
 
         OvenChannelSelector selector = (OvenChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -57,15 +56,15 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOn", protocol);
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "switchOn");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOff", protocol);
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "switchOff");
                         }
                         break;
                     }
                     case STOP: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stop", protocol);
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "stop");
                         }
                         break;
                     }
