@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.velux.internal.bridge.slip.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ConnectException;
 
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Guenther Schreiner - Initial contribution.
  */
 @NonNullByDefault
-public class Connection {
+public class Connection implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     /*
@@ -225,5 +226,10 @@ public class Connection {
             logger.info("resetConnection() on {}: raised an error during connection close: {}.", host, e.getMessage());
         }
         logger.trace("resetConnection() on {}: done.", host);
+    }
+
+    @Override
+    public void close() throws IOException {
+        resetConnection();
     }
 }
