@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.joining;
 import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.*;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +39,7 @@ import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyF
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
-import org.openhab.binding.openweathermap.internal.utils.ByteArrayFileCache;
+import org.openhab.core.cache.ByteArrayFileCache;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.PointType;
@@ -224,7 +225,12 @@ public class OpenWeatherMapConnection {
 
     private static @Nullable RawType downloadWeatherIconFromCache(String url) {
         if (IMAGE_CACHE.containsKey(url)) {
-            return new RawType(IMAGE_CACHE.get(url), PNG_CONTENT_TYPE);
+            try {
+                return new RawType(IMAGE_CACHE.get(url), PNG_CONTENT_TYPE);
+            } catch (IOException e) {
+                LoggerFactory.getLogger(OpenWeatherMapConnection.class)
+                        .trace("Failed to download the content of URL '{}'", url, e);
+            }
         } else {
             RawType image = downloadWeatherIcon(url);
             if (image != null) {
