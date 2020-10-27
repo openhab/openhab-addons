@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="withings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="withingsapi">
+		<label>Withings API</label>
+		<description>This bridge represents the gateway to the Withings API.</description>
+
+		<config-description uri="thing-type:withings:bridge">
+			<parameter name="clientId" type="text">
+				<label>Client ID</label>
+				<description>Client ID provided for the application you created</description>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="clientSecret" type="text">
+				<label>Client Secret</label>
+				<description>Client Secret provided for the application you created</description>
+				<required>true</required>
+				<context>password</context>
+			</parameter>
+
+			<parameter name="authCode" type="text">
+				<label>Auth-Code (redeem)</label>
+				<description>Auth-Code received from the OAuth 2.0 grant of the Withings API. Please see the binding README for
+					detailed instructions on how to generate an auth-code. The auth-code is redeemed once
+					(therefore the field is
+					cleared when it could redeemed successfully).</description>
+				<required>false</required>
+			</parameter>
+
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

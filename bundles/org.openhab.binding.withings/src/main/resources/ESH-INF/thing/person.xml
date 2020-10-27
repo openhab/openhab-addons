@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="withings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="Person">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="withingsapi"/>
+		</supported-bridge-type-refs>
+
+		<label>Withings Person</label>
+		<description>Withings Person</description>
+
+		<channels>
+			<channel id="personWeight" typeId="weight"/>
+			<channel id="personHeight" typeId="height"/>
+			<channel id="personFatMass" typeId="fatMass"/>
+			<channel id="personLastSleepStart" typeId="lastSleepStart"/>
+			<channel id="personLastSleepEnd" typeId="lastSleepEnd"/>
+			<channel id="personLastSleepScore" typeId="lastSleepScore"/>
+		</channels>
+
+		<properties>
+			<property name="userId"/>
+		</properties>
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:withings:person"/>
+	</thing-type>
+
+	<channel-type id="weight">
+		<item-type>Number</item-type>
+		<label>Weight</label>
+		<description>Weight of the person in kg</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="height">
+		<item-type>Number</item-type>
+		<label>Height</label>
+		<description>Height of the person in meters</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fatMass">
+		<item-type>Number</item-type>
+		<label>Fat Mass</label>
+		<description>Fat mass weight in kg</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastSleepStart">
+		<item-type>DateTime</item-type>
+		<label>Last Sleep Start</label>
+		<description>Last sleep start timestamp</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastSleepEnd">
+		<item-type>DateTime</item-type>
+		<label>Last Sleep End</label>
+		<description>Last sleep end timestamp</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastSleepScore">
+		<item-type>Number</item-type>
+		<label>Last Sleep Score</label>
+		<description>Last sleep score</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

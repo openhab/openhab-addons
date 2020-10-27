@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="withings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="Scale">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="withingsapi"/>
+		</supported-bridge-type-refs>
+
+		<label>Withings Scale</label>
+		<description>Withings Scale</description>
+
+		<channels>
+			<channel id="scaleBatteryLevel" typeId="batteryLevel"/>
+			<channel id="scaleLastConnection" typeId="lastConnection"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Withings</property>
+			<property name="deviceId"/>
+			<property name="modelId"/>
+			<property name="model"/>
+		</properties>
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:withings:scale"/>
+	</thing-type>
+
+	<channel-type id="batteryLevel">
+		<item-type>String</item-type>
+		<label>Battery level</label>
+		<description>Battery level of the state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastConnection">
+		<item-type>DateTime</item-type>
+		<label>Last connection</label>
+		<description>Last connection timestamp</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

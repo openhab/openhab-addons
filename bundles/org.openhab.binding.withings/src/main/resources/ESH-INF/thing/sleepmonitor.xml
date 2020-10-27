@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="withings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="SleepMonitor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="withingsapi"/>
+		</supported-bridge-type-refs>
+
+		<label>Withings Sleep Monitor</label>
+		<description>Withings Sleep Monitor</description>
+
+		<channels>
+			<channel id="sleepMonitorLastConnection" typeId="lastConnection"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Withings</property>
+			<property name="deviceId"/>
+			<property name="modelId"/>
+			<property name="model"/>
+		</properties>
+
+		<representation-property>id</representation-property>
+		<config-description-ref uri="thing-type:withings:sleepmonitor"/>
+	</thing-type>
+
+	<channel-type id="lastConnection">
+		<item-type>DateTime</item-type>
+		<label>Last connection</label>
+		<description>Last connection timestamp</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
