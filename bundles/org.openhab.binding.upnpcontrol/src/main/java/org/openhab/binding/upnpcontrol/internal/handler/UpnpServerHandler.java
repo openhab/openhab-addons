@@ -633,20 +633,20 @@ public class UpnpServerHandler extends UpnpHandler {
         logger.debug("Filtering content on server {}: {}", thing.getLabel(), config.filter);
         List<UpnpEntry> resultList = config.filter ? filterEntries(titleList, true) : titleList;
 
-        List<CommandOption> commandOptionList = new ArrayList<>();
+        List<StateOption> stateOptionList = new ArrayList<>();
         // Add a directory up selector if not in the directory root
         if ((!resultList.isEmpty() && !(DIRECTORY_ROOT.equals(resultList.get(0).getParentId())))
                 || (resultList.isEmpty() && !DIRECTORY_ROOT.equals(currentEntry.getId()))) {
-            CommandOption commandOption = new CommandOption(UP, UP);
-            commandOptionList.add(commandOption);
+            StateOption stateOption = new StateOption(UP, UP);
+            stateOptionList.add(stateOption);
             logger.debug("UP added to selection list on server {}", thing.getLabel());
         }
 
         synchronized (entries) {
             entries.clear(); // always only keep the current selection in the entry map to keep memory usage down
             resultList.forEach((value) -> {
-                CommandOption commandOption = new CommandOption(value.getId(), value.getTitle());
-                commandOptionList.add(commandOption);
+                StateOption stateOption = new StateOption(value.getId(), value.getTitle());
+                stateOptionList.add(stateOption);
                 logger.trace("{} added to selection list on server {}", value.getId(), thing.getLabel());
 
                 // Keep the entries in a map so we can find the parent and container for the current selection to go
@@ -658,8 +658,9 @@ public class UpnpServerHandler extends UpnpHandler {
             });
         }
 
-        logger.debug("{} entries added to selection list on server {}", commandOptionList.size(), thing.getLabel());
-        updateCommandDescription(currentSelectionChannelUID, commandOptionList);
+        logger.debug("{} entries added to selection list on server {}", stateOptionList.size(), thing.getLabel());
+        updateStateDescription(currentSelectionChannelUID, stateOptionList);
+        updateState(BROWSE, StringType.valueOf(currentEntry.getId()));
 
         serveMedia();
     }
