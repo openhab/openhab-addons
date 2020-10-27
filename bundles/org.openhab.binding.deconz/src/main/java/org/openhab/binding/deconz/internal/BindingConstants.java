@@ -109,6 +109,7 @@ public class BindingConstants {
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_HTTP_PORT = "httpPort";
     public static final String CONFIG_APIKEY = "apikey";
+    public static final String PROPERTY_UDN = "UDN";
 
     public static final String UNIQUE_ID = "uid";
 

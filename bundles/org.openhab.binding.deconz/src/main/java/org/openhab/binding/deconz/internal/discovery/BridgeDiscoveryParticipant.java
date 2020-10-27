@@ -73,9 +73,10 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
         properties.put(CONFIG_HOST, host);
         properties.put(CONFIG_HTTP_PORT, port);
+        properties.put(PROPERTY_UDN, UDN);
 
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(name)
-                .withRepresentationProperty(UDN).build();
+                .withRepresentationProperty(PROPERTY_UDN).build();
     }
 
     @Override
