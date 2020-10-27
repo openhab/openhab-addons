@@ -62,9 +62,9 @@ import org.slf4j.LoggerFactory;
 public class JdbcBaseDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcBaseDAO.class);
 
-    public Properties databaseProps = new Properties();
+    public final Properties databaseProps = new Properties();
     protected String urlSuffix = "";
-    public Map<String, String> sqlTypes = new HashMap<>();
+    public final Map<String, String> sqlTypes = new HashMap<>();
 
     // Get Database Meta data
     protected DbMetaData dbMeta;
@@ -318,12 +318,12 @@ public class JdbcBaseDAO {
     }
 
     public void doStoreItemValue(Item item, ItemVO vo) {
-        vo = storeItemValueProvider(item, vo);
+        ItemVO storedVO = storeItemValueProvider(item, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" },
-                new String[] { vo.getTableName(), sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { vo.getValue(), vo.getValue() };
-        logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, vo.getValue());
+                new String[] { storedVO.getTableName(), sqlTypes.get("tablePrimaryValue") });
+        Object[] params = new Object[] { storedVO.getValue(), storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }
 
@@ -402,17 +402,17 @@ public class JdbcBaseDAO {
             String it = getSqlTypes().get(itemType);
             if (it.toUpperCase().contains("DOUBLE")) {
                 vo.setValueTypes(it, java.lang.Double.class);
-                Number newVal = ((DecimalType) item.getState());
+                Number newVal = (Number) item.getState();
                 logger.debug("JDBC::storeItemValueProvider: newVal.doubleValue: '{}'", newVal.doubleValue());
                 vo.setValue(newVal.doubleValue());
             } else if (it.toUpperCase().contains("DECIMAL") || it.toUpperCase().contains("NUMERIC")) {
                 vo.setValueTypes(it, java.math.BigDecimal.class);
-                DecimalType newVal = ((DecimalType) item.getState());
+                DecimalType newVal = (DecimalType) item.getState();
                 logger.debug("JDBC::storeItemValueProvider: newVal.toBigDecimal: '{}'", newVal.toBigDecimal());
                 vo.setValue(newVal.toBigDecimal());
             } else if (it.toUpperCase().contains("INT")) {
                 vo.setValueTypes(it, java.lang.Integer.class);
-                Number newVal = ((DecimalType) item.getState());
+                Number newVal = (Number) item.getState();
                 logger.debug("JDBC::storeItemValueProvider: newVal.intValue: '{}'", newVal.intValue());
                 vo.setValue(newVal.intValue());
             } else {// fall back to String
@@ -423,7 +423,7 @@ public class JdbcBaseDAO {
             }
         } else if ("ROLLERSHUTTERITEM".equals(itemType) || "DIMMERITEM".equals(itemType)) {
             vo.setValueTypes(getSqlTypes().get(itemType), java.lang.Integer.class);
-            Number newVal = ((DecimalType) item.getState());
+            Number newVal = (DecimalType) item.getState();
             logger.debug("JDBC::storeItemValueProvider: newVal.intValue: '{}'", newVal.intValue());
             vo.setValue(newVal.intValue());
         } else if ("DATETIMEITEM".equals(itemType)) {
