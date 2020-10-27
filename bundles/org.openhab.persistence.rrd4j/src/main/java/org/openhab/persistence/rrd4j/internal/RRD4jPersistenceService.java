@@ -220,7 +220,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 logger.debug("Error closing rrd4j database: {}", e.getMessage());
             }
         }
-
     }
 
     @Override
