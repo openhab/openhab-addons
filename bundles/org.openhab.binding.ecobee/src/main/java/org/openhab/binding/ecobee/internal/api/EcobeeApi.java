@@ -170,11 +170,22 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             logger.info("API: The Ecobee authorization process threw an exception", e);
             ecobeeAuth.setState(EcobeeAuthState.NEED_PIN);
         } catch (OAuthResponseException e) {
-            logger.info("API: Exception getting access token: error='{}', description='{}'", e.getError(),
-                    e.getErrorDescription());
-            // How to handle the possible error codes?
+            handleOAuthException(e);
         }
         return isAuthorized;
+    }
+
+    private void handleOAuthException(OAuthResponseException e) {
+        if ("invalid_grant".equalsIgnoreCase(e.getError())) {
+            // Usually indicates that the refresh token is no longer valid and will require reauthorization
+            logger.warn("API: Received 'invalid_grant' error response. Please reauthorize application with Ecobee");
+            deleteOAuthClientService();
+            createOAuthClientService();
+        } else {
+            // Other errors may not require reauthorization and/or may not apply
+            logger.warn("API: Exception getting access token: error='{}', description='{}'", e.getError(),
+                    e.getErrorDescription());
+        }
     }
 
     @Override
