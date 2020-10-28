@@ -17,7 +17,7 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link bluetooth.genericBindingConstants} class defines common constants, which are
+ * The {@link GenericBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Connor Petty - Initial contribution

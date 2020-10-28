@@ -27,14 +27,18 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This class implements the BluetoothDiscoveryParticipant for generic bluetooth devices.
+ *
  * @author Connor Petty - Initial contribution
  *
  */
 @NonNullByDefault
+@Component(service = BluetoothDiscoveryParticipant.class)
 public class GenericDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(GenericDiscoveryParticipant.class);

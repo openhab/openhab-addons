@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
 
 /**
- * The {@link bluetooth.genericHandlerFactory} is responsible for creating things and thing
+ * The {@link GenericBluetoothHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Connor Petty - Initial contribution

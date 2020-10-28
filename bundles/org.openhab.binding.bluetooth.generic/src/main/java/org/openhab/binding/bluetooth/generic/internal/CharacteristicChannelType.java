@@ -25,6 +25,8 @@ import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
 import org.sputnikdev.bluetooth.gattparser.spec.Field;
 
 /**
+ * This class handles the formatting/parsing of the generated channel types.
+ *
  * @author Connor Petty - Initial contribution
  *
  */

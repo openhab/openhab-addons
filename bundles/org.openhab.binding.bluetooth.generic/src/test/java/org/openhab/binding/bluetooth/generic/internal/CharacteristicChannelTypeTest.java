@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.generic.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -22,6 +23,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * @author Connor Petty - Initial contribution
  *
  */
+@NonNullByDefault
 class CharacteristicChannelTypeTest {
 
     @Test
