@@ -8,18 +8,19 @@ TouchWand products are compatible with most major Z-Wave products, IP controlled
 
 ## Supported Things
 
-This binding supports switches, shutters dimmers and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
+This binding supports switches, shutters dimmers alarm sensors and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
 
-## Control 
+## Control and Status 
 
 1. **switch**  - control - ON/OFF
 2. **shutter** - control - UP/DOWN/STOP
 3. **dimmer**  - control - ON/OFF/BRIGHTNESS
 4. **wallcontroller** - control - LONG/SHORT
+5. **alarmmensor** - status channels depend on alarm sensor type
 
 ## Discovery
 
-After adding TouchWand Hub the auto discovery will add all switches dimmers and shutters to the inbox.
+After adding TouchWand Hub the auto discovery will add all switches dimmers alarm sensors and shutters to the inbox.
 
 ## Bridge Configuration
 
