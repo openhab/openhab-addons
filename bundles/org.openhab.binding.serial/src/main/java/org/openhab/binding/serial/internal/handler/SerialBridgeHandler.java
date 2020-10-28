@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.serial.internal;
+package org.openhab.binding.serial.internal.handler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +22,7 @@ import java.util.TooManyListenersException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.serial.internal.SerialBindingConstants;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.serial.internal;
+package org.openhab.binding.serial.internal.handler;
 
 /**
  * Class describing the serial device user configuration

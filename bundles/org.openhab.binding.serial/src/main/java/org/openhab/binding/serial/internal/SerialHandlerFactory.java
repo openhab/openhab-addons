@@ -19,6 +19,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.serial.internal.handler.SerialBridgeHandler;
+import org.openhab.binding.serial.internal.handler.SerialDeviceHandler;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
