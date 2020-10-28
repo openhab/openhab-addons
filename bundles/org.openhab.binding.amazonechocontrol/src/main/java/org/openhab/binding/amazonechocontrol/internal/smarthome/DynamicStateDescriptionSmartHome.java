@@ -66,7 +66,7 @@ public class DynamicStateDescriptionSmartHome implements DynamicStateDescription
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-        if (channelTypeUID != null || !BINDING_ID.equals(channelTypeUID.getBindingId())) {
+        if (channelTypeUID == null || !BINDING_ID.equals(channelTypeUID.getBindingId())) {
             return null;
         }
         if (originalStateDescription == null) {
