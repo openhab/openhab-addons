@@ -80,6 +80,8 @@
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
     <spotless.version>2.0.3</spotless.version>
+
+    <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
   </properties>
 
   <dependencyManagement>
