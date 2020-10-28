@@ -93,7 +93,8 @@ public class NetworkUtils {
      * @return
      */
     public static Response singleError(Gson gson, UriInfo uri, int type, @Nullable String message) {
-        HueResponse e = new HueResponse(new HueErrorMessage(type, uri.getPath().replace("/api", ""), message != null ? message : ""));
+        HueResponse e = new HueResponse(
+                new HueErrorMessage(type, uri.getPath().replace("/api", ""), message != null ? message : ""));
         String str = gson.toJson(Collections.singleton(e), new TypeToken<List<?>>() {
         }.getType());
         int httpCode = 500;
