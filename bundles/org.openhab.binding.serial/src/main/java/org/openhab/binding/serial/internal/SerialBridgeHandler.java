@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.util.Base64;
 import java.util.TooManyListenersException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,6 +33,7 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -54,7 +56,6 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     private @NonNullByDefault({}) SerialBridgeConfiguration config;
 
     private final SerialPortManager serialPortManager;
-    private @NonNullByDefault({}) SerialPortIdentifier portId;
     private @NonNullByDefault({}) SerialPort serialPort;
 
     private @Nullable InputStream inputStream;
@@ -74,7 +75,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         if (command instanceof RefreshType) {
             refresh(channelUID.getId());
         } else {
-            writeCommand(command);
+            writeCommand(channelUID.getId(), command);
         }
     }
 
@@ -82,15 +83,27 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     public void initialize() {
         config = getConfigAs(SerialBridgeConfiguration.class);
 
+        try {
+            if (config.charset == null) {
+                charset = Charset.defaultCharset();
+            } else {
+                charset = Charset.forName(config.charset);
+            }
+            logger.debug("Serial port '{}' charset '{}' set", config.serialPort, charset);
+        } catch (final IllegalCharsetNameException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invalid charset");
+            return;
+        }
+
         if (config.serialPort == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set");
             return;
         }
 
         // parse ports and if the port is found, initialize the reader
-        portId = serialPortManager.getIdentifier(config.serialPort);
+        final SerialPortIdentifier portId = serialPortManager.getIdentifier(config.serialPort);
         if (portId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port is not known!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port is not known");
             return;
         }
 
@@ -98,7 +111,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         try {
             serialPort = portId.open(getThing().getUID().toString(), 2000);
 
-            serialPort.setSerialPortParams(config.baudrate, config.databits, config.getStopBitsAsInt(),
+            serialPort.setSerialPortParams(config.baudRate, config.dataBits, config.getStopBitsAsInt(),
                     config.getParityAsInt());
 
             serialPort.addEventListener(this);
@@ -110,27 +123,15 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
             updateStatus(ThingStatus.ONLINE);
         } catch (final IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error");
         } catch (final PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use");
         } catch (final TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Cannot attach listener to port!");
         } catch (final UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Unsupported port parameters: " + e.getMessage());
-        }
-
-        try {
-            if (config.charset == null) {
-                charset = Charset.defaultCharset();
-            } else {
-                charset = Charset.forName(config.charset);
-            }
-            logger.debug("Serial port '{}' charset '{}' set.", config.serialPort, charset);
-        } catch (final IllegalCharsetNameException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invalid charset!");
-            return;
         }
     }
 
@@ -194,7 +195,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                     final String result = sb.toString();
                     data = result;
 
-                    triggerChannel(SerialBindingConstants.TRIGGER_CHANNEL);
+                    triggerChannel(SerialBindingConstants.TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
                     refresh(SerialBindingConstants.STRING_CHANNEL);
                     refresh(SerialBindingConstants.BINARY_CHANNEL);
 
@@ -231,7 +232,10 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                 updateState(channelId, new StringType(data));
                 break;
             case SerialBindingConstants.BINARY_CHANNEL:
-                updateState(channelId, new RawType(data.getBytes(charset), RawType.DEFAULT_MIME_TYPE));
+                final StringBuilder sb = new StringBuilder("data:");
+                sb.append(RawType.DEFAULT_MIME_TYPE).append(";base64,")
+                        .append(Base64.getEncoder().encodeToString(data.getBytes(charset)));
+                updateState(channelId, new StringType(sb.toString()));
                 break;
             default:
                 break;
@@ -241,9 +245,10 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     /**
      * Sends a command as a string to the serial port
      *
+     * @param channelId the channel receiving the command
      * @param command the string to send
      */
-    private void writeCommand(final Command command) {
+    private void writeCommand(final String channelId, final Command command) {
         final OutputStream outputStream = this.outputStream;
 
         if (outputStream == null) {
@@ -254,14 +259,15 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
         try {
             // write string to serial port
-            if (command instanceof RawType) {
-                outputStream.write(((RawType) command).getBytes());
+            if (SerialBindingConstants.BINARY_CHANNEL.equals(channelId)) {
+                final RawType rt = RawType.valueOf(command.toFullString());
+                outputStream.write(rt.getBytes());
             } else {
                 outputStream.write(command.toFullString().getBytes(charset));
             }
 
             outputStream.flush();
-        } catch (final IOException e) {
+        } catch (final IOException | IllegalArgumentException e) {
             logger.warn("Error writing '{}' to serial port {}: {}", command.toFullString(), config.serialPort,
                     e.getMessage());
         }

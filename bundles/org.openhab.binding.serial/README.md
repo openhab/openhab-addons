@@ -1,56 +1,97 @@
 # Serial Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+The Serial binding allows openHAB to communicate over serial ports attached to the openHAB server.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+The binding allows data to be sent and received from a serial port. The binding does not support any particular serial protocols
+and simply reads what is available and sends what is provided.
 
-## Supported Things
+The binding can be used to communicate with simple serial devices for which a dedicated openHAB binding does not exist.
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+## Overview
 
-## Discovery
+The Serial binding represents a serial port as a bridge thing and data matching defined patterns as things connected to the bridge.
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+### Serial Bridge
 
-## Binding Configuration
+A Serial Bridge thing (`serialBridge`) represents a single serial port.
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
+The bridge supports a String channel which is set to the currently received data from the serial port. Sending a command to this channel
+sends the command as a string to the serial port.
 
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+The bridge also supports a String channel which encodes the received data as the string representation of a RawType to handle data that is 
+not supported by the REST interface. A command sent to this channel will only be sent to the serial port if it is encoded as the string representation of a RawType.
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
+A trigger channel is also provided which triggers when data is received.
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
+### Serial Device
+
+A Serial Device thing (`serialDevice`) can be used to represent data matching a defined pattern as a device. The serial port
+may be providing data for many different devices/sensors, such as a temperature sensor or a doorbell. Usually such devices can be indentified 
+by performing a patterm match on the received data. For example, a Serial Device could be configured to represent a temperature sensor.
+
+The thing supports a String channel which is set to the currently received data if the data matches the defined pattern. Profiles can be used to transform the data, such as extracting the temperature value, when linking to an item. The channel is read only and does not support sending data.
+
+When using a Serial Device the expectation is that the data for each device is terminated by a line break.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The configuration for the `serialBridge` consists of the following parameters:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Parameter           | Description                                                                                            |
+|---------------------|--------------------------------------------------------------------------------------------------------|
+| serialPort          | The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1) (mandatory)                           |
+| baudRate            | Set the baud rate. Valid values: 4800, 9600, 19200, 38400, 57600, 115200 (default 9600)                |
+| dataBits            | Set the data bits. Valid values: 5, 6, 7, 8 (default 8)                                                |
+| parity              | Set the parity. Valid values: N(one), O(dd), E(even), M(ark), S(pace) (default N)                      |
+| stopBits            | Set the stop bits. Valid values: 1, 1.5, 2 (default 1)                                                 |
+| charset             | The charset to use for converting between bytes and string (e.g. UTF-8,ISO-8859-1)                     |
+
+The configuration for the `serialDevice` consists of the following parameters:
+
+| Parameter           | Description                                                                                            |
+|---------------------|--------------------------------------------------------------------------------------------------------|
+| patternMatch        | Regular expression used to identify device from received data (must match the whole line) (mandatory)  |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The channels supported by the `serialBridge` are:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| channel  | type             | description                                                                                              |
+|----------|------------------|----------------------------------------------------------------------------------------------------------|
+| string   | String           | Channel for sending/receiving data as a string to/from the serial port. The channel will update its      |
+|          |                  | state to a StringType that is the data received from the serial port. Sending a command to the channel   |
+|          |                  | will be sent out as data through the serial port.                                                        |
+| binary   | String           | Channel for sending/receiving data in Base64 format to/from the serial port. The channel will update its |
+|          |                  | state to a StringType which is the string representation of a RawType that is the data received from the |
+|          |                  | serial port. A command sent to this channel must be encoded as the string representation of a RawType,   |
+|          |                  | e.g. "data:application/octet-stream;base64,MjA7MDU7Q3Jlc3RhO0lEPTI4MDE7VEVNUD0yNTtIVU09NTU7QkFUPU9LOwo=" |
+| data     | system.rawbutton | Trigger which emits `PRESSED` events (no `RELEASED` events) whenever data is available on the serial     |
+|          |                  | port                                                                                                     |
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+
+The channels supported by the `serialDevice` are:
+
+| channel  | type             | description                                                                                              |
+|----------|------------------|----------------------------------------------------------------------------------------------------------|
+| device   | String           | Channel for receiving data as a string from the device. If the data matches the regular expression the   |
+|          |                  | channel will update its state to a StringType that is the line of data received from the serial port.    |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+The following example is for a device connected to a serial port which provides data for many different sensors and we are interested in the temperature from a particular sensor.
 
-## Any custom content here!
+The data for the sensor of interest is `20;05;Cresta;ID=2801;TEMP=25;HUM=55;BAT=OK;`
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+demo.things:
+
+```
+Bridge serial:serialBridge:sensors [serialPort="/dev/ttyUSB01", baudRate=57600] {
+    Thing serialDevice temperatureSensor [patternMatch="20;05;Cresta;ID=2801;.*"]
+}
+```
+
+demo.items:
+
+```
+Number:Temperature myTemp "My Temperature" {channel="serial:serialDevice:sensors:temperatureSensor:device" [profile="transform:REGEX", function=".*?TEMP=(.*?);.*"]}
+```

@@ -28,12 +28,12 @@ public class SerialBridgeConfiguration {
     /**
      * Serial port baud rate
      */
-    public int baudrate;
+    public int baudRate;
 
     /**
      * Serial port data bits
      */
-    public int databits;
+    public int dataBits;
 
     /**
      * Serial port parity
@@ -43,7 +43,7 @@ public class SerialBridgeConfiguration {
     /**
      * Serial port stop bits
      */
-    public String stopbits;
+    public String stopBits;
 
     /**
      * Charset
@@ -84,29 +84,29 @@ public class SerialBridgeConfiguration {
      * Convert the config stop bits value to an int required for serial port configuration
      */
     public int getStopBitsAsInt() {
-        int stopbitsAsInt;
+        int stopBitsAsInt;
 
-        switch (stopbits) {
+        switch (stopBits) {
             case "1":
-                stopbitsAsInt = SerialPort.STOPBITS_1;
+                stopBitsAsInt = SerialPort.STOPBITS_1;
                 break;
             case "1.5":
-                stopbitsAsInt = SerialPort.STOPBITS_1_5;
+                stopBitsAsInt = SerialPort.STOPBITS_1_5;
                 break;
             case "2":
-                stopbitsAsInt = SerialPort.STOPBITS_2;
+                stopBitsAsInt = SerialPort.STOPBITS_2;
                 break;
             default:
-                stopbitsAsInt = SerialPort.STOPBITS_1;
+                stopBitsAsInt = SerialPort.STOPBITS_1;
                 break;
         }
 
-        return stopbitsAsInt;
+        return stopBitsAsInt;
     }
 
     @Override
     public String toString() {
-        return "SerialBridgeConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudrate + ", Databits="
-                + databits + ", Parity=" + parity + ", Stopbits=" + stopbits + "]";
+        return "SerialBridgeConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudRate + ", Databits="
+                + dataBits + ", Parity=" + parity + ", Stopbits=" + stopBits + "charset=" + charset + "]";
     }
 }

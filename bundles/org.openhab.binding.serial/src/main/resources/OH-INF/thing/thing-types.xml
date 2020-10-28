@@ -12,7 +12,7 @@
 		<channels>
 			<channel id="string" typeId="stringData"/>
 			<channel id="binary" typeId="binaryData"/>
-			<channel id="data" typeId="system.trigger"/>
+			<channel id="data" typeId="system.rawbutton"/>
 		</channels>
 
 		<config-description>
@@ -22,7 +22,7 @@
 				<label>Serial Port</label>
 				<description>The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
 			</parameter>
-			<parameter name="baudrate" type="integer">
+			<parameter name="baudRate" type="integer">
 				<advanced>true</advanced>
 				<label>Baud Rate</label>
 				<description>Set the baud rate</description>
@@ -36,10 +36,10 @@
 					<option value="115200">115200</option>
 				</options>
 			</parameter>
-			<parameter name="databits" type="integer">
+			<parameter name="dataBits" type="integer">
 				<advanced>true</advanced>
 				<label>Data Bits</label>
-				<description>Set the data bits in case auto detect fails.</description>
+				<description>Set the data bits</description>
 				<default>8</default>
 				<options>
 					<option value="5">5</option>
@@ -61,7 +61,7 @@
 					<option value="S">S(pace)</option>
 				</options>
 			</parameter>
-			<parameter name="stopbits" type="text">
+			<parameter name="stopBits" type="text">
 				<advanced>true</advanced>
 				<label>Stop Bits</label>
 				<description>Set the stop bits</description>
@@ -75,7 +75,7 @@
 			<parameter name="charset" type="text">
 				<advanced>true</advanced>
 				<label>Charset</label>
-				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1, etc.)</description>
+				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1)</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -98,7 +98,7 @@
 				<context>pattern-match</context>
 				<limitToOptions>false</limitToOptions>
 				<required>true</required>
-				<description>Pattern used to identify device from received data</description>
+				<description>Regular expression used to identify device from received data (must match the whole line)</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -111,9 +111,9 @@
 	</channel-type>
 
 	<channel-type id="binaryData">
-		<item-type>Image</item-type>
+		<item-type>String</item-type>
 		<label>Binary Data</label>
-		<description>Channel for sending/receiving data encoded as base64 to/from the serial port</description>
+		<description>Channel for sending/receiving data encoded as Base64 to/from the serial port</description>
 	</channel-type>
 
 	<channel-type id="deviceData">
