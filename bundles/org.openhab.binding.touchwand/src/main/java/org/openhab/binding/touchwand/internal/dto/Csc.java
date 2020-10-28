@@ -20,9 +20,9 @@ package org.openhab.binding.touchwand.internal.dto;
  */
 public class Csc {
 
-    private int sceneNo;
-    private int ts;
-    private int keyAttr;
+    private int sceneNo = 0;
+    private long ts = 0;
+    private int keyAttr = 0;
 
     public int getSceneNo() {
         return sceneNo;
@@ -32,11 +32,11 @@ public class Csc {
         this.sceneNo = sceneNo;
     }
 
-    public int getTs() {
+    public long getTs() {
         return ts;
     }
 
-    public void setTs(int ts) {
+    public void setTs(long ts) {
         this.ts = ts;
     }
 

@@ -24,11 +24,11 @@ public class TouchWandUnitDataWallController extends TouchWandUnitData {
     private CurrStatus currStatus;
 
     @Override
-    public Integer getCurrStatus() {
+    public Csc getCurrStatus() {
         if (currStatus != null) {
-            return currStatus.getCsc().getKeyAttr();
+            return currStatus.getCsc();
         } else {
-            return 0;
+            return new Csc();
         }
     }
 
