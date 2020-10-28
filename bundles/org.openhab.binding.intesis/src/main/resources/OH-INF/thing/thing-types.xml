@@ -52,7 +52,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.intesis.ambientTemperature.label</label>
 		<description>@text/channel-type.intesis.ambientTemperature.description</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
+		<state pattern="%.1f %unit%" step="0.5" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="errorCode">
