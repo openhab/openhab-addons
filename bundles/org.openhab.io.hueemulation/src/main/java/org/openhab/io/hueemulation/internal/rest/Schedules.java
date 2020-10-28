@@ -298,9 +298,7 @@ public class Schedules implements RegistryChangeListener<Rule> {
             ruleRegistry.add(
                     createRule(rule.getUID(), builder, rule.getActions(), rule.getTriggers(), changeRequest, cs.ds));
         } catch (IllegalStateException e) {
-            String message = e.getMessage();
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
-                    message != null ? message : "");
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
         }
 
         return NetworkUtils.successList(cs.gson, Arrays.asList( //
@@ -337,9 +335,7 @@ public class Schedules implements RegistryChangeListener<Rule> {
         try {
             rule = createRule(uid, builder, Collections.emptyList(), Collections.emptyList(), newScheduleData, cs.ds);
         } catch (IllegalStateException e) { // No stacktrace required, we just need the exception message
-            String message = e.getMessage();
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
-                    message != null ? message : "");
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
         }
 
         ruleRegistry.add(rule);

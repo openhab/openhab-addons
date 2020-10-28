@@ -153,7 +153,7 @@ class SpotifyConnector {
                 if (cause != null) {
                     future.completeExceptionally(cause);
                 } else {
-                    future.completeExceptionally(new IllegalStateException());
+                    future.completeExceptionally(e);
                 }
             } catch (RuntimeException | TimeoutException e) {
                 future.completeExceptionally(e);

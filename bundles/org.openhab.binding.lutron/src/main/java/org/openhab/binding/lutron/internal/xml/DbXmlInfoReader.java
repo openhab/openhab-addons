@@ -52,7 +52,7 @@ public class DbXmlInfoReader {
         configureSecurity(xstream);
         ClassLoader classLoader = Project.class.getClassLoader();
         if (classLoader == null) {
-            throw new IllegalStateException("Cannot find classloader");
+            throw new UnknownError("Cannot find classloader");
         }
         setClassLoader(classLoader);
         registerAliases(xstream);

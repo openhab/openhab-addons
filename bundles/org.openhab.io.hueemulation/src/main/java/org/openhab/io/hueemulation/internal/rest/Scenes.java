@@ -305,9 +305,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
         try {
             ruleRegistry.add(builder.build());
         } catch (IllegalStateException e) {
-            String message = e.getMessage();
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
-                    message != null ? message : "");
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
         }
 
         List<String> lightsList = changeRequest.lights;
@@ -368,9 +366,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
         try {
             ruleRegistry.add(builder.build());
         } catch (IllegalStateException e) {
-            String message = e.getMessage();
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
-                    message != null ? message : "");
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
         }
 
         return NetworkUtils.singleSuccess(cs.gson, uid, "id");
@@ -413,9 +409,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
         try {
             ruleRegistry.add(builder.build());
         } catch (IllegalStateException e) {
-            String message = e.getMessage();
-            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID,
-                    message != null ? message : "");
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, e.getMessage());
         }
 
         return NetworkUtils.successList(cs.gson, Arrays.asList( //
