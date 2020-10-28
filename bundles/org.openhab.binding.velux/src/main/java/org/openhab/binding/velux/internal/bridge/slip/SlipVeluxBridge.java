@@ -23,6 +23,7 @@ import org.openhab.binding.velux.internal.bridge.VeluxBridgeInstance;
 import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
 import org.openhab.binding.velux.internal.bridge.slip.io.Connection;
+import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.bridge.slip.utils.SlipEncoding;
 import org.openhab.binding.velux.internal.bridge.slip.utils.SlipRFC1055;
 import org.openhab.binding.velux.internal.development.Threads;
@@ -219,6 +220,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
         boolean looping = false;
         boolean success = false;
         boolean sending = false;
+        boolean rcvonly = false;
         byte[] txPacket = emptyPacket;
 
         // special handling
@@ -236,6 +238,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     success = true;
                 } else {
                     logger.trace(loggerFmt, "message(s) waiting", "=> start reading", "");
+                    rcvonly = true;
                     looping = true;
                 }
                 break;
@@ -267,15 +270,21 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                 if (sending && isProtocolTraceEnabled) {
                     logger.info("sent command {}", txName);
                 }
-                // no more messages, stop looping
-                if (rxPacket.length == 0) {
-                    looping = false;
-                    // in receive-only mode, getting no more messages is ok
-                    success = !sending;
-                    break;
-                }
                 // message sent, don't send it again
                 sending = false;
+                // no response, stop looping
+                if (rxPacket.length == 0) {
+                    if (sending) {
+                    }
+                    // in receive-only mode, no response is always ok, and don't log anything
+                    if (rcvonly) {
+                        success = true;
+                    } else {
+                        logger.debug(loggerFmt, "no response", "=> aborting", "");
+                    }
+                    looping = false;
+                    break;
+                }
             } catch (IOException e) {
                 logger.debug(loggerFmt, "i/o error =>", e.getMessage(), "=> aborting");
                 looping = false;
@@ -295,7 +304,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
             // SLIP decode response
             SlipEncoding slipEnc = new SlipEncoding(rfc1055);
             if (!slipEnc.isValid()) {
-                logger.debug(loggerFmt, "slip decode error", "=> aborting");
+                logger.debug(loggerFmt, "slip decode error", "=> aborting", "");
                 looping = false;
                 break;
             }
@@ -307,9 +316,13 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
             final String rxName = rxEnum.toString();
 
             // logging
-            logger.debug(loggerFmt, rxName, "=> received data length =>", rxData.length);
+            if (logger.isTraceEnabled()) {
+                logger.trace(loggerFmt, rxName, "=> received data =>", new Packet(rxData));
+            } else {
+                logger.debug(loggerFmt, rxName, "=> received data length =>", rxData.length);
+            }
             if (isProtocolTraceEnabled) {
-                logger.info("received message {}", rxName);
+                logger.info("received message {} => {}", rxName, new Packet(rxData));
             }
 
             // handle responses
