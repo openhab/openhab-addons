@@ -8,7 +8,7 @@
 		<label>Status</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="device-local-dc-power">
+	<channel-type id="device-local-dc-power">  
 		<item-type>Number:Energy</item-type>
 		<label>DC Power</label>
 		<description>Current DC power of the inverter</description>
@@ -506,11 +506,11 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-operating-status">
-		<item-type>String </item-type>
+		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Current operating status</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-grid-voltage-l1">
 		<item-type>Number:ElectricPotential</item-type>
@@ -769,7 +769,7 @@
 		<label>Charge Cycles</label>
 		<description>Total number of charge cycles</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-battery-temperature">
 		<item-type>Number:Temperature</item-type>
@@ -790,7 +790,7 @@
 		<label>S0 Input Pulses Counter</label>
 		<description>S0-pulse counter</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="statistic-own-cons-rate-total">
 		<item-type>Number:Dimensionless</item-type>
@@ -870,14 +870,14 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-battery-charge-time-from">
-		<item-type>Number:Time</item-type>
+		<item-type>String</item-type>
 		<label>Battery Charge Time From</label>
 		<description>Set battery charge time from</description>
-		<category>Number:Time</category>
+		<category>String</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-battery-charge-time-to">
-		<item-type>Number:Time</item-type>
+		<item-type>String</item-type>
 		<label>Battery Charge Time To</label>
 		<description>Set battery charge time to</description>
 		<category>String</category>
@@ -891,17 +891,16 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-shadow-management">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Shadow Management</label>
 		<description>Set shadow management</description>
-		<category>Number</category>
+		<category>String</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-external-module-control">
 		<item-type>String</item-type>
 		<label>External Module Control</label>
-		<description>Set external module control</description>
-		<category>String</category>
+		<description>Set external module control</description>		<category>String</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-inverter-name">

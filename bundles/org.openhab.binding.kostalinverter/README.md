@@ -112,7 +112,7 @@ None
 | chargeCycles              | Number:One                | Total number of charge cycles  |    R    |       
 | batteryTemperature        | Number:Temperature        | Current battery temperature  |    R    |
 | loginterval               | Number:Time               | Set value for loginterval  |    R    |
-| s0InPulseCnt              | Number:One                | S0-pulse counter  |    R    | 
+| s0InPulseCnt              | String                    | S0-pulse counter  |    R    | 
 | ownConsRateTotal          | Number:Dimensionless      | Total own comsumption rate  |    R    |
 | autonomyDegreeTotal       | Number:Dimensionless      | Total autonomy degree  |    R    |
 | batteryVoltage            | Number:ElectricPotential  | Current battery voltage  |    R    |
@@ -123,16 +123,16 @@ The following Channels are writeable
 
 | Channel Type ID           | Item Type                 | Description                                                 |  Read Write  |
 |-------------------------------|---------------------------|-------------------------------------------------------|-----------------|    
-| chargeTimeEnd             | Number:Time     | Set charge time end, Value = 00:00  |    W    |
+| chargeTimeEnd             | String          | Set charge time end, Value = 00:00  |    W    |
 | batteryType               | String          | Set battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV  |   W    |
 | batteryUsageConsumption   | String          | Set battery usage consumption, Value = 100  |    W    |
 | batteryUsageStrategy      | String          | Set battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |    W    |             
 | smartBatteryControl       | Switch          | Set smart battery control, Value = False / True  |    W    |
 | smartBatteryControlText   | String          | Set smart battery control text, Value = False / True  |    W    |
-| batterChargeTimeFrom      | Number:Time     | Set battery charge time from, Value = 00:00  |    W    |
-| batteryChargeTimeTo       | Number:Time     | Set battery charge time to, Value = 23:59  |    W    |
+| batterChargeTimeFrom      | String          | Set battery charge time from, Value = 00:00  |    W    |
+| batteryChargeTimeTo       | String          | Set battery charge time to, Value = 23:59  |    W    |
 | maxDepthOfDischarge       | String          | Set max depth of discharge (SoC), Value = 10  |    W    |
-| shadowManagement          | Number          | Set shadow management, Value = 0 = None, Value = 1 = Shadow management + String 1 activated, Value = 2 = Shadow  management + String 2 activated, Value = 3 = Shadow management + String 1 and 2 activated  |    W    |
+| shadowManagement          | String          | Set shadow management, Value = 0 = No shadow management enabled, Value = 1 = Shadow management enabled for DC-Input String 1, Value = 2 = Shadow  management enabled for DC-Input String 2,  Value = 3 = Shadow management enabled for DC-Input String 1 and 2  |    W    |
 | externalModuleControl     | String          | Set external module control, Value = 0 = True  |    W    |
 | inverterName              | String          | Set inverter name, Value = 'Name of inverter'  |    W    |
 
@@ -350,7 +350,7 @@ Number:ElectricCurrent          CurrentDir              "Current Dir[%.2f %unit%
 Number:Temperature              ChargeCycles            "Charge Cycles[%.0f]"                   <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:chargeCycles" }
 Number:Temperature              Temperature             "Temperature[%.2f %unit%]"              <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryTemperature" }
 Number:Time                     Loginterval             "Log Interval[%.2f %unit%]"             <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:loginterval" }
-Number:Temperature              S0InPulseCnt            "S0 In Pulse Counter[%.0f]"             <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:s0InPulseCnt" }
+String                          S0InPulseCnt            "S0 In Pulse Counter[%s]"               <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:s0InPulseCnt" }
 Number:Dimensionless            OwnConsRateTotal        "Own Cons Rate Total[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsRateTotal" } 
 Number:Dimensionless            AutonomyDegreeTotal     "Autonomy Degree Total[%.2f %unit%]"    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:autonomyDegreeTotal" } 
 
@@ -364,8 +364,8 @@ String                          BatteryUsageConsumption "Battery Usage Consumpti
 String                          BatteryUsageStrategy    "Battery Usage Strategy[%s]"            <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryUsageStrategy" }
 Switch                          SmartBatteryControl     "Smart Battery Control[%s]"             <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:smartBatteryControl" }
 String                          SmartBatteryControlText "Smart Battery ControlText[%s]"         <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:smartBatteryControlText" } 
-Number:Time                     BatteryChargeTimeFrom   "Battery Charge Time From[%.2f %unit%]" <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryChargeTimeFrom" }
-Number:Time                     BatteryChargeTimeTo     "Battery Charge Time To[%.2f %unit%]"   <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryChargeTimeTo" }
+String                          BatteryChargeTimeFrom   "Battery Charge Time From[%s]"          <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryChargeTimeFrom" }
+String                          BatteryChargeTimeTo     "Battery Charge Time To[%s]"            <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryChargeTimeTo" }
 String                          MaxDephtOfDischarge     "Max Depht Of Discharge[%s]"            <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:maxDephtOfDischarge" }
 String                          ShadowManagement        "Shadow Management[%s]"                 <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:shadowManagement" }
 String                          ExternalModuleControl   "External Module Control[%s]"           <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:externalModuleControl" }
