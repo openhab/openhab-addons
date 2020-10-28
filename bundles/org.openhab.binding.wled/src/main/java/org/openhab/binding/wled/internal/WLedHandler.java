@@ -82,7 +82,7 @@ public class WLedHandler extends BaseThingHandler {
 
     private void sendGetRequest(String url) {
         Request request;
-        if (url.contains("json")) {
+        if (url.contains("json") || config.segmentIndex == -1) {
             request = httpClient.newRequest(config.address + url);
         } else {
             request = httpClient.newRequest(config.address + url + "&SM=" + config.segmentIndex);
