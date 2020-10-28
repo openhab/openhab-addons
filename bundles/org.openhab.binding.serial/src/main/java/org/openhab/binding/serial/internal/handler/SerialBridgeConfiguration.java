@@ -107,6 +107,6 @@ public class SerialBridgeConfiguration {
     @Override
     public String toString() {
         return "SerialBridgeConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudRate + ", Databits="
-                + dataBits + ", Parity=" + parity + ", Stopbits=" + stopBits + "charset=" + charset + "]";
+                + dataBits + ", Parity=" + parity + ", Stopbits=" + stopBits + ", charset=" + charset + "]";
     }
 }

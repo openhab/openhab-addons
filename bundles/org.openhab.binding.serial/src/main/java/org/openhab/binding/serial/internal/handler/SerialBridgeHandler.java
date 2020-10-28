@@ -129,7 +129,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use");
         } catch (final TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Cannot attach listener to port!");
+                    "Cannot attach listener to port");
         } catch (final UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Unsupported port parameters: " + e.getMessage());
