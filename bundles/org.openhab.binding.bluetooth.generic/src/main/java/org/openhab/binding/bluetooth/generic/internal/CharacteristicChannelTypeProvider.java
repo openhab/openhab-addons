@@ -47,7 +47,7 @@ import org.sputnikdev.bluetooth.gattparser.spec.Field;
 @Component(service = ChannelTypeProvider.class)
 public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
 
-    private Logger logger = LoggerFactory.getLogger(CharacteristicChannelTypeProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(CharacteristicChannelTypeProvider.class);
 
     private final Map<ChannelTypeUID, @Nullable ChannelType> cache = new ConcurrentHashMap<>();
 

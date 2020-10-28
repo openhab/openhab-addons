@@ -63,6 +63,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
     public void initialize() {
         super.initialize();
 
+        GenericBindingConfiguration config = getConfigAs(GenericBindingConfiguration.class);
         readCharacteristicJob = scheduler.scheduleWithFixedDelay(() -> {
             if (device.getConnectionState() == ConnectionState.CONNECTED) {
                 if (resolved) {
@@ -75,17 +76,16 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                     device.disconnect();
                 }
             }
-        }, 15, 30, TimeUnit.SECONDS);
+        }, 15, config.pollingInterval, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
-        super.dispose();
-
         Future<?> future = readCharacteristicJob;
         if (future != null) {
             future.cancel(true);
         }
+        super.dispose();
     }
 
     @Override
