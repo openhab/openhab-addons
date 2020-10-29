@@ -108,15 +108,15 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         if (CHANNEL_TYPE_BLUETHOOTH_MAC.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
-                return originalStateDescription;
+                return null;
             }
             BluetoothState bluetoothState = handler.findBluetoothState();
             if (bluetoothState == null) {
-                return originalStateDescription;
+                return null;
             }
             PairedDevice[] pairedDeviceList = bluetoothState.pairedDeviceList;
             if (pairedDeviceList == null) {
-                return originalStateDescription;
+                return null;
             }
 
             ArrayList<StateOption> options = new ArrayList<>();
@@ -136,12 +136,12 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         } else if (CHANNEL_TYPE_AMAZON_MUSIC_PLAY_LIST_ID.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
-                return originalStateDescription;
+                return null;
             }
 
             JsonPlaylists playLists = handler.findPlaylists();
             if (playLists == null) {
-                return originalStateDescription;
+                return null;
             }
 
             ArrayList<StateOption> options = new ArrayList<>();
@@ -166,12 +166,12 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         } else if (CHANNEL_TYPE_PLAY_ALARM_SOUND.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
-                return originalStateDescription;
+                return null;
             }
 
             JsonNotificationSound[] notificationSounds = handler.findAlarmSounds();
             if (notificationSounds == null) {
-                return originalStateDescription;
+                return null;
             }
 
             ArrayList<StateOption> options = new ArrayList<>();
@@ -191,15 +191,15 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         } else if (CHANNEL_TYPE_CHANNEL_PLAY_ON_DEVICE.equals(channel.getChannelTypeUID())) {
             FlashBriefingProfileHandler handler = (FlashBriefingProfileHandler) findHandler(channel);
             if (handler == null) {
-                return originalStateDescription;
+                return null;
             }
             AccountHandler accountHandler = handler.findAccountHandler();
             if (accountHandler == null) {
-                return originalStateDescription;
+                return null;
             }
             List<Device> devices = accountHandler.getLastKnownDevices();
             if (devices.isEmpty()) {
-                return originalStateDescription;
+                return null;
             }
 
             ArrayList<StateOption> options = new ArrayList<>();
@@ -216,11 +216,11 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         } else if (CHANNEL_TYPE_MUSIC_PROVIDER_ID.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
-                return originalStateDescription;
+                return null;
             }
             List<JsonMusicProvider> musicProviders = handler.findMusicProviders();
             if (musicProviders == null) {
-                return originalStateDescription;
+                return null;
             }
 
             ArrayList<StateOption> options = new ArrayList<>();
@@ -241,15 +241,15 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
         } else if (CHANNEL_TYPE_START_COMMAND.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
-                return originalStateDescription;
+                return null;
             }
             AccountHandler account = handler.findAccount();
             if (account == null) {
-                return originalStateDescription;
+                return null;
             }
             List<FlashBriefingProfileHandler> flashbriefings = account.getFlashBriefingProfileHandlers();
             if (flashbriefings.isEmpty()) {
-                return originalStateDescription;
+                return null;
             }
 
             ArrayList<StateOption> options = new ArrayList<>();
