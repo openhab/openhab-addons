@@ -322,6 +322,10 @@
     <module>org.openhab.voice.voicerss</module>
   </modules>
 
+  <properties>
+    <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.lastnpe.eea</groupId>

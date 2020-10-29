@@ -35,6 +35,10 @@
     <module>org.openhab.persistence.mapdb.tests</module>
   </modules>
 
+  <properties>
+    <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.openhab.core.bom</groupId>
