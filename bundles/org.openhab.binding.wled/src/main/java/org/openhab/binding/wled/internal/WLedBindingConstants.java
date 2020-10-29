@@ -33,8 +33,7 @@ public class WLedBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_WLED = new ThingTypeUID(BINDING_ID, "wled");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_WLED));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_WLED);
 
     // Configs
     public static final String CONFIG_ADDRESS = "address";
