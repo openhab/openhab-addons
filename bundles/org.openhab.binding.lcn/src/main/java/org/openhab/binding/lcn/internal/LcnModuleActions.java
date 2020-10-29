@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lcn.internal;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -40,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "lcn")
 @NonNullByDefault
-public class LcnModuleActions implements ThingActions, ILcnModuleActions {
+public class LcnModuleActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleActions.class);
     private static final int DYN_TEXT_CHUNK_COUNT = 5;
     private static final int DYN_TEXT_HEADER_LENGTH = 6;
@@ -57,8 +55,7 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
         return moduleHandler;
     }
 
-    @Override
-    @RuleAction(label = "LCN Hit Key", description = "Sends a \"hit key\" command to an LCN module")
+    @RuleAction(label = "send a hit key command", description = "Sends a \"hit key\" command to an LCN module.")
     public void hitKey(
             @ActionInput(name = "table", required = true, type = "java.lang.String", label = "Table", description = "The key table (A-D)") @Nullable String table,
             @ActionInput(name = "key", required = true, type = "java.lang.Integer", label = "Key", description = "The key number (1-8)") int key,
@@ -104,8 +101,7 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
         }
     }
 
-    @Override
-    @RuleAction(label = "LCN Flicker Output", description = "Let a dimmer output flicker for a given count of flashes")
+    @RuleAction(label = "flicker a dimmer output", description = "Let a dimmer output flicker for a given count of flashes.")
     public void flickerOutput(
             @ActionInput(name = "output", type = "java.lang.Integer", required = true, label = "Output", description = "The output number (1-4)") int output,
             @ActionInput(name = "depth", type = "java.lang.Integer", label = "Depth", description = "0=25% 1=50% 2=100%") int depth,
@@ -118,8 +114,7 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
         }
     }
 
-    @Override
-    @RuleAction(label = "LCN Dynamic Text", description = "Send custom text to an LCN-GTxD display")
+    @RuleAction(label = "send a custom text", description = "Send custom text to an LCN-GTxD display.")
     public void sendDynamicText(
             @ActionInput(name = "row", type = "java.lang.Integer", required = true, label = "Row", description = "Display the text on the LCN-GTxD in the given row number (1-4)") int row,
             @ActionInput(name = "text", type = "java.lang.String", label = "Text", description = "The text to display (max. 60 chars/bytes)") @Nullable String textInput) {
@@ -162,8 +157,7 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
      * @param relaynumber 1-based number of the relay to use
      * @param duration duration of the relay timer in milliseconds
      */
-    @Override
-    @RuleAction(label = "LCN Relay Timer", description = "Start an LCN relay timer")
+    @RuleAction(label = "start a relay timer", description = "Start an LCN relay timer.")
     public void startRelayTimer(
             @ActionInput(name = "relaynumber", required = true, type = "java.lang.Integer", label = "Relay Number", description = "The relay number (1-8)") int relayNumber,
             @ActionInput(name = "duration", required = true, type = "java.lang.Double", label = "Duration [ms]", description = "The timer duration in milliseconds") double duration) {
@@ -174,44 +168,24 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
         }
     }
 
-    private static ILcnModuleActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(LcnModuleActions.class.getName())) {
-            if (actions instanceof LcnModuleActions) {
-                return (ILcnModuleActions) actions;
-            } else {
-                return (ILcnModuleActions) Proxy.newProxyInstance(ILcnModuleActions.class.getClassLoader(),
-                        new Class[] { ILcnModuleActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException("Actions is not an instance of LcnModuleActions");
+    /** Static alias to support the old DSL rules engine and make the action available there. */
+    public static void hitKey(ThingActions actions, @Nullable String table, int key, @Nullable String action) {
+        ((LcnModuleActions) actions).hitKey(table, key, action);
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void hitKey(@Nullable ThingActions actions, @Nullable String table, int key,
-            @Nullable String action) {
-        invokeMethodOf(actions).hitKey(table, key, action);
+    public static void flickerOutput(ThingActions actions, int output, int depth, int ramp, int count) {
+        ((LcnModuleActions) actions).flickerOutput(output, depth, ramp, count);
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void flickerOutput(@Nullable ThingActions actions, int output, int depth, int ramp, int count) {
-        invokeMethodOf(actions).flickerOutput(output, depth, ramp, count);
+    public static void sendDynamicText(ThingActions actions, int row, @Nullable String text) {
+        ((LcnModuleActions) actions).sendDynamicText(row, text);
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void sendDynamicText(@Nullable ThingActions actions, int row, @Nullable String text) {
-        invokeMethodOf(actions).sendDynamicText(row, text);
-    }
-
-    /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void startRelayTimer(@Nullable ThingActions actions, int relaynumber, double duration) {
-        invokeMethodOf(actions).startRelayTimer(relaynumber, duration);
+    public static void startRelayTimer(ThingActions actions, int relaynumber, double duration) {
+        ((LcnModuleActions) actions).startRelayTimer(relaynumber, duration);
     }
 
     private LcnModuleHandler getHandler() throws LcnException {

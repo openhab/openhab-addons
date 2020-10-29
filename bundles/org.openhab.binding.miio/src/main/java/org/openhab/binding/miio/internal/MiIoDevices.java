@@ -88,6 +88,9 @@ public enum MiIoDevices {
     HUMIDIFIER("zhimi.humidifier.v1", "Mi Humdifier", THING_TYPE_BASIC),
     LUMI_C11("lumi.ctrl_neutral1.v1", "Light Control (Wall Switch)", THING_TYPE_UNSUPPORTED),
     LUMI_C12("lumi.ctrl_neutral2.v1", "Light Control (Wall Switch)", THING_TYPE_UNSUPPORTED),
+    MRBOND_AIRER_M1PRO("mrbond.airer.m1pro", "Mr Bond M1 Pro Smart Clothes Dryer", THING_TYPE_BASIC),
+    MRBOND_AIRER_M1S("mrbond.airer.m1s", "Mr Bond M1 Smart Clothes Dryer", THING_TYPE_BASIC),
+    MRBOND_AIRER_M1SUPER("mrbond.airer.m1super", "Mr Bond M1 Super Smart Clothes Dryer", THING_TYPE_BASIC),
     PHILIPS_SR1("philips.light.sread1", "Xiaomi Philips Eyecare Smart Lamp 2", THING_TYPE_BASIC),
     PHILIPS_SR2("philips.light.sread2", "Xiaomi Philips Eyecare Smart Lamp 2", THING_TYPE_BASIC),
     PHILIPS_C("philips.light.ceiling", "Xiaomi Philips LED Ceiling Lamp", THING_TYPE_BASIC),
@@ -253,6 +256,7 @@ public enum MiIoDevices {
     YL_CEILING1("yilai.light.ceiling1", "Yeelight yilai ceiling", THING_TYPE_BASIC),
     YL_CEILING2("yilai.light.ceiling2", "Yeelight yilai ceiling", THING_TYPE_BASIC),
     YL_CEILING3("yilai.light.ceiling3", "Yeelight yilai ceiling", THING_TYPE_BASIC),
+    ZHIMI_HEATER_ZA1("zhimi.heater.za1", "Zhimi Heater", THING_TYPE_BASIC),
     UNKNOWN("unknown", "Unknown Mi IO Device", THING_TYPE_UNSUPPORTED);
 
     public static MiIoDevices getType(String modelString) {

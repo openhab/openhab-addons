@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.intesis.internal;
 
-import static org.openhab.binding.intesis.internal.IntesisBindingConstants.THING_TYPE_INTESISHOME;
+import static org.openhab.binding.intesis.internal.IntesisBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.intesis.internal.handler.IntesisBoxHandler;
 import org.openhab.binding.intesis.internal.handler.IntesisHomeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
@@ -48,7 +51,8 @@ public class IntesisHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final IntesisDynamicStateDescriptionProvider intesisStateDescriptionProvider;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_INTESISHOME);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_INTESISHOME, THING_TYPE_INTESISBOX).collect(Collectors.toSet()));
 
     @Activate
     public IntesisHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
@@ -69,8 +73,11 @@ public class IntesisHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_INTESISHOME.equals(thingTypeUID)) {
-            logger.debug("Creating a IntesisHomeHandler for thing '{}'", thing.getUID());
             return new IntesisHomeHandler(thing, httpClient, intesisStateDescriptionProvider);
+        }
+
+        if (THING_TYPE_INTESISBOX.equals(thingTypeUID)) {
+            return new IntesisBoxHandler(thing, intesisStateDescriptionProvider);
         }
 
         return null;

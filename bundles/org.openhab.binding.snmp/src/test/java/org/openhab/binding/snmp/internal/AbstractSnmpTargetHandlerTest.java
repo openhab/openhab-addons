@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import org.junit.jupiter.api.AfterEach;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -64,6 +65,12 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
 
     protected Thing thing;
     protected SnmpTargetHandler thingHandler;
+    private AutoCloseable mocks;
+
+    @AfterEach
+    public void after() throws Exception {
+        mocks.close();
+    }
 
     protected VariableBinding handleCommandSwitchChannel(SnmpDatatype datatype, Command command, String onValue,
             String offValue, boolean refresh) throws IOException {
@@ -134,7 +141,7 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
     protected void refresh(SnmpChannelMode channelMode, boolean refresh) throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, channelMode);
 
-        waitForAssert(() -> assertEquals(ThingStatus.ONLINE, thingHandler.getThing().getStatusInfo().getStatus()));
+        verifyStatus(ThingStatus.UNKNOWN);
         verify(snmpService).addCommandResponder(any());
 
         if (refresh) {
@@ -165,7 +172,7 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
             String onValue, String offValue, String exceptionValue) {
         Map<String, Object> channelConfig = new HashMap<>();
         Map<String, Object> thingConfig = new HashMap<>();
-        MockitoAnnotations.initMocks(this);
+        mocks = MockitoAnnotations.openMocks(this);
 
         thingConfig.put("hostname", "localhost");
 
@@ -206,6 +213,10 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
 
         thingHandler.initialize();
 
-        waitForAssert(() -> assertEquals(ThingStatus.ONLINE, thingHandler.getThing().getStatusInfo().getStatus()));
+        verifyStatus(ThingStatus.UNKNOWN);
+    }
+
+    protected void verifyStatus(ThingStatus status) {
+        waitForAssert(() -> assertEquals(status, thingHandler.getThing().getStatusInfo().getStatus()));
     }
 }

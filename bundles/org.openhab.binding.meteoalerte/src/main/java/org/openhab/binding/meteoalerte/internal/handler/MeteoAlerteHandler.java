@@ -14,24 +14,24 @@ package org.openhab.binding.meteoalerte.internal.handler;
 
 import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.AbstractMap;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.MeteoAlerteConfiguration;
 import org.openhab.binding.meteoalerte.internal.json.ApiResponse;
-import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.RawType;
@@ -44,6 +44,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,18 +63,21 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             + "facet=etat_vent&facet=etat_pluie_inondation&facet=etat_orage&facet=etat_inondation&facet=etat_neige&facet=etat_canicule&"
             + "facet=etat_grand_froid&facet=etat_avalanches&refine.nom_dept=";
     private static final int TIMEOUT_MS = 30000;
-    private static final List<String> ALERT_LEVELS = Arrays.asList("Vert", "Jaune", "Orange", "Rouge");
-    private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
+    private static final Map<AlertLevel, String> ALERT_COLORS = Map.ofEntries(
+            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.GREEN, "00ff00"),
+            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.YELLOW, "ffff00"),
+            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.ORANGE, "ff6600"),
+            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.RED, "ff0000"),
+            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.UNKNOWN, "b3b3b3"));
 
+    private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
     // Time zone provider representing time zone configured in openHAB configuration
-    private final TimeZoneProvider timeZoneProvider;
     private final Gson gson;
     private @Nullable ScheduledFuture<?> refreshJob;
     private String queryUrl = "";
 
-    public MeteoAlerteHandler(Thing thing, TimeZoneProvider timeZoneProvider, Gson gson) {
+    public MeteoAlerteHandler(Thing thing, Gson gson) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
         this.gson = gson;
     }
 
@@ -120,7 +124,6 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("Querying '%s' raised : %s", queryUrl, e.getMessage()));
         } catch (IOException e) {
-            logger.warn("Error opening connection to Meteo Alerte webservice : {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -133,74 +136,49 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     private void updateChannels(ApiResponse apiResponse) {
         Arrays.stream(apiResponse.getRecords()).findFirst()
                 .ifPresent((record) -> record.getResponseFieldDTO().ifPresent(fields -> {
-                    updateAlertString(WIND, fields.getVent());
-                    updateAlertString(RAIN, fields.getPluieInondation());
-                    updateAlertString(STORM, fields.getOrage());
-                    updateAlertString(FLOOD, fields.getInondation());
-                    updateAlertString(SNOW, fields.getNeige());
-                    updateAlertString(HEAT, fields.getCanicule());
-                    updateAlertString(FREEZE, fields.getGrandFroid());
-                    updateAlertString(AVALANCHE, fields.getAvalanches());
-
-                    fields.getDateInsert().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
+                    updateAlert(WIND, fields.getVent());
+                    updateAlert(RAIN, fields.getPluieInondation());
+                    updateAlert(STORM, fields.getOrage());
+                    updateAlert(FLOOD, fields.getInondation());
+                    updateAlert(SNOW, fields.getNeige());
+                    updateAlert(HEAT, fields.getCanicule());
+                    updateAlert(FREEZE, fields.getGrandFroid());
+                    updateAlert(AVALANCHE, fields.getAvalanches());
+                    updateAlert(WAVE, fields.getVagueSubmersion());
                     updateState(COMMENT, new StringType(fields.getVigilanceComment()));
-                    updateIcon(WIND, fields.getVent());
-                    updateIcon(RAIN, fields.getPluieInondation());
-                    updateIcon(STORM, fields.getOrage());
-                    updateIcon(FLOOD, fields.getInondation());
-                    updateIcon(SNOW, fields.getNeige());
-                    updateIcon(HEAT, fields.getCanicule());
-                    updateIcon(FREEZE, fields.getGrandFroid());
-                    updateIcon(AVALANCHE, fields.getAvalanches());
+                    fields.getDateInsert().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
+                    fields.getDatePrevue().ifPresent(date -> updateDate(END_TIME, date));
                 }));
     }
 
-    public void updateIcon(String channelId, String value) {
-        String iconChannelId = channelId + "-icon";
-        if (isLinked(iconChannelId)) {
-            String pictoName = channelId + (!value.isEmpty() ? "_" + value.toLowerCase() : "");
-            byte[] image = getImage("picto" + File.separator + pictoName + ".gif");
-            if (image != null) {
-                RawType picto = new RawType(image, "image/gif");
-                updateState(iconChannelId, picto);
-            }
-        }
-    }
-
-    private byte @Nullable [] getImage(String iconPath) {
-        URL url = FrameworkUtil.getBundle(getClass()).getResource(iconPath);
-        logger.debug("Path to icon image resource is: {}", url);
-        try (InputStream in = new BufferedInputStream(url.openStream())) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            int next = in.read();
-            while (next > -1) {
-                bos.write(next);
-                next = in.read();
-            }
-            bos.flush();
-            return bos.toByteArray();
+    public @Nullable String getResource(String iconPath) {
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        try (InputStream stream = bundle.getResource(iconPath).openStream()) {
+            return new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
-            logger.debug("I/O exception occurred getting image data: {}", e.getMessage(), e);
+            logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
         }
         return null;
     }
 
-    public void updateAlertString(String channelId, String value) {
-        if (!value.isEmpty() && isLinked(channelId)) {
-            int level = ALERT_LEVELS.indexOf(value);
-            if (level != -1) {
-                updateState(channelId, new StringType(Integer.toString(level)));
-            } else {
-                updateState(channelId, UnDefType.UNDEF);
-                logger.warn("Value {} is not a valid alert level for channel {}", value, channelId);
+    public void updateAlert(String channelId, AlertLevel value) {
+        String channelIcon = channelId + "-icon";
+        if (isLinked(channelId)) {
+            updateState(channelId, value != AlertLevel.UNKNOWN ? new StringType(value.name()) : UnDefType.UNDEF);
+        }
+        if (isLinked(channelIcon)) {
+            String resource = getResource(String.format("picto/%s.svg", channelId));
+            if (resource != null) {
+                resource = resource.replaceAll(ALERT_COLORS.get(AlertLevel.UNKNOWN), ALERT_COLORS.get(value));
             }
+            updateState(channelIcon,
+                    resource != null ? new RawType(resource.getBytes(), "image/svg+xml") : UnDefType.UNDEF);
         }
     }
 
     public void updateDate(String channelId, ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
-            ZonedDateTime localDateTime = zonedDateTime.withZoneSameInstant(timeZoneProvider.getTimeZone());
-            updateState(channelId, new DateTimeType(localDateTime));
+            updateState(channelId, new DateTimeType(zonedDateTime));
         }
     }
 }

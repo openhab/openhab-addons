@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="remoteopenhab"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="server">
+		<label>Remote openHAB Server</label>
+		<description>A remote openHAB server.</description>
+
+		<representation-property>host</representation-property>
+
+		<config-description>
+			<parameter name="host" type="text">
+				<context>network-address</context>
+				<label>Server Address</label>
+				<description>The host name or IP address of the remote openHAB server.</description>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="port" type="integer">
+				<label>Server HTTP Port</label>
+				<description>The HTTP port to be used to communicate with the remote openHAB server.</description>
+				<required>true</required>
+				<default>8080</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="restPath" type="text">
+				<label>REST API Path</label>
+				<description>The subpath of the REST API on the remote openHAB server.</description>
+				<required>true</required>
+				<default>/rest</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="token" type="text">
+				<context>password</context>
+				<label>Token</label>
+				<description>The token to use when the remote openHAB server is setup to require authorization to run its REST API.</description>
+				<required>false</required>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

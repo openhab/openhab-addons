@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoDevices;
@@ -170,7 +171,9 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         sb.append("Properties: ");
         int lastCommand = -1;
         for (String c : channelList.keySet()) {
-            String cmd = "get_prop[" + c + "]";
+            MiIoBasicChannel ch = channelList.get(c);
+            String cmd = ch.getChannelCustomRefreshCommand().isBlank() ? ("get_prop[" + c + "]")
+                    : ch.getChannelCustomRefreshCommand();
             sb.append(c);
             sb.append(" -> ");
             lastCommand = sendCommand(cmd);
@@ -183,10 +186,13 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         logger.info("{}", sb.toString());
     }
 
-    private LinkedHashMap<String, MiIoBasicChannel> collectProperties(String model) {
+    private LinkedHashMap<String, MiIoBasicChannel> collectProperties(@Nullable String model) {
         LinkedHashMap<String, MiIoBasicChannel> testChannelsList = new LinkedHashMap<>();
         LinkedHashSet<MiIoDevices> testDeviceList = new LinkedHashSet<>();
-
+        if (model == null || model.length() < 2) {
+            logger.info("Wait until the model is determined, than try again");
+            return testChannelsList;
+        }
         // first add similar devices to test those channels first, then test all others
         int[] subset = { model.length() - 1, model.lastIndexOf("."), model.indexOf("."), 0 };
         for (int i : subset) {
@@ -203,8 +209,15 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         }
         for (MiIoDevices dev : testDeviceList) {
             for (MiIoBasicChannel ch : getBasicChannels(dev.getModel())) {
-                if (!ch.isMiOt() && !ch.getProperty().isBlank() && !testChannelsList.containsKey(ch.getProperty())) {
+                // Add all (unique) properties
+                if (!ch.isMiOt() && !ch.getProperty().isBlank() && ch.getChannelCustomRefreshCommand().isBlank()
+                        && !testChannelsList.containsKey(ch.getProperty())) {
                     testChannelsList.put(ch.getProperty(), ch);
+                }
+                // Add all (unique) custom refresh commands
+                if (!ch.isMiOt() && !ch.getChannelCustomRefreshCommand().isBlank()
+                        && !testChannelsList.containsKey(ch.getChannelCustomRefreshCommand())) {
+                    testChannelsList.put(ch.getChannelCustomRefreshCommand(), ch);
                 }
             }
         }

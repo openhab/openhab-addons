@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hpprinter.internal.HPPrinterConfiguration;
 import org.openhab.core.thing.Thing;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,6 +43,8 @@ public class HPProperties {
                     element.getElementsByTagName("dd:SerialNumber").item(0).getTextContent());
             properties.put(Thing.PROPERTY_MODEL_ID,
                     element.getElementsByTagName("dd:ProductNumber").item(0).getTextContent());
+            properties.put(HPPrinterConfiguration.UUID,
+                    element.getElementsByTagName("dd:UUID").item(0).getTextContent());
             Node firmwareDate = element.getElementsByTagName("dd:Version").item(0);
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareDate.getChildNodes().item(0).getTextContent());
         }

@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.automower.internal.actions;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.automower.internal.things.AutomowerCommand;
@@ -32,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "automower")
 @NonNullByDefault
-public class AutomowerActions implements ThingActions, IAutomowerActions {
+public class AutomowerActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(AutomowerActions.class);
     private @Nullable AutomowerHandler handler;
 
@@ -46,7 +43,6 @@ public class AutomowerActions implements ThingActions, IAutomowerActions {
         return handler;
     }
 
-    @Override
     @RuleAction(label = "@text/action-start-label", description = "@text/action-start-desc")
     public void start(
             @ActionInput(name = "duration", label = "@text/action-input-duration-label", description = "@text/action-input-duration-desc") int durationMin) {
@@ -58,11 +54,10 @@ public class AutomowerActions implements ThingActions, IAutomowerActions {
         }
     }
 
-    public static void start(@Nullable ThingActions actions, int durationMin) {
-        invokeMethodOf(actions).start(durationMin);
+    public static void start(ThingActions actions, int durationMin) {
+        ((AutomowerActions) actions).start(durationMin);
     }
 
-    @Override
     @RuleAction(label = "@text/action-pause-label", description = "@text/action-pause-desc")
     public void pause() {
         AutomowerHandler automowerHandler = handler;
@@ -73,11 +68,10 @@ public class AutomowerActions implements ThingActions, IAutomowerActions {
         }
     }
 
-    public static void pause(@Nullable ThingActions actions) {
-        invokeMethodOf(actions).pause();
+    public static void pause(ThingActions actions) {
+        ((AutomowerActions) actions).pause();
     }
 
-    @Override
     @RuleAction(label = "@text/action-parkuntilnextschedule-label", description = "@text/action-parkuntilnextschedule-desc")
     public void parkUntilNextSchedule() {
         AutomowerHandler automowerHandler = handler;
@@ -88,11 +82,10 @@ public class AutomowerActions implements ThingActions, IAutomowerActions {
         }
     }
 
-    public static void parkUntilNextSchedule(@Nullable ThingActions actions) {
-        invokeMethodOf(actions).parkUntilNextSchedule();
+    public static void parkUntilNextSchedule(ThingActions actions) {
+        ((AutomowerActions) actions).parkUntilNextSchedule();
     }
 
-    @Override
     @RuleAction(label = "@text/action-parkuntilfurthernotice-label", description = "@text/action-parkuntilfurthernotice-desc")
     public void parkUntilFurtherNotice() {
         AutomowerHandler automowerHandler = handler;
@@ -103,11 +96,10 @@ public class AutomowerActions implements ThingActions, IAutomowerActions {
         }
     }
 
-    public static void parkUntilFurtherNotice(@Nullable ThingActions actions) {
-        invokeMethodOf(actions).parkUntilFurtherNotice();
+    public static void parkUntilFurtherNotice(ThingActions actions) {
+        ((AutomowerActions) actions).parkUntilFurtherNotice();
     }
 
-    @Override
     @RuleAction(label = "@text/action-park-label", description = "@text/action-park-desc")
     public void park(
             @ActionInput(name = "duration", label = "@text/action-input-duration-label", description = "@text/action-input-duration-desc") int durationMin) {
@@ -119,11 +111,10 @@ public class AutomowerActions implements ThingActions, IAutomowerActions {
         }
     }
 
-    public static void park(@Nullable ThingActions actions, int durationMin) {
-        invokeMethodOf(actions).park(durationMin);
+    public static void park(ThingActions actions, int durationMin) {
+        ((AutomowerActions) actions).park(durationMin);
     }
 
-    @Override
     @RuleAction(label = "@text/action-resumeschedule-label", description = "@text/action-resumeschedule-desc")
     public void resumeSchedule() {
         AutomowerHandler automowerHandler = handler;
@@ -134,26 +125,7 @@ public class AutomowerActions implements ThingActions, IAutomowerActions {
         }
     }
 
-    public static void resumeSchedule(@Nullable ThingActions actions) {
-        invokeMethodOf(actions).resumeSchedule();
-    }
-
-    private static IAutomowerActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(AutomowerActions.class.getName())) {
-            if (actions instanceof AutomowerActions) {
-                return (IAutomowerActions) actions;
-            } else {
-                return (IAutomowerActions) Proxy.newProxyInstance(IAutomowerActions.class.getClassLoader(),
-                        new Class[] { IAutomowerActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException("Actions is not an instance of IAutomowerActions");
+    public static void resumeSchedule(ThingActions actions) {
+        ((AutomowerActions) actions).resumeSchedule();
     }
 }

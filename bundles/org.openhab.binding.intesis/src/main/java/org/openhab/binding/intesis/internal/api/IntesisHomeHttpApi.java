@@ -23,7 +23,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.intesis.internal.IntesisConfiguration;
+import org.openhab.binding.intesis.internal.config.IntesisHomeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class IntesisHomeHttpApi {
     private final Logger logger = LoggerFactory.getLogger(IntesisHomeHttpApi.class);
     private final HttpClient httpClient;
 
-    public IntesisHomeHttpApi(IntesisConfiguration config, HttpClient httpClient) {
+    public IntesisHomeHttpApi(IntesisHomeConfiguration config, HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
