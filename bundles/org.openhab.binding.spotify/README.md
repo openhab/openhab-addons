@@ -214,6 +214,7 @@ sitemap spotify label="Spotify Sitemap" {
     Default   item=spotifyTrackPlayer   label="Player"
     Switch    item=spotifyDeviceShuffle label="Shuffle mode:"
     Text      item=spotifyTrackRepeat   label="Repeat mode: [%s]"
+    Selection item=spotifyTrackRepeat   label="Repeat mode: [%s]" mappings=[off="OFF",context="all repeat",track="track repeat"]
     Text      item=spotifyTrackProgress label="Track progress: [%s]"
     Text      item=spotifyTrackDuration label="Track duration: [%s]"
     Text      item=spotifyTrackName     label="Track Name: [%s]"
