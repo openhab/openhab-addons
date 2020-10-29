@@ -327,7 +327,7 @@ public class WLedHandler extends BaseThingHandler {
                 if (command instanceof OnOffType) {
                     return;
                 } else if (command instanceof HSBType) {
-                    secondaryColor = new HSBType(command.toString());
+                    secondaryColor = (HSBType) command;
                     sendGetRequest("/win&C2=" + createColorHex(secondaryColor));
                 } else if (command instanceof IncreaseDecreaseType) {
                     return;
