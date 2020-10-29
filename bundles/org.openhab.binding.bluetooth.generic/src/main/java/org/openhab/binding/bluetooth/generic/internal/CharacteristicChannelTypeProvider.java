@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
+import org.sputnikdev.bluetooth.gattparser.spec.Enumerations;
 import org.sputnikdev.bluetooth.gattparser.spec.Field;
 
 /**
@@ -82,58 +84,61 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
     private @Nullable ChannelType buildChannelType(ChannelTypeUID channelTypeUID) {
         // characteristic-advncd-readable-00002a04-0000-1000-8000-00805f9b34fb-Battery_Level
         CharacteristicChannelType type = CharacteristicChannelType.fromChannelTypeUID(gattParser, channelTypeUID);
-        if (type != null) {
-            List<StateOption> options = getStateOptions(type.field);
-            String itemType = BluetoothChannelUtils.getItemType(type.field);
-
-            if (itemType == null) {
-                throw new IllegalStateException("Unknown field format type: " + type.field.getUnit());
-            }
-
-            if (itemType.equals("Switch") || itemType.equals("Binary")) {
-                options = Collections.emptyList();
-            }
-
-            String format = getFormat(type.field);
-            String unit = getUnit(type.field);
-            String pattern = format + " " + (unit != null ? unit : "");
-
-            StateDescriptionFragmentBuilder stateDescBuilder = StateDescriptionFragmentBuilder.create()
-                    .withPattern(pattern)//
-                    .withReadOnly(type.readOnly)//
-                    .withOptions(options);
-
-            BigDecimal min = toBigDecimal(type.field.getMinimum());
-            BigDecimal max = toBigDecimal(type.field.getMaximum());
-            if (min != null) {
-                stateDescBuilder = stateDescBuilder.withMinimum(min);
-            }
-            if (max != null) {
-                stateDescBuilder = stateDescBuilder.withMaximum(max);
-            }
-            return ChannelTypeBuilder.state(channelTypeUID, type.field.getName(), itemType)//
-                    .isAdvanced(type.advanced)//
-                    .withDescription(type.field.getInformativeText())//
-                    .withStateDescriptionFragment(stateDescBuilder.build()).build();
+        if (type == null) {
+            return null;
         }
-        return null;
+        List<StateOption> options = getStateOptions(type.field);
+        String itemType = BluetoothChannelUtils.getItemType(type.field);
+
+        if (itemType == null) {
+            throw new IllegalStateException("Unknown field format type: " + type.field.getUnit());
+        }
+
+        if (itemType.equals("Switch")) {
+            options = Collections.emptyList();
+        }
+
+        StateDescriptionFragmentBuilder stateDescBuilder = StateDescriptionFragmentBuilder.create()//
+                .withPattern(getPattern(type.field))//
+                .withReadOnly(type.readOnly)//
+                .withOptions(options);
+
+        BigDecimal min = toBigDecimal(type.field.getMinimum());
+        BigDecimal max = toBigDecimal(type.field.getMaximum());
+        if (min != null) {
+            stateDescBuilder = stateDescBuilder.withMinimum(min);
+        }
+        if (max != null) {
+            stateDescBuilder = stateDescBuilder.withMaximum(max);
+        }
+        return ChannelTypeBuilder.state(channelTypeUID, type.field.getName(), itemType)//
+                .isAdvanced(type.advanced)//
+                .withDescription(type.field.getInformativeText())//
+                .withStateDescriptionFragment(stateDescBuilder.build()).build();
+    }
+
+    private static String getPattern(Field field) {
+        String format = getFormat(field);
+        String unit = getUnit(field);
+        StringBuilder pattern = new StringBuilder();
+        pattern.append(format);
+        if (unit != null) {
+            pattern.append(" ").append(unit);
+        }
+        return pattern.toString();
     }
 
     private static List<StateOption> getStateOptions(Field field) {
-        return hasEnums(field)
-                ? field.getEnumerations().getEnumerations().stream()
-                        .map(enumeration -> new StateOption(String.valueOf(enumeration.getKey()),
-                                enumeration.getValue()))
-                        .collect(Collectors.toList())
-                : Collections.emptyList();
+        return Optional.ofNullable(field.getEnumerations())//
+                .map(Enumerations::getEnumerations)//
+                .stream()//
+                .flatMap(List::stream)
+                .map(enumeration -> new StateOption(String.valueOf(enumeration.getKey()), enumeration.getValue()))
+                .collect(Collectors.toList());
     }
 
     private static @Nullable BigDecimal toBigDecimal(@Nullable Double value) {
         return value != null ? BigDecimal.valueOf(value) : null;
-    }
-
-    private static boolean hasEnums(Field field) {
-        return field.getEnumerations() != null && field.getEnumerations().getEnumerations() != null;
     }
 
     private static String getFormat(Field field) {
