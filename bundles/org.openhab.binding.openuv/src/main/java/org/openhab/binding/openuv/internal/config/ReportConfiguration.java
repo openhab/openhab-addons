@@ -10,14 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openuv.internal;
+package org.openhab.binding.openuv.internal.config;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SafeExposureConfiguration} is the class used to match the
- * SafeExposure channel configuration.
+ * The {@link ReportConfiguration} is the class used to match the
+ * thing configuration.
  *
  * @author Gaël L"hopital - Initial contribution
  */
-public class SafeExposureConfiguration {
-    public int index = -1;
+@NonNullByDefault
+public class ReportConfiguration {
+    public static final String LOCATION = "location";
+
+    public int refresh = 10;
+    public String location = "";
 }
