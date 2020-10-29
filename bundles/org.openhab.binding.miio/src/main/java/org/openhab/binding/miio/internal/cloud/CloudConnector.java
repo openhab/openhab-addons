@@ -137,7 +137,7 @@ public class CloudConnector {
             mapCountry = country.trim().toLowerCase();
             mapUrl = cl.getMapUrl(mapId, mapCountry);
         }
-        if (mapUrl.isBlank()) {
+        if (mapUrl.isEmpty()) {
             logger.debug("Cannot download map data: Returned map URL is empty");
             return null;
         }
