@@ -83,7 +83,7 @@
 	<channel-type id="secondaryWhite" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Secondary White</label>
-		<description>Changes the brightness of the white LED</description>
+		<description>Changes the brightness of the secondary white LED</description>
 		<category>DimmableLight</category>
 	</channel-type>
 
