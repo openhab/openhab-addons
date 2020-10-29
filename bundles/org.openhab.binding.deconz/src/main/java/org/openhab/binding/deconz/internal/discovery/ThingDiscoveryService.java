@@ -131,7 +131,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, group.id);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(group.name)
-                .withProperties(properties).withRepresentationProperty("id").build();
+                .withProperties(properties).withRepresentationProperty(CONFIG_ID).build();
         thingDiscovered(discoveryResult);
     }
 
