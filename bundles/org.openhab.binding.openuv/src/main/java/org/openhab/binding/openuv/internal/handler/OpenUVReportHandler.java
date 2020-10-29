@@ -23,11 +23,13 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.quantity.Angle;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.openuv.internal.ReportConfiguration;
-import org.openhab.binding.openuv.internal.SafeExposureConfiguration;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.openuv.internal.config.ReportConfiguration;
+import org.openhab.binding.openuv.internal.config.SafeExposureConfiguration;
 import org.openhab.binding.openuv.internal.json.OpenUVResult;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Bridge;
@@ -54,13 +56,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenUVReportHandler extends BaseThingHandler {
-    private static final int DEFAULT_REFRESH_PERIOD = 30;
-
     private final Logger logger = LoggerFactory.getLogger(OpenUVReportHandler.class);
 
     private @NonNullByDefault({}) OpenUVBridgeHandler bridgeHandler;
-    private @NonNullByDefault({}) ScheduledFuture<?> refreshJob;
-    private @NonNullByDefault({}) ScheduledFuture<?> uvMaxJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> uvMaxJob;
     private boolean suspendUpdates = false;
 
     public OpenUVReportHandler(Thing thing) {
@@ -73,7 +73,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
 
         ReportConfiguration config = getConfigAs(ReportConfiguration.class);
 
-        if (config.refresh != null && config.refresh < 3) {
+        if (config.refresh < 3) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'refresh' must be higher than 3 minutes to stay in free API plan");
         } else {
@@ -94,7 +94,8 @@ public class OpenUVReportHandler extends BaseThingHandler {
      * @param openUVData
      */
     private void scheduleUVMaxEvent(OpenUVResult openUVData) {
-        if ((uvMaxJob == null || uvMaxJob.isCancelled())) {
+        ScheduledFuture<?> job = this.uvMaxJob;
+        if ((job == null || job.isCancelled())) {
             State uvMaxTime = openUVData.getUVMaxTime();
             if (uvMaxTime != UnDefType.NULL) {
                 ZonedDateTime uvMaxZdt = ((DateTimeType) uvMaxTime).getZonedDateTime();
@@ -114,22 +115,23 @@ public class OpenUVReportHandler extends BaseThingHandler {
      * Start the job refreshing the data
      */
     private void startAutomaticRefresh() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        ScheduledFuture<?> job = this.refreshJob;
+        if (job == null || job.isCancelled()) {
             ReportConfiguration config = getConfigAs(ReportConfiguration.class);
-            int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {
                 if (!suspendUpdates) {
                     updateChannels(config);
                 }
-            }, 0, delay, TimeUnit.MINUTES);
+            }, 0, config.refresh, TimeUnit.MINUTES);
         }
     }
 
     private void updateChannels(ReportConfiguration config) {
         ThingStatusInfo bridgeStatusInfo = bridgeHandler.getThing().getStatusInfo();
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            OpenUVResult openUVData = bridgeHandler.getUVData(config.getLatitude(), config.getLongitude(),
-                    config.getAltitude());
+            PointType location = new PointType(config.location);
+            OpenUVResult openUVData = bridgeHandler.getUVData(location.getLatitude().toString(),
+                    location.getLongitude().toString(), location.getAltitude().toString());
             if (openUVData != null) {
                 scheduleUVMaxEvent(openUVData);
                 getThing().getChannels().forEach(channel -> {
@@ -146,16 +148,17 @@ public class OpenUVReportHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing the OpenUV handler.");
-
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        ScheduledFuture<?> refresh = this.refreshJob;
+        if (refresh != null && !refresh.isCancelled()) {
+            refresh.cancel(true);
         }
+        refreshJob = null;
 
-        if (uvMaxJob != null && !uvMaxJob.isCancelled()) {
-            uvMaxJob.cancel(true);
-            uvMaxJob = null;
+        ScheduledFuture<?> uxMax = this.uvMaxJob;
+        if (uxMax != null && !uxMax.isCancelled()) {
+            uxMax.cancel(true);
         }
+        uvMaxJob = null;
     }
 
     @SuppressWarnings("unchecked")
