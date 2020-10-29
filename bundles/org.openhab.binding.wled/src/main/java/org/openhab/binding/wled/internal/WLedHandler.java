@@ -47,6 +47,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,9 +63,10 @@ import org.slf4j.LoggerFactory;
 public class WLedHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final HttpClient httpClient;
+    private final BigDecimal BIG_DECIMAL_2_55 = new BigDecimal(2.55);
     private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
-    private BigDecimal masterBrightness = BigDecimal.ZERO;
+    private BigDecimal masterBrightness255 = BigDecimal.ZERO;
     private HSBType primaryColor = new HSBType();
     private BigDecimal primaryWhite = BigDecimal.ZERO;
     private HSBType secondaryColor = new HSBType();
@@ -151,10 +153,10 @@ public class WLedHandler extends BaseThingHandler {
             if (primaryWhite.intValue() > -1) {
                 hasWhite = true;
                 updateState(CHANNEL_PRIMARY_WHITE,
-                        new PercentType(primaryWhite.divide(new BigDecimal(2.55), RoundingMode.HALF_UP)));
+                        new PercentType(primaryWhite.divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
                 secondaryWhite = new BigDecimal(WLedHelper.getValue(message, "<ws>", "<"));
                 updateState(CHANNEL_SECONDARY_WHITE,
-                        new PercentType(secondaryWhite.divide(new BigDecimal(2.55), RoundingMode.HALF_UP)));
+                        new PercentType(secondaryWhite.divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
             }
         } catch (NumberFormatException e) {
             logger.warn("NumberFormatException when parsing the WLED colour and white fields.");
@@ -194,14 +196,14 @@ public class WLedHandler extends BaseThingHandler {
         if (message.contains("<ac>0</ac>")) {
             updateState(CHANNEL_MASTER_CONTROLS, OnOffType.OFF);
         } else {
-            masterBrightness = new BigDecimal(WLedHelper.getValue(message, "<ac>", "<"));
+            masterBrightness255 = new BigDecimal(WLedHelper.getValue(message, "<ac>", "<"));
             updateState(CHANNEL_MASTER_CONTROLS,
-                    new PercentType(masterBrightness.divide(new BigDecimal(2.55), RoundingMode.HALF_UP)));
+                    new PercentType(masterBrightness255.divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
         }
         if (message.contains("<ix>0</ix>")) {
             updateState(CHANNEL_INTENSITY, OnOffType.OFF);
         } else {
-            BigDecimal bigTemp = new BigDecimal(WLedHelper.getValue(message, "<ix>", "<")).divide(new BigDecimal(2.55),
+            BigDecimal bigTemp = new BigDecimal(WLedHelper.getValue(message, "<ix>", "<")).divide(BIG_DECIMAL_2_55,
                     RoundingMode.HALF_UP);
             updateState(CHANNEL_INTENSITY, new PercentType(bigTemp));
         }
@@ -219,7 +221,7 @@ public class WLedHandler extends BaseThingHandler {
             updateState(CHANNEL_FX, new StringType(WLedHelper.getValue(message, "<fx>", "<")));
         }
         if (message.contains("<sx>")) {
-            BigDecimal bigTemp = new BigDecimal(WLedHelper.getValue(message, "<sx>", "<")).divide(new BigDecimal(2.55),
+            BigDecimal bigTemp = new BigDecimal(WLedHelper.getValue(message, "<sx>", "<")).divide(BIG_DECIMAL_2_55,
                     RoundingMode.HALF_UP);
             updateState(CHANNEL_SPEED, new PercentType(bigTemp));
         }
@@ -231,9 +233,9 @@ public class WLedHandler extends BaseThingHandler {
 
     private void sendWhite() {
         if (hasWhite) {
-            sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=hFF000000" + "&A=" + masterBrightness);
+            sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=hFF000000" + "&A=" + masterBrightness255);
         } else {
-            sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=hFFFFFF" + "&A=" + masterBrightness);
+            sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=hFFFFFF" + "&A=" + masterBrightness255);
         }
     }
 
@@ -248,6 +250,7 @@ public class WLedHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        BigDecimal bigTemp;
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_MASTER_CONTROLS:
@@ -259,12 +262,12 @@ public class WLedHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_PRIMARY_WHITE:
                 if (command instanceof PercentType) {
-                    sendGetRequest("/win&W=" + new BigDecimal(command.toString()).multiply(new BigDecimal(2.55)));
+                    sendGetRequest("/win&W=" + ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55));
                 }
                 break;
             case CHANNEL_SECONDARY_WHITE:
                 if (command instanceof PercentType) {
-                    sendGetRequest("/win&W2=" + new BigDecimal(command.toString()).multiply(new BigDecimal(2.55)));
+                    sendGetRequest("/win&W2=" + ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55));
                 }
                 break;
             case CHANNEL_MASTER_CONTROLS:
@@ -276,13 +279,13 @@ public class WLedHandler extends BaseThingHandler {
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                        if (masterBrightness.intValue() < 240) {
+                        if (masterBrightness255.intValue() < 240) {
                             sendGetRequest("/win&TT=1000&A=~15"); // 255 divided by 15 = 17 different levels
                         } else {
                             sendGetRequest("/win&TT=1000&A=255");
                         }
                     } else {
-                        if (masterBrightness.intValue() > 15) {
+                        if (masterBrightness255.intValue() > 15) {
                             sendGetRequest("/win&TT=1000&A=~-15");
                         } else {
                             sendGetRequest("/win&TT=1000&A=0");
@@ -292,9 +295,8 @@ public class WLedHandler extends BaseThingHandler {
                     if ((((HSBType) command).getBrightness()) == PercentType.ZERO) {
                         sendGetRequest("/win&TT=500&T=0");
                     }
-                    masterBrightness = new BigDecimal((((HSBType) command).getBrightness()).toString())
-                            .multiply(new BigDecimal(2.55));
-                    primaryColor = new HSBType(command.toString());
+                    primaryColor = (HSBType) command;
+                    masterBrightness255 = primaryColor.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55);
                     if (primaryColor.getSaturation().intValue() < config.saturationThreshold) {
                         sendWhite();
                     } else if (primaryColor.getSaturation().intValue() == 32 && primaryColor.getHue().intValue() == 36
@@ -302,38 +304,31 @@ public class WLedHandler extends BaseThingHandler {
                         // Google sends this when it wants white
                         sendWhite();
                     } else {
-                        sendGetRequest(
-                                "/win&TT=1000&FX=0&CY=0&CL=" + createColorHex(primaryColor) + "&A=" + masterBrightness);
+                        sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=" + createColorHex(primaryColor) + "&A="
+                                + masterBrightness255);
                     }
-                } else {// should only be PercentType left
-                    masterBrightness = new BigDecimal(command.toString()).multiply(new BigDecimal(2.55));
-                    sendGetRequest("/win&TT=1000&A=" + masterBrightness);
+                } else if (command instanceof PercentType) {
+                    masterBrightness255 = ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55);
+                    sendGetRequest("/win&TT=1000&A=" + masterBrightness255);
                 }
                 return;
             case CHANNEL_PRIMARY_COLOR:
-                if (command instanceof OnOffType) {
-                    return;
-                } else if (command instanceof HSBType) {
+                if (command instanceof HSBType) {
                     primaryColor = (HSBType) command;
                     sendGetRequest("/win&CL=" + createColorHex(primaryColor));
-                } else if (command instanceof IncreaseDecreaseType) {
-                    return;
-                } else {// Percentype
-                    primaryColor = new HSBType(primaryColor.getHue(), primaryColor.getSaturation(),  ((State)command).as(PercentType.class));
+                } else if (command instanceof PercentType) {
+                    primaryColor = new HSBType(primaryColor.getHue(), primaryColor.getSaturation(),
+                            ((PercentType) command));
                     sendGetRequest("/win&CL=" + createColorHex(primaryColor));
                 }
                 return;
             case CHANNEL_SECONDARY_COLOR:
-                if (command instanceof OnOffType) {
-                    return;
-                } else if (command instanceof HSBType) {
+                if (command instanceof HSBType) {
                     secondaryColor = (HSBType) command;
                     sendGetRequest("/win&C2=" + createColorHex(secondaryColor));
-                } else if (command instanceof IncreaseDecreaseType) {
-                    return;
-                } else {// Percentype
-                    secondaryColor = new HSBType(secondaryColor.getHue().toString() + ","
-                            + secondaryColor.getSaturation().toString() + ",command");
+                } else if (command instanceof PercentType) {
+                    secondaryColor = new HSBType(secondaryColor.getHue(), secondaryColor.getSaturation(),
+                            ((PercentType) command));
                     sendGetRequest("/win&C2=" + createColorHex(secondaryColor));
                 }
                 return;
@@ -344,17 +339,11 @@ public class WLedHandler extends BaseThingHandler {
                 sendGetRequest("/win&FX=" + command);
                 break;
             case CHANNEL_SPEED:
-                BigDecimal bigTemp = ((State)command).as(PercentType.class).multiply(BIG_DECIMAL_2_55));
+                bigTemp = ((State) command).as(PercentType.class).toBigDecimal().multiply(BIG_DECIMAL_2_55);
                 sendGetRequest("/win&SX=" + bigTemp);
                 break;
             case CHANNEL_INTENSITY:
-                if (OnOffType.OFF.equals(command)) {
-                    bigTemp = BigDecimal.ZERO;
-                } else if (OnOffType.ON.equals(command)) {
-                    bigTemp = new BigDecimal(255);
-                } else {
-                    bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(2.55));
-                }
+                bigTemp = ((State) command).as(PercentType.class).toBigDecimal().multiply(BIG_DECIMAL_2_55);
                 sendGetRequest("/win&IX=" + bigTemp);
                 break;
             case CHANNEL_SLEEP:

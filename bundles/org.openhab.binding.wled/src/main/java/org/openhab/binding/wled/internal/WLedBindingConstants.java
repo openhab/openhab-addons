@@ -13,8 +13,6 @@
 
 package org.openhab.binding.wled.internal;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
