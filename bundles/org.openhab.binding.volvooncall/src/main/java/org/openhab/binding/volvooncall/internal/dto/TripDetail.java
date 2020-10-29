@@ -74,10 +74,14 @@ public class TripDetail {
         return getPositionAsState(endPosition);
     }
 
-    public long getDurationInMinutes() {
+    public Optional<Long> getDurationInMinutes() {
         Temporal start = startTime;
         Temporal end = endTime;
-        return (start == null || end == null) ? 0 : Duration.between(start, end).toMinutes();
+        if (start == null || end == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(Duration.between(start, end).toMinutes());
+        }
     }
 
     public Optional<Integer> getFuelConsumption() {

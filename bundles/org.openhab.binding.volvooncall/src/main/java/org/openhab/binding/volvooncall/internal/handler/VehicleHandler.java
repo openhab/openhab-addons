@@ -295,7 +295,8 @@ public class VehicleHandler extends BaseThingHandler {
             case TRIP_END_TIME:
                 return tripDetails.getEndTime();
             case TRIP_DURATION:
-                return new QuantityType<>(tripDetails.getDurationInMinutes(), MINUTE);
+                return tripDetails.getDurationInMinutes().map(value -> (State) new QuantityType<>(value, MINUTE))
+                        .orElse(UnDefType.UNDEF);
             case TRIP_START_ODOMETER:
                 return new QuantityType<>((double) tripDetails.startOdometer / 1000, KILO(METRE));
             case TRIP_STOP_ODOMETER:
