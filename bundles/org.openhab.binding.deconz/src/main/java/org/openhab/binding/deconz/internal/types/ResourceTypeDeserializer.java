@@ -14,6 +14,9 @@ package org.openhab.binding.deconz.internal.types;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -24,11 +27,12 @@ import com.google.gson.JsonParseException;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class ResourceTypeDeserializer implements JsonDeserializer<ResourceType> {
     @Override
-    public ResourceType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-            throws JsonParseException {
-        String s = json.getAsString();
+    public ResourceType deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
+        String s = json != null ? json.getAsString() : null;
         return s == null ? ResourceType.UNKNOWN : ResourceType.fromString(s);
     }
 }

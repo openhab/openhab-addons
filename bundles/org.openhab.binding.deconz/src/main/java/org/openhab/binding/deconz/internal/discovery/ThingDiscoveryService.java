@@ -116,7 +116,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put("id", groupId);
+        properties.put(CONFIG_ID, groupId);
 
         switch (groupType) {
             case LIGHT_GROUP:
@@ -157,7 +157,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put("id", lightId);
+        properties.put(CONFIG_ID, lightId);
         properties.put(UNIQUE_ID, light.uniqueid);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, light.swversion);
         properties.put(Thing.PROPERTY_VENDOR, light.manufacturername);
@@ -270,7 +270,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, sensor.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperty("id", sensorID)
+                .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperty(CONFIG_ID, sensorID)
                 .withProperty(UNIQUE_ID, sensor.uniqueid).withRepresentationProperty(UNIQUE_ID).build();
         thingDiscovered(discoveryResult);
     }
