@@ -115,6 +115,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
         charHandlers.clear();
         channelHandlers.clear();
+        channelTypeProvider.clearRegistry();
     }
 
     @Override
