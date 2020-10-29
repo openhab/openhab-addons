@@ -24,18 +24,17 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bluetooth.BluetoothBindingConstants;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
 import org.sputnikdev.bluetooth.gattparser.spec.Enumerations;
 import org.sputnikdev.bluetooth.gattparser.spec.Field;
 
@@ -46,18 +45,24 @@ import org.sputnikdev.bluetooth.gattparser.spec.Field;
  * @author Connor Petty - Modified for openHAB use.
  */
 @NonNullByDefault
-@Component(service = ChannelTypeProvider.class)
-public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
+public class CharacteristicChannelTypeProvider implements ChannelTypeProvider, ThingHandlerService {
+
+    private static final String CHANNEL_TYPE_NAME_PATTERN = "characteristic-%s-%s-%s-%s";
 
     private final Logger logger = LoggerFactory.getLogger(CharacteristicChannelTypeProvider.class);
 
     private final Map<ChannelTypeUID, @Nullable ChannelType> cache = new ConcurrentHashMap<>();
 
-    private final BluetoothGattParser gattParser;
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof GenericBluetoothHandler) {
+            ((GenericBluetoothHandler) handler).setChannelTypeProvider(this);
+        }
+    }
 
-    @Activate
-    public CharacteristicChannelTypeProvider(@Reference GattParserFactory gattParserFactory) {
-        this.gattParser = gattParserFactory.getParser();
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return null;
     }
 
     @Override
@@ -67,10 +72,22 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
 
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        if (CharacteristicChannelType.isValidUID(channelTypeUID)) {
-            return cache.computeIfAbsent(channelTypeUID, this::buildChannelType);
-        }
-        return null;
+        return cache.get(channelTypeUID);
+    }
+
+    public ChannelTypeUID registerChannelType(String characteristicUUID, boolean advanced, boolean readOnly,
+            Field field) {
+        // characteristic-advncd-readable-00002a04-0000-1000-8000-00805f9b34fb-Battery_Level
+        String channelType = String.format(CHANNEL_TYPE_NAME_PATTERN, advanced ? "advncd" : "simple",
+                readOnly ? "readable" : "writable", characteristicUUID, BluetoothChannelUtils.encodeFieldID(field));
+
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BluetoothBindingConstants.BINDING_ID, channelType);
+        cache.computeIfAbsent(channelTypeUID, uid -> buildChannelType(uid, advanced, readOnly, field));
+        return channelTypeUID;
+    }
+
+    public void clearRegistry() {
+        cache.clear();
     }
 
     /**
@@ -81,17 +98,13 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
      * @param channelTypeUID channel type UID
      * @return new channel type
      */
-    private @Nullable ChannelType buildChannelType(ChannelTypeUID channelTypeUID) {
-        // characteristic-advncd-readable-00002a04-0000-1000-8000-00805f9b34fb-Battery_Level
-        CharacteristicChannelType type = CharacteristicChannelType.fromChannelTypeUID(gattParser, channelTypeUID);
-        if (type == null) {
-            return null;
-        }
-        List<StateOption> options = getStateOptions(type.field);
-        String itemType = BluetoothChannelUtils.getItemType(type.field);
+    private ChannelType buildChannelType(ChannelTypeUID channelTypeUID, boolean advanced, boolean readOnly,
+            Field field) {
+        List<StateOption> options = getStateOptions(field);
+        String itemType = BluetoothChannelUtils.getItemType(field);
 
         if (itemType == null) {
-            throw new IllegalStateException("Unknown field format type: " + type.field.getUnit());
+            throw new IllegalStateException("Unknown field format type: " + field.getUnit());
         }
 
         if (itemType.equals("Switch")) {
@@ -99,21 +112,21 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
         }
 
         StateDescriptionFragmentBuilder stateDescBuilder = StateDescriptionFragmentBuilder.create()//
-                .withPattern(getPattern(type.field))//
-                .withReadOnly(type.readOnly)//
+                .withPattern(getPattern(field))//
+                .withReadOnly(readOnly)//
                 .withOptions(options);
 
-        BigDecimal min = toBigDecimal(type.field.getMinimum());
-        BigDecimal max = toBigDecimal(type.field.getMaximum());
+        BigDecimal min = toBigDecimal(field.getMinimum());
+        BigDecimal max = toBigDecimal(field.getMaximum());
         if (min != null) {
             stateDescBuilder = stateDescBuilder.withMinimum(min);
         }
         if (max != null) {
             stateDescBuilder = stateDescBuilder.withMaximum(max);
         }
-        return ChannelTypeBuilder.state(channelTypeUID, type.field.getName(), itemType)//
-                .isAdvanced(type.advanced)//
-                .withDescription(type.field.getInformativeText())//
+        return ChannelTypeBuilder.state(channelTypeUID, field.getName(), itemType)//
+                .isAdvanced(advanced)//
+                .withDescription(field.getInformativeText())//
                 .withStateDescriptionFragment(stateDescBuilder.build()).build();
     }
 

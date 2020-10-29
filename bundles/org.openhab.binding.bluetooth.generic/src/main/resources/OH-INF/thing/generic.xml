@@ -14,13 +14,13 @@
 				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" unit="s">
-                <advanced>true</advanced>
-                <label>Polling Interval</label>
-                <description>The frequency at which readable characteristics refreshed</description>
-                <default>30</default>
-            </parameter>
+				<advanced>true</advanced>
+				<label>Polling Interval</label>
+				<description>The frequency at which readable characteristics refreshed</description>
+				<default>30</default>
+			</parameter>
 		</config-description>
-		
+
 	</thing-type>
 
 	<channel-type id="char-unknown">
