@@ -79,9 +79,10 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
         String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
         String model = device.getDetails().getModelDetails().getModelName();
         String serialNumber = device.getDetails().getSerialNumber();
+        String udn = device.getIdentity().getUdn().getIdentifierString();
 
-        logger.debug("Device type {}, manufacturer {}, model {}, SN# {}", deviceType, manufacturer, model,
-                serialNumber);
+        logger.debug("Device type {}, manufacturer {}, model {}, SN# {}, UDN {}", deviceType, manufacturer, model,
+                serialNumber, udn);
 
         if (deviceType.equalsIgnoreCase("MediaRenderer")) {
             this.logger.debug("Media renderer found: {}, {}", manufacturer, model);

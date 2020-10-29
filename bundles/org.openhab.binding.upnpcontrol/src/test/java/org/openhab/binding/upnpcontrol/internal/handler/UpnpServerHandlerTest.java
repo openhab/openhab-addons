@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.CommandOption;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,11 +114,11 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
     private ChannelUID rendererChannelUID = new ChannelUID(THING_UID + ":" + UPNPRENDERER);
     private Channel rendererChannel = ChannelBuilder.create(rendererChannelUID, "String").build();
 
-    private ChannelUID currentIdChannelUID = new ChannelUID(THING_UID + ":" + CURRENTID);
-    private Channel currentIdChannel = ChannelBuilder.create(currentIdChannelUID, "String").build();
-
     private ChannelUID browseChannelUID = new ChannelUID(THING_UID + ":" + BROWSE);
     private Channel browseChannel = ChannelBuilder.create(browseChannelUID, "String").build();
+
+    private ChannelUID currentTitleChannelUID = new ChannelUID(THING_UID + ":" + CURRENTTITLE);
+    private Channel currentTitleChannel = ChannelBuilder.create(currentTitleChannelUID, "String").build();
 
     private ChannelUID searchChannelUID = new ChannelUID(THING_UID + ":" + SEARCH);
     private Channel searchChannel = ChannelBuilder.create(searchChannelUID, "String").build();
@@ -162,8 +163,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
 
         // stub channels
         when(thing.getChannel(UPNPRENDERER)).thenReturn(rendererChannel);
-        when(thing.getChannel(CURRENTID)).thenReturn(currentIdChannel);
         when(thing.getChannel(BROWSE)).thenReturn(browseChannel);
+        when(thing.getChannel(CURRENTTITLE)).thenReturn(currentTitleChannel);
         when(thing.getChannel(SEARCH)).thenReturn(searchChannel);
         when(thing.getChannel(PLAYLIST_SELECT)).thenReturn(playlistSelectChannel);
         when(thing.getChannel(PLAYLIST)).thenReturn(playlistChannel);
@@ -200,8 +201,15 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is(UpnpServerHandler.DIRECTORY_ROOT));
 
-        // Check CURRENTID
-        // Don't check CURRENTID channel, as the REFRESH of the channel may happen before the callback is set
+        // Check BROWSE
+        ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("0")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("")));
 
         // Check entries
         assertThat(handler.entries.size(), is(2));
@@ -211,13 +219,13 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         assertThat(handler.entries.get(1).getTitle(), is("All Image Items"));
 
         // Check that BROWSE channel gets the correct command options, no UP should be added
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
+        ArgumentCaptor<List<StateOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
                 commandOptionListCaptor.capture());
         assertThat(commandOptionListCaptor.getValue().size(), is(2));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is("C1"));
+        assertThat(commandOptionListCaptor.getValue().get(0).getValue(), is("C1"));
         assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is("All Audio Items"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("C2"));
+        assertThat(commandOptionListCaptor.getValue().get(1).getValue(), is("C2"));
         assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("All Image Items"));
 
         // Check media queue serving
@@ -225,8 +233,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
     }
 
     @Test
-    public void testCurrentId() {
-        logger.info("testCurrentId");
+    public void testSetBrowse() {
+        logger.info("testSetBrowse");
 
         handler.config.filter = false;
         handler.config.browsedown = false;
@@ -236,15 +244,20 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         result.put("Result", DOUBLE_MEDIA);
         doReturn(result).when(upnpIOService).invokeAction(any(), eq("ContentDirectory"), eq("Browse"), anyMap());
 
-        handler.handleCommand(currentIdChannelUID, StringType.valueOf("C11"));
+        handler.handleCommand(browseChannelUID, StringType.valueOf("C11"));
 
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("C11"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("C11")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("")));
 
         // Check entries
         assertThat(handler.entries.size(), is(2));
@@ -253,25 +266,25 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         assertThat(handler.entries.get(1).getId(), is("M2"));
         assertThat(handler.entries.get(1).getTitle(), is("Music_02"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(3));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("M1"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getCommand(), is("M2"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(3));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("M1"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getValue(), is("M2"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
 
         // Check media queue serving
         verify(rendererHandler, times(0)).registerQueue(any());
     }
 
     @Test
-    public void testCurrentIdRendererFilter() {
-        logger.info("testCurrentIdRendererFilter");
+    public void testSetBrowseRendererFilter() {
+        logger.info("testSetBrowseRendererFilter");
 
         handler.config.filter = true;
         handler.config.browsedown = false;
@@ -283,30 +296,35 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         result.put("Result", DOUBLE_MEDIA);
         doReturn(result).when(upnpIOService).invokeAction(any(), eq("ContentDirectory"), eq("Browse"), anyMap());
 
-        handler.handleCommand(currentIdChannelUID, StringType.valueOf("C11"));
+        handler.handleCommand(browseChannelUID, StringType.valueOf("C11"));
 
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("C11"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("C11")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("")));
 
         // Check entries
         assertThat(handler.entries.size(), is(1));
         assertThat(handler.entries.get(0).getId(), is("M1"));
         assertThat(handler.entries.get(0).getTitle(), is("Music_01"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(2));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("M1"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(2));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("M1"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
 
         // Check media queue serving
         verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(UPNPRENDERER).getUID()),
@@ -334,10 +352,15 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("C1"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("C1")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("All Audio Items")));
 
         // Check entries
         assertThat(handler.entries.size(), is(2));
@@ -346,17 +369,17 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         assertThat(handler.entries.get(1).getId(), is("C12"));
         assertThat(handler.entries.get(1).getTitle(), is("Evening Music"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(3));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("C11"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Morning Music"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getCommand(), is("C12"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getLabel(), is("Evening Music"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(3));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("C11"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Morning Music"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getValue(), is("C12"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getLabel(), is("Evening Music"));
 
         // Check media queue serving
         verify(rendererHandler, times(0)).registerQueue(any());
@@ -382,25 +405,30 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("C1"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("C1")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("All Audio Items")));
 
         // Check entries
         assertThat(handler.entries.size(), is(1));
         assertThat(handler.entries.get(0).getId(), is("C11"));
         assertThat(handler.entries.get(0).getTitle(), is("Morning Music"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(2));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("C11"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Morning Music"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(2));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("C11"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Morning Music"));
 
         // Check that a no media queue is being served as there is no renderer selected
         verify(rendererHandler, times(0)).registerQueue(any());
@@ -426,10 +454,15 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("C11"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("C11")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("Morning Music")));
 
         // Check entries
         assertThat(handler.entries.size(), is(2));
@@ -438,17 +471,17 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         assertThat(handler.entries.get(1).getId(), is("M2"));
         assertThat(handler.entries.get(1).getTitle(), is("Music_02"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(3));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("M1"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getCommand(), is("M2"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(3));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("M1"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getValue(), is("M2"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
 
         // Check media queue serving
         verify(rendererHandler, times(0)).registerQueue(any());
@@ -482,25 +515,30 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("C1"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("C1")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("All Audio Items")));
 
         // Check entries
         assertThat(handler.entries.size(), is(1));
         assertThat(handler.entries.get(0).getId(), is("C11"));
         assertThat(handler.entries.get(0).getTitle(), is("Morning Music"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(2));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("C11"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Morning Music"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(2));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("C11"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Morning Music"));
 
         // Check that a no media queue is being served as there is no renderer selected
         verify(rendererHandler, times(0)).registerQueue(any());
@@ -534,10 +572,15 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("C11"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("C11")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("Morning Music")));
 
         // Check entries
         assertThat(handler.entries.size(), is(2));
@@ -546,17 +589,17 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         assertThat(handler.entries.get(1).getId(), is("M2"));
         assertThat(handler.entries.get(1).getTitle(), is("Music_02"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(3));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("M1"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getCommand(), is("M2"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(3));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("M1"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getValue(), is("M2"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
 
         // Check that a no media queue is being served as there is no renderer selected
         verify(rendererHandler, times(0)).registerQueue(any());
@@ -590,25 +633,30 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("0"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("0")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("")));
 
         // Check entries
         assertThat(handler.entries.size(), is(1));
         assertThat(handler.entries.get(0).getId(), is("C11"));
         assertThat(handler.entries.get(0).getTitle(), is("Morning Music"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(2));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("C11"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Morning Music"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(2));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("C11"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Morning Music"));
 
         // Check that a no media queue is being served as there is no renderer selected
         verify(rendererHandler, times(0)).registerQueue(any());
@@ -642,10 +690,15 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("C11"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("C11")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("Morning Music")));
 
         // Check entries
         assertThat(handler.entries.size(), is(2));
@@ -654,17 +707,17 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         assertThat(handler.entries.get(1).getId(), is("M2"));
         assertThat(handler.entries.get(1).getTitle(), is("Music_02"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(3));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("M1"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getCommand(), is("M2"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(3));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("M1"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getValue(), is("M2"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
 
         // Check that a no media queue is being served as there is no renderer selected
         verify(rendererHandler, times(0)).registerQueue(any());
@@ -694,10 +747,15 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is("0"));
 
-        // Check CURRENTID
+        // Check BROWSE
         ArgumentCaptor<StringType> stringCaptor = ArgumentCaptor.forClass(StringType.class);
-        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTID).getUID()), stringCaptor.capture());
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(BROWSE).getUID()), stringCaptor.capture());
         assertThat(stringCaptor.getValue(), is(StringType.valueOf("0")));
+
+        // Check CURRENTTITLE
+        verify(callback, atLeastOnce()).stateUpdated(eq(thing.getChannel(CURRENTTITLE).getUID()),
+                stringCaptor.capture());
+        assertThat(stringCaptor.getValue(), is(StringType.valueOf("")));
 
         // Check entries
         assertThat(handler.entries.size(), is(2));
@@ -706,17 +764,17 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         assertThat(handler.entries.get(1).getId(), is("M2"));
         assertThat(handler.entries.get(1).getTitle(), is("Music_02"));
 
-        // Check that BROWSE channel gets the correct command options
-        ArgumentCaptor<List<CommandOption>> commandOptionListCaptor = ArgumentCaptor.forClass(List.class);
-        verify(handler, atLeastOnce()).updateCommandDescription(eq(thing.getChannel(BROWSE).getUID()),
-                commandOptionListCaptor.capture());
-        assertThat(commandOptionListCaptor.getValue().size(), is(3));
-        assertThat(commandOptionListCaptor.getValue().get(0).getCommand(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(0).getLabel(), is(".."));
-        assertThat(commandOptionListCaptor.getValue().get(1).getCommand(), is("M1"));
-        assertThat(commandOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getCommand(), is("M2"));
-        assertThat(commandOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
+        // Check that BROWSE channel gets the correct state options
+        ArgumentCaptor<List<StateOption>> stateOptionListCaptor = ArgumentCaptor.forClass(List.class);
+        verify(handler, atLeastOnce()).updateStateDescription(eq(thing.getChannel(BROWSE).getUID()),
+                stateOptionListCaptor.capture());
+        assertThat(stateOptionListCaptor.getValue().size(), is(3));
+        assertThat(stateOptionListCaptor.getValue().get(0).getValue(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(0).getLabel(), is(".."));
+        assertThat(stateOptionListCaptor.getValue().get(1).getValue(), is("M1"));
+        assertThat(stateOptionListCaptor.getValue().get(1).getLabel(), is("Music_01"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getValue(), is("M2"));
+        assertThat(stateOptionListCaptor.getValue().get(2).getLabel(), is("Music_02"));
 
         // Check that a no media queue is being served as there is no renderer selected
         verify(rendererHandler, times(0)).registerQueue(any());

@@ -149,6 +149,8 @@ public class UpnpServerHandler extends UpnpHandler {
 
     @Override
     public void dispose() {
+        logger.debug("Disposing handler for media server device {}", thing.getLabel());
+
         CompletableFuture<Boolean> browsingFuture = isBrowsing;
         if (browsingFuture != null) {
             browsingFuture.complete(false);
@@ -291,46 +293,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 handleCommandCurrentId(channelUID, command);
                 break;
             case BROWSE:
-<<<<<<< Upstream, based on main
-                if (command instanceof StringType) {
-                    String browseTarget = command.toString();
-                    if (browseTarget != null) {
-                        if (!UP.equals(browseTarget)) {
-                            final String target = browseTarget;
-                            synchronized (entries) {
-                                Optional<UpnpEntry> current = entries.stream()
-                                        .filter(entry -> target.equals(entry.getId())).findFirst();
-                                if (current.isPresent()) {
-                                    currentEntry = current.get();
-                                } else {
-                                    logger.info("Trying to browse invalid target {}", browseTarget);
-                                    browseTarget = UP; // move up on invalid target
-                                }
-                            }
-                        }
-                        if (UP.equals(browseTarget)) {
-                            // Move up in tree
-                            browseTarget = currentEntry.getParentId();
-                            if (browseTarget.isEmpty()) {
-                                // No parent found, so make it the root directory
-                                browseTarget = DIRECTORY_ROOT;
-                            }
-                            UpnpEntry entry = parentMap.get(browseTarget);
-                            if (entry == null) {
-                                logger.info("Browse target not found. Exiting.");
-                                return;
-                            }
-                            currentEntry = entry;
-
-                        }
-                        updateState(CURRENTID, StringType.valueOf(currentEntry.getId()));
-                        logger.debug("Browse target {}", browseTarget);
-                        browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
-                    }
-                }
-=======
-                handleCommandBrowse(command);
->>>>>>> 9c67025 Bring development to OH3.
+                handleCommandBrowse(channelUID, command);
                 break;
             case SEARCH:
                 handleCommandSearch(command);
@@ -393,44 +356,17 @@ public class UpnpServerHandler extends UpnpHandler {
         }
     }
 
-    private void handleCommandCurrentId(ChannelUID channelUID, Command command) {
-        String currentId = "";
-        if (command instanceof StringType) {
-            currentId = String.valueOf(command);
-            logger.debug("Server {}, setting currentId to {}", thing.getLabel(), currentId);
-            if (!currentId.isEmpty()) {
-                if (parentMap.containsKey(currentId)) {
-                    currentEntry = parentMap.get(currentId);
-                } else {
-                    // The real entry is not in the parentMap yet, so construct a default one
-                    currentEntry = new UpnpEntry(currentId, currentId, DIRECTORY_ROOT, "object.container");
-                }
-                browse(currentId, "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
-            }
-        } else if (command instanceof RefreshType) {
-            currentId = currentEntry.getId();
+    private void handleCommandCurrentTitle(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            updateState(channelUID, StringType.valueOf(currentEntry.getTitle()));
         }
-        updateState(channelUID, StringType.valueOf(currentId));
     }
 
-    private void handleCommandBrowse(Command command) {
+    private void handleCommandBrowse(ChannelUID channelUID, Command command) {
+        String browseTarget = "";
         if (command instanceof StringType) {
-            String browseTarget = command.toString();
-            if (browseTarget != null) {
-                if (!UP.equals(browseTarget)) {
-                    final String target = browseTarget;
-                    synchronized (entries) {
-                        Optional<UpnpEntry> current = entries.stream().filter(entry -> target.equals(entry.getId()))
-                                .findFirst();
-                        if (current.isPresent()) {
-                            currentEntry = current.get();
-                        } else {
-                            logger.info("Server {}, trying to browse invalid target {}", thing.getLabel(),
-                                    browseTarget);
-                            browseTarget = UP; // move up on invalid target
-                        }
-                    }
-                }
+            browseTarget = command.toString();
+            if (!browseTarget.isEmpty()) {
                 if (UP.equals(browseTarget)) {
                     // Move up in tree
                     browseTarget = currentEntry.getParentId();
@@ -438,20 +374,34 @@ public class UpnpServerHandler extends UpnpHandler {
                         // No parent found, so make it the root directory
                         browseTarget = DIRECTORY_ROOT;
                     }
-                    if (parentMap.containsKey(browseTarget)) {
-                        currentEntry = parentMap.get(browseTarget);
-                    } else {
-                        // The real entry is not in the parentMap yet, so construct a default one
-                        currentEntry = new UpnpEntry(browseTarget, browseTarget, DIRECTORY_ROOT, "object.container");
-                    }
                     browseUp = true;
                 }
+                if (parentMap.containsKey(browseTarget)) {
+                    currentEntry = parentMap.get(browseTarget);
+                } else {
+                    final String target = browseTarget;
+                    synchronized (entries) {
+                        Optional<UpnpEntry> current = entries.stream().filter(entry -> target.equals(entry.getId()))
+                                .findFirst();
+                        if (current.isPresent()) {
+                            currentEntry = current.get();
+                        } else {
+                            // The real entry is not in the parentMap or options list yet, so construct a default one
+                            currentEntry = new UpnpEntry(browseTarget, browseTarget, DIRECTORY_ROOT,
+                                    "object.container");
+                        }
+                    }
+                }
 
-                logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
-                updateState(CURRENTID, StringType.valueOf(currentEntry.getId()));
                 logger.debug("Browse target {}", browseTarget);
+                logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
+                updateState(channelUID, StringType.valueOf(browseTarget));
+                updateState(CURRENTTITLE, StringType.valueOf(currentEntry.getTitle()));
                 browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
             }
+        } else if (command instanceof RefreshType) {
+            browseTarget = currentEntry.getId();
+            updateState(channelUID, StringType.valueOf(browseTarget));
         }
     }
 
@@ -477,7 +427,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 }
 
                 logger.debug("Navigating to node {} on server {}", searchContainer, thing.getLabel());
-                updateState(CURRENTID, StringType.valueOf(currentEntry.getId()));
+                updateState(BROWSE, StringType.valueOf(currentEntry.getId()));
                 logger.debug("Search container {} for {}", searchContainer, criteria);
                 search(searchContainer, criteria, "*", "0", "0", config.sortcriteria);
             }
@@ -552,7 +502,6 @@ public class UpnpServerHandler extends UpnpHandler {
             }
 
             logger.debug("Restoring playlist to node {} on server {}", parentId, thing.getLabel());
-            updateState(CURRENTID, StringType.valueOf(currentEntry.getId()));
         }
     }
 
@@ -661,6 +610,7 @@ public class UpnpServerHandler extends UpnpHandler {
         logger.debug("{} entries added to selection list on server {}", stateOptionList.size(), thing.getLabel());
         updateStateDescription(currentSelectionChannelUID, stateOptionList);
         updateState(BROWSE, StringType.valueOf(currentEntry.getId()));
+        updateState(CURRENTTITLE, StringType.valueOf(currentEntry.getTitle()));
 
         serveMedia();
     }
@@ -687,85 +637,6 @@ public class UpnpServerHandler extends UpnpHandler {
         return list;
     }
 
-<<<<<<< Upstream, based on main
-    private void updateStateDescription(ChannelUID channelUID, List<StateOption> stateOptionList) {
-        StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withReadOnly(false)
-                .withOptions(stateOptionList).build().toStateDescription();
-        upnpStateDescriptionProvider.setDescription(channelUID, stateDescription);
-    }
-
-    private void updateCommandDescription(ChannelUID channelUID, List<CommandOption> commandOptionList) {
-        CommandDescription commandDescription = CommandDescriptionBuilder.create().withCommandOptions(commandOptionList)
-                .build();
-        upnpCommandDescriptionProvider.setDescription(channelUID, commandDescription);
-    }
-
-    /**
-     * Method that does a UPnP browse on a content directory. Results will be retrieved in the
-     * {@link #onValueReceived(String, String, String)} method.
-     *
-     * @param objectID content directory object
-     * @param browseFlag BrowseMetaData or BrowseDirectChildren
-     * @param filter properties to be returned
-     * @param startingIndex starting index of objects to return
-     * @param requestedCount number of objects to return, 0 for all
-     * @param sortCriteria sort criteria, example: +dc:title
-     */
-    public void browse(String objectID, String browseFlag, String filter, String startingIndex, String requestedCount,
-            String sortCriteria) {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("ObjectID", objectID);
-        inputs.put("BrowseFlag", browseFlag);
-        inputs.put("Filter", filter);
-        inputs.put("StartingIndex", startingIndex);
-        inputs.put("RequestedCount", requestedCount);
-        inputs.put("SortCriteria", sortCriteria);
-
-        invokeAction("ContentDirectory", "Browse", inputs);
-    }
-
-    /**
-     * Method that does a UPnP search on a content directory. Results will be retrieved in the
-     * {@link #onValueReceived(String, String, String)} method.
-     *
-     * @param containerID content directory container
-     * @param searchCriteria search criteria, examples:
-     *            dc:title contains "song"
-     *            dc:creator contains "Springsteen"
-     *            upnp:class = "object.item.audioItem"
-     *            upnp:album contains "Born in"
-     * @param filter properties to be returned
-     * @param startingIndex starting index of objects to return
-     * @param requestedCount number of objects to return, 0 for all
-     * @param sortCriteria sort criteria, example: +dc:title
-     */
-    public void search(String containerID, String searchCriteria, String filter, String startingIndex,
-            String requestedCount, String sortCriteria) {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("ContainerID", containerID);
-        inputs.put("SearchCriteria", searchCriteria);
-        inputs.put("Filter", filter);
-        inputs.put("StartingIndex", startingIndex);
-        inputs.put("RequestedCount", requestedCount);
-        inputs.put("SortCriteria", sortCriteria);
-
-        invokeAction("ContentDirectory", "Search", inputs);
-    }
-
-    @Override
-    public void onStatusChanged(boolean status) {
-        logger.debug("Server status changed to {}", status);
-        if (status) {
-            initServer();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication lost with " + thing.getLabel());
-        }
-        super.onStatusChanged(status);
-    }
-
-=======
->>>>>>> 9c67025 Bring development to OH3.
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("UPnP device {} received variable {} with value {} from service {}", thing.getLabel(), variable,
@@ -800,7 +671,6 @@ public class UpnpServerHandler extends UpnpHandler {
                 currentEntry = list.get(0);
                 String browseTarget = currentEntry.getId();
                 parentMap.put(browseTarget, currentEntry);
-                updateState(CURRENTID, StringType.valueOf(currentEntry.getId()));
                 logger.debug("Server {}, browsing down one level to the unique container result {}", thing.getLabel(),
                         browseTarget);
                 browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);

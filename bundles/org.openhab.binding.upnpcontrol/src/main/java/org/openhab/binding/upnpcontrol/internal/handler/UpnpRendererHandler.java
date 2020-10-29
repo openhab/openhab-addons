@@ -201,6 +201,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     @Override
     public void dispose() {
+        logger.debug("Disposing handler for media renderer device {}", thing.getLabel());
+
         cancelTrackPositionRefresh();
         resetPaused();
         CompletableFuture<Boolean> settingURI = isSettingURI;
@@ -649,7 +651,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                     handleCommandUri(channelUID, command);
                     break;
                 case FAVORITE_SELECT:
-                    handleCommandFavoriteSelect(channelUID, command);
+                    handleCommandFavoriteSelect(command);
                     break;
                 case FAVORITE:
                     handleCommandFavorite(channelUID, command);
@@ -658,7 +660,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                     handleCommandFavoriteAction(command);
                     break;
                 case PLAYLIST_SELECT:
-                    handleCommandPlaylistSelect(channelUID, command);
+                    handleCommandPlaylistSelect(command);
                     break;
                 case TRACK_POSITION:
                     handleCommandTrackPosition(channelUID, command);
@@ -807,7 +809,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
     }
 
-    private void handleCommandFavoriteSelect(ChannelUID channelUID, Command command) {
+    private void handleCommandFavoriteSelect(Command command) {
         if (command instanceof StringType) {
             favoriteName = command.toString();
             updateState(FAVORITE, StringType.valueOf(favoriteName));
@@ -854,7 +856,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
     }
 
-    private void handleCommandPlaylistSelect(ChannelUID channelUID, Command command) {
+    private void handleCommandPlaylistSelect(Command command) {
         if (command instanceof StringType) {
             String playlistName = command.toString();
             UpnpEntryQueue queue = new UpnpEntryQueue();

@@ -56,7 +56,8 @@
 			</parameter>
 			<parameter name="maxnotificationduration" type="integer" unit="s">
 				<label>Maximum Notification Duration</label>
-				<description>Specifies the maximum duration for notifications, longer notification sounds will be interrupted</description>
+				<description>Specifies the maximum duration for notifications, longer notification sounds will be interrupted. O
+					represents no maximum duration</description>
 				<default>15</default>
 			</parameter>
 			<parameter name="seekstep" type="integer" min="1">
@@ -78,7 +79,7 @@
 		<description>UPnP AV Server</description>
 		<channels>
 			<channel id="upnprenderer" typeId="upnprenderer"/>
-			<channel id="currentid" typeId="currentid"/>
+			<channel id="currenttitle" typeId="system.media-title"/>
 			<channel id="browse" typeId="browse"/>
 			<channel id="search" typeId="search"/>
 
@@ -167,6 +168,7 @@
 		<item-type>String</item-type>
 		<label>Select Favorite</label>
 		<description>Select favorite to play</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="favorite">
 		<item-type>String</item-type>
@@ -245,15 +247,10 @@
 		<label>Renderer</label>
 		<description>Select AV renderer</description>
 	</channel-type>
-	<channel-type id="currentid">
-		<item-type>String</item-type>
-		<label>Current Media Id</label>
-		<description>Current id of media entry or container</description>
-	</channel-type>
 	<channel-type id="browse">
 		<item-type>String</item-type>
-		<label>Browse Selection</label>
-		<description>Browse selection for playing</description>
+		<label>Current Media Id</label>
+		<description>Current id of media entry or container, option list to browse hierarchy</description>
 	</channel-type>
 	<channel-type id="search">
 		<item-type>String</item-type>
@@ -266,6 +263,7 @@
 		<item-type>String</item-type>
 		<label>Select Playlist</label>
 		<description>Playlist for selection</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="playlist">
 		<item-type>String</item-type>

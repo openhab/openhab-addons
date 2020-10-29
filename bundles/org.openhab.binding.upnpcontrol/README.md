@@ -73,6 +73,7 @@ A `upnprenderer` has the following optional configuration parameters:
 * `notificationvolumeadjustment`: volume adjustment from current volume in percent (range -100 to +100) for notifications when no volume is set in `playSound` command, default 10.
 
 * `maxnotificationduration`: maximum duration for notifications, default 15s.
+  When set to 0s, there will not be a maximum duration.
 
 The full syntax for manual configuration is:
 
@@ -93,15 +94,15 @@ The `upnpserver` has the following channels (item type and access mode indicated
   The channel allows selecting from all discovered media renderers.
   This list is dynamically adjusted as media renderers are being added/removed.
 
-* `currentid` (String, RW): Current ID of media container or entry ready for playback.
+* `currenttitle` (String, R): Current title of media container or entry ready for playback.
 
-  This channel can be used to skip to a specific container or entry in the content directory.
-  Setting this to 0 will reposition to the top of the content hierarchy.
-
-* `browse` (String, W): Browse and serve media content.
+* `browse` (String, RW): Browse and serve media content, current ID of media container or entry ready for playback.
 
   The browsing will start at the top of the content directory tree and allows you to go down and up (represented by ..) in the tree.
   The list of containers (directories) and media entries for selection in the content hierarchy is updated dynamically when selecting a container or entry.
+  
+  This channel can also be used to skip to a specific container or entry in the content directory.
+  Setting it to 0 will reposition to the top of the content hierarchy.
   
   All media in the selection list, playable on the currently selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
   
@@ -300,21 +301,24 @@ This is especially useful when doing searches and starting to play in scripts, a
 For interactive use through a UI, you may opt to switch the `browsedown` configuration parameter to `false` to see all levels in the browsing hierarchy.
 
 The `searchfromroot` configuration parameter always forces searching to start from the directory root.
-This will also always reset the `currentid` channel to the root.
-This option is helpfull if you do not want to limit search to a selected container in the directory.
+This will also always reset the `browse` channel to the root.
+This option is helpful if you do not want to limit search to a selected container in the directory.
 
 ## Limitations
 
-BasicUI does not support dynamic refreshing of the selection list in the `upnpserver` channels `renderer`, `browse`, `playlistselect` and in the `upnprenderer` channel `favoriteselect`.
-A refresh of the browser will be required to show the adjusted selection list.
+BasicUI has a number of limitations that impact the way some of the channels can be used from it:
 
-The `upnpserver search` channel requires input of a string to trigger a search.
-The `upnpserver playlist` channel and `upnprenderer favorite` channel require input of a string to set a playlist or favorite.
-This cannot be done with BasicUI, but can be achieved with rules.
+* BasicUI does not support dynamic refreshing of the selection list in the `upnpserver` channels `renderer`, `browse`, `playlistselect` and in the `upnprenderer` channel `favoriteselect`.
+  A refresh of the browser will be required to show the adjusted selection list.
 
-The player control in BasicUI does not support fast forward or rewind.
-This can be done through rules.
+* The `upnpserver search` channel requires input of a string to trigger a search.
+  The `upnpserver playlist` channel and `upnprenderer favorite` channel require input of a string to set a playlist or favorite.
+  This cannot be done with BasicUI, but can be achieved with rules.
 
+* The player control in BasicUI does not support fast forward or rewind.
+  This can be done through rules.
+
+None of these are limitations when using the main UI.
 
 ## Full Example
 
@@ -358,7 +362,7 @@ Number:Time TrackPosition "Track Position [%d %unit%]" (MediaRenderer) {channel=
 Dimmer RelTrackPosition "Relative Track Position ´[%d %%]" (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:reltrackposition"}
 
 String Renderer  "Renderer [%s]"    <text>             (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:title"}
-String CurrentId "Current Entry [%s]" <text>           (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:currentid"}
+String CurrentTitle "Current Entry [%s]" <text>        (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:currenttitle"}
 String Browse    "Browse"                              (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:browse"}
 String Search    "Search"                              (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:search"}
 String PlaylistSelect "Playlist"                       (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:playlistselect"}
@@ -396,7 +400,7 @@ Text      item=TrackPosition
 Slider    item=RelTrackPosition
 
 Selection item=Renderer
-Text      item=CurrentId
+Text      item=CurrentTitle
 Selection item=Browse
 Text      item=Search
 Selection item=PlaylistSelect
@@ -409,6 +413,6 @@ Audio sink usage examples in rules:
 ```
 playSound(“doorbell.mp3”)
 playStream("upnpcontrol:upnprenderer:mymediarenderer", "http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3”)
-playSound("upnpcontrol:upnprenderer:mymediarenderer-notify", "doorbell.mp3", new PercentType(80));
+playSound("upnpcontrol:upnprenderer:mymediarenderer-notify", "doorbell.mp3", new PercentType(80))
 
 ```

@@ -201,17 +201,18 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected void initDevice() {
         String udn = getUDN();
         if ((udn != null) && !udn.isEmpty()) {
+            if (!upnpIOService.isRegistered(this)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "UPnP device with UDN " + getUDN() + " not yet registered");
+                return;
+            }
+
             if (config.refresh == 0) {
                 upnpScheduler.submit(this::initJob);
             } else {
                 pollingJob = upnpScheduler.scheduleWithFixedDelay(this::initJob, 0, config.refresh, TimeUnit.SECONDS);
             }
 
-            if (!upnpIOService.isRegistered(this)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "UPnP device with UDN " + getUDN() + " not yet registered");
-                return;
-            }
             if (!upnpSubscribed) {
                 addSubscriptions();
             }

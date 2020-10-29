@@ -80,7 +80,7 @@ public class UpnpControlBindingConstants {
     public static final String REL_TRACK_POSITION = "reltrackposition";
 
     public static final String UPNPRENDERER = "upnprenderer";
-    public static final String CURRENTID = "currentid";
+    public static final String CURRENTTITLE = "currenttitle";
     public static final String BROWSE = "browse";
     public static final String SEARCH = "search";
     public static final String SERVE = "serve";
