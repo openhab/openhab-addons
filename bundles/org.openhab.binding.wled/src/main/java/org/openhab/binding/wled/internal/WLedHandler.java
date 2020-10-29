@@ -345,14 +345,7 @@ public class WLedHandler extends BaseThingHandler {
                 sendGetRequest("/win&FX=" + command);
                 break;
             case CHANNEL_SPEED:
-                BigDecimal bigTemp = new BigDecimal(command.toString());
-                if (OnOffType.OFF.equals(command)) {
-                    bigTemp = BigDecimal.ZERO;
-                } else if (OnOffType.ON.equals(command)) {
-                    bigTemp = new BigDecimal(255);
-                } else {
-                    bigTemp = new BigDecimal(command.toString()).multiply(new BigDecimal(2.55));
-                }
+                BigDecimal bigTemp = ((State)command).as(PercentType.class).multiply(BIG_DECIMAL_2_55));
                 sendGetRequest("/win&SX=" + bigTemp);
                 break;
             case CHANNEL_INTENSITY:
