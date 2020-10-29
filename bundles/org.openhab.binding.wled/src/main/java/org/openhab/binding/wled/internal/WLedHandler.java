@@ -319,8 +319,7 @@ public class WLedHandler extends BaseThingHandler {
                 } else if (command instanceof IncreaseDecreaseType) {
                     return;
                 } else {// Percentype
-                    primaryColor = new HSBType(primaryColor.getHue().toString() + ","
-                            + primaryColor.getSaturation().toString() + ",command");
+                    primaryColor = new HSBType(primaryColor.getHue(), primaryColor.getSaturation(),  ((State)command).as(PercentType.class));
                     sendGetRequest("/win&CL=" + createColorHex(primaryColor));
                 }
                 return;
