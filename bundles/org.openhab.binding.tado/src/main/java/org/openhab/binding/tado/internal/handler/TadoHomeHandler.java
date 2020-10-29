@@ -16,12 +16,14 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
@@ -29,6 +31,9 @@ import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
 import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.binding.tado.internal.api.model.HomeInfo;
+import org.openhab.binding.tado.internal.api.model.HomePresence;
+import org.openhab.binding.tado.internal.api.model.HomeState;
+import org.openhab.binding.tado.internal.api.model.PresenceState;
 import org.openhab.binding.tado.internal.api.model.User;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
 import org.slf4j.Logger;
@@ -126,9 +131,44 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         return homeId;
     }
 
+    public HomeState getHomeState() throws IOException, ApiException {
+        HomeApi api = getApi();
+        return api != null ? api.homeState(getHomeId()) : null;
+    }
+
+    public void updateHomeState() {
+        try {
+            updateState(TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE,
+                    getHomeState().getPresence() == PresenceState.HOME ? OnOffType.ON : OnOffType.OFF);
+        } catch (IOException | ApiException e) {
+            logger.debug("Error accessing tado server: {}", e.getMessage(), e);
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Nothing to do for a bridge
+        String id = channelUID.getId();
+
+        if (command == RefreshType.REFRESH) {
+            updateHomeState();
+            return;
+        }
+
+        switch (id) {
+            case TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE:
+                HomePresence presence = new HomePresence();
+                presence.setHomePresence(command.toFullString().toUpperCase().equals("ON")
+                        || command.toFullString().toUpperCase().equals("HOME") ? PresenceState.HOME
+                                : PresenceState.AWAY);
+                try {
+                    api.updatePresenceLock(homeId, presence);
+                } catch (IOException | ApiException e) {
+                    logger.warn("Error setting home presence: {}", e.getMessage(), e);
+                }
+
+                break;
+
+        }
     }
 
     public State getBatteryLowAlarm(long zoneId) {

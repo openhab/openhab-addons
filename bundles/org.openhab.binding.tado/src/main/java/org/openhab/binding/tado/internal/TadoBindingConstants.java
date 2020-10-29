@@ -41,6 +41,8 @@ public class TadoBindingConstants {
         FAHRENHEIT
     }
 
+    public static final String CHANNEL_HOME_PRESENCE_MODE = "homePresence";
+
     public static final String CHANNEL_ZONE_CURRENT_TEMPERATURE = "currentTemperature";
     public static final String CHANNEL_ZONE_HUMIDITY = "humidity";
 
