@@ -408,7 +408,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             logger.trace("refreshOpenHAB.scheduled() initiated by {} will process HouseStatus.",
                     Thread.currentThread());
             if (new VeluxBridgeGetHouseStatus().evaluateState(thisBridge)) {
-                logger.trace("refreshOpenHAB.scheduled(): successfully processed of GetHouseStatus()");
+                logger.trace("refreshOpenHAB.scheduled(): => GetHouseStatus() => updates received => synchronizing");
+                syncChannelsWithProducts();
+            } else {
+                logger.trace("refreshOpenHAB.scheduled(): => GetHouseStatus() => no updates");
             }
             logger.trace("refreshOpenHAB.scheduled() initiated by {} has finished.", Thread.currentThread());
         });

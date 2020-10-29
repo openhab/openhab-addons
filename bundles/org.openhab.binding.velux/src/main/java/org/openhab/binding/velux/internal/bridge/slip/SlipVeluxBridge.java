@@ -182,14 +182,15 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
     }
 
     /**
-     * Initializes a client/server communication towards <b>Velux</b> veluxBridge based on the Basic I/O interface
+     * Initializes a client/server communication towards the Velux Bridge based on the Basic I/O interface
      * {@link Connection#io} and parameters passed as arguments (see below).
      *
-     * @param communication Structure of interface type {@link SlipBridgeCommunicationProtocol} describing the
+     * @param communication a structure of interface type {@link SlipBridgeCommunicationProtocol} describing the
      *            intended communication, that is request and response interactions as well as appropriate URL
      *            definition.
-     * @param useAuthentication boolean flag to decide whether to use authenticated communication.
-     * @return <b>success</b> of type boolean which signals the success of the communication.
+     * @param useAuthentication a boolean flag to select whether to use authenticated communication.
+     * @return a boolean which in general signals the success of the communication, but in the
+     *         special case of receive-only calls, signals if any products were updated during the call
      */
     private synchronized boolean bridgeDirectCommunicate(SlipBridgeCommunicationProtocol communication,
             boolean useAuthentication) {
@@ -223,7 +224,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
         boolean rcvonly = false;
         byte[] txPacket = emptyPacket;
 
-        // special handling
+        // handling of the requests
         switch (txEnum) {
             case GW_OPENHAB_CLOSE:
                 logger.trace(loggerFmt, "shut down command", "=> executing", "");
@@ -235,12 +236,11 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                 logger.trace(loggerFmt, "receive-only mode", "=> checking messages", "");
                 if (!connection.isMessageAvailable()) {
                     logger.trace(loggerFmt, "no waiting messages", "=> done", "");
-                    success = true;
                 } else {
                     logger.trace(loggerFmt, "message(s) waiting", "=> start reading", "");
-                    rcvonly = true;
                     looping = true;
                 }
+                rcvonly = true;
                 break;
 
             default:
@@ -274,12 +274,8 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                 sending = false;
                 // no response, stop looping
                 if (rxPacket.length == 0) {
-                    if (sending) {
-                    }
-                    // in receive-only mode, no response is always ok, and don't log anything
-                    if (rcvonly) {
-                        success = true;
-                    } else {
+                    // in receive-only mode, no response is ok, so don't log anything
+                    if (!rcvonly) {
                         logger.debug(loggerFmt, "no response", "=> aborting", "");
                     }
                     looping = false;
@@ -325,7 +321,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                 logger.info("received message {} => {}", rxName, new Packet(rxData));
             }
 
-            // handle responses
+            // handling of the responses
             switch (rxEnum) {
                 case GW_ERROR_NTF:
                     byte code = rxData[0];
@@ -355,9 +351,10 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     SCgetHouseStatus receiver = new SCgetHouseStatus();
                     receiver.setResponse(rxCmd, rxData, isSequentialEnforced);
                     if (receiver.isCommunicationSuccessful()) {
-                        logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
                         bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver.getNtfNodeID()),
                                 receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget());
+                        logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
+                        success = true;
                     }
                     logger.trace(loggerFmt, rxName, "=> special command", "=> continuing");
                     break;
@@ -378,8 +375,10 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     looping = !communication.isCommunicationFinished();
                     success = communication.isCommunicationSuccessful();
             }
+
         }
-        logger.debug(loggerFmt, "finished", "=>", success ? "success" : "failure");
+        // in receive-only mode 'failure` just means that no products were updated, so don't log it as a failure..
+        logger.debug(loggerFmt, "finished", "=>", ((success || rcvonly) ? "success" : "failure"));
         return success;
     }
 
