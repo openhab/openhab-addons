@@ -93,12 +93,23 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         readCharacteristicJob = scheduler.scheduleWithFixedDelay(() -> {
             if (device.getConnectionState() == ConnectionState.CONNECTED) {
                 if (resolved) {
-                    for (BluetoothCharacteristic characteristic : deviceCharacteristics) {
-                        device.readCharacteristic(characteristic);
+                    for (CharacteristicHandler charHandler : charHandlers.values()) {
+                        if (charHandler.canRead()) {
+                            device.readCharacteristic(charHandler.characteristic);
+                            try {
+                                // TODO the ideal solution would be to use locks/conditions and timeouts
+                                // between this code and `onCharacteristicReadComplete` but
+                                // that would overcomplicate the code a bit and I plan
+                                // on implementing a better more generalized solution later
+                                Thread.sleep(50);
+                            } catch (InterruptedException e) {
+                                return;
+                            }
+                        }
                     }
                 } else {
                     // if we are connected and still haven't been able to resolve the services, try disconnecting and
-                    // trying connecting again
+                    // then connecting again
                     device.disconnect();
                 }
             }
@@ -300,16 +311,16 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                 Map<String, List<Field>> fieldsMapping = fields.stream().collect(Collectors.groupingBy(Field::getName));
 
                 for (List<Field> fieldList : fieldsMapping.values()) {
+                    Field field = fieldList.get(0);
                     if (fieldList.size() > 1) {
-                        if (fieldList.get(0).isFlagField() || fieldList.get(0).isOpCodesField()) {
+                        if (field.isFlagField() || field.isOpCodesField()) {
                             logger.debug("Skipping flags/op codes field: {}.", charUUID);
                         } else {
                             logger.warn("Multiple fields with the same name found: {} / {}. Skipping these fields.",
-                                    charUUID, fieldList.get(0).getName());
+                                    charUUID, field.getName());
                         }
                         continue;
                     }
-                    Field field = fieldList.get(0);
 
                     if (isFieldSupported(field)) {
                         Channel channel = buildFieldChannel(field, label, !gattChar.isValidForWrite());
