@@ -209,6 +209,7 @@ public class UpnpServerHandler extends UpnpHandler {
                             }
                             UpnpEntry entry = parentMap.get(browseTarget);
                             if (entry == null) {
+                                logger.info("Browse target not found. Exiting.")
                                 return;
                             }
                             currentEntry = entry;

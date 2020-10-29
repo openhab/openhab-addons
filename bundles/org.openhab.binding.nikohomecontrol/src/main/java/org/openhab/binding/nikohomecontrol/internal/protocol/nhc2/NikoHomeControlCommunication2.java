@@ -510,15 +510,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         Optional<Boolean> overruleActiveProperty = deviceProperties.stream().map(p -> p.overruleActive)
                 .filter(Objects::nonNull).map(t -> Boolean.parseBoolean(t)).findFirst();
         Optional<Integer> overruleSetpointProperty = deviceProperties.stream().map(p -> p.overruleSetpoint)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
+                .filter(Objects::nonNull).findFirst();
         Optional<Integer> overruleTimeProperty = deviceProperties.stream().map(p -> p.overruleTime)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                .filter(Objects::nonNull).findFirst();
         Optional<Integer> setpointTemperatureProperty = deviceProperties.stream().map(p -> p.setpointTemperature)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
+                .filter(Objects::nonNull).findFirst();
         Optional<Boolean> ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave)
-                .map(s -> s != null ? Boolean.parseBoolean(s) : null).findFirst();
+                .map(s -> s != null ? Boolean.parseBoolean(s) : null).filter(Objects::nonNull).findFirst();
         Optional<Integer> ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
-                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null).findFirst();
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
+                .filter(Objects::nonNull).findFirst();
         Optional<@Nullable String> demandProperty = deviceProperties.stream().map(p -> p.demand)
                 .filter(Objects::nonNull).findFirst();
         Optional<@Nullable String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)

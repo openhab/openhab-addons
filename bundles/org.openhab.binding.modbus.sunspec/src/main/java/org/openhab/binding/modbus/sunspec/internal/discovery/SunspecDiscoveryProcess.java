@@ -286,6 +286,7 @@ public class SunspecDiscoveryProcess {
         ThingTypeUID thingTypeUID = SUPPORTED_THING_TYPES_UIDS.get(block.moduleID);
         if (thingTypeUID == null) {
             logger.warn("Found model block but no corresponding thing type UID present: {}", block.moduleID);
+            return;
         }
         ThingUID thingUID = new ThingUID(thingTypeUID, handler.getUID(), Integer.toString(block.address));
 

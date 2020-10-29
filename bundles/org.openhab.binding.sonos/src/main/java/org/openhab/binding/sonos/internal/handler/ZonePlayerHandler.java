@@ -1395,7 +1395,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         try {
             String resultString = resultInput.get(requestedKey);
             if (resultString == null) {
-                throw new NumberFormatException();
+                throw new NumberFormatException("Requested key is null.");
             }
             result = Long.valueOf(resultString);
         } catch (NumberFormatException ex) {
