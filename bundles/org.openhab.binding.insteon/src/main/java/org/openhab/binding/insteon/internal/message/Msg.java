@@ -74,11 +74,11 @@ public class Msg {
     }
 
     // has the structure of all known messages
-    private static final Map<String, @Nullable Msg> MSG_MAP = new HashMap<>();
+    private static final Map<String, Msg> MSG_MAP = new HashMap<>();
     // maps between command number and the length of the header
-    private static final Map<Integer, @Nullable Integer> HEADER_MAP = new HashMap<>();
+    private static final Map<Integer, Integer> HEADER_MAP = new HashMap<>();
     // has templates for all message from modem to host
-    private static final Map<Integer, @Nullable Msg> REPLY_MAP = new HashMap<>();
+    private static final Map<Integer, Msg> REPLY_MAP = new HashMap<>();
 
     private int headerLength = -1;
     private byte @Nullable [] data = null;

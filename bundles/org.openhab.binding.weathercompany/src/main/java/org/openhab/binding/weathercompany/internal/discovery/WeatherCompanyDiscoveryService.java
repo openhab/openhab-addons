@@ -67,7 +67,7 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    public void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
         logger.debug("Discovery: Activating discovery service for {}", bridgeHandler.getThing().getUID());
     }

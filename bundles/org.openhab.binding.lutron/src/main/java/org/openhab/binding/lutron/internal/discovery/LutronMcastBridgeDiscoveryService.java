@@ -171,7 +171,7 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
                     StandardCharsets.US_ASCII);
 
             Matcher matcher = BRIDGE_PROP_PATTERN.matcher(data);
-            Map<String, @Nullable String> bridgeProperties = new HashMap<>();
+            Map<String, String> bridgeProperties = new HashMap<>();
 
             while (matcher.find()) {
                 bridgeProperties.put(matcher.group(1), matcher.group(2));

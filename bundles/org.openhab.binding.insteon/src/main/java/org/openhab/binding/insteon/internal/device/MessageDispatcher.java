@@ -37,7 +37,7 @@ public abstract class MessageDispatcher {
 
     DeviceFeature feature;
     @Nullable
-    Map<String, @Nullable String> parameters = new HashMap<>();
+    Map<String, String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -48,7 +48,7 @@ public abstract class MessageDispatcher {
         feature = f;
     }
 
-    public void setParameters(@Nullable Map<String, @Nullable String> map) {
+    public void setParameters(@Nullable Map<String, String> map) {
         parameters = map;
     }
 
@@ -397,8 +397,8 @@ public abstract class MessageDispatcher {
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends MessageDispatcher> T makeHandler(String name,
-            @Nullable Map<String, @Nullable String> params, DeviceFeature f) {
+    public static <T extends MessageDispatcher> T makeHandler(String name, @Nullable Map<String, String> params,
+            DeviceFeature f) {
         String cname = MessageDispatcher.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);

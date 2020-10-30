@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LauncherApplication extends BaseChannelHandler<AppInfo> {
     private final Logger logger = LoggerFactory.getLogger(LauncherApplication.class);
-    private final Map<ThingUID, @Nullable List<AppInfo>> applicationListCache = new HashMap<>();
+    private final Map<ThingUID, List<AppInfo>> applicationListCache = new HashMap<>();
     private final ResponseListener<LaunchSession> launchSessionResponseListener = createResponseListener();
 
     @Override

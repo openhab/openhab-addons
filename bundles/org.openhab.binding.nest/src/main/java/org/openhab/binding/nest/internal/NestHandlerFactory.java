@@ -60,7 +60,7 @@ public class NestHandlerFactory extends BaseThingHandlerFactory {
 
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryService = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryService = new HashMap<>();
 
     @Activate
     public NestHandlerFactory(@Reference ClientBuilder clientBuilder,

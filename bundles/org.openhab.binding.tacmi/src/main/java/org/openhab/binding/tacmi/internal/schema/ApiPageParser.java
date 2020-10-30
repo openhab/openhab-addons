@@ -88,11 +88,11 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     private @Nullable String address;
     private @Nullable StringBuilder value;
     private ButtonValue buttonValue = ButtonValue.UNKNOWN;
-    private Map<String, @Nullable ApiPageEntry> entries;
+    private Map<String, ApiPageEntry> entries;
     private Set<String> seenNames = new HashSet<>();
     private List<Channel> channels = new ArrayList<>();
 
-    public ApiPageParser(TACmiSchemaHandler taCmiSchemaHandler, Map<String, @Nullable ApiPageEntry> entries,
+    public ApiPageParser(TACmiSchemaHandler taCmiSchemaHandler, Map<String, ApiPageEntry> entries,
             TACmiChannelTypeProvider channelTypeProvider) {
         super();
         this.taCmiSchemaHandler = taCmiSchemaHandler;

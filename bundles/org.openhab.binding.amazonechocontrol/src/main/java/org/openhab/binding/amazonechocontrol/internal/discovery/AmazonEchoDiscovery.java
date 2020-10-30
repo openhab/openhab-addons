@@ -122,7 +122,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     @Override
     @Activate
-    public void activate(@Nullable Map<String, @Nullable Object> config) {
+    public void activate(@Nullable Map<String, Object> config) {
         super.activate(config);
         if (config != null) {
             modified(config);

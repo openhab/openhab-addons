@@ -64,7 +64,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
     private final NetworkAddressService networkAddressService;
     private final SonosStateDescriptionOptionProvider stateDescriptionProvider;
 
-    private final Map<String, @Nullable ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+    private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     // optional OPML URL that can be configured through configuration admin
     private @Nullable String opmlUrl;
