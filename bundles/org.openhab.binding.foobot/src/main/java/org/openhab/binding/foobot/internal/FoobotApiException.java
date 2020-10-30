@@ -13,6 +13,7 @@
 package org.openhab.binding.foobot.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Exception thrown when problems occur with obtaining data for the foobot api.
@@ -24,7 +25,7 @@ public class FoobotApiException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public FoobotApiException(final int status, final String message) {
+    public FoobotApiException(final int status, final @Nullable String message) {
         super(String.format("%s (code: %s)", message, status));
     }
 }

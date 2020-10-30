@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.RegistryHook;
 
@@ -87,13 +88,21 @@ public class DummyItemRegistry implements ItemRegistry {
     }
 
     @Override
-    public Item getItem(String name) {
-        return items.get(name);
+    public Item getItem(String name) throws ItemNotFoundException {
+        Item item = items.get(name);
+        if (item == null) {
+            throw new ItemNotFoundException(name);
+        }
+        return item;
     }
 
     @Override
-    public Item getItemByPattern(String name) {
-        return items.get(name);
+    public Item getItemByPattern(String name) throws ItemNotFoundException {
+        Item item = items.get(name);
+        if (item == null) {
+            throw new ItemNotFoundException(name);
+        }
+        return item;
     }
 
     @Override

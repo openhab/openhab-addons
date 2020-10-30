@@ -75,9 +75,9 @@ public class HttpResponse {
      * @param httpCode the http code
      * @param msg the msg
      */
-    HttpResponse(int httpCode, String msg) {
+    HttpResponse(int httpCode, @Nullable String msg) {
         httpStatus = httpCode;
-        httpReason = msg;
+        httpReason = msg != null ? msg : "";
         contents = null;
     }
 

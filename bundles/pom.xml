@@ -322,7 +322,17 @@
     <module>org.openhab.voice.voicerss</module>
   </modules>
 
+  <properties>
+    <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
+    <dep.noembedding/>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>org.lastnpe.eea</groupId>
+      <artifactId>eea-all</artifactId>
+      <version>2.1.0</version>
+    </dependency>
     <!-- openHAB core -->
     <dependency>
       <groupId>org.openhab.core.bom</groupId>
@@ -366,10 +376,6 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
-  <properties>
-    <dep.noembedding/>
-  </properties>
 
   <build>
     <pluginManagement>
@@ -475,13 +481,29 @@
             <configuration>
               <includeScope>runtime</includeScope>
               <includeTypes>jar</includeTypes>
-              <excludeGroupIds>javax.activation,org.apache.karaf.features</excludeGroupIds>
+              <excludeGroupIds>javax.activation,org.apache.karaf.features,org.lastnpe.eea</excludeGroupIds>
               <excludeArtifactIds>${dep.noembedding}</excludeArtifactIds>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
               <overWriteReleases>true</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
               <excludeTransitive>true</excludeTransitive>
               <type>jar</type>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-eea</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.lastnpe.eea</groupId>
+                  <artifactId>eea-all</artifactId>
+                  <version>2.1.0</version>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
             </configuration>
           </execution>
         </executions>

@@ -221,9 +221,12 @@ public class HueBridge {
         ArrayList<T> lightList = new ArrayList<>();
 
         for (String id : lightMap.keySet()) {
+            @Nullable
             T light = lightMap.get(id);
-            light.setId(id);
-            lightList.add(light);
+            if (light != null) {
+                light.setId(id);
+                lightList.add(light);
+            }
         }
 
         return lightList;

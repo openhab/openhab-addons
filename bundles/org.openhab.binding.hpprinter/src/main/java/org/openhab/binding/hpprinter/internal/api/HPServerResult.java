@@ -27,10 +27,10 @@ public class HPServerResult<result> {
     private final @Nullable result data;
     private final String errorMessage;
 
-    public HPServerResult(RequestStatus status, String errorMessage) {
+    public HPServerResult(RequestStatus status, @Nullable String errorMessage) {
         this.status = status;
         this.data = null;
-        this.errorMessage = errorMessage;
+        this.errorMessage = errorMessage != null ? errorMessage : "";
     }
 
     public HPServerResult(result data) {

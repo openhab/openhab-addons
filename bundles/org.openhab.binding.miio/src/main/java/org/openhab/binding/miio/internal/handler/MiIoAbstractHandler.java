@@ -278,8 +278,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         disconnected("No Response from device");
     }
 
-    protected void disconnected(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
+    protected void disconnected(@Nullable String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                message != null ? message : "");
         final MiIoAsyncCommunication miioCom = this.miioCom;
         if (miioCom != null) {
             lastId = miioCom.getId();

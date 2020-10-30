@@ -1280,22 +1280,27 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
 
     @Override
     public void handleEvent(EventItem eventItem) {
-        if (EventNames.DEVICE_SENSOR_VALUE.equals(eventItem.getName())
-                || EventNames.DEVICE_BINARY_INPUT_EVENT.equals(eventItem.getName())) {
-            logger.debug("Detect {} eventItem = {}", eventItem.getName(), eventItem.toString());
-            Device dev = getDeviceOfEvent(eventItem);
-            if (dev != null) {
-                if (EventNames.DEVICE_SENSOR_VALUE.equals(eventItem.getName())) {
-                    dev.setDeviceSensorByEvent(eventItem);
-                } else {
-                    DeviceBinarayInputEnum binaryInputType = DeviceBinarayInputEnum.getdeviceBinarayInput(
-                            Short.parseShort(eventItem.getProperties().get(EventResponseEnum.INPUT_TYPE)));
-                    Short newState = Short.parseShort(eventItem.getProperties().get(EventResponseEnum.INPUT_STATE));
-                    if (binaryInputType != null) {
-                        dev.setBinaryInputState(binaryInputType, newState);
+        try {
+            if (EventNames.DEVICE_SENSOR_VALUE.equals(eventItem.getName())
+                    || EventNames.DEVICE_BINARY_INPUT_EVENT.equals(eventItem.getName())) {
+                logger.debug("Detect {} eventItem = {}", eventItem.getName(), eventItem.toString());
+                Device dev = getDeviceOfEvent(eventItem);
+                if (dev != null) {
+                    if (EventNames.DEVICE_SENSOR_VALUE.equals(eventItem.getName())) {
+                        dev.setDeviceSensorByEvent(eventItem);
+                    } else {
+                        DeviceBinarayInputEnum binaryInputType = DeviceBinarayInputEnum.getdeviceBinarayInput(Short
+                                .parseShort(eventItem.getProperties().getOrDefault(EventResponseEnum.INPUT_TYPE, "")));
+                        Short newState = Short
+                                .parseShort(eventItem.getProperties().getOrDefault(EventResponseEnum.INPUT_STATE, ""));
+                        if (binaryInputType != null) {
+                            dev.setBinaryInputState(binaryInputType, newState);
+                        }
                     }
                 }
             }
+        } catch (NumberFormatException e) {
+            logger.debug("Unexpected missing or invalid number while handling event", e);
         }
     }
 

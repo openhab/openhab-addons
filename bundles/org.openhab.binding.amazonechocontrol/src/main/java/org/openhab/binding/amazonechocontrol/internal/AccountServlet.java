@@ -697,9 +697,10 @@ public class AccountServlet extends HttpServlet {
         }
     }
 
-    void returnError(HttpServletResponse resp, String errorMessage) {
+    void returnError(HttpServletResponse resp, @Nullable String errorMessage) {
         try {
-            resp.getWriter().write("<html>" + StringEscapeUtils.escapeHtml(errorMessage) + "<br><a href='" + servletUrl
+            String message = errorMessage != null ? errorMessage : "null";
+            resp.getWriter().write("<html>" + StringEscapeUtils.escapeHtml(message) + "<br><a href='" + servletUrl
                     + "'>Try again</a></html>");
         } catch (IOException e) {
             logger.info("Returning error message failed", e);

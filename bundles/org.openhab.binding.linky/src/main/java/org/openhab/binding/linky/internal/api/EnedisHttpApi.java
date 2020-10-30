@@ -17,6 +17,7 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -125,8 +126,8 @@ public class EnedisHttpApi {
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
             if (authData.callbacks.size() < 2 || authData.callbacks.get(0).input.size() == 0
-                    || authData.callbacks.get(1).input.size() == 0
-                    || !config.username.contentEquals(authData.callbacks.get(0).input.get(0).valueAsString())) {
+                    || authData.callbacks.get(1).input.size() == 0 || !config.username
+                            .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
                 throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
             }
 

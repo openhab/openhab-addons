@@ -100,11 +100,7 @@ public enum EirDataType {
             initMapping();
         }
 
-        if (codeMapping.get(eirDataType) == null) {
-            return UNKNOWN;
-        }
-
-        return codeMapping.get(eirDataType);
+        return codeMapping.getOrDefault(eirDataType, UNKNOWN);
     }
 
     /**

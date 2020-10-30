@@ -132,6 +132,6 @@ public class RemoteSensor {
      */
     private String convertSoilMoistureToString(double soilMoisture) {
         Double key = soilMoistureMap.ceilingKey(soilMoisture);
-        return key == null ? "UNKNOWN" : soilMoistureMap.get(key);
+        return key == null ? "UNKNOWN" : soilMoistureMap.getOrDefault(key, "UNKNOWN");
     }
 }

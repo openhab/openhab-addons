@@ -159,9 +159,8 @@ public abstract class MessageHandler {
      */
     protected double getDoubleParameter(String key, double def) {
         try {
-            if (parameters.get(key) != null) {
-                return Double.parseDouble(parameters.get(key));
-            }
+            String str = parameters.get(key);
+            return str != null ? Double.parseDouble(str) : def;
         } catch (NumberFormatException e) {
             logger.warn("malformed int parameter in message handler: {}", key);
         }

@@ -123,16 +123,17 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         setDeviceType(config.deviceType);
 
         try {
+            Map<String, String> properties = getThing().getProperties();
             if (StringUtils.isEmpty(getAddress()) || StringUtils.isEmpty(String.valueOf(getPort()))) {
                 logger.warn("No IP address and port configured for the Nanoleaf controller");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noIp");
                 stopAllJobs();
-            } else if (!StringUtils.isEmpty(getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))
-                    && !OpenAPIUtils.checkRequiredFirmware(getThing().getProperties().get(Thing.PROPERTY_MODEL_ID),
-                            getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))) {
+            } else if (!StringUtils.isEmpty(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))
+                    && !OpenAPIUtils.checkRequiredFirmware(properties.get(Thing.PROPERTY_MODEL_ID),
+                            properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
                 logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
-                        getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION), API_MIN_FW_VER_LIGHTPANELS);
+                        properties.get(Thing.PROPERTY_FIRMWARE_VERSION), API_MIN_FW_VER_LIGHTPANELS);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.nanoleaf.controller.incompatibleFirmware");
                 stopAllJobs();

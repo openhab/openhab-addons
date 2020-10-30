@@ -63,12 +63,13 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             + "facet=etat_vent&facet=etat_pluie_inondation&facet=etat_orage&facet=etat_inondation&facet=etat_neige&facet=etat_canicule&"
             + "facet=etat_grand_froid&facet=etat_avalanches&refine.nom_dept=";
     private static final int TIMEOUT_MS = 30000;
+    private static final String UNKNOWN_COLOR = "b3b3b3";
     private static final Map<AlertLevel, String> ALERT_COLORS = Map.ofEntries(
             new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.GREEN, "00ff00"),
             new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.YELLOW, "ffff00"),
             new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.ORANGE, "ff6600"),
             new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.RED, "ff0000"),
-            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.UNKNOWN, "b3b3b3"));
+            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.UNKNOWN, UNKNOWN_COLOR));
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
     // Time zone provider representing time zone configured in openHAB configuration
@@ -169,7 +170,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         if (isLinked(channelIcon)) {
             String resource = getResource(String.format("picto/%s.svg", channelId));
             if (resource != null) {
-                resource = resource.replaceAll(ALERT_COLORS.get(AlertLevel.UNKNOWN), ALERT_COLORS.get(value));
+                resource = resource.replaceAll(UNKNOWN_COLOR, ALERT_COLORS.getOrDefault(value, UNKNOWN_COLOR));
             }
             updateState(channelIcon,
                     resource != null ? new RawType(resource.getBytes(), "image/svg+xml") : UnDefType.UNDEF);
