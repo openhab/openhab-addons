@@ -34,5 +34,8 @@ public class SerialBindingConstants {
     public static final String TRIGGER_CHANNEL = "data";
     public static final String STRING_CHANNEL = "string";
     public static final String BINARY_CHANNEL = "binary";
-    public static final String DEVICE_CHANNEL = "device";
+    public static final String DEVICE_STRING_CHANNEL = "string";
+    public static final String DEVICE_NUMBER_CHANNEL = "number";
+    public static final String DEVICE_SWITCH_CHANNEL = "switch";
+    public static final String DEVICE_ROLLERSHUTTER_CHANNEL = "rollershutter";
 }

@@ -80,7 +80,7 @@
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="serialDevice">
+	<thing-type id="serialDevice" extensible="string, number, switch, rollershutter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serialBridge"/>
 		</supported-bridge-type-refs>
@@ -89,7 +89,7 @@
 		<description>Represents a device</description>
 
 		<channels>
-			<channel id="device" typeId="deviceData"/>
+			<channel id="device" typeId="string"/>
 		</channels>
 
 		<config-description>
@@ -116,9 +116,88 @@
 		<description>Channel for sending/receiving data encoded as Base64 to/from the serial port</description>
 	</channel-type>
 
-	<channel-type id="deviceData">
+	<channel-type id="string">
 		<item-type>String</item-type>
-		<label>Device Data</label>
-		<description>Channel for receiving data as a string from the device</description>
+		<label>String</label>
+		<description>Channel to receive commands as a string</description>
+		<config-description>
+			<parameter name="transform" type="text">
+				<label>Transform to convert device data to channel state</label>
+				<description>Transform applied to the device data, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			</parameter>
+			<parameter name="commandTransform" type="text">
+				<label>Transform to convert command to device value</label>
+				<description>Transform applied to the command, e.g. JS(device.js)</description>
+			</parameter>
+			<parameter name="commandFormat" type="text">
+				<label>Format string to apply to command before transform</label>
+				<description>Format string applied to the command, e.g. ID=671;COMMAND=%s</description>
+			</parameter>
+		</config-description>
 	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>Channel to receive commands as a number</description>
+		<config-description>
+			<parameter name="transform" type="text">
+				<label>Transform to convert device data to channel state</label>
+				<description>Transform applied to the device data, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			</parameter>
+			<parameter name="commandTransform" type="text">
+				<label>Transform to convert command to device value</label>
+				<description>Transform applied to the command, e.g. JS(device.js)</description>
+			</parameter>
+			<parameter name="commandFormat" type="text">
+				<label>Format string to apply to command before transform</label>
+				<description>Format string applied to the command, e.g. ID=671;COMMAND=%s</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Channel to send specific values when used with a Switch</description>
+		<config-description>
+			<parameter name="transform" type="text">
+				<label>Transform to convert device data to channel state</label>
+				<description>Transform applied to the device data, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			</parameter>
+			<parameter name="on" type="text">
+				<label>On Value</label>
+				<description>Send this value when receiving an ON command</description>
+			</parameter>
+			<parameter name="off" type="text">
+				<label>Off Value</label>
+				<description>Send this value when receiving an OFF command</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Channel to send specific values when used with a Rollershutter</description>
+		<config-description>
+			<parameter name="transform" type="text">
+				<label>Transform to convert device data to channel state</label>
+				<description>Transform applied to the device data, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			</parameter>
+			<parameter name="up" type="text">
+				<label>Up Value</label>
+				<description>Send this value when receiving an UP command</description>
+			</parameter>
+			<parameter name="down" type="text">
+				<label>Down Value</label>
+				<description>Send this value when receiving a DOWN command</description>
+			</parameter>
+			<parameter name="stop" type="text">
+				<label>Stop Value</label>
+				<description>Send this value when receiving a STOP command</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
 </thing:thing-descriptions>

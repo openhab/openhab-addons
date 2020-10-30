@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.serial.internal.handler;
 
+import static org.openhab.binding.serial.internal.SerialBindingConstants.BINARY_CHANNEL;
+import static org.openhab.binding.serial.internal.SerialBindingConstants.STRING_CHANNEL;
+import static org.openhab.binding.serial.internal.SerialBindingConstants.TRIGGER_CHANNEL;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,7 +26,6 @@ import java.util.TooManyListenersException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.serial.internal.SerialBindingConstants;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
@@ -76,7 +79,17 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         if (command instanceof RefreshType) {
             refresh(channelUID.getId());
         } else {
-            writeCommand(channelUID.getId(), command);
+            switch (channelUID.getId()) {
+                case STRING_CHANNEL:
+                    writeString(command.toFullString(), false);
+                    break;
+                case BINARY_CHANNEL:
+                    writeString(command.toFullString(), true);
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 
@@ -163,6 +176,8 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             }
             this.outputStream = null;
         }
+
+        data = null;
     }
 
     @Override
@@ -196,9 +211,9 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                     final String result = sb.toString();
                     data = result;
 
-                    triggerChannel(SerialBindingConstants.TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
-                    refresh(SerialBindingConstants.STRING_CHANNEL);
-                    refresh(SerialBindingConstants.BINARY_CHANNEL);
+                    triggerChannel(TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
+                    refresh(STRING_CHANNEL);
+                    refresh(BINARY_CHANNEL);
 
                     result.lines().forEach(l -> getThing().getThings().forEach(t -> {
                         final SerialDeviceHandler device = (SerialDeviceHandler) t.getHandler();
@@ -217,6 +232,15 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     }
 
     /**
+     * Sends a string to the serial port.
+     *
+     * @param string the string to send
+     */
+    public void writeString(final String string) {
+        writeString(string, false);
+    }
+
+    /**
      * Refreshes the channel with the last received data
      *
      * @param channelId the channel to refresh
@@ -229,10 +253,10 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         }
 
         switch (channelId) {
-            case SerialBindingConstants.STRING_CHANNEL:
+            case STRING_CHANNEL:
                 updateState(channelId, new StringType(data));
                 break;
-            case SerialBindingConstants.BINARY_CHANNEL:
+            case BINARY_CHANNEL:
                 final StringBuilder sb = new StringBuilder("data:");
                 sb.append(RawType.DEFAULT_MIME_TYPE).append(";base64,")
                         .append(Base64.getEncoder().encodeToString(data.getBytes(charset)));
@@ -244,33 +268,32 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     }
 
     /**
-     * Sends a command as a string to the serial port
+     * Sends a string to the serial port.
      *
-     * @param channelId the channel receiving the command
-     * @param command the string to send
+     * @param string the string to send
+     * @param isRawType the string should be handled as a RawType
      */
-    private void writeCommand(final String channelId, final Command command) {
+    private void writeString(final String string, final boolean isRawType) {
         final OutputStream outputStream = this.outputStream;
 
         if (outputStream == null) {
             return;
         }
 
-        logger.debug("Writing '{}' to serial port {}", command.toFullString(), config.serialPort);
+        logger.debug("Writing '{}' to serial port {}", string, config.serialPort);
 
         try {
             // write string to serial port
-            if (SerialBindingConstants.BINARY_CHANNEL.equals(channelId)) {
-                final RawType rt = RawType.valueOf(command.toFullString());
+            if (isRawType) {
+                final RawType rt = RawType.valueOf(string);
                 outputStream.write(rt.getBytes());
             } else {
-                outputStream.write(command.toFullString().getBytes(charset));
+                outputStream.write(string.getBytes(charset));
             }
 
             outputStream.flush();
         } catch (final IOException | IllegalArgumentException e) {
-            logger.warn("Error writing '{}' to serial port {}: {}", command.toFullString(), config.serialPort,
-                    e.getMessage());
+            logger.warn("Error writing '{}' to serial port {}: {}", string, config.serialPort, e.getMessage());
         }
     }
 }

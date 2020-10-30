@@ -29,9 +29,13 @@ A Serial Device thing (`serialDevice`) can be used to represent data matching a 
 may be providing data for many different devices/sensors, such as a temperature sensor or a doorbell. Usually such devices can be indentified 
 by performing a patterm match on the received data. For example, a Serial Device could be configured to represent a temperature sensor.
 
-The thing supports a String channel which is set to the currently received data if the data matches the defined pattern. Profiles can be used to transform the data, such as extracting the temperature value, when linking to an item. The channel is read only and does not support sending data.
+The thing will only update its channels if the received data matches the defined pattern. 
 
-When using a Serial Device the expectation is that the data for each device is terminated by a line break.
+The thing supports generic String and Number channels which can apply a transform on the received data to set the channel state. Commands sent to the channels can be formatted and transformed before being sent to the device.
+
+The thing also supports Switch and Rollershutter channels which provide simple mappings for the ON, OFF, UP, DOWN and STOP commands.
+
+When using a Serial Device the expectation is that the received data for each device is terminated by a line break.
 
 ## Thing Configuration
 
@@ -67,7 +71,10 @@ The channels supported by the `serialDevice` are:
 
 | Channel  | Type             | Description                                                                                              |
 |----------|------------------|----------------------------------------------------------------------------------------------------------|
-| device   | String           | Channel for receiving data as a string from the device. If the data matches the regular expression the channel will update its state to a StringType that is the line of data received from the serial port.    |
+| string   | String           | Channel for receiving string based commands. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can optionally be formatted and transformed before sending to the device.    |
+| number   | Number           | Channel for receiving number based commands, e.g. from a Dimmer. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can optionally be formatted and transformed before sending to the device.    |
+| switch   | Switch           | Channel for receiving commands from a Switch. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the ON and OFF commands.    |
+| rollershutter   | Rollershutter           | Channel for receiving commands from a Rollershutter. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the UP, DOWN and STOP commands.    |
 
 ## Full Example
 
