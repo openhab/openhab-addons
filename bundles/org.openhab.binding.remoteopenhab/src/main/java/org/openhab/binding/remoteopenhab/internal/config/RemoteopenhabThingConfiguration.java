@@ -10,19 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.remoteopenhab.internal.data;
+package org.openhab.binding.remoteopenhab.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Event received through the SSE connection.
+ * The {@link RemoteopenhabThingConfiguration} is responsible for holding
+ * configuration informations associated to a remote openHAB thing
+ * thing type
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class Event {
+public class RemoteopenhabThingConfiguration {
+    public static final String THING_UID = "thingUID";
 
-    public String type = "";
-    public String topic = "";
-    public String payload = "";
+    public String thingUID = "";
+    public boolean buildChannels = true;
 }

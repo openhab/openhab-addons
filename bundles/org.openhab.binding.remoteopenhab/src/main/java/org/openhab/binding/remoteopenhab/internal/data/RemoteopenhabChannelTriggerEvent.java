@@ -13,15 +13,16 @@
 package org.openhab.binding.remoteopenhab.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Subpart of the response to the API GET /rest containing the runtime information
+ * Payload from ChannelTriggerEvent events received through the SSE connection.
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class RuntimeInfo {
+public class RemoteopenhabChannelTriggerEvent {
 
-    public String version = "";
-    public String buildString = "";
+    public String channel = "";
+    public @Nullable String event;
 }

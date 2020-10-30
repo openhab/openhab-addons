@@ -15,13 +15,15 @@ package org.openhab.binding.remoteopenhab.internal.data;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Payload from ItemStateEvent / GroupItemStateChangedEvent events received through the SSE connection.
+ * Part of {@link RemoteopenhabThing} containing the channel definition
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class EventPayload {
+public class RemoteopenhabChannel {
 
-    public String type = "";
-    public String value = "";
+    public String uid = "";
+    public String kind = "";
+    public String label = "";
+    public String description = "";
 }

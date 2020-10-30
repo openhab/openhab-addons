@@ -12,16 +12,18 @@
  */
 package org.openhab.binding.remoteopenhab.internal.data;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Response to the API GET /rest
+ * Response to the API GET /rest/things/{uid}/status
+ * Also payload from ThingStatusInfoChangedEvent events received through the SSE connection.
  *
  * @author Laurent Garnier - Initial contribution
  */
-public class RestApi {
+@NonNullByDefault
+public class RemoteopenhabStatusInfo {
 
-    public String version;
-    public RestApiEndpoint[] links;
-    public @Nullable RuntimeInfo runtimeInfo;
+    public String status = "";
+    public String statusDetail = "";
+    public String description = "";
 }
