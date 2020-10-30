@@ -36,7 +36,7 @@ Once the rightmost box in the drawer is full, the leftmost box is emptied, the c
 ## Datasources
 
 For every persisted Item, a separate database file is created in the `userdata/persistence/rrd4j` folder.
-These database files are called datasources, which contain the archives of different granularities.
+These database files contain the archives of different granularities.
 
 By default, if `services/rrd4j.cfg` does not exist, or if an Item is not explicitly listed in a `<dsName>.items` property value in it, then the respective Item will be persisted according to the [default datasource settings](#default-datasource).
 
@@ -83,7 +83,7 @@ It must be one of the following string values:
 ### `<heartBeat>` (Heart Beat)
 
 The heartbeat parameter helps the database to detect missing values.
-i.e. if no new value is stored after "heartBeat" seconds, the value is considered missing when charting.
+i.e. if no new sample is stored after "heartBeat" seconds, the value is considered missing when charting.
 
 It must be a positive integer value.
 
@@ -100,6 +100,9 @@ They must be either:
 The time interval (seconds) between reading consecutive samples from the OpenHAB core.
 
 It must be a positive integer value.
+
+Relation between the sample intervall and openHABs persistence strategy. 
+The persistence strategy determines on which events (time, change, startUp) a new value is provided to the persistence service, the sample intervall determines at which time steps the actually provided value is being read (i.e an everyMinute strategy provides a new value at every full minute, a sample intervall of 10 seconds would use such a provided value 6 times).
 
 ### `<consolidationFunction>` (Consolidation Function)
 
@@ -165,7 +168,7 @@ So it covers `144 X 10 X 60` seconds of data (24 hours) at a granularity of ten 
 The service automatically creates three default datasources with the properties below.
 
 There is no `.items` parameter for the default datasources.
-This means that any Item with an allocated strategy in the `rrd4j.persist` file is persisted using the default settingswith the only exception if the Item is explicitly listed in an `.items` property value of a datasource in the `rrd4j.cfg` file.
+This means that any Item with an allocated strategy in the `rrd4j.persist` file is persisted using one the default settings, unless the Item is explicitly listed in an `.items` property value of a datasource in the `rrd4j.cfg` file.
 
 
 #### default_numeric
@@ -255,8 +258,7 @@ Items {
 ```
 
 **IMPORTANT:**
-The strategy `everyMinute` (60 seconds) **must** be used, otherwise no data will be persisted (stored).
-Other strategies can be used, too.
+When creating a custom datasource in the `rrd4j.cfg` file the used [sample interval](#sampleinterval-sample-interval) should be 20 seconds or less in order to keep the granularity. The selection of the used strategy has no effect on the granularity.  
 
 ---
 
