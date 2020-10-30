@@ -15,7 +15,6 @@ package org.openhab.binding.feed.test;
 import static java.lang.Thread.sleep;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.openhab.core.thing.ThingStatus.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -46,6 +45,7 @@ import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingProvider;
 import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -232,7 +232,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
 
         // This will ensure that the configuration is read before the channelLinked() method in FeedHandler is called !
         waitForAssert(() -> {
-            assertThat(feedThing.getStatus(), anyOf(is(ONLINE), is(OFFLINE)));
+            assertThat(feedThing.getStatus(), anyOf(is(ThingStatus.ONLINE), is(ThingStatus.OFFLINE)));
         }, 60000, DFL_SLEEP_TIME);
         initializeItem(channelUID);
     }
@@ -270,7 +270,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
         initializeDefaultFeedHandler();
 
         waitForAssert(() -> {
-            assertThat("Feed Thing can not be initialized", feedThing.getStatus(), is(equalTo(ONLINE)));
+            assertThat("Feed Thing can not be initialized", feedThing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
             assertThat("Item's state is not updated on initialize", currentItemState, is(notNullValue()));
         });
 
@@ -294,7 +294,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
 
         waitForAssert(() -> {
             assertThat("Error occurred while trying to connect to server. Content is not downloaded!",
-                    feedThing.getStatus(), is(equalTo(ONLINE)));
+                    feedThing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
         });
 
         waitForAssert(() -> {
@@ -361,7 +361,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
         feedHandler.handleCommand(channelUID, RefreshType.REFRESH);
 
         waitForAssert(() -> {
-            assertThat(feedThing.getStatus(), is(equalTo(OFFLINE)));
+            assertThat(feedThing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
         });
 
         servlet.httpStatus = HttpStatus.OK_200;
@@ -372,7 +372,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
         feedHandler.handleCommand(channelUID, RefreshType.REFRESH);
 
         waitForAssert(() -> {
-            assertThat(feedThing.getStatus(), is(equalTo(ONLINE)));
+            assertThat(feedThing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
         });
     }
 
@@ -384,7 +384,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
 
         initializeFeedHandler(invalidURL);
         waitForAssert(() -> {
-            assertThat(feedThing.getStatus(), is(equalTo(OFFLINE)));
+            assertThat(feedThing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
             assertThat(feedThing.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         });
     }
@@ -397,7 +397,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
 
         initializeFeedHandler(invalidURL);
         waitForAssert(() -> {
-            assertThat(feedThing.getStatus(), is(equalTo(OFFLINE)));
+            assertThat(feedThing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
             assertThat(feedThing.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.COMMUNICATION_ERROR)));
         }, 30000, DFL_SLEEP_TIME);
     }
@@ -410,7 +410,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
 
         initializeFeedHandler(invalidURL);
         waitForAssert(() -> {
-            assertThat(feedThing.getStatus(), is(equalTo(OFFLINE)));
+            assertThat(feedThing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
             assertThat(feedThing.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.COMMUNICATION_ERROR)));
         });
     }
