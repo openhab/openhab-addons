@@ -209,7 +209,7 @@ public class UpnpServerHandler extends UpnpHandler {
                             }
                             UpnpEntry entry = parentMap.get(browseTarget);
                             if (entry == null) {
-                                logger.info("Browse target not found. Exiting.")
+                                logger.info("Browse target not found. Exiting.");
                                 return;
                             }
                             currentEntry = entry;
@@ -355,8 +355,8 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     /**
-     * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link onValueReceived}
-     * method.
+     * Method that does a UPnP browse on a content directory. Results will be retrieved in the
+     * {@link #onValueReceived(String, String, String)} method.
      *
      * @param objectID content directory object
      * @param browseFlag BrowseMetaData or BrowseDirectChildren
@@ -379,8 +379,8 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     /**
-     * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link onValueReceived}
-     * method.
+     * Method that does a UPnP search on a content directory. Results will be retrieved in the
+     * {@link #onValueReceived(String, String, String)} method.
      *
      * @param containerID content directory container
      * @param searchCriteria search criteria, examples:
