@@ -328,7 +328,7 @@ public class SonosXMLParser {
         @Override
         public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
             Element elt = element;
-            if (elt == null) {
+            if (elt == null || ch == null) {
                 return;
             }
             switch (elt) {
@@ -446,7 +446,7 @@ public class SonosXMLParser {
         @Override
         public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
             Element elt = element;
-            if (elt == null) {
+            if (elt == null || ch == null) {
                 return;
             }
             switch (elt) {
@@ -530,9 +530,17 @@ public class SonosXMLParser {
                 boolean finalIncludeLinkedZones = !"0".equals(includeLinkedZones);
 
                 try {
+                    String id = this.id;
+                    if (id == null) {
+                        throw new NumberFormatException();
+                    }
                     finalID = Integer.parseInt(id);
+                    String volume = this.volume;
+                    if (volume == null) {
+                        throw new NumberFormatException();
+                    }
                     finalVolume = Integer.parseInt(volume);
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     LOGGER.debug("Error parsing Integer");
                 }
 
@@ -790,7 +798,7 @@ public class SonosXMLParser {
         @Override
         public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
             CurrentElement elt = currentElement;
-            if (elt == null) {
+            if (elt == null || ch == null) {
                 return;
             }
             switch (elt) {
@@ -875,7 +883,7 @@ public class SonosXMLParser {
 
         @Override
         public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
-            if (getPresetName) {
+            if (getPresetName && ch != null) {
                 presetName = new String(ch, start, length);
             }
         }
@@ -944,7 +952,7 @@ public class SonosXMLParser {
 
         @Override
         public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
-            if (roomNameTag) {
+            if (roomNameTag && ch != null) {
                 roomName = new String(ch, start, length);
                 roomNameTag = false;
             }
@@ -983,7 +991,7 @@ public class SonosXMLParser {
 
         @Override
         public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
-            if (modelNameTag) {
+            if (modelNameTag && ch != null) {
                 modelName = new String(ch, start, length);
                 modelNameTag = false;
             }

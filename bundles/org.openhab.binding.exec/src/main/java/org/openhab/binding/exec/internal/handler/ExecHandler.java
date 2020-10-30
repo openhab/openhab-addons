@@ -422,6 +422,7 @@ public class ExecHandler extends BaseThingHandler {
     }
 
     public static String getOperatingSystemName() {
-        return System.getProperty("os.name");
+        String osname = System.getProperty("os.name");
+        return osname != null ? osname : "unknown";
     }
 }

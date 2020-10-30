@@ -454,8 +454,6 @@ public class HomekitAccessoryFactory {
      * @return new characteristic type
      */
     private static HomekitCharacteristicType legacyCheck(HomekitCharacteristicType characteristicType) {
-        if (LEGACY_CHARACTERISTICS_MAPPING.containsKey(characteristicType))
-            return LEGACY_CHARACTERISTICS_MAPPING.get(characteristicType);
-        return characteristicType;
+        return LEGACY_CHARACTERISTICS_MAPPING.getOrDefault(characteristicType, characteristicType);
     }
 }

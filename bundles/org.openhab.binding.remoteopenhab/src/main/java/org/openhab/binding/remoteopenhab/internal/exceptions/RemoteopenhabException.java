@@ -13,6 +13,7 @@
 package org.openhab.binding.remoteopenhab.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Exceptions thrown by this binding.
@@ -23,15 +24,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @SuppressWarnings("serial")
 public class RemoteopenhabException extends Exception {
 
-    public RemoteopenhabException(String message) {
+    public RemoteopenhabException(@Nullable String message) {
         super(message);
     }
 
-    public RemoteopenhabException(String message, Throwable cause) {
+    public RemoteopenhabException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
-    public RemoteopenhabException(Throwable cause) {
+    public RemoteopenhabException(@Nullable Throwable cause) {
         super(cause);
     }
 }

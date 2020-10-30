@@ -200,7 +200,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private int getShadeId() throws NumberFormatException {
-        return Integer.parseInt(getConfigAs(HDPowerViewShadeConfiguration.class).id);
+        String str = getConfigAs(HDPowerViewShadeConfiguration.class).id;
+        if (str == null) {
+            throw new NumberFormatException("null input string");
+        }
+        return Integer.parseInt(str);
     }
 
     private void stopShade() {

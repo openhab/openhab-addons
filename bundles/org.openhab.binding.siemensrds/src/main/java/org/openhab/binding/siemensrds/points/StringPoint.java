@@ -34,10 +34,14 @@ public class StringPoint extends BasePoint {
     @Override
     public int asInt() {
         try {
-            return Integer.parseInt(value);
-        } catch (Exception e) {
-            return UNDEFINED_VALUE;
+            String value = this.value;
+            if (value != null) {
+                return Integer.parseInt(value);
+            }
+        } catch (NumberFormatException e) {
+            // default value
         }
+        return UNDEFINED_VALUE;
     }
 
     @Override

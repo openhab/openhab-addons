@@ -46,7 +46,7 @@ public class TACmiChannelTypeProvider implements ChannelTypeProvider {
         return channelTypesByUID.get(channelTypeUID);
     }
 
-    public ChannelType getInternalChannelType(ChannelTypeUID channelTypeUID) {
+    public @Nullable ChannelType getInternalChannelType(ChannelTypeUID channelTypeUID) {
         return channelTypesByUID.get(channelTypeUID);
     }
 

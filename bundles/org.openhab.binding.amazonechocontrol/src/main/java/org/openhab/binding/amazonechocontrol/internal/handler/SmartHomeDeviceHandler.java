@@ -109,7 +109,8 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 }
             }
             if (handler != null) {
-                Collection<ChannelInfo> required = handler.initialize(this, capabilities.get(interfaceName));
+                Collection<ChannelInfo> required = handler.initialize(this,
+                        capabilities.getOrDefault(interfaceName, Collections.emptyList()));
                 for (ChannelInfo channelInfo : required) {
                     unusedChannels.remove(channelInfo.channelId);
                     if (addChannelToDevice(thingBuilder, channelInfo.channelId, channelInfo.itemType,

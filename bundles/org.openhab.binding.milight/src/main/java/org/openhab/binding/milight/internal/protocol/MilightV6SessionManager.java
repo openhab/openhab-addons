@@ -196,7 +196,7 @@ public class MilightV6SessionManager implements Runnable, Closeable {
     public CompletableFuture<DatagramSocket> start() {
         if (willbeclosed) {
             CompletableFuture<DatagramSocket> f = new CompletableFuture<>();
-            f.completeExceptionally(null);
+            f.completeExceptionally(new IllegalStateException("will be closed"));
             return f;
         }
         if (sessionThread.isAlive()) {

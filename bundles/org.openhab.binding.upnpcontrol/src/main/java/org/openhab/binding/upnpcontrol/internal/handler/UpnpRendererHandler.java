@@ -590,7 +590,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                     playing = true;
                     updateState(CONTROL, PlayPauseType.PLAY);
                     scheduleTrackPositionRefresh();
-                } else if ("PAUSED_PLAYBACK".contentEquals(value)) {
+                } else if ("PAUSED_PLAYBACK".equals(value)) {
                     updateState(CONTROL, PlayPauseType.PAUSE);
                 }
                 break;

@@ -408,7 +408,7 @@ public class TelegramHandler extends BaseThingHandler {
         return replyIdToCallbackId.get(new ReplyKey(chatId, replyId));
     }
 
-    public Integer removeMessageId(Long chatId, String replyId) {
+    public @Nullable Integer removeMessageId(Long chatId, String replyId) {
         return replyIdToMessageId.remove(new ReplyKey(chatId, replyId));
     }
 

@@ -341,7 +341,8 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             }
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
             log.debug("Unable to fetch info data", e);
-            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = e.getMessage();
+            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
         } catch (VenstarAuthenticationException e) {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }
@@ -376,7 +377,8 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             goOnline();
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
             log.debug("Unable to fetch info data", e);
-            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = e.getMessage();
+            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
         } catch (VenstarAuthenticationException e) {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }

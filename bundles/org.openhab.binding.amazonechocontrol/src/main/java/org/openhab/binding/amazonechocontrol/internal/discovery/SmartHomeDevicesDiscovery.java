@@ -32,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
@@ -171,7 +172,8 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                     continue;
                 }
 
-                if (Stream.of(shd.capabilities).noneMatch(capability -> capability != null
+                JsonSmartHomeCapabilities.SmartHomeCapability[] capabilities = shd.capabilities;
+                if (capabilities == null || Stream.of(capabilities).noneMatch(capability -> capability != null
                         && Constants.SUPPORTED_INTERFACES.contains(capability.interfaceName))) {
                     // No supported interface found
                     continue;
