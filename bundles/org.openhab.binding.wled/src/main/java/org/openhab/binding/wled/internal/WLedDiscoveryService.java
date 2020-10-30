@@ -76,7 +76,7 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         } catch (TimeoutException | ExecutionException e) {
             logger.debug(
                     "WLED discovery hit a TimeoutException | ExecutionException which may have blocked a device from getting discovered:{}",
-                    e.getCause());
+                    e.getMessage());
         }
         return "";
     }
