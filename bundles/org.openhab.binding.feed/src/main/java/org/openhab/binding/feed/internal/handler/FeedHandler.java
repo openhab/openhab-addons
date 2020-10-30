@@ -162,6 +162,13 @@ public class FeedHandler extends BaseThingHandler {
                     state = new StringType(getValueSafely(description));
                 }
                 break;
+            case CHANNEL_LATEST_LINK:
+                if (latestEntry == null || latestEntry.getLink() == null) {
+                    state = UnDefType.UNDEF;
+                } else {
+                    state = new StringType(getValueSafely(latestEntry.getLink()));
+                }
+                break;
             case CHANNEL_LATEST_PUBLISHED_DATE:
             case CHANNEL_LAST_UPDATE:
                 if (latestEntry == null || latestEntry.getPublishedDate() == null) {

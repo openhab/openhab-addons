@@ -41,9 +41,14 @@ public class FeedBindingConstants {
     public static final String CHANNEL_LATEST_TITLE = "latest-title";
 
     /**
-     * Contains the description of last feed entry.
+     * Contains the description of the last feed entry.
      */
     public static final String CHANNEL_LATEST_DESCRIPTION = "latest-description";
+
+    /**
+     * Contains the link to the last feed entry.
+     */
+    public static final String CHANNEL_LATEST_LINK = "latest-link";
 
     /**
      * Description of the feed.
