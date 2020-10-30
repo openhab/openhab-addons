@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.satel.internal.event;
 
-import static org.eclipse.jdt.annotation.Checks.requireNonNull;
-
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,10 +71,10 @@ public class IntegraStateEvent implements SatelEvent {
         if (stateType.getStartByte() == 0 && bitsCount == stateBits.size()) {
             return stateBits;
         }
-        return requireNonNull(stateBitsMap.computeIfAbsent(stateType, k -> {
+        return stateBitsMap.computeIfAbsent(stateType, k -> {
             int startBit = k.getStartByte() * 8;
             return stateBits.get(startBit, startBit + bitsCount);
-        }));
+        });
     }
 
     /**

@@ -468,7 +468,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 case MonopriceAudioConnector.KEY_ZONE_UPDATE:
                     String zoneId = updateData.substring(0, 2);
                     MonopriceAudioZoneDTO zoneDTO = zoneDataMap.get(zoneId);
-                    if (MonopriceAudioZone.VALID_ZONE_IDS.contains(zoneId) || zoneDTO != null) {
+                    if (MonopriceAudioZone.VALID_ZONE_IDS.contains(zoneId) && zoneDTO != null) {
                         MonopriceAudioZone targetZone = MonopriceAudioZone.fromZoneId(zoneId);
                         processZoneUpdate(targetZone, zoneDTO, updateData);
                     } else {
