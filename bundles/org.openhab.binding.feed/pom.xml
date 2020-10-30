@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>org.jaxen.*;resolution:=optional</bnd.importpackage>
-    
+
     <rome.version>1.15.0</rome.version>
   </properties>
 

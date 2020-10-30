@@ -64,12 +64,12 @@
 		<state readOnly="true" pattern="%tc %n"/>
 	</channel-type>
 
-    <channel-type id="latest-link">
-        <item-type>String</item-type>
-        <label>Latest Link</label>
-        <description>Contains the link of the last feed entry.</description>
-        <state readOnly="true" pattern="%s"/>
-    </channel-type>
+	<channel-type id="latest-link">
+		<item-type>String</item-type>
+		<label>Latest Link</label>
+		<description>Contains the link of the last feed entry.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
 
 	<channel-type id="author" advanced="true">
 		<item-type>String</item-type>
