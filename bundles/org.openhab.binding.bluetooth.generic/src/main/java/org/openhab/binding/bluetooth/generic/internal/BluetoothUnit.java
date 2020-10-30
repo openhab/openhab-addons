@@ -234,11 +234,10 @@ public enum BluetoothUnit {
         public static final Unit<Angle> SECOND_ANGLE = addUnit(new TransformedUnit<Angle>(Units.RADIAN,
                 new PiMultiplierConverter().concatenate(new RationalConverter(1, 180 * 60 * 60))));
 
-        public static final Unit<Area> HECTARE = addUnit(new ProductUnit<Area>(Units.SQUARE_METRE.multiply(10000.0)));
-        public static final Unit<Area> BARN = addUnit(new ProductUnit<Area>(Units.SQUARE_METRE.multiply(10E-28)));
+        public static final Unit<Area> HECTARE = addUnit(Units.SQUARE_METRE.multiply(10000.0));
+        public static final Unit<Area> BARN = addUnit(Units.SQUARE_METRE.multiply(10E-28));
 
-        public static final Unit<Length> NAUTICAL_MILE = addUnit(
-                new ProductUnit<Length>(SIUnits.METRE.multiply(1852.0)));
+        public static final Unit<Length> NAUTICAL_MILE = addUnit(SIUnits.METRE.multiply(1852.0));
 
         public static final Unit<RadiantIntensity> WATT_PER_STERADIAN = addUnit(
                 new ProductUnit<RadiantIntensity>(Units.WATT.divide(Units.STERADIAN)));
@@ -249,11 +248,23 @@ public enum BluetoothUnit {
         public static final Unit<Frequency> CYCLES_PER_MINUTE = addUnit(new TransformedUnit<Frequency>(Units.HERTZ,
                 new RationalConverter(BigInteger.valueOf(60), BigInteger.ONE)));
 
+        public static final Unit<Angle> REVOLUTION = addUnit(new TransformedUnit<Angle>(Units.RADIAN,
+                new PiMultiplierConverter().concatenate(new RationalConverter(2, 1))));
         public static final Unit<AngularVelocity> REVOLUTION_PER_MINUTE = addUnit(
-                CYCLES_PER_MINUTE.alternate("rpm").asType(AngularVelocity.class));
-        public static final Unit<Frequency> STEP_PER_MINUTE = addUnit(CYCLES_PER_MINUTE.alternate("spm"));
-        public static final Unit<Frequency> STROKE_PER_MINUTE = addUnit(CYCLES_PER_MINUTE.alternate("spm"));
-        public static final Unit<Frequency> BEATS_PER_MINUTE = addUnit(CYCLES_PER_MINUTE.alternate("bpm"));
+                new ProductUnit<AngularVelocity>(REVOLUTION.divide(Units.MINUTE)));
+
+        public static final Unit<Dimensionless> STEPS = addUnit(SmartHomeUnits.ONE.alternate("steps"));
+        public static final Unit<Dimensionless> BEATS = addUnit(SmartHomeUnits.ONE.alternate("beats"));
+        public static final Unit<Dimensionless> STROKE = addUnit(SmartHomeUnits.ONE.alternate("stroke"));
+
+        public static final Unit<Frequency> STEP_PER_MINUTE = addUnit(
+                new ProductUnit<Frequency>(STEPS.divide(Units.MINUTE)));
+
+        public static final Unit<Frequency> BEATS_PER_MINUTE = addUnit(
+                new ProductUnit<Frequency>(BEATS.divide(Units.MINUTE)));
+
+        public static final Unit<Frequency> STROKE_PER_MINUTE = addUnit(
+                new ProductUnit<Frequency>(STROKE.divide(Units.MINUTE)));
 
         public static final Unit<MassFlowRate> GRAM_PER_SECOND = addUnit(
                 new ProductUnit<MassFlowRate>(Units.GRAM.divide(Units.SECOND)));
@@ -273,8 +284,7 @@ public enum BluetoothUnit {
         public static final Unit<LuminousExposure> LUX_HOUR = addUnit(
                 new ProductUnit<LuminousExposure>(Units.LUX.multiply(Units.HOUR)));
 
-        public static final Unit<Speed> KILOMETRE_PER_MINUTE = addUnit(
-                new ProductUnit<Speed>(Units.KILOMETRE_PER_HOUR.multiply(60.0)));
+        public static final Unit<Speed> KILOMETRE_PER_MINUTE = addUnit(Units.KILOMETRE_PER_HOUR.multiply(60.0));
 
         public static final Unit<VolumetricFlowRate> LITRE_PER_SECOND = addUnit(
                 new ProductUnit<VolumetricFlowRate>(Units.LITRE.divide(Units.SECOND)));
@@ -299,6 +309,10 @@ public enum BluetoothUnit {
             SimpleUnitFormat.getInstance().label(KILOMETRE_PER_MINUTE, "km/min");
             SimpleUnitFormat.getInstance().label(LITRE_PER_SECOND, "l/s");
             SimpleUnitFormat.getInstance().label(PARTS_PER_BILLION, "ppb");
+            SimpleUnitFormat.getInstance().label(BEATS_PER_MINUTE, "bpm");
+            SimpleUnitFormat.getInstance().label(STEP_PER_MINUTE, "steps/min");
+            SimpleUnitFormat.getInstance().label(STROKE_PER_MINUTE, "spm");
+            SimpleUnitFormat.getInstance().label(REVOLUTION_PER_MINUTE, "rpm");
         }
 
         private static <U extends Unit<?>> U addUnit(U unit) {

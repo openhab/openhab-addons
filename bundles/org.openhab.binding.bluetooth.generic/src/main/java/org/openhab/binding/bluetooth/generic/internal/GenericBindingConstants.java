@@ -29,8 +29,6 @@ public class GenericBindingConstants {
     public static final ThingTypeUID THING_TYPE_GENERIC = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
             "generic");
 
-    public static final String CHANNEL_CHARACTERISTIC_PREFIX = "char";
-
     // Field properties
     public static final String PROPERTY_FIELD_NAME = "FieldName";
     public static final String PROPERTY_FIELD_INDEX = "FieldIndex";

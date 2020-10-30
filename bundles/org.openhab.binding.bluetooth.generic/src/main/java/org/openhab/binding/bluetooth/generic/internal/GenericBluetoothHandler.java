@@ -15,9 +15,11 @@ package org.openhab.binding.bluetooth.generic.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -180,12 +182,20 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
         ThingBuilder builder = editThing();
         boolean changed = false;
+        Set<ChannelUID> channelUIDs = new HashSet<>();
         for (Channel channel : channels) {
             logger.trace("{} attempting to add channel {}", address, channel.getLabel());
             // we only want to add each channel, not replace all of them
             if (getThing().getChannel(channel.getUID()) == null) {
                 changed = true;
                 builder.withChannel(channel);
+            }
+            channelUIDs.add(channel.getUID());
+        }
+        for (Channel channel : getThing().getChannels()) {
+            if (!channelUIDs.contains(channel.getUID())) {
+                changed = true;
+                builder.withoutChannel(channel.getUID());
             }
         }
         if (changed) {
@@ -326,6 +336,8 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                         Channel channel = buildFieldChannel(field, label, !gattChar.isValidForWrite());
                         if (channel != null) {
                             channels.add(channel);
+                        } else {
+                            logger.warn("Unable to build channel for field: {}", field.getName());
                         }
                     } else {
                         logger.warn("GATT field is not supported: {} / {} / {}", charUUID, field.getName(),
@@ -392,13 +404,24 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
         private ChannelUID getChannelUID(@Nullable Field field) {
             StringBuilder builder = new StringBuilder();
-            builder.append(GenericBindingConstants.CHANNEL_CHARACTERISTIC_PREFIX)//
-                    .append("-")//
-                    .append(getCharacteristicUUID());
+            builder.append("service-")//
+                    .append(toBluetoothHandle(characteristic.getService().getUuid()))//
+                    .append("-char-")//
+                    .append(toBluetoothHandle(characteristic.getUuid()));
             if (field != null) {
                 builder.append("-").append(BluetoothChannelUtils.encodeFieldName(field.getName()));
             }
             return new ChannelUID(getThing().getUID(), builder.toString());
+        }
+
+        private String toBluetoothHandle(UUID uuid) {
+            long leastSig = uuid.getLeastSignificantBits();
+            long mostSig = uuid.getMostSignificantBits();
+
+            if (leastSig == BluetoothBindingConstants.BLUETOOTH_BASE_UUID) {
+                return "0x" + Long.toHexString(mostSig >> 32).toUpperCase();
+            }
+            return uuid.toString().toUpperCase();
         }
 
         private @Nullable String getFieldName(ChannelUID channelUID) {
