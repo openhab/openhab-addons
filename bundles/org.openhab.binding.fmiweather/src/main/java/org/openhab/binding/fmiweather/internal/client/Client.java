@@ -83,7 +83,7 @@ public class Client {
     }
     private static final NamespaceContext NAMESPACE_CONTEXT = new NamespaceContext() {
         @Override
-        public String getNamespaceURI(@Nullable String prefix) {
+        public @Nullable String getNamespaceURI(@Nullable String prefix) {
             return NAMESPACES.get(prefix);
         }
 

@@ -14,10 +14,7 @@ package org.openhab.transform.map.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.Callable;
@@ -125,7 +122,10 @@ public class MapTransformationServiceTest {
                 }
             }, 10000, 100);
         } catch (IOException e1) {
-            e1.printStackTrace(System.err);
+            PrintStream err = System.err;
+            if (err != null) {
+                e1.printStackTrace(err);
+            }
         }
 
         // Checks that an unknown input in an existing file give the expected

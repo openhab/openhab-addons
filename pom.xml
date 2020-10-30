@@ -284,6 +284,10 @@ Import-Package: \\
           <version>3.8.1</version>
           <configuration>
             <compilerId>eclipse</compilerId>
+            <compilerArguments>
+              <annotationpath>CLASSPATH</annotationpath>
+              <classpath>${project.build.directory}/dependency</classpath>
+            </compilerArguments>
             <compilerArgs>
               <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,-nullUncheckedConversion</arg>
               <arg>-warn:+null,+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>

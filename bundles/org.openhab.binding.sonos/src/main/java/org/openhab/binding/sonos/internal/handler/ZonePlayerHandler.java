@@ -1393,7 +1393,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
 
         try {
-            result = Long.valueOf(resultInput.get(requestedKey));
+            String resultString = resultInput.get(requestedKey);
+            if (resultString == null) {
+                throw new NumberFormatException("Requested key is null.");
+            }
+            result = Long.valueOf(resultString);
         } catch (NumberFormatException ex) {
             logger.debug("Could not fetch {} result for type: {} and filter: {}. Using default value '0': {}",
                     requestedKey, entriesType, entriesFilter, ex.getMessage(), ex);

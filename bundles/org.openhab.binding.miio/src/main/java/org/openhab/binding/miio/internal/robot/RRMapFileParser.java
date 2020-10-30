@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -358,7 +359,11 @@ public class RRMapFileParser {
         return sw.toString();
     }
 
-    private void printAreaDetails(ArrayList<float[]> areas, PrintWriter pw) {
+    private void printAreaDetails(@Nullable ArrayList<float[]> areas, PrintWriter pw) {
+        if (areas == null) {
+            pw.println("null");
+            return;
+        }
         areas.forEach(area -> {
             pw.print("\tArea coordinates:");
             for (int i = 0; i < area.length; i++) {
@@ -368,7 +373,11 @@ public class RRMapFileParser {
         });
     }
 
-    private void printObstacleDetails(ArrayList<int[]> obstacle, PrintWriter pw) {
+    private void printObstacleDetails(@Nullable ArrayList<int[]> obstacle, PrintWriter pw) {
+        if (obstacle == null) {
+            pw.println("null");
+            return;
+        }
         obstacle.forEach(area -> {
             pw.print("\tObstacle coordinates:");
             for (int i = 0; i < area.length; i++) {

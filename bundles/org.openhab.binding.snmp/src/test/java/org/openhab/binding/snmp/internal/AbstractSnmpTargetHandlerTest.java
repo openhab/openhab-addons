@@ -146,7 +146,7 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
 
         if (refresh) {
             ArgumentCaptor<PDU> pduCaptor = ArgumentCaptor.forClass(PDU.class);
-            verify(snmpService, atLeast(1)).send(pduCaptor.capture(), any(), eq(null), eq(thingHandler));
+            verify(snmpService, timeout(500).atLeast(1)).send(pduCaptor.capture(), any(), eq(null), eq(thingHandler));
             Vector<? extends VariableBinding> variables = pduCaptor.getValue().getVariableBindings();
             assertTrue(variables.stream().filter(v -> v.getOid().toDottedString().equals(TEST_OID)).findFirst()
                     .isPresent());

@@ -197,7 +197,8 @@ public class SmartherApiConnector {
                     }
                 }
             } catch (ExecutionException e) {
-                future.completeExceptionally(e.getCause());
+                Throwable cause = e.getCause();
+                future.completeExceptionally(cause != null ? cause : e);
             } catch (SmartherGatewayException e) {
                 future.completeExceptionally(e);
             } catch (RuntimeException | TimeoutException e) {

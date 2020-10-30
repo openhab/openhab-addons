@@ -243,9 +243,12 @@ public class Enums {
 
     public static <E extends Enum<E> & TypeWithIntProperty> E lookup(Class<E> en, int value)
             throws SmartherIllegalPropertyValueException {
-        for (E constant : en.getEnumConstants()) {
-            if (constant.getValue() == value) {
-                return constant;
+        E[] constants = en.getEnumConstants();
+        if (constants != null) {
+            for (E constant : constants) {
+                if (constant.getValue() == value) {
+                    return constant;
+                }
             }
         }
         throw new SmartherIllegalPropertyValueException(en.getSimpleName(), String.valueOf(value));
@@ -257,9 +260,12 @@ public class Enums {
 
     public static <E extends Enum<E> & TypeWithStringProperty> E lookup(Class<E> en, String value)
             throws SmartherIllegalPropertyValueException {
-        for (E constant : en.getEnumConstants()) {
-            if (constant.getValue().equals(value)) {
-                return constant;
+        E[] constants = en.getEnumConstants();
+        if (constants != null) {
+            for (E constant : constants) {
+                if (constant.getValue().equals(value)) {
+                    return constant;
+                }
             }
         }
         throw new SmartherIllegalPropertyValueException(en.getSimpleName(), value);

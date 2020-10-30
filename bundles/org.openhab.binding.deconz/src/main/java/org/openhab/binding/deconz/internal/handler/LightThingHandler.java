@@ -105,8 +105,10 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 || thing.getThingTypeUID().equals(THING_TYPE_EXTENDED_COLOR_LIGHT)) {
             try {
                 Map<String, String> properties = thing.getProperties();
-                ctMax = Integer.parseInt(properties.get(PROPERTY_CT_MAX));
-                ctMin = Integer.parseInt(properties.get(PROPERTY_CT_MIN));
+                String ctMaxString = properties.get(PROPERTY_CT_MAX);
+                ctMax = ctMaxString == null ? ZCL_CT_MAX : Integer.parseInt(ctMaxString);
+                String ctMinString = properties.get(PROPERTY_CT_MIN);
+                ctMin = ctMinString == null ? ZCL_CT_MIN : Integer.parseInt(ctMinString);
 
                 // minimum and maximum are inverted due to mired/kelvin conversion!
                 StateDescription stateDescription = StateDescriptionFragmentBuilder.create()

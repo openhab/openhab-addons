@@ -149,7 +149,12 @@ class SpotifyConnector {
                     }
                 }
             } catch (ExecutionException e) {
-                future.completeExceptionally(e.getCause());
+                Throwable cause = e.getCause();
+                if (cause != null) {
+                    future.completeExceptionally(cause);
+                } else {
+                    future.completeExceptionally(e);
+                }
             } catch (RuntimeException | TimeoutException e) {
                 future.completeExceptionally(e);
             } catch (InterruptedException e) {

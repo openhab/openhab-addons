@@ -67,8 +67,9 @@ public class VerisureGatewayThingHandler extends VerisureThingHandler<VerisureGa
                                 updateState(channelUID, state);
                             } else {
                                 String timestamp = communicationState.getTestDate();
-                                if (timestamp != null && channelUID.toString()
-                                        .contains(communicationState.getHardwareCarrierType())) {
+                                String carrierType = communicationState.getHardwareCarrierType();
+                                if (timestamp != null && carrierType != null
+                                        && channelUID.toString().contains(carrierType)) {
                                     updateTimeStamp(timestamp, channelUID);
                                 }
                             }

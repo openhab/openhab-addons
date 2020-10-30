@@ -278,7 +278,10 @@ public class OpenWeatherMapConnection {
                 .collect(joining("&", url + "?", ""));
     }
 
-    private String encodeParam(String value) {
+    private String encodeParam(@Nullable String value) {
+        if (value == null) {
+            return "";
+        }
         try {
             return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {

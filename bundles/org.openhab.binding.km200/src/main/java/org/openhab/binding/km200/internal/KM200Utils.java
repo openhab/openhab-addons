@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,8 @@ public class KM200Utils {
      * Translates a service name to a service path (Replaces # through /)
      *
      */
-    public static String translatesNameToPath(String name) {
-        return name.replace("#", "/");
+    public static @Nullable String translatesNameToPath(@Nullable String name) {
+        return name == null ? null : name.replace("#", "/");
     }
 
     /**

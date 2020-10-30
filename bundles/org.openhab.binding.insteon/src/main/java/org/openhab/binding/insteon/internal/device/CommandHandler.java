@@ -291,8 +291,8 @@ public abstract class CommandHandler {
         }
 
         private int getRampLevel(InsteonChannelConfiguration conf, int defaultValue) {
-            Map<String, @Nullable String> params = conf.getParameters();
-            return params.containsKey("ramplevel") ? Integer.parseInt(params.get("ramplevel")) : defaultValue;
+            String str = conf.getParameters().get("ramplevel");
+            return str != null ? Integer.parseInt(str) : defaultValue;
         }
     }
 
@@ -642,8 +642,8 @@ public abstract class CommandHandler {
         }
 
         protected double getRampTime(InsteonChannelConfiguration conf, double defaultValue) {
-            Map<String, @Nullable String> params = conf.getParameters();
-            return params.containsKey("ramptime") ? Double.parseDouble(params.get("ramptime")) : defaultValue;
+            String str = conf.getParameters().get("ramptime");
+            return str != null ? Double.parseDouble(str) : defaultValue;
         }
     }
 

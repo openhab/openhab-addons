@@ -211,7 +211,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         addedLinks.add(link);
     }
 
-    protected List<State> getStateUpdates(String itemName) {
+    protected @Nullable List<State> getStateUpdates(String itemName) {
         return stateSubscriber.stateUpdates.get(itemName);
     }
 
