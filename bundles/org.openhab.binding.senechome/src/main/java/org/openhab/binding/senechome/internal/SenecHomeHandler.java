@@ -36,7 +36,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.senechome.internal.json.SenecHomeResponse;
 import org.openhab.core.cache.ExpiringCache;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -228,7 +227,7 @@ public class SenecHomeHandler extends BaseThingHandler {
             Channel channelBatteryStateValue = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_STATE_VALUE);
             updateState(channelBatteryStateValue.getUID(),
-                    new DecimalType(getSenecValue(response.energy.batteryState).intValue()));
+                    new QuantityType<>(getSenecValue(response.energy.batteryState).intValue(), SmartHomeUnits.ONE));
 
             Channel channelLiveBatCharge = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_LIVE_BAT_CHARGE);

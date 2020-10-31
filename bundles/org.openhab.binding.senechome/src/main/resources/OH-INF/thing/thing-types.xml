@@ -99,7 +99,7 @@
 	</channel-type>
 
 	<channel-type id="batteryStateValue">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Battery State Value</label>
 		<category>Battery</category>
 		<state readOnly="true" pattern="%d"/>
