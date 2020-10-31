@@ -70,7 +70,7 @@ public class SOAPValueConverter {
             QuantityType<?> value = (unit.isEmpty()) ? ((QuantityType<?>) command)
                     : ((QuantityType<?>) command).toUnit(unit);
             if (value == null) {
-                logger.info("Could not convert {} to unit {}", command, unit);
+                logger.warn("Could not convert {} to unit {}", command, unit);
                 return Optional.empty();
             }
             switch (dataType) {

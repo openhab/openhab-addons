@@ -286,6 +286,7 @@ public class Util {
                 return Optional.of(nodeList.item(0).getTextContent());
             }
         } catch (SOAPException e) {
+            // if an error occurs, returning an empty Optional is fine
         }
         return Optional.empty();
     }

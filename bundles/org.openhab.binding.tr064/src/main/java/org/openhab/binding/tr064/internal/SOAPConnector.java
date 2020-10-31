@@ -133,7 +133,7 @@ public class SOAPConnector {
             if (logger.isTraceEnabled()) {
                 request.getContent().forEach(buffer -> logger.trace("Request: {}", new String(buffer.array())));
             }
-            
+
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 // retry once if authentication expired

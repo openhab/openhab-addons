@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tr064.internal;
 
+import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYPE_FRITZBOX;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,7 +75,9 @@ public class Tr064HandlerFactory extends BaseThingHandlerFactory {
 
         if (Tr064RootHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             Tr064RootHandler handler = new Tr064RootHandler((Bridge) thing, httpClient);
-            phonebookProfileFactory.registerPhonebookProvider(handler);
+            if (thingTypeUID.equals(THING_TYPE_FRITZBOX)) {
+                phonebookProfileFactory.registerPhonebookProvider(handler);
+            }
             return handler;
         } else if (Tr064SubHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new Tr064SubHandler(thing);

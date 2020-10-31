@@ -33,7 +33,6 @@ If you only configured password authentication for your device, the `user` param
 The second credential parameter is `password`, which is mandatory.
 For security reasons it is highly recommended to set both, username and password.
 
-
 ### `fritzbox`
 
 All additional parameters for `fritzbox` devices (i.e. except those that are shared with `generic`) are advanced parameters.
@@ -58,7 +57,7 @@ If the `wanBlockIPs` parameter is set, a channel for each IP is created to block
 Values need to be IPv4 addresses in the format `a.b.c.d`.
 This is an optional parameter and multiple values are allowed.
 
-If the `PHONEBOOK` transformation shall be used, it is necessary to retrieve the phonebooks from the FritzBox.
+If the `PHONEBOOK` profile shall be used, it is necessary to retrieve the phonebooks from the FritzBox.
 The `phonebookInterval` is uses to set the refresh cycle for phonebooks.
 
 ### `subdevice`, `subdeviceLan`
@@ -118,5 +117,3 @@ If only a specific phonebook from the device should be used, this can be specifi
 The default is to use all available phonebooks from the specified thing.
 In case the format of the number in the phonebook and the format of the number from the channel are different (e.g. regarding country prefixes), the `matchCount` parameter can be used.
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
-
-## Full Example
