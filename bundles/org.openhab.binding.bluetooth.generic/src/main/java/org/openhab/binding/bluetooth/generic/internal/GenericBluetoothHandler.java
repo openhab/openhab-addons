@@ -169,7 +169,6 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
         ThingBuilder builder = editThing();
         boolean changed = false;
-        // Set<ChannelUID> channelUIDs = new HashSet<>();
         for (Channel channel : channels) {
             logger.trace("{} attempting to add channel {}", address, channel.getLabel());
             // we only want to add each channel, not replace all of them
@@ -177,14 +176,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                 changed = true;
                 builder.withChannel(channel);
             }
-            // channelUIDs.add(channel.getUID());
         }
-        // for (Channel channel : getThing().getChannels()) {
-        // if (!channelUIDs.contains(channel.getUID())) {
-        // changed = true;
-        // builder.withoutChannel(channel.getUID());
-        // }
-        // }
         if (changed) {
             updateThing(builder.build());
         }
@@ -245,7 +237,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                                     "Could not write data to characteristic: " + characteristicUUID);
                         }
                     }
-                } catch (Exception ex) {
+                } catch (RuntimeException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Could not update bluetooth device. Error: " + ex.getMessage());
                     logger.warn("Could not update bluetooth device: {} : {}", characteristicUUID, ex.getMessage());

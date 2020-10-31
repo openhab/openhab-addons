@@ -91,7 +91,7 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
         return null;
     }
 
-    private boolean isValidUID(ChannelTypeUID channelTypeUID) {
+    private static boolean isValidUID(ChannelTypeUID channelTypeUID) {
         if (!channelTypeUID.getBindingId().equals(BluetoothBindingConstants.BINDING_ID)) {
             return false;
         }
@@ -126,14 +126,6 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
         return channelTypeUID;
     }
 
-    /**
-     * Builds a new channel type for a channel type UID.
-     * See
-     * {@link org.sputnikdev.esh.binding.bluetooth.handler.BluetoothChannelBuilder#buildChannels(URL, List, boolean, boolean)}
-     *
-     * @param channelTypeUID channel type UID
-     * @return new channel type
-     */
     private ChannelType buildChannelType(ChannelTypeUID channelTypeUID, boolean advanced, boolean readOnly,
             Field field) {
         List<StateOption> options = getStateOptions(field);
