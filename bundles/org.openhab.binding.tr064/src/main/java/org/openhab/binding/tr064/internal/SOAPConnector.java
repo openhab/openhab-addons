@@ -189,7 +189,7 @@ public class SOAPConnector {
                     } catch (Tr064CommunicationException e) {
                         logger.warn("Could not send command {}: {}", command, e.getMessage());
                     }
-                }, () -> logger.info("Could not convert {} to SOAP value", command));
+                }, () -> logger.warn("Could not convert {} to SOAP value", command));
     }
 
     /**
