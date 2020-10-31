@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.serial.internal.channel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
 import org.osgi.framework.BundleContext;
@@ -21,6 +23,7 @@ import org.osgi.framework.BundleContext;
  *
  * @author Mike Major - Initial contribution
  */
+@NonNullByDefault
 public class SwitchChannel extends DeviceChannel {
 
     public SwitchChannel(final BundleContext bundleContext, final ChannelConfig config) {
@@ -28,7 +31,7 @@ public class SwitchChannel extends DeviceChannel {
     }
 
     @Override
-    public String mapCommand(final Command command) {
+    public @Nullable String mapCommand(final Command command) {
         String data = null;
 
         if (config.on != null && OnOffType.ON.equals(command)) {

@@ -80,17 +80,13 @@
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="serialDevice" extensible="string, number, switch, rollershutter">
+	<thing-type id="serialDevice" extensible="string, number, dimmer, switch, rollershutter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serialBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Serial Device</label>
 		<description>Represents a device</description>
-
-		<channels>
-			<channel id="device" typeId="string"/>
-		</channels>
 
 		<config-description>
 			<parameter name="patternMatch" type="text">
@@ -122,16 +118,16 @@
 		<description>Channel to receive commands as a string</description>
 		<config-description>
 			<parameter name="transform" type="text">
-				<label>Transform to convert device data to channel state</label>
-				<description>Transform applied to the device data, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+				<label>State Transform</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
 			</parameter>
 			<parameter name="commandTransform" type="text">
-				<label>Transform to convert command to device value</label>
-				<description>Transform applied to the command, e.g. JS(device.js)</description>
+				<label>Command Transform</label>
+				<description>Transform used to convert command to device data, e.g. JS(device.js)</description>
 			</parameter>
 			<parameter name="commandFormat" type="text">
-				<label>Format string to apply to command before transform</label>
-				<description>Format string applied to the command, e.g. ID=671;COMMAND=%s</description>
+				<label>Command Format</label>
+				<description>Format string applied to the command before transform, e.g. ID=671;COMMAND=%s</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -142,16 +138,36 @@
 		<description>Channel to receive commands as a number</description>
 		<config-description>
 			<parameter name="transform" type="text">
-				<label>Transform to convert device data to channel state</label>
-				<description>Transform applied to the device data, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+				<label>State Transform</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
 			</parameter>
 			<parameter name="commandTransform" type="text">
-				<label>Transform to convert command to device value</label>
-				<description>Transform applied to the command, e.g. JS(device.js)</description>
+				<label>Command Transform</label>
+				<description>Transform used to convert command to device data, e.g. JS(device.js)</description>
 			</parameter>
 			<parameter name="commandFormat" type="text">
-				<label>Format string to apply to command before transform</label>
-				<description>Format string applied to the command, e.g. ID=671;COMMAND=%s</description>
+				<label>Command Format</label>
+				<description>Format string applied to the command before transform, e.g. ID=671;VAL=%f</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Channel to receive commands as a percentage</description>
+		<config-description>
+			<parameter name="transform" type="text">
+				<label>State Transform</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			</parameter>
+			<parameter name="commandTransform" type="text">
+				<label>Command Transform</label>
+				<description>Transform used to convert command to device data, e.g. JS(device.js)</description>
+			</parameter>
+			<parameter name="commandFormat" type="text">
+				<label>Command Format</label>
+				<description>Format string applied to the command before transform, e.g. ID=671;VAL=%d</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -162,8 +178,8 @@
 		<description>Channel to send specific values when used with a Switch</description>
 		<config-description>
 			<parameter name="transform" type="text">
-				<label>Transform to convert device data to channel state</label>
-				<description>Transform applied to the device data, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+				<label>State Transform</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
 			</parameter>
 			<parameter name="on" type="text">
 				<label>On Value</label>
@@ -182,8 +198,8 @@
 		<description>Channel to send specific values when used with a Rollershutter</description>
 		<config-description>
 			<parameter name="transform" type="text">
-				<label>Transform to convert device data to channel state</label>
-				<description>Transform applied to the device data, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+				<label>State Transform</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
 			</parameter>
 			<parameter name="up" type="text">
 				<label>Up Value</label>
@@ -196,6 +212,10 @@
 			<parameter name="stop" type="text">
 				<label>Stop Value</label>
 				<description>Send this value when receiving a STOP command</description>
+			</parameter>
+			<parameter name="commandFormat" type="text">
+				<label>Percent Format</label>
+				<description>Format string applied to the percent command, e.g. ID=671;VAL=%d</description>
 			</parameter>
 		</config-description>
 	</channel-type>

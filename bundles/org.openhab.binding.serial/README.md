@@ -69,12 +69,27 @@ The channels supported by the `serialBridge` are:
 
 The channels supported by the `serialDevice` are:
 
-| Channel  | Type             | Description                                                                                              |
-|----------|------------------|----------------------------------------------------------------------------------------------------------|
-| string   | String           | Channel for receiving string based commands. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can optionally be formatted and transformed before sending to the device.    |
-| number   | Number           | Channel for receiving number based commands, e.g. from a Dimmer. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can optionally be formatted and transformed before sending to the device.    |
-| switch   | Switch           | Channel for receiving commands from a Switch. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the ON and OFF commands.    |
-| rollershutter   | Rollershutter           | Channel for receiving commands from a Rollershutter. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the UP, DOWN and STOP commands.    |
+| Channel Type  | Type             | Description                                                                                              |
+|---------------|------------------|----------------------------------------------------------------------------------------------------------|
+| string        | String           | Channel for receiving string based commands. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can optionally be formatted and transformed before sending to the device. |
+| number        | Number           | Channel for receiving number based commands. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can optionally be formatted and transformed before sending to the device. |
+| dimmer        | Dimmer           | Channel for receiving percentage based commands, e.g. from a Dimmer. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can optionally be formatted and transformed before sending to the device. |
+| switch        | Switch           | Channel for receiving commands from a Switch. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the ON and OFF commands. |
+| rollershutter | Rollershutter    | Channel for receiving commands from a Rollershutter. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the UP, DOWN and STOP commands. |
+
+The configuration for the `serialBridge` channels consists of the following parameters:
+
+| Parameter        | Description                                                                            | Supported Channels |
+|------------------|----------------------------------------------------------------------------------------|--------------------|
+| transform        | Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)  | string, number, dimmer, switch, rollershutter |
+| commandTransform | Transform used to convert command to device data, e.g. JS(device.js)                   | string, number, dimmer |
+| commandFormat    | Format string applied to the command before transform, e.g. ID=671;COMMAND=%s          | string, number, dimmer, rollershutter |
+| on               | Send this value when receiving an ON command                                           | switch |
+| off              | Send this value when receiving an OFF command                                          | switch |
+| up               | Send this value when receiving an UP command                                           | rollershutter |
+| down             | Send this value when receiving a DOWN command                                          | rollershutter |
+| stop             | Send this value when receiving a STOP command                                          | rollershutter |
+
 
 ## Full Example
 
@@ -86,12 +101,35 @@ demo.things:
 
 ```
 Bridge serial:serialBridge:sensors [serialPort="/dev/ttyUSB01", baudRate=57600] {
-    Thing serialDevice temperatureSensor [patternMatch="20;05;Cresta;ID=2801;.*"]
+    Thing serialDevice temperatureSensor [patternMatch="20;05;Cresta;ID=2801;.*"] {
+        Channels:
+            Type number : temperature [transform="REGEX(.*?TEMP=(.*?);.*)"]
+            Type number : humidity [transform="REGEX(.*?HUM=(.*?);.*)"]
+    }
+    Thing serialDevice rollershutter [patternMatch=".*"] {
+        Channels:
+            Type rollershutter : serialRollo [transform="REGEX(Position:([0-9.]*))", up="Rollo_UP\n", down="Rollo_DOWN\n", stop="Rollo_STOP\n"]
+            Type switch : roloAt100 [transform="REGEX(s/Position:100/ON/)"]
+    }
+    Thing serialDevice relay [patternMatch=".*"] {
+        Channels:
+            Type switch : serialRelay [on="Q1_ON\n", off="Q1_OFF\n"]
+    }
+    Thing serialDevice myDevice [patternMatch="ID=2341;.*"] {
+        Channels:
+            Type string : control [commandTransform="JS(addCheckSum.js)", commandFormat="ID=2341;COMMAND=%s;"]
+    }
 }
+
 ```
 
 demo.items:
 
 ```
-Number:Temperature myTemp "My Temperature" {channel="serial:serialDevice:sensors:temperatureSensor:device" [profile="transform:REGEX", function=".*?TEMP=(.*?);.*"]}
+Number:Temperature myTemp "My Temperature" {channel="serial:serialDevice:sensors:temperatureSensor:temperature"}
+Number myHum "My Humidity" {channel="serial:serialDevice:sensors:temperatureSensor:humidity"}
+Switch serialRelay "Relay Q1" (Entrance) {channel="serial:serialDevice:sensors:relay:serialRelay"}
+Rollershutter serialRollo "Entrance Rollo" (Entrance) {channel="serial:serialDevice:sensors:rollershutter:serialRollo"}
+Rollershutter roloAt100 "Rolo at 100" (Entrance) {channel="serial:serialDevice:sensors:rollershutter:roloAt100"}
+String deviceControl {channel="serial:serialDevice:sensors:myDevice:control"}
 ```

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.serial.internal.channel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
@@ -22,6 +24,7 @@ import org.osgi.framework.BundleContext;
  *
  * @author Mike Major - Initial contribution
  */
+@NonNullByDefault
 public class RollershutterChannel extends DeviceChannel {
 
     public RollershutterChannel(final BundleContext bundleContext, final ChannelConfig config) {
@@ -29,15 +32,21 @@ public class RollershutterChannel extends DeviceChannel {
     }
 
     @Override
-    public String mapCommand(final Command command) {
+    public @Nullable String mapCommand(final Command command) {
         String data = null;
 
-        if (config.up != null && UpDownType.UP.equals(command)) {
-            data = config.up;
-        } else if (config.down != null && UpDownType.DOWN.equals(command)) {
-            data = config.down;
-        } else if (config.stop != null && StopMoveType.STOP.equals(command)) {
-            data = config.stop;
+        if (command instanceof UpDownType) {
+            if (config.up != null && UpDownType.UP.equals(command)) {
+                data = config.up;
+            } else if (config.down != null && UpDownType.DOWN.equals(command)) {
+                data = config.down;
+            }
+        } else if (command instanceof StopMoveType) {
+            if (config.stop != null && StopMoveType.STOP.equals(command)) {
+                data = config.stop;
+            }
+        } else {
+            data = super.mapCommand(command);
         }
 
         logger.debug("Mapped command is '{}'", data);

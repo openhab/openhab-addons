@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.serial.internal.channel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -19,6 +20,7 @@ import org.osgi.framework.BundleContext;
  *
  * @author Mike Major - Initial contribution
  */
+@NonNullByDefault
 public class NumberChannel extends DeviceChannel {
 
     public NumberChannel(final BundleContext bundleContext, final ChannelConfig config) {

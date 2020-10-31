@@ -36,6 +36,7 @@ public class SerialBindingConstants {
     public static final String BINARY_CHANNEL = "binary";
     public static final String DEVICE_STRING_CHANNEL = "string";
     public static final String DEVICE_NUMBER_CHANNEL = "number";
+    public static final String DEVICE_DIMMER_CHANNEL = "dimmer";
     public static final String DEVICE_SWITCH_CHANNEL = "switch";
     public static final String DEVICE_ROLLERSHUTTER_CHANNEL = "rollershutter";
 }

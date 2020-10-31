@@ -16,14 +16,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.framework.BundleContext;
 
 /**
- * The {@link StringChannel} channel applies a format followed by a transform.
+ * The {@link DimmerChannel} channel applies a format followed by a transform.
  *
  * @author Mike Major - Initial contribution
  */
 @NonNullByDefault
-public class StringChannel extends DeviceChannel {
+public class DimmerChannel extends DeviceChannel {
 
-    public StringChannel(final BundleContext bundleContext, final ChannelConfig config) {
+    public DimmerChannel(final BundleContext bundleContext, final ChannelConfig config) {
         super(bundleContext, config);
     }
 }

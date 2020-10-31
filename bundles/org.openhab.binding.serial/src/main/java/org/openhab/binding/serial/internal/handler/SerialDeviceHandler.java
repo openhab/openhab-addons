@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.serial.internal.handler;
 
+import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_DIMMER_CHANNEL;
 import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_NUMBER_CHANNEL;
 import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_ROLLERSHUTTER_CHANNEL;
 import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_STRING_CHANNEL;
@@ -26,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.channel.ChannelConfig;
 import org.openhab.binding.serial.internal.channel.DeviceChannel;
+import org.openhab.binding.serial.internal.channel.DimmerChannel;
 import org.openhab.binding.serial.internal.channel.NumberChannel;
 import org.openhab.binding.serial.internal.channel.RollershutterChannel;
 import org.openhab.binding.serial.internal.channel.StringChannel;
@@ -108,6 +110,9 @@ public class SerialDeviceHandler extends BaseThingHandler {
                             break;
                         case DEVICE_NUMBER_CHANNEL:
                             channels.put(c.getUID(), new NumberChannel(bundleContext, channelConfig));
+                            break;
+                        case DEVICE_DIMMER_CHANNEL:
+                            channels.put(c.getUID(), new DimmerChannel(bundleContext, channelConfig));
                             break;
                         case DEVICE_SWITCH_CHANNEL:
                             channels.put(c.getUID(), new SwitchChannel(bundleContext, channelConfig));
