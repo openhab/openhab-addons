@@ -10,23 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.deconz.internal.netutils;
+package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 
 /**
- * Informs about received messages
+ * The {@link GroupState} is send by the websocket connection as well as the Rest API.
+ * It is part of a {@link GroupMessage}.
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public interface WebSocketMessageListener {
-    /**
-     * A new message was received
-     *
-     * @param sensorID The sensor ID (API endpoint)
-     * @param message The received message
-     */
-    void messageReceived(String sensorID, DeconzBaseMessage message);
+public class GroupState {
+    public boolean all_on;
+    public boolean any_on;
+
+    @Override
+    public String toString() {
+        return "GroupState{" + "all_on=" + all_on + ", any_on=" + any_on + '}';
+    }
 }
