@@ -12,21 +12,23 @@
  */
 package org.openhab.binding.helios.internal;
 
-import static org.openhab.binding.helios.internal.HeliosBindingConstants.*;
+import static org.openhab.binding.helios.internal.HeliosBindingConstants.HELIOS_VARIO_IP_2_21_TYPE;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.client.ClientBuilder;
 
 import org.openhab.binding.helios.internal.handler.HeliosHandler221;
-import org.openhab.binding.helios.internal.handler.HeliosHandler27;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HeliosHandlerFactory} is responsible for creating things and thing
@@ -37,8 +39,22 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.helios")
 public class HeliosHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(HELIOS_VARIO_IP_2_7_TYPE, HELIOS_VARIO_IP_2_21_TYPE).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(HELIOS_VARIO_IP_2_21_TYPE);
+
+    private static final int CONNECT_TIMEOUT = 3;
+    private static final int READ_TIMEOUT = 200;
+
+    private final ClientBuilder clientBuilder;
+
+    @Activate
+    public HeliosHandlerFactory(@Reference ClientBuilder clientBuilder) {
+        this.clientBuilder = clientBuilder;
+        this.clientBuilder.connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS);
+        this.clientBuilder.readTimeout(READ_TIMEOUT, TimeUnit.SECONDS);
+
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,14 +63,11 @@ public class HeliosHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
+
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(HELIOS_VARIO_IP_2_7_TYPE)) {
-            return new HeliosHandler27(thing);
-        }
-
         if (thingTypeUID.equals(HELIOS_VARIO_IP_2_21_TYPE)) {
-            return new HeliosHandler221(thing);
+            return new HeliosHandler221(thing, clientBuilder);
         }
 
         return null;
