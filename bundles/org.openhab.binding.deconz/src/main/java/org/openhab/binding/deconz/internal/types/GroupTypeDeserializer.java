@@ -23,16 +23,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- * Custom deserializer for {@link LightType}
+ * Custom deserializer for {@link GroupType}
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class LightTypeDeserializer implements JsonDeserializer<LightType> {
+public class GroupTypeDeserializer implements JsonDeserializer<GroupType> {
     @Override
-    public LightType deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
+    public GroupType deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
             @Nullable JsonDeserializationContext context) throws JsonParseException {
         String s = json != null ? json.getAsString() : null;
-        return s == null ? LightType.UNKNOWN : LightType.fromString(s);
+        return s == null ? GroupType.UNKNOWN : GroupType.fromString(s);
     }
 }
