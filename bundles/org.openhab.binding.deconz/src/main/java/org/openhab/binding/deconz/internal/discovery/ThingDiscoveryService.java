@@ -26,12 +26,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
+import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
+import org.openhab.binding.deconz.internal.types.GroupType;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -93,12 +95,53 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     }
 
     /**
-     * Add a sensor device to the discovery inbox.
+     * Add a group to the discovery inbox.
      *
-     * @param lightID The id of the light
-     * @param light The sensor description
+     * @param groupId The id of the light
+     * @param group The group description
      */
-    private void addLight(String lightID, LightMessage light) {
+    private void addGroup(String groupId, GroupMessage group) {
+        final ThingUID bridgeUID = this.bridgeUID;
+        if (bridgeUID == null) {
+            logger.warn("Received a message from non-existent bridge. This most likely is a bug.");
+            return;
+        }
+
+        ThingTypeUID thingTypeUID;
+        GroupType groupType = group.type;
+
+        if (groupType == null) {
+            logger.warn("No group type reported for group {} ({})", group.modelid, group.name);
+            return;
+        }
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(CONFIG_ID, groupId);
+
+        switch (groupType) {
+            case LIGHT_GROUP:
+                thingTypeUID = THING_TYPE_LIGHTGROUP;
+                break;
+            default:
+                logger.debug(
+                        "Found group: {} ({}), type {} but no thing type defined for that type. This should be reported.",
+                        group.id, group.name, group.type);
+                return;
+        }
+
+        ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, group.id);
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withLabel(group.name)
+                .withProperties(properties).withRepresentationProperty(CONFIG_ID).build();
+        thingDiscovered(discoveryResult);
+    }
+
+    /**
+     * Add a light device to the discovery inbox.
+     *
+     * @param lightId The id of the light
+     * @param light The light description
+     */
+    private void addLight(String lightId, LightMessage light) {
         final ThingUID bridgeUID = this.bridgeUID;
         if (bridgeUID == null) {
             logger.warn("Received a message from non-existent bridge. This most likely is a bug.");
@@ -114,7 +157,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put("id", lightID);
+        properties.put(CONFIG_ID, lightId);
         properties.put(UNIQUE_ID, light.uniqueid);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, light.swversion);
         properties.put(Thing.PROPERTY_VENDOR, light.manufacturername);
@@ -227,7 +270,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, sensor.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperty("id", sensorID)
+                .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperty(CONFIG_ID, sensorID)
                 .withProperty(UNIQUE_ID, sensor.uniqueid).withRepresentationProperty(UNIQUE_ID).build();
         thingDiscovered(discoveryResult);
     }
@@ -268,6 +311,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         if (fullState != null) {
             fullState.sensors.forEach(this::addSensor);
             fullState.lights.forEach(this::addLight);
+            fullState.groups.forEach(this::addGroup);
         }
     }
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="deconz"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lightgroup">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Light Group</label>
+		<channels>
+			<channel typeId="all_on" id="all_on"/>
+			<channel typeId="any_on" id="any_on"/>
+			<channel typeId="alert" id="alert"/>
+			<channel typeId="color" id="color"/>
+			<channel typeId="ct" id="color_temperature"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor"/>
+	</thing-type>
+
+	<channel-type id="alert">
+		<item-type>Switch</item-type>
+		<label>Alert</label>
+	</channel-type>
+
+	<channel-type id="all_on">
+		<item-type>Switch</item-type>
+		<label>All On</label>
+		<description>"On" if all lights in this group are "On", otherwise "Off".</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="any_on">
+		<item-type>Switch</item-type>
+		<label>Any On</label>
+		<description>"On" if any light in this group is "On", otherwise "Off".</description>
+	</channel-type>
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+	</channel-type>
+
+	<channel-type id="ct">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<state pattern="%d K" min="15" max="100000" step="100"/>
+	</channel-type>
+
+</thing:thing-descriptions>
