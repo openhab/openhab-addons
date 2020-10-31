@@ -16,7 +16,7 @@
 
   <properties>
     <org.osgi.service.http.port>9090</org.osgi.service.http.port>
-    
+
     <rome.version>1.15.0</rome.version>
   </properties>
 
