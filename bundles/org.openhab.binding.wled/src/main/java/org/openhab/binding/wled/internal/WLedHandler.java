@@ -177,7 +177,7 @@ public class WLedHandler extends BaseThingHandler {
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FX), fxOptions);
         counter = 0;
         for (String value : (WLedHelper.getValue(message, "\"palettes\":[", "]").replace("\"", "")).split(",")) {
-            palleteOptions.add(new StateOption("" + counter++, value));
+            palleteOptions.add(new StateOption(Integer.toString(counter++), value));
         }
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), palleteOptions);
     }
