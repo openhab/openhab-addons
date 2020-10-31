@@ -141,9 +141,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     // Our BT address
     private @Nullable BluetoothAddress address;
 
-    // Map of Bluetooth devices known to this bridge.
-    // This is all devices we have heard on the network - not just things bound to the bridge
-
     // Map of open connections
     private final Map<Integer, BluetoothAddress> connections = new ConcurrentHashMap<>();
 
