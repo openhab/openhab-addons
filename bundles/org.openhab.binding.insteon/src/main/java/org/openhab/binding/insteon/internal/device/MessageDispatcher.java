@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public abstract class MessageDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(MessageDispatcher.class);
 
@@ -128,7 +127,6 @@ public abstract class MessageDispatcher {
     //
     //
 
-    @NonNullByDefault
     public static class DefaultDispatcher extends MessageDispatcher {
         DefaultDispatcher(DeviceFeature f) {
             super(f);
@@ -194,7 +192,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class DefaultGroupDispatcher extends MessageDispatcher {
         DefaultGroupDispatcher(DeviceFeature f) {
             super(f);
@@ -263,7 +260,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class PollGroupDispatcher extends MessageDispatcher {
         PollGroupDispatcher(DeviceFeature f) {
             super(f);
@@ -290,7 +286,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class SimpleDispatcher extends MessageDispatcher {
         SimpleDispatcher(DeviceFeature f) {
             super(f);
@@ -328,7 +323,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class X10Dispatcher extends MessageDispatcher {
         X10Dispatcher(DeviceFeature f) {
             super(f);
@@ -355,7 +349,6 @@ public abstract class MessageDispatcher {
         }
     }
 
-    @NonNullByDefault
     public static class PassThroughDispatcher extends MessageDispatcher {
         PassThroughDispatcher(DeviceFeature f) {
             super(f);
@@ -376,7 +369,6 @@ public abstract class MessageDispatcher {
     /**
      * Drop all incoming messages silently
      */
-    @NonNullByDefault
     public static class NoOpDispatcher extends MessageDispatcher {
         NoOpDispatcher(DeviceFeature f) {
             super(f);
@@ -404,6 +396,7 @@ public abstract class MessageDispatcher {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
+            @Nullable
             T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
             ch.setParameters(params);
             return ch;
