@@ -91,8 +91,9 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
             case CHANNEL_COLOR:
                 if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
-                    newGroupAction.bri = Util.fromPercentType(hsbCommand.getBrightness());
-                    if (newGroupAction.bri > 0) {
+                    Integer bri = Util.fromPercentType(hsbCommand.getBrightness());
+                    newGroupAction.bri = bri;
+                    if (bri > 0) {
                         newGroupAction.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
                         newGroupAction.sat = Util.fromPercentType(hsbCommand.getSaturation());
                     }
@@ -118,7 +119,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
                 return;
         }
 
-        if (newGroupAction.bri != null && newGroupAction.bri > 0) {
+        Integer bri = newGroupAction.bri;
+        if (bri != null && bri > 0) {
             newGroupAction.on = true;
         }
 

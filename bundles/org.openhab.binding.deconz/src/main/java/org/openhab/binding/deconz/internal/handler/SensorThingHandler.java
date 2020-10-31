@@ -34,8 +34,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -64,8 +62,6 @@ public class SensorThingHandler extends SensorBaseThingHandler {
 
     private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_TEMPERATURE);
-
-    private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
 
     public SensorThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
