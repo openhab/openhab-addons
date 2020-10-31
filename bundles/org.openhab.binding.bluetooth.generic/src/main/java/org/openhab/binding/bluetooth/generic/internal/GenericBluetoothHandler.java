@@ -13,12 +13,9 @@
 package org.openhab.binding.bluetooth.generic.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -38,7 +35,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -70,20 +66,12 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
     private final Map<BluetoothCharacteristic, CharacteristicHandler> charHandlers = new ConcurrentHashMap<>();
     private final Map<ChannelUID, CharacteristicHandler> channelHandlers = new ConcurrentHashMap<>();
     private final BluetoothGattParser gattParser = BluetoothGattParserFactory.getDefault();
+    private final CharacteristicChannelTypeProvider channelTypeProvider;
 
-    private CharacteristicChannelTypeProvider channelTypeProvider = new CharacteristicChannelTypeProvider();
     private @Nullable Future<?> readCharacteristicJob = null;
 
-    public GenericBluetoothHandler(Thing thing) {
+    public GenericBluetoothHandler(Thing thing, CharacteristicChannelTypeProvider channelTypeProvider) {
         super(thing);
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(CharacteristicChannelTypeProvider.class);
-    }
-
-    public void setChannelTypeProvider(CharacteristicChannelTypeProvider channelTypeProvider) {
         this.channelTypeProvider = channelTypeProvider;
     }
 
@@ -128,7 +116,6 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
         charHandlers.clear();
         channelHandlers.clear();
-        channelTypeProvider.clearRegistry();
     }
 
     @Override
@@ -182,7 +169,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
         ThingBuilder builder = editThing();
         boolean changed = false;
-        Set<ChannelUID> channelUIDs = new HashSet<>();
+        // Set<ChannelUID> channelUIDs = new HashSet<>();
         for (Channel channel : channels) {
             logger.trace("{} attempting to add channel {}", address, channel.getLabel());
             // we only want to add each channel, not replace all of them
@@ -190,14 +177,14 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                 changed = true;
                 builder.withChannel(channel);
             }
-            channelUIDs.add(channel.getUID());
+            // channelUIDs.add(channel.getUID());
         }
-        for (Channel channel : getThing().getChannels()) {
-            if (!channelUIDs.contains(channel.getUID())) {
-                changed = true;
-                builder.withoutChannel(channel.getUID());
-            }
-        }
+        // for (Channel channel : getThing().getChannels()) {
+        // if (!channelUIDs.contains(channel.getUID())) {
+        // changed = true;
+        // builder.withoutChannel(channel.getUID());
+        // }
+        // }
         if (changed) {
             updateThing(builder.build());
         }

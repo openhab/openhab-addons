@@ -25,16 +25,17 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sputnikdev.bluetooth.gattparser.BluetoothGattParser;
+import org.sputnikdev.bluetooth.gattparser.BluetoothGattParserFactory;
 import org.sputnikdev.bluetooth.gattparser.spec.Enumerations;
 import org.sputnikdev.bluetooth.gattparser.spec.Field;
 
@@ -45,34 +46,72 @@ import org.sputnikdev.bluetooth.gattparser.spec.Field;
  * @author Connor Petty - Modified for openHAB use.
  */
 @NonNullByDefault
-public class CharacteristicChannelTypeProvider implements ChannelTypeProvider, ThingHandlerService {
+@Component(service = { CharacteristicChannelTypeProvider.class, ChannelTypeProvider.class })
+public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
 
     private static final String CHANNEL_TYPE_NAME_PATTERN = "characteristic-%s-%s-%s-%s";
 
     private final Logger logger = LoggerFactory.getLogger(CharacteristicChannelTypeProvider.class);
 
-    private final Map<ChannelTypeUID, @Nullable ChannelType> cache = new ConcurrentHashMap<>();
+    private final @NonNullByDefault({}) Map<ChannelTypeUID, ChannelType> cache = new ConcurrentHashMap<>();
 
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof GenericBluetoothHandler) {
-            ((GenericBluetoothHandler) handler).setChannelTypeProvider(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return null;
-    }
+    private final BluetoothGattParser gattParser = BluetoothGattParserFactory.getDefault();
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return Collections.emptyList();
+        return cache.values();
     }
 
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        return cache.get(channelTypeUID);
+        if (isValidUID(channelTypeUID)) {
+            return cache.computeIfAbsent(channelTypeUID, uid -> {
+                String channelID = uid.getId();
+                boolean advanced = "advncd".equals(channelID.substring(15, 21));
+                boolean readOnly = "readable".equals(channelID.substring(22, 30));
+                String characteristicUUID = channelID.substring(31, 67);
+                String fieldName = channelID.substring(68, channelID.length());
+
+                if (gattParser.isKnownCharacteristic(characteristicUUID)) {
+                    List<Field> fields = gattParser.getFields(characteristicUUID).stream()
+                            .filter(field -> BluetoothChannelUtils.encodeFieldID(field).equals(fieldName))
+                            .collect(Collectors.toList());
+
+                    if (fields.size() > 1) {
+                        logger.warn("Multiple fields with the same name found: {} / {}. Skipping them.",
+                                characteristicUUID, fieldName);
+                        return null;
+                    }
+                    Field field = fields.get(0);
+                    return buildChannelType(uid, advanced, readOnly, field);
+                }
+                return null;
+            });
+        }
+        return null;
+    }
+
+    private boolean isValidUID(ChannelTypeUID channelTypeUID) {
+        if (!channelTypeUID.getBindingId().equals(BluetoothBindingConstants.BINDING_ID)) {
+            return false;
+        }
+        String channelID = channelTypeUID.getId();
+        if (!channelID.startsWith("characteristic")) {
+            return false;
+        }
+        if (channelID.length() < 68) {
+            return false;
+        }
+        if (channelID.charAt(21) != '-') {
+            return false;
+        }
+        if (channelID.charAt(30) != '-') {
+            return false;
+        }
+        if (channelID.charAt(67) != '-') {
+            return false;
+        }
+        return true;
     }
 
     public ChannelTypeUID registerChannelType(String characteristicUUID, boolean advanced, boolean readOnly,
@@ -83,11 +122,8 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider, T
 
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BluetoothBindingConstants.BINDING_ID, channelType);
         cache.computeIfAbsent(channelTypeUID, uid -> buildChannelType(uid, advanced, readOnly, field));
+        logger.debug("registered channel type: {}", channelTypeUID);
         return channelTypeUID;
-    }
-
-    public void clearRegistry() {
-        cache.clear();
     }
 
     /**
