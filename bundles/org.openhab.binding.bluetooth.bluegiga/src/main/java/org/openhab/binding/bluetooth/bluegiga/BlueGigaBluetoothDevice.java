@@ -127,6 +127,10 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         updateLastSeenTime();
     }
 
+    public void setAddressType(BluetoothAddressType addressType) {
+        this.addressType = addressType;
+    }
+
     @Override
     public boolean connect() {
         if (connection != -1) {
