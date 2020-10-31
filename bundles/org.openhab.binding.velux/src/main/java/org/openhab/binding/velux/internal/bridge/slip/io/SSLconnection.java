@@ -17,7 +17,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -69,8 +68,8 @@ class SSLconnection implements Closeable {
     private @Nullable SSLSocket socket;
     private @Nullable DataOutputStream dOut;
     private @Nullable DataInputStreamWithTimeout dIn;
-    private int ioTimeoutMSecs = 60000;
-    private int connectTimeoutMSecs = 5000;
+    private int ioTimeoutMSecs = 1000;
+    private int sslTimeoutMSecs = 5000; // allow more time than regular I/O for establishing SSL connection
 
     /**
      * Fake trust manager to suppress any certificate errors,
@@ -112,12 +111,13 @@ class SSLconnection implements Closeable {
      * Constructor to setup and establish a connection.
      *
      * @param host as String describing the Service Access Point location i.e. hostname.
-     * @param port as String describing the Service Access Point location i.e. TCP port.
+     * @param port as int describing the Service Access Point location i.e. TCP port.
+     * @param timeoutMSecs as int describing the I/O timeout in milli- seconds.
      * @throws java.net.ConnectException in case of unrecoverable communication failures.
      * @throws java.io.IOException in case of continuous communication I/O failures.
      * @throws java.net.UnknownHostException in case of continuous communication I/O failures.
      */
-    SSLconnection(String host, int port) throws ConnectException, IOException, UnknownHostException {
+    SSLconnection(String host, int port, int timeoutMSecs) throws ConnectException, IOException, UnknownHostException {
         logger.debug("SSLconnection({},{}) called.", host, port);
         logger.info("Starting {} bridge connection.", VeluxBindingConstants.BINDING_ID);
         SSLContext ctx = null;
@@ -128,23 +128,25 @@ class SSLconnection implements Closeable {
             throw new IOException(String.format("create of an empty trust store failed: %s.", e.getMessage()));
         }
         logger.trace("SSLconnection(): creating socket...");
+        ioTimeoutMSecs = timeoutMSecs;
+        sslTimeoutMSecs = Math.max(sslTimeoutMSecs, timeoutMSecs);
         // Just for avoidance of Potential null pointer access
         SSLSocket socketX = (SSLSocket) ctx.getSocketFactory().createSocket();
         if (socketX != null) {
-            socketX.setSoTimeout(ioTimeoutMSecs);
+            socketX.setSoTimeout(sslTimeoutMSecs);
             socketX.setKeepAlive(true);
-            if (logger.isTraceEnabled()) {
-                logger.trace(
-                        "SSLconnection(): connecting... (ip={}, port={}, connectTimeout={}, soTimeout={}, soKeepAlive={})",
-                        host, port, connectTimeoutMSecs, socketX.getSoTimeout(),
-                        socketX.getKeepAlive() ? "true" : "false");
-            }
-            socketX.connect(new InetSocketAddress(host, port), connectTimeoutMSecs);
+            socketX.connect(new InetSocketAddress(host, port), sslTimeoutMSecs);
             logger.trace("SSLconnection(): starting SSL handshake...");
             socketX.startHandshake();
+            socketX.setSoTimeout(ioTimeoutMSecs);
             dOut = new DataOutputStream(socketX.getOutputStream());
             dIn = new DataInputStreamWithTimeout(socketX.getInputStream());
             ready = true;
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        "SSLconnection(): connected... (ip={}, port={}, sslTimeout={}, soTimeout={}, soKeepAlive={})",
+                        host, port, sslTimeoutMSecs, socketX.getSoTimeout(), socketX.getKeepAlive() ? "true" : "false");
+            }
             socket = socketX;
         }
         logger.trace("SSLconnection() finished.");
@@ -160,7 +162,7 @@ class SSLconnection implements Closeable {
      *
      * @return <b>ready</b> as boolean for an established connection.
      */
-    public synchronized boolean isReady() {
+    synchronized boolean isReady() {
         return ready;
     }
 
@@ -180,13 +182,15 @@ class SSLconnection implements Closeable {
      * @param packet as Array of bytes to be transmitted towards the bridge via the established connection.
      * @throws java.io.IOException in case of a communication I/O failure, and sets 'ready' = false
      */
-    public synchronized void send(byte[] packet) throws IOException {
+    synchronized void send(byte[] packet) throws IOException {
         logger.trace("send() called, writing {} bytes.", packet.length);
         try {
             DataOutputStream dOutX = dOut;
             if (!ready || (dOutX == null)) {
                 throw new IOException();
             }
+            // flush the read buffer if (exceptionally) there is orphan response data in it
+            // dIn.flush();
             // copy packet data to the write buffer
             dOutX.write(packet, 0, packet.length);
             // force the write buffer data to be written to the socket
@@ -205,20 +209,20 @@ class SSLconnection implements Closeable {
     }
 
     /**
-     * Method to verify that there is a message from the bridge.
+     * Method to verify that there is message from the bridge.
      *
-     * @return <b>true</b> if there are any messages ready to be queried using {@link SSLconnection#receive}.
+     * @return <b>true</b> if there are any bytes ready to be queried using {@link SSLconnection#receive}.
      * @throws java.io.IOException in case of a communication I/O failure.
      */
-    public synchronized boolean available() throws IOException {
+    synchronized boolean available() throws IOException {
         logger.trace("available() called.");
         DataInputStreamWithTimeout dInX = dIn;
         if (!ready || (dInX == null)) {
             throw new IOException();
         }
-        int availableMessages = dInX.available();
-        logger.trace("available(): found {} messages ready to be read (> 0 means true).", availableMessages);
-        return availableMessages > 0;
+        int availableBytes = dInX.available();
+        logger.trace("available(): found {} bytes ready to be read (> 0 means true).", availableBytes);
+        return availableBytes > 0;
     }
 
     /**
@@ -227,7 +231,7 @@ class SSLconnection implements Closeable {
      * @return <b>packet</b> as Array of bytes as received from the bridge via the established connection.
      * @throws java.io.IOException in case of a communication I/O failure.
      */
-    public synchronized byte[] receive() throws IOException {
+    synchronized byte[] receive() throws IOException {
         logger.trace("receive() called.");
         try {
             DataInputStreamWithTimeout dInX = dIn;
@@ -250,7 +254,7 @@ class SSLconnection implements Closeable {
     }
 
     /**
-     * Destructor to tear down a connection. Overridden method of {@link Closeable} interface. Closes the sockets.
+     * Destructor to tear down a connection.
      *
      * @throws java.io.IOException in case of a communication I/O failure.
      */
@@ -278,21 +282,5 @@ class SSLconnection implements Closeable {
             socket = null;
         }
         logger.trace("close() finished.");
-    }
-
-    /**
-     * Set the socket read time out.
-     *
-     * @param timeoutMSecs the maximum allowed duration in milliseconds for read operations.
-     * @throws SocketException
-     */
-    public void setTimeout(int timeoutMSecs) throws SocketException {
-        logger.debug("setTimeout() set timeout to {} milliseconds.", timeoutMSecs);
-        ioTimeoutMSecs = timeoutMSecs;
-        SSLSocket socketX = socket;
-        if (socketX != null) {
-            socketX.setSoTimeout(ioTimeoutMSecs);
-            logger.trace("setTimeout() confirmed {} milliseconds.", socketX.getSoTimeout());
-        }
     }
 }

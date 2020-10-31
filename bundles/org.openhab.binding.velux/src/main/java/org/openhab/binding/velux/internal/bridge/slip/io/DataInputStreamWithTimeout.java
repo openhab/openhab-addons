@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class DataInputStreamWithTimeout implements Closeable {
 
-    private static final int QUEUE_SIZE = 16;
+    private static final int QUEUE_SIZE = 32;
     private static final int BUFFER_SIZE = 512;
-    private static final int SLEEP_INTERVAL = 50;
+    private static final int SLEEP_INTERVAL_MSECS = 50;
 
     // special character that marks the first and last byte of a slip message
     private static final byte SLIP_MARK = (byte) 0xc0;
@@ -74,7 +74,7 @@ class DataInputStreamWithTimeout implements Closeable {
                         if ((i > 5) && (_bytes[0] == SLIP_MARK)) {
                             slipMessageQueue.offer(Arrays.copyOfRange(_bytes, 0, i + 1));
                             if (slipMessageQueue.size() > QUEUE_SIZE) {
-                                logger.debug("pollRunner() => slip message queue overflow");
+                                logger.warn("pollRunner() => slip message queue overflow => PLEASE REPORT !!");
                                 slipMessageQueue.poll();
                             }
                         }
@@ -140,7 +140,7 @@ class DataInputStreamWithTimeout implements Closeable {
      */
     public byte[] readSlipMessage(int timeoutMSecs) throws IOException {
         startPolling();
-        int i = timeoutMSecs / SLEEP_INTERVAL;
+        int i = (timeoutMSecs / SLEEP_INTERVAL_MSECS) + 1;
         while (i-- >= 0) {
             try {
                 byte[] slip = slipMessageQueue.remove();
@@ -150,7 +150,7 @@ class DataInputStreamWithTimeout implements Closeable {
                 // queue empty, wait and continue
             }
             try {
-                Thread.sleep(SLEEP_INTERVAL);
+                Thread.sleep(SLEEP_INTERVAL_MSECS);
             } catch (InterruptedException e) {
                 logger.debug("readSlipMessage() => thread interrupt");
                 throw new IOException("Thread Interrupted");
@@ -181,11 +181,11 @@ class DataInputStreamWithTimeout implements Closeable {
     }
 
     private void stopPolling() {
-        Thread pollThreadX = pollThread;
+        Thread pollThreadX = this.pollThread;
         if (pollThreadX != null) {
             logger.trace("stopPolling()");
             pollThreadX.interrupt();
-            pollThread = null;
+            this.pollThread = null;
         }
     }
 }

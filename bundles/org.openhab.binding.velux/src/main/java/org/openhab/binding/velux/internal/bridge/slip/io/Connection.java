@@ -15,6 +15,7 @@ package org.openhab.binding.velux.internal.bridge.slip.io;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
@@ -97,8 +98,7 @@ public class Connection implements Closeable {
                         int timeoutMsecs = bridgeInstance.veluxBridgeConfiguration().timeoutMsecs;
 
                         logger.trace("io() on {}: connecting to port {}", host, port);
-                        connectivity = new SSLconnection(host, port);
-                        connectivity.setTimeout(timeoutMsecs);
+                        connectivity = new SSLconnection(host, port, timeoutMsecs);
                     } catch (ConnectException ce) {
                         throw new ConnectException(String
                                 .format("raised a non-recoverable error during connection setup: %s", ce.getMessage()));
@@ -108,7 +108,8 @@ public class Connection implements Closeable {
                         continue;
                     }
                 }
-                if (request.length > 0) {
+                boolean sending = request.length > 0;
+                if (sending) {
                     try {
                         if (logger.isTraceEnabled()) {
                             logger.trace("io() on {}: sending packet with {} bytes: {}", host, request.length,
@@ -128,6 +129,10 @@ public class Connection implements Closeable {
                 logger.trace("io() on {}: receiving bytes.", host);
                 if (connectivity.isReady()) {
                     packet = connectivity.receive();
+                    // in receive-only mode, a zero length response packet is NOT a timeout
+                    if (sending && (packet.length == 0)) {
+                        throw new SocketTimeoutException("read time out after send");
+                    }
                 }
                 if (logger.isTraceEnabled()) {
                     logger.trace("io() on {}: received packet with {} bytes: {}", host, packet.length,

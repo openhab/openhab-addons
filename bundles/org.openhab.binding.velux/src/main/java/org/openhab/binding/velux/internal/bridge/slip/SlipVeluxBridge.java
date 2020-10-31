@@ -266,15 +266,14 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
             // send command (optionally), and receive response
             byte[] rxPacket;
             try {
-                rxPacket = connection.io(this.bridgeInstance, sending ? txPacket : emptyPacket);
                 if (sending && isProtocolTraceEnabled) {
-                    logger.info("sent command {}", txName);
+                    logger.info("sending command {}", txName);
                 }
+                rxPacket = connection.io(this.bridgeInstance, sending ? txPacket : emptyPacket);
                 // message sent, don't send it again
                 sending = false;
-                // no response, stop looping
                 if (rxPacket.length == 0) {
-                    // in receive-only mode, no response is ok, so don't log anything
+                    // only log in send mode (in receive-only mode, no response is ok)
                     if (!rcvonly) {
                         logger.debug(loggerFmt, "no response", "=> aborting", "");
                     }
@@ -326,11 +325,11 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                 case GW_ERROR_NTF:
                     byte code = rxData[0];
                     switch (code) {
-                        case 7:
+                        case 7: // busy
                             logger.trace(loggerFmt, rxName, getErrorText(code), "=> retrying");
-                            sending = true; // retry sending the command
+                            sending = true; // TODO: I am not sure if we should retry sending
                             break;
-                        case 12:
+                        case 12: // authentication failed
                             logger.debug(loggerFmt, rxName, getErrorText(code), "=> aborting");
                             resetAuthentication();
                             looping = false;
@@ -354,7 +353,10 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                         bridgeInstance.existingProducts().update(new ProductBridgeIndex(receiver.getNtfNodeID()),
                                 receiver.getNtfState(), receiver.getNtfCurrentPosition(), receiver.getNtfTarget());
                         logger.trace(loggerFmt, rxName, "=> special command", "=> product updated");
-                        success = true;
+                        if (rcvonly) {
+                            // receive-only: return success to confirm that product(s) were updated
+                            success = true;
+                        }
                     }
                     logger.trace(loggerFmt, rxName, "=> special command", "=> continuing");
                     break;
