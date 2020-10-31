@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -394,6 +397,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     // Continuous synchronization methods
 
+    @SuppressWarnings("null")
     private synchronized void refreshOpenHAB() {
         logger.debug("refreshOpenHAB() initiated by {} starting cycle {}.", Thread.currentThread(), refreshCounter);
 
@@ -416,15 +420,27 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             logger.trace("refreshOpenHAB.scheduled() initiated by {} has finished.", Thread.currentThread());
         });
 
-        logger.trace(
-                "refreshOpenHAB(): looping through all (both child things and bridge) linked channels for a need of refresh.");
+        // create a list of dirty products (or a null list if nothing is dirty)
+        VeluxExistingProducts eP = bridgeParameters.actuators.getChannel().existingProducts;
+        List<ProductBridgeIndex> dirtyList = eP.isDirty() ? Arrays.asList(eP.valuesOfModified()).stream()
+                .map(p -> p.getBridgeProductIndex()).collect(Collectors.toList()) : null;
+        logger.trace("refreshOpenHAB(): dirty product count is {}", dirtyList != null ? dirtyList.size() : 0);
+
+        logger.trace("refreshOpenHAB(): loop through all (child things and bridge) linked channels needing a refresh");
         for (ChannelUID channelUID : BridgeChannels.getAllLinkedChannelUIDs(this)) {
-            if (VeluxItemType.isToBeRefreshedNow(refreshCounter, thingTypeUIDOf(channelUID), channelUID.getId())) {
+            boolean doRefresh = VeluxItemType.isToBeRefreshedNow(refreshCounter, thingTypeUIDOf(channelUID),
+                    channelUID.getId());
+            if (!doRefresh && (dirtyList != null)) {
+                Thing2VeluxActuator actuator = channel2VeluxActuator.get(channelUID);
+                doRefresh = (actuator != null) && !dirtyList.contains(actuator.getProductBridgeIndex());
+            }
+            if (doRefresh) {
                 logger.trace("refreshOpenHAB(): refreshing channel {}.", channelUID);
                 handleCommand(channelUID, RefreshType.REFRESH);
             }
         }
-        logger.trace("refreshOpenHAB(): looping through properties for a need of refresh.");
+
+        logger.trace("refreshOpenHAB(): loop through properties needing a refresh");
         for (VeluxItemType veluxItem : VeluxItemType.getPropertyEntriesByThing(getThing().getThingTypeUID())) {
             if (VeluxItemType.isToBeRefreshedNow(refreshCounter, getThing().getThingTypeUID(),
                     veluxItem.getIdentifier())) {

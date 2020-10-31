@@ -123,8 +123,8 @@ public class VeluxExistingProducts {
             return false;
         }
         VeluxProduct thisProduct = this.get(bridgeProductIndex);
-        if (thisProduct.setState(productState) || thisProduct.setCurrentPosition(productPosition)
-                || thisProduct.setTarget(productTarget)) {
+        if (thisProduct.setState(productState) | thisProduct.setCurrentPosition(productPosition)
+                | thisProduct.setTarget(productTarget)) {
             dirty = true;
 
             String uniqueIndex = thisProduct.isV2() ? thisProduct.getSerialNumber()
