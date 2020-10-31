@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wled.internal;
 
+import java.util.LinkedList;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -36,5 +38,21 @@ public class WLedHelper {
             }
         }
         return "";
+    }
+
+    static LinkedList<String> listOfResults(String message, String element, String end) {
+        LinkedList<String> results = new LinkedList<String>();
+        String temp = "";
+        for (int startLookingFromIndex = 0; startLookingFromIndex != -1;) {
+            startLookingFromIndex = message.indexOf(element, startLookingFromIndex);
+            if (startLookingFromIndex >= 0) {
+                temp = getValue(message.substring(startLookingFromIndex), element, end);
+                if (!temp.isEmpty()) {
+                    results.add(temp);
+                    ++startLookingFromIndex;
+                }
+            }
+        }
+        return results;
     }
 }

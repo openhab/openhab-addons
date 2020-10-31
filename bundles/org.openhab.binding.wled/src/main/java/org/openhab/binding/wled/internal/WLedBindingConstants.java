@@ -13,6 +13,7 @@
 
 package org.openhab.binding.wled.internal;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class WLedBindingConstants {
 
     public static final String BINDING_ID = "wled";
+    public static final BigDecimal BIG_DECIMAL_2_55 = new BigDecimal(2.55);
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_WLED = new ThingTypeUID(BINDING_ID, "wled");

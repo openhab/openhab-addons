@@ -63,7 +63,6 @@ import org.slf4j.LoggerFactory;
 public class WLedHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final HttpClient httpClient;
-    private final BigDecimal BIG_DECIMAL_2_55 = new BigDecimal(2.55);
     private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private BigDecimal masterBrightness255 = BigDecimal.ZERO;
