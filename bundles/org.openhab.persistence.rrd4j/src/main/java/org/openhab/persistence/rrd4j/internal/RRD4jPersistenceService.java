@@ -233,7 +233,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         RrdDb db = getDB(itemName);
         if (db == null) {
-            logger.warn("Could not find item '{}' in rrd4j database", itemName);
+            logger.debug("Could not find item '{}' in rrd4j database", itemName);
             return List.of();
         }
 
