@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.serial.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Class describing the serial device user configuration
  *
  * @author Mike Major - Initial contribution
  */
+@NonNullByDefault
 public class SerialDeviceConfiguration {
     /**
      * 
      * Pattern match
      */
-    public String patternMatch;
+    public String patternMatch = "";
 
     @Override
     public String toString() {

@@ -57,14 +57,16 @@ public abstract class DeviceChannel {
         this.bundleContext = bundleContext;
         this.config = config;
 
-        if (config.transform != null) {
-            final String[] parts = splitTransformationConfig(config.transform);
+        final String transform = config.transform;
+        if (transform != null) {
+            final String[] parts = splitTransformationConfig(transform);
             type = parts[0];
             pattern = parts[1];
         }
 
-        if (config.commandTransform != null) {
-            final String[] parts = splitTransformationConfig(config.commandTransform);
+        final String commandTransform = config.commandTransform;
+        if (commandTransform != null) {
+            final String[] parts = splitTransformationConfig(commandTransform);
             commandType = parts[0];
             commandPattern = parts[1];
         }
@@ -94,7 +96,7 @@ public abstract class DeviceChannel {
      * @return the transformed data. The orginal data is returned if no transform is defined or there
      *         is an error performing the transform.
      */
-    public @Nullable String transformData(final String data) {
+    public @Nullable String transformData(final @Nullable String data) {
         return transform(data, config.transform, pattern, getTransformationService());
     }
 
@@ -105,7 +107,7 @@ public abstract class DeviceChannel {
      * @return the transformed data. The orginal data is returned if no transform is defined or there
      *         is an error performing the transform.
      */
-    protected @Nullable String transformCommand(final String data) {
+    protected @Nullable String transformCommand(final @Nullable String data) {
         return transform(data, config.commandTransform, commandPattern, getCommandTransformationService());
     }
 
@@ -119,11 +121,12 @@ public abstract class DeviceChannel {
     protected String formatCommand(final Command command) {
         String data;
 
-        if (config.commandFormat != null) {
+        final String commandFormat = config.commandFormat;
+        if (commandFormat != null) {
             try {
-                data = command.format(config.commandFormat);
+                data = command.format(commandFormat);
             } catch (final IllegalFormatException e) {
-                logger.warn("Couldn't format commmand because format string '{}' is invalid", config.commandFormat);
+                logger.warn("Couldn't format commmand because format string '{}' is invalid", commandFormat);
                 data = command.toFullString();
             }
         } else {
@@ -143,10 +146,10 @@ public abstract class DeviceChannel {
      * @return the transformed data. The orginal data is returned if no transform is defined or there
      *         is an error performing the transform.
      */
-    private @Nullable String transform(final String data, final @Nullable String transform,
+    private @Nullable String transform(final @Nullable String data, final @Nullable String transform,
             final @Nullable String pattern, final @Nullable TransformationService transformationService) {
 
-        if (transform == null || pattern == null) {
+        if (data == null || transform == null || pattern == null) {
             return data;
         }
 

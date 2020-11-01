@@ -12,59 +12,63 @@
  */
 package org.openhab.binding.serial.internal.channel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Class describing the channel user configuration
  *
  * @author Mike Major - Initial contribution
  */
+@NonNullByDefault
 public class ChannelConfig {
     /**
      * Transform for received data
      */
-    public String transform;
+    public @Nullable String transform;
 
     /**
      * Transform for command
      */
-    public String commandTransform;
+    public @Nullable String commandTransform;
 
     /**
      * Format string for command
      */
-    public String commandFormat;
+    public @Nullable String commandFormat;
 
     /**
      * On value
      */
-    public String on;
+    public @Nullable String on;
 
     /**
      * Off value
      */
-    public String off;
+    public @Nullable String off;
 
     /**
      * Up value
      */
-    public String up;
+    public @Nullable String up;
 
     /**
      * Down value
      */
-    public String down;
+    public @Nullable String down;
 
     /**
      * Stop value
      */
-    public String stop;
+    public @Nullable String stop;
 
     /**
      * Increase value
      */
-    public String increase;
+    public @Nullable String increase;
 
     /**
      * Decrease value
      */
-    public String decrease;
+    public @Nullable String decrease;
 }

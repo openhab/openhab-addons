@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.serial.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.serial.SerialPort;
 
 /**
@@ -19,36 +21,37 @@ import org.openhab.core.io.transport.serial.SerialPort;
  *
  * @author Mike Major - Initial contribution
  */
+@NonNullByDefault
 public class SerialBridgeConfiguration {
     /**
      * Serial port name
      */
-    public String serialPort;
+    public @Nullable String serialPort;
 
     /**
      * Serial port baud rate
      */
-    public int baudRate;
+    public int baudRate = 9600;
 
     /**
      * Serial port data bits
      */
-    public int dataBits;
+    public int dataBits = 8;
 
     /**
      * Serial port parity
      */
-    public String parity;
+    public String parity = "N";
 
     /**
      * Serial port stop bits
      */
-    public String stopBits;
+    public String stopBits = "1";
 
     /**
      * Charset
      */
-    public String charset;
+    public @Nullable String charset;
 
     /**
      * Convert the config parity value to an int required for serial port configuration

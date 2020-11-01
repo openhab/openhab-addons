@@ -109,13 +109,14 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             return;
         }
 
-        if (config.serialPort == null) {
+        final String port = config.serialPort;
+        if (port == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set");
             return;
         }
 
         // parse ports and if the port is found, initialize the reader
-        final SerialPortIdentifier portId = serialPortManager.getIdentifier(config.serialPort);
+        final SerialPortIdentifier portId = serialPortManager.getIdentifier(port);
         if (portId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port is not known");
             return;
