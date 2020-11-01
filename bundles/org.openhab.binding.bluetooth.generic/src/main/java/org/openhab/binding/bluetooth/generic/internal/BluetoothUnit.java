@@ -233,7 +233,7 @@ public enum BluetoothUnit {
      * @deprecated
      */
     @Deprecated
-    static class BUnits {
+    public static class BUnits {
         public static final Unit<ArealDensity> KILOGRAM_PER_SQUARE_METER = addUnit(
                 new ProductUnit<ArealDensity>(Units.KILOGRAM.divide(Units.SQUARE_METRE)));
 
