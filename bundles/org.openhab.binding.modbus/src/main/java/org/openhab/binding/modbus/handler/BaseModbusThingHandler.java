@@ -13,6 +13,7 @@
 package org.openhab.binding.modbus.handler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -39,9 +40,9 @@ import org.openhab.io.transport.modbus.PollTask;
  */
 @NonNullByDefault
 public abstract class BaseModbusThingHandler extends BaseThingHandler {
-    private List<PollTask> periodicPollers = new ArrayList<>();
-    private List<Future<?>> oneTimePollers = new ArrayList<>();
-    private boolean initialized;
+    private List<PollTask> periodicPollers = Collections.synchronizedList(new ArrayList<>());
+    private List<Future<?>> oneTimePollers = Collections.synchronizedList(new ArrayList<>());
+    private volatile boolean initialized;
 
     public BaseModbusThingHandler(Thing thing) {
         super(thing);
@@ -51,7 +52,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * This method must be invoked in the base class' initialize() method before any other initialization is done.
      * It will throw an unchecked exception if the {@link ModbusCommunicationInterface} is not accessible (fail-fast).
      * This prevents any further initialization of the Thing. The framework will set the ThingStatus to
-     * HANDLER_INITIALIZING_ERROR and display an appropriate error message.
+     * HANDLER_INITIALIZING_ERROR and display the exception's message.
      */
     @Override
     public void initialize() {
@@ -94,7 +95,6 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * @param task poll task to unregister
      * @return whether poll task was unregistered. Poll task is not unregistered in case of unexpected errors or
      *         in the case where the poll task is not registered in the first place
-     * @throws SBCException
      */
     public boolean unregisterRegularPoll(PollTask task) {
         periodicPollers.remove(task);
