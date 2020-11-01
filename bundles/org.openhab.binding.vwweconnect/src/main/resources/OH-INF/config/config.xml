@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:vwweconnect:vwweconnectapi">
+		<parameter name="username" type="text">
+			<label>Username</label>
+			<description>Your VW Connect Portal username (email)</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="password" type="text">
+			<label>Password</label>
+			<description>Your VW Connect Portal password</description>
+			<required>true</required>
+			<context>password</context>
+		</parameter>
+
+		<parameter name="spin" type="text">
+			<label>Secure Pin Code</label>
+			<description>Your VW Connect Portal S-PIN.</description>
+			<context>password</context>
+		</parameter>
+
+		<parameter name="refresh" type="integer">
+			<label>Refresh Interval</label>
+			<description>Specifies the refresh interval in seconds.</description>
+			<default>600</default>
+		</parameter>
+
+	</config-description>
+</config-description:config-descriptions>

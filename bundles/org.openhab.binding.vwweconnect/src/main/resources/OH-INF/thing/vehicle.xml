@@ -1,0 +1,627 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vwweconnect"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="vwweconnectapi"/>
+		</supported-bridge-type-refs>
+
+		<label>VW Vehicle</label>
+		<description>A VW Vehicle.</description>
+
+		<channel-groups>
+			<channel-group typeId="details" id="details"/>
+			<channel-group typeId="odometer" id="odometer"/>
+			<channel-group typeId="fuel" id="fuel"/>
+			<channel-group typeId="electric" id="electric"/>
+			<channel-group typeId="doors" id="doors"/>
+			<channel-group typeId="windows" id="windows"/>
+			<channel-group typeId="position" id="position"/>
+			<channel-group typeId="lasttrip" id="lasttrip"/>
+			<channel-group typeId="action" id="action"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">Volkswagen</property>
+		</properties>
+
+		<representation-property>vin</representation-property>
+
+		<config-description>
+			<parameter name="vin" type="text" required="true">
+				<label>Vehicle Identification Number</label>
+				<description>VIN of the vehicle associated with this Thing</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="action">
+		<label>Actions and status</label>
+		<channels>
+			<channel id="remoteHeater" typeId="remoteHeater"/>
+			<channel id="remoteVentilation" typeId="remoteVentilation"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="remainingTime" typeId="remainingTime"/>
+			<channel id="emanagerCharge" typeId="emanagerCharge"/>
+			<channel id="emanagerClimate" typeId="emanagerClimate"/>
+			<channel id="emanagerWindowHeat" typeId="emanagerWindowHeat"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="odometer">
+		<label>Total Trip Data</label>
+		<channels>
+			<channel id="totalDistance" typeId="odometer">
+				<label>Total Distance</label>
+				<description>Total distance traveled</description>
+			</channel>
+			<channel id="totalAverageSpeed" typeId="averageSpeed">
+				<label>Total Average Speed</label>
+				<description>Total average speed</description>
+			</channel>
+			<channel id="totalTripDistance" typeId="odometer">
+				<label>Total Trip Distance</label>
+				<description>Total trip distance traveled</description>
+			</channel>
+			<channel id="totalTripDuration" typeId="tripDuration">
+				<label>Total Duration</label>
+				<description>Total trip duration</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="lasttrip">
+		<label>Last Trip Data</label>
+		<channels>
+			<channel id="averageFuelConsumption" typeId="fuelConsumption">
+				<label>Fuel Consumption</label>
+				<description>Average fuel consumption for trip</description>
+			</channel>
+			<channel id="averageCngConsumption" typeId="cngConsumption">
+				<label>CNG Consumption</label>
+				<description>Average Compressed Natural Gas consumption for trip</description>
+			</channel>
+			<channel id="averageElectricConsumption" typeId="electricConsumption">
+				<label>Electric Consumption</label>
+				<description>Average Electric consumption for trip</description>
+			</channel>
+			<channel id="averageAuxiliaryConsumption" typeId="auxiliaryConsumption">
+				<label>Auxiliary Consumption</label>
+				<description>Average Auxiliary consumption for trip</description>
+			</channel>
+			<channel id="tripAverageSpeed" typeId="averageSpeed">
+				<label>Average Speed</label>
+				<description>Average speed for trip</description>
+			</channel>
+			<channel id="tripDistance" typeId="odometer">
+				<label>Distance</label>
+				<description>Distance traveled</description>
+			</channel>
+			<channel id="tripStartTime" typeId="timestamp">
+				<label>Start Time</label>
+				<description>Trip start time</description>
+			</channel>
+			<channel id="tripEndTime" typeId="timestamp">
+				<label>End Time</label>
+				<description>Trip end time</description>
+			</channel>
+			<channel id="tripDuration" typeId="tripDuration"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="doors">
+		<label>Door Status</label>
+		<channels>
+			<channel id="trunk" typeId="door">
+				<label>Trunk</label>
+			</channel>
+			<channel id="rightBack" typeId="door">
+				<label>Right Back</label>
+			</channel>
+			<channel id="leftBack" typeId="door">
+				<label>Left Back</label>
+			</channel>
+			<channel id="rightFront" typeId="door">
+				<label>Right Front</label>
+			</channel>
+			<channel id="leftFront" typeId="door">
+				<label>Left Front</label>
+			</channel>
+			<channel id="hood" typeId="door">
+				<label>Hood</label>
+			</channel>
+			<channel id="doorsLocked" typeId="doorsLocked"/>
+			<channel id="trunkLocked" typeId="trunkLocked"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="windows">
+		<label>Window Status</label>
+		<channels>
+			<channel id="rightBackWnd" typeId="window">
+				<label>Right Back</label>
+			</channel>
+			<channel id="leftBackWnd" typeId="window">
+				<label>Left Back</label>
+			</channel>
+			<channel id="rightFrontWnd" typeId="window">
+				<label>Right Front</label>
+			</channel>
+			<channel id="leftFrontWnd" typeId="window">
+				<label>Left Front</label>
+			</channel>
+			<channel id="roof" typeId="window">
+				<label>Roof</label>
+			</channel>
+			<channel id="sunroof" typeId="window">
+				<label>Sun Roof</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fuel">
+		<label>Fuel Info</label>
+		<channels>
+			<channel id="fuelLevel" typeId="fuelLevel"/>
+			<channel id="fuelConsumption" typeId="fuelConsumption"/>
+			<channel id="fuelAlert" typeId="fuelAlert"/>
+			<channel id="fuelRange" typeId="odometer">
+				<label>Distance Left</label>
+				<description>Distance left with given quantity of fuel</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cng">
+		<label>Compressed Natural Gas Info</label>
+		<channels>
+			<channel id="cngLevel" typeId="cngLevel"/>
+			<channel id="cngConsumption" typeId="cngConsumption"/>
+			<channel id="cngAlert" typeId="fuelAlert"/>
+			<channel id="cngRange" typeId="odometer">
+				<label>Distance Left</label>
+				<description>Distance left with given quantity of CNG</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="electric">
+		<label>Electric/Hybrid Info</label>
+		<channels>
+			<channel id="batteryLevel" typeId="batteryLevel"/>
+			<channel id="electricConsumption" typeId="electricConsumption"/>
+			<channel id="batteryAlert" typeId="batteryAlert"/>
+			<channel id="batteryRange" typeId="odometer">
+				<label>Distance Left</label>
+				<description>Distance left with given battery level</description>
+			</channel>
+			<channel id="chargingState" typeId="chargingState"/>
+			<channel id="chargingRemainingHour" typeId="chargingRemainingHour"/>
+			<channel id="chargingRemainingMinute" typeId="chargingRemainingMinute"/>
+			<channel id="chargingReason" typeId="chargingReason"/>
+			<channel id="pluginState" typeId="pluginState"/>
+			<channel id="lockState" typeId="lockState"/>
+			<channel id="extPowerSupplyState" typeId="extPowerSupplyState"/>
+			<channel id="chargerMaxCurrent" typeId="chargerMaxCurrent"/>
+			<channel id="maxAmpere" typeId="maxAmpere"/>
+			<channel id="maxCurrentReduced" typeId="maxCurrentReduced"/>
+			<channel id="climatisationState" typeId="climatisationState"/>
+			<channel id="climatisationRemainingTime" typeId="climatisationRemainingTime"/>
+			<channel id="climatisationReason" typeId="climatisationReason"/>
+			<channel id="windowHeatingStateFront" typeId="windowHeatingStateFront"/>
+			<channel id="windowHeatingStateRear" typeId="windowHeatingStateRear"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="position">
+		<label>Location Info</label>
+		<channels>
+			<channel id="location" typeId="location">
+				<label>Location</label>
+				<description>The position of the vehicle</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="details">
+		<label>Vehicle Details</label>
+		<channels>
+			<channel id="name" typeId="name"/>
+			<channel id="model" typeId="model"/>
+			<channel id="modelCode" typeId="modelCode"/>
+			<channel id="modelYear" typeId="modelYear"/>
+			<channel id="enrollmentDate" typeId="enrollmentDate"/>
+			<channel id="dashboardURL" typeId="dashboardURL"/>
+			<channel id="imageURL" typeId="imageURL"/>
+			<channel id="engineTypeCombustian" typeId="engineTypeCombustian"/>
+			<channel id="engineTypeElectric" typeId="engineTypeElectric"/>
+			<channel id="engineTypeHybridOCU1" typeId="engineTypeHybridOCU1"/>
+			<channel id="engineTypeHybridOCU2" typeId="engineTypeHybridOCU2"/>
+			<channel id="engineTypeCNG" typeId="engineTypeCNG"/>
+			<channel id="serviceInspectionStatus" typeId="serviceInspectionStatus"/>
+			<channel id="oilInspectionStatus" typeId="oilInspectionStatus"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="door">
+		<item-type>Contact</item-type>
+		<label>Door</label>
+		<description>Indicates if the door is opened</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="tripDuration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Trip Duration</description>
+		<state pattern="%d min" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="window">
+		<item-type>Contact</item-type>
+		<label>Window Status</label>
+		<description>Indicates if the window is opened</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="odometer">
+		<item-type>Number:Length</item-type>
+		<label>Odometer</label>
+		<description>Odometer of the vehicle</description>
+		<state pattern="%.2f km" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fuelQuantity">
+		<item-type>Number:Volume</item-type>
+		<label>Fuel Quantity</label>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fuelLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Fuel Level</label>
+		<description>Indicates the level of fuel in the tank</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fuelConsumption" advanced="true">
+		<item-type>Number</item-type>
+		<label>Average Fuel Consumption</label>
+		<description>Indicates the average fuel consumption in L/100km</description>
+		<state pattern="%.1f L/100km" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="cngLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CNG Level</label>
+		<description>Indicates the level of Compressed Natural Gas in the tank</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="cngConsumption" advanced="true">
+		<item-type>Number</item-type>
+		<label>Average CNG Consumption</label>
+		<description>Indicates the average Compressed Natural Gas consumption in L/100km</description>
+		<state pattern="%.1f L/100km" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="batteryLevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<description>Indicates the battery level</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="electricConsumption" advanced="true">
+		<item-type>Number</item-type>
+		<label>Average Electric Consumption</label>
+		<description>Indicates the average Electric consumption in A/100km</description>
+		<state pattern="%.1f A/100km" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargingState" advanced="true">
+		<item-type>Switch </item-type>
+		<label>Charging State</label>
+		<description>Indicates if the vehicle is charging.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargingRemainingHour" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Charging Remaining Hour</label>
+		<description>Indicates charging remaining time in hours.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargingRemainingMinute" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Charging Remaining Minute</label>
+		<description>Indicates charging remaining time in minutes.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargingReason" advanced="true">
+		<item-type>String</item-type>
+		<label>Charging Reason</label>
+		<description>Indicates charging reason.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="pluginState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Plugin State</label>
+		<description>Indicates plugin state.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lockState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Lock State</label>
+		<description>Indicates lock state.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="extPowerSupplyState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>External Power Supply State</label>
+		<description>Indicates external power supply state.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargerMaxCurrent" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Max Charger Current</label>
+		<description>Max configured charger current in A.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="maxAmpere" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Max Ampere</label>
+		<description>Max configured charger current in A.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="maxCurrentReduced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Max Current Reduced</label>
+		<description>Indicates if max current is reduced.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="climatisationState" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Climatisation State</label>
+		<description>Indicates climatisation state.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="climatisationRemainingTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Climatisation Remaining Time</label>
+		<description>Remaining climatisation time in minutes.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="climatisationReason" advanced="true">
+		<item-type>String</item-type>
+		<label>Climatisation Reason</label>
+		<description>Indicates climatisation state.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="windowHeatingStateFront" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Window Heating State Front</label>
+		<description>Indicates window heating state front.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="windowHeatingStateRear" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Window Heating State Rear</label>
+		<description>Indicates window heating state rear.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="auxiliaryConsumption" advanced="true">
+		<item-type>Number</item-type>
+		<label>Average Auxiliary Consumption</label>
+		<description>Indicates the average Auxiliary consumption in L</description>
+		<state pattern="%.1f L" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="averageSpeed" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Average Speed</label>
+		<description>Indicates the average speed in km/h</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<category>Location</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Data timestamp</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="doorsLocked">
+		<item-type>Switch</item-type>
+		<label>Doors Locked</label>
+		<description>Door locking status</description>
+	</channel-type>
+
+	<channel-type id="trunkLocked">
+		<item-type>Switch</item-type>
+		<label>Trunk Locked</label>
+		<description>Trunk locking status</description>
+	</channel-type>
+
+	<channel-type id="remoteHeater">
+		<item-type>Switch</item-type>
+		<label>Remote Heater</label>
+		<description>(De)Activates remote heater</description>
+	</channel-type>
+
+	<channel-type id="remoteVentilation">
+		<item-type>Switch</item-type>
+		<label>Remote Ventilation</label>
+		<description>(De)Activates remote ventilation</description>
+	</channel-type>
+
+	<channel-type id="emanagerCharge">
+		<item-type>Switch</item-type>
+		<label>Emanager Charge Battery</label>
+		<description>(De)Activates Emanager battery charging</description>
+	</channel-type>
+
+	<channel-type id="emanagerClimate">
+		<item-type>Switch</item-type>
+		<label>Emanager Climatisation</label>
+		<description>(De)Activates Emanager climatisation</description>
+	</channel-type>
+
+	<channel-type id="emanagerWindowHeat">
+		<item-type>Switch</item-type>
+		<label>Emanager Window Heater</label>
+		<description>(De)Activates Emanager window heating</description>
+	</channel-type>
+
+	<channel-type id="serviceInspectionStatus">
+		<item-type>String</item-type>
+		<label>Service Inspection</label>
+		<description>Service Inspection Status.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="oilInspectionStatus">
+		<item-type>String</item-type>
+		<label>Oil Inspection</label>
+		<description>Oil Inspection Status.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fuelAlert">
+		<item-type>Switch</item-type>
+		<label>Fuel Alarm</label>
+		<description>set to 'ON' when the tank level is low</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="batteryAlert">
+		<item-type>Switch</item-type>
+		<label>Battery Alarm</label>
+		<description>set to 'ON' when the battery level is low</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Vehicle name</label>
+		<description>Name of vehicle in VW portal.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="model">
+		<item-type>String</item-type>
+		<label>Vehicle model</label>
+		<description>Vehicle model.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="modelCode">
+		<item-type>String</item-type>
+		<label>Vehicle model code</label>
+		<description>Vehicle model code.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="modelYear">
+		<item-type>String</item-type>
+		<label>Vehicle model year</label>
+		<description>Vehicle model year.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="enrollmentDate">
+		<item-type>DateTime</item-type>
+		<label>Vehicle enrollment date</label>
+		<description>Vehicle enrollment date.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="dashboardURL">
+		<item-type>String</item-type>
+		<label>Vehicle dashboard URL</label>
+		<description>Vehicle dashboard URL in VW portal.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="imageURL">
+		<item-type>Image</item-type>
+		<label>Vehicle image URL</label>
+		<description>Vehicle image URL in VW portal.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="engineTypeCombustian" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Combustian engine type</label>
+		<description>Indicates if the engine type is combustian.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="engineTypeElectric" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Electric engine type</label>
+		<description>Indicates if the engine type is electric.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="engineTypeHybridOCU1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Hybrid OCU1 engine type</label>
+		<description>Indicates if the engine type is hybrid OCU1.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="engineTypeHybridOCU2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Hybrid OCU2 engine type</label>
+		<description>Indicates if the engine type is hybrid OCU2.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="engineTypeCNG" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Compressed Natural Gas engine type</label>
+		<description>Indicates if the engine type is compressed natural gas.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="remainingTime">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Heater Time</label>
+		<description>Remaining Heater Time</description>
+		<state pattern="%d min" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature.</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vwweconnect"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- VW We Connect Portal Bridge -->
+	<bridge-type id="vwweconnectapi">
+		<label>VW We Connect Portal</label>
+		<description>This bridge represents the gateway to the VW We Connect Portal.</description>
+
+		<channels>
+			<channel id="status" typeId="status"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Volkswagen</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:vwweconnect:vwweconnectapi"/>
+
+	</bridge-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Refresh Status</label>
+		<description>Can be used to manually refresh status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
