@@ -773,7 +773,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateMuted(boolean muted) {
-        updateState(mutedChannelUID, muted ? OnOffType.ON : OnOffType.OFF);
+        updateState(mutedChannelUID, OnOffType.from(muted));
     }
 
     @Override
@@ -938,11 +938,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateSubtitleEnabled(boolean enabled) {
-        if (enabled) {
-            updateState(CHANNEL_SUBTITLE_ENABLED, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_SUBTITLE_ENABLED, OnOffType.OFF);
-        }
+        updateState(CHANNEL_SUBTITLE_ENABLED, OnOffType.from(enabled));
     }
 
     @Override
