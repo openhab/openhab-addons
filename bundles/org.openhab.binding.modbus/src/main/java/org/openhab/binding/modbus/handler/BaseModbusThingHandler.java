@@ -31,6 +31,7 @@ import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
+import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
  * This is a convenience class to interact with the Thing's {@link ModbusCommunicationInterface}.
@@ -144,6 +145,15 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Get endpoint associated with this communication interface
+     *
+     * @return modbus slave endpoint
+     */
+    public ModbusSlaveEndpoint getEndpoint() {
+        return getModbus().getEndpoint();
+    }
+
+    /**
      * Retrieves the {@link ModbusCommunicationInterface} and does some validity checking.
      * Sets the ThingStatus to offline if it couldn't be retrieved and throws an unchecked exception.
      *
@@ -153,7 +163,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * @throws IllegalStateException if the {@link ModbusCommunicationInterface} couldn't be retrieved.
      * @return the {@link ModbusCommunicationInterface}
      */
-    protected ModbusCommunicationInterface getModbus() {
+    private ModbusCommunicationInterface getModbus() {
         try {
             Bridge bridge = getBridge();
             if (bridge == null) {
