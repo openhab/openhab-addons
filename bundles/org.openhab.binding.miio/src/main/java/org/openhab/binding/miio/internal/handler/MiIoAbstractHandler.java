@@ -211,7 +211,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             String param = "[]";
             int sb = command.indexOf("[");
             int cb = command.indexOf("{");
-            logger.debug("locs {}, {}", sb, cb);
             if (Math.max(sb, cb) > 0) {
                 int loc = (Math.min(sb, cb) > 0 ? Math.min(sb, cb) : Math.max(sb, cb));
                 param = command.substring(loc).trim();
