@@ -122,7 +122,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
     public void onServicesDiscovered() {
         if (!resolved) {
             resolved = true;
-            logger.warn("Service discovery completed for '{}'", address);
+            logger.trace("Service discovery completed for '{}'", address);
             updateThingChannels();
         }
     }
