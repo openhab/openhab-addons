@@ -240,7 +240,6 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
                 } catch (RuntimeException ex) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Could not update bluetooth device. Error: " + ex.getMessage());
-                    logger.warn("Could not update bluetooth device: {} : {}", characteristicUUID, ex.getMessage());
                 }
             }
         }
