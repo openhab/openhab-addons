@@ -222,6 +222,10 @@ public class LinkyHandler extends BaseThingHandler {
             Consumption result = cachedMonthlyData.getValue();
             if (result != null) {
                 Aggregate months = result.aggregats.months;
+                if (months.datas.size() < 2) {
+                    logger.debug("Received data array too small (required size is 2): {}", months);
+                    return;
+                }
                 updateKwhChannel(LAST_MONTH, months.datas.get(0));
                 updateKwhChannel(THIS_MONTH, months.datas.get(1));
             }
