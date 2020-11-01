@@ -45,6 +45,8 @@ For any additional segments, you can add them manually and set the `segmentIndex
 | `presetDuration` | Number:Time | How long in seconds it will display a preset for, before it begins to change from one preset to the next with `presetCycle` turned ON. |
 | `transformTime` | Number:Time | How long in seconds it takes to transform/morph from one look to the next. |
 | `sleep` | Switch | Turns on the sleep or 'night light' timer which can be configured to work in many different ways. Refer to WLED documentation for how this can be setup. The default action is the light will fade to OFF over the next 60 minutes. |
+| `syncSend` | Switch | Sends UDP packets that tell other WLED lights to follow this one. |
+| `syncReceive` | Switch | Allows UDP packets from other WLED lights to control this one. |
 
 ## Rule Actions
 

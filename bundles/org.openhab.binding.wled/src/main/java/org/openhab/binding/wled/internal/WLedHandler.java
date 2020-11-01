@@ -137,7 +137,7 @@ public class WLedHandler extends BaseThingHandler {
             endIndex = message.indexOf("<", startIndex + element.length());
             b = Integer.parseInt(message.substring(startIndex + element.length(), endIndex));
         } catch (NumberFormatException e) {
-            logger.warn("NumberFormatException when parsing the WLED color fields.");
+            logger.warn("NumberFormatException when parsing the WLED color fields:{}", e.getMessage());
         }
         return HSBType.fromRGB(r, g, b);
     }
@@ -158,7 +158,7 @@ public class WLedHandler extends BaseThingHandler {
                         new PercentType(secondaryWhite.divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
             }
         } catch (NumberFormatException e) {
-            logger.warn("NumberFormatException when parsing the WLED colour and white fields.");
+            logger.warn("NumberFormatException when parsing the WLED colour and white fields:{}", e.getMessage());
         }
     }
 
@@ -216,6 +216,16 @@ public class WLedHandler extends BaseThingHandler {
         } else {
             updateState(CHANNEL_SLEEP, OnOffType.OFF);
         }
+        if (message.contains("<ns>1</ns>")) {
+            updateState(CHANNEL_SYNC_SEND, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_SYNC_SEND, OnOffType.OFF);
+        }
+        if (message.contains("<nr>1</nr>")) {
+            updateState(CHANNEL_SYNC_RECEIVE, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_SYNC_RECEIVE, OnOffType.OFF);
+        }
         if (message.contains("<fx>")) {
             updateState(CHANNEL_FX, new StringType(WLedHelper.getValue(message, "<fx>", "<")));
         }
@@ -259,6 +269,20 @@ public class WLedHandler extends BaseThingHandler {
         }
         logger.debug("command {} sent to {}", command, channelUID.getId());
         switch (channelUID.getId()) {
+            case CHANNEL_SYNC_SEND:
+                if (OnOffType.OFF.equals(command)) {
+                    sendGetRequest("/win&NS=0");
+                } else {
+                    sendGetRequest("/win&NS=1");
+                }
+                break;
+            case CHANNEL_SYNC_RECEIVE:
+                if (OnOffType.OFF.equals(command)) {
+                    sendGetRequest("/win&NR=0");
+                } else {
+                    sendGetRequest("/win&NR=1");
+                }
+                break;
             case CHANNEL_PRIMARY_WHITE:
                 if (command instanceof PercentType) {
                     sendGetRequest("/win&W=" + ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55));

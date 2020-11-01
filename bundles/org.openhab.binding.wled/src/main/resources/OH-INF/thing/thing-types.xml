@@ -23,6 +23,8 @@
 			<channel id="speed" typeId="speed"/>
 			<channel id="intensity" typeId="intensity"/>
 			<channel id="sleep" typeId="sleep"/>
+			<channel id="syncSend" typeId="syncSend"/>
+			<channel id="syncReceive" typeId="syncReceive"/>
 		</channels>
 		<config-description>
 			<parameter name="address" type="text" required="true">
@@ -164,6 +166,18 @@
 		<item-type>Switch</item-type>
 		<label>Preset Cycle</label>
 		<description>Cycle through the saved presets</description>
+	</channel-type>
+
+	<channel-type id="syncSend" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sync Send</label>
+		<description>Sends UDP packets that tell other WLED lights to follow this one.</description>
+	</channel-type>
+
+	<channel-type id="syncReceive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sync Receive</label>
+		<description>Allows UDP packets from other WLED lights to control this one.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

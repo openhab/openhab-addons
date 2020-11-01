@@ -56,4 +56,6 @@ public class WLedBindingConstants {
     public static final String CHANNEL_SPEED = "speed";
     public static final String CHANNEL_INTENSITY = "intensity";
     public static final String CHANNEL_SLEEP = "sleep";
+    public static final String CHANNEL_SYNC_SEND = "syncSend";
+    public static final String CHANNEL_SYNC_RECEIVE = "syncReceive";
 }
