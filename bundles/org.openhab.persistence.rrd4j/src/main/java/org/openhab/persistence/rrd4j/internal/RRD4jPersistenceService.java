@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -154,7 +153,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                             sample.setValue(DATASOURCE_STATE, lastValue);
                             sample.update();
                             logger.debug("Stored '{}' with state '{}' in rrd4j database (again)", name,
-                                    mapToState(lastValue, item.getName()));
+                                    mapToState(lastValue, item));
                         }
                     }
                 } catch (IOException e) {
@@ -199,7 +198,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                     logger.debug("Stored '{}' with state '{}' in rrd4j database", name, value);
                 }
             } catch (IllegalArgumentException e) {
-                if (e.getMessage().contains("at least one second step is required")) {
+                String message = e.getMessage();
+                if (message != null && message.contains("at least one second step is required")) {
                     // we try to store the value one second later
                     ScheduledFuture<?> job = scheduledJobs.get(name);
                     if (job != null) {
@@ -230,73 +230,83 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         String itemName = filter.getItemName();
-        RrdDb db = getDB(itemName);
-        if (db != null) {
-            ConsolFun consolidationFunction = getConsolidationFunction(db);
-            long start = 0L;
-            long end = filter.getEndDate() == null ? System.currentTimeMillis() / 1000
-                    : filter.getEndDate().toInstant().getEpochSecond();
 
-            try {
-                if (filter.getBeginDate() == null) {
-                    // as rrd goes back for years and gets more and more
-                    // inaccurate, we only support descending order
-                    // and a single return value
-                    // if there is no begin date is given - this case is
-                    // required specifically for the historicState()
-                    // query, which we want to support
-                    if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
-                            && filter.getPageNumber() == 0) {
-                        if (filter.getEndDate() == null) {
-                            // we are asked only for the most recent value!
-                            double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
-                            if (!Double.isNaN(lastValue)) {
-                                HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, itemName),
-                                        ZonedDateTime.ofInstant(
-                                                Instant.ofEpochMilli(db.getLastArchiveUpdateTime() * 1000),
-                                                ZoneId.systemDefault()));
-                                return Collections.singletonList(rrd4jItem);
-                            } else {
-                                return Collections.emptyList();
-                            }
+        RrdDb db = getDB(itemName);
+        if (db == null) {
+            logger.warn("Could not find item '{}' in rrd4j database", itemName);
+            return List.of();
+        }
+
+        Item item = null;
+        try {
+            item = itemRegistry.getItem(itemName);
+        } catch (ItemNotFoundException e) {
+            logger.debug("Could not find item '{}' in registry", itemName);
+        }
+
+        long start = 0L;
+        long end = filter.getEndDate() == null ? System.currentTimeMillis() / 1000
+                : filter.getEndDate().toInstant().getEpochSecond();
+
+        try {
+            if (filter.getBeginDate() == null) {
+                // as rrd goes back for years and gets more and more
+                // inaccurate, we only support descending order
+                // and a single return value
+                // if there is no begin date is given - this case is
+                // required specifically for the historicState()
+                // query, which we want to support
+                if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
+                        && filter.getPageNumber() == 0) {
+                    if (filter.getEndDate() == null) {
+                        // we are asked only for the most recent value!
+                        double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
+                        if (!Double.isNaN(lastValue)) {
+                            HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, item),
+                                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(db.getLastArchiveUpdateTime() * 1000),
+                                            ZoneId.systemDefault()));
+                            return List.of(rrd4jItem);
                         } else {
-                            start = end;
+                            return List.of();
                         }
                     } else {
-                        throw new UnsupportedOperationException("rrd4j does not allow querys without a begin date, "
-                                + "unless order is descending and a single value is requested");
+                        start = end;
                     }
                 } else {
-                    start = filter.getBeginDate().toInstant().getEpochSecond();
+                    throw new UnsupportedOperationException("rrd4j does not allow querys without a begin date, "
+                            + "unless order is descending and a single value is requested");
                 }
-                FetchRequest request = db.createFetchRequest(consolidationFunction, start, end, 1);
-
-                List<HistoricItem> items = new ArrayList<>();
-                FetchData result = request.fetchData();
-                long ts = result.getFirstTimestamp();
-                long step = result.getRowCount() > 1 ? result.getStep() : 0;
-                for (double value : result.getValues(DATASOURCE_STATE)) {
-                    if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
-                        RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, itemName),
-                                ZonedDateTime.ofInstant(Instant.ofEpochMilli(ts * 1000), ZoneId.systemDefault()));
-                        items.add(rrd4jItem);
-                    }
-                    ts += step;
-                }
-                return items;
-            } catch (IOException e) {
-                logger.warn("Could not query rrd4j database for item '{}': {}", itemName, e.getMessage());
+            } else {
+                start = filter.getBeginDate().toInstant().getEpochSecond();
             }
+
+            FetchRequest request = db.createFetchRequest(getConsolidationFunction(db), start, end, 1);
+            FetchData result = request.fetchData();
+
+            List<HistoricItem> items = new ArrayList<>();
+            long ts = result.getFirstTimestamp();
+            long step = result.getRowCount() > 1 ? result.getStep() : 0;
+            for (double value : result.getValues(DATASOURCE_STATE)) {
+                if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
+                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, item),
+                            ZonedDateTime.ofInstant(Instant.ofEpochMilli(ts * 1000), ZoneId.systemDefault()));
+                    items.add(rrd4jItem);
+                }
+                ts += step;
+            }
+            return items;
+        } catch (IOException e) {
+            logger.warn("Could not query rrd4j database for item '{}': {}", itemName, e.getMessage());
+            return List.of();
         }
-        return Collections.emptyList();
     }
 
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
-        return Collections.emptySet();
+        return Set.of();
     }
 
-    protected @Nullable synchronized RrdDb getDB(String alias) {
+    protected synchronized @Nullable RrdDb getDB(String alias) {
         RrdDb db = null;
         File file = new File(DB_FOLDER + File.separator + alias + ".rrd");
         try {
@@ -383,29 +393,17 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private State mapToState(double value, String itemName) {
-        try {
-            Item item = itemRegistry.getItem(itemName);
-            if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
-                return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
-            } else if (item instanceof ContactItem) {
-                return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-            } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
-                // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
-                return new PercentType((int) Math.round(value * 100));
-            } else if (item instanceof NumberItem) {
-                Unit<? extends Quantity<?>> unit = ((NumberItem) item).getUnit();
-                if (unit != null) {
-                    return new QuantityType(value, unit);
-                } else {
-                    return new DecimalType(value);
-                }
-            }
-        } catch (ItemNotFoundException e) {
-            logger.debug("Could not find item '{}' in registry", itemName);
+    private State mapToState(double value, @Nullable Item item) {
+        if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
+            return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
+        } else if (item instanceof ContactItem) {
+            return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
+            // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
+            return new PercentType((int) Math.round(value * 100));
         }
-        // just return a DecimalType as a fallback
+        // return a DecimalType as a fallback and for QuantityType values to prevent performance issues
+        // see: https://github.com/openhab/openhab-addons/issues/8928
         return new DecimalType(value);
     }
 
