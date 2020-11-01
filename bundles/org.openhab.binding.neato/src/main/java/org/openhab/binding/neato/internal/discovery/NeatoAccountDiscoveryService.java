@@ -84,9 +84,14 @@ public class NeatoAccountDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void addThing(Robot robot) {
+        if (robot == null || !robot.discoveryInformationPresent()) {
+            return;
+        }
+
         logger.debug("addThing(): Adding new Neato unit {} to the smarthome inbox", robot.getName());
 
         Map<String, Object> properties = new HashMap<>();
+        String serial = robot.getSerial();
         ThingUID thingUID = new ThingUID(NeatoBindingConstants.THING_TYPE_VACUUMCLEANER, bridgeUID, robot.getSerial());
         properties.put(NeatoBindingConstants.CONFIG_SECRET, robot.getSecretKey());
         properties.put(NeatoBindingConstants.CONFIG_SERIAL, robot.getSerial());
