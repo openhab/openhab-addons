@@ -57,4 +57,14 @@ public class ChannelConfig {
      * Stop value
      */
     public String stop;
+
+    /**
+     * Increase value
+     */
+    public String increase;
+
+    /**
+     * Decrease value
+     */
+    public String decrease;
 }

@@ -33,21 +33,27 @@ public class RollershutterChannel extends DeviceChannel {
 
     @Override
     public @Nullable String mapCommand(final Command command) {
-        String data = null;
+        String data;
 
         if (command instanceof UpDownType) {
             if (config.up != null && UpDownType.UP.equals(command)) {
                 data = config.up;
             } else if (config.down != null && UpDownType.DOWN.equals(command)) {
                 data = config.down;
+            } else {
+                data = command.toFullString();
             }
         } else if (command instanceof StopMoveType) {
             if (config.stop != null && StopMoveType.STOP.equals(command)) {
                 data = config.stop;
+            } else {
+                data = command.toFullString();
             }
         } else {
-            data = super.mapCommand(command);
+            data = formatCommand(command);
         }
+
+        data = transformCommand(data);
 
         logger.debug("Mapped command is '{}'", data);
 

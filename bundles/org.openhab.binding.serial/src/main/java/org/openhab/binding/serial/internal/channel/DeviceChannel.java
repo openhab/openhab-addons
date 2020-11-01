@@ -78,20 +78,9 @@ public abstract class DeviceChannel {
      * @return the mapped data or the orginal data if no mapping found
      */
     public @Nullable String mapCommand(final Command command) {
-        String data = null;
+        String data = formatCommand(command);
 
-        if (config.commandFormat != null) {
-            try {
-                data = command.format(config.commandFormat);
-            } catch (final IllegalFormatException e) {
-                logger.warn("Couldn't map commmand because format string '{}' is invalid", config.commandFormat);
-                data = command.toFullString();
-            }
-        } else {
-            data = command.toFullString();
-        }
-
-        data = transform(data, config.commandTransform, commandPattern, getCommandTransformationService());
+        data = transformCommand(data);
 
         logger.debug("Mapped command is '{}'", data);
 
@@ -107,6 +96,41 @@ public abstract class DeviceChannel {
      */
     public @Nullable String transformData(final String data) {
         return transform(data, config.transform, pattern, getTransformationService());
+    }
+
+    /**
+     * Transform the data using the configured command transform
+     * 
+     * @param data the command to transform
+     * @return the transformed data. The orginal data is returned if no transform is defined or there
+     *         is an error performing the transform.
+     */
+    protected @Nullable String transformCommand(final String data) {
+        return transform(data, config.commandTransform, commandPattern, getCommandTransformationService());
+    }
+
+    /**
+     * Format the commnd using the configured format
+     * 
+     * @param data the command to transform
+     * @return the formatted data. The orginal data is returned if there is no format string
+     *         or if there is an error performing the format.
+     */
+    protected String formatCommand(final Command command) {
+        String data;
+
+        if (config.commandFormat != null) {
+            try {
+                data = command.format(config.commandFormat);
+            } catch (final IllegalFormatException e) {
+                logger.warn("Couldn't format commmand because format string '{}' is invalid", config.commandFormat);
+                data = command.toFullString();
+            }
+        } else {
+            data = command.toFullString();
+        }
+
+        return data;
     }
 
     /**

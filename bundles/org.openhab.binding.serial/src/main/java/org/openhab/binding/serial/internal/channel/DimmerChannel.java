@@ -13,6 +13,10 @@
 package org.openhab.binding.serial.internal.channel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.types.Command;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -21,9 +25,36 @@ import org.osgi.framework.BundleContext;
  * @author Mike Major - Initial contribution
  */
 @NonNullByDefault
-public class DimmerChannel extends DeviceChannel {
+public class DimmerChannel extends SwitchChannel {
 
     public DimmerChannel(final BundleContext bundleContext, final ChannelConfig config) {
         super(bundleContext, config);
+    }
+
+    @Override
+    public @Nullable String mapCommand(final Command command) {
+        String data;
+
+        if (command instanceof OnOffType) {
+            data = super.mapCommand(command);
+        } else {
+            if (command instanceof IncreaseDecreaseType) {
+                if (config.increase != null && IncreaseDecreaseType.INCREASE.equals(command)) {
+                    data = config.increase;
+                } else if (config.decrease != null && IncreaseDecreaseType.DECREASE.equals(command)) {
+                    data = config.decrease;
+                } else {
+                    data = command.toFullString();
+                }
+            } else {
+                data = formatCommand(command);
+            }
+
+            data = transformCommand(data);
+
+            logger.debug("Mapped command is '{}'", data);
+        }
+
+        return data;
     }
 }

@@ -12,12 +12,6 @@
  */
 package org.openhab.binding.serial.internal.handler;
 
-import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_DIMMER_CHANNEL;
-import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_NUMBER_CHANNEL;
-import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_ROLLERSHUTTER_CHANNEL;
-import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_STRING_CHANNEL;
-import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_SWITCH_CHANNEL;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -27,11 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.channel.ChannelConfig;
 import org.openhab.binding.serial.internal.channel.DeviceChannel;
-import org.openhab.binding.serial.internal.channel.DimmerChannel;
-import org.openhab.binding.serial.internal.channel.NumberChannel;
-import org.openhab.binding.serial.internal.channel.RollershutterChannel;
-import org.openhab.binding.serial.internal.channel.StringChannel;
-import org.openhab.binding.serial.internal.channel.SwitchChannel;
+import org.openhab.binding.serial.internal.channel.DeviceChannelFactory;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -104,24 +94,10 @@ public class SerialDeviceHandler extends BaseThingHandler {
             if (type != null) {
                 final ChannelConfig channelConfig = c.getConfiguration().as(ChannelConfig.class);
                 try {
-                    switch (type.getId()) {
-                        case DEVICE_STRING_CHANNEL:
-                            channels.put(c.getUID(), new StringChannel(bundleContext, channelConfig));
-                            break;
-                        case DEVICE_NUMBER_CHANNEL:
-                            channels.put(c.getUID(), new NumberChannel(bundleContext, channelConfig));
-                            break;
-                        case DEVICE_DIMMER_CHANNEL:
-                            channels.put(c.getUID(), new DimmerChannel(bundleContext, channelConfig));
-                            break;
-                        case DEVICE_SWITCH_CHANNEL:
-                            channels.put(c.getUID(), new SwitchChannel(bundleContext, channelConfig));
-                            break;
-                        case DEVICE_ROLLERSHUTTER_CHANNEL:
-                            channels.put(c.getUID(), new RollershutterChannel(bundleContext, channelConfig));
-                            break;
-                        default:
-                            break;
+                    DeviceChannel deviceChannel = DeviceChannelFactory.createDeviceChannel(bundleContext, channelConfig,
+                            type.getId());
+                    if (deviceChannel != null) {
+                        channels.put(c.getUID(), deviceChannel);
                     }
                 } catch (final IllegalArgumentException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -130,7 +106,6 @@ public class SerialDeviceHandler extends BaseThingHandler {
                 }
             }
         }
-        ;
 
         updateStatus(ThingStatus.UNKNOWN);
         bridgeStatusChanged(getBridgeStatus());

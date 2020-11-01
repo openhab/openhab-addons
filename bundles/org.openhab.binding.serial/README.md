@@ -84,8 +84,10 @@ The configuration for the `serialBridge` channels consists of the following para
 | transform        | Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)  | string, number, dimmer, switch, rollershutter |
 | commandTransform | Transform used to convert command to device data, e.g. JS(device.js)                   | string, number, dimmer |
 | commandFormat    | Format string applied to the command before transform, e.g. ID=671;COMMAND=%s          | string, number, dimmer, rollershutter |
-| on               | Send this value when receiving an ON command                                           | switch |
-| off              | Send this value when receiving an OFF command                                          | switch |
+| on               | Send this value when receiving an ON command                                           | switch, dimmer |
+| off              | Send this value when receiving an OFF command                                          | switch, dimmer |
+| increase         | Send this value when receiving an INCREASE command                                          | dimmer |
+| descrease        | Send this value when receiving a DECREASE command                                          | dimmer |
 | up               | Send this value when receiving an UP command                                           | rollershutter |
 | down             | Send this value when receiving a DOWN command                                          | rollershutter |
 | stop             | Send this value when receiving a STOP command                                          | rollershutter |

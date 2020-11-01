@@ -32,13 +32,17 @@ public class SwitchChannel extends DeviceChannel {
 
     @Override
     public @Nullable String mapCommand(final Command command) {
-        String data = null;
+        String data;
 
         if (config.on != null && OnOffType.ON.equals(command)) {
             data = config.on;
         } else if (config.off != null && OnOffType.OFF.equals(command)) {
             data = config.off;
+        } else {
+            data = command.toFullString();
         }
+
+        data = transformCommand(data);
 
         logger.debug("Mapped command is '{}'", data);
 
