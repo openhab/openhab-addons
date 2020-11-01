@@ -152,8 +152,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                             sample.setTime(now - 1);
                             sample.setValue(DATASOURCE_STATE, lastValue);
                             sample.update();
-                            logger.debug("Stored '{}' with state '{}' in rrd4j database (again)", name,
-                                    mapToState(lastValue, item));
+                            logger.debug("Stored '{}' as value '{}' in rrd4j database (again)", name, lastValue);
                         }
                     }
                 } catch (IOException e) {
@@ -195,7 +194,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                     }
                     sample.setValue(DATASOURCE_STATE, value);
                     sample.update();
-                    logger.debug("Stored '{}' with state '{}' in rrd4j database", name, value);
+                    logger.debug("Stored '{}' as value '{}' in rrd4j database", name, value);
                 }
             } catch (IllegalArgumentException e) {
                 String message = e.getMessage();
@@ -238,8 +237,14 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         Item item = null;
+        Unit<?> unit = null;
         try {
             item = itemRegistry.getItem(itemName);
+            if (item instanceof NumberItem) {
+                // we already retrieve the unit here once as it is a very costly operation,
+                // see https://github.com/openhab/openhab-addons/issues/8928
+                unit = ((NumberItem) item).getUnit();
+            }
         } catch (ItemNotFoundException e) {
             logger.debug("Could not find item '{}' in registry", itemName);
         }
@@ -262,7 +267,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
-                            HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, item),
+                            HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, item, unit),
                                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(db.getLastArchiveUpdateTime() * 1000),
                                             ZoneId.systemDefault()));
                             return List.of(rrd4jItem);
@@ -288,7 +293,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             long step = result.getRowCount() > 1 ? result.getStep() : 0;
             for (double value : result.getValues(DATASOURCE_STATE)) {
                 if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
-                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, item),
+                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, item, unit),
                             ZonedDateTime.ofInstant(Instant.ofEpochMilli(ts * 1000), ZoneId.systemDefault()));
                     items.add(rrd4jItem);
                 }
@@ -393,7 +398,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    private State mapToState(double value, @Nullable Item item) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private State mapToState(double value, @Nullable Item item, @Nullable Unit unit) {
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
             return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
         } else if (item instanceof ContactItem) {
@@ -401,9 +407,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
             // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
             return new PercentType((int) Math.round(value * 100));
+        } else if (item instanceof NumberItem) {
+            if (unit != null) {
+                return new QuantityType(value, unit);
+            } else {
+                return new DecimalType(value);
+            }
         }
-        // return a DecimalType as a fallback and for QuantityType values to prevent performance issues
-        // see: https://github.com/openhab/openhab-addons/issues/8928
         return new DecimalType(value);
     }
 
