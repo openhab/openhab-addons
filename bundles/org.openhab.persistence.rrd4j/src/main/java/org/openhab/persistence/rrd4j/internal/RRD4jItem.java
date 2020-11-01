@@ -12,8 +12,10 @@
  */
 package org.openhab.persistence.rrd4j.internal;
 
-import java.text.DateFormat;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
@@ -53,6 +55,8 @@ public class RRD4jItem implements HistoricItem {
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
+        return timestamp
+                .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.getDefault())) + ": "
+                + name + " -> " + state.toString();
     }
 }
