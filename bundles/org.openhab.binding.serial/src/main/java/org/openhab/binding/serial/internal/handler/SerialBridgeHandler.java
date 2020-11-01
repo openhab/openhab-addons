@@ -57,15 +57,15 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
     private final Logger logger = LoggerFactory.getLogger(SerialBridgeHandler.class);
 
-    private @NonNullByDefault({}) SerialBridgeConfiguration config;
+    private SerialBridgeConfiguration config = new SerialBridgeConfiguration();
 
     private final SerialPortManager serialPortManager;
-    private @NonNullByDefault({}) SerialPort serialPort;
+    private @Nullable SerialPort serialPort;
 
     private @Nullable InputStream inputStream;
     private @Nullable OutputStream outputStream;
 
-    private @NonNullByDefault({}) Charset charset;
+    private Charset charset = Charset.defaultCharset();
 
     private @Nullable String data;
 
@@ -98,9 +98,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         config = getConfigAs(SerialBridgeConfiguration.class);
 
         try {
-            if (config.charset == null) {
-                charset = Charset.defaultCharset();
-            } else {
+            if (config.charset != null) {
                 charset = Charset.forName(config.charset);
             }
             logger.debug("Serial port '{}' charset '{}' set", config.serialPort, charset);
@@ -124,7 +122,8 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
         // initialize serial port
         try {
-            serialPort = portId.open(getThing().getUID().toString(), 2000);
+            final SerialPort serialPort = portId.open(getThing().getUID().toString(), 2000);
+            this.serialPort = serialPort;
 
             serialPort.setSerialPortParams(config.baudRate, config.dataBits, config.getStopBitsAsInt(),
                     config.getParityAsInt());
@@ -152,10 +151,11 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
     @Override
     public void dispose() {
+        final SerialPort serialPort = this.serialPort;
         if (serialPort != null) {
             serialPort.removeEventListener();
             serialPort.close();
-            serialPort = null;
+            this.serialPort = null;
         }
 
         final InputStream inputStream = this.inputStream;

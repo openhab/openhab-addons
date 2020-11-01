@@ -35,7 +35,6 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
 /**
  * The {@link SerialDeviceHandler} is responsible for handling commands, which are
@@ -46,14 +45,17 @@ import org.osgi.framework.FrameworkUtil;
 @NonNullByDefault
 public class SerialDeviceHandler extends BaseThingHandler {
 
+    private final BundleContext bundleContext;
+
     private @NonNullByDefault({}) Pattern devicePattern;
 
     private @Nullable String data;
 
     private final Map<ChannelUID, DeviceChannel> channels = new HashMap<>();
 
-    public SerialDeviceHandler(final Thing thing) {
+    public SerialDeviceHandler(final Thing thing, final BundleContext bundleContext) {
         super(thing);
+        this.bundleContext = bundleContext;
     }
 
     @Override
@@ -88,14 +90,13 @@ public class SerialDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        final BundleContext bundleContext = FrameworkUtil.getBundle(SerialDeviceHandler.class).getBundleContext();
         for (final Channel c : getThing().getChannels()) {
             final ChannelTypeUID type = c.getChannelTypeUID();
             if (type != null) {
                 final ChannelConfig channelConfig = c.getConfiguration().as(ChannelConfig.class);
                 try {
-                    DeviceChannel deviceChannel = DeviceChannelFactory.createDeviceChannel(bundleContext, channelConfig,
-                            type.getId());
+                    final DeviceChannel deviceChannel = DeviceChannelFactory.createDeviceChannel(bundleContext,
+                            channelConfig, type.getId());
                     if (deviceChannel != null) {
                         channels.put(c.getUID(), deviceChannel);
                     }
