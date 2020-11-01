@@ -225,6 +225,14 @@ public enum BluetoothUnit {
         return unit;
     }
 
+    /**
+     * This class contains the set of units that are not yet defined in SmarthomeUnits.
+     * Once these units are added to the core then this class will be removed.
+     *
+     * @author cpetty
+     * @deprecated
+     */
+    @Deprecated
     static class BUnits {
         public static final Unit<ArealDensity> KILOGRAM_PER_SQUARE_METER = addUnit(
                 new ProductUnit<ArealDensity>(Units.KILOGRAM.divide(Units.SQUARE_METRE)));
@@ -324,33 +332,34 @@ public enum BluetoothUnit {
         private static <U extends Unit<?>> U addUnit(U unit) {
             return unit;
         }
-    }
 
-    public interface AngularVelocity extends Quantity<AngularVelocity> {
-    }
+        public interface AngularVelocity extends Quantity<AngularVelocity> {
+        }
 
-    public interface LuminousEnergy extends Quantity<LuminousEnergy> {
-    }
+        public interface LuminousEnergy extends Quantity<LuminousEnergy> {
+        }
 
-    public interface LuminousEfficacy extends Quantity<LuminousEfficacy> {
-    }
+        public interface LuminousEfficacy extends Quantity<LuminousEfficacy> {
+        }
 
-    public interface LuminousExposure extends Quantity<LuminousExposure> {
-    }
+        public interface LuminousExposure extends Quantity<LuminousExposure> {
+        }
 
-    public interface RadiantIntensity extends Quantity<RadiantIntensity> {
-    }
+        public interface RadiantIntensity extends Quantity<RadiantIntensity> {
+        }
 
-    public interface Radiance extends Quantity<Radiance> {
-    }
+        public interface Radiance extends Quantity<Radiance> {
+        }
 
-    public interface RadiationExposure extends Quantity<RadiationExposure> {
-    }
+        public interface RadiationExposure extends Quantity<RadiationExposure> {
+        }
 
-    public interface RadiationDoseAbsorptionRate extends Quantity<RadiationDoseAbsorptionRate> {
-    }
+        public interface RadiationDoseAbsorptionRate extends Quantity<RadiationDoseAbsorptionRate> {
+        }
 
-    public interface MassFlowRate extends Quantity<MassFlowRate> {
+        public interface MassFlowRate extends Quantity<MassFlowRate> {
+        }
+
     }
 
 }
