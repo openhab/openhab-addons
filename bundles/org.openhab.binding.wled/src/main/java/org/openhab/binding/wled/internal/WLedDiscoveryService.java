@@ -84,32 +84,31 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         String name = service.getName().toLowerCase();
-        if (!name.equals("wled")) {
+        if (!name.contains("wled")) {
             return null;
         }
         String address[] = service.getURLs();
         if ((address == null) || address.length < 1) {
             logger.debug("WLED discovered with empty IP address-{}", service);
             return null;
-        } else {
-            String response = sendGetRequest(address[0], "/json");
-            // LinkedList<String> segmentIndexList = WLedHelper.listOfResults(response, "{\"id\":", ",");
-            // How to create multiple things from the returned list of segments?
-            String label = WLedHelper.getValue(response, "\"name\":\"", "\"");
-            if (label.isEmpty()) {
-                label = "WLED @ " + address[0];
-            }
-            String macAddress = WLedHelper.getValue(response, "\"mac\":\"", "\"");
-            String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
-            ThingTypeUID thingtypeuid = new ThingTypeUID("wled", "wled");
-            ThingUID thingUID = new ThingUID(thingtypeuid, macAddress);
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware);
-            return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0])
-                    .withProperty(CONFIG_SEGMENT_INDEX, 0).withLabel(label).withProperties(properties)
-                    .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
         }
+        String response = sendGetRequest(address[0], "/json");
+        // LinkedList<String> segmentIndexList = WLedHelper.listOfResults(response, "{\"id\":", ",");
+        // How to create multiple things from the returned list of segments?
+        String label = WLedHelper.getValue(response, "\"name\":\"", "\"");
+        if (label.isEmpty()) {
+            label = "WLED @ " + address[0];
+        }
+        String macAddress = WLedHelper.getValue(response, "\"mac\":\"", "\"");
+        String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
+        ThingTypeUID thingtypeuid = new ThingTypeUID("wled", "wled");
+        ThingUID thingUID = new ThingUID(thingtypeuid, macAddress);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware);
+        return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0])
+                .withProperty(CONFIG_SEGMENT_INDEX, -1).withLabel(label).withProperties(properties)
+                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
     }
 
     @Override
