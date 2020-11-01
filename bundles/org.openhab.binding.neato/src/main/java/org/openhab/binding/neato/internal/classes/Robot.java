@@ -148,4 +148,8 @@ public class Robot {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
+
+    public boolean discoveryInformationPresent() {
+        return serial != null && secretKey != null && name != null && model != null;
+    }
 }
