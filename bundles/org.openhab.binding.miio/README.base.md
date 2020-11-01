@@ -153,6 +153,12 @@ The most common problem is a wrong userId/password. Try to fix your userId/passw
 If it still fails, you're bit out of luck. You may try to restart OpenHAB (not just the binding) to clean the cookies. 
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
 
+_My Roborock vacuum is not found or not reacting_
+Did you link the vacuum with the Roborock app? 
+This won't work, the Roborock app is using a different communication method. 
+Reset your vacuum and connect it to the Xiaomi MiHome app. 
+This will change the communication method and the Mi IO binding can communicate with the vacuum.
+
 
 # Channels
 
