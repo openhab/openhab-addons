@@ -16,6 +16,9 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 
 import java.util.Arrays;
 
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.inwallswitch.dto.PowerMeterState;
@@ -23,8 +26,9 @@ import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchService;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -42,7 +46,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
-    private PowerSwitchService powerSwitchService;
+    private final PowerSwitchService powerSwitchService;
 
     public BoschInWallSwitchHandler(Thing thing) {
         super(thing);
@@ -92,8 +96,9 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
         logger.debug("Parsed power meter state of {}: energy {} - power {}", this.getBoschID(), state.energyConsumption,
                 state.energyConsumption);
 
-        updateState(CHANNEL_POWER_CONSUMPTION, new DecimalType(state.powerConsumption));
-        updateState(CHANNEL_ENERGY_CONSUMPTION, new DecimalType(state.energyConsumption));
+        updateState(CHANNEL_POWER_CONSUMPTION, new QuantityType<Power>(state.powerConsumption, SmartHomeUnits.WATT));
+        updateState(CHANNEL_ENERGY_CONSUMPTION,
+                new QuantityType<Energy>(state.energyConsumption, SmartHomeUnits.WATT_HOUR));
     }
 
     /**
