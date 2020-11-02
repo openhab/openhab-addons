@@ -13,7 +13,7 @@
 package org.openhab.binding.serial.internal.channel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.osgi.framework.BundleContext;
+import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 
 /**
  * The {@link NumberChannel} channel applies a format followed by a transform.
@@ -23,7 +23,7 @@ import org.osgi.framework.BundleContext;
 @NonNullByDefault
 public class NumberChannel extends DeviceChannel {
 
-    public NumberChannel(final BundleContext bundleContext, final ChannelConfig config) {
-        super(bundleContext, config);
+    public NumberChannel(final ValueTransformationProvider valueTransformationProvider, final ChannelConfig config) {
+        super(valueTransformationProvider, config);
     }
 }

@@ -117,17 +117,17 @@
 		<label>String</label>
 		<description>Channel to receive commands as a string</description>
 		<config-description>
-			<parameter name="transform" type="text">
-				<label>State Transform</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
 			</parameter>
 			<parameter name="commandFormat" type="text">
 				<label>String Format</label>
 				<description>Format string applied to the command, e.g. ID=671;COMMAND=%s</description>
 			</parameter>
-			<parameter name="commandTransform" type="text">
-				<label>Device Transform</label>
-				<description>Transform used to convert command to device data, e.g. JS(device.js)</description>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -137,17 +137,17 @@
 		<label>Number</label>
 		<description>Channel to receive commands as a number</description>
 		<config-description>
-			<parameter name="transform" type="text">
-				<label>State Transform</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
 			</parameter>
 			<parameter name="commandFormat" type="text">
 				<label>Number Format</label>
 				<description>Format string applied to the command, e.g. ID=671;VAL=%f</description>
 			</parameter>
-			<parameter name="commandTransform" type="text">
-				<label>Device Transform</label>
-				<description>Transform used to convert command to device data, e.g. JS(device.js)</description>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -157,23 +157,23 @@
 		<label>Dimmer</label>
 		<description>Channel to receive commands from a Dimmer</description>
 		<config-description>
-			<parameter name="transform" type="text">
-				<label>State Transform</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
 			</parameter>
-			<parameter name="on" type="text">
+			<parameter name="onValue" type="text">
 				<label>On Value</label>
 				<description>Send this value when receiving an ON command</description>
 			</parameter>
-			<parameter name="off" type="text">
+			<parameter name="offValue" type="text">
 				<label>Off Value</label>
 				<description>Send this value when receiving an OFF command</description>
 			</parameter>
-			<parameter name="increase" type="text">
+			<parameter name="increaseValue" type="text">
 				<label>Increase Value</label>
 				<description>Send this value when receiving an INCREASE command</description>
 			</parameter>
-			<parameter name="decrease" type="text">
+			<parameter name="decreaseValue" type="text">
 				<label>Decrease Value</label>
 				<description>Send this value when receiving a DECREASE command</description>
 			</parameter>
@@ -181,9 +181,9 @@
 				<label>Percent Format</label>
 				<description>Format string applied to the percent command, e.g. ID=671;VAL=%d</description>
 			</parameter>
-			<parameter name="commandTransform" type="text">
-				<label>Device Transform</label>
-				<description>Transform used to convert command to device data, e.g. JS(device.js)</description>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -193,21 +193,21 @@
 		<label>Switch</label>
 		<description>Channel to receive commands from a Switch</description>
 		<config-description>
-			<parameter name="transform" type="text">
-				<label>State Transform</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
 			</parameter>
-			<parameter name="on" type="text">
+			<parameter name="onValue" type="text">
 				<label>On Value</label>
 				<description>Send this value when receiving an ON command</description>
 			</parameter>
-			<parameter name="off" type="text">
+			<parameter name="offValue" type="text">
 				<label>Off Value</label>
 				<description>Send this value when receiving an OFF command</description>
 			</parameter>
-			<parameter name="commandTransform" type="text">
-				<label>Device Transform</label>
-				<description>Transform used to convert command to device data, e.g. JS(device.js)</description>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -217,19 +217,19 @@
 		<label>Rollershutter</label>
 		<description>Channel to receive commands from a Rollershutter</description>
 		<config-description>
-			<parameter name="transform" type="text">
-				<label>State Transform</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX(.*?STATE=(.*?);.*)</description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
 			</parameter>
-			<parameter name="up" type="text">
+			<parameter name="upValue" type="text">
 				<label>Up Value</label>
 				<description>Send this value when receiving an UP command</description>
 			</parameter>
-			<parameter name="down" type="text">
+			<parameter name="downValue" type="text">
 				<label>Down Value</label>
 				<description>Send this value when receiving a DOWN command</description>
 			</parameter>
-			<parameter name="stop" type="text">
+			<parameter name="stopValue" type="text">
 				<label>Stop Value</label>
 				<description>Send this value when receiving a STOP command</description>
 			</parameter>
@@ -237,9 +237,9 @@
 				<label>Percent Format</label>
 				<description>Format string applied to the percent command, e.g. ID=671;VAL=%d</description>
 			</parameter>
-			<parameter name="commandTransform" type="text">
-				<label>Device Transform</label>
-				<description>Transform used to convert command to device data, e.g. JS(device.js)</description>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
 			</parameter>
 		</config-description>
 	</channel-type>

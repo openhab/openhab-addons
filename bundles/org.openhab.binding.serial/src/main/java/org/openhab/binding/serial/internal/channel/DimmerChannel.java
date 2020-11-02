@@ -14,10 +14,10 @@ package org.openhab.binding.serial.internal.channel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
-import org.osgi.framework.BundleContext;
 
 /**
  * The {@link DimmerChannel} channel applies a format followed by a transform.
@@ -27,8 +27,8 @@ import org.osgi.framework.BundleContext;
 @NonNullByDefault
 public class DimmerChannel extends SwitchChannel {
 
-    public DimmerChannel(final BundleContext bundleContext, final ChannelConfig config) {
-        super(bundleContext, config);
+    public DimmerChannel(final ValueTransformationProvider valueTransformationProvider, final ChannelConfig config) {
+        super(valueTransformationProvider, config);
     }
 
     @Override
@@ -39,10 +39,10 @@ public class DimmerChannel extends SwitchChannel {
             data = super.mapCommand(command);
         } else {
             if (command instanceof IncreaseDecreaseType) {
-                if (config.increase != null && IncreaseDecreaseType.INCREASE.equals(command)) {
-                    data = config.increase;
-                } else if (config.decrease != null && IncreaseDecreaseType.DECREASE.equals(command)) {
-                    data = config.decrease;
+                if (config.increaseValue != null && IncreaseDecreaseType.INCREASE.equals(command)) {
+                    data = config.increaseValue;
+                } else if (config.decreaseValue != null && IncreaseDecreaseType.DECREASE.equals(command)) {
+                    data = config.decreaseValue;
                 } else {
                     data = command.toFullString();
                 }

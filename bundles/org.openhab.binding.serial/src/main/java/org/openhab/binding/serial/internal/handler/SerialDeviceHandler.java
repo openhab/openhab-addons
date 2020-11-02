@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.channel.ChannelConfig;
 import org.openhab.binding.serial.internal.channel.DeviceChannel;
 import org.openhab.binding.serial.internal.channel.DeviceChannelFactory;
+import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -34,7 +35,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.osgi.framework.BundleContext;
 
 /**
  * The {@link SerialDeviceHandler} is responsible for handling commands, which are
@@ -45,7 +45,7 @@ import org.osgi.framework.BundleContext;
 @NonNullByDefault
 public class SerialDeviceHandler extends BaseThingHandler {
 
-    private final BundleContext bundleContext;
+    private final ValueTransformationProvider valueTransformationProvider;
 
     private @NonNullByDefault({}) Pattern devicePattern;
 
@@ -53,9 +53,9 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     private final Map<ChannelUID, DeviceChannel> channels = new HashMap<>();
 
-    public SerialDeviceHandler(final Thing thing, final BundleContext bundleContext) {
+    public SerialDeviceHandler(final Thing thing, final ValueTransformationProvider valueTransformationProvider) {
         super(thing);
-        this.bundleContext = bundleContext;
+        this.valueTransformationProvider = valueTransformationProvider;
     }
 
     @Override
@@ -95,8 +95,8 @@ public class SerialDeviceHandler extends BaseThingHandler {
             if (type != null) {
                 final ChannelConfig channelConfig = c.getConfiguration().as(ChannelConfig.class);
                 try {
-                    final DeviceChannel deviceChannel = DeviceChannelFactory.createDeviceChannel(bundleContext,
-                            channelConfig, type.getId());
+                    final DeviceChannel deviceChannel = DeviceChannelFactory
+                            .createDeviceChannel(valueTransformationProvider, channelConfig, type.getId());
                     if (deviceChannel != null) {
                         channels.put(c.getUID(), deviceChannel);
                     }

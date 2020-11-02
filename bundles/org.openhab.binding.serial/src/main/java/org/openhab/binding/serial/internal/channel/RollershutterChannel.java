@@ -14,10 +14,10 @@ package org.openhab.binding.serial.internal.channel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
-import org.osgi.framework.BundleContext;
 
 /**
  * The {@link RollershutterChannel} channel provides mappings for the UP, DOWN and STOP commands
@@ -27,8 +27,9 @@ import org.osgi.framework.BundleContext;
 @NonNullByDefault
 public class RollershutterChannel extends DeviceChannel {
 
-    public RollershutterChannel(final BundleContext bundleContext, final ChannelConfig config) {
-        super(bundleContext, config);
+    public RollershutterChannel(final ValueTransformationProvider valueTransformationProvider,
+            final ChannelConfig config) {
+        super(valueTransformationProvider, config);
     }
 
     @Override
@@ -36,16 +37,16 @@ public class RollershutterChannel extends DeviceChannel {
         String data;
 
         if (command instanceof UpDownType) {
-            if (config.up != null && UpDownType.UP.equals(command)) {
-                data = config.up;
-            } else if (config.down != null && UpDownType.DOWN.equals(command)) {
-                data = config.down;
+            if (config.upValue != null && UpDownType.UP.equals(command)) {
+                data = config.upValue;
+            } else if (config.downValue != null && UpDownType.DOWN.equals(command)) {
+                data = config.downValue;
             } else {
                 data = command.toFullString();
             }
         } else if (command instanceof StopMoveType) {
-            if (config.stop != null && StopMoveType.STOP.equals(command)) {
-                data = config.stop;
+            if (config.stopValue != null && StopMoveType.STOP.equals(command)) {
+                data = config.stopValue;
             } else {
                 data = command.toFullString();
             }

@@ -25,12 +25,12 @@ public class ChannelConfig {
     /**
      * Transform for received data
      */
-    public @Nullable String transform;
+    public @Nullable String stateTransformation;
 
     /**
      * Transform for command
      */
-    public @Nullable String commandTransform;
+    public @Nullable String commandTransformation;
 
     /**
      * Format string for command
@@ -40,35 +40,35 @@ public class ChannelConfig {
     /**
      * On value
      */
-    public @Nullable String on;
+    public @Nullable String onValue;
 
     /**
      * Off value
      */
-    public @Nullable String off;
+    public @Nullable String offValue;
 
     /**
      * Up value
      */
-    public @Nullable String up;
+    public @Nullable String upValue;
 
     /**
      * Down value
      */
-    public @Nullable String down;
+    public @Nullable String downValue;
 
     /**
      * Stop value
      */
-    public @Nullable String stop;
+    public @Nullable String stopValue;
 
     /**
      * Increase value
      */
-    public @Nullable String increase;
+    public @Nullable String increaseValue;
 
     /**
      * Decrease value
      */
-    public @Nullable String decrease;
+    public @Nullable String decreaseValue;
 }

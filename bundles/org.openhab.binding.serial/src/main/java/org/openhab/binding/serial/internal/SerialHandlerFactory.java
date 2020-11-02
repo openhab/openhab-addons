@@ -21,6 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.handler.SerialBridgeHandler;
 import org.openhab.binding.serial.internal.handler.SerialDeviceHandler;
+import org.openhab.binding.serial.internal.transform.CascadedValueTransformationImpl;
+import org.openhab.binding.serial.internal.transform.NoOpValueTransformation;
+import org.openhab.binding.serial.internal.transform.ValueTransformation;
+import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -28,6 +32,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.transform.TransformationHelper;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -40,7 +45,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.serial", service = ThingHandlerFactory.class)
-public class SerialHandlerFactory extends BaseThingHandlerFactory {
+public class SerialHandlerFactory extends BaseThingHandlerFactory implements ValueTransformationProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
 
@@ -63,9 +68,18 @@ public class SerialHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new SerialBridgeHandler((Bridge) thing, serialPortManager);
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new SerialDeviceHandler(thing, getBundleContext());
+            return new SerialDeviceHandler(thing, this);
         }
 
         return null;
+    }
+
+    @Override
+    public ValueTransformation getValueTransformation(@Nullable final String pattern) {
+        if (pattern == null) {
+            return NoOpValueTransformation.getInstance();
+        }
+        return new CascadedValueTransformationImpl(pattern,
+                name -> TransformationHelper.getTransformationService(bundleContext, name));
     }
 }

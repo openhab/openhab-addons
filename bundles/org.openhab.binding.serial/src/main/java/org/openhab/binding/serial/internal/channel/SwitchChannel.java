@@ -14,9 +14,9 @@ package org.openhab.binding.serial.internal.channel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
-import org.osgi.framework.BundleContext;
 
 /**
  * The {@link SwitchChannel} channel provides mappings for the ON and OFF commands
@@ -26,18 +26,18 @@ import org.osgi.framework.BundleContext;
 @NonNullByDefault
 public class SwitchChannel extends DeviceChannel {
 
-    public SwitchChannel(final BundleContext bundleContext, final ChannelConfig config) {
-        super(bundleContext, config);
+    public SwitchChannel(final ValueTransformationProvider valueTransformationProvider, final ChannelConfig config) {
+        super(valueTransformationProvider, config);
     }
 
     @Override
     public @Nullable String mapCommand(final Command command) {
         String data;
 
-        if (config.on != null && OnOffType.ON.equals(command)) {
-            data = config.on;
-        } else if (config.off != null && OnOffType.OFF.equals(command)) {
-            data = config.off;
+        if (config.onValue != null && OnOffType.ON.equals(command)) {
+            data = config.onValue;
+        } else if (config.offValue != null && OnOffType.OFF.equals(command)) {
+            data = config.offValue;
         } else {
             data = command.toFullString();
         }

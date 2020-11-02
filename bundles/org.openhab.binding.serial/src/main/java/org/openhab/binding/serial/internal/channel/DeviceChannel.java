@@ -12,18 +12,14 @@
  */
 package org.openhab.binding.serial.internal.channel;
 
-import java.lang.ref.WeakReference;
 import java.util.IllegalFormatException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.transform.TransformationException;
-import org.openhab.core.transform.TransformationHelper;
-import org.openhab.core.transform.TransformationService;
+import org.openhab.binding.serial.internal.transform.ValueTransformation;
+import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.types.Command;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,41 +31,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class DeviceChannel {
-    // RegEx to extract a parse a function String <code>'(.*?)\((.*)\)'</code>
-    private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(.*?)\\((.*)\\)");
-
     protected final Logger logger = LoggerFactory.getLogger(DeviceChannel.class);
 
     protected final ChannelConfig config;
 
-    private final BundleContext bundleContext;
+    private final ValueTransformation transform;
+    private final ValueTransformation commandTransform;
 
-    private @Nullable String type;
-    private @Nullable String pattern;
-
-    private @Nullable String commandType;
-    private @Nullable String commandPattern;
-
-    private WeakReference<@Nullable TransformationService> transformationService = new WeakReference<>(null);
-    private WeakReference<@Nullable TransformationService> commandTransformationService = new WeakReference<>(null);
-
-    protected DeviceChannel(final BundleContext bundleContext, final ChannelConfig config) {
-        this.bundleContext = bundleContext;
+    protected DeviceChannel(final ValueTransformationProvider valueTransformationProvider, final ChannelConfig config) {
         this.config = config;
-
-        final String transform = config.transform;
-        if (transform != null) {
-            final String[] parts = splitTransformationConfig(transform);
-            type = parts[0];
-            pattern = parts[1];
-        }
-
-        final String commandTransform = config.commandTransform;
-        if (commandTransform != null) {
-            final String[] parts = splitTransformationConfig(commandTransform);
-            commandType = parts[0];
-            commandPattern = parts[1];
-        }
+        transform = valueTransformationProvider.getValueTransformation(config.stateTransformation);
+        commandTransform = valueTransformationProvider.getValueTransformation(config.commandTransformation);
     }
 
     /**
@@ -97,7 +69,8 @@ public abstract class DeviceChannel {
      *         is an error performing the transform.
      */
     public @Nullable String transformData(final @Nullable String data) {
-        return transform(data, config.transform, pattern, getTransformationService());
+        final Optional<String> result = data != null ? transform.apply(data) : Optional.empty();
+        return result.isPresent() ? result.get() : null;
     }
 
     /**
@@ -108,7 +81,8 @@ public abstract class DeviceChannel {
      *         is an error performing the transform.
      */
     protected @Nullable String transformCommand(final @Nullable String data) {
-        return transform(data, config.commandTransform, commandPattern, getCommandTransformationService());
+        final Optional<String> result = data != null ? commandTransform.apply(data) : Optional.empty();
+        return result.isPresent() ? result.get() : null;
     }
 
     /**
@@ -134,110 +108,5 @@ public abstract class DeviceChannel {
         }
 
         return data;
-    }
-
-    /**
-     * Transform the data using the supplied transform parameters
-     * 
-     * @param data the data to transform
-     * @param transform the transform config string
-     * @param pattern the transform pattern
-     * @param transformationService the transformation service
-     * @return the transformed data. The orginal data is returned if no transform is defined or there
-     *         is an error performing the transform.
-     */
-    private @Nullable String transform(final @Nullable String data, final @Nullable String transform,
-            final @Nullable String pattern, final @Nullable TransformationService transformationService) {
-
-        if (data == null || transform == null || pattern == null) {
-            return data;
-        }
-
-        String transformedData;
-
-        try {
-            if (transformationService != null) {
-                transformedData = transformationService.transform(pattern, data);
-            } else {
-                transformedData = data;
-                logger.warn("Couldn't transform because transformationService of type '{}' is unavailable", type);
-            }
-        } catch (final TransformationException te) {
-            logger.warn("An exception occurred while transforming '{}' with '{}' : '{}'", data, transform,
-                    te.getMessage());
-
-            // in case of an error we return the response without any transformation
-            transformedData = data;
-        }
-
-        logger.debug("Transform result is '{}'", transformedData);
-        return transformedData;
-    }
-
-    /**
-     * Splits a transformation configuration string into its two parts - the
-     * transformation type and the function/pattern to apply.
-     *
-     * @param transformation the string to split
-     * @return a string array with exactly two entries for the type and the function
-     */
-    private String[] splitTransformationConfig(final String transformation) {
-        final Matcher matcher = EXTRACT_FUNCTION_PATTERN.matcher(transformation);
-
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("given transformation function '" + transformation
-                    + "' does not follow the expected pattern '<function>(<pattern>)'");
-        }
-        matcher.reset();
-
-        matcher.find();
-
-        final String type = matcher.group(1);
-        final String pattern = matcher.group(2);
-
-        return new String[] { type, pattern };
-    }
-
-    /**
-     * Get the transformation service for transforming data received from the device
-     * 
-     * @return TransformationService
-     */
-    private @Nullable TransformationService getTransformationService() {
-        final String type = this.type;
-
-        if (type == null) {
-            return null;
-        }
-
-        TransformationService transformationService = this.transformationService.get();
-        if (transformationService == null) {
-            transformationService = TransformationHelper.getTransformationService(bundleContext, type);
-            this.transformationService = new WeakReference<@Nullable TransformationService>(transformationService);
-        }
-
-        return transformationService;
-    }
-
-    /**
-     * Get the transformation service for transforming the command to send to the device
-     * 
-     * @return TransformationService
-     */
-    private @Nullable TransformationService getCommandTransformationService() {
-        final String type = this.commandType;
-
-        if (type == null) {
-            return null;
-        }
-
-        TransformationService transformationService = this.commandTransformationService.get();
-        if (transformationService == null) {
-            transformationService = TransformationHelper.getTransformationService(bundleContext, type);
-            this.commandTransformationService = new WeakReference<@Nullable TransformationService>(
-                    transformationService);
-        }
-
-        return transformationService;
     }
 }

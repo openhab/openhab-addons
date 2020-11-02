@@ -20,7 +20,7 @@ import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.osgi.framework.BundleContext;
+import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 
 /**
  * A factory to create {@link DeviceChannel} objects
@@ -38,25 +38,26 @@ public class DeviceChannelFactory {
      * @param channelTypeID the channel type id
      * @return the DeviceChannel or null if the channel type is not supported.
      */
-    public static @Nullable DeviceChannel createDeviceChannel(final BundleContext bundleContext,
-            final ChannelConfig channelConfig, final String channelTypeID) {
+    public static @Nullable DeviceChannel createDeviceChannel(
+            final ValueTransformationProvider valueTransformationProvider, final ChannelConfig channelConfig,
+            final String channelTypeID) {
         DeviceChannel deviceChannel;
 
         switch (channelTypeID) {
             case DEVICE_STRING_CHANNEL:
-                deviceChannel = new StringChannel(bundleContext, channelConfig);
+                deviceChannel = new StringChannel(valueTransformationProvider, channelConfig);
                 break;
             case DEVICE_NUMBER_CHANNEL:
-                deviceChannel = new NumberChannel(bundleContext, channelConfig);
+                deviceChannel = new NumberChannel(valueTransformationProvider, channelConfig);
                 break;
             case DEVICE_DIMMER_CHANNEL:
-                deviceChannel = new DimmerChannel(bundleContext, channelConfig);
+                deviceChannel = new DimmerChannel(valueTransformationProvider, channelConfig);
                 break;
             case DEVICE_SWITCH_CHANNEL:
-                deviceChannel = new SwitchChannel(bundleContext, channelConfig);
+                deviceChannel = new SwitchChannel(valueTransformationProvider, channelConfig);
                 break;
             case DEVICE_ROLLERSHUTTER_CHANNEL:
-                deviceChannel = new RollershutterChannel(bundleContext, channelConfig);
+                deviceChannel = new RollershutterChannel(valueTransformationProvider, channelConfig);
                 break;
             default:
                 deviceChannel = null;
