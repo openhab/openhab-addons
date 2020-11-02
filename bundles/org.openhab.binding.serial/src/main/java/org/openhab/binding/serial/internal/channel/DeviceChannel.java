@@ -13,7 +13,6 @@
 package org.openhab.binding.serial.internal.channel;
 
 import java.util.IllegalFormatException;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,24 +64,20 @@ public abstract class DeviceChannel {
      * Transform the data using the configured transform
      * 
      * @param data the data to transform
-     * @return the transformed data. The orginal data is returned if no transform is defined or there
-     *         is an error performing the transform.
+     * @return the transformed data is the transform produced a result otherwise null.
      */
     public @Nullable String transformData(final @Nullable String data) {
-        final Optional<String> result = data != null ? transform.apply(data) : Optional.empty();
-        return result.isPresent() ? result.get() : null;
+        return data != null ? transform.apply(data).orElse(null) : null;
     }
 
     /**
      * Transform the data using the configured command transform
      * 
      * @param data the command to transform
-     * @return the transformed data. The orginal data is returned if no transform is defined or there
-     *         is an error performing the transform.
+     * @return the transformed data is the transform produced a result otherwise null.
      */
     protected @Nullable String transformCommand(final @Nullable String data) {
-        final Optional<String> result = data != null ? commandTransform.apply(data) : Optional.empty();
-        return result.isPresent() ? result.get() : null;
+        return data != null ? commandTransform.apply(data).orElse(null) : null;
     }
 
     /**

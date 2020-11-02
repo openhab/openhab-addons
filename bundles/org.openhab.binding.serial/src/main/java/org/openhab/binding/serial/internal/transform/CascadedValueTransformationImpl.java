@@ -35,7 +35,7 @@ public class CascadedValueTransformationImpl implements ValueTransformation {
 
     public CascadedValueTransformationImpl(final String transformationString,
             final Function<String, @Nullable TransformationService> transformationServiceSupplier) {
-        transformations = Arrays.stream(transformationString.split("∩")).filter(s -> s != null && !s.isEmpty())
+        transformations = Arrays.stream(transformationString.split("∩")).filter(s -> !s.isEmpty())
                 .map(transformation -> new SingleValueTransformation(transformation, transformationServiceSupplier))
                 .collect(Collectors.toList());
     }
