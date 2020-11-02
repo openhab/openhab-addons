@@ -889,8 +889,6 @@ public class IpCameraHandler extends BaseThingHandler {
         if (rtspUri.toLowerCase().contains("rtsp")) {
             if (inputOptions.isEmpty()) {
                 inputOptions = "-rtsp_transport tcp";
-            } else {
-                inputOptions = inputOptions + " -rtsp_transport tcp";
             }
         }
 
@@ -1010,7 +1008,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     if (inputOptions.isEmpty()) {
                         inputOptions = "-hide_banner -loglevel warning";
                     } else {
-                        inputOptions = inputOptions + " -hide_banner -loglevel warning";
+                        inputOptions += " -hide_banner -loglevel warning";
                     }
                     ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getMjpegOptions(),
@@ -1022,13 +1020,13 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 break;
             case SNAPSHOT:
-                // if mjpeg stream you can use ffmpeg -i input.h264 -codec:v copy -bsf:v mjpeg2jpeg output%03d.jpg
+                // if mjpeg stream you can use 'ffmpeg -i input -codec:v copy -bsf:v mjpeg2jpeg output.jpg'
                 if (ffmpegSnapshot == null) {
                     if (inputOptions.isEmpty()) {
                         // iFrames only
                         inputOptions = "-threads 1 -skip_frame nokey -hide_banner -loglevel warning";
                     } else {
-                        inputOptions = inputOptions + " -threads 1 -skip_frame nokey -hide_banner -loglevel warning";
+                        inputOptions += " -threads 1 -skip_frame nokey -hide_banner -loglevel warning";
                     }
                     ffmpegSnapshot = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             "-an -vsync vfr -update 1",
