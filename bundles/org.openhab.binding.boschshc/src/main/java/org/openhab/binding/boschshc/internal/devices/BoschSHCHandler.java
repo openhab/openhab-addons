@@ -146,7 +146,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
                         deviceService.service.refreshState();
                     } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
                         this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                String.format("Error when trying to refresh state from service {}: {}",
+                                String.format("Error when trying to refresh state from service %s: %s",
                                         deviceService.service.getServiceName(), e.getMessage()));
                     }
                 }
@@ -185,11 +185,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected BoschSHCBridgeHandler getBridgeHandler() throws BoschSHCException {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            throw new BoschSHCException(String.format("No valid bridge set for {}", this.getThing()));
+            throw new BoschSHCException(String.format("No valid bridge set for %s", this.getThing()));
         }
         BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            throw new BoschSHCException(String.format("Bridge of {} has no valid bridge handler", this.getThing()));
+            throw new BoschSHCException(String.format("Bridge of %s has no valid bridge handler", this.getThing()));
         }
         return bridgeHandler;
     }
@@ -212,7 +212,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             return bridgeHandler.getState(deviceId, stateName, classOfT);
         } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    String.format("Error when trying to refresh state from service {}: {}", stateName, e.getMessage()));
+                    String.format("Error when trying to refresh state from service %s: %s", stateName, e.getMessage()));
             return null;
         }
     }

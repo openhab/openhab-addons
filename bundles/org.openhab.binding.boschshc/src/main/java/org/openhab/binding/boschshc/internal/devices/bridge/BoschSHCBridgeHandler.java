@@ -328,7 +328,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         if (statusCode != 200) {
             JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
             throw new BoschSHCException(String.format(
-                    "State request for service {} of device {} failed with status code {} and error code {}", stateName,
+                    "State request for service %s of device %s failed with status code %d and error code %s", stateName,
                     deviceId, errorResponse.statusCode, errorResponse.errorCode));
         }
 
