@@ -14,7 +14,6 @@ package org.openhab.binding.serial.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.io.transport.serial.SerialPort;
 
 /**
  * Class describing the serial bridge user configuration
@@ -52,60 +51,6 @@ public class SerialBridgeConfiguration {
      * Charset
      */
     public @Nullable String charset;
-
-    /**
-     * Convert the config parity value to an int required for serial port configuration
-     */
-    public int getParityAsInt() {
-        int parityInt;
-
-        switch (parity) {
-            case "N":
-                parityInt = SerialPort.PARITY_NONE;
-                break;
-            case "O":
-                parityInt = SerialPort.PARITY_ODD;
-                break;
-            case "E":
-                parityInt = SerialPort.PARITY_EVEN;
-                break;
-            case "M":
-                parityInt = SerialPort.PARITY_MARK;
-                break;
-            case "S":
-                parityInt = SerialPort.PARITY_SPACE;
-                break;
-            default:
-                parityInt = SerialPort.PARITY_NONE;
-                break;
-        }
-
-        return parityInt;
-    }
-
-    /**
-     * Convert the config stop bits value to an int required for serial port configuration
-     */
-    public int getStopBitsAsInt() {
-        int stopBitsAsInt;
-
-        switch (stopBits) {
-            case "1":
-                stopBitsAsInt = SerialPort.STOPBITS_1;
-                break;
-            case "1.5":
-                stopBitsAsInt = SerialPort.STOPBITS_1_5;
-                break;
-            case "2":
-                stopBitsAsInt = SerialPort.STOPBITS_2;
-                break;
-            default:
-                stopBitsAsInt = SerialPort.STOPBITS_1;
-                break;
-        }
-
-        return stopBitsAsInt;
-    }
 
     @Override
     public String toString() {

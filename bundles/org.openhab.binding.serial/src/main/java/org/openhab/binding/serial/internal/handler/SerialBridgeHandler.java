@@ -29,6 +29,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.serial.internal.util.Parity;
+import org.openhab.binding.serial.internal.util.StopBits;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
@@ -131,8 +133,9 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             final SerialPort serialPort = portId.open(getThing().getUID().toString(), 2000);
             this.serialPort = serialPort;
 
-            serialPort.setSerialPortParams(config.baudRate, config.dataBits, config.getStopBitsAsInt(),
-                    config.getParityAsInt());
+            serialPort.setSerialPortParams(config.baudRate, config.dataBits,
+                    StopBits.fromConfig(config.stopBits).getSerialPortValue(),
+                    Parity.fromConfig(config.parity).getSerialPortValue());
 
             serialPort.addEventListener(this);
 
