@@ -14,6 +14,7 @@
 package org.openhab.binding.haywardomnilogic.internal;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -33,8 +34,8 @@ import org.openhab.core.types.State;
  * @author Matt Myers - Initial contribution
  */
 
+@NonNullByDefault
 public class HaywardThingHandler extends BaseThingHandler {
-    protected Thing thing;
 
     public HaywardThingHandler(Thing thing) {
         super(thing);
