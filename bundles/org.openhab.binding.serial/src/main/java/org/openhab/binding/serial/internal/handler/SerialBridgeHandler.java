@@ -23,6 +23,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.util.Base64;
 import java.util.TooManyListenersException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,6 +71,9 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     private Charset charset = Charset.defaultCharset();
 
     private @Nullable String data;
+
+    private final AtomicBoolean readerActive = new AtomicBoolean(false);
+    private @Nullable ScheduledFuture<?> reader;
 
     public SerialBridgeHandler(final Bridge bridge, final SerialPortManager serialPortManager) {
         super(bridge);
@@ -178,53 +184,22 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             this.outputStream = null;
         }
 
+        final ScheduledFuture<?> reader = this.reader;
+        if (reader != null) {
+            reader.cancel(false);
+            this.reader = null;
+        }
+
         data = null;
     }
 
     @Override
     public void serialEvent(final SerialPortEvent event) {
-        final InputStream inputStream = this.inputStream;
-
-        if (inputStream == null) {
-            return;
-        }
-
         switch (event.getEventType()) {
             case SerialPortEvent.DATA_AVAILABLE:
-                final StringBuilder sb = new StringBuilder();
-                final byte[] readBuffer = new byte[20];
-                try {
-                    do {
-                        // read data from serial device
-                        while (inputStream.available() > 0) {
-                            final int bytes = inputStream.read(readBuffer);
-                            sb.append(new String(readBuffer, 0, bytes, charset));
-                        }
-                        try {
-                            // add wait states around reading the stream, so that interrupted transmissions
-                            // are merged
-                            Thread.sleep(100);
-                        } catch (final InterruptedException e) {
-                            // ignore interruption
-                        }
-                    } while (inputStream.available() > 0);
-
-                    final String result = sb.toString();
-                    data = result;
-
-                    triggerChannel(TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
-                    refresh(STRING_CHANNEL);
-                    refresh(BINARY_CHANNEL);
-
-                    result.lines().forEach(l -> getThing().getThings().forEach(t -> {
-                        final SerialDeviceHandler device = (SerialDeviceHandler) t.getHandler();
-                        if (device != null) {
-                            device.handleData(l);
-                        }
-                    }));
-
-                } catch (final IOException e) {
-                    logger.debug("Error reading from serial port: {}", e.getMessage(), e);
+                if (readerActive.compareAndSet(false, true)) {
+                    reader = scheduler.schedule(() -> receiveAndProcess(new StringBuilder(), true), 0,
+                            TimeUnit.MILLISECONDS);
                 }
                 break;
             default:
@@ -265,6 +240,62 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * Read from the serial port and process the data
+     * 
+     * @param sb the string builder to receive the data
+     * @param firstAttempt indicates if this is the first read attempt without waiting
+     */
+    private void receiveAndProcess(final StringBuilder sb, final boolean firstAttempt) {
+        final InputStream inputStream = this.inputStream;
+
+        if (inputStream == null) {
+            readerActive.set(false);
+            return;
+        }
+
+        try {
+            if (firstAttempt || inputStream.available() > 0) {
+                final byte[] readBuffer = new byte[20];
+
+                // read data from serial device
+                while (inputStream.available() > 0) {
+                    final int bytes = inputStream.read(readBuffer);
+                    sb.append(new String(readBuffer, 0, bytes, charset));
+                }
+
+                // Add wait states around reading the stream, so that interrupted transmissions
+                // are merged
+                reader = scheduler.schedule(() -> receiveAndProcess(sb, false), 100, TimeUnit.MILLISECONDS);
+
+            } else {
+                final String result = sb.toString();
+                data = result;
+
+                triggerChannel(TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
+                refresh(STRING_CHANNEL);
+                refresh(BINARY_CHANNEL);
+
+                result.lines().forEach(l -> getThing().getThings().forEach(t -> {
+                    final SerialDeviceHandler device = (SerialDeviceHandler) t.getHandler();
+                    if (device != null) {
+                        device.handleData(l);
+                    }
+                }));
+
+                readerActive.set(false);
+                // Check we haven't received more data while processing
+                if (inputStream.available() > 0 && readerActive.compareAndSet(false, true)) {
+                    reader = scheduler.schedule(() -> receiveAndProcess(new StringBuilder(), true), 0,
+                            TimeUnit.MILLISECONDS);
+                }
+            }
+        } catch (final IOException e) {
+            logger.debug("Error reading from serial port: {}", e.getMessage(), e);
+            readerActive.set(false);
         }
     }
 
