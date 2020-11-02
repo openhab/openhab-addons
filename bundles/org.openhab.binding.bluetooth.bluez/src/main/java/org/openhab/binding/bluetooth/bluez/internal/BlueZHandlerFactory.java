@@ -18,9 +18,9 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
-import org.openhab.binding.bluetooth.bluez.BlueZAdapterConstants;
-import org.openhab.binding.bluetooth.bluez.handler.BlueZBridgeHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -30,21 +30,32 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link BlueZHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Kai Kreuzer - Initial contribution and API
+ * @author Connor Petty - Added DeviceManagerFactory
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluetooth.bluez")
 public class BlueZHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(BlueZAdapterConstants.THING_TYPE_BLUEZ);
 
-    private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> serviceRegs = new HashMap<>();
+
+    private final DeviceManagerFactory deviceManagerFactory;
+
+    @Activate
+    public BlueZHandlerFactory(@Reference DeviceManagerFactory deviceManagerFactory) {
+        this.deviceManagerFactory = deviceManagerFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -52,11 +63,11 @@ public class BlueZHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(BlueZAdapterConstants.THING_TYPE_BLUEZ)) {
-            BlueZBridgeHandler handler = new BlueZBridgeHandler((Bridge) thing);
+            BlueZBridgeHandler handler = new BlueZBridgeHandler((Bridge) thing, deviceManagerFactory);
             registerBluetoothAdapter(handler);
             return handler;
         } else {

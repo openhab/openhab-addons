@@ -339,8 +339,11 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     try {
                         writeValue(channelId, v);
                         if (variableMap != null) {
-                            updateState(variableMap.get(channelId), v);
-                            updateStatus(ThingStatus.ONLINE);
+                            HeliosVariable variable = variableMap.get(channelId);
+                            if (variable != null) {
+                                updateState(variable, v);
+                                updateStatus(ThingStatus.ONLINE);
+                            }
                         }
                     } catch (HeliosException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

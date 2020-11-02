@@ -147,9 +147,9 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
                 .map(Thing::getHandler)
                 .filter(DSMRMeterHandler.class::isInstance)
                 .map(DSMRMeterHandler.class::cast)
-                .map(DSMRMeterHandler::getMeterDescriptor)
+                .map(h -> h == null ? null : h.getMeterDescriptor())
+                .map(d -> d == null ? null : d.getMeterType())
                 .filter(Objects::nonNull)
-                .map(h -> h.getMeterType())
                 .collect(Collectors.toSet());
         // @formatter:on
         // Create list of all configured meters that are not in the detected list. If not empty meters might not be

@@ -23,7 +23,6 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class BindingConstants {
-
     public static final String BINDING_ID = "deconz";
 
     // List of all Thing Type UIDs
@@ -63,7 +62,10 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_WINDOW_COVERING = new ThingTypeUID(BINDING_ID, "windowcovering");
     public static final ThingTypeUID THING_TYPE_WARNING_DEVICE = new ThingTypeUID(BINDING_ID, "warningdevice");
 
-    // List of all Channel ids
+    // groups
+    public static final ThingTypeUID THING_TYPE_LIGHTGROUP = new ThingTypeUID(BINDING_ID, "lightgroup");
+
+    // sensor channel ids
     public static final String CHANNEL_PRESENCE = "presence";
     public static final String CHANNEL_LAST_UPDATED = "last_updated";
     public static final String CHANNEL_LAST_SEEN = "last_seen";
@@ -98,18 +100,22 @@ public class BindingConstants {
     public static final String CHANNEL_TEMPERATURE_OFFSET = "offset";
     public static final String CHANNEL_VALVE_POSITION = "valve";
 
+    // group + light channel ids
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR_TEMPERATURE = "color_temperature";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_POSITION = "position";
     public static final String CHANNEL_ALERT = "alert";
+    public static final String CHANNEL_ALL_ON = "all_on";
+    public static final String CHANNEL_ANY_ON = "any_on";
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_HTTP_PORT = "httpPort";
     public static final String CONFIG_APIKEY = "apikey";
-
+    public static final String PROPERTY_UDN = "UDN";
+    public static final String CONFIG_ID = "id";
     public static final String UNIQUE_ID = "uid";
 
     public static final String PROPERTY_CT_MIN = "ctmin";
@@ -120,4 +126,7 @@ public class BindingConstants {
     public static final int ZCL_CT_MIN = 1;
     public static final int ZCL_CT_MAX = 65279; // 0xFEFF
     public static final int ZCL_CT_INVALID = 65535; // 0xFFFF
+
+    public static final double HUE_FACTOR = 65535 / 360.0;
+    public static final double BRIGHTNESS_FACTOR = 2.54;
 }

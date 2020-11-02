@@ -42,10 +42,12 @@ Additionally lights, window coverings (blinds) and thermostats are supported:
 | Thermostat                           | ZHAThermostat                                 | `thermostat`            |
 | Warning Device (Siren)               | Warning device                                | `warningdevice`         |
 
+Currently only light-groups are supported via the thing-type `lightgroup`.
+
 ## Discovery
 
 deCONZ software instances are discovered automatically in the same subnet.
-Sensors, switches, lights and blinds are discovered as soon as a `deconz` bridge thing comes online.
+Sensors, switches, groups, lights and blinds are discovered as soon as a `deconz` bridge thing comes online.
 If your device is not discovered, please check the DEBUG log for unknown devices and report your findings.
 
 ## Thing Configuration
@@ -81,12 +83,10 @@ Due to limitations in the API of deCONZ, the `lastSeen` channel (available some 
 Allowed values are all positive integers, the unit is minutes.
 The default-value is `0`, which means "no polling at all".
 
-
 `dimmablelight`, `extendedcolorlight`, `colorlight` and `colortemperaturelight` have an additional optional parameter `transitiontime`.
 The transition time is the time to move between two states and is configured in seconds.
 The resolution provided is 1/10s.
 If no value is provided, the default value of the device is used.
-
 
 ### Textual Thing Configuration - Retrieving an API Key
 
@@ -154,18 +154,23 @@ The `last_seen` channel is added when it is available AND the `lastSeenPolling` 
 
 Other devices support
 
-| Channel Type ID   | Item Type                | Access Mode | Description                           | Thing types                                   |
-|-------------------|--------------------------|:-----------:|---------------------------------------|-----------------------------------------------|
-| brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`, `colortemperaturelight`      |                                 
-| switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                  |
-| color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`            |
-| color_temperature | Number                   |     R/W     | Color temperature in kelvin. The value range is determined by each individual light          | `colortemperaturelight`, `extendedcolorlight` |
-| position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                              |
-| heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                  |
-| valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                  |
-| mode              | String                   |     R/W     | Mode: "auto", "heat" and "off"        | `thermostat`                                  |
-| offset            | Number                   |     R       | Temperature offset for sensor         | `thermostat`                                  |
-| alert             | Switch                   |     R/W     | Turn alerts on/off                    | `warningdevice`                               |
+| Channel Type ID   | Item Type                | Access Mode | Description                           | Thing types                                     |
+|-------------------|--------------------------|:-----------:|---------------------------------------|-------------------------------------------------|
+| brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`, `colortemperaturelight`        |                                 
+| switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                    |
+| color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`, `lightgroup`|
+| color_temperature | Number                   |     R/W     | Color temperature in kelvin. The value range is determined by each individual light          | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
+| position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                                |
+| heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                    |
+| valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                    |
+| mode              | String                   |     R/W     | Mode: "auto", "heat" and "off"        | `thermostat`                                    |
+| offset            | Number                   |     R       | Temperature offset for sensor         | `thermostat`                                    |
+| alert             | Switch                   |     R/W     | Turn alerts on/off                    | `warningdevice`, `lightgroup`                   |
+| all_on            | Switch                   |     R       | All lights in group are on            | `lightgroup`                                    |
+| any_on            | Switch                   |     R       | Any light in group is on              | `lightgroup`                                    |
+
+**NOTE:** For groups `color` and `color_temperature`  are used for sending commands to the group.
+Their state represents the last command send to the group, not necessarily the actual state of the group.
 
 ### Trigger Channels
 
@@ -207,6 +212,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
     alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8", lastSeenPolling=5 ]
     dimmablelight       livingroom-ceiling      "Livingroom Ceiling"        [ id="1" ]
+    lightgroup          livingroom              "Livingroom"                [ id="1" ]
 }
 ```
 
@@ -221,6 +227,7 @@ Contact                 Livingroom_Window       "Window Livingroom [%s]"        
 Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
 Switch                  Basement_Alarm          "Basement Alarm Triggered [%s]"                     { channel="deconz:alarmsensor:homeserver:basement-alarm:alarm" }
 Dimmer                  Livingroom_Ceiling      "Livingroom Ceiling [%d]"           <light>         { channel="deconz:dimmablelight:homeserver:livingroom-ceiling:brightness" }                 
+Color                   Livingroom              "Livingroom Light Control"
 ```
 
 ### Events

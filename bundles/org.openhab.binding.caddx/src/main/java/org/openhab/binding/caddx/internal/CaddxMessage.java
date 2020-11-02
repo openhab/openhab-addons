@@ -196,7 +196,7 @@ public class CaddxMessage {
             logger.debug("Message does not contain property [{}]", property);
             return "";
         }
-        return propertyMap.get(property);
+        return propertyMap.getOrDefault(property, "");
     }
 
     public String getPropertyById(String id) {
@@ -204,7 +204,7 @@ public class CaddxMessage {
             logger.debug("Message does not contain id [{}]", id);
             return "";
         }
-        return idMap.get(id);
+        return idMap.getOrDefault(id, "");
     }
 
     public int @Nullable [] getReplyMessageNumbers() {

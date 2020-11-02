@@ -22,6 +22,7 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -43,6 +44,7 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
+				"channelType": "temperature",
 				"type": "Number",
 				"refresh": true,
 				"actions": []

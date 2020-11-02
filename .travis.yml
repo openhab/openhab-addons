@@ -4,6 +4,11 @@ dist: focal
 language: java
 jdk: openjdk11
 
+branches:
+  only:
+  # We run tests on Jenkins for the main branch, so let's have Travis only in place for 2.5.x
+    - 2.5.x
+    
 cache:
   directories:
   - $HOME/.m2

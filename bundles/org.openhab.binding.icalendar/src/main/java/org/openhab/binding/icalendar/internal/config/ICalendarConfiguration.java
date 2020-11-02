@@ -14,17 +14,28 @@ package org.openhab.binding.icalendar.internal.config;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link ICalendarConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Support for authorizationCode
+ * @author Michael Wodniok - Added Nullable annotations for conformity
  */
+@NonNullByDefault
 public class ICalendarConfiguration {
+    @Nullable
     public String authorizationCode;
-    public Integer maxSize;
+    @Nullable
+    public BigDecimal maxSize;
+    @Nullable
     public String password;
+    @Nullable
     public BigDecimal refreshTime;
+    @Nullable
     public String url;
+    @Nullable
     public String username;
 }

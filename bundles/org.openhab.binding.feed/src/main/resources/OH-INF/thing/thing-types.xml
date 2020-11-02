@@ -6,8 +6,9 @@
 
 	<!-- DEFINITIONS of terms used in the binding: Feed is a XML document used for providing users with frequently updated content.
 		The most popular feed formats are RSS and Atom. Entry is a single element in the Feed, that contains reference (link),
-		short description and other information like images, comments and etc. Entry in this binding is abstraction for RSS item
-		element and Atom entry element. -->
+		short
+		description and other information like images, comments and etc. Entry in this binding is abstraction for RSS item element
+		and Atom entry element. -->
 
 	<!-- Feed Thing Type -->
 	<thing-type id="feed">
@@ -18,6 +19,7 @@
 			<channel id="latest-title" typeId="latest-title"/>
 			<channel id="latest-description" typeId="latest-description"/>
 			<channel id="latest-date" typeId="latest-date"/>
+			<channel id="latest-link" typeId="latest-link"/>
 			<channel id="author" typeId="author"/>
 			<channel id="description" typeId="description"/>
 			<channel id="title" typeId="title"/>
@@ -28,18 +30,16 @@
 		<config-description>
 			<parameter name="URL" type="text" required="true">
 				<label>Feed URL</label>
-				<description>The URL of the feed</description>
+				<description>The URL of the feed.</description>
 			</parameter>
 
-			<!--After the refresh time interval expires, the bindings checks for updates in the Feed, and if the information is not
+			<!-- After the refresh time interval expires, the bindings checks for updates in the Feed, and if the information is not
 				up to date, updates the feed content stored in the channel -->
-
 			<parameter name="refresh" type="integer">
 				<label>Refresh Time Interval</label>
 				<description>Refresh time interval in minutes.</description>
 				<default>20</default>
 			</parameter>
-
 		</config-description>
 	</thing-type>
 
@@ -53,7 +53,7 @@
 	<channel-type id="latest-description">
 		<item-type>String</item-type>
 		<label>Latest Description</label>
-		<description>Contains the description of last feed entry.</description>
+		<description>Contains the description of the last feed entry.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -64,38 +64,45 @@
 		<state readOnly="true" pattern="%tc %n"/>
 	</channel-type>
 
+	<channel-type id="latest-link">
+		<item-type>String</item-type>
+		<label>Latest Link</label>
+		<description>Contains the link of the last feed entry.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
 	<channel-type id="author" advanced="true">
 		<item-type>String</item-type>
 		<label>Author</label>
-		<description>The name of the feed author, if author is present</description>
+		<description>The name of the feed author, if author is present.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="title" advanced="true">
 		<item-type>String</item-type>
 		<label>Title</label>
-		<description>The title of the feed</description>
+		<description>The title of the feed.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="description" advanced="true">
 		<item-type>String</item-type>
 		<label>Description</label>
-		<description>Description of the feed</description>
+		<description>Description of the feed.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="last-update" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
-		<description>The last update date of the feed</description>
+		<description>The last update date of the feed.</description>
 		<state readOnly="true" pattern="%tc %n"/>
 	</channel-type>
 
 	<channel-type id="number-of-entries" advanced="true">
 		<item-type>Number</item-type>
 		<label>Number of Entries</label>
-		<description>Number of entries in the feed</description>
+		<description>Number of entries in the feed.</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 

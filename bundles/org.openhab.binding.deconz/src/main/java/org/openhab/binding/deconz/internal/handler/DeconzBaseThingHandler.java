@@ -26,12 +26,10 @@ import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.binding.deconz.internal.types.ResourceType;
+import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +40,7 @@ import com.google.gson.Gson;
  *
  * It waits for the bridge to come online, grab the websocket connection and bridge configuration
  * and registers to the websocket connection as a listener.
- *
- * A REST API call is made to get the initial light/rollershutter state.
- *
+ **
  * @author David Graeff - Initial contribution
  * @author Jan N. Klug - Refactored to abstract class
  */
@@ -52,6 +48,7 @@ import com.google.gson.Gson;
 public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extends BaseThingHandler
         implements WebSocketMessageListener {
     private final Logger logger = LoggerFactory.getLogger(DeconzBaseThingHandler.class);
+    protected final ResourceType resourceType;
     protected ThingConfig config = new ThingConfig();
     protected DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
     protected final Gson gson;
@@ -59,9 +56,10 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     protected @Nullable WebSocketConnection connection;
     protected @Nullable AsyncHttpClient http;
 
-    public DeconzBaseThingHandler(Thing thing, Gson gson) {
+    public DeconzBaseThingHandler(Thing thing, Gson gson, ResourceType resourceType) {
         super(thing);
         this.gson = gson;
+        this.resourceType = resourceType;
     }
 
     /**
@@ -75,9 +73,19 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         }
     }
 
-    protected abstract void registerListener();
+    private void registerListener() {
+        WebSocketConnection conn = connection;
+        if (conn != null) {
+            conn.registerListener(resourceType, config.id, this);
+        }
+    }
 
-    protected abstract void unregisterListener();
+    private void unregisterListener() {
+        WebSocketConnection conn = connection;
+        if (conn != null) {
+            conn.unregisterListener(resourceType, config.id);
+        }
+    }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
@@ -86,39 +94,38 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
             return;
         }
 
-        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            // the bridge is ONLINE, we can communicate with the gateway, so we update the connection parameters and
+            // register the listener
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
+            DeconzBridgeHandler bridgeHandler = (DeconzBridgeHandler) bridge.getHandler();
+            if (bridgeHandler == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
+
+            final WebSocketConnection webSocketConnection = bridgeHandler.getWebsocketConnection();
+            this.connection = webSocketConnection;
+            this.http = bridgeHandler.getHttp();
+            this.bridgeConfig = bridgeHandler.getBridgeConfig();
+
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
+
+            // Real-time data
+            registerListener();
+
+            // get initial values
+            requestState();
+        } else {
+            // if the bridge is not ONLINE, we assume communication is not possible, so we unregister the listener and
+            // set the thing status to OFFLINE
             unregisterListener();
-            return;
-        }
-
-        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            return;
-        }
-
-        Bridge bridge = getBridge();
-        if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
         }
-        DeconzBridgeHandler bridgeHandler = (DeconzBridgeHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
-
-        final WebSocketConnection webSocketConnection = bridgeHandler.getWebsocketConnection();
-        this.connection = webSocketConnection;
-        this.http = bridgeHandler.getHttp();
-        this.bridgeConfig = bridgeHandler.getBridgeConfig();
-
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
-
-        // Real-time data
-        registerListener();
-
-        // get initial values
-        requestState();
     }
 
     protected abstract @Nullable T parseStateResponse(AsyncHttpClient.Result r);
@@ -133,20 +140,16 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     protected abstract void processStateResponse(@Nullable T stateResponse);
 
     /**
-     * call requestState(type) in this method only
-     */
-    protected abstract void requestState();
-
-    /**
      * Perform a request to the REST API for retrieving the full light state with all data and configuration.
      */
-    protected void requestState(String type) {
+    protected void requestState() {
         AsyncHttpClient asyncHttpClient = http;
         if (asyncHttpClient == null) {
             return;
         }
 
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, type, config.id);
+        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey,
+                resourceType.getIdentifier(), config.id);
         logger.trace("Requesting URL for initial data: {}", url);
 
         // Get initial data
@@ -165,13 +168,42 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         }).thenAccept(this::processStateResponse);
     }
 
+    /**
+     * sends a command to the bridge
+     *
+     * @param object must be serializable and contain the command
+     * @param originalCommand the original openHAB command (used for logging purposes)
+     * @param channelUID the channel that this command was send to (used for logging purposes)
+     * @param acceptProcessing additional processing after the command was successfully send (might be null)
+     */
+    protected void sendCommand(Object object, Command originalCommand, ChannelUID channelUID,
+            @Nullable Runnable acceptProcessing) {
+        AsyncHttpClient asyncHttpClient = http;
+        if (asyncHttpClient == null) {
+            return;
+        }
+        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey,
+                resourceType.getIdentifier(), config.id, resourceType.getCommandUrl());
+
+        String json = gson.toJson(object);
+        logger.trace("Sending {} to {} {} via {}", json, resourceType, config.id, url);
+
+        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
+            if (acceptProcessing != null) {
+                acceptProcessing.run();
+            }
+            logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
+        }).exceptionally(e -> {
+            logger.debug("Sending command {} to channel {} failed: {} - {}", originalCommand, channelUID, e.getClass(),
+                    e.getMessage());
+            return null;
+        });
+    }
+
     @Override
     public void dispose() {
         stopInitializationJob();
-        WebSocketConnection webSocketConnection = connection;
-        if (webSocketConnection != null) {
-            webSocketConnection.unregisterLightListener(config.id);
-        }
+        unregisterListener();
         super.dispose();
     }
 

@@ -19,8 +19,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,7 +28,7 @@ import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
-import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
+import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -68,12 +66,10 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
             THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT,
-            THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE).collect(Collectors.toSet());
+            THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE);
 
-    private static final double HUE_FACTOR = 65535 / 360.0;
-    private static final double BRIGHTNESS_FACTOR = 2.54;
     private static final long DEFAULT_COMMAND_EXPIRY_TIME = 250; // in ms
 
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
@@ -94,8 +90,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     private int ctMin = ZCL_CT_MIN;
 
     public LightThingHandler(Thing thing, Gson gson, StateDescriptionProvider stateDescriptionProvider) {
-        super(thing, gson);
-
+        super(thing, gson, ResourceType.LIGHTS);
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -105,8 +100,10 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 || thing.getThingTypeUID().equals(THING_TYPE_EXTENDED_COLOR_LIGHT)) {
             try {
                 Map<String, String> properties = thing.getProperties();
-                ctMax = Integer.parseInt(properties.get(PROPERTY_CT_MAX));
-                ctMin = Integer.parseInt(properties.get(PROPERTY_CT_MIN));
+                String ctMaxString = properties.get(PROPERTY_CT_MAX);
+                ctMax = ctMaxString == null ? ZCL_CT_MAX : Integer.parseInt(ctMaxString);
+                String ctMinString = properties.get(PROPERTY_CT_MIN);
+                ctMin = ctMinString == null ? ZCL_CT_MIN : Integer.parseInt(ctMinString);
 
                 // minimum and maximum are inverted due to mired/kelvin conversion!
                 StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
@@ -123,27 +120,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             }
         }
         super.initialize();
-    }
-
-    @Override
-    protected void registerListener() {
-        WebSocketConnection conn = connection;
-        if (conn != null) {
-            conn.registerLightListener(config.id, this);
-        }
-    }
-
-    @Override
-    protected void unregisterListener() {
-        WebSocketConnection conn = connection;
-        if (conn != null) {
-            conn.unregisterLightListener(config.id);
-        }
-    }
-
-    @Override
-    protected void requestState() {
-        requestState("lights");
     }
 
     @Override
@@ -184,15 +160,15 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                             logger.warn("Failed to convert {} to xy-values", command);
                         }
                         newLightState.xy = new double[] { xy[0].doubleValue() / 100.0, xy[1].doubleValue() / 100.0 };
-                        newLightState.bri = fromPercentType(hsbCommand.getBrightness());
+                        newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
                     } else {
                         // default is colormode "hs" (used when colormode "hs" is set or colormode is unknown)
-                        newLightState.bri = fromPercentType(hsbCommand.getBrightness());
+                        newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
                         newLightState.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
-                        newLightState.sat = fromPercentType(hsbCommand.getSaturation());
+                        newLightState.sat = Util.fromPercentType(hsbCommand.getSaturation());
                     }
                 } else if (command instanceof PercentType) {
-                    newLightState.bri = fromPercentType((PercentType) command);
+                    newLightState.bri = Util.fromPercentType((PercentType) command);
                 } else if (command instanceof DecimalType) {
                     newLightState.bri = ((DecimalType) command).intValue();
                 } else {
@@ -201,7 +177,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
                 // send on/off state together with brightness if not already set or unknown
                 Integer newBri = newLightState.bri;
-                if ((newBri != null) && ((currentOn == null) || ((newBri > 0) != currentOn))) {
+                if (newBri != null) {
                     newLightState.on = (newBri > 0);
                 }
 
@@ -220,13 +196,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 if (command instanceof DecimalType) {
                     int miredValue = kelvinToMired(((DecimalType) command).intValue());
                     newLightState.ct = constrainToRange(miredValue, ctMin, ctMax);
-
-                    if (currentOn != null && !currentOn) {
-                        // sending new color temperature is only allowed when light is on
-                        newLightState.on = true;
-                    }
-                } else {
-                    return;
+                    newLightState.on = true;
                 }
                 break;
             case CHANNEL_POSITION:
@@ -251,31 +221,17 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 return;
         }
 
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
-            return;
-        }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "lights", config.id,
-                "state");
-
         if (newLightState.on != null && !newLightState.on) {
             // if light shall be off, no other commands are allowed, so reset the new light state
             newLightState.clear();
             newLightState.on = false;
         }
 
-        String json = gson.toJson(newLightState);
-        logger.trace("Sending {} to light {} via {}", json, config.id, url);
-
-        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
+        sendCommand(newLightState, command, channelUID, () -> {
             lastCommandExpireTimestamp = System.currentTimeMillis()
                     + (newLightState.transitiontime != null ? newLightState.transitiontime
                             : DEFAULT_COMMAND_EXPIRY_TIME);
             lastCommand = newLightState;
-            logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
-        }).exceptionally(e -> {
-            logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
-            return null;
         });
     }
 
@@ -386,20 +342,5 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 }
             }
         }
-    }
-
-    private PercentType toPercentType(int val) {
-        int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
-        if (scaledValue < 0 || scaledValue > 100) {
-            logger.trace("received value {} (converted to {}). Coercing.", val, scaledValue);
-            scaledValue = scaledValue < 0 ? 0 : scaledValue;
-            scaledValue = scaledValue > 100 ? 100 : scaledValue;
-        }
-        logger.debug("val = '{}', scaledValue = '{}'", val, scaledValue);
-        return new PercentType(scaledValue);
-    }
-
-    private int fromPercentType(PercentType val) {
-        return (int) Math.floor(val.doubleValue() * BRIGHTNESS_FACTOR);
     }
 }

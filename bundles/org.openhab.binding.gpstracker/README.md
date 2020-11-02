@@ -36,7 +36,7 @@ Go to Preferences/Connection and set:
 
 ### GPSLogger
 
-Install [GPSLogger for Android](https://play.google.com/store/apps/details?id=com.mendhak.gpslogger) on your device.
+Install [GPSLogger for Android](https://github.com/mendhak/gpslogger/releases) on your device.
 After the launch, go to General Options.
 Enable **Start on boot-up** and **Start on app launch**.
 

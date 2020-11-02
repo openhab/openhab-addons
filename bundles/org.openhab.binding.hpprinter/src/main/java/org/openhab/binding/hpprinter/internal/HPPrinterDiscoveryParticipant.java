@@ -71,8 +71,9 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 String label = service.getName();
 
                 properties.put(HPPrinterConfiguration.IP_ADDRESS, inetAddress);
-                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
-                        .build();
+                properties.put(HPPrinterConfiguration.UUID, service.getPropertyString("UUID"));
+                DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withRepresentationProperty(HPPrinterConfiguration.UUID).withLabel(label).build();
                 logger.trace("Created a DiscoveryResult {} for printer on host '{}' name '{}'", result, inetAddress,
                         label);
                 return result;

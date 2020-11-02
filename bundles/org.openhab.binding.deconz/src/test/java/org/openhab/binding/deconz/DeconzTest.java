@@ -34,10 +34,7 @@ import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
-import org.openhab.binding.deconz.internal.types.LightType;
-import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
-import org.openhab.binding.deconz.internal.types.ThermostatMode;
-import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
+import org.openhab.binding.deconz.internal.types.*;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Bridge;
@@ -68,6 +65,8 @@ public class DeconzTest {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
+        gsonBuilder.registerTypeAdapter(GroupType.class, new GroupTypeDeserializer());
+        gsonBuilder.registerTypeAdapter(ResourceType.class, new ResourceTypeDeserializer());
         gsonBuilder.registerTypeAdapter(ThermostatMode.class, new ThermostatModeGsonTypeAdapter());
         gson = gsonBuilder.create();
     }
@@ -84,7 +83,7 @@ public class DeconzTest {
         discoveryService.addDiscoveryListener(discoveryListener);
 
         discoveryService.stateRequestFinished(bridgeFullState);
-        Mockito.verify(discoveryListener, times(15)).thingDiscovered(any(), any());
+        Mockito.verify(discoveryListener, times(20)).thingDiscovered(any(), any());
     }
 
     public static <T> T getObjectFromJson(String filename, Class<T> clazz, Gson gson) throws IOException {

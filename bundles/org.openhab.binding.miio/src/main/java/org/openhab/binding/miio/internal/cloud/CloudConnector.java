@@ -56,7 +56,7 @@ public class CloudConnector {
 
     private String username = "";
     private String password = "";
-    private String country = "ru,us,tw,sg,cn,de";
+    private String country = "ru,us,tw,sg,cn,de,i2";
     private List<CloudDeviceDTO> deviceList = new ArrayList<>();
     private boolean connected;
     private final HttpClient httpClient;
@@ -137,14 +137,22 @@ public class CloudConnector {
             mapCountry = country.trim().toLowerCase();
             mapUrl = cl.getMapUrl(mapId, mapCountry);
         }
-        @Nullable
-        RawType mapData = HttpUtil.downloadData(mapUrl, null, false, -1);
-        if (mapData != null) {
-            return mapData;
-        } else {
-            logger.debug("Could not download '{}'", mapUrl);
+        if (mapUrl.isBlank()) {
+            logger.debug("Cannot download map data: Returned map URL is empty");
             return null;
         }
+        try {
+            RawType mapData = HttpUtil.downloadData(mapUrl, null, false, -1);
+            if (mapData != null) {
+                return mapData;
+            } else {
+                logger.debug("Could not download '{}'", mapUrl);
+                return null;
+            }
+        } catch (IllegalArgumentException e) {
+            logger.debug("Error downloading map: {}", e.getMessage());
+        }
+        return null;
     }
 
     public void setCredentials(@Nullable String username, @Nullable String password, @Nullable String country) {

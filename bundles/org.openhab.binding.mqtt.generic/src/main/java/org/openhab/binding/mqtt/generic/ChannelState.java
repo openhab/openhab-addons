@@ -290,7 +290,7 @@ public class ChannelState implements MqttMessageSubscriber {
             int timeout) {
         synchronized (futureLock) {
             // if the connection is still the same, the subscription is still present, otherwise we need to renew
-            if (hasSubscribed || !future.isDone() && connection.equals(this.connection)) {
+            if ((hasSubscribed || !future.isDone()) && connection.equals(this.connection)) {
                 return future;
             }
             hasSubscribed = false;

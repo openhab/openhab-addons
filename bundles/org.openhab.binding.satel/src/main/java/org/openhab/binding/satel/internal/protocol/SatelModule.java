@@ -351,8 +351,8 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
     private synchronized void disconnect(@Nullable String reason) {
         // remove all pending commands from the queue
         // notifying about send failure
-        while (!this.sendQueue.isEmpty()) {
-            SatelCommand cmd = this.sendQueue.poll();
+        SatelCommand cmd;
+        while ((cmd = this.sendQueue.poll()) != null) {
             cmd.setState(State.FAILED);
         }
         final CommunicationChannel channel = this.channel;
@@ -503,13 +503,13 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         }
 
         private void startCommunication() {
-            final Thread thread = this.thread;
+            Thread thread = this.thread;
             if (thread != null && thread.isAlive()) {
                 logger.error("Start communication canceled: communication thread is still alive");
                 return;
             }
             // start new thread
-            this.thread = new Thread(new Runnable() {
+            thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     logger.debug("Communication thread started");
@@ -517,7 +517,8 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
                     logger.debug("Communication thread stopped");
                 }
             });
-            this.thread.start();
+            thread.start();
+            this.thread = thread;
             // if module is not initialized yet, send version command
             if (!SatelModule.this.isInitialized()) {
                 SatelModule.this.sendCommand(new IntegraVersionCommand());

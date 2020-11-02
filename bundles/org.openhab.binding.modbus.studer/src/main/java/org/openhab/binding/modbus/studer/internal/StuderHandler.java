@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
@@ -38,6 +40,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
@@ -304,8 +307,10 @@ public class StuderHandler extends BaseThingHandler {
         Float quantity = parser.hexToFloat(hexString);
         if (quantity != null) {
             if (type.equals(THING_TYPE_BSP)) {
-                updateState(CHANNELS_BSP.get(registerNumber),
-                        new QuantityType<>(quantity, UNIT_CHANNELS_BSP.get(registerNumber)));
+                Unit<?> unit = UNIT_CHANNELS_BSP.get(registerNumber);
+                if (unit != null) {
+                    internalUpdateState(CHANNELS_BSP.get(registerNumber), new QuantityType<>(quantity, unit));
+                }
             } else if (type.equals(THING_TYPE_XTENDER)) {
                 handlePolledDataXtender(registerNumber, quantity);
             } else if (type.equals(THING_TYPE_VARIOTRACK)) {
@@ -329,18 +334,20 @@ public class StuderHandler extends BaseThingHandler {
             case CHANNEL_PV2_OPERATING_MODE:
                 VSMode vsmode = StuderParser.getVSModeByCode(quantity.intValue());
                 if (vsmode == VSMode.UNKNOWN) {
-                    updateState(CHANNELS_VARIOSTRING.get(registerNumber), UnDefType.UNDEF);
+                    internalUpdateState(CHANNELS_VARIOSTRING.get(registerNumber), UnDefType.UNDEF);
                 } else {
-                    updateState(CHANNELS_VARIOSTRING.get(registerNumber), new StringType(vsmode.name()));
+                    internalUpdateState(CHANNELS_VARIOSTRING.get(registerNumber), new StringType(vsmode.name()));
                 }
                 break;
             case CHANNEL_STATE_VARIOSTRING:
                 OnOffType vsstate = StuderParser.getStateByCode(quantity.intValue());
-                updateState(CHANNELS_VARIOSTRING.get(registerNumber), vsstate);
+                internalUpdateState(CHANNELS_VARIOSTRING.get(registerNumber), vsstate);
                 break;
             default:
-                updateState(CHANNELS_VARIOSTRING.get(registerNumber),
-                        new QuantityType<>(quantity, UNIT_CHANNELS_VARIOSTRING.get(registerNumber)));
+                Unit<?> unit = UNIT_CHANNELS_VARIOSTRING.get(registerNumber);
+                if (unit != null) {
+                    internalUpdateState(CHANNELS_VARIOSTRING.get(registerNumber), new QuantityType<>(quantity, unit));
+                }
         }
     }
 
@@ -354,28 +361,30 @@ public class StuderHandler extends BaseThingHandler {
             case CHANNEL_MODEL_VARIOTRACK:
                 VTType type = StuderParser.getVTTypeByCode(quantity.intValue());
                 if (type == VTType.UNKNOWN) {
-                    updateState(CHANNELS_VARIOTRACK.get(registerNumber), UnDefType.UNDEF);
+                    internalUpdateState(CHANNELS_VARIOTRACK.get(registerNumber), UnDefType.UNDEF);
                 } else {
-                    updateState(CHANNELS_VARIOTRACK.get(registerNumber), new StringType(type.name()));
+                    internalUpdateState(CHANNELS_VARIOTRACK.get(registerNumber), new StringType(type.name()));
                 }
                 break;
 
             case CHANNEL_OPERATING_MODE:
                 VTMode vtmode = StuderParser.getVTModeByCode(quantity.intValue());
                 if (vtmode == VTMode.UNKNOWN) {
-                    updateState(CHANNELS_VARIOTRACK.get(registerNumber), UnDefType.UNDEF);
+                    internalUpdateState(CHANNELS_VARIOTRACK.get(registerNumber), UnDefType.UNDEF);
                 } else {
-                    updateState(CHANNELS_VARIOTRACK.get(registerNumber), new StringType(vtmode.name()));
+                    internalUpdateState(CHANNELS_VARIOTRACK.get(registerNumber), new StringType(vtmode.name()));
                 }
                 break;
 
             case CHANNEL_STATE_VARIOTRACK:
                 OnOffType vtstate = StuderParser.getStateByCode(quantity.intValue());
-                updateState(CHANNELS_VARIOTRACK.get(registerNumber), vtstate);
+                internalUpdateState(CHANNELS_VARIOTRACK.get(registerNumber), vtstate);
                 break;
             default:
-                updateState(CHANNELS_VARIOTRACK.get(registerNumber),
-                        new QuantityType<>(quantity, UNIT_CHANNELS_VARIOTRACK.get(registerNumber)));
+                Unit<?> unit = UNIT_CHANNELS_VARIOTRACK.get(registerNumber);
+                if (unit != null) {
+                    internalUpdateState(CHANNELS_VARIOTRACK.get(registerNumber), new QuantityType<>(quantity, unit));
+                }
         }
     }
 
@@ -389,18 +398,20 @@ public class StuderHandler extends BaseThingHandler {
             case CHANNEL_OPERATING_STATE:
                 ModeXtender mode = StuderParser.getModeXtenderByCode(quantity.intValue());
                 if (mode == ModeXtender.UNKNOWN) {
-                    updateState(CHANNELS_XTENDER.get(registerNumber), UnDefType.UNDEF);
+                    internalUpdateState(CHANNELS_XTENDER.get(registerNumber), UnDefType.UNDEF);
                 } else {
-                    updateState(CHANNELS_XTENDER.get(registerNumber), new StringType(mode.name()));
+                    internalUpdateState(CHANNELS_XTENDER.get(registerNumber), new StringType(mode.name()));
                 }
                 break;
             case CHANNEL_STATE_INVERTER:
                 OnOffType xtstate = StuderParser.getStateByCode(quantity.intValue());
-                updateState(CHANNELS_XTENDER.get(registerNumber), xtstate);
+                internalUpdateState(CHANNELS_XTENDER.get(registerNumber), xtstate);
                 break;
             default:
-                updateState(CHANNELS_XTENDER.get(registerNumber),
-                        new QuantityType<>(quantity, UNIT_CHANNELS_XTENDER.get(registerNumber)));
+                Unit<?> unit = UNIT_CHANNELS_XTENDER.get(registerNumber);
+                if (unit != null) {
+                    internalUpdateState(CHANNELS_XTENDER.get(registerNumber), new QuantityType<>(quantity, unit));
+                }
         }
     }
 
@@ -437,6 +448,12 @@ public class StuderHandler extends BaseThingHandler {
         if (ThingStatus.OFFLINE.equals(statusInfo.getStatus())
                 && ThingStatusDetail.COMMUNICATION_ERROR.equals(statusInfo.getStatusDetail())) {
             updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    protected void internalUpdateState(@Nullable String channelUID, @Nullable State state) {
+        if (channelUID != null && state != null) {
+            super.updateState(channelUID, state);
         }
     }
 }

@@ -134,7 +134,8 @@ public class LGWebOSTVMouseSocket {
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        Optional.ofNullable(this.listener).ifPresent(l -> l.onError(cause.getMessage()));
+        String message = cause.getMessage();
+        Optional.ofNullable(this.listener).ifPresent(l -> l.onError(message != null ? message : ""));
         logger.debug("Connection Error.", cause);
     }
 
