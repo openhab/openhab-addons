@@ -495,7 +495,7 @@ public class ComfoAirSerialConnector {
                         return ComfoAirCommandType.Constants.EMPTY_INT_ARRAY;
                     }
                     break;
-                case ComfoAirCommandType.Constants.REQUEST_SET_EWT:
+                case ComfoAirCommandType.Constants.REQUEST_SET_GHX:
                     newRequestData = new int[5];
 
                     if (preRequestData.length > 0 && newRequestData.length <= preRequestData.length) {
