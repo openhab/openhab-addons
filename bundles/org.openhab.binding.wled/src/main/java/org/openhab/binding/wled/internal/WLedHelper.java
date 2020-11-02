@@ -40,8 +40,8 @@ public class WLedHelper {
         return "";
     }
 
-    static LinkedList<String> listOfResults(String message, String element, String end) {
-        LinkedList<String> results = new LinkedList<String>();
+    static List<String> listOfResults(String message, String element, String end) {
+        List<String> results = new LinkedList<>();
         String temp = "";
         for (int startLookingFromIndex = 0; startLookingFromIndex != -1;) {
             startLookingFromIndex = message.indexOf(element, startLookingFromIndex);
