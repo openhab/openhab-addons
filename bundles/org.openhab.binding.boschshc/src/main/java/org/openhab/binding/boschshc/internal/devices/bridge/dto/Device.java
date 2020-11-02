@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -45,7 +45,7 @@ public class Device {
 
     public String rootDeviceId;
     public String id;
-    public ArrayList<String> deviceSerivceIDs;
+    public List<String> deviceSerivceIDs;
     public String manufacturer;
     public String roomId;
     public String deviceModel;
@@ -53,5 +53,5 @@ public class Device {
     public String profile;
     public String name;
     public String status;
-    public ArrayList<String> childDeviceIds;
+    public List<String> childDeviceIds;
 }
