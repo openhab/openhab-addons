@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -145,8 +146,8 @@ public class OnvifConnection {
     private String ptzNodeToken = "000";
     private String ptzConfigToken = "000";
     private int presetTokenIndex = 0;
-    private LinkedList<String> presetTokens = new LinkedList<>();
-    private LinkedList<String> mediaProfileTokens = new LinkedList<>();
+    private List<String> presetTokens = new LinkedList<>();
+    private List<String> mediaProfileTokens = new LinkedList<>();
     private boolean ptzDevice = true;
 
     public OnvifConnection(IpCameraHandler ipCameraHandler, String ipAddress, String user, String password) {
@@ -718,8 +719,8 @@ public class OnvifConnection {
         this.mediaProfileIndex = mediaProfileIndex;
     }
 
-    LinkedList<String> listOfResults(String message, String heading, String key) {
-        LinkedList<String> results = new LinkedList<String>();
+    List<String> listOfResults(String message, String heading, String key) {
+        List<String> results = new LinkedList<>();
         String temp = "";
         for (int startLookingFromIndex = 0; startLookingFromIndex != -1;) {
             startLookingFromIndex = message.indexOf(heading, startLookingFromIndex);
@@ -728,8 +729,10 @@ public class OnvifConnection {
                 if (!temp.isEmpty()) {
                     logger.trace("String was found:{}", temp);
                     results.add(temp);
-                    ++startLookingFromIndex;
+                } else {
+                    return results;// key string must not exist so stop looking.
                 }
+                startLookingFromIndex += temp.length();
             }
         }
         return results;
