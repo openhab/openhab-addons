@@ -269,8 +269,8 @@ public class WebserviceHandler extends BaseBridgeHandler {
                                     }
                                     break;
                                 case THURSDAY:
-                                if ((day.contains("Werktags")) || (day.contains("Do")) || (day.contains("Mo-Fr"))) {
-                                     logger.debug("Found a setting which is valid for today (Thursday).");
+                                    if ((day.contains("Werktags")) || (day.contains("Do")) || (day.contains("Mo-Fr"))) {
+                                        logger.debug("Found a setting which is valid for today (Thursday).");
                                         foundIt = true;
                                     }
                                     break;
@@ -293,11 +293,11 @@ public class WebserviceHandler extends BaseBridgeHandler {
                                     }
                                     break;
                             }
-                        }   
+                        }
                         if (foundIt) {
-                             start = open;
-                             ende = close;
-                             break;
+                            start = open;
+                            ende = close;
+                            break;
                         }
                         i = i + 1;
                     } while (i < o.length);
