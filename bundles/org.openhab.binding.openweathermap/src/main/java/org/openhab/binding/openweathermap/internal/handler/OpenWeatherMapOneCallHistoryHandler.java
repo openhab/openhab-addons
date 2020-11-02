@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOneCallHistoryConfiguration;
@@ -61,7 +62,6 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
 
     // the relative day in history.
     private int day = 0;
-    private boolean initialized = false;
 
     public OpenWeatherMapOneCallHistoryHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
@@ -69,7 +69,6 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
 
     @Override
     public void initialize() {
-        initialized = false;
         super.initialize();
         OpenWeatherMapOneCallHistoryConfiguration config = getConfigAs(OpenWeatherMapOneCallHistoryConfiguration.class);
         if (config.historyDay <= 0) {
@@ -87,7 +86,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
         day = config.historyDay;
         logger.debug("Initialize OpenWeatherMapOneCallHistoryHandler handler '{}' with historyDay {}.",
                 getThing().getUID(), day);
-        initialized = true;
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -105,11 +104,6 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
-        // During testing of the binding I got NullPointerExceptions that showed that updateChannel is called already
-        // before the initialization is completed. So we return here if the initialization is not complete.
-        if (!initialized) {
-            return;
-        }
         String channelGroupId = channelUID.getGroupId();
         switch (channelGroupId) {
             case CHANNEL_GROUP_ONECALL_HISTORY:

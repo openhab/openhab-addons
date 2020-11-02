@@ -206,7 +206,8 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     }
 
     protected List<Channel> createChannelsForGroup(String channelGroupId, ChannelGroupTypeUID channelGroupTypeUID) {
-        logger.debug("Building channel group '{}' for thing '{}'.", channelGroupId, getThing().getUID());
+        logger.debug("Building channel group '{}' for thing '{}' and GroupType '{}'.", channelGroupId,
+                getThing().getUID(), channelGroupTypeUID);
         List<Channel> channels = new ArrayList<>();
         @Nullable
         ThingHandlerCallback callback = getCallback();
@@ -223,6 +224,7 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
                 channels.add(newChannel);
             }
         }
+        logger.debug("Built channels: {}", channels);
         return channels;
     }
 

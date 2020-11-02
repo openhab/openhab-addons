@@ -134,9 +134,7 @@
 
 	<channel-group-type id="oneCallMinutely">
 		<label>One Call API Minutely Forecast</label>
-		<description>Minutely weather forecast delivered by the One Call API, where available.
-			Currently only contains
-			precipitation data</description>
+		<description>Minutely precipitation delivered by the One Call API.</description>
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp"/>
 			<channel id="precipitation" typeId="precipitation"/>
@@ -206,7 +204,7 @@
 
 	<channel-group-type id="oneCallHistory">
 		<label>One Call API Historical Weather</label>
-		<description>Historical weather data from the One Call API at the given point in time.</description>
+		<description>Historical weather data from the One Call API at this point in time the given day.</description>
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp"/>
 			<channel id="sunrise" typeId="sunrise"/>
@@ -233,7 +231,7 @@
 
 	<channel-group-type id="oneCallHistoryHours">
 		<label>One Call API Hourly Historical Weather Data</label>
-		<description>Historical weather data from the One Call API for one day per hour.</description>
+		<description>Historical weather data from the One Call API per hour.</description>
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp"/>
 			<channel id="condition" typeId="condition"/>

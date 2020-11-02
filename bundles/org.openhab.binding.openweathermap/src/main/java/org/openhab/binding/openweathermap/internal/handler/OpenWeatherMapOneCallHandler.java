@@ -63,11 +63,9 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
 
     private @Nullable OpenWeatherMapOneCallAPIData weatherData;
 
-    private int forecastMinutes = 0;
-    private int forecastHours = 0;
-    private int forecastDays = 0;
-
-    private boolean initialized = false;
+    private int forecastMinutes = 60;
+    private int forecastHours = 24;
+    private int forecastDays = 8;
 
     public OpenWeatherMapOneCallHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
@@ -75,7 +73,6 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
 
     @Override
     public void initialize() {
-        initialized = false;
         super.initialize();
         logger.debug("Initialize OpenWeatherMapOneCallHandler handler '{}'.", getThing().getUID());
         OpenWeatherMapOneCallConfiguration config = getConfigAs(OpenWeatherMapOneCallConfiguration.class);
@@ -108,7 +105,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     .addAll(createChannelsForGroup(CHANNEL_GROUP_ONECALL_CURRENT, CHANNEL_GROUP_TYPE_ONECALL_CURRENT));
 
             if (forecastMinutes != newForecastMinutes) {
-                logger.debug("Rebuilding minutely forecast channel groups.");
+                logger.debug("forecastMinutes changed from {} to {}. Rebuilding minutely forecast channel groups.",
+                        forecastMinutes, newForecastMinutes);
                 if (forecastMinutes > newForecastMinutes) {
                     for (int i = newForecastMinutes + 1; i <= forecastMinutes; i++) {
                         toBeRemovedChannels.addAll(removeChannelsOfGroup(
@@ -124,7 +122,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 forecastMinutes = newForecastMinutes;
             }
             if (forecastHours != newForecastHours) {
-                logger.debug("Rebuilding hourly forecast channel groups.");
+                logger.debug("ForecastHours changed from {} to {}. Rebuilding hourly forecast channel groups.",
+                        forecastHours, newForecastHours);
                 if (forecastHours > newForecastHours) {
                     for (int i = newForecastHours + 1; i <= forecastHours; i++) {
                         toBeRemovedChannels.addAll(removeChannelsOfGroup(
@@ -140,7 +139,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 forecastHours = newForecastHours;
             }
             if (forecastDays != newForecastDays) {
-                logger.debug("Rebuilding daily forecast channel groups.");
+                logger.debug("ForecastDays changed from {} to {}. Rebuilding daily forecast channel groups.",
+                        forecastDays, newForecastDays);
                 if (forecastDays > newForecastDays) {
                     if (newForecastDays < 1) {
                         toBeRemovedChannels.addAll(removeChannelsOfGroup(CHANNEL_GROUP_FORECAST_TODAY));
@@ -169,13 +169,14 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 }
                 forecastDays = newForecastDays;
             }
+            logger.debug("toBeRemovedChannels: {}. toBeAddedChannels: {}", toBeRemovedChannels, toBeAddedChannels);
             ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
             for (Channel channel : toBeAddedChannels) {
                 builder.withChannel(channel);
             }
             updateThing(builder.build());
+            updateStatus(ThingStatus.ONLINE);
         }
-        initialized = true;
     }
 
     @Override
@@ -194,11 +195,6 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
-        // During testing of the binding I got NullPointerExceptions that showed that updateChannel is called already
-        // before the initialization is completed. So we return here if the initialization is not complete.
-        if (!initialized) {
-            return;
-        }
         String channelGroupId = channelUID.getGroupId();
         logger.debug("OneCallHandler: updateChannel {}, groupID {}", channelUID, channelGroupId);
         switch (channelGroupId) {
