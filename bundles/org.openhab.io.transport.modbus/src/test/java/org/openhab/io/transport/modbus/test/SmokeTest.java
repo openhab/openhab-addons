@@ -1054,5 +1054,4 @@ public class SmokeTest extends IntegrationTestSupport {
         }
         return port == tcpModbusPort && connected && address.equals(testServerAddress);
     }
-
 }

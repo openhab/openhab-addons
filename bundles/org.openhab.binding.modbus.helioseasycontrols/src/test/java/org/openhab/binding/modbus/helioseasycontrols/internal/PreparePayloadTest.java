@@ -40,7 +40,6 @@ public class PreparePayloadTest {
                 .of(new Object[] { "v00020=a", new ModbusRegisterArray(0x7630, 0x3030, 0x3230, 0x3d61, 0x0000) },
                         new Object[] { "v00020=aa", new ModbusRegisterArray(0x7630, 0x3030, 0x3230, 0x3d61, 0x6100) })
                 .collect(Collectors.toList()));
-
     }
 
     @ParameterizedTest
