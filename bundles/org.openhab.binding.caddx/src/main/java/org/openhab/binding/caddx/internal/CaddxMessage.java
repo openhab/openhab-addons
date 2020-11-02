@@ -171,7 +171,7 @@ public class CaddxMessage {
             case ZONE_STATUS_MESSAGE:
                 String zone;
                 try {
-                    zone = "" + Integer.parseInt(getPropertyById("zone_number")) + 1;
+                    zone = "" + (Integer.parseInt(getPropertyById("zone_number")) + 1);
                 } catch (NumberFormatException e) {
                     zone = "";
                 }
@@ -189,7 +189,7 @@ public class CaddxMessage {
             case PARTITION_STATUS_MESSAGE:
                 String partition;
                 try {
-                    partition = "" + Integer.parseInt(getPropertyById("partition_number")) + 1;
+                    partition = "" + (Integer.parseInt(getPropertyById("partition_number")) + 1);
                 } catch (NumberFormatException e) {
                     partition = "";
                 }
