@@ -19,7 +19,7 @@
 		<properties>
 			<property name="vendor">Hayward</property>
 			<property name="minPumpSpeed"></property>
-			<property name="maxPumpSPeed"></property>
+			<property name="maxPumpSpeed"></property>
 			<property name="minPumpRPM"></property>
 			<property name="maxPumpRPM"></property>
 		</properties>
