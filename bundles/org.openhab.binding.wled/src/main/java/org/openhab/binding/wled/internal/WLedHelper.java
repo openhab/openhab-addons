@@ -13,6 +13,7 @@
 package org.openhab.binding.wled.internal;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -40,6 +41,10 @@ public class WLedHelper {
         return "";
     }
 
+    /**
+     * @return A List that holds the values from a heading/element that re-occurs in a message multiple times.
+     *
+     */
     static List<String> listOfResults(String message, String element, String end) {
         List<String> results = new LinkedList<>();
         String temp = "";
@@ -49,8 +54,10 @@ public class WLedHelper {
                 temp = getValue(message.substring(startLookingFromIndex), element, end);
                 if (!temp.isEmpty()) {
                     results.add(temp);
-                    ++startLookingFromIndex;
+                } else {
+                    return results;// end string must not exist so stop looking.
                 }
+                startLookingFromIndex += temp.length();
             }
         }
         return results;
