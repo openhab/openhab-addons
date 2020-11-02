@@ -81,10 +81,13 @@ public class ShutterControlHandler extends BoschSHCHandler {
             }
             this.shutterControlService.setState(state);
         } else if (command instanceof StopMoveType) {
-            // Set STOPPED operation state
-            ShutterControlServiceState state = new ShutterControlServiceState();
-            state.operationState = OperationState.STOPPED;
-            this.shutterControlService.setState(state);
+            StopMoveType stopMoveType = (StopMoveType) command;
+            if (stopMoveType == StopMoveType.STOP) {
+                // Set STOPPED operation state
+                ShutterControlServiceState state = new ShutterControlServiceState();
+                state.operationState = OperationState.STOPPED;
+                this.shutterControlService.setState(state);
+            }
         } else if (command instanceof PercentType) {
             // Set specific level
             PercentType percentType = (PercentType) command;
