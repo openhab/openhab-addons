@@ -25,6 +25,5 @@ public class BoschSHCConfiguration {
     /**
      * ID of the device as returned by the controller.
      */
-    @Nullable
-    public String id;
+    public @Nullable String id;
 }
