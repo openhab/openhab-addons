@@ -8,19 +8,19 @@ The Hayward Omnilogic API interacts with Hayward's cloud server requiring a conn
 
 The table below lists the Hayward OmniLogic binding thing types:
 
-| Things                                  | Description                                                                                                  | Thing Type     |
-|-----------------------------------------|--------------------------------------------------------------------------------------------------------------|----------------|
-| Hayward OmniLogix Connection            | Connection to Hayward's Server                                                                               | bridge         |
-| Backyard                                | Backyard                                                                                                     | backyard       |
-| Body of Water                           | Body of Water                                                                                                | bow            |
-| Chlorinator                             | Chlorinator																									 | chlorinator    |
-| Colorlogic Light                        | Colorlogic Light                                                                                             | colorlogic     |
-| Chlorine Sense and Dispense             | CSAD/ORP Control (under development)                                                                         | csad           |
-| Filter                                  | Filter control                                                                                               | filter         |
-| Heater Equipment                        | Actual heater (i.e. gas, solar, electric)                                                                    | heater         |
-| Pump                                    | Auxillary pump control (i.e. spillover)                                                                      | pump           |
-| Relay                                   | Accessory relay control (deck jet sprinklers, lights, etc.)                                                  | relay          |
-| Virtaul Heater                          | A Virtual Heater that can control all of the heater equipment based on priority                              | virtualHeater  |
+| Things                                  | Description                                                                     | Thing Type     |
+|-----------------------------------------|---------------------------------------------------------------------------------|----------------|
+| Hayward OmniLogix Connection            | Connection to Hayward's Server                                                  | bridge         |
+| Backyard                                | Backyard                                                                        | backyard       |
+| Body of Water                           | Body of Water                                                                   | bow            |
+| Chlorinator                             | Chlorinator																		| chlorinator    |
+| Colorlogic Light                        | Colorlogic Light                                                                | colorlogic     |
+| Chlorine Sense and Dispense             | CSAD/ORP Control (under development)                                            | csad           |
+| Filter                                  | Filter control                                                                  | filter         |
+| Heater Equipment                        | Actual heater (i.e. gas, solar, electric)                                       | heater         |
+| Pump                                    | Auxillary pump control (i.e. spillover)                                         | pump           |
+| Relay                                   | Accessory relay control (deck jet sprinklers, lights, etc.)                     | relay          |
+| Virtaul Heater                          | A Virtual Heater that can control all of the heater equipment based on priority | virtualHeater  |
 
 ## Discovery
 
@@ -30,14 +30,15 @@ The binding will automatically discover the Omnilogic pool things from the cloud
 
 Hayward OmniLogic Connection Parameters:
 
-| Property			    | Default															| Required 	| Description 								|
-|-----------------------|-------------------------------------------------------------------|-----------|:-----------------------------------------:|
-| Host Name      		| https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ashx	| Yes		| Host name of the Hayward API server 		|
-| User Name       		| None    															| Yes		| Your Hayward User Name (not email address)|
-| Password 				| None																| Yes		| Your Hayward User Password				|
-| Telemetry Poll Delay  | 12    															| Yes		| Telemetry Poll Delay (seconds)			|
-| Alarm Poll Delay    	| 60    															| Yes		| Alarm Poll Delay (seconds)				|
-| Command Poll Delay	| 12    															| Yes		| Command Poll Delay (seconds)				|
+| Property			    | Default												      | Required | Description 								 |
+|-----------------------|-------------------------------------------------------------|----------|-------------------------------------------|
+| Host Name      		| https://app1.haywardomnilogic.com/HAAPI/	                  | Yes		 | Host name of the Hayward API server 		 |
+|                       | HomeAutomation/API.ashx                                     |          |                                           |
+| User Name       		| None    													  | Yes		 | Your Hayward User Name (not email address)|
+| Password 				| None													      | Yes		 | Your Hayward User Password				 |
+| Telemetry Poll Delay  | 12    													  | Yes		 | Telemetry Poll Delay (seconds)			 |
+| Alarm Poll Delay    	| 60    													  | Yes		 | Alarm Poll Delay (seconds)				 |
+| Command Poll Delay	| 12    													  | Yes		 | Command Poll Delay (seconds)				 |
 
 ## Channels
 
@@ -57,10 +58,10 @@ Hayward OmniLogic Connection Parameters:
 
 ### Body of Water Channels
 
-| Channel Type ID       		| Item Type 			| Description                                                    | Read Write |
-|-------------------------------|-----------------------|----------------------------------------------------------------|:----------:|
-| bowFlow       				| Number    			| Body of Water flow sensor feedback							 |      R     |
-| bowWaterTemp       			| Number:Temperature    | Body of Water temperature  									 |      R     |
+| Channel Type ID       		| Item Type 			| Description                                                   | Read Write |
+|-------------------------------|-----------------------|---------------------------------------------------------------|:----------:|
+| bowFlow       				| Number    			| Body of Water flow sensor feedback						    |      R     |
+| bowWaterTemp       			| Number:Temperature    | Body of Water temperature  								    |      R     |
 
 
 ### Chlorinator Channels
@@ -133,7 +134,8 @@ To be developed
 
 ## Full Example
 
-After installing the binding, you will need to manually add the Hayward Connection thing and enter your credentials.  All pool items will then be automatically discovered.
+After installing the binding, you will need to manually add the Hayward Connection thing and enter your credentials.
+All pool items will then be automatically discovered.
 Goto the inbox and add the things.
 
 ### demo.items:
