@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -149,7 +150,7 @@ public class BoschSslUtil {
         Security.addProvider(new BouncyCastleProvider());
         Signature signer = Signature.getInstance("SHA256withRSA", "BC");
         signer.initSign(keyPair.getPrivate());
-        signer.update("Hello OpenHAB".getBytes());
+        signer.update("Hello OpenHAB".getBytes(StandardCharsets.UTF_8));
         signer.sign();
 
         X509Certificate cert = generateClientCertificate(keyPair);
