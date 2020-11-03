@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andi Bräu - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.revogismartstripcontrol")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.revogi")
 @NonNullByDefault
 public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
