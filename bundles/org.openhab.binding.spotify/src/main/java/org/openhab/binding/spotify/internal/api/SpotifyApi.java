@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -88,7 +89,7 @@ public class SpotifyApi {
     public Me getMe() {
         final ContentResponse response = request(GET, SPOTIFY_API_URL, "");
 
-        return ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Me.class);
+        return Objects.requireNonNull(ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Me.class));
     }
 
     /**

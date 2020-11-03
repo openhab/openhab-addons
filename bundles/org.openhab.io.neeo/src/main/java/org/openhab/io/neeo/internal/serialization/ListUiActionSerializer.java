@@ -13,7 +13,6 @@
 package org.openhab.io.neeo.internal.serialization;
 
 import java.lang.reflect.Type;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,12 +35,8 @@ import com.google.gson.JsonSerializer;
 @NonNullByDefault
 public class ListUiActionSerializer implements JsonSerializer<ListUiAction>, JsonDeserializer<ListUiAction> {
     @Override
-    public ListUiAction deserialize(@Nullable JsonElement elm, @Nullable Type type,
-            @Nullable JsonDeserializationContext jsonContext) throws JsonParseException {
-        Objects.requireNonNull(elm, "elm cannot be null");
-        Objects.requireNonNull(type, "type cannot be null");
-        Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
-
+    public @Nullable ListUiAction deserialize(JsonElement elm, Type type, JsonDeserializationContext jsonContext)
+            throws JsonParseException {
         if (elm.isJsonNull()) {
             throw new JsonParseException("ListUiAction could not be parsed from null");
         }
@@ -50,12 +45,7 @@ public class ListUiActionSerializer implements JsonSerializer<ListUiAction>, Jso
     }
 
     @Override
-    public JsonElement serialize(ListUiAction ist, @Nullable Type type,
-            @Nullable JsonSerializationContext jsonContext) {
-        Objects.requireNonNull(ist, "ist cannot be null");
-        Objects.requireNonNull(type, "type cannot be null");
-        Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
-
+    public JsonElement serialize(ListUiAction ist, Type type, JsonSerializationContext jsonContext) {
         return new JsonPrimitive(ist.toString());
     }
 }

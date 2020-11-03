@@ -165,8 +165,8 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
 
         // get the channel id from the map
         HashMap<String, String> logMap = panelLogMessagesMap;
-        if (logMap != null && logMap.containsKey(eventNumberString)) {
-            String id = logMap.get(eventNumberString);
+        String id = logMap.get(eventNumberString);
+        if (logMap != null && id != null) {
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), id);
             updateChannel(channelUID, logEventMessage.toString());
         }

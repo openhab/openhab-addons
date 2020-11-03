@@ -76,7 +76,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), NeeoBrain.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), NeeoBrain.class));
     }
 
     /**
@@ -97,7 +97,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), NeeoRoom.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), NeeoRoom.class));
     }
 
     /**
@@ -121,7 +121,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), ExecuteResult.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), ExecuteResult.class));
     }
 
     /**
@@ -145,7 +145,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), ExecuteResult.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), ExecuteResult.class));
     }
 
     /**
@@ -163,7 +163,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), String[].class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), String[].class));
     }
 
     /**
@@ -189,7 +189,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), ExecuteResult.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), ExecuteResult.class));
     }
 
     /**

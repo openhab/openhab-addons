@@ -15,7 +15,6 @@ package org.openhab.io.neeo.internal.serialization;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,12 +53,7 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
     private final Logger logger = LoggerFactory.getLogger(NeeoBrainDeviceSerializer.class);
 
     @Override
-    public JsonElement serialize(NeeoDevice device, @Nullable Type deviceType,
-            @Nullable JsonSerializationContext jsonContext) {
-        Objects.requireNonNull(device, "device cannot be null");
-        Objects.requireNonNull(deviceType, "deviceType cannot be null");
-        Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
-
+    public JsonElement serialize(NeeoDevice device, Type deviceType, JsonSerializationContext jsonContext) {
         final JsonObject jsonObject = new JsonObject();
 
         final String adapterName = device.getUid().getNeeoUID();

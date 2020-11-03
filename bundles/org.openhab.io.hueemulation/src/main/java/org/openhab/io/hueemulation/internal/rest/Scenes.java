@@ -383,7 +383,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
 
-        final HueStateChange changeRequest = cs.gson.fromJson(body, HueStateChange.class);
+        final HueStateChange changeRequest = Objects.requireNonNull(cs.gson.fromJson(body, HueStateChange.class));
 
         Rule rule = ruleRegistry.remove(id);
         if (rule == null) {

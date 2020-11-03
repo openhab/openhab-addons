@@ -80,6 +80,7 @@
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
     <spotless.version>2.0.3</spotless.version>
+    <eea.version>2.2.1</eea.version>
   </properties>
 
   <dependencyManagement>
@@ -289,8 +290,8 @@ Import-Package: \\
               <classpath>${project.build.directory}/dependency</classpath>
             </compilerArguments>
             <compilerArgs>
-              <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,-nullUncheckedConversion</arg>
-              <arg>-warn:+null,+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>
+              <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion</arg>
+              <arg>-warn:+null,+inheritNullAnnot,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>
             </compilerArgs>
             <showWarnings>true</showWarnings>
             <showDeprecation>true</showDeprecation>

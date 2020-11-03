@@ -14,13 +14,7 @@ package org.openhab.binding.insteon.internal.handler;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -185,7 +179,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 Type mapType = new TypeToken<Map<String, Object>>() {
                 }.getType();
                 try {
-                    deviceConfigMap = new Gson().fromJson(deviceConfig, mapType);
+                    deviceConfigMap = Objects.requireNonNull(new Gson().fromJson(deviceConfig, mapType));
                 } catch (JsonParseException e) {
                     String msg = "The device configuration parameter is not valid JSON.";
                     logger.warn("{} {}", thing.getUID().getAsString(), msg);

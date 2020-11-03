@@ -177,6 +177,8 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         if (channel == null) {
             logger.debug("Creating a new temperature channel: {}", segmentId);
             createTempChannel(segmentId, segment.getSegmentName());
+            processThermometer(segment);
+            return;
         }
         updateTemperatureChannel(channel, segment);
     }
@@ -187,6 +189,8 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         if (channel == null) {
             logger.debug("Creating a new thermostat channel: {}", segmentId);
             createThermostatChannel(segmentId, segment.getSegmentName());
+            processThermostat(segment);
+            return;
         }
         updateTemperatureChannel(channel, segment);
     }
