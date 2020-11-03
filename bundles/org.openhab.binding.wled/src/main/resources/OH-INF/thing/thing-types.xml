@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wled"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="wled">
+		<label>WLED String</label>
+		<description>A WLED string of LEDs</description>
+		<category>ColorLight</category>
+		<channels>
+			<channel id="masterControls" typeId="masterControls"/>
+			<channel id="primaryColor" typeId="primaryColor"/>
+			<channel id="primaryWhite" typeId="primaryWhite"/>
+			<channel id="secondaryColor" typeId="secondaryColor"/>
+			<channel id="secondaryWhite" typeId="secondaryWhite"/>
+			<channel id="presets" typeId="presets"/>
+			<channel id="presetDuration" typeId="presetDuration"/>
+			<channel id="transformTime" typeId="transformTime"/>
+			<channel id="presetCycle" typeId="presetCycle"/>
+			<channel id="palettes" typeId="palettes"/>
+			<channel id="fx" typeId="fx"/>
+			<channel id="speed" typeId="speed"/>
+			<channel id="intensity" typeId="intensity"/>
+			<channel id="sleep" typeId="sleep"/>
+			<channel id="syncSend" typeId="syncSend"/>
+			<channel id="syncReceive" typeId="syncReceive"/>
+		</channels>
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Use this format http://192.168.1.2:80</description>
+			</parameter>
+			<parameter name="pollTime" type="integer" required="true" min="1" unit="s">
+				<label>Poll States</label>
+				<description>Time in seconds of how often to fetch the state of the LEDs.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="segmentIndex" type="integer" required="true" min="-1">
+				<label>Segment Index</label>
+				<description>Leave this as -1 if you are not using segments, otherwise set this to the segment index number that you
+					wish to control.</description>
+				<default>-1</default>
+			</parameter>
+			<parameter name="saturationThreshold" type="integer" required="true" min="0" max="99">
+				<label>Saturation Threshold</label>
+				<description>This feature allows you to specify a number that if the saturation drops below, will trigger white.
+				</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="masterControls">
+		<item-type>Color</item-type>
+		<label>Master Controls</label>
+		<description>Allows you to exit FX mode and use the LEDS like a normal light</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="primaryColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>Primary Color</label>
+		<description>Allows you to change the primary color used in FX</description>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="primaryWhite" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Primary White</label>
+		<description>Changes the brightness of the primary white LED</description>
+		<category>DimmableLight</category>
+	</channel-type>
+
+	<channel-type id="secondaryColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>Secondary Color</label>
+		<description>Allows you to change the secondary color used in FX</description>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="secondaryWhite" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Secondary White</label>
+		<description>Changes the brightness of the secondary white LED</description>
+		<category>DimmableLight</category>
+	</channel-type>
+
+	<channel-type id="palettes">
+		<item-type>String</item-type>
+		<label>Palettes</label>
+		<description>Change the colours used by the FX</description>
+	</channel-type>
+
+	<channel-type id="fx">
+		<item-type>String</item-type>
+		<label>Effect</label>
+		<description>Use the built in FX</description>
+	</channel-type>
+
+	<channel-type id="presets">
+		<item-type>String</item-type>
+		<label>Presets</label>
+		<description>Auto rotate or change to a saved preset</description>
+		<state>
+			<options>
+				<option value="1">Preset 1</option>
+				<option value="2">Preset 2</option>
+				<option value="3">Preset 3</option>
+				<option value="4">Preset 4</option>
+				<option value="5">Preset 5</option>
+				<option value="6">Preset 6</option>
+				<option value="7">Preset 7</option>
+				<option value="8">Preset 8</option>
+				<option value="9">Preset 9</option>
+				<option value="10">Preset 10</option>
+				<option value="11">Preset 11</option>
+				<option value="12">Preset 12</option>
+				<option value="13">Preset 13</option>
+				<option value="14">Preset 14</option>
+				<option value="15">Preset 15</option>
+				<option value="16">Preset 16</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="presetDuration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Preset Duration</label>
+		<description>Time for how long to show each preset for before moving to the next</description>
+		<category>Time</category>
+		<state min="0.1" max="65" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="transformTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Transform Time</label>
+		<description>Time it takes to change/fade from one look to the next.</description>
+		<category>Time</category>
+		<state min="0" max="65" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="speed" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>FX Speed</label>
+		<description>Change the speed of the FX</description>
+	</channel-type>
+
+	<channel-type id="intensity" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>FX Intensity</label>
+		<description>Change the intensity of the FX</description>
+	</channel-type>
+
+	<channel-type id="sleep" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sleep Timer</label>
+		<description>Fade the level of light and turn off after set time</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="presetCycle">
+		<item-type>Switch</item-type>
+		<label>Preset Cycle</label>
+		<description>Cycle through the saved presets</description>
+	</channel-type>
+
+	<channel-type id="syncSend" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sync Send</label>
+		<description>Sends UDP packets that tell other WLED lights to follow this one.</description>
+	</channel-type>
+
+	<channel-type id="syncReceive" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sync Receive</label>
+		<description>Allows UDP packets from other WLED lights to control this one.</description>
+	</channel-type>
+
+</thing:thing-descriptions>
