@@ -15,8 +15,8 @@ The auto discovery will find your WLED if your network supports mDNS and the UDP
 Before discovering any WLED devices, you may wish to name them by providing a 'Server description' in the WLED web page, CONFIG>User Interface> setup page.
 openHAB will then discover and auto name your WLED to the name provided as the 'Server description'.
 If it fails to find your WLED, you can still manually add a `wled` thing by using the UI or textual methods.
-For multiple segments, the binding will only auto find the first segment which has an index of 0.
-For any additional segments, you can add them manually and set the `segmentIndex` config to the correct number shown in the WLED control web page.
+For multiple segments, the binding will only auto find the first segment.
+For additional segments, you can add them manually and set the `segmentIndex` config to the correct number shown in the WLED control web page.
 
 ## Thing Configuration
 

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -259,6 +260,7 @@ public class WLedHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         BigDecimal bigTemp;
+        PercentType localPercentType;
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_MASTER_CONTROLS:
@@ -361,12 +363,18 @@ public class WLedHandler extends BaseThingHandler {
                 sendGetRequest("/win&FX=" + command);
                 break;
             case CHANNEL_SPEED:
-                bigTemp = ((State) command).as(PercentType.class).toBigDecimal().multiply(BIG_DECIMAL_2_55);
-                sendGetRequest("/win&SX=" + bigTemp);
+                localPercentType = ((State) command).as(PercentType.class);
+                if (localPercentType != null) {
+                    bigTemp = localPercentType.toBigDecimal().multiply(BIG_DECIMAL_2_55);
+                    sendGetRequest("/win&SX=" + bigTemp);
+                }
                 break;
             case CHANNEL_INTENSITY:
-                bigTemp = ((State) command).as(PercentType.class).toBigDecimal().multiply(BIG_DECIMAL_2_55);
-                sendGetRequest("/win&IX=" + bigTemp);
+                localPercentType = ((State) command).as(PercentType.class);
+                if (localPercentType != null) {
+                    bigTemp = localPercentType.toBigDecimal().multiply(BIG_DECIMAL_2_55);
+                    sendGetRequest("/win&IX=" + bigTemp);
+                }
                 break;
             case CHANNEL_SLEEP:
                 if (OnOffType.ON.equals(command)) {

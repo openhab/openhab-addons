@@ -47,8 +47,9 @@ public class WLedActions implements ThingActions {
     @RuleAction(label = "save state to preset", description = "Save a WLED state to a preset slot")
     public void savePreset(
             @ActionInput(name = "presetNumber", label = "Preset Slot", description = "Number for the preset slot you wish to use") int presetNumber) {
-        if (presetNumber > 0 && handler != null) {
-            handler.savePreset(presetNumber);
+        WLedHandler localHandler = handler;
+        if (presetNumber > 0 && localHandler != null) {
+            localHandler.savePreset(presetNumber);
         }
     }
 
