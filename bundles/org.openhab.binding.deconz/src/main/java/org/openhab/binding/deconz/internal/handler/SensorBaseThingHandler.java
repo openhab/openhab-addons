@@ -164,21 +164,29 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
         // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
         // So to monitor a sensor is still alive, the "last seen" is necessary.
+        // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
+        // manually poll it after the defined time
         String lastSeen = stateResponse.lastseen;
         if (lastSeen != null && config.lastSeenPolling > 0) {
             createChannel(CHANNEL_LAST_SEEN, ChannelKind.STATE);
             updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
-            // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
-            // manually poll it after the defined time (default is off)
-            if (config.lastSeenPolling > 0) {
-                lastSeenPollingJob = scheduler.schedule((Runnable) this::requestState, config.lastSeenPolling,
-                        TimeUnit.MINUTES);
-                logger.trace("lastSeen polling enabled for thing {} with interval of {} minutes", thing.getUID(),
-                        config.lastSeenPolling);
-            }
+            lastSeenPollingJob = scheduler.schedule(() -> requestState(this::processLastSeen), config.lastSeenPolling,
+                    TimeUnit.MINUTES);
+            logger.trace("lastSeen polling enabled for thing {} with interval of {} minutes", thing.getUID(),
+                    config.lastSeenPolling);
         }
 
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    private void processLastSeen(@Nullable SensorMessage stateResponse) {
+        if (stateResponse == null) {
+            return;
+        }
+        String lastSeen = stateResponse.lastseen;
+        if (lastSeen != null) {
+            updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
+        }
     }
 
     protected void createChannel(String channelId, ChannelKind kind) {
