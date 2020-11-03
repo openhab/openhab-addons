@@ -163,11 +163,11 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         properties.put(Thing.PROPERTY_VENDOR, light.manufacturername);
         properties.put(Thing.PROPERTY_MODEL_ID, light.modelid);
 
-        if (light.ctmax != null && light.ctmin != null) {
-            properties.put(PROPERTY_CT_MAX,
-                    Integer.toString(Util.constrainToRange(light.ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
-            properties.put(PROPERTY_CT_MIN,
-                    Integer.toString(Util.constrainToRange(light.ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
+        Integer ctmax = light.ctmax;
+        Integer ctmin = light.ctmin;
+        if (ctmax != null && ctmin != null) {
+            properties.put(PROPERTY_CT_MAX, Integer.toString(Util.constrainToRange(ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
+            properties.put(PROPERTY_CT_MIN, Integer.toString(Util.constrainToRange(ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
         }
 
         switch (lightType) {

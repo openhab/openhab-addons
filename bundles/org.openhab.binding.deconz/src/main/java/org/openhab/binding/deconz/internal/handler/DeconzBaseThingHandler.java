@@ -19,6 +19,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -119,7 +120,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
             registerListener();
 
             // get initial values
-            requestState();
+            requestState(this::processStateResponse);
         } else {
             // if the bridge is not ONLINE, we assume communication is not possible, so we unregister the listener and
             // set the thing status to OFFLINE
@@ -131,7 +132,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     protected abstract @Nullable T parseStateResponse(AsyncHttpClient.Result r);
 
     /**
-     * processes a newly received state response
+     * processes a newly received (initial) state response
      *
      * MUST set the thing status!
      *
@@ -142,7 +143,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     /**
      * Perform a request to the REST API for retrieving the full light state with all data and configuration.
      */
-    protected void requestState() {
+    protected void requestState(Consumer<@Nullable T> processor) {
         AsyncHttpClient asyncHttpClient = http;
         if (asyncHttpClient == null) {
             return;
@@ -162,10 +163,11 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
             }
 
             stopInitializationJob();
-            initializationJob = scheduler.schedule((Runnable) this::requestState, 10, TimeUnit.SECONDS);
+            initializationJob = scheduler.schedule(() -> requestState(this::processStateResponse), 10,
+                    TimeUnit.SECONDS);
 
             return null;
-        }).thenAccept(this::processStateResponse);
+        }).thenAccept(processor);
     }
 
     /**
