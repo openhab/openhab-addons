@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Andi Bräu - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.revogismartstripcontrol", service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.revogi", service = ThingHandlerFactory.class)
 public class RevogiSmartStripControlHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
