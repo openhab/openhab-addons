@@ -187,6 +187,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             this.outputStream = null;
         }
 
+        readerActive.set(false);
         final ScheduledFuture<?> reader = this.reader;
         if (reader != null) {
             reader.cancel(false);
@@ -272,7 +273,9 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
                 // Add wait states around reading the stream, so that interrupted transmissions
                 // are merged
-                reader = scheduler.schedule(() -> receiveAndProcess(sb, false), 100, TimeUnit.MILLISECONDS);
+                if (readerActive.get()) {
+                    reader = scheduler.schedule(() -> receiveAndProcess(sb, false), 100, TimeUnit.MILLISECONDS);
+                }
 
             } else {
                 final String result = sb.toString();
@@ -289,11 +292,12 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                     }
                 }));
 
-                readerActive.set(false);
-                // Check we haven't received more data while processing
-                if (inputStream.available() > 0 && readerActive.compareAndSet(false, true)) {
-                    reader = scheduler.schedule(() -> receiveAndProcess(new StringBuilder(), true), 0,
-                            TimeUnit.MILLISECONDS);
+                if (readerActive.compareAndSet(true, false)) {
+                    // Check we haven't received more data while processing
+                    if (inputStream.available() > 0 && readerActive.compareAndSet(false, true)) {
+                        reader = scheduler.schedule(() -> receiveAndProcess(new StringBuilder(), true), 0,
+                                TimeUnit.MILLISECONDS);
+                    }
                 }
             }
         } catch (final IOException e) {
