@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.tr064-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+
+	<feature name="openhab-binding-tr064" description="TR-064 Binding" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<requirement>openhab.tp;filter:="(feature=jaxb)"</requirement>
+		<feature dependency="true">openhab.tp-jaxb</feature>
+		<requirement>openhab.tp;filter:="(feature=jax-ws)"</requirement>
+		<feature dependency="true">openhab.tp-jaxws</feature>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tr064/${project.version}</bundle>
+	</feature>
+</features>
