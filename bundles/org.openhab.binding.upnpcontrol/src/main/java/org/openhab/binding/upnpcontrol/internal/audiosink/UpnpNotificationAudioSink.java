@@ -22,8 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.upnpcontrol.internal.handler.UpnpRendererHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.library.types.PercentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,8 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class UpnpNotificationAudioSink extends UpnpAudioSink {
-
-    private final Logger logger = LoggerFactory.getLogger(UpnpNotificationAudioSink.class);
 
     public UpnpNotificationAudioSink(UpnpRendererHandler handler, AudioHTTPServer audioHTTPServer, String callbackUrl) {
         super(handler, audioHTTPServer, callbackUrl);

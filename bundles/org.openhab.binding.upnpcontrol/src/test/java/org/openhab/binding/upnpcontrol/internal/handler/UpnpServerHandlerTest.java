@@ -86,12 +86,6 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
             + "<dc:title>Evening Music</dc:title><upnp:class>object.container</upnp:class>"
             + "<upnp:writeStatus>UNKNOWN</upnp:writeStatus></container>" + RESPONSE_FOOTER;
 
-    private static final String SINGLE_MEDIA = RESPONSE_HEADER + "<item id=\"M1\" parentID=\"C11\" restricted=\"1\">"
-            + "<dc:title>Music_01</dc:title><upnp:class>object.item.audioItem</upnp:class>"
-            + "<dc:creator>Creator_1</dc:creator>"
-            + "<res protocolInfo=\"http-get:*:audio/mpeg:*\" size=\"8054458\" importUri=\"http://MediaServerContent_0/1/M1/\">http://MediaServerContent_0/1/M1/Test_1.mp3</res>"
-            + "<upnp:writeStatus>UNKNOWN</upnp:writeStatus></item>" + RESPONSE_FOOTER;
-
     private static final String DOUBLE_MEDIA = RESPONSE_HEADER + "<item id=\"M1\" parentID=\"C11\" restricted=\"1\">"
             + "<dc:title>Music_01</dc:title><upnp:class>object.item.audioItem</upnp:class>"
             + "<dc:creator>Creator_1</dc:creator>"

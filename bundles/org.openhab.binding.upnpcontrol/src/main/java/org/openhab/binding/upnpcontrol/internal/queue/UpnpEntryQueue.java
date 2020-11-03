@@ -56,7 +56,8 @@ public class UpnpEntryQueue {
     private volatile int currentIndex = -1;
 
     private class Playlist {
-        String name;
+        @SuppressWarnings("unused")
+        String name; // Used in serialization
         volatile Map<String, List<UpnpEntry>> masterList;
 
         Playlist(String name, Map<String, List<UpnpEntry>> masterList) {

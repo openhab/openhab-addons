@@ -289,8 +289,8 @@ public class UpnpServerHandler extends UpnpHandler {
             case UPNPRENDERER:
                 handleCommandUpnpRenderer(channelUID, command);
                 break;
-            case CURRENTID:
-                handleCommandCurrentId(channelUID, command);
+            case CURRENTTITLE:
+                handleCommandCurrentTitle(channelUID, command);
                 break;
             case BROWSE:
                 handleCommandBrowse(channelUID, command);
@@ -376,12 +376,13 @@ public class UpnpServerHandler extends UpnpHandler {
                     }
                     browseUp = true;
                 }
-                if (parentMap.containsKey(browseTarget)) {
-                    currentEntry = parentMap.get(browseTarget);
+                UpnpEntry entry = parentMap.get(browseTarget);
+                if (entry != null) {
+                    currentEntry = entry;
                 } else {
                     final String target = browseTarget;
                     synchronized (entries) {
-                        Optional<UpnpEntry> current = entries.stream().filter(entry -> target.equals(entry.getId()))
+                        Optional<UpnpEntry> current = entries.stream().filter(e -> target.equals(e.getId()))
                                 .findFirst();
                         if (current.isPresent()) {
                             currentEntry = current.get();
@@ -408,7 +409,7 @@ public class UpnpServerHandler extends UpnpHandler {
     private void handleCommandSearch(Command command) {
         if (command instanceof StringType) {
             String criteria = command.toString();
-            if (criteria != null) {
+            if (!criteria.isEmpty()) {
                 String searchContainer = "";
                 if (currentEntry.isContainer()) {
                     searchContainer = currentEntry.getId();
@@ -419,8 +420,9 @@ public class UpnpServerHandler extends UpnpHandler {
                     // Config option search from root or no parent found, so make it the root directory
                     searchContainer = DIRECTORY_ROOT;
                 }
-                if (parentMap.containsKey(searchContainer)) {
-                    currentEntry = parentMap.get(searchContainer);
+                UpnpEntry entry = parentMap.get(searchContainer);
+                if (entry != null) {
+                    currentEntry = entry;
                 } else {
                     // The real entry is not in the parentMap yet, so construct a default one
                     currentEntry = new UpnpEntry(searchContainer, searchContainer, DIRECTORY_ROOT, "object.container");
@@ -490,8 +492,9 @@ public class UpnpServerHandler extends UpnpHandler {
             UpnpEntry current = queue.get(0);
             if (current != null) {
                 parentId = current.getParentId();
-                if (parentMap.containsKey(parentId)) {
-                    currentEntry = parentMap.get(parentId);
+                UpnpEntry entry = parentMap.get(parentId);
+                if (entry != null) {
+                    currentEntry = entry;
                 } else {
                     // The real entry is not in the parentMap yet, so construct a default one
                     currentEntry = new UpnpEntry(parentId, parentId, DIRECTORY_ROOT, "object.container");
@@ -545,7 +548,10 @@ public class UpnpServerHandler extends UpnpHandler {
      */
     public void addRendererOption(String key) {
         synchronized (rendererStateOptionList) {
-            rendererStateOptionList.add(new StateOption(key, upnpRenderers.get(key).getThing().getLabel()));
+            UpnpRendererHandler handler = upnpRenderers.get(key);
+            if (handler != null) {
+                rendererStateOptionList.add(new StateOption(key, handler.getThing().getLabel()));
+            }
         }
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
         logger.debug("Renderer option {} added to {}", key, thing.getLabel());

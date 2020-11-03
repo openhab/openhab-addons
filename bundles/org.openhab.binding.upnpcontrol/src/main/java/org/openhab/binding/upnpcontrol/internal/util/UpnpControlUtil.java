@@ -109,7 +109,7 @@ public final class UpnpControlUtil implements UpnpControlBindingConfigurationLis
         File[] files = directory.listFiles((dir, name) -> name.toLowerCase().endsWith(extension));
 
         if (files == null) {
-            LOGGER.debug("Error reading {} files in {}", extension, path);
+            LOGGER.debug("No {} files in {}", extension, path);
             return Collections.emptyList();
         }
 

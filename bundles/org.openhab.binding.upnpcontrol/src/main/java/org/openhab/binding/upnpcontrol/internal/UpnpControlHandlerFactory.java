@@ -179,33 +179,46 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     }
 
     private void removeServer(String key) {
-        logger.debug("Removing media server handler for {} with UID {}", upnpServers.get(key).getThing().getLabel(),
-                upnpServers.get(key).getThing().getUID());
-        handlers.remove(upnpServers.remove(key).getUDN());
+        UpnpHandler handler = upnpServers.get(key);
+        if (handler == null) {
+            return;
+        }
+        logger.debug("Removing media server handler for {} with UID {}", handler.getThing().getLabel(),
+                handler.getThing().getUID());
+        handlers.remove(handler.getUDN());
+        upnpServers.remove(key);
     }
 
     private void removeRenderer(String key) {
-        logger.debug("Removing media renderer handler for {} with UID {}", upnpRenderers.get(key).getThing().getLabel(),
-                upnpRenderers.get(key).getThing().getUID());
+        UpnpHandler handler = upnpServers.get(key);
+        if (handler == null) {
+            return;
+        }
+        logger.debug("Removing media renderer handler for {} with UID {}", handler.getThing().getLabel(),
+                handler.getThing().getUID());
 
         if (audioSinkRegistrations.containsKey(key)) {
-            logger.debug("Removing audio sink registration for {}", upnpRenderers.get(key).getThing().getLabel());
+            logger.debug("Removing audio sink registration for {}", handler.getThing().getLabel());
             ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(key);
-            reg.unregister();
+            if (reg != null) {
+                reg.unregister();
+            }
             audioSinkRegistrations.remove(key);
         }
 
         String notificationKey = key + NOTIFICATION_AUDIOSINK_EXTENSION;
         if (audioSinkRegistrations.containsKey(notificationKey)) {
-            logger.debug("Removing notification audio sink registration for {}",
-                    upnpRenderers.get(key).getThing().getLabel());
+            logger.debug("Removing notification audio sink registration for {}", handler.getThing().getLabel());
             ServiceRegistration<AudioSink> reg = audioSinkRegistrations.get(notificationKey);
-            reg.unregister();
+            if (reg != null) {
+                reg.unregister();
+            }
             audioSinkRegistrations.remove(notificationKey);
         }
 
         upnpServers.forEach((thingId, value) -> value.removeRendererOption(key));
-        handlers.remove(upnpRenderers.remove(key).getUDN());
+        handlers.remove(handler.getUDN());
+        upnpRenderers.remove(key);
     }
 
     @Override
@@ -279,8 +292,9 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         }
 
         String udn = device.getIdentity().getUdn().getIdentifierString();
-        if (handlers.containsKey(udn)) {
-            handlers.get(udn).updateDeviceConfig(device);
+        UpnpHandler handler = handlers.get(udn);
+        if (handler != null) {
+            handler.updateDeviceConfig(device);
         }
     }
 

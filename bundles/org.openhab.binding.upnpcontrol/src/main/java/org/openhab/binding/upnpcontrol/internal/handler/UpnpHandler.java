@@ -438,7 +438,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     protected void invokeAction(String serviceId, String actionId, Map<String, String> inputs) {
         upnpScheduler.submit(() -> {
-            Map<String, String> result;
+            Map<String, @Nullable String> result;
             synchronized (invokeActionLock) {
                 if (logger.isDebugEnabled() && !"GetPositionInfo".equals(actionId)) {
                     // don't log position info refresh every second
@@ -476,9 +476,9 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * @param result
      * @return
      */
-    protected Map<String, String> preProcessInvokeActionResult(Map<String, String> inputs, @Nullable String service,
-            @Nullable String action, Map<String, String> result) {
-        Map<String, String> newResult = new HashMap<>();
+    protected Map<String, @Nullable String> preProcessInvokeActionResult(Map<String, String> inputs,
+            @Nullable String service, @Nullable String action, Map<String, @Nullable String> result) {
+        Map<String, @Nullable String> newResult = new HashMap<>();
         for (String variable : result.keySet()) {
             String newVariable = preProcessValueReceived(inputs, variable, result.get(variable), service, action);
             if (newVariable != null) {
@@ -520,7 +520,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
                 break;
             case "Source":
             case "Sink":
-                if (!((value == null) || (value.isEmpty()))) {
+                if (!value.isEmpty()) {
                     updateProtocolInfo(value);
                 }
                 break;
@@ -531,7 +531,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     private void onValueReceivedConnectionId(@Nullable String value) {
         try {
-            connectionId = Integer.parseInt(value);
+            connectionId = (value == null) ? 0 : Integer.parseInt(value);
         } catch (NumberFormatException e) {
             connectionId = 0;
         }
@@ -543,7 +543,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     private void onValueReceivedAVTransportId(@Nullable String value) {
         try {
-            avTransportId = Integer.parseInt(value);
+            avTransportId = (value == null) ? 0 : Integer.parseInt(value);
         } catch (NumberFormatException e) {
             avTransportId = 0;
         }
@@ -555,7 +555,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     private void onValueReceivedRcsId(@Nullable String value) {
         try {
-            rcsId = Integer.parseInt(value);
+            rcsId = (value == null) ? 0 : Integer.parseInt(value);
         } catch (NumberFormatException e) {
             rcsId = 0;
         }
