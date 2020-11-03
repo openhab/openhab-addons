@@ -162,7 +162,7 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     public synchronized void stopScan() {
         logger.trace("stopScan() called.");
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
+        // removeOlderResults(getTimestampOfLastScan());
         logger.trace("stopScan() done.");
     }
 

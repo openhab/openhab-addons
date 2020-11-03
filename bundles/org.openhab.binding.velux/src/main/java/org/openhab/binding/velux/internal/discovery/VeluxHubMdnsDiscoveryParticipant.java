@@ -14,6 +14,7 @@ package org.openhab.binding.velux.internal.discovery;
 
 import static org.openhab.binding.velux.internal.VeluxBindingConstants.THING_TYPE_BRIDGE;
 
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -70,12 +71,25 @@ public class VeluxHubMdnsDiscoveryParticipant implements MDNSDiscoveryParticipan
              */
             for (Inet4Address ipAddr : serviceInfo.getInet4Addresses()) {
                 ipv4 = ipAddr.getHostAddress();
-                logger.trace("getIpAddress(): gateway '{}' found on '{}' (resolved by mDNS)", svcName, ipv4);
+                logger.trace("getIpAddress(): gateway '{}' found on '{}' (implicitly resolved by mDNS)", svcName, ipv4);
                 return ipv4;
             }
 
             /*
-             * but if there was no ipv4 in serviceInfo, try to resolve the host using plain DNS
+             * otherwise try to resolve the host name using mDNS
+             */
+            try (MDnsHostnameResolver mdnsResolver = new MDnsHostnameResolver()) {
+                ipv4 = mdnsResolver.getIpAddress(svcName + ".local");
+                if (!"".equals(ipv4)) {
+                    logger.trace("getIpAddress(): gateway '{}' found on '{}' (by MDnsHostnameResolver)", svcName, ipv4);
+                    return ipv4;
+                }
+            } catch (IOException e) {
+                // fall through
+            }
+
+            /*
+             * finally try to resolve the host using plain DNS
              */
             try {
                 for (InetAddress ipAddr : InetAddress.getAllByName(svcName + "." + serviceInfo.getDomain())) {
