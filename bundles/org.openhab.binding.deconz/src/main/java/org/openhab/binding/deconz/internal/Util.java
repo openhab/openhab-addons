@@ -69,13 +69,8 @@ public class Util {
      */
     public static PercentType toPercentType(int val) {
         int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
-        if (scaledValue < 0 || scaledValue > 100) {
-            LOGGER.trace("received value {} (converted to {}). Coercing.", val, scaledValue);
-            scaledValue = scaledValue < 0 ? 0 : scaledValue;
-            scaledValue = scaledValue > 100 ? 100 : scaledValue;
-        }
-
-        return new PercentType(scaledValue);
+        return new PercentType(
+                Util.constrainToRange(scaledValue, PercentType.ZERO.intValue(), PercentType.HUNDRED.intValue()));
     }
 
     /**
