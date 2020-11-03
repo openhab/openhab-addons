@@ -413,15 +413,14 @@ public class OnvifConnection {
 
     /**
      * The {@link removeIPfromUrl} Will throw away all text before the cameras IP, also removes the IP and the PORT
-     * leaving just the
-     * URL.
+     * leaving just the URL.
      *
      * @author Matthew Skinner - Initial contribution
      */
     String removeIPfromUrl(String url) {
-        int index = url.indexOf(ipAddress);
+        int index = url.indexOf("//");
         if (index != -1) {// now remove the :port
-            index = url.indexOf("/", index + ipAddress.length());
+            index = url.indexOf("/", index + 2);
         }
         if (index == -1) {
             logger.debug("We hit an issue parsing url:{}", url);
