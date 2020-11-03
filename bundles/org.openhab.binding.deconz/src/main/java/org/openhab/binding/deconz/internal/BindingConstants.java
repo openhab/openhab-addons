@@ -13,6 +13,7 @@
 package org.openhab.binding.deconz.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -128,5 +129,7 @@ public class BindingConstants {
     public static final int ZCL_CT_INVALID = 65535; // 0xFFFF
 
     public static final double HUE_FACTOR = 65535 / 360.0;
-    public static final double BRIGHTNESS_FACTOR = 2.54;
+    public static final int BRIGHTNESS_MIN = 0;
+    public static final int BRIGHTNESS_MAX = 254;
+    public static final double BRIGHTNESS_FACTOR = BRIGHTNESS_MAX / PercentType.HUNDRED.intValue();
 }
