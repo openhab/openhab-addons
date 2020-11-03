@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"philips.light.sread1"
+			"philips.light.sread1",
+			"philips.light.sread2"
 		],
 		"channels": [
 			{
@@ -96,6 +97,19 @@
 					{
 						"command": "set_eyecare",
 						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bl",
+				"friendlyName": "Night Light",
+				"channel": "bl",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "enable_bl",
+						"parameterType": "NUMBER"
 					}
 				]
 			}
