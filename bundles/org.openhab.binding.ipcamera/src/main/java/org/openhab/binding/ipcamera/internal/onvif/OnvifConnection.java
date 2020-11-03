@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.LinkedList;
@@ -34,6 +35,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,6 +150,7 @@ public class OnvifConnection {
     private String ptzConfigToken = "000";
     private int presetTokenIndex = 0;
     private List<String> presetTokens = new LinkedList<>();
+    private List<String> presetNames = new LinkedList<>();
     private List<String> mediaProfileTokens = new LinkedList<>();
     private boolean ptzDevice = true;
 
@@ -327,7 +331,7 @@ public class OnvifConnection {
         } else if (message.contains("GetStatusResponse")) {
             processPTZLocation(message);
         } else if (message.contains("GetPresetsResponse")) {
-            presetTokens = listOfResults(message, "<tptz:Preset", "token=\"");
+            parsePresets(message);
         } else if (message.contains("GetConfigurationsResponse")) {
             sendPTZRequest(RequestType.GetPresets);
             ptzConfigToken = Helper.fetchXML(message, "PTZConfiguration", "token=\"");
@@ -736,6 +740,22 @@ public class OnvifConnection {
             }
         }
         return results;
+    }
+
+    void parsePresets(String message) {
+        List<StateOption> presets = new ArrayList<>();
+        int counter = 0;
+        presetTokens = listOfResults(message, "<tptz:Preset", "token=\"");
+        presetNames = listOfResults(message, "<tptz:Preset", "<tt:Name>");
+        if (presetTokens.size() != presetNames.size()) {
+            logger.warn("Camera did not report the same number of Tokens and Names for PTZ presets");
+            return;
+        }
+        for (String value : presetNames) {
+            presets.add(new StateOption(Integer.toString(counter++), value));
+        }
+        ipCameraHandler.stateDescriptionProvider
+                .setStateOptions(new ChannelUID(ipCameraHandler.getThing().getUID(), CHANNEL_GOTO_PRESET), presets);
     }
 
     void parseProfiles(String message) {

@@ -53,6 +53,7 @@ import org.openhab.binding.ipcamera.internal.HttpOnlyHandler;
 import org.openhab.binding.ipcamera.internal.InstarHandler;
 import org.openhab.binding.ipcamera.internal.IpCameraActions;
 import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
+import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProvider;
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.StreamServerHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
@@ -125,9 +126,10 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 @NonNullByDefault
 public class IpCameraHandler extends BaseThingHandler {
     public final Logger logger = LoggerFactory.getLogger(getClass());
+    public final IpCameraDynamicStateDescriptionProvider stateDescriptionProvider;
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(4);
     private GroupTracker groupTracker;
-    public CameraConfig cameraConfig;
+    public CameraConfig cameraConfig = new CameraConfig();
 
     // ChannelGroup is thread safe
     public final ChannelGroup mjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -392,9 +394,10 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    public IpCameraHandler(Thing thing, @Nullable String ipAddress, GroupTracker groupTracker) {
+    public IpCameraHandler(Thing thing, @Nullable String ipAddress, GroupTracker groupTracker,
+            IpCameraDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
-        cameraConfig = getConfigAs(CameraConfig.class);
+        this.stateDescriptionProvider = stateDescriptionProvider;
         if (ipAddress != null) {
             hostIp = ipAddress;
         } else {
