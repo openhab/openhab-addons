@@ -266,8 +266,15 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
             // send command (optionally), and receive response
             byte[] rxPacket;
             try {
-                if (sending && isProtocolTraceEnabled) {
-                    logger.info("sending command {}", txName);
+                if (sending) {
+                    if (isProtocolTraceEnabled) {
+                        logger.info("sending command {}", txName);
+                    }
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(loggerFmt, txName, "=> sending data =>", new Packet(txData));
+                    } else {
+                        logger.debug(loggerFmt, txName, "=> sending data length =>", txData.length);
+                    }
                 }
                 rxPacket = connection.io(this.bridgeInstance, sending ? txPacket : emptyPacket);
                 // message sent, don't send it again
