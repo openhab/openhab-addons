@@ -1,0 +1,79 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="urn:dslforum-org:device-1-0" targetNamespace="urn:dslforum-org:device-1-0">
+    <xs:element name="root" type="rootType"/>
+    <xs:complexType name="specVersionType">
+        <xs:sequence>
+            <xs:element type="xs:byte" name="major"/>
+            <xs:element type="xs:byte" name="minor"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="systemVersionType">
+        <xs:sequence>
+            <xs:element type="xs:short" name="HW"/>
+            <xs:element type="xs:short" name="Major"/>
+            <xs:element type="xs:byte" name="Minor"/>
+            <xs:element type="xs:byte" name="Patch"/>
+            <xs:element type="xs:int" name="Buildnumber"/>
+            <xs:element type="xs:string" name="Display"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="iconType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="mimetype"/>
+            <xs:element type="xs:byte" name="width"/>
+            <xs:element type="xs:byte" name="height"/>
+            <xs:element type="xs:byte" name="depth"/>
+            <xs:element type="xs:string" name="url"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="iconListType">
+        <xs:sequence>
+            <xs:element type="iconType" name="icon"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="serviceType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="serviceType"/>
+            <xs:element type="xs:string" name="serviceId"/>
+            <xs:element type="xs:string" name="controlURL"/>
+            <xs:element type="xs:string" name="eventSubURL"/>
+            <xs:element type="xs:string" name="SCPDURL"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="serviceListType">
+        <xs:sequence>
+            <xs:element type="serviceType" name="service" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="deviceType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="deviceType"/>
+            <xs:element type="xs:string" name="friendlyName"/>
+            <xs:element type="xs:string" name="manufacturer"/>
+            <xs:element type="xs:anyURI" name="manufacturerURL"/>
+            <xs:element type="xs:string" name="modelDescription"/>
+            <xs:element type="xs:string" name="modelName"/>
+            <xs:element type="xs:string" name="modelNumber"/>
+            <xs:element type="xs:anyURI" name="modelURL"/>
+            <xs:element type="xs:string" name="UDN"/>
+            <xs:element type="xs:string" name="UPC" minOccurs="0"/>
+            <xs:element type="iconListType" name="iconList" minOccurs="0"/>
+            <xs:element type="serviceListType" name="serviceList"/>
+            <xs:element type="deviceListType" name="deviceList" minOccurs="0"/>
+            <xs:element type="xs:anyURI" name="presentationURL" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="deviceListType">
+        <xs:sequence>
+            <xs:element type="deviceType" name="device" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="rootType">
+        <xs:sequence>
+            <xs:element type="specVersionType" name="specVersion"/>
+            <xs:element type="systemVersionType" name="systemVersion"/>
+            <xs:element type="deviceType" name="device"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
+
