@@ -430,8 +430,9 @@ public class WLedHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (pollingFuture != null) {
-            pollingFuture.cancel(true);
+        Future<?> future = pollingFuture;
+        if (future != null) {
+            future.cancel(true);
         }
     }
 
