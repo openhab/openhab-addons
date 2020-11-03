@@ -69,7 +69,8 @@ public class Util {
      */
     public static PercentType toPercentType(int val) {
         int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
-        return new PercentType(Util.constrainToRange(scaledValue, PercentType.ZERO.intValue(), PercentType.HUNDRED.intValue()));
+        return new PercentType(
+                Util.constrainToRange(scaledValue, PercentType.ZERO.intValue(), PercentType.HUNDRED.intValue()));
     }
 
     /**

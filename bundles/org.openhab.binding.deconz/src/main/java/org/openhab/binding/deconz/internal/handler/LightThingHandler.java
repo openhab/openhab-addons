@@ -149,11 +149,14 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                     newLightState.on = (command == OnOffType.ON);
                 } else if (command instanceof IncreaseDecreaseType) {
                     // try to get best value for current brightness
-                    int oldBri = currentBri != null ? currentBri : (Boolean.TRUE.equals(currentOn) ? BRIGHTNESS_MAX : BRIGHTNESS_MIN);
+                    int oldBri = currentBri != null ? currentBri
+                            : (Boolean.TRUE.equals(currentOn) ? BRIGHTNESS_MAX : BRIGHTNESS_MIN);
                     if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                        newLightState.bri = Util.constrainToRange(oldBri + BRIGHTNESS_DIM_STEP, BRIGHTNESS_MIN, BRIGHTNESS_MAX);
+                        newLightState.bri = Util.constrainToRange(oldBri + BRIGHTNESS_DIM_STEP, BRIGHTNESS_MIN,
+                                BRIGHTNESS_MAX);
                     } else {
-                        newLightState.bri = Util.constrainToRange(oldBri - BRIGHTNESS_DIM_STEP, BRIGHTNESS_MIN, BRIGHTNESS_MAX);
+                        newLightState.bri = Util.constrainToRange(oldBri - BRIGHTNESS_DIM_STEP, BRIGHTNESS_MIN,
+                                BRIGHTNESS_MAX);
                     }
                 } else if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
