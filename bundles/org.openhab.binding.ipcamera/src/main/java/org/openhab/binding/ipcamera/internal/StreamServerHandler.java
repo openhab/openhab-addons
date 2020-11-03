@@ -96,20 +96,16 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
                     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(httpRequest.uri());
                     switch (queryStringDecoder.path()) {
                         case "/ipcamera.m3u8":
-                            if (ipCameraHandler.ffmpegHLS != null) {
-                                if (!ipCameraHandler.ffmpegHLS.getIsAlive()) {
-                                    if (ipCameraHandler.ffmpegHLS != null) {
-                                        ipCameraHandler.ffmpegHLS.startConverting();
-                                    }
-                                }
-                            } else {
+                            Ffmpeg localFfmpeg = ipCameraHandler.ffmpegHLS;
+                            if (localFfmpeg == null) {
                                 ipCameraHandler.setupFfmpegFormat(FFmpegFormat.HLS);
-                            }
-                            if (ipCameraHandler.ffmpegHLS != null) {
-                                ipCameraHandler.ffmpegHLS.setKeepAlive(8);
+                            } else if (!localFfmpeg.getIsAlive()) {
+                                localFfmpeg.startConverting();
+                            } else {
+                                localFfmpeg.setKeepAlive(8);
                             }
                             sendFile(ctx, httpRequest.uri(), "application/x-mpegurl");
-                            ctx.close();
+                            // ctx.close();
                             return;
                         case "/ipcamera.mpd":
                             sendFile(ctx, httpRequest.uri(), "application/dash+xml");

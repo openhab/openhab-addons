@@ -119,8 +119,9 @@ public class Ffmpeg {
         public void run() {
             try {
                 process = Runtime.getRuntime().exec(commandArrayList.toArray(new String[commandArrayList.size()]));
-                if (process != null) {
-                    InputStream errorStream = process.getErrorStream();
+                Process localProcess = process;
+                if (localProcess != null) {
+                    InputStream errorStream = localProcess.getErrorStream();
                     InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
                     BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
                     String line = null;
@@ -191,8 +192,9 @@ public class Ffmpeg {
         if (ipCameraFfmpegThread.isAlive()) {
             logger.debug("Stopping ffmpeg {} now", format);
             running = false;
-            if (process != null) {
-                process.destroyForcibly();
+            Process localProcess = process;
+            if (localProcess != null) {
+                localProcess.destroyForcibly();
             }
             if (format.equals(FFmpegFormat.HLS)) {
                 if (keepAlive == -1) {

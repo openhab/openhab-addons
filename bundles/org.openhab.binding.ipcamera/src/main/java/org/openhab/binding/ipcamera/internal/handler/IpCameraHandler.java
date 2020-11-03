@@ -764,16 +764,13 @@ public class IpCameraHandler extends BaseThingHandler {
             mjpegChannelGroup.remove(ctx.channel());
             if (mjpegChannelGroup.isEmpty()) {
                 logger.debug("All ipcamera.mjpeg streams have stopped.");
-                if (mjpegUri.equals("ffmpeg")) {
-                    if (ffmpegMjpeg != null) {
-                        ffmpegMjpeg.stopConverting();
+                if (mjpegUri.equals("ffmpeg") || mjpegUri.isEmpty()) {
+                    Ffmpeg localMjpeg = ffmpegMjpeg;
+                    if (localMjpeg != null) {
+                        localMjpeg.stopConverting();
                     }
-                } else if (!mjpegUri.isEmpty()) {
-                    closeChannel(getTinyUrl(mjpegUri));
                 } else {
-                    if (ffmpegMjpeg != null) {
-                        ffmpegMjpeg.stopConverting();
-                    }
+                    closeChannel(getTinyUrl(mjpegUri));
                 }
             }
         }
@@ -912,8 +909,9 @@ public class IpCameraHandler extends BaseThingHandler {
                                 cameraConfig.getPassword());
                     }
                 }
-                if (ffmpegHLS != null) {
-                    ffmpegHLS.startConverting();
+                Ffmpeg localHLS = ffmpegHLS;
+                if (localHLS != null) {
+                    localHLS.startConverting();
                 }
                 break;
             case GIF:

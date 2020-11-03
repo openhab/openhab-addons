@@ -50,10 +50,11 @@ public class IpCameraActions implements ThingActions {
             @ActionInput(name = "filename", label = "Filename", description = "Name that the recording will have once created, don't include the .mp4.") @Nullable String filename,
             @ActionInput(name = "secondsToRecord", label = "Seconds to Record", description = "Enter a number of how many seconds to record.") int secondsToRecord) {
         logger.debug("Recording {}.mp4 for {} seconds.", filename, secondsToRecord);
-        if (filename == null && handler != null) {
-            handler.recordMp4("ipcamera", secondsToRecord);
-        } else if (handler != null && filename != null) {
-            handler.recordMp4(filename, secondsToRecord);
+        IpCameraHandler localHandler = handler;
+        if (filename == null && localHandler != null) {
+            localHandler.recordMp4("ipcamera", secondsToRecord);
+        } else if (localHandler != null && filename != null) {
+            localHandler.recordMp4(filename, secondsToRecord);
         }
     }
 
@@ -70,10 +71,11 @@ public class IpCameraActions implements ThingActions {
             @ActionInput(name = "filename", label = "Filename", description = "Name that the recording will have once created, don't include the .mp4.") @Nullable String filename,
             @ActionInput(name = "secondsToRecord", label = "Seconds to Record", description = "Enter a number of how many seconds to record.") int secondsToRecord) {
         logger.debug("Recording {}.gif for {} seconds.", filename, secondsToRecord);
-        if (filename == null && handler != null) {
-            handler.recordGif("ipcamera", secondsToRecord);
-        } else if (handler != null && filename != null) {
-            handler.recordGif(filename, secondsToRecord);
+        IpCameraHandler localHandler = handler;
+        if (filename == null && localHandler != null) {
+            localHandler.recordGif("ipcamera", secondsToRecord);
+        } else if (localHandler != null && filename != null) {
+            localHandler.recordGif(filename, secondsToRecord);
         }
     }
 
