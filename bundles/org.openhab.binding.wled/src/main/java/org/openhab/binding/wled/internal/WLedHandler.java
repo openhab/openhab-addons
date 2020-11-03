@@ -71,14 +71,13 @@ public class WLedHandler extends BaseThingHandler {
     private HSBType secondaryColor = new HSBType();
     private BigDecimal secondaryWhite = BigDecimal.ZERO;
     private boolean hasWhite = false;
-    private WLedConfiguration config;
+    private WLedConfiguration config = new WLedConfiguration();
 
     public WLedHandler(Thing thing, HttpClient httpClient,
             WledDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.httpClient = httpClient;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        config = getConfigAs(WLedConfiguration.class);
     }
 
     private void sendGetRequest(String url) {
