@@ -47,6 +47,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -187,7 +188,7 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
     }
 
     protected Unit<?> getSpeedUnit() {
-        return isImperial() ? ImperialUnits.MILES_PER_HOUR : SIUnits.KILOMETRE_PER_HOUR;
+        return isImperial() ? ImperialUnits.MILES_PER_HOUR : SmartHomeUnits.METRE_PER_SECOND;
     }
 
     protected Unit<?> getLengthUnit() {
