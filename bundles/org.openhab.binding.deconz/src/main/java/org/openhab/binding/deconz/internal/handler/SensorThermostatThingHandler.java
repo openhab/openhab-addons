@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
@@ -125,7 +127,8 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     @Override
     protected void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
         super.valueUpdated(channelUID, newConfig);
-        String mode = newConfig.mode != null ? newConfig.mode.name() : ThermostatMode.UNKNOWN.name();
+        ThermostatMode thermostatMode = newConfig.mode;
+        String mode = thermostatMode != null ? thermostatMode.name() : ThermostatMode.UNKNOWN.name();
         String channelID = channelUID.getId();
         switch (channelID) {
             case CHANNEL_HEATSETPOINT:
@@ -135,9 +138,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                 updateQuantityTypeChannel(channelID, newConfig.offset, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_THERMOSTAT_MODE:
-                if (mode != null) {
-                    updateState(channelUID, new StringType(mode));
-                }
+                updateState(channelUID, new StringType(mode));
                 break;
         }
     }
@@ -169,7 +170,13 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         if (command instanceof DecimalType) {
             newTemperature = ((DecimalType) command).toBigDecimal();
         } else if (command instanceof QuantityType) {
-            newTemperature = ((QuantityType) command).toUnit(CELSIUS).toBigDecimal();
+            @SuppressWarnings("unchecked")
+            QuantityType<Temperature> temperatureCelsius = ((QuantityType<Temperature>) command).toUnit(CELSIUS);
+            if (temperatureCelsius != null) {
+                newTemperature = temperatureCelsius.toBigDecimal();
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

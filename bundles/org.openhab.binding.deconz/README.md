@@ -81,7 +81,7 @@ Auto-discovered things do not need to be configured.
 All sensor-things have an additional `lastSeenPolling` parameter.
 Due to limitations in the API of deCONZ, the `lastSeen` channel (available some sensors) is only available when using polling.
 Allowed values are all positive integers, the unit is minutes.
-The default-value is `0`, which means "no polling at all".
+The default-value is `1440`, which means "once a day".
 
 `dimmablelight`, `extendedcolorlight`, `colorlight` and `colortemperaturelight` have an additional optional parameter `transitiontime`.
 The transition time is the time to move between two states and is configured in seconds.
