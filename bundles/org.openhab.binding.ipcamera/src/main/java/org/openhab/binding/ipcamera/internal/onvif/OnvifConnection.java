@@ -743,7 +743,7 @@ public class OnvifConnection {
 
     void parsePresets(String message) {
         List<StateOption> presets = new ArrayList<>();
-        int counter = 0;
+        int counter = 1;// Presets start at 1 not 0. HOME may be added to index 0.
         presetTokens = listOfResults(message, "<tptz:Preset", "token=\"");
         presetNames = listOfResults(message, "<tptz:Preset", "<tt:Name>");
         if (presetTokens.size() != presetNames.size()) {
