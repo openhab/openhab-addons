@@ -17,7 +17,6 @@ import static org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabTri
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -106,7 +105,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
 
                     updateStatus(ThingStatus.UNKNOWN);
 
-                    scheduler.schedule(() -> {
+                    scheduler.execute(() -> {
                         try {
                             RemoteopenhabThing thing = client.getRemoteThing(uid);
                             createTriggerChannels(thing, config.buildChannels);
@@ -118,7 +117,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                             logger.debug("{}", e.getMessage(), e);
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
-                    }, 0, TimeUnit.SECONDS);
+                    });
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
