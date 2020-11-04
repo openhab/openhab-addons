@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.touchwand.internal.TouchWandBindingConstants;
@@ -71,7 +70,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
     }
 
     @Override
-    public void activate(@Nullable Map<@NonNull String, @NonNull Object> configProperties) {
+    public void activate(@Nullable Map<String, Object> configProperties) {
         removeOlderResults(getTimestampOfLastScan());
         super.activate(configProperties);
     }

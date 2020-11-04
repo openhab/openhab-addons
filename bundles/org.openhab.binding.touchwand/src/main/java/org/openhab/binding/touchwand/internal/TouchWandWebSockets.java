@@ -17,7 +17,6 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.S
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
@@ -138,8 +137,8 @@ public class TouchWandWebSockets {
         public void onConnect(Session session) {
             logger.debug("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
             try {
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // need unique id
-                String controllerIdStr = String.format("{\"contId\": \"openhab%d\"}", timestamp.getTime());
+                long timestamp = System.currentTimeMillis(); // need unique id
+                String controllerIdStr = String.format("{\"contId\": \"openhab%d\"}", timestamp);
                 session.getRemote().sendString(controllerIdStr);
             } catch (IOException e) {
                 logger.warn("sendString : {}", e.getMessage());

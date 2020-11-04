@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.touchwand.internal.dto.TouchWandAlarmSensorCurrentStatus.Alarm;
-import org.openhab.binding.touchwand.internal.dto.TouchWandAlarmSensorCurrentStatus.bSensor;
+import org.openhab.binding.touchwand.internal.dto.TouchWandAlarmSensorCurrentStatus.BinarySensor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,6 +37,9 @@ import com.google.gson.JsonParseException;
  */
 @NonNullByDefault
 public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWandUnitDataAlarmSensor> {
+
+    static final Gson gson = new Gson();
+    static GsonBuilder builder = new GsonBuilder();
 
     @Override
     public TouchWandUnitDataAlarmSensor deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
@@ -63,7 +66,6 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
                 touchWandUnitDataAlarmSensor.setStatus(jsonObject.get("status").getAsString());
             }
 
-            GsonBuilder builder = new GsonBuilder();
             JsonObject currentStatusObj = builder.create().fromJson(jsonObject.get("currStatus").getAsJsonObject(),
                     JsonObject.class);
 
@@ -84,7 +86,6 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
                     }
                 }
 
-                final Gson gson = new Gson();
                 switch (keyName) {
                     case "batt":
                         touchWandUnitDataAlarmSensorCurrentStatus.setBatt(entry.getValue().getAsInt());
@@ -103,8 +104,8 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
                         touchWandUnitDataAlarmSensor.getCurrStatus().getSensorsStatus().add(sensor);
                         break;
                     case "bsensor":
-                        bSensor bsensor = gson.fromJson(entry.getValue().getAsJsonObject(), bSensor.class);
-                        TouchWandAlarmSensorCurrentStatus.bSensorEvent bsensorevent = touchWandUnitDataAlarmSensorCurrentStatus.new bSensorEvent();
+                        BinarySensor bsensor = gson.fromJson(entry.getValue().getAsJsonObject(), BinarySensor.class);
+                        TouchWandAlarmSensorCurrentStatus.BinarySensorEvent bsensorevent = touchWandUnitDataAlarmSensorCurrentStatus.new BinarySensorEvent();
                         bsensorevent.sensor = bsensor;
                         bsensorevent.sensorType = index;
                         touchWandUnitDataAlarmSensor.getCurrStatus().getbSensorsStatus().add(bsensorevent);

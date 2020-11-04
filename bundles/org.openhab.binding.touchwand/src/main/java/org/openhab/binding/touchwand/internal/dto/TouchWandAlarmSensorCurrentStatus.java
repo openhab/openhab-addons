@@ -31,7 +31,7 @@ public class TouchWandAlarmSensorCurrentStatus {
     private int batt;
     private List<Sensor> sensorsStatus = new ArrayList<Sensor>();
     private List<AlarmEvent> alarmsStatus = new ArrayList<AlarmEvent>();
-    private List<bSensorEvent> bSensorsStatus = new ArrayList<bSensorEvent>();
+    private List<BinarySensorEvent> bSensorsStatus = new ArrayList<BinarySensorEvent>();
 
     public void setBatt(Integer batt) {
         this.batt = batt;
@@ -49,11 +49,11 @@ public class TouchWandAlarmSensorCurrentStatus {
         return sensorsStatus;
     }
 
-    public List<bSensorEvent> getbSensorsStatus() {
+    public List<BinarySensorEvent> getbSensorsStatus() {
         return bSensorsStatus;
     }
 
-    public void setbSensorsStatus(List<bSensorEvent> bSensorsStatus) {
+    public void setbSensorsStatus(List<BinarySensorEvent> bSensorsStatus) {
         this.bSensorsStatus = bSensorsStatus;
     }
 
@@ -80,13 +80,13 @@ public class TouchWandAlarmSensorCurrentStatus {
         public float value;
     }
 
-    public class bSensor {
+    public class BinarySensor {
         public long ts;
         public boolean state;
     }
 
-    public class bSensorEvent {
+    public class BinarySensorEvent {
         public int sensorType;
-        public bSensor sensor = new bSensor();
+        public BinarySensor sensor = new BinarySensor();
     }
 }
