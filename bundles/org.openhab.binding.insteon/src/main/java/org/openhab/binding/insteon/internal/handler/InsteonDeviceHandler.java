@@ -162,7 +162,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             }
 
             String deviceConfig = config.getDeviceConfig();
-            Map<String, @Nullable Object> deviceConfigMap;
+            Map<String, Object> deviceConfigMap;
             if (deviceConfig != null) {
                 Type mapType = new TypeToken<Map<String, Object>>() {
                 }.getType();
@@ -368,7 +368,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        Map<String, @Nullable String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         Channel channel = getThing().getChannel(channelUID.getId());
 
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();

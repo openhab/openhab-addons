@@ -68,7 +68,7 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory
                     HarmonyDeviceHandler.SUPPORTED_THING_TYPES_UIDS.stream())
             .collect(Collectors.toSet());
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final HttpClient httpClient;
 
     private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();

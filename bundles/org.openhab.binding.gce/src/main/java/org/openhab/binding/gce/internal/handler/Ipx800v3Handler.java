@@ -83,7 +83,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     private @NonNullByDefault({}) StatusFileInterpreter statusFile;
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    private final Map<String, @Nullable PortData> portDatas = new HashMap<>();
+    private final Map<String, PortData> portDatas = new HashMap<>();
 
     private class LongPressEvaluator implements Runnable {
         private final ZonedDateTime referenceTime;
@@ -147,9 +147,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         parser = null;
 
         portDatas.values().stream().forEach(portData -> {
-            if (portData != null) {
-                portData.destroy();
-            }
+            portData.destroy();
         });
         super.dispose();
     }

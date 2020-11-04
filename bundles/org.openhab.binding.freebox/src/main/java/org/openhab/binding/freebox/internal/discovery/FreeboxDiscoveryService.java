@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freebox.internal.FreeboxBindingConstants;
 import org.openhab.binding.freebox.internal.FreeboxDataListener;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
@@ -73,7 +71,7 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+    public void activate(Map<String, Object> configProperties) {
         super.activate(configProperties);
         applyConfig(configProperties);
         bridgeHandler.registerDataListener(this);

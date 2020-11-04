@@ -49,7 +49,7 @@ public abstract class CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(CommandHandler.class);
     DeviceFeature feature; // related DeviceFeature
     @Nullable
-    Map<String, @Nullable String> parameters = new HashMap<>();
+    Map<String, String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -113,7 +113,7 @@ public abstract class CommandHandler {
     }
 
     protected int getMaxLightLevel(InsteonChannelConfiguration conf, int defaultLevel) {
-        Map<String, @Nullable String> params = conf.getParameters();
+        Map<String, String> params = conf.getParameters();
         if (conf.getFeature().contains("dimmer") && params.containsKey("dimmermax")) {
             String item = conf.getChannelName();
             String dimmerMax = params.get("dimmermax");
@@ -136,7 +136,7 @@ public abstract class CommandHandler {
         return defaultLevel;
     }
 
-    void setParameters(Map<String, @Nullable String> map) {
+    void setParameters(Map<String, String> map) {
         parameters = map;
     }
 
@@ -597,7 +597,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        void setParameters(Map<String, @Nullable String> params) {
+        void setParameters(Map<String, String> params) {
             super.setParameters(params);
             onCmd = (byte) getIntParameter("on", 0x2E);
             offCmd = (byte) getIntParameter("off", 0x2F);
@@ -877,8 +877,7 @@ public abstract class CommandHandler {
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends CommandHandler> T makeHandler(String name, Map<String, @Nullable String> params,
-            DeviceFeature f) {
+    public static <T extends CommandHandler> T makeHandler(String name, Map<String, String> params, DeviceFeature f) {
         String cname = CommandHandler.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);

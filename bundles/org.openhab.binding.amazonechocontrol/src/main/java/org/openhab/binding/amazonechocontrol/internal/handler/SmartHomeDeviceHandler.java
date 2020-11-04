@@ -70,8 +70,8 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     private @Nullable SmartHomeBaseDevice smartHomeBaseDevice;
     private final Gson gson;
-    private final Map<String, @Nullable HandlerBase> handlers = new HashMap<>();
-    private final Map<String, @Nullable JsonArray> lastStates = new HashMap<>();
+    private final Map<String, HandlerBase> handlers = new HashMap<>();
+    private final Map<String, JsonArray> lastStates = new HashMap<>();
 
     public SmartHomeDeviceHandler(Thing thing, Gson gson) {
         super(thing);
