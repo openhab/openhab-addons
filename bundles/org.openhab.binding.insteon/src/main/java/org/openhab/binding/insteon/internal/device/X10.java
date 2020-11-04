@@ -13,6 +13,7 @@
 package org.openhab.binding.insteon.internal.device;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -139,7 +140,7 @@ public class X10 {
         return 0xf;
     }
 
-    private static @Nullable <T, E> T findKey(HashMap<T, E> map, E value) {
+    private static @Nullable <T, E> T findKey(Map<T, E> map, E value) {
         for (Entry<T, E> entry : map.entrySet()) {
             if (value.equals(entry.getValue())) {
                 return entry.getKey();
@@ -151,11 +152,11 @@ public class X10 {
     /**
      * Map between 4-bit X10 code and the house code.
      */
-    private static HashMap<Integer, @Nullable String> houseCodeToString = new HashMap<>();
+    private static Map<Integer, String> houseCodeToString = new HashMap<>();
     /**
      * Map between 4-bit X10 code and the unit code.
      */
-    private static HashMap<Integer, @Nullable Integer> unitCodeToInt = new HashMap<>();
+    private static Map<Integer, Integer> unitCodeToInt = new HashMap<>();
 
     static {
         houseCodeToString.put(0x6, "A");

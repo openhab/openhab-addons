@@ -12,14 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.BINDING_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_AMAZON_MUSIC_PLAY_LIST_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_BLUETHOOTH_MAC;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_CHANNEL_PLAY_ON_DEVICE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_MUSIC_PROVIDER_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_PLAY_ALARM_SOUND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_START_COMMAND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.FLASH_BRIEFING_COMMAND_PREFIX;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,7 +112,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return null;
             }
 
-            ArrayList<StateOption> options = new ArrayList<>();
+            List<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
             for (PairedDevice device : pairedDeviceList) {
                 if (device == null) {
@@ -144,10 +137,9 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return null;
             }
 
-            ArrayList<StateOption> options = new ArrayList<>();
+            List<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
-            @Nullable
-            Map<String, @Nullable PlayList @Nullable []> playlistMap = playLists.playlists;
+            Map<String, PlayList @Nullable []> playlistMap = playLists.playlists;
             if (playlistMap != null) {
                 for (PlayList[] innerLists : playlistMap.values()) {
                     if (innerLists != null && innerLists.length > 0) {
@@ -174,7 +166,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return null;
             }
 
-            ArrayList<StateOption> options = new ArrayList<>();
+            List<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
 
             for (JsonNotificationSound notificationSound : notificationSounds) {
@@ -202,7 +194,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return null;
             }
 
-            ArrayList<StateOption> options = new ArrayList<>();
+            List<StateOption> options = new ArrayList<>();
             options.add(new StateOption("", ""));
             for (Device device : devices) {
                 final String value = device.serialNumber;
@@ -223,10 +215,9 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return null;
             }
 
-            ArrayList<StateOption> options = new ArrayList<>();
+            List<StateOption> options = new ArrayList<>();
             for (JsonMusicProvider musicProvider : musicProviders) {
-                @Nullable
-                List<@Nullable String> properties = musicProvider.supportedProperties;
+                List<String> properties = musicProvider.supportedProperties;
                 String providerId = musicProvider.id;
                 String displayName = musicProvider.displayName;
                 if (properties != null && properties.contains("Alexa.Music.PlaySearchPhrase")
@@ -252,7 +243,7 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 return null;
             }
 
-            ArrayList<StateOption> options = new ArrayList<>();
+            List<StateOption> options = new ArrayList<>();
             options.addAll(originalStateDescription.getOptions());
 
             for (FlashBriefingProfileHandler flashBriefing : flashbriefings) {

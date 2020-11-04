@@ -101,7 +101,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3,
             new NamedThreadFactory("RRD4j"));
 
-    private final Map<String, @Nullable RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
+    private final Map<String, RrdDefConfig> rrdDefs = new ConcurrentHashMap<>();
 
     private static final String DATASOURCE_STATE = "state";
 
@@ -109,7 +109,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(RRD4jPersistenceService.class);
 
-    private final Map<String, @Nullable ScheduledFuture<?>> scheduledJobs = new HashMap<>();
+    private final Map<String, ScheduledFuture<?>> scheduledJobs = new HashMap<>();
 
     protected final ItemRegistry itemRegistry;
 
@@ -344,7 +344,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private @Nullable RrdDefConfig getRrdDefConfig(String itemName) {
         RrdDefConfig useRdc = null;
-        for (Map.Entry<String, @Nullable RrdDefConfig> e : rrdDefs.entrySet()) {
+        for (Map.Entry<String, RrdDefConfig> e : rrdDefs.entrySet()) {
             // try to find special config
             RrdDefConfig rdc = e.getValue();
             if (rdc != null && rdc.appliesTo(itemName)) {

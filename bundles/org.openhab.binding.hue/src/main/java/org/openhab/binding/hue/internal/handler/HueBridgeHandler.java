@@ -99,14 +99,14 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
     private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
 
-    private final Map<String, @Nullable FullLight> lastLightStates = new ConcurrentHashMap<>();
-    private final Map<String, @Nullable FullSensor> lastSensorStates = new ConcurrentHashMap<>();
-    private final Map<String, @Nullable FullGroup> lastGroupStates = new ConcurrentHashMap<>();
+    private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
+    private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
+    private final Map<String, FullGroup> lastGroupStates = new ConcurrentHashMap<>();
 
     private @Nullable HueDeviceDiscoveryService discoveryService;
-    private final Map<String, @Nullable LightStatusListener> lightStatusListeners = new ConcurrentHashMap<>();
-    private final Map<String, @Nullable SensorStatusListener> sensorStatusListeners = new ConcurrentHashMap<>();
-    private final Map<String, @Nullable GroupStatusListener> groupStatusListeners = new ConcurrentHashMap<>();
+    private final Map<String, LightStatusListener> lightStatusListeners = new ConcurrentHashMap<>();
+    private final Map<String, SensorStatusListener> sensorStatusListeners = new ConcurrentHashMap<>();
+    private final Map<String, GroupStatusListener> groupStatusListeners = new ConcurrentHashMap<>();
 
     final ReentrantLock pollingLock = new ReentrantLock();
 
@@ -182,7 +182,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private final Runnable sensorPollingRunnable = new PollingRunnable() {
         @Override
         protected void doConnectedRun() throws IOException, ApiException {
-            Map<String, @Nullable FullSensor> lastSensorStateCopy = new HashMap<>(lastSensorStates);
+            Map<String, FullSensor> lastSensorStateCopy = new HashMap<>(lastSensorStates);
 
             final HueDeviceDiscoveryService discovery = discoveryService;
 
@@ -231,7 +231,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
 
         private void updateLights() throws IOException, ApiException {
-            Map<String, @Nullable FullLight> lastLightStateCopy = new HashMap<>(lastLightStates);
+            Map<String, FullLight> lastLightStateCopy = new HashMap<>(lastLightStates);
 
             List<FullLight> lights;
             if (ApiVersionUtils.supportsFullLights(hueBridge.getVersion())) {
@@ -279,7 +279,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
 
         private void updateGroups() throws IOException, ApiException {
-            Map<String, @Nullable FullGroup> lastGroupStateCopy = new HashMap<>(lastGroupStates);
+            Map<String, FullGroup> lastGroupStateCopy = new HashMap<>(lastGroupStates);
 
             List<FullGroup> groups = hueBridge.getGroups();
 
@@ -379,7 +379,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             notifyGroupSceneUpdate(scenes);
         }
 
-        private void setBridgeSceneChannelStateOptions(List<Scene> scenes, Map<String, @Nullable FullGroup> groups) {
+        private void setBridgeSceneChannelStateOptions(List<Scene> scenes, Map<String, FullGroup> groups) {
             Map<String, String> groupNames = groups.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getName()));
             List<StateOption> stateOptions = scenes.stream().map(scene -> scene.toStateOption(groupNames))

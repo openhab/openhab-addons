@@ -63,7 +63,7 @@ public class InsteonDevice {
     private InsteonAddress address = new InsteonAddress();
     private long pollInterval = -1L; // in milliseconds
     private @Nullable Driver driver = null;
-    private HashMap<String, @Nullable DeviceFeature> features = new HashMap<>();
+    private Map<String, DeviceFeature> features = new HashMap<>();
     private @Nullable String productKey = null;
     private volatile long lastTimePolled = 0L;
     private volatile long lastMsgReceived = 0L;
@@ -73,8 +73,8 @@ public class InsteonDevice {
     private long lastQueryTime = 0L;
     private boolean hasModemDBEntry = false;
     private DeviceStatus status = DeviceStatus.INITIALIZED;
-    private Map<Integer, @Nullable GroupMessageStateMachine> groupState = new HashMap<>();
-    private Map<String, @Nullable Object> deviceConfigMap = new HashMap<String, @Nullable Object>();
+    private Map<Integer, GroupMessageStateMachine> groupState = new HashMap<>();
+    private Map<String, Object> deviceConfigMap = new HashMap<String, Object>();
 
     /**
      * Constructor
@@ -121,7 +121,7 @@ public class InsteonDevice {
         return features.get(f);
     }
 
-    public HashMap<String, @Nullable DeviceFeature> getFeatures() {
+    public Map<String, DeviceFeature> getFeatures() {
         return features;
     }
 
@@ -194,11 +194,11 @@ public class InsteonDevice {
         }
     }
 
-    public void setDeviceConfigMap(Map<String, @Nullable Object> deviceConfigMap) {
+    public void setDeviceConfigMap(Map<String, Object> deviceConfigMap) {
         this.deviceConfigMap = deviceConfigMap;
     }
 
-    public Map<String, @Nullable Object> getDeviceConfigMap() {
+    public Map<String, Object> getDeviceConfigMap() {
         return deviceConfigMap;
     }
 
@@ -217,7 +217,7 @@ public class InsteonDevice {
     public boolean removeFeatureListener(String aItemName) {
         boolean removedListener = false;
         synchronized (features) {
-            for (Iterator<Entry<String, @Nullable DeviceFeature>> it = features.entrySet().iterator(); it.hasNext();) {
+            for (Iterator<Entry<String, DeviceFeature>> it = features.entrySet().iterator(); it.hasNext();) {
                 DeviceFeature f = it.next().getValue();
                 if (f.removeListener(aItemName)) {
                     removedListener = true;
@@ -584,7 +584,7 @@ public class InsteonDevice {
     @Override
     public String toString() {
         String s = address.toString();
-        for (Entry<String, @Nullable DeviceFeature> f : features.entrySet()) {
+        for (Entry<String, DeviceFeature> f : features.entrySet()) {
             s += "|" + f.getKey() + "->" + f.getValue().toString();
         }
         return s;

@@ -66,7 +66,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
     private final TACmiChannelTypeProvider channelTypeProvider;
-    private final Map<String, @Nullable ApiPageEntry> entries = new HashMap<>();
+    private final Map<String, ApiPageEntry> entries = new HashMap<>();
     private boolean online;
     private @Nullable String serverBase;
     private @Nullable URI schemaApiPage;
