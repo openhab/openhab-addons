@@ -34,7 +34,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vigicrues.internal.StationConfiguration;
 import org.openhab.binding.vigicrues.internal.api.ApiHandler;
-import org.openhab.binding.vigicrues.internal.api.ApiRequest;
 import org.openhab.binding.vigicrues.internal.api.VigiCruesException;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
 import org.openhab.binding.vigicrues.internal.dto.opendatasoft.OpenDatasoftResponse;
@@ -131,7 +130,7 @@ public class VigiCruesHandler extends BaseThingHandler {
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
 
         try {
-            HubEauResponse stationDetails = apiHandler.execute(new ApiRequest.DiscoverStations(config.id));
+            HubEauResponse stationDetails = apiHandler.DiscoverStations(config.id);
             stationDetails.stations.stream().findFirst().ifPresent(station -> {
                 PointType stationLocation = new PointType(
                         String.format(Locale.US, "%f,%f", station.latitudeStation, station.longitudeStation));
@@ -148,16 +147,16 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
 
         try {
-            CdStationHydro refineStation = apiHandler.execute(new ApiRequest.GetStationDetails(config.id));
-            if (refineStation.vigilanceCrues.cruesHistoriques.size() == 0) {
+            CdStationHydro refineStation = apiHandler.GetStationDetails(config.id);
+            if (refineStation.vigilanceCrues.cruesHistoriques == null) {
                 throw new VigiCruesException("No historical data available");
             }
             refineStation.vigilanceCrues.cruesHistoriques.stream()
                     .forEach(crue -> properties.putAll(crue.getDescription()));
             String codeTerritoire = refineStation.vigilanceCrues.pereBoitEntVigiCru.cdEntVigiCru;
-            TerEntVigiCru territoire = apiHandler.execute(new ApiRequest.GetTerritoire(codeTerritoire));
+            TerEntVigiCru territoire = apiHandler.GetTerritoire(codeTerritoire);
             for (VicANMoinsUn troncon : territoire.vicTerEntVigiCru.vicANMoinsUn) {
-                TronEntVigiCru detail = apiHandler.execute(new ApiRequest.GetTroncon(troncon.vicCdEntVigiCru));
+                TronEntVigiCru detail = apiHandler.GetTroncon(troncon.vicCdEntVigiCru);
                 if (detail.getSubLevels().anyMatch(s -> s.vicCdEntVigiCru.equalsIgnoreCase(config.id))) {
                     properties.put(TRONCON, troncon.vicCdEntVigiCru);
                     break;
@@ -174,7 +173,7 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
 
         try {
-            OpenDatasoftResponse measures = apiHandler.execute(new ApiRequest.GetMeasures(config.id));
+            OpenDatasoftResponse measures = apiHandler.GetMeasures(config.id);
             measures.getFirstRecord().ifPresent(field -> {
                 if (field.getHeight().isEmpty()) {
                     channels.removeIf(channel -> (channel.getUID().getId().contains(HEIGHT)));
@@ -214,7 +213,7 @@ public class VigiCruesHandler extends BaseThingHandler {
     private void updateAndPublish() {
         StationConfiguration config = getConfigAs(StationConfiguration.class);
         try {
-            OpenDatasoftResponse measures = apiHandler.execute(new ApiRequest.GetMeasures(config.id));
+            OpenDatasoftResponse measures = apiHandler.GetMeasures(config.id);
             measures.getFirstRecord().ifPresent(field -> {
                 field.getHeight().ifPresent(height -> {
                     updateQuantity(HEIGHT, height, SIUnits.METRE);
@@ -227,7 +226,7 @@ public class VigiCruesHandler extends BaseThingHandler {
                 field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
             });
             if (portion != null) {
-                InfoVigiCru status = apiHandler.execute(new ApiRequest.GetTronconStatus(portion));
+                InfoVigiCru status = apiHandler.GetTronconStatus(portion);
                 updateAlert(ALERT, status.vicInfoVigiCru.vicNivInfoVigiCru);
                 updateString(SHORT_COMMENT, status.vicInfoVigiCru.vicSituActuInfoVigiCru);
                 updateString(COMMENT, status.vicInfoVigiCru.vicQualifInfoVigiCru);

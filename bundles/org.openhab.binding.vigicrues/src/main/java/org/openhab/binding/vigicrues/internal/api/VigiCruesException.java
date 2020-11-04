@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.vigicrues.internal.api;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -25,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class VigiCruesException extends Exception {
     private static final long serialVersionUID = -7781683052187130152L;
 
-    public VigiCruesException(IOException e) {
+    public VigiCruesException(Throwable e) {
         super(null, e);
     }
 

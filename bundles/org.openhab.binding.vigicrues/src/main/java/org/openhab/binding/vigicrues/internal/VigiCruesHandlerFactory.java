@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.vigicrues.internal;
 
-import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 public class VigiCruesHandlerFactory extends BaseThingHandlerFactory {
     private final LocationProvider locationProvider;
     private final ApiHandler apiHandler;
-    private @Nullable ServiceRegistration<?> serviceReg;
+    private Map<String, @Nullable ServiceRegistration<DiscoveryService>> discoveryServiceRegistrations = new HashMap<>();
 
     @Activate
     public VigiCruesHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
@@ -58,9 +59,7 @@ public class VigiCruesHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        VigiCruesDiscoveryService discoveryService = new VigiCruesDiscoveryService(apiHandler, locationProvider);
-        serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<>());
+        registerAccountDiscoveryService();
     }
 
     @Override
@@ -71,14 +70,25 @@ public class VigiCruesHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         return supportsThingType(thingTypeUID) ? new VigiCruesHandler(thing, locationProvider, apiHandler) : null;
     }
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (serviceReg != null) {
-            serviceReg.unregister();
+        ServiceRegistration<DiscoveryService> serviceRegistration = discoveryServiceRegistrations.get(BINDING_ID);
+        if (serviceRegistration != null) {
+            serviceRegistration.unregister();
+        }
+    }
+
+    private void registerAccountDiscoveryService() {
+        if (!discoveryServiceRegistrations.containsKey(BINDING_ID)) {
+            VigiCruesDiscoveryService discoveryService = new VigiCruesDiscoveryService(apiHandler, locationProvider);
+
+            ServiceRegistration<DiscoveryService> serviceRegistration = this.bundleContext
+                    .registerService(DiscoveryService.class, discoveryService, null);
+
+            discoveryServiceRegistrations.put(BINDING_ID, serviceRegistration);
         }
     }
 }

@@ -17,7 +17,6 @@ import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vigicrues.internal.StationConfiguration;
 import org.openhab.binding.vigicrues.internal.api.ApiHandler;
-import org.openhab.binding.vigicrues.internal.api.ApiRequest;
 import org.openhab.binding.vigicrues.internal.api.VigiCruesException;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -55,7 +54,7 @@ public class VigiCruesDiscoveryService extends AbstractDiscoveryService {
         PointType location = locationProvider.getLocation();
         if (location != null) {
             try {
-                HubEauResponse response = apiHandler.execute(new ApiRequest.DiscoverStations(location, searchRange));
+                HubEauResponse response = apiHandler.DiscoverStations(location, searchRange);
                 if (response.count > 0) {
                     response.stations.stream().filter(station -> station.enService).forEach(station -> {
                         thingDiscovered(DiscoveryResultBuilder
