@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public abstract class PollHandler {
     private static final Logger logger = LoggerFactory.getLogger(PollHandler.class);
     DeviceFeature feature;
-    Map<String, @Nullable String> parameters = new HashMap<>();
+    Map<String, String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -57,7 +57,7 @@ public abstract class PollHandler {
      */
     public abstract @Nullable Msg makeMsg(InsteonDevice device);
 
-    public void setParameters(Map<String, @Nullable String> hm) {
+    public void setParameters(Map<String, String> hm) {
         parameters = hm;
     }
 

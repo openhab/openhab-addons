@@ -70,7 +70,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
     }
 
     @Override
-    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    public void activate(@Nullable Map<String, Object> configProperties) {
         removeOlderResults(getTimestampOfLastScan());
         super.activate(configProperties);
     }

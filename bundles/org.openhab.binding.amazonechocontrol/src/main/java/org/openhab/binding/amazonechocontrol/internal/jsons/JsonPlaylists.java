@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonPlaylists {
 
-    public @Nullable Map<String, @Nullable PlayList @Nullable []> playlists;
+    public @Nullable Map<String, PlayList @Nullable []> playlists;
 
     public static class PlayList {
         public @Nullable String playlistId;

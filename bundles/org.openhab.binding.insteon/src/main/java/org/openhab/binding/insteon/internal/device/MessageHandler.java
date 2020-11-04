@@ -55,7 +55,7 @@ public abstract class MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
     protected DeviceFeature feature;
-    protected Map<String, @Nullable String> parameters = new HashMap<>();
+    protected Map<String, String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -324,7 +324,7 @@ public abstract class MessageHandler {
      *
      * @param map the parameter map for this message handler
      */
-    public void setParameters(Map<String, @Nullable String> map) {
+    public void setParameters(Map<String, String> map) {
         parameters = map;
     }
 
@@ -457,7 +457,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void setParameters(Map<String, @Nullable String> params) {
+        public void setParameters(Map<String, String> params) {
             super.setParameters(params);
             onCmd = getIntParameter("on", 0x2E);
             offCmd = getIntParameter("off", 0x2F);
@@ -1342,7 +1342,7 @@ public abstract class MessageHandler {
      * @param f the feature for which to create the handler
      * @return the handler which was created
      */
-    public static @Nullable <T extends MessageHandler> T makeHandler(String name, Map<String, @Nullable String> params,
+    public static @Nullable <T extends MessageHandler> T makeHandler(String name, Map<String, String> params,
             DeviceFeature f) {
         String cname = MessageHandler.class.getName() + "$" + name;
         try {

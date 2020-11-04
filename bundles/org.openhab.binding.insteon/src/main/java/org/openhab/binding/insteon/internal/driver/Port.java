@@ -152,7 +152,7 @@ public class Port {
      */
     public void clearModemDB() {
         logger.debug("clearing modem db!");
-        Map<InsteonAddress, @Nullable ModemDBEntry> dbes = getDriver().lockModemDBEntries();
+        Map<InsteonAddress, ModemDBEntry> dbes = getDriver().lockModemDBEntries();
         for (InsteonAddress addr : dbes.keySet()) {
             if (!dbes.get(addr).isModem()) {
                 dbes.remove(addr);

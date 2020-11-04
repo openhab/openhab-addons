@@ -151,8 +151,8 @@ public class ModemDBBuilder implements MsgListener {
     private void logModemDB() {
         try {
             logger.debug("MDB ------- start of modem link records ------------------");
-            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
-            for (Entry<InsteonAddress, @Nullable ModemDBEntry> db : dbes.entrySet()) {
+            Map<InsteonAddress, ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
+            for (Entry<InsteonAddress, ModemDBEntry> db : dbes.entrySet()) {
                 List<Msg> lrs = db.getValue().getLinkRecords();
                 for (Msg m : lrs) {
                     int recordFlags = m.getByte("RecordFlags") & 0xff;
@@ -177,7 +177,7 @@ public class ModemDBBuilder implements MsgListener {
 
     public void updateModemDB(InsteonAddress linkAddr, Port port, @Nullable Msg m, boolean isModem) {
         try {
-            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
+            Map<InsteonAddress, ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
             ModemDBEntry dbe = dbes.get(linkAddr);
             if (dbe == null) {
                 dbe = new ModemDBEntry(linkAddr, isModem);

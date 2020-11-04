@@ -249,8 +249,7 @@ public class InsteonBinding {
         handler.updateState(channelUID, state);
     }
 
-    public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey,
-            Map<String, @Nullable Object> deviceConfigMap) {
+    public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey, Map<String, Object> deviceConfigMap) {
         DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
         InsteonDevice dev = InsteonDevice.makeDevice(dt);
         dev.setAddress(addr);
@@ -296,7 +295,7 @@ public class InsteonBinding {
     private int checkIfInModemDatabase(InsteonDevice dev) {
         try {
             InsteonAddress addr = dev.getAddress();
-            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+            Map<InsteonAddress, ModemDBEntry> dbes = driver.lockModemDBEntries();
             if (dbes.containsKey(addr)) {
                 if (!dev.hasModemDBEntry()) {
                     logger.debug("device {} found in the modem database and {}.", addr, getLinkInfo(dbes, addr, true));
@@ -316,7 +315,7 @@ public class InsteonBinding {
     public Map<String, String> getDatabaseInfo() {
         try {
             Map<String, String> databaseInfo = new HashMap<>();
-            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+            Map<InsteonAddress, ModemDBEntry> dbes = driver.lockModemDBEntries();
             for (InsteonAddress addr : dbes.keySet()) {
                 String a = addr.toString();
                 databaseInfo.put(a, a + ": " + getLinkInfo(dbes, addr, false));
@@ -360,7 +359,7 @@ public class InsteonBinding {
         return (dev);
     }
 
-    private String getLinkInfo(Map<InsteonAddress, @Nullable ModemDBEntry> dbes, InsteonAddress a, boolean prefix) {
+    private String getLinkInfo(Map<InsteonAddress, ModemDBEntry> dbes, InsteonAddress a, boolean prefix) {
         ModemDBEntry dbe = dbes.get(a);
         List<Byte> controls = dbe.getControls();
         List<Byte> responds = dbe.getRespondsTo();
@@ -454,7 +453,7 @@ public class InsteonBinding {
         public void driverCompletelyInitialized() {
             List<String> missing = new ArrayList<>();
             try {
-                Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+                Map<InsteonAddress, ModemDBEntry> dbes = driver.lockModemDBEntries();
                 logger.debug("modem database has {} entries!", dbes.size());
                 if (dbes.isEmpty()) {
                     logger.warn("the modem link database is empty!");

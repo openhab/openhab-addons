@@ -131,7 +131,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
                 || HW_DISCOVERABLE_DEVICE_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
     // Marked as Nullable only to fix incorrect redundant null check complaints after adding null annotations
 
     @Override

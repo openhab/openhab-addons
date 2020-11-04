@@ -13,6 +13,7 @@
 package org.openhab.binding.insteon.internal.device;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,7 +42,7 @@ public class RequestQueueManager {
     private final Logger logger = LoggerFactory.getLogger(RequestQueueManager.class);
     private @Nullable Thread queueThread = null;
     private PriorityQueue<RequestQueue> requestQueues = new PriorityQueue<>();
-    private HashMap<InsteonDevice, @Nullable RequestQueue> requestQueueHash = new HashMap<>();
+    private Map<InsteonDevice, RequestQueue> requestQueueHash = new HashMap<>();
     private boolean keepRunning = true;
 
     private RequestQueueManager() {

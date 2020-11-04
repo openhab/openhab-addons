@@ -128,12 +128,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private final Object stateLock = new Object();
     private final Object jobLock = new Object();
 
-    private final Map<String, @Nullable String> stateMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable SonosZonePlayerState savedState;
 
-    private Map<String, @Nullable Boolean> subscriptionState = new HashMap<>();
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     /**
      * Thing handler instance of the coordinator speaker used for control delegation
@@ -405,7 +405,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
             // pre-process some variables, eg XML processing
             if (service.equals("AVTransport") && variable.equals("LastChange")) {
-                Map<String, @Nullable String> parsedValues = SonosXMLParser.getAVTransportFromXML(value);
+                Map<String, String> parsedValues = SonosXMLParser.getAVTransportFromXML(value);
                 for (String parsedValue : parsedValues.keySet()) {
                     // Update the transport state after the update of the media information
                     // to not break the notification mechanism
@@ -427,7 +427,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             }
 
             if (service.equals("RenderingControl") && variable.equals("LastChange")) {
-                Map<String, @Nullable String> parsedValues = SonosXMLParser.getRenderingControlFromXML(value);
+                Map<String, String> parsedValues = SonosXMLParser.getRenderingControlFromXML(value);
                 for (String parsedValue : parsedValues.keySet()) {
                     onValueReceived(parsedValue, parsedValues.get(parsedValue), "RenderingControl");
                 }
@@ -957,8 +957,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     protected void updateRunningAlarmProperties() {
-        Map<String, @Nullable String> result = service.invokeAction(this, "AVTransport", "GetRunningAlarmProperties",
-                null);
+        Map<String, String> result = service.invokeAction(this, "AVTransport", "GetRunningAlarmProperties", null);
 
         String alarmID = result.get("AlarmID");
         String loggedStartTime = result.get("LoggedStartTime");
@@ -1327,7 +1326,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         inputs.put("RequestedCount", Integer.toString(200));
         inputs.put("SortCriteria", "");
 
-        Map<String, @Nullable String> result = service.invokeAction(this, "ContentDirectory", "Browse", inputs);
+        Map<String, String> result = service.invokeAction(this, "ContentDirectory", "Browse", inputs);
 
         String initialResult = result.get("Result");
         if (initialResult == null) {
@@ -1369,7 +1368,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         inputs.put("RequestedCount", "1");
         inputs.put("SortCriteria", "");
 
-        Map<String, @Nullable String> result = service.invokeAction(this, "ContentDirectory", "Browse", inputs);
+        Map<String, String> result = service.invokeAction(this, "ContentDirectory", "Browse", inputs);
 
         return getResultEntry(result, "TotalMatches", type, "dc:title");
     }
@@ -1384,7 +1383,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      *
      * @return 0 as long or the value corresponding to the requiredKey if found
      */
-    private Long getResultEntry(Map<String, @Nullable String> resultInput, String requestedKey, String entriesType,
+    private Long getResultEntry(Map<String, String> resultInput, String requestedKey, String entriesType,
             String entriesFilter) {
         long result = 0;
 
@@ -2090,7 +2089,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public List<SonosAlarm> getCurrentAlarmList() {
-        Map<String, @Nullable String> result = service.invokeAction(this, "AlarmClock", "ListAlarms", null);
+        Map<String, String> result = service.invokeAction(this, "AlarmClock", "ListAlarms", null);
 
         for (String variable : result.keySet()) {
             this.onValueReceived(variable, result.get(variable), "AlarmClock");
@@ -2822,8 +2821,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private @Nullable List<SonosMusicService> getAvailableMusicServices() {
         if (musicServices == null) {
-            Map<String, @Nullable String> result = service.invokeAction(this, "MusicServices", "ListAvailableServices",
-                    null);
+            Map<String, String> result = service.invokeAction(this, "MusicServices", "ListAvailableServices", null);
 
             String serviceList = result.get("AvailableServiceDescriptorList");
             if (serviceList != null) {
