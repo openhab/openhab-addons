@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class InsteonDevice {
     private final Logger logger = LoggerFactory.getLogger(InsteonDevice.class);
 
@@ -134,6 +133,7 @@ public class InsteonDevice {
     }
 
     public boolean hasProductKey(String key) {
+        String productKey = this.productKey;
         return productKey != null && productKey.equals(key);
     }
 
@@ -275,7 +275,12 @@ public class InsteonDevice {
                 mrequestQueue.add(e);
             }
         }
-        RequestQueueManager.instance().addQueue(this, now + delay);
+        RequestQueueManager instance = RequestQueueManager.instance();
+        if (instance != null) {
+            instance.addQueue(this, now + delay);
+        } else {
+            logger.warn("request queue manager is null");
+        }
 
         if (!l.isEmpty()) {
             lastTimePolled = now;
@@ -440,6 +445,7 @@ public class InsteonDevice {
             if (mrequestQueue.isEmpty()) {
                 return 0L;
             }
+            DeviceFeature featureQueried = this.featureQueried;
             if (featureQueried != null) {
                 // A feature has been queried, but
                 // the response has not been digested yet.
@@ -453,6 +459,9 @@ public class InsteonDevice {
                 }
             }
             QEntry qe = mrequestQueue.poll(); // take it off the queue!
+            if (qe == null) {
+                return 0L;
+            }
             if (!qe.getMsg().isBroadcast()) {
                 logger.debug("qe taken off direct: {} {}", qe.getFeature(), qe.getMsg());
                 lastQueryTime = timeNow;
@@ -505,14 +514,22 @@ public class InsteonDevice {
             m.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
         logger.trace("enqueing direct message with delay {}", delay);
-        RequestQueueManager.instance().addQueue(this, now + delay);
+        RequestQueueManager instance = RequestQueueManager.instance();
+        if (instance != null) {
+            instance.addQueue(this, now + delay);
+        } else {
+            logger.warn("request queue manger instance is null");
+        }
     }
 
     private void writeMessage(Msg m) throws IOException {
-        driver.writeMessage(m);
+        Driver driver = this.driver;
+        if (driver != null) {
+            driver.writeMessage(m);
+        }
     }
 
-    private void instantiateFeatures(@Nullable DeviceType dt) {
+    private void instantiateFeatures(DeviceType dt) {
         for (Entry<String, String> fe : dt.getFeatures().entrySet()) {
             DeviceFeature f = DeviceFeature.makeDeviceFeature(fe.getValue());
             if (f == null) {
@@ -596,7 +613,7 @@ public class InsteonDevice {
      * @param dt device type after which to model the device
      * @return newly created device
      */
-    public static InsteonDevice makeDevice(@Nullable DeviceType dt) {
+    public static InsteonDevice makeDevice(DeviceType dt) {
         InsteonDevice dev = new InsteonDevice();
         dev.instantiateFeatures(dt);
         return dev;
@@ -607,7 +624,6 @@ public class InsteonDevice {
      *
      * @author Bernd Pfrommer - Initial contribution
      */
-    @NonNullByDefault
     public static class QEntry implements Comparable<QEntry> {
         private DeviceFeature feature;
         private Msg msg;

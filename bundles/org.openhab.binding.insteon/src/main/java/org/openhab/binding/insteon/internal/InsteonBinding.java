@@ -106,15 +106,14 @@ import org.xml.sax.SAXException;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings({ "null", "unused" })
 public class InsteonBinding {
     private static final int DEAD_DEVICE_COUNT = 10;
 
     private final Logger logger = LoggerFactory.getLogger(InsteonBinding.class);
 
     private Driver driver;
-    private ConcurrentHashMap<InsteonAddress, InsteonDevice> devices = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, InsteonChannelConfiguration> bindingConfigs = new ConcurrentHashMap<>();
+    private Map<InsteonAddress, InsteonDevice> devices = new ConcurrentHashMap<>();
+    private Map<String, InsteonChannelConfiguration> bindingConfigs = new ConcurrentHashMap<>();
     private PortListener portListener = new PortListener();
     private int devicePollIntervalMilliseconds = 300000;
     private int deadDeviceTimeout = -1;
@@ -123,8 +122,8 @@ public class InsteonBinding {
     private int x10HouseUnit = -1;
     private InsteonNetworkHandler handler;
 
-    public InsteonBinding(InsteonNetworkHandler handler, @Nullable InsteonNetworkConfiguration config,
-            @Nullable SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
+    public InsteonBinding(InsteonNetworkHandler handler, InsteonNetworkConfiguration config,
+            SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
         this.handler = handler;
 
         String port = config.getPort();
@@ -142,8 +141,13 @@ public class InsteonBinding {
         String additionalDevices = config.getAdditionalDevices();
         if (additionalDevices != null) {
             try {
-                DeviceTypeLoader.instance().loadDeviceTypesXML(additionalDevices);
-                logger.debug("read additional device definitions from {}", additionalDevices);
+                DeviceTypeLoader instance = DeviceTypeLoader.instance();
+                if (instance != null) {
+                    instance.loadDeviceTypesXML(additionalDevices);
+                    logger.debug("read additional device definitions from {}", additionalDevices);
+                } else {
+                    logger.warn("device type loader instance is null");
+                }
             } catch (ParserConfigurationException | SAXException | IOException e) {
                 logger.warn("error reading additional devices from {}", additionalDevices, e);
             }
@@ -201,6 +205,10 @@ public class InsteonBinding {
 
         InsteonAddress address = bindingConfig.getAddress();
         InsteonDevice dev = getDevice(address);
+        if (dev == null) {
+            logger.warn("device for address {} is null", address);
+            return;
+        }
         @Nullable
         DeviceFeature f = dev.getFeature(bindingConfig.getFeature());
         if (f == null || f.isFeatureGroup()) {
@@ -209,7 +217,7 @@ public class InsteonBinding {
             Collections.sort(names);
             for (String name : names) {
                 DeviceFeature feature = dev.getFeature(name);
-                if (!feature.isFeatureGroup()) {
+                if (feature != null && !feature.isFeatureGroup()) {
                     if (buf.length() > 0) {
                         buf.append(", ");
                     }
@@ -249,8 +257,16 @@ public class InsteonBinding {
         handler.updateState(channelUID, state);
     }
 
-    public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey, Map<String, Object> deviceConfigMap) {
-        DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
+    public @Nullable InsteonDevice makeNewDevice(InsteonAddress addr, String productKey,
+            Map<String, Object> deviceConfigMap) {
+        DeviceTypeLoader instance = DeviceTypeLoader.instance();
+        if (instance == null) {
+            return null;
+        }
+        DeviceType dt = instance.getDeviceType(productKey);
+        if (dt == null) {
+            return null;
+        }
         InsteonDevice dev = InsteonDevice.makeDevice(dt);
         dev.setAddress(addr);
         dev.setProductKey(productKey);
@@ -361,10 +377,16 @@ public class InsteonBinding {
 
     private String getLinkInfo(Map<InsteonAddress, ModemDBEntry> dbes, InsteonAddress a, boolean prefix) {
         ModemDBEntry dbe = dbes.get(a);
+        if (dbe == null) {
+            return "";
+        }
         List<Byte> controls = dbe.getControls();
         List<Byte> responds = dbe.getRespondsTo();
 
         Port port = dbe.getPort();
+        if (port == null) {
+            return "";
+        }
         String deviceName = port.getDeviceName();
         String s = deviceName.startsWith("/hub") ? "hub" : "plm";
         StringBuilder buf = new StringBuilder();
@@ -433,7 +455,6 @@ public class InsteonBinding {
      * Handles messages that come in from the ports.
      * Will only process one message at a time.
      */
-    @NonNullByDefault
     private class PortListener implements MsgListener, DriverListener {
         @Override
         public void msg(Msg msg) {

@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This class has utilities related to the X10 protocol.
@@ -26,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class X10 {
     /**
      * Enumerates the X10 command codes.
@@ -120,8 +118,12 @@ public class X10 {
      * @return coded house byte
      */
     public static int houseStringToCode(String s) {
-        Integer i = findKey(houseCodeToString, s);
-        return (i == null) ? 0xf : i;
+        for (Entry<Integer, String> entry : houseCodeToString.entrySet()) {
+            if (s.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return 0xf;
     }
 
     /**
@@ -132,21 +134,15 @@ public class X10 {
      */
     public static int unitStringToCode(String s) {
         try {
-            Integer key = Integer.parseInt(s);
-            Integer i = findKey(unitCodeToInt, key);
-            return i;
+            int i = Integer.parseInt(s);
+            for (Entry<Integer, Integer> entry : unitCodeToInt.entrySet()) {
+                if (i == entry.getValue()) {
+                    return entry.getKey();
+                }
+            }
         } catch (NumberFormatException e) {
         }
         return 0xf;
-    }
-
-    private static @Nullable <T, E> T findKey(Map<T, E> map, E value) {
-        for (Entry<T, E> entry : map.entrySet()) {
-            if (value.equals(entry.getValue())) {
-                return entry.getKey();
-            }
-        }
-        return null;
     }
 
     /**
