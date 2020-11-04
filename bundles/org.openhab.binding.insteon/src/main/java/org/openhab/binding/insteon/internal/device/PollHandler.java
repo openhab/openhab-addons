@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public abstract class PollHandler {
     private static final Logger logger = LoggerFactory.getLogger(PollHandler.class);
     DeviceFeature feature;
@@ -87,7 +86,6 @@ public abstract class PollHandler {
      * most query messages. Provide the suitable parameters in
      * the device features file.
      */
-    @NonNullByDefault
     public static class FlexPollHandler extends PollHandler {
         FlexPollHandler(DeviceFeature f) {
             super(f);
@@ -124,7 +122,6 @@ public abstract class PollHandler {
         }
     }
 
-    @NonNullByDefault
     public static class NoPollHandler extends PollHandler {
         NoPollHandler(DeviceFeature f) {
             super(f);
@@ -144,12 +141,13 @@ public abstract class PollHandler {
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends PollHandler> T makeHandler(@Nullable HandlerEntry ph, DeviceFeature f) {
+    public static <T extends PollHandler> T makeHandler(HandlerEntry ph, DeviceFeature f) {
         String cname = PollHandler.class.getName() + "$" + ph.getName();
         try {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
+            @Nullable
             T phc = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
             phc.setParameters(ph.getParams());
             return phc;

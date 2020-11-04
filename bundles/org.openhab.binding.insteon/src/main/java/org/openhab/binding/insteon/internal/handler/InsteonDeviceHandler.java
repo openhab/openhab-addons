@@ -34,12 +34,14 @@ import org.openhab.binding.insteon.internal.device.DeviceFeature;
 import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -56,7 +58,6 @@ import com.google.gson.reflect.TypeToken;
  * @author Rob Nielsen - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class InsteonDeviceHandler extends BaseThingHandler {
 
     private static final Set<String> ALL_CHANNEL_IDS = Collections.unmodifiableSet(Stream.of(
@@ -142,6 +143,14 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 return;
             }
 
+            InsteonDeviceConfiguration config = this.config;
+            if (config == null) {
+                String msg = "Insteon device configuration is null.";
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                return;
+            }
             String address = config.getAddress();
             if (!InsteonAddress.isValid(address)) {
                 String msg = "Unable to start Insteon device, the insteon or X10 address '" + address
@@ -152,8 +161,17 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 return;
             }
 
+            DeviceTypeLoader instance = DeviceTypeLoader.instance();
+            if (instance == null) {
+                String msg = "Device type loader is null.";
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                return;
+            }
+
             String productKey = config.getProductKey();
-            if (DeviceTypeLoader.instance().getDeviceType(productKey) == null) {
+            if (instance.getDeviceType(productKey) == null) {
                 String msg = "Unable to start Insteon device, invalid product key '" + productKey + "'.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
@@ -190,6 +208,23 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             }
 
             InsteonDevice device = insteonBinding.makeNewDevice(insteonAddress, productKey, deviceConfigMap);
+            if (device == null) {
+                String msg = "Unable to create a device with the product key '" + productKey + "' with the address'"
+                        + address + "'.";
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                return;
+            }
+
+            ThingHandlerCallback callback = getCallback();
+            if (callback == null) {
+                String msg = "Unable to get thing handler callback.";
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                return;
+            }
 
             StringBuilder channelList = new StringBuilder();
             List<Channel> channels = new ArrayList<>();
@@ -256,7 +291,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                                                 ChannelTypeUID channelTypeUID = new ChannelTypeUID(
                                                         InsteonBindingConstants.BINDING_ID,
                                                         InsteonBindingConstants.SWITCH);
-                                                Channel channel = getCallback()
+                                                Channel channel = callback
                                                         .createChannelBuilder(channelUID, channelTypeUID).withLabel(id)
                                                         .build();
 
@@ -285,7 +320,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                                     channelId);
                             Channel channel = thing.getChannel(channelUID);
                             if (channel == null) {
-                                channel = getCallback().createChannelBuilder(channelUID, channelTypeUID).build();
+                                channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
                             }
 
                             addChannel(channel, channelId, channels, channelList);
@@ -343,14 +378,17 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        String address = config.getAddress();
-        if (getBridge() != null && InsteonAddress.isValid(address)) {
-            getInsteonBinding().removeDevice(new InsteonAddress(address));
+        InsteonDeviceConfiguration config = this.config;
+        if (config != null) {
+            String address = config.getAddress();
+            if (getBridge() != null && InsteonAddress.isValid(address)) {
+                getInsteonBinding().removeDevice(new InsteonAddress(address));
 
-            logger.debug("removed {} address = {}", getThing().getUID().getAsString(), address);
+                logger.debug("removed {} address = {}", getThing().getUID().getAsString(), address);
+            }
+
+            getInsteonNetworkHandler().disposed(getThing().getUID());
         }
-
-        getInsteonNetworkHandler().disposed(getThing().getUID());
 
         super.dispose();
     }
@@ -370,6 +408,10 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
         Map<String, String> params = new HashMap<>();
         Channel channel = getThing().getChannel(channelUID.getId());
+        if (channel == null) {
+            logger.warn("channel is null");
+            return;
+        }
 
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();
         for (String key : channelProperties.keySet()) {
@@ -381,11 +423,16 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 params.put(key, s);
             } else {
                 logger.warn("not a string or big decimal value key '{}' value '{}' {}", key, value,
-                        value.getClass().getName());
+                        value != null ? value.getClass().getName() : "unknown");
             }
         }
 
         String feature = channelUID.getId().toLowerCase();
+        InsteonDeviceConfiguration config = this.config;
+        if (config == null) {
+            logger.warn("insteon device config is null");
+            return;
+        }
         String productKey = config.getProductKey();
         if (productKey.equals(HIDDEN_DOOR_SENSOR_PRODUCT_KEY)) {
             if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_LEVEL)) {
@@ -461,11 +508,19 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         logger.debug("channel {} unlinked ", channelUID.getAsString());
     }
 
-    private @Nullable InsteonNetworkHandler getInsteonNetworkHandler() {
-        return (InsteonNetworkHandler) getBridge().getHandler();
+    private InsteonNetworkHandler getInsteonNetworkHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            throw new IllegalArgumentException("insteon network bridge is null");
+        }
+        InsteonNetworkHandler handler = (InsteonNetworkHandler) bridge.getHandler();
+        if (handler == null) {
+            throw new IllegalArgumentException("insteon network handler is null");
+        }
+        return handler;
     }
 
-    private @Nullable InsteonBinding getInsteonBinding() {
+    private InsteonBinding getInsteonBinding() {
         return getInsteonNetworkHandler().getInsteonBinding();
     }
 }

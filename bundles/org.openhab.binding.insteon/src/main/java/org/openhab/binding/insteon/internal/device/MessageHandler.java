@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public abstract class MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
@@ -147,7 +146,8 @@ public abstract class MessageHandler {
      * @return value of parameter (or default if not found)
      */
     protected @Nullable String getStringParameter(String key, @Nullable String def) {
-        return (parameters.get(key) == null ? def : parameters.get(key));
+        String str = parameters.get(key);
+        return str != null ? str : def;
     }
 
     /**
@@ -334,7 +334,6 @@ public abstract class MessageHandler {
     //
     //
 
-    @NonNullByDefault
     public static class DefaultMsgHandler extends MessageHandler {
         DefaultMsgHandler(DeviceFeature p) {
             super(p);
@@ -346,7 +345,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class NoOpMsgHandler extends MessageHandler {
         NoOpMsgHandler(DeviceFeature p) {
             super(p);
@@ -358,7 +356,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class LightOnDimmerHandler extends MessageHandler {
         LightOnDimmerHandler(DeviceFeature p) {
             super(p);
@@ -388,7 +385,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class LightOffDimmerHandler extends MessageHandler {
         LightOffDimmerHandler(DeviceFeature p) {
             super(p);
@@ -404,7 +400,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class LightOnSwitchHandler extends MessageHandler {
         LightOnSwitchHandler(DeviceFeature p) {
             super(p);
@@ -422,7 +417,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class LightOffSwitchHandler extends MessageHandler {
         LightOffSwitchHandler(DeviceFeature p) {
             super(p);
@@ -445,7 +439,6 @@ public abstract class MessageHandler {
      * handler and the command handler will need to be extended to support
      * those devices.
      */
-    @NonNullByDefault
     public static class RampDimmerHandler extends MessageHandler {
         private int onCmd;
         private int offCmd;
@@ -505,7 +498,6 @@ public abstract class MessageHandler {
      * else if command2 == 0x00 then the light has been turned off
      */
 
-    @NonNullByDefault
     public static class SwitchRequestReplyHandler extends MessageHandler {
         SwitchRequestReplyHandler(DeviceFeature p) {
             super(p);
@@ -573,7 +565,6 @@ public abstract class MessageHandler {
      * Handles Dimmer replies to status requests.
      * In the dimmers case the command2 byte represents the light level from 0-255
      */
-    @NonNullByDefault
     public static class DimmerRequestReplyHandler extends MessageHandler {
         DimmerRequestReplyHandler(DeviceFeature p) {
             super(p);
@@ -609,7 +600,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class DimmerStopManualChangeHandler extends MessageHandler {
         DimmerStopManualChangeHandler(DeviceFeature p) {
             super(p);
@@ -631,7 +621,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class StartManualChangeHandler extends MessageHandler {
         StartManualChangeHandler(DeviceFeature p) {
             super(p);
@@ -658,7 +647,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class StopManualChangeHandler extends MessageHandler {
         StopManualChangeHandler(DeviceFeature p) {
             super(p);
@@ -678,7 +666,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class InfoRequestReplyHandler extends MessageHandler {
         InfoRequestReplyHandler(DeviceFeature p) {
             super(p);
@@ -714,7 +701,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class MotionSensorDataReplyHandler extends MessageHandler {
         MotionSensorDataReplyHandler(DeviceFeature p) {
             super(p);
@@ -780,7 +766,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class MotionSensor2AlternateHeartbeatHandler extends MessageHandler {
         MotionSensor2AlternateHeartbeatHandler(DeviceFeature p) {
             super(p);
@@ -792,6 +777,10 @@ public abstract class MessageHandler {
             try {
                 // group 0x0B (11) - alternate heartbeat group
                 InsteonAddress toAddr = msg.getAddr("toAddress");
+                if (toAddr == null) {
+                    logger.warn("toAddr is null");
+                    return;
+                }
                 int batteryLevel = toAddr.getHighByte() & 0xff;
                 int lightLevel = toAddr.getMiddleByte() & 0xff;
                 int temperatureLevel = msg.getByte("command2") & 0xff;
@@ -823,7 +812,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class HiddenDoorSensorDataReplyHandler extends MessageHandler {
         HiddenDoorSensorDataReplyHandler(DeviceFeature p) {
             super(p);
@@ -859,7 +847,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class PowerMeterUpdateHandler extends MessageHandler {
         PowerMeterUpdateHandler(DeviceFeature p) {
             super(p);
@@ -899,7 +886,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class PowerMeterResetHandler extends MessageHandler {
         PowerMeterResetHandler(DeviceFeature p) {
             super(p);
@@ -918,7 +904,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class LastTimeHandler extends MessageHandler {
         LastTimeHandler(DeviceFeature p) {
             super(p);
@@ -930,7 +915,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class ContactRequestReplyHandler extends MessageHandler {
         ContactRequestReplyHandler(DeviceFeature p) {
             super(p);
@@ -955,7 +939,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class ClosedContactHandler extends MessageHandler {
         ClosedContactHandler(DeviceFeature p) {
             super(p);
@@ -967,7 +950,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class OpenedContactHandler extends MessageHandler {
         OpenedContactHandler(DeviceFeature p) {
             super(p);
@@ -979,7 +961,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class OpenedOrClosedContactHandler extends MessageHandler {
         OpenedOrClosedContactHandler(DeviceFeature p) {
             super(p);
@@ -1020,7 +1001,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class ClosedSleepingContactHandler extends MessageHandler {
         ClosedSleepingContactHandler(DeviceFeature p) {
             super(p);
@@ -1039,7 +1019,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class OpenedSleepingContactHandler extends MessageHandler {
         OpenedSleepingContactHandler(DeviceFeature p) {
             super(p);
@@ -1066,7 +1045,6 @@ public abstract class MessageHandler {
      * Then connect this handler to the ACK, such that the device will be polled, and
      * the settings updated.
      */
-    @NonNullByDefault
     public static class TriggerPollMsgHandler extends MessageHandler {
         TriggerPollMsgHandler(DeviceFeature p) {
             super(p);
@@ -1081,7 +1059,6 @@ public abstract class MessageHandler {
     /**
      * Flexible handler to extract numerical data from messages.
      */
-    @NonNullByDefault
     public static class NumberMsgHandler extends MessageHandler {
         NumberMsgHandler(DeviceFeature p) {
             super(p);
@@ -1120,8 +1097,8 @@ public abstract class MessageHandler {
         }
 
         private int extractValue(Msg msg, int group) throws FieldException {
-            String lowByte = getStringParameter("low_byte", "");
-            if (lowByte.equals("")) {
+            String lowByte = getStringParameter("low_byte", null);
+            if (lowByte == null) {
                 logger.warn("{} handler misconfigured, missing low_byte!", nm());
                 return 0;
             }
@@ -1131,8 +1108,8 @@ public abstract class MessageHandler {
             } else {
                 value = msg.getByte(lowByte) & 0xFF;
             }
-            String highByte = getStringParameter("high_byte", "");
-            if (!highByte.equals("")) {
+            String highByte = getStringParameter("high_byte", null);
+            if (highByte != null) {
                 value |= (msg.getByte(highByte) & 0xFF) << 8;
             }
             return (value);
@@ -1143,7 +1120,6 @@ public abstract class MessageHandler {
      * Convert system mode field to number 0...4. Insteon has two different
      * conventions for numbering, we use the one of the status update messages
      */
-    @NonNullByDefault
     public static class ThermostatSystemModeMsgHandler extends NumberMsgHandler {
         ThermostatSystemModeMsgHandler(DeviceFeature p) {
             super(p);
@@ -1172,7 +1148,6 @@ public abstract class MessageHandler {
     /**
      * Handle reply to system mode change command
      */
-    @NonNullByDefault
     public static class ThermostatSystemModeReplyHandler extends NumberMsgHandler {
         ThermostatSystemModeReplyHandler(DeviceFeature p) {
             super(p);
@@ -1201,7 +1176,6 @@ public abstract class MessageHandler {
     /**
      * Handle reply to fan mode change command
      */
-    @NonNullByDefault
     public static class ThermostatFanModeReplyHandler extends NumberMsgHandler {
         ThermostatFanModeReplyHandler(DeviceFeature p) {
             super(p);
@@ -1224,7 +1198,6 @@ public abstract class MessageHandler {
     /**
      * Handle reply to fanlinc fan speed change command
      */
-    @NonNullByDefault
     public static class FanLincFanReplyHandler extends NumberMsgHandler {
         FanLincFanReplyHandler(DeviceFeature p) {
             super(p);
@@ -1252,7 +1225,6 @@ public abstract class MessageHandler {
      * Process X10 messages that are generated when another controller
      * changes the state of an X10 device.
      */
-    @NonNullByDefault
     public static class X10OnHandler extends MessageHandler {
         X10OnHandler(DeviceFeature p) {
             super(p);
@@ -1266,7 +1238,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class X10OffHandler extends MessageHandler {
         X10OffHandler(DeviceFeature p) {
             super(p);
@@ -1280,7 +1251,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class X10BrightHandler extends MessageHandler {
         X10BrightHandler(DeviceFeature p) {
             super(p);
@@ -1293,7 +1263,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class X10DimHandler extends MessageHandler {
         X10DimHandler(DeviceFeature p) {
             super(p);
@@ -1306,7 +1275,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class X10OpenHandler extends MessageHandler {
         X10OpenHandler(DeviceFeature p) {
             super(p);
@@ -1320,7 +1288,6 @@ public abstract class MessageHandler {
         }
     }
 
-    @NonNullByDefault
     public static class X10ClosedHandler extends MessageHandler {
         X10ClosedHandler(DeviceFeature p) {
             super(p);
@@ -1349,6 +1316,7 @@ public abstract class MessageHandler {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
+            @Nullable
             T mh = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
             mh.setParameters(params);
             return mh;

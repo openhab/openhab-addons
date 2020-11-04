@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class ModemDBBuilder implements MsgListener {
     private static final int MESSAGE_TIMEOUT = 30000;
 
@@ -65,8 +64,11 @@ public class ModemDBBuilder implements MsgListener {
         job = scheduler.scheduleWithFixedDelay(() -> {
             if (isComplete()) {
                 logger.trace("modem db builder finished");
-                job.cancel(false);
-                job = null;
+                ScheduledFuture<?> job = this.job;
+                if (job != null) {
+                    job.cancel(false);
+                }
+                this.job = null;
             } else {
                 if (System.currentTimeMillis() - lastMessageTimestamp > MESSAGE_TIMEOUT) {
                     String s = "";

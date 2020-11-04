@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -42,11 +43,10 @@ import org.xml.sax.SAXException;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class DeviceTypeLoader {
     private static final Logger logger = LoggerFactory.getLogger(DeviceTypeLoader.class);
-    private HashMap<String, DeviceType> deviceTypes = new HashMap<>();
-    private @Nullable static DeviceTypeLoader deviceTypeLoader = null;
+    private Map<String, DeviceType> deviceTypes = new HashMap<>();
+    private static DeviceTypeLoader deviceTypeLoader = new DeviceTypeLoader();
 
     private DeviceTypeLoader() {
     } // private so nobody can call it
@@ -66,7 +66,7 @@ public class DeviceTypeLoader {
      *
      * @return currently known device types
      */
-    public HashMap<String, DeviceType> getDeviceTypes() {
+    public Map<String, DeviceType> getDeviceTypes() {
         return (deviceTypes);
     }
 
@@ -202,20 +202,23 @@ public class DeviceTypeLoader {
      */
     @Nullable
     public static synchronized DeviceTypeLoader instance() {
-        if (deviceTypeLoader == null) {
-            deviceTypeLoader = new DeviceTypeLoader();
+        if (deviceTypeLoader.getDeviceTypes().isEmpty()) {
             InputStream input = DeviceTypeLoader.class.getResourceAsStream("/device_types.xml");
-            try {
-                deviceTypeLoader.loadDeviceTypesXML(input);
-            } catch (ParserConfigurationException e) {
-                logger.warn("parser config error when reading device types xml file: ", e);
-            } catch (SAXException e) {
-                logger.warn("SAX exception when reading device types xml file: ", e);
-            } catch (IOException e) {
-                logger.warn("I/O exception when reading device types xml file: ", e);
+            if (input != null) {
+                try {
+                    deviceTypeLoader.loadDeviceTypesXML(input);
+                } catch (ParserConfigurationException e) {
+                    logger.warn("parser config error when reading device types xml file: ", e);
+                } catch (SAXException e) {
+                    logger.warn("SAX exception when reading device types xml file: ", e);
+                } catch (IOException e) {
+                    logger.warn("I/O exception when reading device types xml file: ", e);
+                }
+                logger.debug("loaded {} devices: ", deviceTypeLoader.getDeviceTypes().size());
+                deviceTypeLoader.logDeviceTypes();
+            } else {
+                logger.warn("unable to get device types xml file as a resource");
             }
-            logger.debug("loaded {} devices: ", deviceTypeLoader.getDeviceTypes().size());
-            deviceTypeLoader.logDeviceTypes();
         }
         return deviceTypeLoader;
     }

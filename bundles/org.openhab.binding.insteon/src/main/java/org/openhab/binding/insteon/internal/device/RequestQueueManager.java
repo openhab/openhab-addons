@@ -15,6 +15,7 @@ package org.openhab.binding.insteon.internal.device;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,20 +37,25 @@ import org.slf4j.LoggerFactory;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class RequestQueueManager {
     private static @Nullable RequestQueueManager instance = null;
     private final Logger logger = LoggerFactory.getLogger(RequestQueueManager.class);
     private @Nullable Thread queueThread = null;
-    private PriorityQueue<RequestQueue> requestQueues = new PriorityQueue<>();
+    private Queue<RequestQueue> requestQueues = new PriorityQueue<>();
     private Map<InsteonDevice, RequestQueue> requestQueueHash = new HashMap<>();
     private boolean keepRunning = true;
 
     private RequestQueueManager() {
         queueThread = new Thread(new RequestQueueReader());
-        queueThread.setName("Insteon Request Queue Reader");
-        queueThread.setDaemon(true);
-        queueThread.start();
+        setParamsAndStart(queueThread);
+    }
+
+    private void setParamsAndStart(@Nullable Thread thread) {
+        if (thread != null) {
+            thread.setName("Insteon Request Queue Reader");
+            thread.setDaemon(true);
+            thread.start();
+        }
     }
 
     /**
@@ -90,6 +96,7 @@ public class RequestQueueManager {
      */
     private void stopThread() {
         logger.debug("stopping thread");
+        Thread queueThread = this.queueThread;
         if (queueThread != null) {
             synchronized (requestQueues) {
                 keepRunning = false;
@@ -102,11 +109,10 @@ public class RequestQueueManager {
             } catch (InterruptedException e) {
                 logger.warn("got interrupted waiting for thread exit ", e);
             }
-            queueThread = null;
+            this.queueThread = null;
         }
     }
 
-    @NonNullByDefault
     class RequestQueueReader implements Runnable {
         @Override
         public void run() {
@@ -114,8 +120,8 @@ public class RequestQueueManager {
             synchronized (requestQueues) {
                 while (keepRunning) {
                     try {
-                        while (keepRunning && !requestQueues.isEmpty()) {
-                            RequestQueue q = requestQueues.peek();
+                        RequestQueue q;
+                        while (keepRunning && (q = requestQueues.peek()) != null) {
                             long now = System.currentTimeMillis();
                             long expTime = q.getExpirationTime();
                             InsteonDevice dev = q.getDevice();
@@ -161,7 +167,6 @@ public class RequestQueueManager {
         }
     }
 
-    @NonNullByDefault
     public static class RequestQueue implements Comparable<RequestQueue> {
         private InsteonDevice device;
         private long expirationTime;
@@ -189,18 +194,18 @@ public class RequestQueueManager {
         }
     }
 
-    @NonNullByDefault
     public static synchronized @Nullable RequestQueueManager instance() {
         if (instance == null) {
             instance = new RequestQueueManager();
         }
-        return (instance);
+        return instance;
     }
 
     public static synchronized void destroyInstance() {
+        RequestQueueManager instance = RequestQueueManager.instance;
         if (instance != null) {
             instance.stopThread();
-            instance = null;
+            RequestQueueManager.instance = null;
         }
     }
 }
