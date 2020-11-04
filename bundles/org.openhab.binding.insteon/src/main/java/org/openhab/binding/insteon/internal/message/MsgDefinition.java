@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class MsgDefinition {
     private Map<String, Field> fields = new HashMap<>();
 
@@ -39,7 +38,7 @@ public class MsgDefinition {
      *
      * @param m the definition to copy
      */
-    MsgDefinition(@Nullable MsgDefinition m) {
+    MsgDefinition(MsgDefinition m) {
         fields = new HashMap<>(m.fields);
     }
 
