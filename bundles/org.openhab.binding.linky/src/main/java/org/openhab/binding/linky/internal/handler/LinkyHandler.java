@@ -217,7 +217,9 @@ public class LinkyHandler extends BaseThingHandler {
         if (isLinked(LAST_WEEK)) {
             cachedDailyData.getValue().ifPresent(values -> {
                 Aggregate weeks = values.aggregats.weeks;
-                updateKwhChannel(LAST_WEEK, weeks.datas.get(1));
+                if (weeks.datas.size() > 1) {
+                    updateKwhChannel(LAST_WEEK, weeks.datas.get(1));
+                }
             });
         }
     }
