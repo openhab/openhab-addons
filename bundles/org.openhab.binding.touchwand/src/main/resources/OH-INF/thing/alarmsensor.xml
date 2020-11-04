@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="touchwand"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="alarmsensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"></bridge-type-ref>
+		</supported-bridge-type-refs>
+		<label>TouchWand Alarm Sensor Unit</label>
+		<channels>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
+			<channel id="leak" typeId="leak"></channel>
+			<channel id="motion" typeId="motion"/>
+			<channel id="illumination" typeId="illumination"/>
+			<channel id="isOpen" typeId="isOpen"/>
+			<channel id="temperature" typeId="temperature"/>
+		</channels>
+	</thing-type>
+	<channel-type id="leak">
+		<item-type>Switch</item-type>
+		<label>Leak Detected</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="illumination">
+		<item-type>Number</item-type>
+		<label>Illumination</label>
+		<description>
+			This channel shows the brightness of the environment of the device in Lux.
+		</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="isOpen">
+		<item-type>Contact</item-type>
+		<label>Open Status</label>
+		<category>Contact</category>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="motion">
+		<item-type>Switch</item-type>
+		<label>Motion Status</label>
+		<category>Motion</category>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

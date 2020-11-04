@@ -10,12 +10,13 @@ TouchWand products are compatible with most major Z-Wave products, IP controlled
 
 This binding supports switches, shutters dimmers and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
 
-## Control 
+## Control and Status 
 
 1. **switch**  - control - ON/OFF
 2. **shutter** - control - UP/DOWN/STOP
 3. **dimmer**  - control - ON/OFF/BRIGHTNESS
 4. **wallcontroller** - control - LONG/SHORT
+5. **alarmsensor** - status channels depend on alarm sensor type
 
 ## Discovery
 
@@ -29,7 +30,7 @@ After adding TouchWand Hub the auto discovery will add all switches dimmers and 
 |-------------------|-----------------------------------------------------------------------|---------|----------|
 | username          | Touchwand hub username                                                | string  | yes      |
 | password          | Touchwand hub password                                                | string  | yes      |
-| ipAddress         | Touchwand hub hotname or IP address                                   | string  | yes      |
+| ipAddress         | Touchwand hub hostname or IP address                                  | string  | yes      |
 | port              | Management port (default 80)                                          | integer | no       |
 | statusrefresh     | Unit status refresh interval in seconds                               | integer | no       |
 | addSecondaryUnits | If the controller is primary, add secondary controllers units as well | bool    | no       |
@@ -39,6 +40,12 @@ After adding TouchWand Hub the auto discovery will add all switches dimmers and 
 ## Thing Configuration
 
 No thing configuration is needed
+
+## AlarmSensor channels 
+
+**Touchwand Wanderfull™** supports various types of alarm sensors for example water leak sensors , door/window sensor , motion sensor.
+Trying to develop a generic Alarm Sensor support all AlarmSensor types has all the channels avaible but only the relevant ones will updates with the relevant values.
+It is the user responsibility to use the proper channels for the sensors.
 
 ## Full Example
 

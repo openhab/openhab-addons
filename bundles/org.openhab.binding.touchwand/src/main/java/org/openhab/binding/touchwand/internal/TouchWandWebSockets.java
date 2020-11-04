@@ -17,6 +17,7 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.S
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,7 +51,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class TouchWandWebSockets {
 
-    private static final int CONNECT_TIMEOUT_SEC = 10;
+    private static final int CONNECT_TIMEOUT_SEC = 15;
+    private static final int CONNECT_TIMEOUT_MS = CONNECT_TIMEOUT_SEC * 1000;
     private static final int WEBSOCKET_RECONNECT_INTERVAL_SEC = CONNECT_TIMEOUT_SEC * 2;
     private static final int WEBSOCKET_IDLE_TIMEOUT_MS = CONNECT_TIMEOUT_SEC * 10 * 1000;
     private final Logger logger = LoggerFactory.getLogger(TouchWandWebSockets.class);
@@ -82,7 +84,7 @@ public class TouchWandWebSockets {
             return;
         }
 
-        client.setConnectTimeout(CONNECT_TIMEOUT_SEC);
+        client.setConnectTimeout(CONNECT_TIMEOUT_MS);
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setSubProtocols("relay_protocol");
 
@@ -136,7 +138,9 @@ public class TouchWandWebSockets {
         public void onConnect(Session session) {
             logger.debug("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
             try {
-                session.getRemote().sendString("{\"myopenhab\": \"myopenhab\"}");
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // need unique id
+                String controllerIdStr = String.format("{\"contId\": \"openhab%d\"}", timestamp.getTime());
+                session.getRemote().sendString(controllerIdStr);
             } catch (IOException e) {
                 logger.warn("sendString : {}", e.getMessage());
             }
