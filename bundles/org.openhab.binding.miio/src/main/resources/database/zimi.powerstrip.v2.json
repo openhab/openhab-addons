@@ -9,9 +9,9 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
@@ -23,9 +23,9 @@
 				"property": "power_consume_rate",
 				"friendlyName": "Power Consumption",
 				"channel": "powerUsage",
+				"channelType": "powerUsage",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"parameterType": "EMPTY"
@@ -36,9 +36,9 @@
 				"property": "wifi_led",
 				"friendlyName": "wifi LED",
 				"channel": "led",
+				"channelType": "led",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_wifi_led",
@@ -52,7 +52,6 @@
 				"channel": "power_price",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power_price",
@@ -64,18 +63,42 @@
 				"property": "current",
 				"friendlyName": "Current",
 				"channel": "current",
+				"channelType": "current",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": []
 			},
 			{
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
+				"channelType": "temperature",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "lp_autooff",
+				"friendlyName": "Low Power Auto Off",
+				"channel": "lp_autooff",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "lp_autooff_delay",
+				"friendlyName": "Low Power Limit Time",
+				"channel": "lp_autooff_delay",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "lp_threshold",
+				"friendlyName": "Low Power Threshold",
+				"channel": "lp_threshold",
+				"type": "Number",
+				"refresh": true,
 				"actions": []
 			}
 		]

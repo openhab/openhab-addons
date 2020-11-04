@@ -131,8 +131,9 @@ public class VehicleHandler extends BaseThingHandler {
                                 thing.getProperties().entrySet().stream().filter(p -> "true".equals(p.getValue()))
                                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
-                        if (thing.getProperties().containsKey(LAST_TRIP_ID)) {
-                            lastTripId = Long.parseLong(thing.getProperties().get(LAST_TRIP_ID));
+                        String lastTripIdString = thing.getProperties().get(LAST_TRIP_ID);
+                        if (lastTripIdString != null) {
+                            lastTripId = Long.parseLong(lastTripIdString);
                         }
 
                         updateStatus(ThingStatus.ONLINE);
@@ -294,7 +295,8 @@ public class VehicleHandler extends BaseThingHandler {
             case TRIP_END_TIME:
                 return tripDetails.getEndTime();
             case TRIP_DURATION:
-                return new QuantityType<>(tripDetails.getDurationInMinutes(), MINUTE);
+                return tripDetails.getDurationInMinutes().map(value -> (State) new QuantityType<>(value, MINUTE))
+                        .orElse(UnDefType.UNDEF);
             case TRIP_START_ODOMETER:
                 return new QuantityType<>((double) tripDetails.startOdometer / 1000, KILO(METRE));
             case TRIP_STOP_ODOMETER:

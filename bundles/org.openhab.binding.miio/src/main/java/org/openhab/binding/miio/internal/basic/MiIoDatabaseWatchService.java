@@ -14,7 +14,7 @@
 package org.openhab.binding.miio.internal.basic;
 
 import static java.nio.file.StandardWatchEventKinds.*;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_DATABASE_PATH;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.Utils;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.service.AbstractWatchService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -56,8 +55,6 @@ import com.google.gson.JsonSyntaxException;
 @Component(service = MiIoDatabaseWatchService.class)
 @NonNullByDefault
 public class MiIoDatabaseWatchService extends AbstractWatchService {
-    private static final String LOCAL_DATABASE_PATH = OpenHAB.getConfigFolder() + File.separator + "misc"
-            + File.separator + BINDING_ID;
     private static final String DATABASE_FILES = ".json";
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
@@ -66,11 +63,11 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
 
     @Activate
     public MiIoDatabaseWatchService() {
-        super(LOCAL_DATABASE_PATH);
+        super(BINDING_DATABASE_PATH);
         logger.debug(
                 "Started miio basic devices local databases watch service. Watching for database files at path: {}",
-                LOCAL_DATABASE_PATH);
-        processWatchEvent(null, null, Paths.get(LOCAL_DATABASE_PATH));
+                BINDING_DATABASE_PATH);
+        processWatchEvent(null, null, Paths.get(BINDING_DATABASE_PATH));
         populateDatabase();
         if (logger.isTraceEnabled()) {
             for (String device : databaseList.keySet()) {
@@ -132,9 +129,8 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
         List<URL> urlEntries = new ArrayList<>();
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         urlEntries.addAll(Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false)));
-        String userDbFolder = OpenHAB.getConfigFolder() + File.separator + "misc" + File.separator + BINDING_ID;
         try {
-            File[] userDbFiles = new File(userDbFolder).listFiles((dir, name) -> name.endsWith(".json"));
+            File[] userDbFiles = new File(BINDING_DATABASE_PATH).listFiles((dir, name) -> name.endsWith(".json"));
             if (userDbFiles != null) {
                 for (File f : userDbFiles) {
                     urlEntries.add(f.toURI().toURL());

@@ -165,12 +165,12 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
-        if (variable == null) {
+        if (variable == null || value == null) {
             return;
         }
         switch (variable) {
             case "CurrentTransportState":
-                if (!((value == null) || (value.isEmpty()))) {
+                if (!value.isEmpty()) {
                     transportState = value;
                 }
                 break;

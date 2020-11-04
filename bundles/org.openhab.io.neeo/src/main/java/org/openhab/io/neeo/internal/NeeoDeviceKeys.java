@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
@@ -48,7 +47,7 @@ public class NeeoDeviceKeys {
     private final Logger logger = LoggerFactory.getLogger(NeeoDeviceKeys.class);
 
     /** The mapping between ThingUID to brain keys */
-    private final ConcurrentHashMap<NeeoThingUID, @Nullable Set<String>> uidToKey = new ConcurrentHashMap<>();
+    private final Map<NeeoThingUID, Set<String>> uidToKey = new ConcurrentHashMap<>();
 
     /** The brain's url */
     private final String brainUrl;
@@ -163,7 +162,7 @@ public class NeeoDeviceKeys {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder(200);
-        for (Entry<NeeoThingUID, @Nullable Set<String>> entry : uidToKey.entrySet()) {
+        for (Entry<NeeoThingUID, Set<String>> entry : uidToKey.entrySet()) {
             final Set<String> entries = entry.getValue();
             if (entries == null) {
                 continue;

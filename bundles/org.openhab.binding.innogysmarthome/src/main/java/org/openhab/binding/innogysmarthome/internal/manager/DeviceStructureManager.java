@@ -186,7 +186,7 @@ public class DeviceStructureManager {
      *
      * @return
      */
-    public Device getBridgeDevice() {
+    public @Nullable Device getBridgeDevice() {
         return getDeviceMap().get(bridgeDeviceId);
     }
 

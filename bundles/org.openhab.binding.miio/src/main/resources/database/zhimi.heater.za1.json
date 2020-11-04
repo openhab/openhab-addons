@@ -1,0 +1,121 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.heater.za1"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"channelType": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "target_temperature",
+				"friendlyName": "Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_target_temperature",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "brightness",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"channelType": "brightness",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_brightness",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "buzzer",
+				"friendlyName": "Buzzer Status",
+				"channel": "buzzer",
+				"channelType": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_buzzer",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "relative_humidity",
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "childlock",
+				"channelType": "childlock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_child_lock",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "theqmostat",
+				"friendlyName": "HW Switch",
+				"channel": "HWSwitch",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_theqmostat",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"channelType": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "use_time",
+				"friendlyName": "Run Time",
+				"channel": "usedhours",
+				"channelType": "usedhours",
+				"type": "Number",
+				"refresh": true,
+				"transformation": "SecondsToHours",
+				"actions": []
+			}
+		],
+		"experimental": true
+	}
+}

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.astro.internal.action;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.time.ZonedDateTime;
 
 import javax.measure.quantity.Angle;
@@ -35,18 +33,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {AstroActions } defines rule actions for the Astro binding.
- * <p>
- * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
- * the test <i>actions instanceof AstroActions</i> fails. This test can fail
- * due to an issue in openHAB core v2.5.0 where the {@link AstroActions} class
- * can be loaded by a different classloader than the <i>actions</i> instance.
+ * Defines the automation thing actions for the Astro binding.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @ThingActionsScope(name = "astro")
 @NonNullByDefault
-public class AstroActions implements ThingActions, IAstroActions {
+public class AstroActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(AstroActions.class);
     protected @Nullable AstroThingHandler handler;
@@ -64,11 +57,10 @@ public class AstroActions implements ThingActions, IAstroActions {
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return this.handler;
+        return handler;
     }
 
-    @Override
-    @RuleAction(label = "Astro : Get Azimuth", description = "Get the azimuth of the sun for a given time")
+    @RuleAction(label = "get the azimuth", description = "Get the azimuth for a given time.")
     public @Nullable @ActionOutput(name = "getAzimuth", label = "Azimuth", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getAzimuth(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getAzimuth' called");
@@ -81,8 +73,7 @@ public class AstroActions implements ThingActions, IAstroActions {
         return null;
     }
 
-    @Override
-    @RuleAction(label = "Astro : Get Elevation", description = "Get the Elevation of the sun for a given time")
+    @RuleAction(label = "get the elevation", description = "Get the elevation for a given time.")
     public @Nullable @ActionOutput(name = "getElevation", label = "Elevation", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getElevation(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getElevation' called");
@@ -95,8 +86,7 @@ public class AstroActions implements ThingActions, IAstroActions {
         return null;
     }
 
-    @Override
-    @RuleAction(label = "Sun : Get Event Time", description = "Get the date time of a given planet event")
+    @RuleAction(label = "get the date time of a sun event", description = "Get the date time of a sun event.")
     public @Nullable @ActionOutput(name = "getEventTime", type = "java.time.ZonedDateTime") ZonedDateTime getEventTime(
             @ActionInput(name = "phaseName", label = "Phase", required = true, description = "Requested phase") String phaseName,
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date,
@@ -122,41 +112,20 @@ public class AstroActions implements ThingActions, IAstroActions {
         return null;
     }
 
-    public static @Nullable QuantityType<Angle> getElevation(@Nullable ThingActions actions,
-            @Nullable ZonedDateTime date) {
-        return invokeMethodOf(actions).getElevation(date);
+    public static @Nullable QuantityType<Angle> getElevation(ThingActions actions, @Nullable ZonedDateTime date) {
+        return ((AstroActions) actions).getElevation(date);
     }
 
-    public static @Nullable QuantityType<Angle> getAzimuth(@Nullable ThingActions actions,
-            @Nullable ZonedDateTime date) {
-        return invokeMethodOf(actions).getAzimuth(date);
+    public static @Nullable QuantityType<Angle> getAzimuth(ThingActions actions, @Nullable ZonedDateTime date) {
+        return ((AstroActions) actions).getAzimuth(date);
     }
 
-    public static @Nullable ZonedDateTime getEventTime(@Nullable ThingActions actions, @Nullable String phaseName,
+    public static @Nullable ZonedDateTime getEventTime(ThingActions actions, @Nullable String phaseName,
             @Nullable ZonedDateTime date, @Nullable String moment) {
         if (phaseName != null) {
-            return invokeMethodOf(actions).getEventTime(phaseName, date, moment);
+            return ((AstroActions) actions).getEventTime(phaseName, date, moment);
         } else {
             throw new IllegalArgumentException("phaseName can not be null");
         }
-    }
-
-    private static IAstroActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(AstroActions.class.getName())) {
-            if (actions instanceof IAstroActions) {
-                return (IAstroActions) actions;
-            } else {
-                return (IAstroActions) Proxy.newProxyInstance(IAstroActions.class.getClassLoader(),
-                        new Class[] { IAstroActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException("Actions is not an instance of AstroActions");
     }
 }

@@ -39,8 +39,8 @@ public class NestUpdateHandler<T> {
      */
     private static final String ANY_ID = "*";
 
-    private final Map<String, @Nullable T> lastUpdates = new ConcurrentHashMap<>();
-    private final Map<String, @Nullable Set<NestThingDataListener<T>>> listenersMap = new ConcurrentHashMap<>();
+    private final Map<String, T> lastUpdates = new ConcurrentHashMap<>();
+    private final Map<String, Set<NestThingDataListener<T>>> listenersMap = new ConcurrentHashMap<>();
 
     public boolean addListener(NestThingDataListener<T> listener) {
         return addListener(ANY_ID, listener);

@@ -64,7 +64,7 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     @Activate
     public AstroDiscoveryService(final @Reference LocationProvider locationProvider,
             final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider i18nProvider,
-            @Nullable Map<String, @Nullable Object> configProperties) {
+            @Nullable Map<String, Object> configProperties) {
         super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVER_TIMEOUT_SECONDS, true);
         this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;

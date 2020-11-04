@@ -8,7 +8,8 @@
 			"yeelink.light.strip1",
 			"yeelink.light.strip2",
 			"yeelink.light.bslamp1",
-			"yeelink.light.bslamp2"
+			"yeelink.light.bslamp2",
+			"yeelink.light.bslamp3"
 		],
 		"maxProperties": 7,
 		"channels": [
@@ -16,6 +17,7 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "",
@@ -30,6 +32,7 @@
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
+				"channelType": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -54,6 +57,7 @@
 				"property": "delayoff",
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
+				"channelType": "delayoff",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -72,6 +76,7 @@
 				"property": "ct",
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
+				"channelType": "colorTemperature",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -91,6 +96,7 @@
 				"property": "color_mode",
 				"friendlyName": "Color Mode",
 				"channel": "colorMode",
+				"channelType": "colorMode",
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -121,14 +127,14 @@
 					{
 						"command": "set_rgb",
 						"parameterType": "COLOR",
-						"condition": {
-							"name": "HSBOnly"
-						},
 						"parameters": [
 							"$value$",
 							"smooth",
 							500
-						]
+						],
+						"condition": {
+							"name": "HSBOnly"
+						}
 					},
 					{
 						"command": "set_bright",

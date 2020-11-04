@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.radiothermostat.internal;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.radiothermostat.internal.handler.RadioThermostatHandler;
@@ -30,24 +27,22 @@ import org.slf4j.LoggerFactory;
  * Some automation actions to be used with a {@link RadioThermostatThingActions}
  *
  * @author Michael Lobstein - initial contribution
- *
  */
 @ThingActionsScope(name = "radiothermostat")
 @NonNullByDefault
-public class RadioThermostatThingActions implements ThingActions, IRadioThermostatThingActions {
+public class RadioThermostatThingActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatThingActions.class);
 
     private @Nullable RadioThermostatHandler handler;
 
-    @Override
-    @RuleAction(label = "sendRawCommand", description = "Action that sends raw command to the thermostat")
+    @RuleAction(label = "send a raw command", description = "Send a raw command to the thermostat.")
     public void sendRawCommand(@ActionInput(name = "sendRawCommand") @Nullable String rawCommand) {
-        RadioThermostatHandler localHandler = handler;
         if (rawCommand == null) {
             logger.warn("sendRawCommand called with null command, ignoring");
             return;
         }
 
+        RadioThermostatHandler localHandler = handler;
         if (localHandler != null) {
             localHandler.handleRawCommand(rawCommand);
             logger.debug("sendRawCommand called with raw command: {}", rawCommand);
@@ -55,9 +50,8 @@ public class RadioThermostatThingActions implements ThingActions, IRadioThermost
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void sendRawCommand(@Nullable ThingActions actions, @Nullable String rawCommand)
-            throws IllegalArgumentException {
-        invokeMethodOf(actions).sendRawCommand(rawCommand);
+    public static void sendRawCommand(ThingActions actions, @Nullable String rawCommand) {
+        ((RadioThermostatThingActions) actions).sendRawCommand(rawCommand);
     }
 
     @Override
@@ -67,27 +61,6 @@ public class RadioThermostatThingActions implements ThingActions, IRadioThermost
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return this.handler;
-    }
-
-    private static IRadioThermostatThingActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(RadioThermostatThingActions.class.getName())) {
-            if (actions instanceof RadioThermostatThingActions) {
-                return (IRadioThermostatThingActions) actions;
-            } else {
-                return (IRadioThermostatThingActions) Proxy.newProxyInstance(
-                        IRadioThermostatThingActions.class.getClassLoader(),
-                        new Class[] { IRadioThermostatThingActions.class },
-                        (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException("Actions is not an instance of RadioThermostatThingActions");
+        return handler;
     }
 }

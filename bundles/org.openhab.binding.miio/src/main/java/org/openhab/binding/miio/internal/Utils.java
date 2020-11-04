@@ -97,4 +97,8 @@ public final class Utils {
         jsonObject = jsonElement.getAsJsonObject();
         return jsonObject;
     }
+
+    public static String minLengthString(String string, int length) {
+        return String.format("%-" + length + "s", string);
+    }
 }

@@ -48,7 +48,7 @@ public class NtpDiscovery extends AbstractDiscoveryService {
     @Activate
     public NtpDiscovery(final @Reference LocaleProvider localeProvider,
             final @Reference TranslationProvider i18nProvider, final @Reference TimeZoneProvider timeZoneProvider,
-            @Nullable Map<String, @Nullable Object> configProperties) throws IllegalArgumentException {
+            @Nullable Map<String, Object> configProperties) throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 2);
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;

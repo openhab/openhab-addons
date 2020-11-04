@@ -293,11 +293,11 @@ public class WebserviceHandler extends BaseBridgeHandler {
                                     }
                                     break;
                             }
-                            if (foundIt) {
-                                start = open;
-                                ende = close;
-                                break;
-                            }
+                        }
+                        if (foundIt) {
+                            start = open;
+                            ende = close;
+                            break;
                         }
                         i = i + 1;
                     } while (i < o.length);

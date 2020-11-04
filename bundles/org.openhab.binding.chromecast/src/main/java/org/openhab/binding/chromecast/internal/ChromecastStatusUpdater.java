@@ -26,7 +26,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.chromecast.internal.handler.ChromecastHandler;
-import org.openhab.binding.chromecast.internal.utils.ByteArrayFileCache;
+import org.openhab.core.cache.ByteArrayFileCache;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -63,6 +63,7 @@ import su.litvak.chromecast.api.v2.Volume;
  */
 @NonNullByDefault
 public class ChromecastStatusUpdater {
+
     private final Logger logger = LoggerFactory.getLogger(ChromecastStatusUpdater.class);
 
     private final Thing thing;

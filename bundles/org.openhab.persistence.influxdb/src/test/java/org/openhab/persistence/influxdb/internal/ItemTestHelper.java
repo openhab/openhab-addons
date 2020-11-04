@@ -22,9 +22,12 @@ import org.openhab.core.library.types.DecimalType;
 @NonNullByDefault
 public class ItemTestHelper {
 
-    public static NumberItem createNumberItem(String name, int value) {
+    public static NumberItem createNumberItem(String name, Number value) {
         NumberItem numberItem = new NumberItem(name);
-        numberItem.setState(new DecimalType(value));
+        if (value instanceof Integer || value instanceof Long)
+            numberItem.setState(new DecimalType(value.longValue()));
+        else
+            numberItem.setState(new DecimalType(value.doubleValue()));
         return numberItem;
     }
 }

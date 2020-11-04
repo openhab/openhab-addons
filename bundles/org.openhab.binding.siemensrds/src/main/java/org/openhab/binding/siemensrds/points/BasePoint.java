@@ -70,7 +70,7 @@ public abstract class BasePoint {
     @SerializedName("presentPriority")
     protected int presentPriority;
 
-    private @Nullable String @Nullable [] enumVals;
+    private String @Nullable [] enumVals;
     private boolean enumParsed = false;
     protected boolean isEnum = false;
 

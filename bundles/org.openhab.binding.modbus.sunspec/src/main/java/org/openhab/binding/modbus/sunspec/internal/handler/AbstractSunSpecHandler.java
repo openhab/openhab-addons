@@ -171,8 +171,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
         }
         try {
             ModelBlock block = new ModelBlock();
-            block.address = (int) Double.parseDouble(thing.getProperties().get(PROPERTY_BLOCK_ADDRESS));
-            block.length = (int) Double.parseDouble(thing.getProperties().get(PROPERTY_BLOCK_LENGTH));
+            block.address = (int) Double.parseDouble(thing.getProperties().getOrDefault(PROPERTY_BLOCK_ADDRESS, ""));
+            block.length = (int) Double.parseDouble(thing.getProperties().getOrDefault(PROPERTY_BLOCK_LENGTH, ""));
             return block;
         } catch (NumberFormatException ex) {
             logger.debug("Could not parse address and length properties, error: {}", ex.getMessage());

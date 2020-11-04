@@ -28,33 +28,45 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ResponseFieldDTO {
+    public enum AlertLevel {
+        UNKNOWN,
+        @SerializedName("Vert")
+        GREEN,
+        @SerializedName("Jaune")
+        YELLOW,
+        @SerializedName("Orange")
+        ORANGE,
+        @SerializedName("Rouge")
+        RED;
+    }
+
     @SerializedName("nom_reg")
     private String nomReg = "";
     @SerializedName("typeprev")
     private String typePrev = "";
     @SerializedName("etat_canicule")
-    private String canicule = "";
+    private AlertLevel canicule = AlertLevel.UNKNOWN;
     @SerializedName("nom_dept")
     private String nomDept = "";
     @SerializedName("etat_grand_froid")
-    private String grandFroid = "";
+    private AlertLevel grandFroid = AlertLevel.UNKNOWN;;
     @SerializedName("noversion")
     private String noVersion = "";
     @SerializedName("etat_pluie_inondation")
-    private String pluieInondation = "";
+    private AlertLevel pluieInondation = AlertLevel.UNKNOWN;;
     @SerializedName("etat_neige")
-    private String neige = "";
+    private AlertLevel neige = AlertLevel.UNKNOWN;;
     @SerializedName("etat_vent")
-    private String vent = "";
+    private AlertLevel vent = AlertLevel.UNKNOWN;;
     @SerializedName("etat_inondation")
-    private String inondation = "";
+    private AlertLevel inondation = AlertLevel.UNKNOWN;;
     @SerializedName("etat_avalanches")
-    private String avalanches = "";
+    private AlertLevel avalanches = AlertLevel.UNKNOWN;;
     @SerializedName("etat_orage")
-    private String orage = "";
+    private AlertLevel orage = AlertLevel.UNKNOWN;
     private int echeance;
     @SerializedName("etat_vague_submersion")
-    private String vagueSubmersion = "";
+    private AlertLevel vagueSubmersion = AlertLevel.UNKNOWN;;
     private String dep = "";
     @SerializedName("vigilancecommentaire_texte")
     private String vigilanceComment = "";
@@ -85,7 +97,7 @@ public class ResponseFieldDTO {
         return typePrev;
     }
 
-    public String getCanicule() {
+    public AlertLevel getCanicule() {
         return canicule;
     }
 
@@ -93,7 +105,7 @@ public class ResponseFieldDTO {
         return nomDept;
     }
 
-    public String getGrandFroid() {
+    public AlertLevel getGrandFroid() {
         return grandFroid;
     }
 
@@ -101,15 +113,15 @@ public class ResponseFieldDTO {
         return noVersion;
     }
 
-    public String getPluieInondation() {
+    public AlertLevel getPluieInondation() {
         return pluieInondation;
     }
 
-    public String getNeige() {
+    public AlertLevel getNeige() {
         return neige;
     }
 
-    public String getVent() {
+    public AlertLevel getVent() {
         return vent;
     }
 
@@ -121,15 +133,15 @@ public class ResponseFieldDTO {
         return Optional.empty();
     }
 
-    public String getInondation() {
+    public AlertLevel getInondation() {
         return inondation;
     }
 
-    public String getAvalanches() {
+    public AlertLevel getAvalanches() {
         return avalanches;
     }
 
-    public String getOrage() {
+    public AlertLevel getOrage() {
         return orage;
     }
 
@@ -137,7 +149,7 @@ public class ResponseFieldDTO {
         return echeance;
     }
 
-    public String getVagueSubmersion() {
+    public AlertLevel getVagueSubmersion() {
         return vagueSubmersion;
     }
 

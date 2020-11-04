@@ -74,7 +74,8 @@ public class HttpRequest implements AutoCloseable {
                 content.close();
             }
         } catch (IOException | IllegalStateException | ProcessingException e) {
-            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, e.getMessage());
+            String message = e.getMessage();
+            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, message != null ? message : "");
         }
     }
 
@@ -100,7 +101,8 @@ public class HttpRequest implements AutoCloseable {
                 content.close();
             }
         } catch (IOException | IllegalStateException | ProcessingException e) {
-            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, e.getMessage());
+            String message = e.getMessage();
+            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, message != null ? message : "");
         }
     }
 

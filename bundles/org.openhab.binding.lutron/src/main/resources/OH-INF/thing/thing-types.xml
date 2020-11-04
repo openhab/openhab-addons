@@ -6,7 +6,7 @@
 
 	<bridge-type id="ipbridge">
 		<label>Lutron IP Access Point</label>
-		<description>Ethernet access point to Lutron lighting control system</description>
+		<description>Lutron controller using Lutron Integration Protocol (LIP) over TCP/IP</description>
 		<properties>
 			<property name="vendor">Lutron</property>
 		</properties>
@@ -57,13 +57,84 @@
 		</config-description>
 	</bridge-type>
 
+	<bridge-type id="leapbridge">
+		<label>Lutron LEAP Access Point</label>
+		<description>Lutron controller using LEAP protocol over TCP/IP</description>
+
+		<channels>
+			<channel id="command" typeId="command-type"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Lutron</property>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the Lutron integration access point</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>TCP Port</label>
+				<description>The bridge TCP port</description>
+				<default>8081</default>
+			</parameter>
+			<parameter name="keystore" type="text" required="true">
+				<label>Keystore File</label>
+				<description>Java keystore containing caseta key and certs</description>
+			</parameter>
+			<parameter name="keystorePassword" type="text">
+				<context>password</context>
+				<label>Keystore Password</label>
+				<description>Password for the keystore file</description>
+			</parameter>
+			<parameter name="certValidate" type="boolean" required="false">
+				<label>Validate SSL Certificates</label>
+				<description>Validate server SSL certificate</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="reconnect" type="integer" min="1" max="60" unit="min">
+				<label>Reconnect Interval</label>
+				<description>The period in minutes that the handler will wait between connection attempts</description>
+				<unitLabel>minutes</unitLabel>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="heartbeat" type="integer" min="1" max="60" unit="min">
+				<label>Keepalive Heartbeat Interval</label>
+				<description>The period in minutes between connection heartbeat checks</description>
+				<unitLabel>minutes</unitLabel>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="delay" type="integer" min="0" max="250" unit="ms">
+				<label>Send Delay</label>
+				<description>The delay in milliseconds between sending integration commands (for throttling)</description>
+				<unitLabel>ms</unitLabel>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="command-type" advanced="true">
+		<item-type>String</item-type>
+		<label>LEAP Command</label>
+		<description>LEAP command to send (for debugging)</description>
+	</channel-type>
+
 	<thing-type id="dimmer">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="leapbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Maestro Dimmer</label>
+		<label>Lutron Dimmer</label>
 		<description>Controls dimmable loads</description>
+		<category>Lightbulb</category>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
@@ -102,13 +173,39 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="fan">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="leapbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Fan Speed Controller</label>
+		<description>Controls ceiling fans</description>
+
+		<channels>
+			<channel id="fanspeed" typeId="fanControl"/>
+			<channel id="fanlevel" typeId="lightDimmer"/>
+		</channels>
+
+		<representation-property>integrationId</representation-property>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of fan controller in the Lutron system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="shade">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="leapbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Sivoia QS Shade</label>
-		<description>Controls roller shades</description>
+		<label>Lutron Shade</label>
+		<description>Controls roller shades, drapes, and motor controllers</description>
+		<category>Blinds</category>
 
 		<channels>
 			<channel id="shadelevel" typeId="shadeControl"/>
@@ -160,10 +257,12 @@
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="leapbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Maestro Switch</label>
+		<label>Lutron Switch</label>
 		<description>On/off switch</description>
+		<category>WallSwitch</category>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -272,6 +371,7 @@
 
 		<label>Radio Powr Savr Sensor</label>
 		<description>Motion sensor to detect occupancy status</description>
+		<category>MotionDetector</category>
 
 		<channels>
 			<channel id="occupancystatus" typeId="occupiedState"/>
@@ -303,6 +403,30 @@
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
 				<description>Integration ID for state variable</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="ogroup">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="leapbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Occupancy Group</label>
+		<description>Shows state of occupancy sensor group</description>
+		<category>MotionDetector</category>
+
+		<channels>
+			<channel id="groupstate" typeId="groupState"/>
+		</channels>
+
+		<representation-property>integrationId</representation-property>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Occupancy group number</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -484,6 +608,7 @@
 	<thing-type id="pico">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="leapbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Pico Keypad</label>
@@ -522,7 +647,7 @@
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>GRAFIK Eye QS</label>
+		<label>GRAFIK Eye QS Keypad</label>
 		<description>Lutron GRAFIK Eye QS for RadioRA 2/HomeWorks QS</description>
 
 		<representation-property>integrationId</representation-property>
@@ -597,10 +722,10 @@
 		</config-description>
 	</thing-type>
 
-
 	<thing-type id="virtualkeypad">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="leapbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Virtual Keypad</label>
@@ -617,8 +742,8 @@
 				<label>Virtual Keypad Type</label>
 				<description>System type for virtual keypad</description>
 				<options>
-					<option value="Caseta">Caseta Scene Buttons</option>
-					<option value="Other">HomeWorks/RA 2/Other</option>
+					<option value="Caseta">Caseta/RA2 Select Scene Buttons</option>
+					<option value="Other">HomeWorks/RadioRA 2/Other</option>
 				</options>
 				<default>Other</default>
 			</parameter>
@@ -717,7 +842,7 @@
 
 	<bridge-type id="prgbridge">
 		<label>Lutron GRX-PRG or GRX-CI-PRG Bridge</label>
-		<description>Ethernet access point to Lutron Grafik Eye 3x/4x Systems</description>
+		<description>Ethernet access point to Lutron GRAFIK Eye 3x/4x Systems</description>
 
 		<channels>
 			<channel id="buttonpress" typeId="buttonpress"/>
@@ -791,8 +916,8 @@
 			<bridge-type-ref id="prgbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Grafik Eye</label>
-		<description>Controls a Grafik Eye</description>
+		<label>GRAFIK Eye</label>
+		<description>Controls a GRAFIK Eye</description>
 
 		<channels>
 			<channel id="scene" typeId="scene"/>
@@ -961,7 +1086,7 @@
 
 	<bridge-type id="hwserialbridge">
 		<label>Lutron HomeWorks RS232 Bridge</label>
-		<description>RS232 access point to Lutron HomeWorks lighting control system</description>
+		<description>RS232 access point to Legacy Lutron HomeWorks lighting control system</description>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
@@ -1017,8 +1142,9 @@
 			<bridge-type-ref id="hwserialbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>HomeWorks Dimmer</label>
-		<description>Controls dimmable loads</description>
+		<label>Lutron Dimmer (Legacy HomeWorks)</label>
+		<description>Controls dimmable loads for legacy HomeWorks systems</description>
+		<category>Lightbulb</category>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
@@ -1044,7 +1170,7 @@
 
 	<bridge-type id="ra-rs232">
 		<label>Lutron RadioRA RS232</label>
-		<description>RS-232 access to Lutron RadioRA</description>
+		<description>RS-232 access to legacy Lutron RadioRA systems</description>
 
 		<config-description>
 			<parameter name="portName" type="text" required="true">
@@ -1064,8 +1190,9 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ra-rs232"/>
 		</supported-bridge-type-refs>
-		<label>RadioRA Dimmer</label>
-		<description>RadioRA Dimmer</description>
+		<label>Lutron Dimmer (Legacy RadioRA)</label>
+		<description>Controls dimmable loads for legacy RadioRA systems</description>
+		<category>Lightbulb</category>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
@@ -1091,8 +1218,9 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ra-rs232"/>
 		</supported-bridge-type-refs>
-		<label>RadioRA Switch</label>
-		<description>RadioRA Switch</description>
+		<label>Lutron Switch (Legacy RadioRA)</label>
+		<description>On/off switch for Legacy RadioRA systems</description>
+		<category>WallSwitch</category>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -1110,8 +1238,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ra-rs232"/>
 		</supported-bridge-type-refs>
-		<label>RadioRA Phantom Button</label>
-		<description>RadioRA Phantom Button</description>
+		<label>Phantom Button (Legacy RadioRA)</label>
+		<description>Phantom Button for Legacy RadioRA systems</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -1170,6 +1298,33 @@
 		<description>Occupancy status</description>
 		<category>Motion</category>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fanControl">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="LOW">Low</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="MEDIUMHIGH">MediumHigh</option>
+				<option value="HIGH">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="groupState">
+		<item-type>String</item-type>
+		<label>Occupancy State</label>
+		<category>Motion</category>
+		<state readOnly="true">
+			<options>
+				<option value="OCCUPIED">Occupied</option>
+				<option value="UNOCCUPIED">Unoccupied</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="button">

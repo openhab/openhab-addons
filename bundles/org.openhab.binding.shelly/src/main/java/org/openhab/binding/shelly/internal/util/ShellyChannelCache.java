@@ -120,10 +120,7 @@ public class ShellyChannelCache {
     }
 
     public State getValue(String channelId) {
-        if (channelData.containsKey(channelId)) {
-            return channelData.get(channelId);
-        }
-        return UnDefType.NULL;
+        return channelData.getOrDefault(channelId, UnDefType.NULL);
     }
 
     public void resetChannel(String channelId) {

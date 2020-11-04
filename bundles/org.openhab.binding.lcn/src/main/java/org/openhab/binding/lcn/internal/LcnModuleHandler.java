@@ -71,9 +71,9 @@ public class LcnModuleHandler extends BaseThingHandler {
     private static final Map<String, Converter> VALUE_CONVERTERS = new HashMap<>();
     private static final InversionConverter INVERSION_CONVERTER = new InversionConverter();
     private @Nullable LcnAddrMod moduleAddress;
-    private final Map<LcnChannelGroup, @Nullable AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
+    private final Map<LcnChannelGroup, AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
     private final List<AbstractLcnModuleSubHandler> metadataSubHandlers = new ArrayList<>();
-    private final Map<ChannelUID, @Nullable Converter> converters = new HashMap<>();
+    private final Map<ChannelUID, Converter> converters = new HashMap<>();
 
     static {
         VALUE_CONVERTERS.put("temperature", Converters.TEMPERATURE);
@@ -112,7 +112,8 @@ public class LcnModuleHandler extends BaseThingHandler {
             for (Channel channel : thing.getChannels()) {
                 Object unitObject = channel.getConfiguration().get("unit");
                 Object parameterObject = channel.getConfiguration().get("parameter");
-                Object invertConfig = channel.getConfiguration().get("invertState");
+                Object invertState = channel.getConfiguration().get("invertState");
+                Object invertUpDown = channel.getConfiguration().get("invertUpDown");
 
                 // Initialize value converters
                 if (unitObject instanceof String) {
@@ -122,15 +123,16 @@ public class LcnModuleHandler extends BaseThingHandler {
                             converters.put(channel.getUID(), new S0Converter(parameterObject));
                             break;
                         default:
-                            if (VALUE_CONVERTERS.containsKey(unitObject)) {
-                                converters.put(channel.getUID(), VALUE_CONVERTERS.get(unitObject));
+                            Converter converter = VALUE_CONVERTERS.get(unitObject);
+                            if (converter != null) {
+                                converters.put(channel.getUID(), converter);
                             }
                             break;
                     }
                 }
 
                 // Initialize inversion converter
-                if (invertConfig instanceof Boolean && invertConfig.equals(true)) {
+                if (Boolean.TRUE.equals(invertState) || Boolean.TRUE.equals(invertUpDown)) {
                     converters.put(channel.getUID(), INVERSION_CONVERTER);
                 }
 

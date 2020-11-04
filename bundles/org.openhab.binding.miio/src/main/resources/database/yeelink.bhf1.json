@@ -1,0 +1,103 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yeelink.bhf_light.v1",
+			"yeelink.bhf_light.v2"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"channelType": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bh_mode",
+				"friendlyName": "Bath Heater mode",
+				"channel": "bh_mode",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_bh_mode",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"channelType": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
+					}
+				]
+			},
+			{
+				"property": "delayoff",
+				"friendlyName": "Shutdown Timer",
+				"channel": "delayoff",
+				"channelType": "delayoff",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "cron_add",
+						"parameterType": "NUMBER",
+						"parameters": [
+							0,
+							"$value$"
+						]
+					}
+				]
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"channelType": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "nl_br",
+				"friendlyName": "Nightlight Brightness",
+				"channel": "nightlightBrightness",
+				"channelType": "nightlightBrightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			}
+		]
+	}
+}

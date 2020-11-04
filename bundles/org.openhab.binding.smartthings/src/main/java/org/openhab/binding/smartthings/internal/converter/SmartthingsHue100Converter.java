@@ -73,7 +73,7 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
             return UnDefType.UNDEF;
         }
 
-        if ("Number".contentEquals(acceptedChannelType)) {
+        if (acceptedChannelType != null && "Number".contentEquals(acceptedChannelType)) {
             if (deviceValue instanceof String) {
                 double d = Double.parseDouble((String) deviceValue);
                 d *= 3.6;

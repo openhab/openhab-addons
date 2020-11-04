@@ -13,7 +13,6 @@
 package org.openhab.persistence.mapdb.internal;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -102,7 +101,6 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         if (db != null) {
             db.close();
         }
-        threadPool.shutdown();
     }
 
     @Override
@@ -144,20 +142,19 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         String json = serialize(mItem);
         map.put(localAlias, json);
         commit();
-        logger.debug("Stored '{}' with state '{}' in MapDB database", localAlias, state.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Stored '{}' with state '{}' as '{}' in MapDB database", localAlias, state, json);
+        }
     }
 
     @Override
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         String json = map.get(filter.getItemName());
         if (json == null) {
-            return Collections.emptyList();
+            return List.of();
         }
         Optional<MapDbItem> item = deserialize(json);
-        if (!item.isPresent()) {
-            return Collections.emptyList();
-        }
-        return Collections.singletonList(item.get());
+        return item.isPresent() ? List.of(item.get()) : List.of();
     }
 
     private String serialize(MapDbItem item) {
@@ -170,7 +167,10 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         if (item == null || !item.isValid()) {
             logger.warn("Deserialized invalid item: {}", item);
             return Optional.empty();
+        } else if (logger.isDebugEnabled()) {
+            logger.debug("Deserialized '{}' with state '{}' from '{}'", item.getName(), item.getState(), json);
         }
+
         return Optional.of(item);
     }
 
@@ -179,10 +179,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     }
 
     private static <T> Stream<T> streamOptional(Optional<T> opt) {
-        if (!opt.isPresent()) {
-            return Stream.empty();
-        }
-        return Stream.of(opt.get());
+        return opt.isPresent() ? Stream.of(opt.get()) : Stream.empty();
     }
 
     @Override

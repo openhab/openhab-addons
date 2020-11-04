@@ -13,6 +13,7 @@
 package org.openhab.binding.oppo.internal.handler;
 
 import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
+import static org.openhab.core.thing.Thing.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -88,7 +89,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private List<StateOption> hdmiModeOptions = new ArrayList<>();
 
     private long lastEventReceived = System.currentTimeMillis();
-    private String versionString = BLANK;
     private String verboseMode = VERBOSE_2;
     private String currentChapter = BLANK;
     private String currentTimeMode = T;
@@ -97,6 +97,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private boolean isPowerOn = false;
     private boolean isUDP20X = false;
     private boolean isBdpIP = false;
+    private boolean isVbModeSet = false;
+    private boolean isInitialQuery = false;
     private Object sequenceLock = new Object();
 
     /**
@@ -243,7 +245,12 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         if (command instanceof OnOffType) {
                             connector.sendCommand(
                                     command == OnOffType.ON ? OppoCommand.POWER_ON : OppoCommand.POWER_OFF);
-                            isPowerOn = (command == OnOffType.ON ? true : false);
+
+                            // set the power flag to false only, will be set true by QPW or UPW messages
+                            if (command == OnOffType.OFF) {
+                                isPowerOn = false;
+                                isInitialQuery = false;
+                            }
                         }
                         break;
                     case CHANNEL_VOLUME:
@@ -369,7 +376,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         String key = evt.getKey();
         String updateData = evt.getValue().trim();
         if (this.getThing().getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         }
 
         synchronized (sequenceLock) {
@@ -410,7 +417,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         updateChannelState(CHANNEL_TIME_DISPLAY, updateData);
                         break;
                     case QVR:
-                        this.versionString = updateData;
+                        thing.setProperty(PROPERTY_FIRMWARE_VERSION, updateData);
                         break;
                     case QPW:
                         updateChannelState(CHANNEL_POWER, updateData);
@@ -426,6 +433,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         if (ZERO.equals(updateData)) {
                             currentPlayMode = BLANK;
                             isPowerOn = false;
+                            isInitialQuery = false;
                         } else {
                             isPowerOn = true;
                         }
@@ -578,11 +586,11 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         try {
                             long prevUpdateTime = lastEventReceived;
 
-                            connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, this.verboseMode);
+                            connector.sendCommand(OppoCommand.QUERY_POWER_STATUS);
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
 
                             // if the player is off most of these won't really do much...
-                            OppoCommand.INITIAL_COMMANDS.forEach(cmd -> {
+                            OppoCommand.QUERY_COMMANDS.forEach(cmd -> {
                                 try {
                                     connector.sendCommand(cmd);
                                     Thread.sleep(SLEEP_BETWEEN_CMD_MS);
@@ -606,7 +614,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
                         closeConnection();
                     } else {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                     }
                 }
             }
@@ -639,11 +647,20 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
                 synchronized (sequenceLock) {
                     try {
-                        // if using direct IP connection on the 83/9x/10x, no unsolicited updates are sent
+                        // the verbose mode must be set while the player is on
+                        if (isPowerOn && !isVbModeSet && !isBdpIP) {
+                            connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, this.verboseMode);
+                            isVbModeSet = true;
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                        }
+
+                        // If using direct serial connection, the query is done once after the player is turned on
+                        // - OR - if using direct IP connection on the 83/9x/10x, no unsolicited updates are sent
                         // so we must query everything to know what changed.
-                        if (isBdpIP) {
+                        if ((isPowerOn && !isInitialQuery) || isBdpIP) {
                             connector.sendCommand(OppoCommand.QUERY_POWER_STATUS);
                             if (isPowerOn) {
+                                isInitialQuery = true;
                                 OppoCommand.QUERY_COMMANDS.forEach(cmd -> {
                                     try {
                                         connector.sendCommand(cmd);

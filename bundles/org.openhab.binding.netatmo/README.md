@@ -9,6 +9,10 @@ The Netatmo binding integrates the following Netatmo products:
 
 See http://www.netatmo.com/ for details on their product.
 
+Please note, recent Netatmo thermostats are not supported because they require the Energy API which is not yet implemented in the binding.
+Only older Netatmo thermostats compatible with the Thermostat API are supported.
+For the same reason, Netatmo valves are also not supported.
+
 
 ## Binding Configuration
 

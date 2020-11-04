@@ -28,12 +28,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class OpenUVBindingConstants {
-    public static final String BASE_URL = "https://api.openuv.io/api/v1/uv";
     public static final String BINDING_ID = "openuv";
     public static final String LOCAL = "local";
-
-    public static final String LOCATION = "location";
-    public static final String APIKEY = "apikey";
 
     // List of Bridge Type UIDs
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "openuvapi");

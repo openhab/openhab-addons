@@ -22,6 +22,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ThingStatus;
 import org.snmp4j.PDU;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.smi.IpAddress;
@@ -75,5 +76,6 @@ public class StringChannelTest extends AbstractSnmpTargetHandlerTest {
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(new StringType("aa 11 bb")));
+        verifyStatus(ThingStatus.ONLINE);
     }
 }

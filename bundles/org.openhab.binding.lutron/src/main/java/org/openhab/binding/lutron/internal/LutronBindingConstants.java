@@ -28,6 +28,7 @@ public class LutronBindingConstants {
 
     // Bridge Type UIDs
     public static final ThingTypeUID THING_TYPE_IPBRIDGE = new ThingTypeUID(BINDING_ID, "ipbridge");
+    public static final ThingTypeUID THING_TYPE_LEAPBRIDGE = new ThingTypeUID(BINDING_ID, "leapbridge");
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
@@ -51,12 +52,15 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_PALLADIOMKEYPAD = new ThingTypeUID(BINDING_ID, "palladiomkeypad");
     public static final ThingTypeUID THING_TYPE_WCI = new ThingTypeUID(BINDING_ID, "wci");
     public static final ThingTypeUID THING_TYPE_SYSVAR = new ThingTypeUID(BINDING_ID, "sysvar");
+    public static final ThingTypeUID THING_TYPE_OGROUP = new ThingTypeUID(BINDING_ID, "ogroup");
+    public static final ThingTypeUID THING_TYPE_FAN = new ThingTypeUID(BINDING_ID, "fan");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
     public static final String CHANNEL_SHADELEVEL = "shadelevel";
     public static final String CHANNEL_SWITCH = "switchstatus";
     public static final String CHANNEL_OCCUPANCYSTATUS = "occupancystatus";
+    public static final String CHANNEL_GROUPSTATE = "groupstate";
     public static final String CHANNEL_CLOCKMODE = "clockmode";
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";
@@ -67,6 +71,9 @@ public class LutronBindingConstants {
     public static final String CHANNEL_BLINDLIFTLEVEL = "blindliftlevel";
     public static final String CHANNEL_BLINDTILTLEVEL = "blindtiltlevel";
     public static final String CHANNEL_VARSTATE = "varstate";
+    public static final String CHANNEL_FANSPEED = "fanspeed";
+    public static final String CHANNEL_FANLEVEL = "fanlevel";
+    public static final String CHANNEL_COMMAND = "command"; // For LEAP bridge debugging
 
     // Bridge config properties (used by discovery service)
     public static final String HOST = "ipAddress";

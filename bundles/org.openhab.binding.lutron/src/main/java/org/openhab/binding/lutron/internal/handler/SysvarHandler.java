@@ -19,7 +19,8 @@ import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.config.SysvarConfig;
-import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.SysvarCommand;
+import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -38,8 +39,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SysvarHandler extends LutronHandler {
-    private static final Integer ACTION_GETSETSYSVAR = 1;
-
     private final Logger logger = LoggerFactory.getLogger(SysvarHandler.class);
 
     private @Nullable SysvarConfig config;
@@ -80,7 +79,8 @@ public class SysvarHandler extends LutronHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
-            querySysvar(ACTION_GETSETSYSVAR); // handleUpdate() will set thing status to online when response arrives
+            querySysvar(SysvarCommand.ACTION_GETSETSYSVAR);
+            // handleUpdate() will set thing status to online when response arrives
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -90,7 +90,7 @@ public class SysvarHandler extends LutronHandler {
     public void channelLinked(ChannelUID channelUID) {
         if (channelUID.getId().equals(CHANNEL_VARSTATE)) {
             // Refresh state when new item is linked.
-            querySysvar(ACTION_GETSETSYSVAR);
+            querySysvar(SysvarCommand.ACTION_GETSETSYSVAR);
         }
     }
 
@@ -99,7 +99,7 @@ public class SysvarHandler extends LutronHandler {
         if (channelUID.getId().equals(CHANNEL_VARSTATE)) {
             if (command instanceof Number) {
                 int state = ((Number) command).intValue();
-                sysvar(ACTION_GETSETSYSVAR, state);
+                sysvar(SysvarCommand.ACTION_GETSETSYSVAR, state);
             }
         }
     }
@@ -107,7 +107,7 @@ public class SysvarHandler extends LutronHandler {
     @Override
     public void handleUpdate(LutronCommandType type, String... parameters) {
         if (type == LutronCommandType.SYSVAR && parameters.length > 1
-                && ACTION_GETSETSYSVAR.toString().equals(parameters[0])) {
+                && SysvarCommand.ACTION_GETSETSYSVAR.toString().equals(parameters[0])) {
             BigDecimal state = new BigDecimal(parameters[1]);
             if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                 updateStatus(ThingStatus.ONLINE);

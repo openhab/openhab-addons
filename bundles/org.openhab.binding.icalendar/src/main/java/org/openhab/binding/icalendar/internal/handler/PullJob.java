@@ -48,10 +48,12 @@ import org.slf4j.LoggerFactory;
  * {@link CalendarUpdateListener#onCalendarUpdated()} after successful update.
  *
  * @author Michael Wodniok - Initial contribution
+ * @author Michael Wodniok - Added better descriptions for some errors while
+ *         downloading calendar
  */
 @NonNullByDefault
 class PullJob implements Runnable {
-    private final static String TMP_FILE_PREFIX = "icalendardld";
+    private static final String TMP_FILE_PREFIX = "icalendardld";
 
     private final Authentication.@Nullable Result authentication;
     private final File destination;
@@ -89,7 +91,7 @@ class PullJob implements Runnable {
     @Override
     public void run() {
         final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET);
-        final Authentication.@Nullable Result currentAuthentication = authentication;
+        final Authentication.Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);
         }
@@ -100,8 +102,17 @@ class PullJob implements Runnable {
         Response response;
         try {
             response = asyncListener.get(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
-        } catch (InterruptedException | TimeoutException | ExecutionException e1) {
-            logger.warn("Response for calendar request could not be retrieved. Error message is: {}", e1.getMessage());
+        } catch (InterruptedException e1) {
+            logger.warn("Download of calendar was interrupted.");
+            logger.debug("InterruptedException message is: {}", e1.getMessage());
+            return;
+        } catch (TimeoutException e1) {
+            logger.warn("Download of calendar timed out (waited too long for headers).");
+            logger.debug("TimeoutException message is: {}", e1.getMessage());
+            return;
+        } catch (ExecutionException e1) {
+            logger.warn("Download of calendar failed.");
+            logger.debug("ExecutionException message is: {}", e1.getCause().getMessage());
             return;
         }
 

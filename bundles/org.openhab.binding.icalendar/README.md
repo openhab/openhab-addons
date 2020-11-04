@@ -6,11 +6,15 @@ Furthermore it is possible to embed `command tags` in the calendar event descrip
 
 ## Supported Things
 
-The only thing type is the calendar.
-It is based on a single iCalendar file.
+The primary thing type is the calendar.
+It is based on a single iCalendar file and implemented as bridge.
 There can be multiple things having different properties representing different calendars.
 
+Each calendar can have event filters which allow to get multiple events, maybe filtered by additional criteria. Time based filtering is done by each event's start.
+
 ## Thing Configuration
+
+### Configuration for `calendar`
 
 Each `calendar` thing requires the following configuration parameters:
 
@@ -23,20 +27,60 @@ Each `calendar` thing requires the following configuration parameters:
 | `maxSize`           | The maximum size of the iCal-file in Mebibytes.                                                                                                                                           | mandatory (default available) |
 | `authorizationCode` | The authorization code to permit the execution of embedded command tags. If set, the binding checks that the authorization code in the command tag matches before executing any commands. | optional                      |
 
+### Configuration for `eventfilter`
+
+Each `eventfilter` thing requires a bridge of type `calendar` and has following configuration options:
+
+| parameter name   | description                                                                                                                                                                                  | optional                                   |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| `maxEvents`      | The count of expected results.                                                                                                                                                               | mandatory                                  |
+| `refreshTime`    | The frequency in minutes the channels get refreshed.                                                                                                                                         | mandatory (default available)              |
+| `datetimeUnit`   | A unit for time settings in this filter. Valid values: `MINUTE`, `HOUR`, `DAY` and `WEEK`.                                                                                                   | optional (required for time-based filtering) |
+| `datetimeStart`  | The start of the time frame where to search for events relative to current time. Combined with `datetimeUnit`.                                                                               | optional                                   |
+| `datetimeEnd`    | The end of the time frame where to search for events relative to current time. Combined with `datetimeUnit`. The value must be greater than `datetimeStart` to get results.                  | optional                                   |
+| `datetimeRound`  | Whether to round the datetimes of start and end down to the earlier time unit. Example if set: current time is 13:00, timeunit is set to `DAY`. Resulting search will start and end at 0:00. | optional                                   |
+| `textEventField` | A field to filter the events text-based. Valid values: `SUMMARY`, `DESCRIPTION`, `COMMENT`, `CONTACT` and `LOCATION` (as described in RFC 5545).                                             | optional/required for text-based filtering |
+| `textEventValue` | The text to filter events with.                                                                                                                                                              | optional                                   |
+| `textValueType`  | The type of the text to filter with. Valid values: `TEXT` (field must contain value), `REGEX` (field must match value, completely, dot matches all, case insensetive).                       | optional/required for text-based filtering |
+
 ## Channels
 
-The channels describe the current and the next forthcoming event.
+### Channels for `calendar` 
+
+The channels of `calendar` describe the current and the next forthcoming event.
 They are all read-only.
 
-| Channel           | Type      | Description                                                                    |
-|-------------------|-----------|--------------------------------------------------------------------------------|
-| current_presence  | Switch    | Current presence of an event, `ON` if there is currently an event, `OFF` otherwise |
-| current_title     | String    | Title of a currently present event                                             |
-| current_start     | DateTime  | Start of a currently present event                                             |
-| current_end       | DateTime  | End of a currently present event                                               |
-| next_title        | String    | Title of the next event                                                        |
-| next_start        | DateTime  | Start of the next event                                                        |
-| next_end          | DateTime  | End of the next event                                                          |
+| Channel           | Type      | Description                                                                         |
+|-------------------|-----------|-------------------------------------------------------------------------------------|
+| current_presence  | Switch    | Current presence of an event, `ON` if there is currently an event, `OFF` otherwise  |
+| current_title     | String    | Title of a currently present event                                                  |
+| current_start     | DateTime  | Start of a currently present event                                                  |
+| current_end       | DateTime  | End of a currently present event                                                    |
+| next_title        | String    | Title of the next event                                                             |
+| next_start        | DateTime  | Start of the next event                                                             |
+| next_end          | DateTime  | End of the next event                                                               |
+
+### Channels for `eventfilter`
+
+The channels of `eventfilter` are generated using following scheme, all are read-only.
+
+| Channel-scheme      | Type      | Description            |
+|---------------------|-----------|------------------------|
+| `result_<no>#begin` | DateTime  | The begin of an event  |
+| `result_<no>#end`   | DateTime  | The end of an event    |
+| `result_<no>#title` | String    | The title of an event  |
+
+The scheme replaces `<no>` by the results index, beginning at `0`. An `eventfilter` having `maxEvents` set to 3 will have following channels:
+
+* `result_0#begin`
+* `result_0#end`
+* `result_0#title`
+* `result_1#begin`
+* `result_1#end`
+* `result_1#title`
+* `result_2#begin`
+* `result_2#end`
+* `result_2#title` 
 
 ## Command Tags
 
@@ -76,16 +120,19 @@ The `Authorization_Code` may *optionally* be used as follows:
 All required information must be provided in the thing definition, either via UI or in the `.things` file..
 
 ```
-Thing icalendar:calendar:deadbeef "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60 ]
+Bridge icalendar:calendar:deadbeef    "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60 ]
+Thing  icalendar:eventfilter:feedd0d0 "Tomorrows events" (icalendar:calendar:deadbeef) [ maxEvents=1, datetimeUnit="DAY", datetimeStart=1, datetimeEnd=2, datetimeRound=true ]
 ```
 
 Link the channels as usual to items:
 
 ```
-String   current_event_name  "current event [%s]"                       <calendar> { channel="icalendar:calendar:deadbeef:current_title" }
-DateTime current_event_until "current until [%1$tT, %1$tY-%1$tm-%1$td]" <calendar> { channel="icalendar:calendar:deadbeef:current_end" }
-String   next_event_name     "next event [%s]"                          <calendar> { channel="icalendar:calendar:deadbeef:next_title" }
-DateTime next_event_at       "next at [%1$tT, %1$tY-%1$tm-%1$td]"       <calendar> { channel="icalendar:calendar:deadbeef:next_start" }
+String   current_event_name        "current event [%s]"                       <calendar> { channel="icalendar:calendar:deadbeef:current_title" }
+DateTime current_event_until       "current until [%1$tT, %1$tY-%1$tm-%1$td]" <calendar> { channel="icalendar:calendar:deadbeef:current_end" }
+String   next_event_name           "next event [%s]"                          <calendar> { channel="icalendar:calendar:deadbeef:next_title" }
+DateTime next_event_at             "next at [%1$tT, %1$tY-%1$tm-%1$td]"       <calendar> { channel="icalendar:calendar:deadbeef:next_start" }
+String   first_event_name_tomorrow "first event [%s]"                         <calendar> { channel="icalendar:eventfilter:feedd0d0:event_0#title" }
+DateTime first_event_at_tomorrow   "first at [%1$tT, %1$tY-%1$tm-%1$td]"      <calendar> { channel="icalendar:eventfilter:feedd0d0:event_0#begin" }
 ```
 
 Sitemap just showing the current event and the beginning of the next:
@@ -97,6 +144,10 @@ sitemap local label="My Calendar Sitemap" {
         Text item=current_event_until label="current until [%1$tT, %1$tY-%1$tm-%1$td]"
         Text item=next_event_name label="next event [%s]"
         Text item=next_event_at label="next at [%1$tT, %1$tY-%1$tm-%1$td]"
+    }
+    Frame label="tomorrow" {
+        Text item=first_event_name_tomorrow
+        Text item=first_event_at_tomorrow
     }
 }
 ```
@@ -114,3 +165,7 @@ Command tags in a calendar event (in the case that configuration parameter `auth
 BEGIN:Calendar_Test_Switch:ON
 END:Calendar_Test_Switch:OFF
 ```
+
+## Breaking changes
+
+In OH3 `calendar` was changed from Thing to Bridge. You need to recreate calendars (or replace `Thing` by `Bridge` in your `.things` file).

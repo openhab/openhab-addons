@@ -22,14 +22,19 @@ import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
 import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.binding.tado.internal.api.model.HomeInfo;
+import org.openhab.binding.tado.internal.api.model.HomePresence;
+import org.openhab.binding.tado.internal.api.model.HomeState;
+import org.openhab.binding.tado.internal.api.model.PresenceState;
 import org.openhab.binding.tado.internal.api.model.User;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,9 +131,44 @@ public class TadoHomeHandler extends BaseBridgeHandler {
         return homeId;
     }
 
+    public HomeState getHomeState() throws IOException, ApiException {
+        HomeApi api = getApi();
+        return api != null ? api.homeState(getHomeId()) : null;
+    }
+
+    public void updateHomeState() {
+        try {
+            updateState(TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE,
+                    getHomeState().getPresence() == PresenceState.HOME ? OnOffType.ON : OnOffType.OFF);
+        } catch (IOException | ApiException e) {
+            logger.debug("Error accessing tado server: {}", e.getMessage(), e);
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Nothing to do for a bridge
+        String id = channelUID.getId();
+
+        if (command == RefreshType.REFRESH) {
+            updateHomeState();
+            return;
+        }
+
+        switch (id) {
+            case TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE:
+                HomePresence presence = new HomePresence();
+                presence.setHomePresence(command.toFullString().toUpperCase().equals("ON")
+                        || command.toFullString().toUpperCase().equals("HOME") ? PresenceState.HOME
+                                : PresenceState.AWAY);
+                try {
+                    api.updatePresenceLock(homeId, presence);
+                } catch (IOException | ApiException e) {
+                    logger.warn("Error setting home presence: {}", e.getMessage(), e);
+                }
+
+                break;
+
+        }
     }
 
     public State getBatteryLowAlarm(long zoneId) {

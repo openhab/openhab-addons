@@ -70,7 +70,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     // ConcurrentHashMap of devices registered to this BridgeHandler
     // association is: ownId (String) -> OpenWebNetThingHandler, with ownId = WHO.WHERE
-    private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
+    private Map<String, OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
 
     protected @Nullable OpenGateway gateway;
     private boolean isBusGateway = false;
@@ -314,14 +314,24 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Un-register a device from this bridge handler
      *
-     * @param oId the device OpenWebNet id
+     * @param ownId the device OpenWebNet id
      */
-    protected void unregisterDevice(String oId) {
-        if (registeredDevices.remove(oId) != null) {
-            logger.debug("un-registered device ownId={}", oId);
+    protected void unregisterDevice(String ownId) {
+        if (registeredDevices.remove(ownId) != null) {
+            logger.debug("un-registered device ownId={}", ownId);
         } else {
-            logger.warn("could not un-register ownId={} (not found)", oId);
+            logger.warn("could not un-register ownId={} (not found)", ownId);
         }
+    }
+
+    /**
+     * Get an already registered device on this bridge handler
+     *
+     * @param ownId the device OpenWebNet id
+     * @return the registered device Thing handler or null if the id cannot be found
+     */
+    public @Nullable OpenWebNetThingHandler getRegisteredDevice(String ownId) {
+        return registeredDevices.get(ownId);
     }
 
     @Override
