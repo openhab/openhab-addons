@@ -16,7 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -53,7 +54,6 @@ import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.core.common.AbstractUID;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -105,10 +105,13 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     private int refreshCounter = 0;
 
     /**
-     * Dedicated thread pool for the long-running bridge communication threads.
+     * Dedicated task executor for the long-running bridge communication tasks.
+     *
+     * Note: there is no point in using multi threaded thread-pool here, since all the submitted (Runnable) tasks are
+     * anyway forced to go through the same serial pipeline, because they all call the same class level "synchronized"
+     * method to actually communicate with the KLF bridge via its one single TCP socket connection
      */
-    private ScheduledExecutorService handleScheduler = ThreadPoolManager
-            .getScheduledPool(VeluxBindingConstants.BINDING_ID);
+    private ExecutorService handleScheduler = Executors.newSingleThreadExecutor();
 
     private VeluxBridge myJsonBridge = new JsonVeluxBridge(this);
     private VeluxBridge mySlipBridge = new SlipVeluxBridge(this);
@@ -403,7 +406,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
         if (handleScheduler.isShutdown()) {
             logger.trace("refreshOpenHAB(): handleScheduler is shutdown, recreating a scheduler pool.");
-            handleScheduler = ThreadPoolManager.getScheduledPool(VeluxBindingConstants.BINDING_ID);
+            handleScheduler = Executors.newSingleThreadExecutor();
         }
 
         logger.trace("refreshOpenHAB(): processing of possible HSM messages.");
