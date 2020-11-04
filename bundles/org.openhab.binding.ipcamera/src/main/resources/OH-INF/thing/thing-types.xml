@@ -151,6 +151,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -391,6 +392,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -767,6 +769,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -1034,6 +1037,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -1315,6 +1319,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -1577,6 +1582,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -1864,6 +1870,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>
@@ -2138,6 +2145,7 @@
 					per the readme.
 				</description>
 				<default>0</default>
+				<advanced>true</advanced>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
 					<option value="1">Image channel follows pollImage (1)</option>

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -935,8 +936,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (cameraConfig.getGifPreroll() > 0) {
                     storeSnapshots();
                 }
-                if (ffmpegGIF != null) {
-                    ffmpegGIF.startConverting();
+                Ffmpeg localGIF = ffmpegGIF;
+                if (localGIF != null) {
+                    localGIF.startConverting();
                     if (gifHistory.isEmpty()) {
                         gifHistory = gifFilename;
                     } else if (!gifFilename.equals("ipcamera")) {
@@ -961,8 +963,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (mp4Preroll > 0) {
                     // fetchFromHLS(); todo: not done yet
                 }
-                if (ffmpegRecord != null) {
-                    ffmpegRecord.startConverting();
+                Ffmpeg localRecord = ffmpegRecord;
+                if (localRecord != null) {
+                    localRecord.startConverting();
                     if (mp4History.isEmpty()) {
                         mp4History = mp4Filename;
                     } else if (!mp4Filename.equals("ipcamera")) {
@@ -976,8 +979,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 break;
             case RTSP_ALARMS:
-                if (ffmpegRtspHelper != null) {
-                    ffmpegRtspHelper.stopConverting();
+                Ffmpeg localAlarms = ffmpegRtspHelper;
+                if (localAlarms != null) {
+                    localAlarms.stopConverting();
                     if (!audioAlarmEnabled && !motionAlarmEnabled) {
                         return;
                     }
@@ -1002,7 +1006,10 @@ public class IpCameraHandler extends BaseThingHandler {
                 ffmpegRtspHelper = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, input,
                         filterOptions + cameraConfig.getMotionOptions(), OutputOptions, cameraConfig.getUser(),
                         cameraConfig.getPassword());
-                ffmpegRtspHelper.startConverting();
+                localAlarms = ffmpegRtspHelper;
+                if (localAlarms != null) {
+                    localAlarms.startConverting();
+                }
                 break;
             case MJPEG:
                 if (ffmpegMjpeg == null) {
@@ -1016,8 +1023,9 @@ public class IpCameraHandler extends BaseThingHandler {
                             "http://127.0.0.1:" + cameraConfig.getServerPort() + "/ipcamera.jpg",
                             cameraConfig.getUser(), cameraConfig.getPassword());
                 }
-                if (ffmpegMjpeg != null) {
-                    ffmpegMjpeg.startConverting();
+                Ffmpeg localMjpeg = ffmpegMjpeg;
+                if (localMjpeg != null) {
+                    localMjpeg.startConverting();
                 }
                 break;
             case SNAPSHOT:
@@ -1034,8 +1042,9 @@ public class IpCameraHandler extends BaseThingHandler {
                             "http://127.0.0.1:" + cameraConfig.getServerPort() + "/snapshot.jpg",
                             cameraConfig.getUser(), cameraConfig.getPassword());
                 }
-                if (ffmpegSnapshot != null) {
-                    ffmpegSnapshot.startConverting();
+                Ffmpeg localSnaps = ffmpegSnapshot;
+                if (localSnaps != null) {
+                    localSnaps.startConverting();
                 }
                 break;
         }
@@ -1200,14 +1209,17 @@ public class IpCameraHandler extends BaseThingHandler {
                     setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                     return;
                 case CHANNEL_START_STREAM:
+                    Ffmpeg localHLS;
                     if (OnOffType.ON.equals(command)) {
                         setupFfmpegFormat(FFmpegFormat.HLS);
-                        if (ffmpegHLS != null) {
-                            ffmpegHLS.setKeepAlive(-1);// will keep running till manually stopped.
+                        localHLS = ffmpegHLS;
+                        if (localHLS != null) {
+                            localHLS.setKeepAlive(-1);// will keep running till manually stopped.
                         }
                     } else {
-                        if (ffmpegHLS != null) {
-                            ffmpegHLS.setKeepAlive(1);
+                        localHLS = ffmpegHLS;
+                        if (localHLS != null) {
+                            localHLS.setKeepAlive(1);
                         }
                     }
                     return;
@@ -1234,8 +1246,9 @@ public class IpCameraHandler extends BaseThingHandler {
                             sendHttpGET(snapshotUri);// Allows this to change Image FPS on demand
                         }
                     } else {
-                        if (ffmpegSnapshot != null) {
-                            ffmpegSnapshot.stopConverting();
+                        Ffmpeg localSnaps = ffmpegSnapshot;
+                        if (localSnaps != null) {
+                            localSnaps.stopConverting();
                             ffmpegSnapshotGeneration = false;
                         }
                         updateImageChannel = false;
@@ -1382,8 +1395,9 @@ public class IpCameraHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
         groupTracker.listOfOnlineCameraHandlers.add(this);
         groupTracker.listOfOnlineCameraUID.add(getThing().getUID().getId());
-        if (cameraConnectionJob != null) {
-            cameraConnectionJob.cancel(false);
+        Future<?> localFuture = cameraConnectionJob;
+        if (localFuture != null) {
+            localFuture.cancel(false);
         }
 
         if (cameraConfig.getGifPreroll() > 0 || cameraConfig.getUpdateImageWhen().contains("1")) {
@@ -1488,16 +1502,19 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void stopSnapshotPolling() {
+        Future<?> localFuture;
         if (!streamingSnapshotMjpeg && cameraConfig.getGifPreroll() == 0
                 && !cameraConfig.getUpdateImageWhen().contains("1")) {
             snapshotPolling = false;
-            if (snapshotJob != null) {
-                snapshotJob.cancel(true);
+            localFuture = snapshotJob;
+            if (localFuture != null) {
+                localFuture.cancel(true);
             }
         } else if (cameraConfig.getUpdateImageWhen().contains("4")) { // only during Motion Alarms
             snapshotPolling = false;
-            if (snapshotJob != null) {
-                snapshotJob.cancel(true);
+            localFuture = snapshotJob;
+            if (localFuture != null) {
+                localFuture.cancel(true);
             }
         }
     }
@@ -1581,8 +1598,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 break;
         }
-        if (ffmpegHLS != null) {
-            ffmpegHLS.checkKeepAlive();
+        Ffmpeg localHLS = ffmpegHLS;
+        if (localHLS != null) {
+            localHLS.checkKeepAlive();
         }
         if (openChannels.size() > 18) {
             logger.debug("There are {} open Channels being tracked.", openChannels.size());
@@ -1687,17 +1705,17 @@ public class IpCameraHandler extends BaseThingHandler {
         isOnline = false;
         snapshotPolling = false;
         onvifCamera.disconnect();
-        if (pollCameraJob != null) {
-            pollCameraJob.cancel(true);
-            pollCameraJob = null;
+        Future<?> localFuture = pollCameraJob;
+        if (localFuture != null) {
+            localFuture.cancel(true);
         }
-        if (snapshotJob != null) {
-            snapshotJob.cancel(true);
-            snapshotJob = null;
+        localFuture = snapshotJob;
+        if (localFuture != null) {
+            localFuture.cancel(true);
         }
-        if (cameraConnectionJob != null) {
-            cameraConnectionJob.cancel(true);
-            cameraConnectionJob = null;
+        localFuture = cameraConnectionJob;
+        if (localFuture != null) {
+            localFuture.cancel(true);
         }
         threadPool.shutdown();
         threadPool = Executors.newScheduledThreadPool(4);
@@ -1713,29 +1731,29 @@ public class IpCameraHandler extends BaseThingHandler {
         stopStreamServer();
         openChannels.close();
 
-        if (ffmpegHLS != null) {
-            ffmpegHLS.stopConverting();
-            ffmpegHLS = null;
+        Ffmpeg localFfmpeg = ffmpegHLS;
+        if (localFfmpeg != null) {
+            localFfmpeg.stopConverting();
         }
-        if (ffmpegRecord != null) {
-            ffmpegRecord.stopConverting();
-            ffmpegRecord = null;
+        localFfmpeg = ffmpegRecord;
+        if (localFfmpeg != null) {
+            localFfmpeg.stopConverting();
         }
-        if (ffmpegGIF != null) {
-            ffmpegGIF.stopConverting();
-            ffmpegGIF = null;
+        localFfmpeg = ffmpegGIF;
+        if (localFfmpeg != null) {
+            localFfmpeg.stopConverting();
         }
-        if (ffmpegRtspHelper != null) {
-            ffmpegRtspHelper.stopConverting();
-            ffmpegRtspHelper = null;
+        localFfmpeg = ffmpegRtspHelper;
+        if (localFfmpeg != null) {
+            localFfmpeg.stopConverting();
         }
-        if (ffmpegMjpeg != null) {
-            ffmpegMjpeg.stopConverting();
-            ffmpegMjpeg = null;
+        localFfmpeg = ffmpegMjpeg;
+        if (localFfmpeg != null) {
+            localFfmpeg.stopConverting();
         }
-        if (ffmpegSnapshot != null) {
-            ffmpegSnapshot.stopConverting();
-            ffmpegSnapshot = null;
+        localFfmpeg = ffmpegSnapshot;
+        if (localFfmpeg != null) {
+            localFfmpeg.stopConverting();
         }
         channelTrackingMap.clear();
     }
