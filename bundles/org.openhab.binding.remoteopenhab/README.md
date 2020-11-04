@@ -37,7 +37,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 The `server` thing has the following configuration parameters:
 
 | Parameter | Required | Description                                                                                            |
-|-----------|-------------------------------------------------------------------------------------------------------------------|
+|-----------|----------|--------------------------------------------------------------------------------------------------------|
 | host      | yes      | The host name or IP address of the remote openHAB server.                                              |
 | port      | yes      | The HTTP port to be used to communicate with the remote openHAB server. Default is 8080.               |
 | restPath  | yes      | The subpath of the REST API on the remote openHAB server. Default is /rest                             |
@@ -46,7 +46,7 @@ The `server` thing has the following configuration parameters:
 The `thing` thing has the following configuration parameters:
 
 | Parameter     | Required | Description                                 |
-|---------------|--------------------------------------------------------|
+|---------------|----------|---------------------------------------------|
 | thingUID      | yes      | The thing UID in the remote openHAB server. |
 | buildChannels | no       | If set to true, a trigger channel will be automatically created and linked to each trigger channel from the remote thing. Default is true. |
 
