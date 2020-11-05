@@ -185,14 +185,14 @@
 	</thing-type>
 
 	<channel-type id="alert-level">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Alerte</label>
 		<state readOnly="true">
 			<options>
-				<option value="GREEN">Vert</option>
-				<option value="YELLOW">Jaune</option>
-				<option value="ORANGE">Orange</option>
-				<option value="RED">Rouge</option>
+				<option value="0">Vert</option>
+				<option value="1">Jaune</option>
+				<option value="2">Orange</option>
+				<option value="3">Rouge</option>
 			</options>
 		</state>
 	</channel-type>
