@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
 public class InfoVigiCru {
     public class VicInfoVigiCru {
         @SerializedName("vic:NivInfoVigiCru")
-        public String vicNivInfoVigiCru;
+        public int vicNivInfoVigiCru;
         @SerializedName("vic:SituActuInfoVigiCru")
         public String vicSituActuInfoVigiCru;
         @SerializedName("vic:QualifInfoVigiCru")

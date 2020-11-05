@@ -24,9 +24,14 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 public class TronEntVigiCru {
+    public class VicStaEntVigiCru {
+        @SerializedName("vic:CdEntVigiCru")
+        public String vicCdEntVigiCru;
+    }
+
     public class VicTronEntVigiCru {
         @SerializedName("vic:aNMoinsUn")
-        public List<VicANMoinsUn> vicANMoinsUn;
+        public List<VicStaEntVigiCru> stations;
         /*
          * Currently unused, maybe interesting in the future
          *
@@ -65,9 +70,9 @@ public class TronEntVigiCru {
     @SerializedName("vic:TronEntVigiCru")
     private VicTronEntVigiCru tronTerEntVigiCru;
 
-    public Stream<VicANMoinsUn> getSubLevels() {
-        if (tronTerEntVigiCru != null && tronTerEntVigiCru.vicANMoinsUn != null) {
-            return tronTerEntVigiCru.vicANMoinsUn.stream();
+    public Stream<VicStaEntVigiCru> getStations() {
+        if (tronTerEntVigiCru != null && tronTerEntVigiCru.stations != null) {
+            return tronTerEntVigiCru.stations.stream();
         } else {
             return Stream.empty();
         }

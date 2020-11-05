@@ -75,7 +75,7 @@ public class CdStationHydro {
          */
     }
 
-    @SerializedName("Evenement")
+    @SerializedName("VigilanceCrues")
     public VigilanceCrues vigilanceCrues;
     /*
      * Currently unused, maybe interesting in the future

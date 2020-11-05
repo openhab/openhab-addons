@@ -56,10 +56,19 @@ The VigiCrues information that retrieved are made available with these channels:
 | height           | Number:Length             | Water height of the river                                  |
 | relative-height  | Number:Dimensionless      | Current water level toward lowest historical flood         |
 | relative-flow    | Number:Dimensionless      | Current water flow tower lowest historical flood           |
-| alert            | String                    | Flooding alert level of the portion related to the station |
+| alert (*)        | Number                    | Flooding alert level of the portion related to the station |
 | alert-icon       | Image                     | Pictogram associated to the alert level                    |
 | short-comment    | String                    | Description of the alert level                             |
 | comment          | String                    | Detailed informations regarding the ongoing event          |
+
+(*) Each alert level is described by a color : 
+
+| Code | Color  | Description                               |
+|------|--------|-------------------------------------------|
+| 0    | Green  | No particular vigilance                   |
+| 1    | Yellow | Be attentive to the flooding situation    |
+| 2    | Orange | Be "very vigilant" in the concerned areas |
+| 3    | Red    | Absolute vigilance required               |
 
 
 ## Full Example

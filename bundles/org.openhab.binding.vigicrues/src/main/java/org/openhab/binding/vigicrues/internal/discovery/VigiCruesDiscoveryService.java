@@ -21,9 +21,13 @@ import org.openhab.binding.vigicrues.internal.api.VigiCruesException;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(service = DiscoveryService.class, configurationPid = "discovery.vigicrues")
 @NonNullByDefault
 public class VigiCruesDiscoveryService extends AbstractDiscoveryService {
     private static final int SEARCH_TIME = 5;
@@ -43,7 +48,8 @@ public class VigiCruesDiscoveryService extends AbstractDiscoveryService {
 
     private int searchRange = 10;
 
-    public VigiCruesDiscoveryService(ApiHandler apiHandler, LocationProvider locationProvider) {
+    @Activate
+    public VigiCruesDiscoveryService(@Reference ApiHandler apiHandler, @Reference LocationProvider locationProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME, false);
         this.apiHandler = apiHandler;
         this.locationProvider = locationProvider;
@@ -54,7 +60,7 @@ public class VigiCruesDiscoveryService extends AbstractDiscoveryService {
         PointType location = locationProvider.getLocation();
         if (location != null) {
             try {
-                HubEauResponse response = apiHandler.DiscoverStations(location, searchRange);
+                HubEauResponse response = apiHandler.discoverStations(location, searchRange);
                 if (response.count > 0) {
                     response.stations.stream().filter(station -> station.enService).forEach(station -> {
                         thingDiscovered(DiscoveryResultBuilder

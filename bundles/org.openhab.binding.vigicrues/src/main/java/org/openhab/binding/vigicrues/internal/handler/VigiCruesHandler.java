@@ -130,7 +130,7 @@ public class VigiCruesHandler extends BaseThingHandler {
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
 
         try {
-            HubEauResponse stationDetails = apiHandler.DiscoverStations(config.id);
+            HubEauResponse stationDetails = apiHandler.discoverStations(config.id);
             stationDetails.stations.stream().findFirst().ifPresent(station -> {
                 PointType stationLocation = new PointType(
                         String.format(Locale.US, "%f,%f", station.latitudeStation, station.longitudeStation));
@@ -147,17 +147,17 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
 
         try {
-            CdStationHydro refineStation = apiHandler.GetStationDetails(config.id);
+            CdStationHydro refineStation = apiHandler.getStationDetails(config.id);
             if (refineStation.vigilanceCrues.cruesHistoriques == null) {
                 throw new VigiCruesException("No historical data available");
             }
             refineStation.vigilanceCrues.cruesHistoriques.stream()
                     .forEach(crue -> properties.putAll(crue.getDescription()));
             String codeTerritoire = refineStation.vigilanceCrues.pereBoitEntVigiCru.cdEntVigiCru;
-            TerEntVigiCru territoire = apiHandler.GetTerritoire(codeTerritoire);
+            TerEntVigiCru territoire = apiHandler.getTerritoire(codeTerritoire);
             for (VicANMoinsUn troncon : territoire.vicTerEntVigiCru.vicANMoinsUn) {
-                TronEntVigiCru detail = apiHandler.GetTroncon(troncon.vicCdEntVigiCru);
-                if (detail.getSubLevels().anyMatch(s -> s.vicCdEntVigiCru.equalsIgnoreCase(config.id))) {
+                TronEntVigiCru detail = apiHandler.getTroncon(troncon.vicCdEntVigiCru);
+                if (detail.getStations().anyMatch(s -> config.id.equalsIgnoreCase(s.vicCdEntVigiCru))) {
                     properties.put(TRONCON, troncon.vicCdEntVigiCru);
                     break;
                 }
@@ -173,7 +173,7 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
 
         try {
-            OpenDatasoftResponse measures = apiHandler.GetMeasures(config.id);
+            OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
             measures.getFirstRecord().ifPresent(field -> {
                 if (field.getHeight().isEmpty()) {
                     channels.removeIf(channel -> (channel.getUID().getId().contains(HEIGHT)));
@@ -213,7 +213,7 @@ public class VigiCruesHandler extends BaseThingHandler {
     private void updateAndPublish() {
         StationConfiguration config = getConfigAs(StationConfiguration.class);
         try {
-            OpenDatasoftResponse measures = apiHandler.GetMeasures(config.id);
+            OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
             measures.getFirstRecord().ifPresent(field -> {
                 field.getHeight().ifPresent(height -> {
                     updateQuantity(HEIGHT, height, SIUnits.METRE);
@@ -226,8 +226,8 @@ public class VigiCruesHandler extends BaseThingHandler {
                 field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
             });
             if (portion != null) {
-                InfoVigiCru status = apiHandler.GetTronconStatus(portion);
-                updateAlert(ALERT, status.vicInfoVigiCru.vicNivInfoVigiCru);
+                InfoVigiCru status = apiHandler.getTronconStatus(portion);
+                updateAlert(ALERT, status.vicInfoVigiCru.vicNivInfoVigiCru - 1);
                 updateString(SHORT_COMMENT, status.vicInfoVigiCru.vicSituActuInfoVigiCru);
                 updateString(COMMENT, status.vicInfoVigiCru.vicQualifInfoVigiCru);
             }
@@ -262,13 +262,13 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
     }
 
-    public void updateAlert(String channelId, String value) {
+    public void updateAlert(String channelId, int value) {
         String channelIcon = channelId + "-icon";
         if (isLinked(channelId)) {
-            updateState(channelId, new StringType(value));
+            updateState(channelId, new DecimalType(value));
         }
         if (isLinked(channelIcon)) {
-            String resource = getResource(String.format("picto/crue-%s.svg", value));
+            String resource = getResource(String.format("picto/crue-%d.svg", value));
             updateState(channelIcon,
                     resource != null ? new RawType(resource.getBytes(), "image/svg+xml") : UnDefType.UNDEF);
         }
