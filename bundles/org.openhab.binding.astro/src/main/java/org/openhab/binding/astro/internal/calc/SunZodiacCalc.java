@@ -49,7 +49,7 @@ public class SunZodiacCalc {
             zodiacsByYear.put(year, zodiacs);
         }
 
-        return zodiacs.stream().filter(z -> z.isValid(calendar)).findFirst();
+        return zodiacs != null ? zodiacs.stream().filter(z -> z.isValid(calendar)).findFirst() : Optional.empty();
     }
 
     /**
