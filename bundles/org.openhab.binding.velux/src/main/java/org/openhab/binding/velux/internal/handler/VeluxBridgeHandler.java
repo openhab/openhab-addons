@@ -297,6 +297,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             logger.trace("dispose(): stopping the refresh.");
             currentRefreshJob.cancel(true);
         }
+        // shut down the task executor
+        handleScheduler.shutdownNow();
         // Background execution of dispose
         scheduler.execute(() -> {
             logger.trace("dispose.scheduled(): (synchronous) logout initiated.");
