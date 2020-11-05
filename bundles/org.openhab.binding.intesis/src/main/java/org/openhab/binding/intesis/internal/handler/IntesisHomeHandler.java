@@ -262,14 +262,14 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     .withType(channelTypeUID).withKind(ChannelKind.STATE).build();
             thingBuilder.withChannel(channel);
             updateThing(thingBuilder.build());
-
-            if (options != null) {
-                final List<StateOption> stateOptions = options.stream()
-                        .map(e -> new StateOption(e, e.substring(0, 1) + e.substring(1).toLowerCase()))
-                        .collect(Collectors.toList());
-                logger.trace("StateOptions : '{}'", stateOptions);
-                intesisStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions);
-            }
+        }
+        if (options != null) {
+            final List<StateOption> stateOptions = options.stream()
+                    .map(e -> new StateOption(e, e.substring(0, 1) + e.substring(1).toLowerCase()))
+                    .collect(Collectors.toList());
+            logger.trace("StateOptions : '{}'", stateOptions);
+            intesisStateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId),
+                    stateOptions);
         }
     }
 
