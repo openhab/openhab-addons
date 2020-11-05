@@ -65,27 +65,27 @@ public class TouchWandAlarmSensorCurrentStatus {
         this.alarmsStatus = alarmsStatus;
     }
 
-    public class Alarm {
+    public static class Alarm {
         public int event;
         public long ts;
     }
 
-    public class AlarmEvent {
+    public static class AlarmEvent {
         int alarmType;
         Alarm alarm = new Alarm();
     }
 
-    public class Sensor {
+    public static class Sensor {
         public int type;
         public float value;
     }
 
-    public class BinarySensor {
+    public static class BinarySensor {
         public long ts;
         public boolean state;
     }
 
-    public class BinarySensorEvent {
+    public static class BinarySensorEvent {
         public int sensorType;
         public BinarySensor sensor = new BinarySensor();
     }
