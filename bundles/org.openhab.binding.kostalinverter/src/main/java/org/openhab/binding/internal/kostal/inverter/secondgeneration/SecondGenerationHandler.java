@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -56,6 +57,8 @@ import com.google.gson.GsonBuilder;
 public class SecondGenerationHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SecondGenerationHandler.class);
+
+    private @Nullable ScheduledFuture<?> secondGenerationPoller;
 
     private final HttpClient httpClient;
 
@@ -169,7 +172,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.scheduleWithFixedDelay(() -> {
+        secondGenerationPoller = scheduler.scheduleWithFixedDelay(() -> {
 
             try {
                 refresh();
@@ -190,9 +193,21 @@ public class SecondGenerationHandler extends BaseThingHandler {
         }, 0, SecondGenerationBindingConstants.REFRESHINTERVAL_SEC, TimeUnit.SECONDS);
     }
 
+    @Override
+    public void dispose() {
+        final ScheduledFuture<?> secondGenerationLocalPoller = secondGenerationPoller;
+
+        if (secondGenerationLocalPoller != null && !secondGenerationLocalPoller.isCancelled()) {
+            secondGenerationLocalPoller.cancel(true);
+            secondGenerationPoller = null;
+        }
+    }
+
+    @SuppressWarnings("null")
     private void refresh() throws InterruptedException, ExecutionException, TimeoutException {
         final @Nullable SecondGenerationBindingConstants refreshConfig;
         refreshConfig = getConfigAs(SecondGenerationBindingConstants.class);
+
         String dxsEntriesCall = refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
                 + channelConfigs.get(0).dxsEntries;
         String dxsEntriesCallExt = refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
@@ -206,11 +221,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
         String jsonDxsEntriesResponse = callURL(dxsEntriesCall);
         String jsonDxsEntriesResponseExt = callURL(dxsEntriesCallExt);
         String jsonDxsEntriesResponseExtExt = callURL(refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
-                + channelConfigsExt.get(0).dxsEntries + "&dxsEntries=" + channelConfigsExt.get(1).dxsEntries
-                + "&dxsEntries=" + channelConfigsExt.get(2).dxsEntries);
+                + channelConfigsExtExt.get(0).dxsEntries + "&dxsEntries=" + channelConfigsExtExt.get(1).dxsEntries
+                + "&dxsEntries=" + channelConfigsExtExt.get(2).dxsEntries);
 
         // Get Gson object
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         // Parse result
         SecondGenerationDxsEntriesContainerDTO dxsEntriesContainer = gson.fromJson(jsonDxsEntriesResponse,
@@ -220,30 +235,23 @@ public class SecondGenerationHandler extends BaseThingHandler {
         SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExtExt = gson.fromJson(jsonDxsEntriesResponseExtExt,
                 SecondGenerationDxsEntriesContainerDTO.class);
 
-        // Create channel-posts array's
-        String[] channelPosts = new String[23];
-        String[] channelPostsExt = new String[23];
-        String[] channelPostsExtExt = new String[3];
+        String[] channelPostsAll = new String[49];
 
         // Fill channelPosts with each item value
-        int channelPostsCounter = 0;
+        int channelPostsCounterAll = 0;
         for (SecondGenerationDxsEntries dxsentries : dxsEntriesContainer.dxsEntries) {
-            channelPosts[channelPostsCounter] = dxsentries.getName();
-            channelPostsCounter++;
+            channelPostsAll[channelPostsCounterAll] = dxsentries.getName();
+            channelPostsCounterAll++;
         }
 
-        // Fill channelPostsExt with each item value
-        int channelPostsCounterExt = 0;
         for (SecondGenerationDxsEntries dxsentriesExt : dxsEntriesContainerExt.dxsEntries) {
-            channelPostsExt[channelPostsCounterExt] = dxsentriesExt.getName();
-            channelPostsCounterExt++;
+            channelPostsAll[channelPostsCounterAll] = dxsentriesExt.getName();
+            channelPostsCounterAll++;
         }
 
-        // Fill channelPostsExtExt with each item value
-        int channelPostsCounterExtExt = 0;
         for (SecondGenerationDxsEntries dxsentriesExtExt : dxsEntriesContainerExtExt.dxsEntries) {
-            channelPostsExtExt[channelPostsCounterExtExt] = dxsentriesExtExt.getName();
-            channelPostsCounterExtExt++;
+            channelPostsAll[channelPostsCounterAll] = dxsentriesExtExt.getName();
+            channelPostsCounterAll++;
         }
 
         // Create and update actual values for each channelPost
@@ -251,38 +259,12 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
         for (SecondGenerationChannelConfiguration cConfig : channelConfigs) {
             Channel channel = getThing().getChannel(cConfig.id);
-            State state = getState(channelPosts[channelValuesCounter], cConfig.unit);
+            State state = getState(channelPostsAll[channelValuesCounter], cConfig.unit);
 
-            // Update the channel
+            // Update the channels
             if (state != null) {
                 updateState(channel.getUID().getId(), state);
                 channelValuesCounter++;
-            }
-        }
-
-        // Create and update actual values for each channelPostExt
-        int channelValuesCounterExt = 0;
-        for (SecondGenerationChannelConfiguration cConfig : channelConfigsExt) {
-            Channel channel = getThing().getChannel(cConfig.id);
-            State state = getState(channelPostsExt[channelValuesCounterExt], cConfig.unit);
-
-            // Update the channel
-            if (state != null) {
-                updateState(channel.getUID().getId(), state);
-                channelValuesCounterExt++;
-            }
-        }
-
-        // Create and update actual values for each channelPostExtExt
-        int channelValuesCounterExtExt = 0;
-        for (SecondGenerationChannelConfiguration cConfig : channelConfigsExtExt) {
-            Channel channel = getThing().getChannel(cConfig.id);
-            State state = getState(channelPostsExtExt[channelValuesCounterExtExt], cConfig.unit);
-
-            // Update the channel
-            if (state != null) {
-                updateState(channel.getUID().getId(), state);
-                channelValuesCounterExtExt++;
             }
         }
     }

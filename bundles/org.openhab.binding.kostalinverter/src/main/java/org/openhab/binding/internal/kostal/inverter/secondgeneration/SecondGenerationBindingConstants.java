@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,6 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation
  */
+
 @NonNullByDefault
 public class SecondGenerationBindingConstants {
 
