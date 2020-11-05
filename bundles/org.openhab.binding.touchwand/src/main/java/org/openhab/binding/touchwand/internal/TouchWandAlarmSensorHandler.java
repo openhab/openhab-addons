@@ -14,6 +14,9 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
+import javax.measure.quantity.Illuminance;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.touchwand.internal.dto.TouchWandAlarmSensorCurrentStatus.BinarySensorEvent;
 import org.openhab.binding.touchwand.internal.dto.TouchWandAlarmSensorCurrentStatus.Sensor;
@@ -22,6 +25,7 @@ import org.openhab.binding.touchwand.internal.dto.TouchWandUnitDataAlarmSensor;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
@@ -69,13 +73,13 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
         int lowThreshold = isBatteryLow ? BATT_LEVEL_LOW + BATT_LEVEL_LOW_HYS : BATT_LEVEL_LOW;
         boolean lowBattery = (battLevel <= lowThreshold);
         updateState(CHANNEL_BATTERY_LOW, OnOffType.from(lowBattery));
-        isBatteryLow = (battLevel <= lowThreshold);
+        isBatteryLow = lowBattery;
     }
 
     void updateIllumination(TouchWandUnitDataAlarmSensor unitData) {
         for (Sensor sensor : unitData.getCurrStatus().getSensorsStatus()) {
             if (sensor.type == SENSOR_TYPE_LUMINANCE) {
-                updateState(CHANNEL_ILLUMINATION, new DecimalType(sensor.value));
+                updateState(CHANNEL_ILLUMINATION, new QuantityType<Illuminance>(String.valueOf(sensor.value)));
             }
         }
     }
@@ -112,7 +116,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
     void updateChannelTemperature(TouchWandUnitDataAlarmSensor unitData) {
         for (Sensor sensor : unitData.getCurrStatus().getSensorsStatus()) {
             if (sensor.type == SENSOR_TYPE_TEMPERATURE) {
-                updateState(CHANNEL_TEMPERATURE, new DecimalType(sensor.value));
+                updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(String.valueOf(sensor.value)));
             }
         }
     }

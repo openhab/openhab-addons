@@ -50,11 +50,4 @@
 		<category>Motion</category>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true">
-		</state>
-	</channel-type>
 </thing:thing-descriptions>
