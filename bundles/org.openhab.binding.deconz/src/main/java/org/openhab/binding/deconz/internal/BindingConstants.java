@@ -62,6 +62,7 @@ public class BindingConstants {
             "extendedcolorlight");
     public static final ThingTypeUID THING_TYPE_WINDOW_COVERING = new ThingTypeUID(BINDING_ID, "windowcovering");
     public static final ThingTypeUID THING_TYPE_WARNING_DEVICE = new ThingTypeUID(BINDING_ID, "warningdevice");
+    public static final ThingTypeUID THING_TYPE_DOORLOCK = new ThingTypeUID(BINDING_ID, "doorlock");
 
     // groups
     public static final ThingTypeUID THING_TYPE_LIGHTGROUP = new ThingTypeUID(BINDING_ID, "lightgroup");
@@ -110,6 +111,7 @@ public class BindingConstants {
     public static final String CHANNEL_ALERT = "alert";
     public static final String CHANNEL_ALL_ON = "all_on";
     public static final String CHANNEL_ANY_ON = "any_on";
+    public static final String CHANNEL_LOCK = "lock";
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";
