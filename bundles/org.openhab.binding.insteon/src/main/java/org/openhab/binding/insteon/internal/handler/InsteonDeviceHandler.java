@@ -226,8 +226,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 return;
             }
 
-            StringBuilder channelList = new StringBuilder();
-            List<Channel> channels = new ArrayList<>();
+            Map<String, Channel> channelMap = new HashMap<>();
             String thingId = getThing().getUID().getAsString();
             for (String channelId : ALL_CHANNEL_IDS) {
                 String feature = channelId.toLowerCase();
@@ -272,7 +271,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                             for (Channel channel : thing.getChannels()) {
                                 String id = channel.getUID().getId();
                                 if (id.startsWith(InsteonBindingConstants.BROADCAST_ON_OFF)) {
-                                    addChannel(channel, id, channels, channelList);
+                                    channelMap.put(id, channel);
                                     broadcastChannels.add(id);
                                 }
                             }
@@ -295,7 +294,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                                                         .createChannelBuilder(channelUID, channelTypeUID).withLabel(id)
                                                         .build();
 
-                                                addChannel(channel, id, channels, channelList);
+                                                channelMap.put(id, channel);
                                                 broadcastChannels.add(id);
                                             }
                                         } else {
@@ -323,7 +322,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                                 channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
                             }
 
-                            addChannel(channel, channelId, channels, channelList);
+                            channelMap.put(channelId, channel);
                         }
                     } else {
                         logger.debug("{} is a feature group for {}. It will not be added as a channel.", feature,
@@ -332,8 +331,24 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 }
             }
 
-            if (!channels.isEmpty() || device.isModem()) {
-                if (!channels.isEmpty()) {
+            if (!channelMap.isEmpty() || device.isModem()) {
+                List<Channel> channels = new ArrayList<>();
+                StringBuilder channelList = new StringBuilder();
+                if (!channelMap.isEmpty()) {
+                    List<String> channelIds = new ArrayList<>(channelMap.keySet());
+                    Collections.sort(channelIds);
+                    channelIds.forEach(channelId -> {
+                        Channel channel = channelMap.get(channelId);
+                        if (channel != null) {
+                            channels.add(channel);
+
+                            if (channelList.length() > 0) {
+                                channelList.append(", ");
+                            }
+                            channelList.append(channelId);
+                        }
+                    });
+
                     updateThing(editThing().withChannels(channels).build());
                 }
 
@@ -365,15 +380,6 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
         });
-    }
-
-    private void addChannel(Channel channel, String channelId, List<Channel> channels, StringBuilder channelList) {
-        channels.add(channel);
-
-        if (channelList.length() > 0) {
-            channelList.append(", ");
-        }
-        channelList.append(channelId);
     }
 
     @Override
