@@ -646,25 +646,24 @@ Again, refer to the [Insteon Terminal](https://github.com/pfrommerd/insteon-term
 This is an example of what to put into your .items file:
 
 ```
-    Number  thermostatCoolPoint   "cool point [%.1f °F]"  { channel="insteon:device:home:AABBCC:coolSetPoint" }
-    Number  thermostatHeatPoint   "heat point [%.1f °F]"  { channel="insteon:device:home:AABBCC:heatSetPoint" }
-    Number  thermostatSystemMode  "system mode [%d]"      { channel="insteon:device:home:AABBCC:systemMode" }
-    Number  thermostatFanMode     "fan mode [%d]"         { channel="insteon:device:home:AABBCC:fanMode" }
-    Number  thermostatIsHeating   "is heating [%d]"       { channel="insteon:device:home:AABBCC:isHeating"}
-    Number  thermostatIsCooling   "is cooling [%d]"       { channel="insteon:device:home:AABBCC:isCooling" }
-    Number  thermostatTempFahren  "temperature [%.1f °F]" { channel="insteon:device:home:AABBCC:tempFahrenheit" }
-    Number  thermostatTempCelsius "temperature [%.1f °C]" { channel="insteon:device:home:AABBCC:tempCelsius" }
-    Number  thermostatHumidity    "humidity [%.0f %%]"    { channel="insteon:device:home:AABBCC:humidity" }
+    Number              thermostatCoolPoint   "cool point [%.1f °F]"       { channel="insteon:device:home:AABBCC:coolSetPoint" }
+    Number              thermostatHeatPoint   "heat point [%.1f °F]"       { channel="insteon:device:home:AABBCC:heatSetPoint" }
+    Number              thermostatSystemMode  "system mode [%d]"           { channel="insteon:device:home:AABBCC:systemMode" }
+    Number              thermostatFanMode     "fan mode [%d]"              { channel="insteon:device:home:AABBCC:fanMode" }
+    Number              thermostatIsHeating   "is heating [%d]"            { channel="insteon:device:home:AABBCC:isHeating"}
+    Number              thermostatIsCooling   "is cooling [%d]"            { channel="insteon:device:home:AABBCC:isCooling" }
+    Number:Temperature  thermostatTemperature  "temperature [%.1f %unit%]" { channel="insteon:device:home:AABBCC:temperature" }
+    Number              thermostatHumidity    "humidity [%.0f %%]"         { channel="insteon:device:home:AABBCC:humidity" }
 ```
 
 Add this as well for some more exotic features:
 
 ```
-    Number  thermostatACDelay      "A/C delay [%d min]"        { channel="insteon:device:home:AABBCC:acDelay" }
-    Number  thermostatBacklight    "backlight [%d sec]"        { channel="insteon:device:home:AABBCC:backlightDuration" }
-    Number  thermostatStage1       "A/C stage 1 time [%d min]" { channel="insteon:device:home:AABBCC:stage1Duration" }
-    Number  thermostatHumidityHigh "humidity high [%d %%]"     { channel="insteon:device:home:AABBCC:humidityHigh" }
-    Number  thermostatHumidityLow  "humidity low [%d %%]"      { channel="insteon:device:home:AABBCC:humidityLow" }
+    Number              thermostatACDelay      "A/C delay [%d min]"        { channel="insteon:device:home:AABBCC:acDelay" }
+    Number              thermostatBacklight    "backlight [%d sec]"        { channel="insteon:device:home:AABBCC:backlightDuration" }
+    Number              thermostatStage1       "A/C stage 1 time [%d min]" { channel="insteon:device:home:AABBCC:stage1Duration" }
+    Number              thermostatHumidityHigh "humidity high [%d %%]"     { channel="insteon:device:home:AABBCC:humidityHigh" }
+    Number              thermostatHumidityLow  "humidity low [%d %%]"      { channel="insteon:device:home:AABBCC:humidityLow" }
 ```
 
 **Sitemap**
@@ -672,8 +671,7 @@ Add this as well for some more exotic features:
 For the thermostat to display in the GUI, add this to the sitemap file:
 
 ```
-    Text   item=thermostatTempCelsius icon="temperature"
-    Text   item=thermostatTempFahren icon="temperature"
+    Text   item=thermostatTemperature icon="temperature"
     Text   item=thermostatHumidity
     Setpoint item=thermostatCoolPoint icon="temperature" minValue=63 maxValue=90 step=1
     Setpoint item=thermostatHeatPoint icon="temperature" minValue=50 maxValue=80 step=1
