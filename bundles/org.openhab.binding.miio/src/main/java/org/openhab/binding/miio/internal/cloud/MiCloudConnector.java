@@ -160,7 +160,8 @@ public class MiCloudConnector {
             if (response.getAsJsonObject().has("result") && response.getAsJsonObject().get("result").isJsonObject()) {
                 JsonObject jo = response.getAsJsonObject().get("result").getAsJsonObject();
                 if (jo.has("url")) {
-                    return jo.get("url").getAsString();
+                    String mapUrl = jo.get("url").getAsString();
+                    return mapUrl != null ? mapUrl : "";
                 } else {
                     errorMsg = "Could not get url";
                 }
