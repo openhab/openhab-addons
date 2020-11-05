@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -36,6 +37,7 @@ import org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabServerConf
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabItem;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabStateDescription;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabStateOption;
+import org.openhab.binding.remoteopenhab.internal.discovery.RemoteopenhabDiscoveryService;
 import org.openhab.binding.remoteopenhab.internal.exceptions.RemoteopenhabException;
 import org.openhab.binding.remoteopenhab.internal.listener.RemoteopenhabItemsDataListener;
 import org.openhab.binding.remoteopenhab.internal.listener.RemoteopenhabStreamingDataListener;
@@ -59,6 +61,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
@@ -549,5 +552,10 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         } else {
             return true;
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(RemoteopenhabDiscoveryService.class);
     }
 }

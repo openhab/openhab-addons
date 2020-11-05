@@ -31,6 +31,8 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,24 +43,36 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class RemoteopenhabDiscoveryService extends AbstractDiscoveryService implements RemoteopenhabThingsDataListener {
+public class RemoteopenhabDiscoveryService extends AbstractDiscoveryService
+        implements ThingHandlerService, RemoteopenhabThingsDataListener {
 
     private final Logger logger = LoggerFactory.getLogger(RemoteopenhabDiscoveryService.class);
 
     private static final int SEARCH_TIME = 10;
 
-    private RemoteopenhabBridgeHandler bridgeHandler;
-    private RemoteopenhabRestClient restClient;
+    private @NonNullByDefault({}) RemoteopenhabBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) RemoteopenhabRestClient restClient;
 
-    public RemoteopenhabDiscoveryService(RemoteopenhabBridgeHandler bridgeHandler) {
+    public RemoteopenhabDiscoveryService() {
         super(RemoteopenhabBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME, false);
-        this.bridgeHandler = bridgeHandler;
-        this.restClient = bridgeHandler.gestRestClient();
     }
 
     @Override
-    public void activate(@Nullable Map<String, Object> configProperties) {
-        super.activate(configProperties);
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof RemoteopenhabBridgeHandler) {
+            this.bridgeHandler = (RemoteopenhabBridgeHandler) handler;
+            this.restClient = bridgeHandler.gestRestClient();
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
+    }
+
+    @Override
+    public void activate() {
+        ThingHandlerService.super.activate();
         restClient.addThingsDataListener(this);
     }
 
