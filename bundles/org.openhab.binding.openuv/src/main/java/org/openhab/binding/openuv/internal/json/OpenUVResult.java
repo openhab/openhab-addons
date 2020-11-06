@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -31,23 +30,23 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class OpenUVResult {
     private final ZonedDateTime DEFAULT_ZDT = ZonedDateTime.of(LocalDateTime.MIN, ZoneId.systemDefault());
-    private DecimalType uv = new DecimalType(0);
+    private double uv;
     private ZonedDateTime uvTime = DEFAULT_ZDT;
-    private DecimalType uvMax = new DecimalType(0);
+    private double uvMax;
     private ZonedDateTime uvMaxTime = DEFAULT_ZDT;
-    private DecimalType ozone = new DecimalType(0);
+    private double ozone;
     private ZonedDateTime ozoneTime = DEFAULT_ZDT;
     private SafeExposureTime safeExposureTime = new SafeExposureTime();
 
-    public DecimalType getUv() {
-        return uv;
+    public int getUv() {
+        return (int) uv;
     }
 
-    public DecimalType getUvMax() {
-        return uvMax;
+    public int getUvMax() {
+        return (int) uvMax;
     }
 
-    public DecimalType getOzone() {
+    public double getOzone() {
         return ozone;
     }
 
