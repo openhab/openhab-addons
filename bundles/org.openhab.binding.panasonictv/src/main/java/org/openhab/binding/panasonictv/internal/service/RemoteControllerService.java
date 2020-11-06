@@ -1,31 +1,33 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.panasonictv.internal.service;
 
-import static org.openhab.binding.panasonictv.PanasonicTvBindingConstants.*;
+import static org.openhab.binding.panasonictv.internal.PanasonicTvBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.UpnpService;
-import org.openhab.binding.panasonictv.internal.protocol.RemoteControllerException;
+import org.openhab.binding.panasonictv.internal.event.PanasonicEventListener;
 import org.openhab.binding.panasonictv.internal.protocol.UpnpRemoteController;
-import org.openhab.binding.panasonictv.internal.service.api.EventListener;
-import org.openhab.binding.panasonictv.internal.service.api.PanasonicTvService;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,44 +38,37 @@ import org.slf4j.LoggerFactory;
  *
  * @author Prakashbabu Sidaraddi - Initial contribution
  */
+@NonNullByDefault
 public class RemoteControllerService implements UpnpIOParticipant, PanasonicTvService {
-
     private Logger logger = LoggerFactory.getLogger(RemoteControllerService.class);
-
-    private UpnpService service;
 
     static final String SERVICE_NAME = "p00RemoteController";
 
-    private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
-    private final List<String> supportedCommandsUpnp = Arrays.asList(KEY_CODE);
+    private Map<String, String> stateMap = new ConcurrentHashMap<>();
+    private final List<String> supportedCommandsUpnp = List.of(KEY_CODE);
 
     private String udn;
-    private String host;
-    private int port;
     private UpnpRemoteController remoteController;
 
-    private List<EventListener> listeners = new CopyOnWriteArrayList<>();
+    private List<PanasonicEventListener> listeners = new CopyOnWriteArrayList<>();
 
-    private RemoteControllerService(UpnpService upnpService, String udn, String host, int port, boolean upnp) {
+    private RemoteControllerService(UpnpService upnpService, String udn, boolean upnp) {
         logger.debug("Create a Panasonic TV RemoteController service");
-        this.host = host;
-        this.port = port;
         this.udn = udn;
-        this.service = upnpService;
         this.remoteController = new UpnpRemoteController(upnpService);
     }
 
-    static RemoteControllerService createUpnpService(UpnpService upnpService, String udn, String host, int port) {
-        return new RemoteControllerService(upnpService, udn, host, port, true);
+    static RemoteControllerService createUpnpService(UpnpService upnpService, String udn) {
+        return new RemoteControllerService(upnpService, udn, true);
     }
 
     @Override
-    public void addEventListener(EventListener listener) {
+    public void addEventListener(PanasonicEventListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeEventListener(EventListener listener) {
+    public void removeEventListener(PanasonicEventListener listener) {
         listeners.remove(listener);
     }
 
@@ -91,8 +86,8 @@ public class RemoteControllerService implements UpnpIOParticipant, PanasonicTvSe
     }
 
     @Override
-    public boolean isUpnp() {
-        return true;
+    public String getServiceName() {
+        return SERVICE_NAME;
     }
 
     @Override
@@ -120,39 +115,14 @@ public class RemoteControllerService implements UpnpIOParticipant, PanasonicTvSe
      *
      * @param key Button code to send
      */
-    private static final List<String> tvInputKeyCodes = Arrays.asList("NRC_HDMI1-ONOFF", "NRC_HDMI2-ONOFF",
-            "NRC_HDMI3-ONOFF", "NRC_HDMI4-ONOFF", "NRC_TV-ONOFF", "NRC_VIDEO1-ONOFF", "NRC_VIDEO2-ONOFF");
+    private static final List<String> tvInputKeyCodes = List.of("NRC_HDMI1-ONOFF", "NRC_HDMI2-ONOFF", "NRC_HDMI3-ONOFF",
+            "NRC_HDMI4-ONOFF", "NRC_TV-ONOFF", "NRC_VIDEO1-ONOFF", "NRC_VIDEO2-ONOFF");
 
     private void sendKeyCode(final String key) {
-        Map<String, String> result = remoteController.invokeAction(this, "p00NetworkControl", "X_SendKey",
-                PanasonicTvUtils.buildHashMap("X_KeyEvent", key));
+        remoteController.invokeAction(this, "p00NetworkControl", "X_SendKey", Map.of("X_KeyEvent", key));
 
         if (tvInputKeyCodes.contains(key)) {
             onValueReceived("sourceName", key.substring(4, key.length() - 6), "p00NetworkControl");
-        }
-    }
-
-    protected Map<String, String> updateResourceState(String serviceId, String actionId, Map<String, String> inputs) {
-        Map<String, String> result = remoteController.invokeAction(this, serviceId, actionId, inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), serviceId);
-        }
-
-        return result;
-    }
-
-    private void reportError(ThingStatusDetail statusDetail, String message) {
-        reportError(statusDetail, message, null);
-    }
-
-    private void reportError(String message, RemoteControllerException e) {
-        reportError(ThingStatusDetail.COMMUNICATION_ERROR, message, e);
-    }
-
-    private void reportError(ThingStatusDetail statusDetail, String message, RemoteControllerException e) {
-        for (EventListener listener : listeners) {
-            listener.reportError(statusDetail, message, e);
         }
     }
 
@@ -163,30 +133,33 @@ public class RemoteControllerService implements UpnpIOParticipant, PanasonicTvSe
 
     @Override
     public void onStatusChanged(boolean status) {
-        logger.debug("PanasonicTV RemoteControl status changed " + status);
+        logger.debug("PanasonicTV RemoteControl status changed to {}", status);
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
+    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
-
+    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
+        if (variable == null) {
+            return;
+        }
         String oldValue = stateMap.get(variable);
         if ((value == null && oldValue == null) || (value != null && value.equals(oldValue))) {
             logger.trace("Value '{}' for {} hasn't changed, ignoring update", value, variable);
             return;
         }
 
-        stateMap.put(variable, value);
+        stateMap.compute(variable, (k, v) -> value);
 
-        for (EventListener listener : listeners) {
+        State newState = (value != null) ? StringType.valueOf(value) : UnDefType.UNDEF;
+        for (PanasonicEventListener listener : listeners) {
             switch (variable) {
                 case SOURCE_NAME:
                 case SOURCE_ID:
-                    listener.valueReceived(SOURCE_NAME, (value != null) ? StringType.valueOf(value) : UnDefType.UNDEF);
-                    listener.valueReceived(SOURCE_ID, (value != null) ? StringType.valueOf(value) : UnDefType.UNDEF);
+                    listener.valueReceived(SOURCE_NAME, newState);
+                    listener.valueReceived(SOURCE_ID, newState);
                     break;
             }
         }

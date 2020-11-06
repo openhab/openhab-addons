@@ -1,15 +1,21 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.panasonictv.internal.service.api;
+package org.openhab.binding.panasonictv.internal.service;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.panasonictv.internal.event.PanasonicEventListener;
 import org.openhab.core.types.Command;
 
 /**
@@ -17,6 +23,7 @@ import org.openhab.core.types.Command;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public interface PanasonicTvService {
 
     /**
@@ -40,7 +47,7 @@ public interface PanasonicTvService {
      * @param listener
      *            Event listener instance to handle events.
      */
-    void addEventListener(EventListener listener);
+    void addEventListener(PanasonicEventListener listener);
 
     /**
      * Procedure for remove event listener.
@@ -48,7 +55,7 @@ public interface PanasonicTvService {
      * @param listener
      *            Event listener instance to remove.
      */
-    void removeEventListener(EventListener listener);
+    void removeEventListener(PanasonicEventListener listener);
 
     /**
      * Procedure for starting service.
@@ -69,9 +76,9 @@ public interface PanasonicTvService {
     void clearCache();
 
     /**
-     * Is this an UPnP configured service
+     * get the service name of this service
      *
-     * @return whether this service is an UPnP configured / discovered service
+     * @return a String containing the service name
      */
-    boolean isUpnp();
+    String getServiceName();
 }

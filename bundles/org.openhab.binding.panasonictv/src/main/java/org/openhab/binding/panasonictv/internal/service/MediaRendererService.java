@@ -1,28 +1,27 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.panasonictv.internal.service;
 
-import static org.openhab.binding.panasonictv.PanasonicTvBindingConstants.*;
+import static org.openhab.binding.panasonictv.internal.PanasonicTvBindingConstants.*;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
-import org.openhab.binding.panasonictv.internal.service.api.EventListener;
-import org.openhab.binding.panasonictv.internal.service.api.PanasonicTvService;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.panasonictv.internal.event.PanasonicEventListener;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
@@ -40,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Prakashbabu Sidaraddi - Initial contribution
  */
+@NonNullByDefault
 public class MediaRendererService implements UpnpIOParticipant, PanasonicTvService {
 
     public static final String SERVICE_NAME = "MediaRenderer";
@@ -49,29 +49,21 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
 
     private UpnpIOService service;
 
-    private ScheduledExecutorService scheduler;
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledExecutorService scheduler;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private String udn;
     private int pollingInterval;
 
-    private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
-
-    private List<EventListener> listeners = new CopyOnWriteArrayList<>();
+    private Map<String, String> stateMap = new ConcurrentHashMap<>();
+    private List<PanasonicEventListener> listeners = new CopyOnWriteArrayList<>();
 
     public MediaRendererService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
         logger.debug("Create a Panasonic TV MediaRenderer service");
 
-        if (upnpIOService != null) {
-            service = upnpIOService;
-        } else {
-            logger.debug("upnpIOService not set.");
-        }
-
+        service = upnpIOService;
         this.udn = udn;
         this.pollingInterval = pollingInterval;
-
-        scheduler = Executors.newScheduledThreadPool(1);
     }
 
     @Override
@@ -80,28 +72,38 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
     }
 
     @Override
-    public void addEventListener(EventListener listener) {
+    public void addEventListener(PanasonicEventListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeEventListener(EventListener listener) {
+    public void removeEventListener(PanasonicEventListener listener) {
         listeners.remove(listener);
     }
 
     @Override
     public void start() {
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            logger.debug("Start refresh task, interval={}", pollingInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, pollingInterval, TimeUnit.MILLISECONDS);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            stop();
         }
+        logger.debug("Start refresh task, interval={}", pollingInterval);
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        this.scheduler = scheduler;
+        this.pollingJob = scheduler.scheduleWithFixedDelay(this::polling, 0, pollingInterval, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void stop() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
+        }
+        ScheduledExecutorService scheduler = this.scheduler;
+        if (scheduler != null) {
+            scheduler.shutdown();
+            this.scheduler = null;
         }
     }
 
@@ -111,22 +113,20 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
     }
 
     @Override
-    public boolean isUpnp() {
-        return true;
+    public String getServiceName() {
+        return SERVICE_NAME;
     }
 
-    private Runnable pollingRunnable = () -> {
+    private void polling() {
         if (isRegistered()) {
             try {
-                updateResourceState("RenderingControl", "GetVolume",
-                        PanasonicTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-                updateResourceState("RenderingControl", "GetMute",
-                        PanasonicTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
+                updateResourceState("RenderingControl", "GetVolume", Map.of("InstanceID", "0", "Channel", "Master"));
+                updateResourceState("RenderingControl", "GetMute", Map.of("InstanceID", "0", "Channel", "Master"));
             } catch (Exception e) {
                 reportError("Error occurred during poll", e);
             }
         }
-    };
+    }
 
     @Override
     public void handleCommand(String channel, Command command) {
@@ -154,11 +154,14 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
+    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
+        if (variable == null) {
+            return;
+        }
 
         String oldValue = stateMap.get(variable);
         if ((value == null && oldValue == null) || (value != null && value.equals(oldValue))) {
@@ -166,34 +169,23 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
             return;
         }
 
-        stateMap.put(variable, value);
+        stateMap.compute(variable, (k, v) -> value);
 
-        for (EventListener listener : listeners) {
+        for (PanasonicEventListener listener : listeners) {
             switch (variable) {
                 case "CurrentVolume":
                     listener.valueReceived(VOLUME, (value != null) ? new PercentType(value) : UnDefType.UNDEF);
                     break;
-
                 case "CurrentMute":
-                    State newState = UnDefType.UNDEF;
-                    if (value != null) {
-                        newState = value.equals("true") ? OnOffType.ON : OnOffType.OFF;
-                    }
+                    State newState = value != null ? OnOffType.from(value.equals("true")) : UnDefType.UNDEF;
                     listener.valueReceived(MUTE, newState);
                     break;
             }
         }
     }
 
-    protected Map<String, String> updateResourceState(String serviceId, String actionId, Map<String, String> inputs) {
-
-        Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
-
-        for (String variable : result.keySet()) {
-            onValueReceived(variable, result.get(variable), serviceId);
-        }
-
-        return result;
+    protected void updateResourceState(String serviceId, String actionId, Map<String, String> inputs) {
+        service.invokeAction(this, serviceId, actionId, inputs).forEach((k, v) -> onValueReceived(k, v, serviceId));
     }
 
     private void setVolume(Command command) {
@@ -206,11 +198,10 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
             throw new NumberFormatException("Command '" + command + "' not supported");
         }
 
-        updateResourceState("RenderingControl", "SetVolume", PanasonicTvUtils.buildHashMap("InstanceID", "0", "Channel",
-                "Master", "DesiredVolume", Integer.toString(newValue)));
+        updateResourceState("RenderingControl", "SetVolume",
+                Map.of("InstanceID", "0", "Channel", "Master", "DesiredVolume", Integer.toString(newValue)));
 
-        updateResourceState("RenderingControl", "GetVolume",
-                PanasonicTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
+        updateResourceState("RenderingControl", "GetVolume", Map.of("InstanceID", "0", "Channel", "Master"));
     }
 
     private void setMute(Command command) {
@@ -222,11 +213,10 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
             throw new NumberFormatException("Command '" + command + "' not supported");
         }
 
-        updateResourceState("RenderingControl", "SetMute", PanasonicTvUtils.buildHashMap("InstanceID", "0", "Channel",
-                "Master", "DesiredMute", Boolean.toString(newValue)));
+        updateResourceState("RenderingControl", "SetMute",
+                Map.of("InstanceID", "0", "Channel", "Master", "DesiredMute", Boolean.toString(newValue)));
 
-        updateResourceState("RenderingControl", "GetMute",
-                PanasonicTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
+        updateResourceState("RenderingControl", "GetMute", Map.of("InstanceID", "0", "Channel", "Master"));
     }
 
     @Override
@@ -235,7 +225,7 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
     }
 
     private void reportError(String message, Throwable e) {
-        for (EventListener listener : listeners) {
+        for (PanasonicEventListener listener : listeners) {
             listener.reportError(ThingStatusDetail.COMMUNICATION_ERROR, message, e);
         }
     }
