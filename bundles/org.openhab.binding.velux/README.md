@@ -33,9 +33,10 @@ The binding supports the following types of Thing.
 
 ## Discovery
 
-To simplify the initial provisioning, the binding provides one thing which is found by autodiscovery.
-The binding then automatically discovers Velux bridges on the local network and places them in the Inbox.
-Once a Velux bridge has been instantiated from the Inbox, the binding then interrogates it to discover all its respective scenes and actuators (e.g. windows and rollershutters).
+To simplify the initial provisioning, the binding provides one thing which can be found by autodiscovery.
+The binding will automatically discover Velux Bridges within the local network, and place them in the Inbox.
+Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
+And once the Velux Bridge is fully configured, the binding will automatically discover all its respective scenes and actuators (like windows and rollershutters), and place them in the Inbox.
 
 ## Thing Configuration
 
@@ -51,7 +52,7 @@ In addition there are some optional Configuration Parameters.
 |-------------------------|------------------|:--------:|--------------------------------------------------------------|
 | ipAddress               |                  |   Yes    | Hostname or address for accessing the Velux Bridge.          |
 | password                | velux123         |   Yes    | Password for authentication against the Velux Bridge.(\*\*)  |
-| timeoutMsecs            | 500              |    No    | Communication timeout in milliseconds.                       |
+| timeoutMsecs            | 1000             |    No    | Communication timeout in milliseconds.                       |
 | protocol                | slip             |    No    | Underlying communication protocol (http/https/slip).         |
 | tcpPort                 | 51200            |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.       |
 | retries                 | 5                |    No    | Number of retries during I/O.                                |
@@ -89,7 +90,7 @@ In addition there are some optional Configuration Parameters.
 
 Notes:
 
-1. To enable a complete invertion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number. For an example, see below at item `Velux DG Window Bathroom`.
+1. To enable a complete inversion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number. For an example, see below at item `Velux DG Window Bathroom`.
 
 2. Somfy devices do not provide a valid serial number to the Velux KLF200 gateway. The bridge reports a registration of the serial number 00:00:00:00:00:00:00:00. Therefore the binding implements a fallback to allow an item specification with a actuator `name` instead of actuator serial number whenever such an invalid serial number occurs. For an example, see below at item `Velux OG Somfy Shutter`.
 
