@@ -14,10 +14,8 @@ package org.openhab.binding.vigicrues.internal.handler;
 
 import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,8 +59,6 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,7 +134,7 @@ public class VigiCruesHandler extends BaseThingHandler {
                 PointType serverLocation = locationProvider.getLocation();
                 if (serverLocation != null) {
                     DecimalType distance = serverLocation.distanceFrom(stationLocation);
-                    properties.put(DISTANCE, new QuantityType<>(distance.intValue(), SIUnits.METRE).toString());
+                    properties.put(DISTANCE, new QuantityType<>(distance, SIUnits.METRE).toString());
                 }
                 properties.put(RIVER, station.libelleCoursEau);
             });
@@ -233,7 +229,7 @@ public class VigiCruesHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (VigiCruesException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -268,16 +264,14 @@ public class VigiCruesHandler extends BaseThingHandler {
             updateState(channelId, new DecimalType(value));
         }
         if (isLinked(channelIcon)) {
-            String resource = getResource(String.format("picto/crue-%d.svg", value));
-            updateState(channelIcon,
-                    resource != null ? new RawType(resource.getBytes(), "image/svg+xml") : UnDefType.UNDEF);
+            byte[] resource = getResource(String.format("picto/crue-%d.svg", value));
+            updateState(channelIcon, resource != null ? new RawType(resource, "image/svg+xml") : UnDefType.UNDEF);
         }
     }
 
-    public @Nullable String getResource(String iconPath) {
-        Bundle bundle = FrameworkUtil.getBundle(getClass());
-        try (InputStream stream = bundle.getResource(iconPath).openStream()) {
-            return new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"));
+    public byte @Nullable [] getResource(String iconPath) {
+        try (InputStream stream = VigiCruesHandler.class.getClassLoader().getResourceAsStream(iconPath)) {
+            return stream.readAllBytes();
         } catch (IOException e) {
             logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
         }

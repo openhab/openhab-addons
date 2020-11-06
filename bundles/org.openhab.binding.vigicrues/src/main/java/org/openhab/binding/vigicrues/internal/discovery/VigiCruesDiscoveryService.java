@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = DiscoveryService.class, configurationPid = "discovery.vigicrues")
+@Component(service = DiscoveryService.class)
 @NonNullByDefault
 public class VigiCruesDiscoveryService extends AbstractDiscoveryService {
     private static final int SEARCH_TIME = 5;
