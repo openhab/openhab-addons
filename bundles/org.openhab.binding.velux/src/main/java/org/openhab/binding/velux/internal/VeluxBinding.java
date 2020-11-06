@@ -79,7 +79,7 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
                 this.password = uncheckedConfiguration.password;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_TIMEOUT_MSECS);
-            if ((uncheckedConfiguration.timeoutMsecs > 0) && (uncheckedConfiguration.timeoutMsecs <= 10000)) {
+            if ((uncheckedConfiguration.timeoutMsecs >= 500) && (uncheckedConfiguration.timeoutMsecs <= 5000)) {
                 this.timeoutMsecs = uncheckedConfiguration.timeoutMsecs;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_RETRIES);
@@ -87,7 +87,7 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
                 this.retries = uncheckedConfiguration.retries;
             }
             logger.trace("VeluxBinding(): checking {}.", VeluxBridgeConfiguration.BRIDGE_REFRESH_MSECS);
-            if ((uncheckedConfiguration.refreshMSecs > 0) && (uncheckedConfiguration.refreshMSecs <= 10000)) {
+            if ((uncheckedConfiguration.refreshMSecs >= 1000) && (uncheckedConfiguration.refreshMSecs <= 60000)) {
                 this.refreshMSecs = uncheckedConfiguration.refreshMSecs;
             }
             this.isBulkRetrievalEnabled = uncheckedConfiguration.isBulkRetrievalEnabled;
