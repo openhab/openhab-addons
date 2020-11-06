@@ -21,16 +21,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
-import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.panasonictv.internal.service.api.EventListener;
 import org.openhab.binding.panasonictv.internal.service.api.PanasonicTvService;
+import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
+import org.openhab.core.io.transport.upnp.UpnpIOService;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,7 +201,7 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
 
         try {
             newValue = DataConverters.convertCommandToIntValue(command, 0, 100,
-                    Integer.valueOf(stateMap.get("CurrentVolume")));
+                    Integer.parseInt(stateMap.getOrDefault("CurrentVolume", "")));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Command '" + command + "' not supported");
         }
@@ -227,7 +227,6 @@ public class MediaRendererService implements UpnpIOParticipant, PanasonicTvServi
 
         updateResourceState("RenderingControl", "GetMute",
                 PanasonicTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-
     }
 
     @Override

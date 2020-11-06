@@ -8,8 +8,8 @@
  */
 package org.openhab.binding.panasonictv.internal.service.api;
 
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.types.State;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.types.State;
 
 /**
  * Interface for receiving data from Panasonic TV services.
@@ -21,7 +21,7 @@ public interface EventListener {
      * Invoked when value is received from the TV.
      *
      * @param variable Name of the variable.
-     * @param value    Value of the variable value.
+     * @param value Value of the variable value.
      */
     void valueReceived(String variable, State value);
 
@@ -29,8 +29,8 @@ public interface EventListener {
      * Report an error to this event listener
      *
      * @param statusDetail hint about the actual underlying problem
-     * @param message      of the error
-     * @param e            exception that might have occurred
+     * @param message of the error
+     * @param e exception that might have occurred
      */
     void reportError(ThingStatusDetail statusDetail, String message, Throwable e);
 }

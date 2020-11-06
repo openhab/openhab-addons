@@ -8,13 +8,11 @@
  */
 package org.openhab.binding.panasonictv.internal.service;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.jupnp.UpnpService;
 import org.openhab.binding.panasonictv.internal.service.api.PanasonicTvService;
+import org.openhab.core.io.transport.upnp.UpnpIOService;
 
 /**
  * The {@link ServiceFactory} is helper class for creating Samsung TV related
@@ -25,13 +23,9 @@ import org.openhab.binding.panasonictv.internal.service.api.PanasonicTvService;
 public class ServiceFactory {
 
     @SuppressWarnings("serial")
-    private static final Map<String, Class<? extends PanasonicTvService>> serviceMap = Collections
-            .unmodifiableMap(new HashMap<String, Class<? extends PanasonicTvService>>() {
-                {
-                    put(MediaRendererService.SERVICE_NAME, MediaRendererService.class);
-                    put(RemoteControllerService.SERVICE_NAME, RemoteControllerService.class);
-                }
-            });
+    private static final Map<String, Class<? extends PanasonicTvService>> serviceMap = Map.of(
+            MediaRendererService.SERVICE_NAME, MediaRendererService.class, RemoteControllerService.SERVICE_NAME,
+            RemoteControllerService.class);
 
     /**
      * Create Panasonic TV service.

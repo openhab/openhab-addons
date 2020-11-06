@@ -17,16 +17,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.jupnp.UpnpService;
 import org.openhab.binding.panasonictv.internal.protocol.RemoteControllerException;
 import org.openhab.binding.panasonictv.internal.protocol.UpnpRemoteController;
 import org.openhab.binding.panasonictv.internal.service.api.EventListener;
 import org.openhab.binding.panasonictv.internal.service.api.PanasonicTvService;
+import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
