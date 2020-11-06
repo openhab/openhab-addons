@@ -14,17 +14,14 @@ package org.openhab.binding.meteoalerte.internal.handler;
 
 import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,8 +42,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,12 +147,14 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         }));
     }
 
-    public @Nullable String getResource(String iconPath) {
-        Bundle bundle = FrameworkUtil.getBundle(getClass());
-        try (InputStream stream = bundle.getResource(iconPath).openStream()) {
-            return new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
+    public byte @Nullable [] getResource(String iconPath) {
+        ClassLoader classLoader = MeteoAlerteHandler.class.getClassLoader();
+        if (classLoader != null) {
+            try (InputStream stream = classLoader.getResourceAsStream(iconPath)) {
+                return stream != null ? stream.readAllBytes() : null;
+            } catch (IOException e) {
+                logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
+            }
         }
         return null;
     }
@@ -168,12 +165,14 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             updateState(channelId, getAlertLevel(value));
         }
         if (isLinked(channelIcon)) {
-            String resource = getResource(String.format("picto/%s.svg", channelId));
-            if (resource != null) {
+            State result = UnDefType.UNDEF;
+            byte[] bytes = getResource(String.format("picto/%s.svg", channelId));
+            if (bytes != null) {
+                String resource = new String(bytes);
                 resource = resource.replaceAll(UNKNOWN_COLOR, ALERT_COLORS.getOrDefault(value, UNKNOWN_COLOR));
+                result = new RawType(resource.getBytes(), "image/svg+xml");
             }
-            updateState(channelIcon,
-                    resource != null ? new RawType(resource.getBytes(), "image/svg+xml") : UnDefType.UNDEF);
+            updateState(channelIcon, result);
         }
     }
 
