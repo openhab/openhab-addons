@@ -28,6 +28,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -57,7 +62,7 @@ public class SysteminfoHandler extends BaseBridgeHandler {
     /**
      * Refresh interval for {@link #highPriorityChannels} in seconds.
      */
-    private BigDecimal refreshIntervalHighPriority = new BigDecimal(1);
+    private BigDecimal refreshIntervalHighPriority = BigDecimal.ONE;
 
     /**
      * Refresh interval for {@link #mediumPriorityChannels} in seconds.
@@ -84,7 +89,7 @@ public class SysteminfoHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> highPriorityTasks;
     private @Nullable ScheduledFuture<?> mediumPriorityTasks;
 
-    private Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
 
     public SysteminfoHandler(Bridge bridge, @Nullable SysteminfoInterface systeminfo) {
         super(bridge);
@@ -115,8 +120,325 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                 handler.handleCommand(channelUID, command);
             }
         } else {
-            if (isLinked(channelUID)) {
-                updateState(channelUID, getInfoForChannel(channelUID));
+            int deviceIndex = getDeviceIndex(channelUID);
+            try {
+                if (BATTERY_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_NAME: {
+                            String state = systeminfo.getBatteryName(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_BATTERY_REMAINING_CAPACITY: {
+                            BigDecimal state = systeminfo.getBatteryRemainingCapacity(deviceIndex);
+                            updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.PERCENT));
+                            break;
+                        }
+                        case CHANNEL_BATTERY_REMAINING_TIME: {
+                            BigDecimal state = systeminfo.getBatteryRemainingTime(deviceIndex);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.SECOND) : UnDefType.UNDEF);
+                            break;
+                        }
+                        default: {
+                            logger.debug("Channel with unknown ID: {}.", channelUID);
+                            break;
+                        }
+                    }
+                } else if (CPU_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_DESCRIPTION: {
+                            String state = systeminfo.getCpuDescription();
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_NAME: {
+                            String state = systeminfo.getCpuName();
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_THREADS: {
+                            BigDecimal state = systeminfo.getCpuThreads();
+                            updateState(channelUID, new DecimalType(state));
+                            break;
+                        }
+                        case CHANNEL_CPU_LOAD: {
+                            BigDecimal state = systeminfo.getCpuLoad();
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_CPU_LOAD_1: {
+                            BigDecimal state = systeminfo.getCpuLoad1();
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_CPU_LOAD_5: {
+                            BigDecimal state = systeminfo.getCpuLoad5();
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_CPU_LOAD_15: {
+                            BigDecimal state = systeminfo.getCpuLoad15();
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_CPU_TEMPERATURE: {
+                            BigDecimal state = systeminfo.getSensorsCpuTemperature();
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SIUnits.CELSIUS) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_CPU_VOLTAGE: {
+                            BigDecimal state = systeminfo.getSensorsCpuVoltage();
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.VOLT) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_CPU_UPTIME: {
+                            BigDecimal state = systeminfo.getCpuUptime();
+                            updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.SECOND));
+                            break;
+                        }
+                        default: {
+                            logger.debug("Channel with unknown ID: {}.", channelUID);
+                            break;
+                        }
+                    }
+                } else if (DISPLAY_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_DISPLAY_INFORMATION: {
+                            String state = systeminfo.getDisplayInformation(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        default: {
+                            logger.debug("Channel with unknown ID: {}.", channelUID);
+                            break;
+                        }
+                    }
+                } else if (DRIVE_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_DRIVE_MODEL: {
+                            String state = systeminfo.getDriveModel(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_DRIVE_SERIAL: {
+                            String state = systeminfo.getDriveSerialNumber(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_NAME: {
+                            String state = systeminfo.getDriveName(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        default: {
+                            logger.debug("Channel with unknown ID: {}.", channelUID);
+                            break;
+                        }
+                    }
+                } else if (FANS_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_FAN_SPEED: {
+                            BigDecimal state = systeminfo.getSensorsFanSpeed(deviceIndex);
+                            updateState(channelUID, state != null ? new DecimalType(state) : UnDefType.UNDEF);
+                            break;
+                        }
+                        default: {
+                            logger.debug("Channel with unknown ID: {}.", channelUID);
+                            break;
+                        }
+                    }
+                } else if (MEMORY_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_AVAILABLE: {
+                            BigDecimal state = systeminfo.getMemoryAvailable();
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_TOTAL: {
+                            BigDecimal state = systeminfo.getMemoryTotal();
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_USED: {
+                            BigDecimal state = systeminfo.getMemoryUsed();
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_AVAILABLE_PERCENT: {
+                            BigDecimal state = systeminfo.getMemoryAvailablePercent();
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_USED_PERCENT: {
+                            BigDecimal state = systeminfo.getMemoryUsedPercent();
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        default: {
+                            logger.debug("Channel with unknown ID: {}.", channelUID);
+                            break;
+                        }
+                    }
+                } else if (NETWORK_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_NAME: {
+                            String state = systeminfo.getNetworkName(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_NETWORK_IP: {
+                            String state = systeminfo.getNetworkIp(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_NETWORK_INTERFACE: {
+                            String state = systeminfo.getNetworkDisplayName(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_NETWORK_MAC: {
+                            String state = systeminfo.getNetworkMac(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_NETWORK_DATA_SENT: {
+                            BigDecimal state = systeminfo.getNetworkDataSent(deviceIndex);
+                            updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.BYTE));
+                            break;
+                        }
+                        case CHANNEL_NETWORK_DATA_RECEIVED: {
+                            BigDecimal state = systeminfo.getNetworkDataReceived(deviceIndex);
+                            updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.BYTE));
+                            break;
+                        }
+                        case CHANNEL_NETWORK_PACKETS_RECEIVED: {
+                            BigDecimal state = systeminfo.getNetworkPacketsReceived(deviceIndex);
+                            updateState(channelUID, new DecimalType(state));
+                            break;
+                        }
+                        case CHANNEL_NETWORK_PACKETS_SENT: {
+                            BigDecimal state = systeminfo.getNetworkPacketsSent(deviceIndex);
+                            updateState(channelUID, new DecimalType(state));
+                            break;
+                        }
+                        default: {
+                            logger.debug("Channel with unknown ID: {}.", channelUID);
+                            break;
+                        }
+                    }
+                } else if (STORAGE_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_AVAILABLE: {
+                            BigDecimal state = systeminfo.getStorageAvailable(deviceIndex);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_DESCRIPTION: {
+                            String state = systeminfo.getStorageDescription(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_NAME: {
+                            String state = systeminfo.getStorageName(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        case CHANNEL_TOTAL: {
+                            BigDecimal state = systeminfo.getStorageTotal(deviceIndex);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_USED: {
+                            BigDecimal state = systeminfo.getStorageUsed(deviceIndex);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_AVAILABLE_PERCENT: {
+                            BigDecimal state = systeminfo.getStorageAvailablePercent(deviceIndex);
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_USED_PERCENT: {
+                            BigDecimal state = systeminfo.getStorageUsedPercent(deviceIndex);
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_STORAGE_TYPE: {
+                            String state = systeminfo.getStorageType(deviceIndex);
+                            updateState(channelUID, new StringType(state));
+                            break;
+                        }
+                        default: {
+                            logger.debug("Channel with unknown ID: {}.", channelUID);
+                            break;
+                        }
+                    }
+                } else if (SWAP_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_AVAILABLE: {
+                            BigDecimal state = systeminfo.getSwapAvailable();
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_TOTAL: {
+                            BigDecimal state = systeminfo.getSwapTotal();
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_USED: {
+                            BigDecimal state = systeminfo.getSwapUsed();
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_AVAILABLE_PERCENT: {
+                            BigDecimal state = systeminfo.getSwapAvailablePercent();
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        case CHANNEL_USED_PERCENT: {
+                            BigDecimal state = systeminfo.getSwapUsedPercent();
+                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
+                                    : UnDefType.UNDEF);
+                            break;
+                        }
+                        default: {
+                            logger.debug("Channel with unknown ID: {}.", channelUID);
+                            break;
+                        }
+                    }
+                } else {
+                    logger.debug("Channel with unknown ID: {}.", channelUID);
+                }
+            } catch (IllegalArgumentException exception) {
+                if (isLinked(channelUID)) {
+                    logger.warn("No information for channel {} with device index {}.", channelUID, deviceIndex);
+                }
+                updateState(channelUID, UnDefType.UNDEF);
+            } catch (Exception exception) {
+                String message = exception.getMessage();
+                logger.debug("Unexpected error occurred while getting system information {}.", message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             }
         }
     }
@@ -169,16 +491,19 @@ public class SysteminfoHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        if (mediumPriorityTasks != null) {
-            mediumPriorityTasks.cancel(true);
-            mediumPriorityTasks = null;
+        ScheduledFuture<?> mediumTasks = mediumPriorityTasks;
+        if (mediumTasks != null) {
+            mediumTasks.cancel(true);
             logger.debug("Medium prioriy tasks will not run anymore.");
         }
-        if (highPriorityTasks != null) {
-            highPriorityTasks.cancel(true);
-            highPriorityTasks = null;
+        mediumPriorityTasks = null;
+
+        ScheduledFuture<?> highTasks = highPriorityTasks;
+        if (highTasks != null) {
+            highTasks.cancel(true);
             logger.debug("High prioriy tasks will not run anymore.");
         }
+        highPriorityTasks = null;
     }
 
     @Override
@@ -222,6 +547,13 @@ public class SysteminfoHandler extends BaseBridgeHandler {
 
     public @Nullable Set<ChannelUID> getLowPriorityChannels() {
         return channelGroups.get(LOW_PRIOIRITY);
+    }
+
+    @Override
+    protected void updateState(ChannelUID channelUID, State state) {
+        if (isLinked(channelUID)) {
+            super.updateState(channelUID, state);
+        }
     }
 
     private boolean updateConfiguration(Thing thing) {
@@ -271,270 +603,6 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                     exception.getMessage());
             return false;
         }
-    }
-
-    /**
-     * This method gets the information for specific channel through the {@link SysteminfoInterface}. It uses the
-     * channel ID to call the correct method from the {@link SysteminfoInterface} with deviceIndex parameter (in case of
-     * multiple devices, for reference see {@link #getDeviceIndex(String)}})
-     *
-     * @param channelUID the UID of the channel
-     * @return State object or null, if there is no information for the device with this index
-     */
-    private State getInfoForChannel(ChannelUID channelUID) {
-        State state = UnDefType.UNDEF;
-        int deviceIndex = getDeviceIndex(channelUID);
-        try {
-            if (BATTERY_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_NAME: {
-                        state = systeminfo.getBatteryName(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_BATTERY_REMAINING_CAPACITY: {
-                        state = systeminfo.getBatteryRemainingCapacity(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_BATTERY_REMAINING_TIME: {
-                        state = systeminfo.getBatteryRemainingTime(deviceIndex);
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
-                }
-            } else if (CPU_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_DESCRIPTION: {
-                        state = systeminfo.getCpuDescription();
-                        break;
-                    }
-                    case CHANNEL_NAME: {
-                        state = systeminfo.getCpuName();
-                        break;
-                    }
-                    case CHANNEL_THREADS: {
-                        state = systeminfo.getCpuThreads();
-                        break;
-                    }
-                    case CHANNEL_CPU_LOAD: {
-                        state = systeminfo.getCpuLoad();
-                        break;
-                    }
-                    case CHANNEL_CPU_LOAD_1: {
-                        state = systeminfo.getCpuLoad1();
-                        break;
-                    }
-                    case CHANNEL_CPU_LOAD_5: {
-                        state = systeminfo.getCpuLoad5();
-                        break;
-                    }
-                    case CHANNEL_CPU_LOAD_15: {
-                        state = systeminfo.getCpuLoad15();
-                        break;
-                    }
-                    case CHANNEL_CPU_TEMPERATURE: {
-                        state = systeminfo.getSensorsCpuTemperature();
-                        break;
-                    }
-                    case CHANNEL_CPU_VOLTAGE: {
-                        state = systeminfo.getSensorsCpuVoltage();
-                        break;
-                    }
-                    case CHANNEL_CPU_UPTIME: {
-                        state = systeminfo.getCpuUptime();
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
-                }
-            } else if (DISPLAY_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_DISPLAY_INFORMATION: {
-                        state = systeminfo.getDisplayInformation(deviceIndex);
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
-                }
-            } else if (DRIVE_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_DRIVE_MODEL: {
-                        state = systeminfo.getDriveModel(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_DRIVE_SERIAL: {
-                        state = systeminfo.getDriveSerialNumber(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_NAME: {
-                        state = systeminfo.getDriveName(deviceIndex);
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
-                }
-            } else if (FANS_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_FAN_SPEED: {
-                        state = systeminfo.getSensorsFanSpeed(deviceIndex);
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
-                }
-            } else if (MEMORY_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_AVAILABLE: {
-                        state = systeminfo.getMemoryAvailable();
-                        break;
-                    }
-                    case CHANNEL_TOTAL: {
-                        state = systeminfo.getMemoryTotal();
-                        break;
-                    }
-                    case CHANNEL_USED: {
-                        state = systeminfo.getMemoryUsed();
-                        break;
-                    }
-                    case CHANNEL_AVAILABLE_PERCENT: {
-                        state = systeminfo.getMemoryAvailablePercent();
-                        break;
-                    }
-                    case CHANNEL_USED_PERCENT: {
-                        state = systeminfo.getMemoryUsedPercent();
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
-                }
-            } else if (NETWORK_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_NAME: {
-                        state = systeminfo.getNetworkName(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_NETWORK_IP: {
-                        state = systeminfo.getNetworkIp(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_NETWORK_INTERFACE: {
-                        state = systeminfo.getNetworkDisplayName(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_NETWORK_MAC: {
-                        state = systeminfo.getNetworkMac(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_NETWORK_DATA_SENT: {
-                        state = systeminfo.getNetworkDataSent(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_NETWORK_DATA_RECEIVED: {
-                        state = systeminfo.getNetworkDataReceived(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_NETWORK_PACKETS_RECEIVED: {
-                        state = systeminfo.getNetworkPacketsReceived(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_NETWORK_PACKETS_SENT: {
-                        state = systeminfo.getNetworkPacketsSent(deviceIndex);
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
-                }
-            } else if (STORAGE_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_AVAILABLE: {
-                        state = systeminfo.getStorageAvailable(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_DESCRIPTION: {
-                        state = systeminfo.getStorageDescription(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_NAME: {
-                        state = systeminfo.getStorageName(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_TOTAL: {
-                        state = systeminfo.getStorageTotal(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_USED: {
-                        state = systeminfo.getStorageUsed(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_AVAILABLE_PERCENT: {
-                        state = systeminfo.getStorageAvailablePercent(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_USED_PERCENT: {
-                        state = systeminfo.getStorageUsedPercent(deviceIndex);
-                        break;
-                    }
-                    case CHANNEL_STORAGE_TYPE: {
-                        state = systeminfo.getStorageType(deviceIndex);
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
-                }
-            } else if (SWAP_GROUP_ID.equalsIgnoreCase(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_AVAILABLE: {
-                        state = systeminfo.getSwapAvailable();
-                        break;
-                    }
-                    case CHANNEL_TOTAL: {
-                        state = systeminfo.getSwapTotal();
-                        break;
-                    }
-                    case CHANNEL_USED: {
-                        state = systeminfo.getSwapUsed();
-                        break;
-                    }
-                    case CHANNEL_AVAILABLE_PERCENT: {
-                        state = systeminfo.getSwapAvailablePercent();
-                        break;
-                    }
-                    case CHANNEL_USED_PERCENT: {
-                        state = systeminfo.getSwapUsedPercent();
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
-                }
-            } else {
-                logger.debug("Channel with unknown ID: {}.", channelUID);
-            }
-        } catch (IllegalArgumentException exception) {
-            logger.warn("No information for channel {} with device index {}.", channelUID, deviceIndex);
-        } catch (Exception exception) {
-            String message = exception.getMessage();
-            logger.debug("Unexpected error occurred while getting system information {}.", message);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-        }
-        return state != null ? state : UnDefType.UNDEF;
     }
 
     /**

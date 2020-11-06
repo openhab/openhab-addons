@@ -21,6 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -30,7 +34,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +50,7 @@ public class ProcessinfoHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) SysteminfoInterface systeminfo;
 
-    private Logger logger = LoggerFactory.getLogger(ProcessinfoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ProcessinfoHandler.class);
 
     public ProcessinfoHandler(Thing thing, @Nullable SysteminfoInterface systeminfo) {
         super(thing);
@@ -71,51 +74,57 @@ public class ProcessinfoHandler extends BaseThingHandler {
             return;
         }
 
-        if (isLinked(channelUID)) {
-            State state = UnDefType.UNDEF;
-            try {
-                switch (channelUID.getId()) {
-                    case CHANNEL_NAME: {
-                        state = systeminfo.getProcessName(pid.intValue());
-                        break;
-                    }
-                    case CHANNEL_PROCESS_LOAD: {
-                        state = systeminfo.getProcessCpuUsage(pid.intValue());
-                        break;
-                    }
-                    case CHANNEL_PROCESS_RESIDENT_MEMORY: {
-                        state = systeminfo.getProcessResidentMemory(pid.intValue());
-                        break;
-                    }
-                    case CHANNEL_PROCESS_VIRTUAL_MEMORY: {
-                        state = systeminfo.getProcessVirtualMemory(pid.intValue());
-                        break;
-                    }
-                    case CHANNEL_PROCESS_USER: {
-                        state = systeminfo.getProcessUser(pid.intValue());
-                        break;
-                    }
-                    case CHANNEL_PROCESS_PATH: {
-                        state = systeminfo.getProcessPath(pid.intValue());
-                        break;
-                    }
-                    case CHANNEL_PROCESS_THREADS: {
-                        state = systeminfo.getProcessThreads(pid.intValue());
-                        break;
-                    }
-                    default: {
-                        logger.debug("Channel with unknown ID: {}.", channelUID);
-                        break;
-                    }
+        try {
+            switch (channelUID.getId()) {
+                case CHANNEL_NAME: {
+                    String state = systeminfo.getProcessName(pid);
+                    updateState(channelUID, new StringType(state));
+                    break;
                 }
-            } catch (IllegalArgumentException exception) {
-                logger.warn("No information for channel {} with process id {}.", channelUID, pid);
-            } catch (Exception exception) {
-                String message = exception.getMessage();
-                logger.debug("Unexpected error occurred while getting system information: {}.", message);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                case CHANNEL_PROCESS_LOAD: {
+                    BigDecimal state = systeminfo.getProcessCpuUsage(pid);
+                    updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.PERCENT));
+                    break;
+                }
+                case CHANNEL_PROCESS_RESIDENT_MEMORY: {
+                    BigDecimal state = systeminfo.getProcessResidentMemory(pid);
+                    updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.BYTE));
+                    break;
+                }
+                case CHANNEL_PROCESS_VIRTUAL_MEMORY: {
+                    BigDecimal state = systeminfo.getProcessVirtualMemory(pid);
+                    updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.BYTE));
+                    break;
+                }
+                case CHANNEL_PROCESS_USER: {
+                    String state = systeminfo.getProcessUser(pid);
+                    updateState(channelUID, new StringType(state));
+                    break;
+                }
+                case CHANNEL_PROCESS_PATH: {
+                    String state = systeminfo.getProcessPath(pid);
+                    updateState(channelUID, new StringType(state));
+                    break;
+                }
+                case CHANNEL_PROCESS_THREADS: {
+                    BigDecimal state = systeminfo.getProcessThreads(pid);
+                    updateState(channelUID, new DecimalType(state));
+                    break;
+                }
+                default: {
+                    logger.debug("Channel with unknown ID: {}.", channelUID);
+                    break;
+                }
             }
-            updateState(channelUID, state != null ? state : UnDefType.UNDEF);
+        } catch (IllegalArgumentException exception) {
+            if (isLinked(channelUID)) {
+                logger.warn("No information for channel {} with process id {}.", channelUID, pid);
+            }
+            updateState(channelUID, UnDefType.UNDEF);
+        } catch (Exception exception) {
+            String message = exception.getMessage();
+            logger.debug("Unexpected error occurred while getting system information: {}.", message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 

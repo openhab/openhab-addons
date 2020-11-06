@@ -13,12 +13,11 @@
 package org.openhab.binding.systeminfo.internal.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.StringType;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,6 @@ import oshi.hardware.VirtualMemory;
 import oshi.software.os.OSFileStore;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
-import oshi.software.os.OperatingSystem.OSVersionInfo;
 import oshi.util.EdidUtil;
 
 /**
@@ -117,122 +115,120 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public StringType getOsFamily() {
-        return new StringType(operatingSystem.getFamily());
+    public String getOsFamily() {
+        return operatingSystem.getFamily();
     }
 
     @Override
-    public StringType getOsManufacturer() {
-        return new StringType(operatingSystem.getManufacturer());
+    public String getOsManufacturer() {
+        return operatingSystem.getManufacturer();
     }
 
     @Override
-    public StringType getOsVersion() {
-        OSVersionInfo osVersion = operatingSystem.getVersionInfo();
-        return new StringType(osVersion.toString());
+    public String getOsVersion() {
+        return operatingSystem.getVersionInfo().toString();
     }
 
     @Override
-    public StringType getCpuName() {
-        ProcessorIdentifier identifier = cpu.getProcessorIdentifier();
-        return new StringType(identifier.getName());
+    public String getCpuName() {
+        return cpu.getProcessorIdentifier().getName();
     }
 
     @Override
-    public StringType getCpuDescription() {
+    public String getCpuDescription() {
         ProcessorIdentifier identifier = cpu.getProcessorIdentifier();
         String serialNumber = computerSystem.getSerialNumber();
         String architecture = identifier.isCpu64bit() ? "64 bit" : "32 bit";
         String format = "Model: %s %s, family: %s, vendor: %s, sn: %s, identifier: %s";
-        return new StringType(String.format(format, identifier.getModel(), architecture, identifier.getFamily(),
-                identifier.getVendor(), serialNumber, identifier.getIdentifier()));
+        return String.format(format, identifier.getModel(), architecture, identifier.getFamily(),
+                identifier.getVendor(), serialNumber, identifier.getIdentifier());
     }
 
     @Override
-    public DecimalType getCpuLogicalCores() {
-        return new DecimalType(cpu.getLogicalProcessorCount());
+    public BigDecimal getCpuLogicalCores() {
+        return BigDecimal.valueOf(cpu.getLogicalProcessorCount());
     }
 
     @Override
-    public DecimalType getCpuPhysicalCores() {
-        return new DecimalType(cpu.getPhysicalProcessorCount());
+    public BigDecimal getCpuPhysicalCores() {
+        return BigDecimal.valueOf(cpu.getPhysicalProcessorCount());
     }
 
     @Override
-    public @Nullable DecimalType getStorageTotal(int index) throws IllegalArgumentException {
+    public @Nullable BigDecimal getStorageTotal(int index) throws IllegalArgumentException {
         OSFileStore store = (OSFileStore) getDevice(fileStores, index);
         store.updateAtrributes();
         long total = store.getTotalSpace();
-        return total < 0 ? null : new DecimalType(getSizeInMB(total));
+        return total < 0 ? null : BigDecimal.valueOf(total);
     }
 
     @Override
-    public @Nullable DecimalType getStorageAvailable(int index) throws IllegalArgumentException {
+    public @Nullable BigDecimal getStorageAvailable(int index) throws IllegalArgumentException {
         OSFileStore store = (OSFileStore) getDevice(fileStores, index);
         store.updateAtrributes();
         long available = store.getUsableSpace();
-        return available < 0 ? null : new DecimalType(getSizeInMB(available));
+        return available < 0 ? null : BigDecimal.valueOf(available);
     }
 
     @Override
-    public @Nullable DecimalType getStorageUsed(int index) throws IllegalArgumentException {
+    public @Nullable BigDecimal getStorageUsed(int index) throws IllegalArgumentException {
         OSFileStore store = (OSFileStore) getDevice(fileStores, index);
         store.updateAtrributes();
         long used = store.getTotalSpace() - store.getUsableSpace();
-        return used < 0 ? null : new DecimalType(getSizeInMB(used));
+        return used < 0 ? null : BigDecimal.valueOf(used);
     }
 
     @Override
-    public @Nullable DecimalType getStorageAvailablePercent(int index) throws IllegalArgumentException {
+    public @Nullable BigDecimal getStorageAvailablePercent(int index) throws IllegalArgumentException {
         OSFileStore store = (OSFileStore) getDevice(fileStores, index);
         store.updateAtrributes();
         long total = store.getTotalSpace();
         if (total > 0) {
             long available = store.getUsableSpace();
             BigDecimal percent = getPercentsValue((double) available / (double) total);
-            return percent.signum() == -1 ? null : new DecimalType(percent);
+            return percent.signum() == -1 ? null : percent;
         } else {
             return null;
         }
     }
 
     @Override
-    public @Nullable DecimalType getStorageUsedPercent(int index) throws IllegalArgumentException {
+    public @Nullable BigDecimal getStorageUsedPercent(int index) throws IllegalArgumentException {
         OSFileStore store = (OSFileStore) getDevice(fileStores, index);
         store.updateAtrributes();
         long total = store.getTotalSpace();
         if (total > 0) {
             long used = total - store.getUsableSpace();
             BigDecimal percent = getPercentsValue((double) used / (double) total);
-            return percent.signum() == -1 ? null : new DecimalType(percent);
+            return percent.signum() == -1 ? null : percent;
         } else {
             return null;
         }
     }
 
     @Override
-    public StringType getStorageName(int index) throws IllegalArgumentException {
+    public String getStorageName(int index) throws IllegalArgumentException {
         OSFileStore store = (OSFileStore) getDevice(fileStores, index);
         store.updateAtrributes();
-        return new StringType(store.getName());
+        return store.getName();
     }
 
     @Override
-    public StringType getStorageType(int index) throws IllegalArgumentException {
+    public String getStorageType(int index) throws IllegalArgumentException {
         OSFileStore store = (OSFileStore) getDevice(fileStores, index);
         store.updateAtrributes();
-        return new StringType(store.getType());
+        return store.getType();
     }
 
     @Override
-    public StringType getStorageDescription(int index) throws IllegalArgumentException {
+    public String getStorageDescription(int index) throws IllegalArgumentException {
         OSFileStore store = (OSFileStore) getDevice(fileStores, index);
         store.updateAtrributes();
-        return new StringType(store.getDescription());
+        return store.getDescription();
     }
 
     @Override
-    public StringType getDisplayInformation(int index) throws IllegalArgumentException {
+    public String getDisplayInformation(int index) throws IllegalArgumentException {
         Display display = (Display) getDevice(displays, index);
 
         byte[] edid = display.getEdid();
@@ -243,179 +239,173 @@ public class OSHISysteminfo implements SysteminfoInterface {
         int height = EdidUtil.getVcm(edid);
 
         String format = "Product %s, manufacturer %s, SN: %s, Width: %d, Height: %d";
-        return new StringType(String.format(format, product, manufacturer, serialNumber, width, height));
+        return String.format(format, product, manufacturer, serialNumber, width, height);
     }
 
     @Override
-    public @Nullable DecimalType getSensorsCpuTemperature() {
+    public @Nullable BigDecimal getSensorsCpuTemperature() {
         BigDecimal temperature = new BigDecimal(sensors.getCpuTemperature());
-        temperature = temperature.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
-        return temperature.signum() == 1 ? new DecimalType(temperature) : null;
+        temperature = temperature.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
+        return temperature.signum() == 1 ? temperature : null;
     }
 
     @Override
-    public @Nullable DecimalType getSensorsCpuVoltage() {
+    public @Nullable BigDecimal getSensorsCpuVoltage() {
         BigDecimal voltage = new BigDecimal(sensors.getCpuVoltage());
-        voltage = voltage.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
-        return voltage.signum() == 1 ? new DecimalType(voltage) : null;
+        voltage = voltage.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
+        return voltage.signum() == 1 ? voltage : null;
     }
 
     @Override
-    public @Nullable DecimalType getSensorsFanSpeed(int index) throws IllegalArgumentException {
+    public @Nullable BigDecimal getSensorsFanSpeed(int index) throws IllegalArgumentException {
         int speed = (int) getDevice(ArrayUtils.toObject(sensors.getFanSpeeds()), index);
-        return speed > 0 ? new DecimalType(speed) : null;
+        return speed > 0 ? BigDecimal.valueOf(speed) : null;
     }
 
     @Override
-    public StringType getBatteryName(int index) throws IllegalArgumentException {
+    public String getBatteryName(int index) throws IllegalArgumentException {
         PowerSource source = (PowerSource) getDevice(powerSources, index);
         source.updateAttributes();
-        return new StringType(source.getName());
+        return source.getName();
     }
 
     @Override
-    public @Nullable DecimalType getBatteryRemainingTime(int index) throws IllegalArgumentException {
+    public @Nullable BigDecimal getBatteryRemainingTime(int index) throws IllegalArgumentException {
         PowerSource source = (PowerSource) getDevice(powerSources, index);
         source.updateAttributes();
         double remaining = source.getTimeRemainingEstimated();
-        return remaining < 0 ? null : new DecimalType(getTimeInMinutes(remaining));
+        return remaining < 0.0 ? null : BigDecimal.valueOf(remaining);
     }
 
     @Override
-    public @Nullable DecimalType getBatteryRemainingCapacity(int index) throws IllegalArgumentException {
+    public BigDecimal getBatteryRemainingCapacity(int index) throws IllegalArgumentException {
         PowerSource source = (PowerSource) getDevice(powerSources, index);
         source.updateAttributes();
         double remaining = source.getRemainingCapacityPercent();
-        return remaining < 0 ? null : new DecimalType(getPercentsValue(remaining));
+        if (remaining >= 0.0) {
+            return getPercentsValue(remaining);
+        } else {
+            throw new IllegalArgumentException("Called with invalid device index");
+        }
     }
 
     @Override
-    public @Nullable DecimalType getMemoryTotal() {
+    public @Nullable BigDecimal getMemoryTotal() {
         long total = memory.getTotal();
-        return total < 0 ? null : new DecimalType(getSizeInMB(total));
+        return total < 0 ? null : BigDecimal.valueOf(total);
     }
 
     @Override
-    public @Nullable DecimalType getMemoryAvailable() {
+    public @Nullable BigDecimal getMemoryAvailable() {
         long available = memory.getAvailable();
-        return available < 0 ? null : new DecimalType(getSizeInMB(available));
+        return available < 0 ? null : BigDecimal.valueOf(available);
     }
 
     @Override
-    public @Nullable DecimalType getMemoryUsed() {
+    public @Nullable BigDecimal getMemoryUsed() {
         long used = memory.getTotal() - memory.getAvailable();
-        return used < 0 ? null : new DecimalType(getSizeInMB(used));
+        return used < 0 ? null : BigDecimal.valueOf(used);
     }
 
     @Override
-    public @Nullable DecimalType getMemoryAvailablePercent() {
+    public @Nullable BigDecimal getMemoryAvailablePercent() {
         long total = memory.getTotal();
         if (total > 0) {
             long available = memory.getAvailable();
             BigDecimal percent = getPercentsValue((double) available / (double) total);
-            return percent.signum() == -1 ? null : new DecimalType(percent);
+            return percent.signum() == -1 ? null : percent;
         } else {
             return null;
         }
     }
 
     @Override
-    public @Nullable DecimalType getMemoryUsedPercent() {
+    public @Nullable BigDecimal getMemoryUsedPercent() {
         long total = memory.getTotal();
         if (total > 0) {
             long used = total - memory.getAvailable();
             BigDecimal percent = getPercentsValue((double) used / (double) total);
-            return percent.signum() == -1 ? null : new DecimalType(percent);
+            return percent.signum() == -1 ? null : percent;
         } else {
             return null;
         }
     }
 
     @Override
-    public StringType getDriveName(int deviceIndex) throws IllegalArgumentException {
+    public String getDriveName(int deviceIndex) throws IllegalArgumentException {
         HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
-        return new StringType(drive.getName());
+        return drive.getName();
     }
 
     @Override
-    public StringType getDriveModel(int deviceIndex) throws IllegalArgumentException {
+    public String getDriveModel(int deviceIndex) throws IllegalArgumentException {
         HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
-        return new StringType(drive.getModel());
+        return drive.getModel();
     }
 
     @Override
-    public StringType getDriveSerialNumber(int deviceIndex) throws IllegalArgumentException {
+    public String getDriveSerialNumber(int deviceIndex) throws IllegalArgumentException {
         HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
-        return new StringType(drive.getSerial());
+        return drive.getSerial();
     }
 
     @Override
-    public @Nullable DecimalType getSwapTotal() {
+    public @Nullable BigDecimal getSwapTotal() {
         VirtualMemory virtual = memory.getVirtualMemory();
         long total = virtual.getSwapTotal();
-        return total < 0 ? null : new DecimalType(getSizeInMB(total));
+        return total < 0 ? null : BigDecimal.valueOf(total);
     }
 
     @Override
-    public @Nullable DecimalType getSwapAvailable() {
+    public @Nullable BigDecimal getSwapAvailable() {
         VirtualMemory virtual = memory.getVirtualMemory();
         long available = virtual.getSwapTotal() - virtual.getSwapUsed();
-        return available < 0 ? null : new DecimalType(getSizeInMB(available));
+        return available < 0 ? null : BigDecimal.valueOf(available);
     }
 
     @Override
-    public @Nullable DecimalType getSwapUsed() {
+    public @Nullable BigDecimal getSwapUsed() {
         VirtualMemory virtual = memory.getVirtualMemory();
         long used = virtual.getSwapUsed();
-        return used < 0 ? null : new DecimalType(getSizeInMB(used));
+        return used < 0 ? null : BigDecimal.valueOf(used);
     }
 
     @Override
-    public @Nullable DecimalType getSwapAvailablePercent() {
+    public @Nullable BigDecimal getSwapAvailablePercent() {
         VirtualMemory virtual = memory.getVirtualMemory();
         long total = virtual.getSwapTotal();
         if (total > 0) {
             long available = total - virtual.getSwapUsed();
             BigDecimal percent = getPercentsValue((double) available / (double) total);
-            return percent.signum() == -1 ? null : new DecimalType(percent);
+            return percent.signum() == -1 ? null : percent;
         } else {
             return null;
         }
     }
 
     @Override
-    public @Nullable DecimalType getSwapUsedPercent() {
+    public @Nullable BigDecimal getSwapUsedPercent() {
         VirtualMemory virtual = memory.getVirtualMemory();
         long total = virtual.getSwapTotal();
         if (total > 0) {
             long used = virtual.getSwapUsed();
             BigDecimal percent = getPercentsValue((double) used / (double) total);
-            return percent.signum() == -1 ? null : new DecimalType(percent);
+            return percent.signum() == -1 ? null : percent;
         } else {
             return null;
         }
     }
 
-    private double getSizeInMB(long sizeInBytes) {
-        double kBytes = Math.round(sizeInBytes / 1024.0);
-        return Math.round(100.0 * (kBytes / 1024.0)) / 100.0;
-    }
-
     private BigDecimal getPercentsValue(double decimalFraction) {
         BigDecimal result = new BigDecimal(decimalFraction * 100.0);
-        return result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
-    }
-
-    private BigDecimal getTimeInMinutes(double timeInSeconds) {
-        BigDecimal timeInMinutes = new BigDecimal(timeInSeconds / 60.0);
-        return timeInMinutes.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_UP);
+        return result.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
     }
 
     @Override
-    public DecimalType getCpuLoad() {
+    public @Nullable BigDecimal getCpuLoad() {
         double load = cpu.getSystemCpuLoadBetweenTicks(oldCpuTicks);
         oldCpuTicks = cpu.getSystemCpuLoadTicks();
-        return new DecimalType(getPercentsValue(load));
+        return load < 0 ? null : getPercentsValue(load);
     }
 
     /**
@@ -424,9 +414,9 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * This information is available only on Mac and Linux OS.
      */
     @Override
-    public @Nullable DecimalType getCpuLoad1() {
-        BigDecimal load = getAvarageCpuLoad(1);
-        return load.signum() == -1 ? null : new DecimalType(load);
+    public @Nullable BigDecimal getCpuLoad1() {
+        BigDecimal load = getAverageCpuLoad(1);
+        return load.signum() == -1 ? null : load;
     }
 
     /**
@@ -435,9 +425,9 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * This information is available only on Mac and Linux OS.
      */
     @Override
-    public @Nullable DecimalType getCpuLoad5() {
-        BigDecimal load = getAvarageCpuLoad(5);
-        return load.signum() == -1 ? null : new DecimalType(load);
+    public @Nullable BigDecimal getCpuLoad5() {
+        BigDecimal load = getAverageCpuLoad(5);
+        return load.signum() == -1 ? null : load;
     }
 
     /**
@@ -446,23 +436,22 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * This information is available only on Mac and Linux OS.
      */
     @Override
-    public @Nullable DecimalType getCpuLoad15() {
-        BigDecimal load = getAvarageCpuLoad(15);
-        return load.signum() == -1 ? null : new DecimalType(load);
+    public @Nullable BigDecimal getCpuLoad15() {
+        BigDecimal load = getAverageCpuLoad(15);
+        return load.signum() == -1 ? null : load;
     }
 
     @Override
-    public DecimalType getCpuThreads() {
-        return new DecimalType(operatingSystem.getThreadCount());
+    public BigDecimal getCpuThreads() {
+        return BigDecimal.valueOf(operatingSystem.getThreadCount());
     }
 
     @Override
-    public DecimalType getCpuUptime() {
-        long seconds = operatingSystem.getSystemUptime();
-        return new DecimalType(getTimeInMinutes(seconds));
+    public BigDecimal getCpuUptime() {
+        return BigDecimal.valueOf(operatingSystem.getSystemUptime());
     }
 
-    private BigDecimal getAvarageCpuLoad(int timeInMunutes) {
+    private BigDecimal getAverageCpuLoad(int timeInMunutes) {
         // This parameter is specified in OSHI Javadoc
         int index;
         switch (timeInMunutes) {
@@ -482,145 +471,145 @@ public class OSHISysteminfo implements SysteminfoInterface {
         }
         double processorLoads[] = cpu.getSystemLoadAverage(index + 1);
         BigDecimal result = new BigDecimal(processorLoads[index]);
-        return result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
+        return result.setScale(PRECISION_AFTER_DECIMAL_SIGN, RoundingMode.HALF_UP);
     }
 
     @Override
-    public StringType getNetworkIp(int index) throws IllegalArgumentException {
+    public String getNetworkIp(int index) throws IllegalArgumentException {
         NetworkIF network = (NetworkIF) getDevice(networks, index);
         network.updateAttributes();
         String[] ipAddresses = network.getIPv4addr();
-        return new StringType((String) getDevice(ipAddresses, 0));
+        return (String) getDevice(ipAddresses, 0);
     }
 
     @Override
-    public StringType getNetworkName(int index) throws IllegalArgumentException {
+    public String getNetworkName(int index) throws IllegalArgumentException {
         NetworkIF network = (NetworkIF) getDevice(networks, index);
         network.updateAttributes();
-        return new StringType(network.getName());
+        return network.getName();
     }
 
     @Override
-    public StringType getNetworkDisplayName(int index) throws IllegalArgumentException {
+    public String getNetworkDisplayName(int index) throws IllegalArgumentException {
         NetworkIF network = (NetworkIF) getDevice(networks, index);
         network.updateAttributes();
-        return new StringType(network.getDisplayName());
+        return network.getDisplayName();
     }
 
     @Override
-    public StringType getNetworkMac(int index) throws IllegalArgumentException {
+    public String getNetworkMac(int index) throws IllegalArgumentException {
         NetworkIF network = (NetworkIF) getDevice(networks, index);
         network.updateAttributes();
-        return new StringType(network.getMacaddr());
+        return network.getMacaddr();
     }
 
     @Override
-    public DecimalType getNetworkPacketsReceived(int index) throws IllegalArgumentException {
+    public BigDecimal getNetworkPacketsReceived(int index) throws IllegalArgumentException {
         NetworkIF network = (NetworkIF) getDevice(networks, index);
         network.updateAttributes();
-        return new DecimalType(network.getPacketsRecv());
+        return BigDecimal.valueOf(network.getPacketsRecv());
     }
 
     @Override
-    public DecimalType getNetworkPacketsSent(int index) throws IllegalArgumentException {
+    public BigDecimal getNetworkPacketsSent(int index) throws IllegalArgumentException {
         NetworkIF network = (NetworkIF) getDevice(networks, index);
         network.updateAttributes();
-        return new DecimalType(network.getPacketsSent());
+        return BigDecimal.valueOf(network.getPacketsSent());
     }
 
     @Override
-    public DecimalType getNetworkDataSent(int index) throws IllegalArgumentException {
+    public BigDecimal getNetworkDataSent(int index) throws IllegalArgumentException {
         NetworkIF network = (NetworkIF) getDevice(networks, index);
         network.updateAttributes();
-        return new DecimalType(getSizeInMB(network.getBytesSent()));
+        return BigDecimal.valueOf(network.getBytesSent());
     }
 
     @Override
-    public DecimalType getNetworkDataReceived(int index) throws IllegalArgumentException {
+    public BigDecimal getNetworkDataReceived(int index) throws IllegalArgumentException {
         NetworkIF network = (NetworkIF) getDevice(networks, index);
         network.updateAttributes();
-        return new DecimalType(getSizeInMB(network.getBytesRecv()));
+        return BigDecimal.valueOf(network.getBytesRecv());
     }
 
     @Override
-    public @Nullable StringType getProcessName(int pid) throws IllegalArgumentException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            return new StringType(process.getName());
+    public String getProcessName(BigDecimal pid) throws IllegalArgumentException {
+        if (pid.compareTo(BigDecimal.ZERO) > 0) {
+            OSProcess process = getProcess(pid.intValue());
+            return process.getName();
         } else {
-            return null;
+            throw new IllegalArgumentException("Called with invalid process ID");
         }
     }
 
     @Override
-    public @Nullable DecimalType getProcessCpuUsage(int pid) throws IllegalArgumentException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
+    public BigDecimal getProcessCpuUsage(BigDecimal pid) throws IllegalArgumentException {
+        if (pid.compareTo(BigDecimal.ZERO) > 0) {
+            OSProcess process = getProcess(pid.intValue());
             double cpuUsageRaw = (double) process.getKernelTime() / (double) process.getUpTime();
             cpuUsageRaw += (double) process.getUserTime() / (double) process.getUpTime();
-            return new DecimalType(getPercentsValue(cpuUsageRaw));
+            return getPercentsValue(cpuUsageRaw);
         } else {
-            return null;
+            throw new IllegalArgumentException("Called with invalid process ID");
         }
     }
 
     @Override
-    public @Nullable DecimalType getProcessResidentMemory(int pid) throws IllegalArgumentException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            return new DecimalType(getSizeInMB(process.getResidentSetSize()));
+    public BigDecimal getProcessResidentMemory(BigDecimal pid) throws IllegalArgumentException {
+        if (pid.compareTo(BigDecimal.ZERO) > 0) {
+            OSProcess process = getProcess(pid.intValue());
+            return BigDecimal.valueOf(process.getResidentSetSize());
         } else {
-            return null;
+            throw new IllegalArgumentException("Called with invalid process ID");
         }
     }
 
     @Override
-    public @Nullable DecimalType getProcessVirtualMemory(int pid) throws IllegalArgumentException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            return new DecimalType(getSizeInMB(process.getVirtualSize()));
+    public BigDecimal getProcessVirtualMemory(BigDecimal pid) throws IllegalArgumentException {
+        if (pid.compareTo(BigDecimal.ZERO) > 0) {
+            OSProcess process = getProcess(pid.intValue());
+            return BigDecimal.valueOf(process.getVirtualSize());
         } else {
-            return null;
+            throw new IllegalArgumentException("Called with invalid process ID");
         }
     }
 
     @Override
-    public @Nullable StringType getProcessPath(int pid) throws IllegalArgumentException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            return new StringType(process.getPath());
+    public String getProcessPath(BigDecimal pid) throws IllegalArgumentException {
+        if (pid.compareTo(BigDecimal.ZERO) > 0) {
+            OSProcess process = getProcess(pid.intValue());
+            return process.getPath();
         } else {
-            return null;
+            throw new IllegalArgumentException("Called with invalid process ID");
         }
     }
 
     @Override
-    public @Nullable DecimalType getProcessThreads(int pid) throws IllegalArgumentException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            return new DecimalType(process.getThreadCount());
+    public BigDecimal getProcessThreads(BigDecimal pid) throws IllegalArgumentException {
+        if (pid.compareTo(BigDecimal.ZERO) > 0) {
+            OSProcess process = getProcess(pid.intValue());
+            return BigDecimal.valueOf(process.getThreadCount());
         } else {
-            return null;
+            throw new IllegalArgumentException("Called with invalid process ID");
         }
     }
 
     @Override
-    public @Nullable DecimalType getProcessUpTime(int pid) throws IllegalArgumentException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            return new DecimalType(process.getUpTime() / 1000);
+    public BigDecimal getProcessUpTime(BigDecimal pid) throws IllegalArgumentException {
+        if (pid.compareTo(BigDecimal.ZERO) > 0) {
+            OSProcess process = getProcess(pid.intValue());
+            return BigDecimal.valueOf(process.getUpTime() / 1000);
         } else {
-            return null;
+            throw new IllegalArgumentException("Called with invalid process ID");
         }
     }
 
     @Override
-    public @Nullable StringType getProcessUser(int pid) throws IllegalArgumentException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            return new StringType(process.getUser());
+    public String getProcessUser(BigDecimal pid) throws IllegalArgumentException {
+        if (pid.compareTo(BigDecimal.ZERO) > 0) {
+            OSProcess process = getProcess(pid.intValue());
+            return process.getUser();
         } else {
-            return null;
+            throw new IllegalArgumentException("Called with invalid process ID");
         }
     }
 }

@@ -119,11 +119,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
         // Preparing the mock with OS properties, that are used in the initialize method of SysteminfoHandler
         mockedSystemInfo = mock(SysteminfoInterface.class);
-        when(mockedSystemInfo.getCpuLogicalCores()).thenReturn(new DecimalType(2));
-        when(mockedSystemInfo.getCpuPhysicalCores()).thenReturn(new DecimalType(2));
-        when(mockedSystemInfo.getOsFamily()).thenReturn(new StringType("Mock OS"));
-        when(mockedSystemInfo.getOsManufacturer()).thenReturn(new StringType("Mock OS Manufacturer"));
-        when(mockedSystemInfo.getOsVersion()).thenReturn(new StringType("Mock Os Version"));
+        when(mockedSystemInfo.getCpuLogicalCores()).thenReturn(BigDecimal.valueOf(2));
+        when(mockedSystemInfo.getCpuPhysicalCores()).thenReturn(BigDecimal.valueOf(2));
+        when(mockedSystemInfo.getOsFamily()).thenReturn("Mock OS");
+        when(mockedSystemInfo.getOsManufacturer()).thenReturn("Mock OS Manufacturer");
+        when(mockedSystemInfo.getOsVersion()).thenReturn("Mock Os Version");
 
         systeminfoHandlerFactory = getService(ThingHandlerFactory.class, SysteminfoHandlerFactory.class);
 
@@ -414,270 +414,284 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     @Test
     public void assertChannelCpuLoadIsUpdated() {
-        DecimalType mockedCpuLoadValue = new DecimalType(10.5);
+        BigDecimal mockedCpuLoadValue = BigDecimal.valueOf(10.5);
         when(mockedSystemInfo.getCpuLoad()).thenReturn(mockedCpuLoadValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID, SysteminfoBindingConstants.CHANNEL_CPU_LOAD,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedCpuLoadValue);
+
+        DecimalType state = new DecimalType(mockedCpuLoadValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelCpuLoad1IsUpdated() {
-        DecimalType mockedCpuLoad1Value = new DecimalType(1.1);
+        BigDecimal mockedCpuLoad1Value = BigDecimal.valueOf(1.1);
         when(mockedSystemInfo.getCpuLoad1()).thenReturn(mockedCpuLoad1Value);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_CPU_LOAD_1, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedCpuLoad1Value);
+
+        DecimalType state = new DecimalType(mockedCpuLoad1Value);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelCpuLoad5IsUpdated() {
-        DecimalType mockedCpuLoad5Value = new DecimalType(5.5);
+        BigDecimal mockedCpuLoad5Value = BigDecimal.valueOf(5.5);
         when(mockedSystemInfo.getCpuLoad5()).thenReturn(mockedCpuLoad5Value);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_CPU_LOAD_5, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedCpuLoad5Value);
+
+        DecimalType state = new DecimalType(mockedCpuLoad5Value);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelCpuLoad15IsUpdated() {
-        DecimalType mockedCpuLoad15Value = new DecimalType(15.15);
+        BigDecimal mockedCpuLoad15Value = BigDecimal.valueOf(15.15);
         when(mockedSystemInfo.getCpuLoad15()).thenReturn(mockedCpuLoad15Value);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_CPU_LOAD_15, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedCpuLoad15Value);
+
+        DecimalType state = new DecimalType(mockedCpuLoad15Value);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelCpuThreadsIsUpdated() {
-        DecimalType mockedCpuThreadsValue = new DecimalType(16);
+        BigDecimal mockedCpuThreadsValue = BigDecimal.valueOf(16);
         when(mockedSystemInfo.getCpuThreads()).thenReturn(mockedCpuThreadsValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID, SysteminfoBindingConstants.CHANNEL_THREADS,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedCpuThreadsValue);
+
+        DecimalType state = new DecimalType(mockedCpuThreadsValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelCpuUptimeIsUpdated() {
-        DecimalType mockedCpuUptimeValue = new DecimalType(100);
+        BigDecimal mockedCpuUptimeValue = BigDecimal.valueOf(100);
         when(mockedSystemInfo.getCpuUptime()).thenReturn(mockedCpuUptimeValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_CPU_UPTIME, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedCpuUptimeValue);
+
+        DecimalType state = new DecimalType(mockedCpuUptimeValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelCpuDescriptionIsUpdated() {
-        StringType mockedCpuDescriptionValue = new StringType("Mocked Cpu Description");
+        String mockedCpuDescriptionValue = "Mocked Cpu Description";
         when(mockedSystemInfo.getCpuDescription()).thenReturn(mockedCpuDescriptionValue);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_DESCRIPTION, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedCpuDescriptionValue);
+
+        StringType state = new StringType(mockedCpuDescriptionValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelCpuNameIsUpdated() {
-        StringType mockedCpuNameValue = new StringType("Mocked Cpu Name");
+        String mockedCpuNameValue = "Mocked Cpu Name";
         when(mockedSystemInfo.getCpuName()).thenReturn(mockedCpuNameValue);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedCpuNameValue);
+
+        StringType state = new StringType(mockedCpuNameValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Disabled
     // There is a bug opened for this issue - https://github.com/dblock/oshi/issues/185
     @Test
     public void assertChannelSensorsCpuTempIsUpdated() {
-        DecimalType mockedSensorsCpuTemperatureValue = new DecimalType(60);
+        BigDecimal mockedSensorsCpuTemperatureValue = BigDecimal.valueOf(60);
         when(mockedSystemInfo.getSensorsCpuTemperature()).thenReturn(mockedSensorsCpuTemperatureValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_CPU_TEMPERATURE, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedSensorsCpuTemperatureValue);
+
+        DecimalType state = new DecimalType(mockedSensorsCpuTemperatureValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelSensorsCpuVoltageIsUpdated() {
-        DecimalType mockedSensorsCpuVoltageValue = new DecimalType(1000);
+        BigDecimal mockedSensorsCpuVoltageValue = BigDecimal.valueOf(1000);
         when(mockedSystemInfo.getSensorsCpuVoltage()).thenReturn(mockedSensorsCpuVoltageValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_CPU_VOLTAGE, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedSensorsCpuVoltageValue);
+
+        DecimalType state = new DecimalType(mockedSensorsCpuVoltageValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelMemoryAvailableIsUpdated() {
-        DecimalType mockedMemoryAvailableValue = new DecimalType(1000);
+        BigDecimal mockedMemoryAvailableValue = BigDecimal.valueOf(1000);
         when(mockedSystemInfo.getMemoryAvailable()).thenReturn(mockedMemoryAvailableValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.MEMORY_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_AVAILABLE, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedMemoryAvailableValue);
+
+        DecimalType state = new DecimalType(mockedMemoryAvailableValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelMemoryUsedIsUpdated() {
-        DecimalType mockedMemoryUsedValue = new DecimalType(24);
+        BigDecimal mockedMemoryUsedValue = BigDecimal.valueOf(24);
         when(mockedSystemInfo.getMemoryUsed()).thenReturn(mockedMemoryUsedValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.MEMORY_GROUP_ID, SysteminfoBindingConstants.CHANNEL_USED,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedMemoryUsedValue);
+
+        DecimalType state = new DecimalType(mockedMemoryUsedValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelMemoryTotalIsUpdated() {
-        DecimalType mockedMemoryTotalValue = new DecimalType(1024);
+        BigDecimal mockedMemoryTotalValue = BigDecimal.valueOf(1024);
         when(mockedSystemInfo.getMemoryTotal()).thenReturn(mockedMemoryTotalValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.MEMORY_GROUP_ID, SysteminfoBindingConstants.CHANNEL_TOTAL,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedMemoryTotalValue);
+
+        DecimalType state = new DecimalType(mockedMemoryTotalValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelMemoryAvailablePercentIsUpdated() {
-        DecimalType mockedMemoryAvailablePercentValue = new DecimalType(97);
+        BigDecimal mockedMemoryAvailablePercentValue = BigDecimal.valueOf(97);
         when(mockedSystemInfo.getMemoryAvailablePercent()).thenReturn(mockedMemoryAvailablePercentValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.MEMORY_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_AVAILABLE_PERCENT, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedMemoryAvailablePercentValue);
+
+        DecimalType state = new DecimalType(mockedMemoryAvailablePercentValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelSwapAvailableIsUpdated() {
-        DecimalType mockedSwapAvailableValue = new DecimalType(482);
+        BigDecimal mockedSwapAvailableValue = BigDecimal.valueOf(482);
         when(mockedSystemInfo.getSwapAvailable()).thenReturn(mockedSwapAvailableValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.SWAP_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_AVAILABLE, acceptedItemType);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedSwapAvailableValue);
+        assertThingOnline(systemInfoBridge);
+
+        DecimalType state = new DecimalType(mockedSwapAvailableValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelSwapUsedIsUpdated() {
-        DecimalType mockedSwapUsedValue = new DecimalType(30);
+        BigDecimal mockedSwapUsedValue = BigDecimal.valueOf(30);
         when(mockedSystemInfo.getSwapUsed()).thenReturn(mockedSwapUsedValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.SWAP_GROUP_ID, SysteminfoBindingConstants.CHANNEL_USED,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedSwapUsedValue);
+
+        DecimalType state = new DecimalType(mockedSwapUsedValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelSwapTotalIsUpdated() {
-        DecimalType mockedSwapTotalValue = new DecimalType(512);
+        BigDecimal mockedSwapTotalValue = BigDecimal.valueOf(512);
         when(mockedSystemInfo.getSwapTotal()).thenReturn(mockedSwapTotalValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.SWAP_GROUP_ID, SysteminfoBindingConstants.CHANNEL_TOTAL,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedSwapTotalValue);
+
+        DecimalType state = new DecimalType(mockedSwapTotalValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelSwapAvailablePercentIsUpdated() {
-        DecimalType mockedSwapAvailablePercentValue = new DecimalType(94);
+        BigDecimal mockedSwapAvailablePercentValue = BigDecimal.valueOf(94);
         when(mockedSystemInfo.getSwapAvailablePercent()).thenReturn(mockedSwapAvailablePercentValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.SWAP_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_AVAILABLE_PERCENT, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedSwapAvailablePercentValue);
+
+        DecimalType state = new DecimalType(mockedSwapAvailablePercentValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelStorageNameIsUpdated() throws IllegalArgumentException {
-        StringType mockedStorageName = new StringType("Mocked Storage Name");
+        String mockedStorageName = "Mocked Storage Name";
         when(mockedSystemInfo.getStorageName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageName);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedStorageName);
+
+        StringType state = new StringType(mockedStorageName);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelStorageTypeIsUpdated() throws IllegalArgumentException {
-        StringType mockedStorageType = new StringType("Mocked Storage Type");
+        String mockedStorageType = "Mocked Storage Type";
         when(mockedSystemInfo.getStorageType(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageType);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_STORAGE_TYPE, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedStorageType);
+
+        StringType state = new StringType(mockedStorageType);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
@@ -685,56 +699,58 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         String channelID = SysteminfoBindingConstants.STORAGE_GROUP_ID + String.valueOf(DEFAULT_DEVICE_INDEX);
         channelID = channelID + "#" + SysteminfoBindingConstants.CHANNEL_DESCRIPTION;
 
-        StringType mockedStorageDescription = new StringType("Mocked Storage Description");
+        String mockedStorageDescription = "Mocked Storage Description";
         when(mockedSystemInfo.getStorageDescription(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageDescription);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_DESCRIPTION, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedStorageDescription);
+
+        StringType state = new StringType(mockedStorageDescription);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelStorageAvailableIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedStorageAvailableValue = new DecimalType(2000);
+        BigDecimal mockedStorageAvailableValue = BigDecimal.valueOf(2000);
         when(mockedSystemInfo.getStorageAvailable(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageAvailableValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_AVAILABLE, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedStorageAvailableValue);
+
+        DecimalType state = new DecimalType(mockedStorageAvailableValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelStorageUsedIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedStorageUsedValue = new DecimalType(500);
+        BigDecimal mockedStorageUsedValue = BigDecimal.valueOf(500);
         when(mockedSystemInfo.getStorageUsed(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageUsedValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID, SysteminfoBindingConstants.CHANNEL_USED,
                 acceptedItemType);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedStorageUsedValue);
+        assertThingOnline(systemInfoBridge);
+
+        DecimalType state = new DecimalType(mockedStorageUsedValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelStorageTotalIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedStorageTotalValue = new DecimalType(2500);
+        BigDecimal mockedStorageTotalValue = BigDecimal.valueOf(2500);
         when(mockedSystemInfo.getStorageTotal(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageTotalValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_TOTAL, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedStorageTotalValue);
+
+        DecimalType state = new DecimalType(mockedStorageTotalValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
@@ -742,236 +758,244 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         String channelID = SysteminfoBindingConstants.STORAGE_GROUP_ID + String.valueOf(DEFAULT_DEVICE_INDEX);
         channelID = channelID + "#" + SysteminfoBindingConstants.CHANNEL_AVAILABLE_PERCENT;
 
-        DecimalType mockedStorageAvailablePercent = new DecimalType(20);
+        BigDecimal mockedStorageAvailablePercent = BigDecimal.valueOf(20);
         when(mockedSystemInfo.getStorageAvailablePercent(DEFAULT_DEVICE_INDEX))
                 .thenReturn(mockedStorageAvailablePercent);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_AVAILABLE_PERCENT, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedStorageAvailablePercent);
+
+        DecimalType state = new DecimalType(mockedStorageAvailablePercent);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelDriveNameIsUpdated() throws IllegalArgumentException {
-        StringType mockedDriveNameValue = new StringType("Mocked Drive Name");
+        String mockedDriveNameValue = "Mocked Drive Name";
         when(mockedSystemInfo.getDriveName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDriveNameValue);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.DRIVE_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedDriveNameValue);
+
+        StringType state = new StringType(mockedDriveNameValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelDriveModelIsUpdated() throws IllegalArgumentException {
-        StringType mockedDriveModelValue = new StringType("Mocked Drive Model");
+        String mockedDriveModelValue = "Mocked Drive Model";
         when(mockedSystemInfo.getDriveModel(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDriveModelValue);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.DRIVE_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_DRIVE_MODEL, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedDriveModelValue);
+
+        StringType state = new StringType(mockedDriveModelValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Disabled
     // There is a bug opened for this issue - https://github.com/dblock/oshi/issues/185
     @Test
     public void assertChannelDriveSerialIsUpdated() throws IllegalArgumentException {
-        StringType mockedDriveSerialNumber = new StringType("Mocked Drive Serial Number");
+        String mockedDriveSerialNumber = "Mocked Drive Serial Number";
         when(mockedSystemInfo.getDriveSerialNumber(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDriveSerialNumber);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.DRIVE_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_DRIVE_SERIAL, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedDriveSerialNumber);
+
+        StringType state = new StringType(mockedDriveSerialNumber);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelSensorsFanSpeedIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedSensorsCpuFanSpeedValue = new DecimalType(180);
+        BigDecimal mockedSensorsCpuFanSpeedValue = BigDecimal.valueOf(180);
         when(mockedSystemInfo.getSensorsFanSpeed(DEFAULT_DEVICE_INDEX)).thenReturn(mockedSensorsCpuFanSpeedValue);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.FANS_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_FAN_SPEED, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedSensorsCpuFanSpeedValue);
+
+        DecimalType state = new DecimalType(mockedSensorsCpuFanSpeedValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelBatteryNameIsUpdated() throws IllegalArgumentException {
-        StringType mockedBatteryName = new StringType("Mocked Battery Name");
+        String mockedBatteryName = "Mocked Battery Name";
         when(mockedSystemInfo.getBatteryName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedBatteryName);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.BATTERY_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedBatteryName);
+
+        StringType state = new StringType(mockedBatteryName);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelBatteryRemainingCapacityIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedBatteryRemainingCapacity = new DecimalType(200);
+        BigDecimal mockedBatteryRemainingCapacity = BigDecimal.valueOf(200);
         when(mockedSystemInfo.getBatteryRemainingCapacity(DEFAULT_DEVICE_INDEX))
                 .thenReturn(mockedBatteryRemainingCapacity);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.BATTERY_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_CAPACITY, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedBatteryRemainingCapacity);
+
+        DecimalType state = new DecimalType(mockedBatteryRemainingCapacity);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelBatteryRemainingTimeIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedBatteryRemainingTime = new DecimalType(3600);
+        BigDecimal mockedBatteryRemainingTime = BigDecimal.valueOf(3600);
         when(mockedSystemInfo.getBatteryRemainingTime(DEFAULT_DEVICE_INDEX)).thenReturn(mockedBatteryRemainingTime);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.BATTERY_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_TIME, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedBatteryRemainingTime);
+
+        DecimalType state = new DecimalType(mockedBatteryRemainingTime);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelDisplayInformationIsUpdated() throws IllegalArgumentException {
-        StringType mockedDisplayInfo = new StringType("Mocked Display Information");
+        String mockedDisplayInfo = "Mocked Display Information";
         when(mockedSystemInfo.getDisplayInformation(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDisplayInfo);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.DISPLAY_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_DISPLAY_INFORMATION, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedDisplayInfo);
+
+        StringType state = new StringType(mockedDisplayInfo);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelNetworkIpIsUpdated() throws IllegalArgumentException {
-        StringType mockedNetworkIp = new StringType("192.168.1.0");
+        String mockedNetworkIp = "192.168.1.0";
         when(mockedSystemInfo.getNetworkIp(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkIp);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_NETWORK_IP, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedNetworkIp);
+
+        StringType state = new StringType(mockedNetworkIp);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelNetworkMacIsUpdated() throws IllegalArgumentException {
-        StringType mockedNetworkMacValue = new StringType("AB-10-11-12-13-14");
+        String mockedNetworkMacValue = "AB-10-11-12-13-14";
         when(mockedSystemInfo.getNetworkMac(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkMacValue);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_NETWORK_MAC, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedNetworkMacValue);
+
+        StringType state = new StringType(mockedNetworkMacValue);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelNetworkDataSentIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedNetworkDataSent = new DecimalType(1000);
+        BigDecimal mockedNetworkDataSent = BigDecimal.valueOf(1000);
         when(mockedSystemInfo.getNetworkDataSent(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkDataSent);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_SENT, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedNetworkDataSent);
+
+        DecimalType state = new DecimalType(mockedNetworkDataSent);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelNetworkDataReceivedIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedNetworkDataReceiveed = new DecimalType(800);
+        BigDecimal mockedNetworkDataReceiveed = BigDecimal.valueOf(800);
         when(mockedSystemInfo.getNetworkDataReceived(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkDataReceiveed);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_RECEIVED, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedNetworkDataReceiveed);
+
+        DecimalType state = new DecimalType(mockedNetworkDataReceiveed);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelNetworkPacketsSentIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedNetworkPacketsSent = new DecimalType(50);
+        BigDecimal mockedNetworkPacketsSent = BigDecimal.valueOf(50);
         when(mockedSystemInfo.getNetworkPacketsSent(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkPacketsSent);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_NETWORK_PACKETS_SENT, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedNetworkPacketsSent);
+
+        DecimalType state = new DecimalType(mockedNetworkPacketsSent);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelNetworkPacketsReceivedIsUpdated() throws IllegalArgumentException {
-        DecimalType mockedNetworkPacketsReceived = new DecimalType(48);
+        BigDecimal mockedNetworkPacketsReceived = BigDecimal.valueOf(48);
         when(mockedSystemInfo.getNetworkPacketsReceived(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkPacketsReceived);
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_NETWORK_PACKETS_RECEIVED, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedNetworkPacketsReceived);
+
+        DecimalType state = new DecimalType(mockedNetworkPacketsReceived);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelNetworkNetworkNameIsUpdated() throws IllegalArgumentException {
-        StringType mockedNetworkName = new StringType("MockN-AQ34");
+        String mockedNetworkName = "MockN-AQ34";
         when(mockedSystemInfo.getNetworkName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkName);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedNetworkName);
+
+        StringType state = new StringType(mockedNetworkName);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelNetworkNetworkDisplayNameIsUpdated() throws IllegalArgumentException {
-        StringType mockedNetworkAdapterName = new StringType("Mocked Network Adapter Name");
+        String mockedNetworkAdapterName = "Mocked Network Adapter Name";
         when(mockedSystemInfo.getNetworkDisplayName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkAdapterName);
 
         String acceptedItemType = "String";
         initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
                 SysteminfoBindingConstants.CHANNEL_NETWORK_INTERFACE, acceptedItemType);
-
         assertThingOnline(systemInfoBridge);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedNetworkAdapterName);
+
+        StringType state = new StringType(mockedNetworkAdapterName);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     class SysteminfoDiscoveryServiceMock extends SysteminfoDiscoveryService {
@@ -1069,104 +1093,109 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelProcessThreadsIsUpdatedWithPIDse() throws IllegalArgumentException {
         String acceptedItemType = "Number";
-        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_THREADS;
+        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_THREADS;
 
         // The pid of the System idle process in Windows
         int pid = 0;
 
-        DecimalType mockedProcessThreadsCount = new DecimalType(4);
+        BigDecimal mockedProcessThreadsCount = BigDecimal.valueOf(4);
         when(mockedSystemInfo.getProcessThreads(pid)).thenReturn(mockedProcessThreadsCount);
 
-        initializeProzessThing(channnelID, acceptedItemType, pid);
-
+        initializeProzessThing(channelID, acceptedItemType, pid);
         assertThingOnline(processInfoThing);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY,
-                mockedProcessThreadsCount);
+
+        DecimalType state = new DecimalType(mockedProcessThreadsCount);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelProcessPathIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_PATH;
+        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_PATH;
         String acceptedItemType = "String";
         // The pid of the System idle process in Windows
         int pid = 0;
 
-        StringType mockedProcessPath = new StringType("C:\\Users\\MockedUser\\Process");
+        String mockedProcessPath = "C:\\Users\\MockedUser\\Process";
         when(mockedSystemInfo.getProcessPath(pid)).thenReturn(mockedProcessPath);
 
-        initializeProzessThing(channnelID, acceptedItemType, pid);
-
+        initializeProzessThing(channelID, acceptedItemType, pid);
         assertThingOnline(processInfoThing);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedProcessPath);
+
+        StringType state = new StringType(mockedProcessPath);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelProcessNameIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_NAME;
+        String channelID = SysteminfoBindingConstants.CHANNEL_NAME;
         String acceptedItemType = "String";
         // The pid of the System idle process in Windows
         int pid = 0;
 
-        StringType mockedProcessName = new StringType("MockedProcess.exe");
+        String mockedProcessName = "MockedProcess.exe";
         when(mockedSystemInfo.getProcessName(pid)).thenReturn(mockedProcessName);
 
-        initializeProzessThing(channnelID, acceptedItemType, pid);
-
+        initializeProzessThing(channelID, acceptedItemType, pid);
         assertThingOnline(processInfoThing);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedProcessName);
+
+        StringType state = new StringType(mockedProcessName);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelProcessResidentMemoryIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_RESIDENT_MEMORY;
+        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_RESIDENT_MEMORY;
         String acceptedItemType = "Number";
         // The pid of the System idle process in Windows
         int pid = 0;
 
-        DecimalType mockedProcessMemory = new DecimalType(450);
+        BigDecimal mockedProcessMemory = BigDecimal.valueOf(450);
         when(mockedSystemInfo.getProcessResidentMemory(pid)).thenReturn(mockedProcessMemory);
 
-        initializeProzessThing(channnelID, acceptedItemType, pid);
-
+        initializeProzessThing(channelID, acceptedItemType, pid);
         assertThingOnline(processInfoThing);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedProcessMemory);
+
+        DecimalType state = new DecimalType(mockedProcessMemory);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelProcessVirtualtMemoryIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_VIRTUAL_MEMORY;
+        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_VIRTUAL_MEMORY;
         String acceptedItemType = "Number";
         // The pid of the System idle process in Windows
         int pid = 0;
 
-        DecimalType mockedProcessMemory = new DecimalType(450);
+        BigDecimal mockedProcessMemory = BigDecimal.valueOf(450);
         when(mockedSystemInfo.getProcessVirtualMemory(pid)).thenReturn(mockedProcessMemory);
 
-        initializeProzessThing(channnelID, acceptedItemType, pid);
-
+        initializeProzessThing(channelID, acceptedItemType, pid);
         assertThingOnline(processInfoThing);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedProcessMemory);
+
+        DecimalType state = new DecimalType(mockedProcessMemory);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void assertChannelProcessLoadIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channnelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD;
+        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD;
         String acceptedItemType = "Number";
         // The pid of the System idle process in Windows
         int pid = 0;
 
-        DecimalType mockedProcessLoad = new DecimalType(3);
+        BigDecimal mockedProcessLoad = BigDecimal.valueOf(3);
         when(mockedSystemInfo.getProcessCpuUsage(pid)).thenReturn(mockedProcessLoad);
 
-        initializeProzessThing(channnelID, acceptedItemType, pid);
-
+        initializeProzessThing(channelID, acceptedItemType, pid);
         assertThingOnline(processInfoThing);
-        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, mockedProcessLoad);
+
+        DecimalType state = new DecimalType(mockedProcessLoad);
+        assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
     @Test
     public void testThingHandlesChannelPriorityChange() {
-        DecimalType mockedCpuLoadValue = new DecimalType(10.5);
+        BigDecimal mockedCpuLoadValue = BigDecimal.valueOf(10.5);
         when(mockedSystemInfo.getCpuLoad()).thenReturn(mockedCpuLoadValue);
 
         String priorityKey = SysteminfoBindingConstants.PARAMETER_PRIOIRITY;

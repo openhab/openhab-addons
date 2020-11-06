@@ -15,7 +15,7 @@
 		<description>Information about running process</description>
 		<channels>
 			<channel id="name" typeId="name"/>
-			<channel id="load" typeId="load"/>
+			<channel id="load" typeId="loadHigh"/>
 			<channel id="resident" typeId="memory"/>
 			<channel id="virtual" typeId="memory"/>
 			<channel id="user" typeId="user"/>
@@ -24,4 +24,13 @@
 		</channels>
 		<config-description-ref uri="thing-type:systeminfo:processConfig"/>
 	</thing-type>
+
+	<channel-type id="memory">
+		<item-type>Number:DataAmount</item-type>
+		<label>Process Memory Size</label>
+		<description>Process Memory Size</description>
+		<state readOnly="true" pattern="%f %unit%"/>
+		<config-description-ref uri="systeminfo:channels:lowpriority"/>
+	</channel-type>
+
 </thing:thing-descriptions>
