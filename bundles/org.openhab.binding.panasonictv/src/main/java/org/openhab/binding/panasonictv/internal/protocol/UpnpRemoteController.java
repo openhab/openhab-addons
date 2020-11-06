@@ -11,7 +11,6 @@ package org.openhab.binding.panasonictv.internal.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.jupnp.UpnpService;
 import org.jupnp.controlpoint.ActionCallback;
 import org.jupnp.model.action.ActionArgumentValue;
@@ -23,6 +22,7 @@ import org.jupnp.model.meta.Service;
 import org.jupnp.model.types.ServiceId;
 import org.jupnp.model.types.UDAServiceId;
 import org.jupnp.model.types.UDN;
+import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

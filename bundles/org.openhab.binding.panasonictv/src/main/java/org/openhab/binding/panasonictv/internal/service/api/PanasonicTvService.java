@@ -10,7 +10,7 @@ package org.openhab.binding.panasonictv.internal.service.api;
 
 import java.util.List;
 
-import org.eclipse.smarthome.core.types.Command;
+import org.openhab.core.types.Command;
 
 /**
  * Interface for Panasonic TV services.
@@ -38,7 +38,7 @@ public interface PanasonicTvService {
      * Procedure for register event listener.
      *
      * @param listener
-     *                     Event listener instance to handle events.
+     *            Event listener instance to handle events.
      */
     void addEventListener(EventListener listener);
 
@@ -46,7 +46,7 @@ public interface PanasonicTvService {
      * Procedure for remove event listener.
      *
      * @param listener
-     *                     Event listener instance to remove.
+     *            Event listener instance to remove.
      */
     void removeEventListener(EventListener listener);
 

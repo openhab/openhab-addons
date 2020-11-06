@@ -32,8 +32,8 @@ public class PanasonicTvUtils {
      * {@link String}s.
      *
      * @param data
-     *                 Variable number of {@link String} parameters which will be
-     *                 added to hash map.
+     *            Variable number of {@link String} parameters which will be
+     *            added to hash map.
      */
     public static HashMap<String, String> buildHashMap(String... data) {
         HashMap<String, String> result = new HashMap<String, String>();
@@ -66,7 +66,7 @@ public class PanasonicTvUtils {
      * Build {@link Document} from {@link String} which contains XML content.
      *
      * @param xml
-     *                {@link String} which contains XML content.
+     *            {@link String} which contains XML content.
      * @return {@link Document} or null if convert has failed.
      */
     public static Document loadXMLFromString(String xml) {

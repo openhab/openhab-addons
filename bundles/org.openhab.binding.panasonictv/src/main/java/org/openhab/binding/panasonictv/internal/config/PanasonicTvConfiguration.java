@@ -23,5 +23,4 @@ public class PanasonicTvConfiguration {
     public String hostName;
     public int port;
     public int refreshInterval;
-
 }

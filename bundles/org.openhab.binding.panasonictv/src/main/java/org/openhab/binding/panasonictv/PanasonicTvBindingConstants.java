@@ -9,7 +9,7 @@
 package org.openhab.binding.panasonictv;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link PanasonicTvBinding} class defines common constants, which are used
@@ -33,5 +33,4 @@ public class PanasonicTvBindingConstants {
     // List of all media renderer thing channel id's
     public static final String VOLUME = "volume";
     public static final String MUTE = "mute";
-
 }
