@@ -148,4 +148,5 @@ public class VeluxBindingConstants {
 
     public static final String UNKNOWN_THING_TYPE_ID = "FAILED";
     public static final String UNKNOWN_IP_ADDRESS = "xxx.xxx.xxx.xxx";
+    public static final int MOTION_EXECUTING = 4;
 }

@@ -123,7 +123,11 @@ public class VeluxExistingProducts {
             return false;
         }
         VeluxProduct thisProduct = this.get(bridgeProductIndex);
-        if (thisProduct.setState(productState) | thisProduct.setCurrentPosition(productPosition)
+        // if the actuator is in motion to a new target position, display the target position, or otherwise display the
+        // actual position; purpose is to give faster feedback to the UI
+        int displayPosition = (productState == VeluxBindingConstants.MOTION_EXECUTING) ? productTarget
+                : productPosition;
+        if (thisProduct.setState(productState) | thisProduct.setCurrentPosition(displayPosition)
                 | thisProduct.setTarget(productTarget)) {
             dirty = true;
 

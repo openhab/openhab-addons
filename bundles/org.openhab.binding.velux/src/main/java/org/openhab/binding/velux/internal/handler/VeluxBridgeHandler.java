@@ -12,15 +12,12 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -402,12 +399,11 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
 
     // Continuous synchronization methods
 
-    @SuppressWarnings("null")
     private synchronized void refreshOpenHAB() {
         logger.debug("refreshOpenHAB() initiated by {} starting cycle {}.", Thread.currentThread(), refreshCounter);
 
         if (handleScheduler.isShutdown()) {
-            logger.trace("refreshOpenHAB(): handleScheduler is shutdown, recreating a scheduler pool.");
+            logger.trace("refreshOpenHAB(): handleScheduler is shutdown, recreating a scheduler.");
             handleScheduler = Executors.newSingleThreadExecutor();
         }
 
@@ -425,21 +421,9 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             logger.trace("refreshOpenHAB.scheduled() initiated by {} has finished.", Thread.currentThread());
         });
 
-        // create a list of dirty products (or a null list if nothing is dirty)
-        VeluxExistingProducts eP = bridgeParameters.actuators.getChannel().existingProducts;
-        List<ProductBridgeIndex> dirtyList = eP.isDirty() ? Arrays.asList(eP.valuesOfModified()).stream()
-                .map(p -> p.getBridgeProductIndex()).collect(Collectors.toList()) : null;
-        logger.trace("refreshOpenHAB(): dirty product count is {}", dirtyList != null ? dirtyList.size() : 0);
-
         logger.trace("refreshOpenHAB(): loop through all (child things and bridge) linked channels needing a refresh");
         for (ChannelUID channelUID : BridgeChannels.getAllLinkedChannelUIDs(this)) {
-            boolean doRefresh = VeluxItemType.isToBeRefreshedNow(refreshCounter, thingTypeUIDOf(channelUID),
-                    channelUID.getId());
-            if (!doRefresh && (dirtyList != null)) {
-                Thing2VeluxActuator actuator = channel2VeluxActuator.get(channelUID);
-                doRefresh = (actuator != null) && !dirtyList.contains(actuator.getProductBridgeIndex());
-            }
-            if (doRefresh) {
+            if (VeluxItemType.isToBeRefreshedNow(refreshCounter, thingTypeUIDOf(channelUID), channelUID.getId())) {
                 logger.trace("refreshOpenHAB(): refreshing channel {}.", channelUID);
                 handleCommand(channelUID, RefreshType.REFRESH);
             }
@@ -463,6 +447,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     private void syncChannelsWithProducts() {
         if (!bridgeParameters.actuators.getChannel().existingProducts.isDirty()) {
+            logger.trace("syncChannelsWithProducts(): no existing products with changed parameters.");
             return;
         }
         logger.trace("syncChannelsWithProducts(): there are some existing products with changed parameters.");
@@ -623,6 +608,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                         case ACTUATOR_LIMIT_MINIMUM:
                         case ROLLERSHUTTER_LIMIT_MINIMUM:
                         case WINDOW_LIMIT_MINIMUM:
+                            // note: the empty string ("") below is intentional
                             newState = ChannelActuatorLimitation.handleRefresh(channelUID, "", this);
                             break;
                         case ACTUATOR_LIMIT_MAXIMUM:
@@ -695,7 +681,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     case ACTUATOR_STATE:
                     case ROLLERSHUTTER_POSITION:
                     case WINDOW_POSITION:
-                        ChannelActuatorPosition.handleCommand(channelUID, channelId, command, this);
+                        newValue = ChannelActuatorPosition.handleCommand(channelUID, channelId, command, this);
                         break;
                     case ACTUATOR_LIMIT_MINIMUM:
                     case ROLLERSHUTTER_LIMIT_MINIMUM:
