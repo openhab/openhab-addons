@@ -26,6 +26,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
@@ -79,7 +81,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
     void updateIllumination(TouchWandUnitDataAlarmSensor unitData) {
         for (Sensor sensor : unitData.getCurrStatus().getSensorsStatus()) {
             if (sensor.type == SENSOR_TYPE_LUMINANCE) {
-                updateState(CHANNEL_ILLUMINATION, new QuantityType<Illuminance>(String.valueOf(sensor.value)));
+                updateState(CHANNEL_ILLUMINATION, new QuantityType<Illuminance>(sensor.value, SmartHomeUnits.LUX));
             }
         }
     }
@@ -116,7 +118,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
     void updateChannelTemperature(TouchWandUnitDataAlarmSensor unitData) {
         for (Sensor sensor : unitData.getCurrStatus().getSensorsStatus()) {
             if (sensor.type == SENSOR_TYPE_TEMPERATURE) {
-                updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(String.valueOf(sensor.value)));
+                updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(sensor.value, SIUnits.CELSIUS));
             }
         }
     }
