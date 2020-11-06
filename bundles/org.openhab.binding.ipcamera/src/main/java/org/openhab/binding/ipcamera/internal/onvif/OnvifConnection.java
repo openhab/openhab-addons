@@ -460,11 +460,10 @@ public class OnvifConnection {
         String minute = Helper.fetchXML(message, "UTCDateTime", "Minute>");
         String hour = Helper.fetchXML(message, "UTCDateTime", "Hour>");
         String second = Helper.fetchXML(message, "UTCDateTime", "Second>");
-        logger.debug("Cameras  UTC time is : {}:{}:{}", hour, minute, second);
         String day = Helper.fetchXML(message, "UTCDateTime", "Day>");
         String month = Helper.fetchXML(message, "UTCDateTime", "Month>");
         String year = Helper.fetchXML(message, "UTCDateTime", "Year>");
-        logger.debug("Cameras  UTC date is : {}-{}-{}", year, month, day);
+        logger.debug("Cameras  UTC dateTime is:{}-{}-{}T{}:{}:{}", year, month, day, hour, minute, second);
     }
 
     private String getUTCdateTime() {
