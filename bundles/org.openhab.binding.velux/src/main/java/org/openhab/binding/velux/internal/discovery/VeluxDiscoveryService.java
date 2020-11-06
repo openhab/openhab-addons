@@ -45,11 +45,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Guenther Schreiner - Initial contribution.
  */
-//
-// To-be-discussed: check whether an immediate activation is preferable.
-// Might be activated by:
-// @Component(service = DiscoveryService.class, configurationPid = "discovery.velux")
-//
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.velux")
 public class VeluxDiscoveryService extends AbstractDiscoveryService implements Runnable {
