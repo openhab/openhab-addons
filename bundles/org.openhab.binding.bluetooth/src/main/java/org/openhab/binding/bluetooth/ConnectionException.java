@@ -15,6 +15,8 @@ package org.openhab.binding.bluetooth;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This is thrown when some kind of connection issue occurs as part of a bluetooth api call that expects a connection.
+ *
  * @author Connor Petty - Initial contribution
  *
  */

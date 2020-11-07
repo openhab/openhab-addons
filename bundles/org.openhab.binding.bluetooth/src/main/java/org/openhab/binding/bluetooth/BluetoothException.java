@@ -15,6 +15,9 @@ package org.openhab.binding.bluetooth;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This class encompasses exceptions that occur within the bluetooth api. This can be subclassed for more specific
+ * exceptions in api implementations.
+ *
  * @author Connor Petty - Initial contribution
  *
  */

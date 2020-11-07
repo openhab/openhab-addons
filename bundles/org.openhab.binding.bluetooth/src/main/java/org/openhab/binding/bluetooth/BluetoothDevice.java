@@ -70,8 +70,6 @@ public abstract class BluetoothDevice {
     protected enum BluetoothEventType {
         CONNECTION_STATE,
         SCAN_RECORD,
-        // CHARACTERISTIC_READ_COMPLETE,
-        // CHARACTERISTIC_WRITE_COMPLETE,
         CHARACTERISTIC_UPDATED,
         DESCRIPTOR_UPDATED,
         SERVICES_DISCOVERED,
@@ -228,14 +226,10 @@ public abstract class BluetoothDevice {
      * Reads a characteristic. Only a single read or write operation can be requested at once. Attempting to perform an
      * operation when one is already in progress will result in subsequent calls returning false.
      * <p>
-     * This is an asynchronous method. Once the read is complete
-     * {@link BluetoothDeviceListener.onCharacteristicReadComplete}
-     * method will be called with the completion state.
-     * <p>
-     * Note that {@link BluetoothDeviceListener.onCharacteristicUpdate} will be called when the read value is received.
+     * This is an asynchronous method. Once the read is complete the returned future will be updated with the result.
      *
      * @param characteristic the {@link BluetoothCharacteristic} to read.
-     * @return true if the characteristic read is started successfully
+     * @return a future that returns the read data is successful, otherwise throws an exception
      */
     public abstract CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic);
 
@@ -243,11 +237,11 @@ public abstract class BluetoothDevice {
      * Writes a characteristic. Only a single read or write operation can be requested at once. Attempting to perform an
      * operation when one is already in progress will result in subsequent calls returning false.
      * <p>
-     * This is an asynchronous method. Once the write is complete
-     * {@link BluetoothDeviceListener.onCharacteristicWriteComplete} method will be called with the completion state.
+     * This is an asynchronous method. Once the write is complete the returned future will be updated with the result.
      *
-     * @param characteristic the {@link BluetoothCharacteristic} to read.
-     * @return true if the characteristic write is started successfully
+     * @param characteristic the {@link BluetoothCharacteristic} to write.
+     * @param value the data to write
+     * @return a future that returns null upon a successful write, otherwise throws an exception
      */
     public abstract CompletableFuture<@Nullable Void> writeCharacteristic(BluetoothCharacteristic characteristic,
             byte[] value);

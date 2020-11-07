@@ -18,10 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a handler for generic Bluetooth devices in connected mode, which at the same time can be used
- * as a base implementation for more specific thing handlers.
+ * This is a utility class for parsing or formatting bluetooth characteristic data.
  *
- * @author Connor Petty - API improvements
+ * @author Connor Petty - Initial Contribution
  *
  */
 public class BluetoothUtils {

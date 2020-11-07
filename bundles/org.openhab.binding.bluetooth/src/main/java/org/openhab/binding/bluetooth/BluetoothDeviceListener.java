@@ -51,6 +51,7 @@ public interface BluetoothDeviceListener {
      * is received from the BLE device even if there is no change to the value.
      *
      * @param characteristic the updated {@link BluetoothCharacteristic}
+     * @param value the update value
      */
     void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value);
 
@@ -58,7 +59,8 @@ public interface BluetoothDeviceListener {
      * Called when a descriptor value is received. Implementations should call this whenever a value
      * is received from the BLE device even if there is no change to the value.
      *
-     * @param characteristic the updated {@link BluetoothCharacteristic}
+     * @param bluetoothDescriptor the updated {@link BluetoothDescriptor}
+     * @param value the update value
      */
     void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor, byte[] value);
 
