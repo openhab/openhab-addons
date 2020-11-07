@@ -42,7 +42,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Gaël L'hopital - Initial contribution
  */
 
-@Component(service = ApiHandler.class, configurationPid = "binding.vigicrues.apiHandler")
+@Component(service = ApiHandler.class)
 @NonNullByDefault
 public class ApiHandler {
     private static final int TIMEOUT_MS = 30000;
