@@ -569,32 +569,9 @@ There are three different format to specify the configuration:
 
 Typical use case for transformations is scaling of numbers.
 The data in Modbus slaves is quite commonly encoded as integers, and thus scaling is necessary to convert them to useful float numbers.
+This type of simple scaling is done most conveniently with JINJA transformations (need to be installed separately). 
 
-`transform/multiply10.js`:
-
-```javascript
-// Wrap everything in a function (no global variable pollution)
-// variable "input" contains data passed by openHAB
-(function(inputData) {
-    // on read: the polled number as string
-    // on write: openHAB command as string
-    var MULTIPLY_BY = 10;
-    return Math.round(parseFloat(inputData, 10) * MULTIPLY_BY);
-})(input)
-```
-
-`transform/divide10.js`:
-
-```javascript
-// Wrap everything in a function (no global variable pollution)
-// variable "input" contains data passed by openHAB
-(function(inputData) {
-    // on read: the polled number as string
-    // on write: openHAB command as string
-    var DIVIDE_BY = 10;
-    return parseFloat(inputData) / DIVIDE_BY;
-})(input)
-```
+More complex logic can be done with JS transformations, see examples below.
 
 See [Scaling example](#scaling-example) for full example with things, items and a sitemap.
 
@@ -769,14 +746,15 @@ sitemap modbus_ex2 label="modbus_ex2"
 
 ### Scaling Example
 
-This example divides value on read, and multiplies them on write, using JS transforms.
+This example divides value on read, and multiplies them on write, using JINJA transform.
+Note that you might need to install JINJA transform separately.
 
 `things/modbus_ex_scaling.things`:
 
 ```xtend
 Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
     Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
-        Thing data holding5Scaled [ readStart="5", readValueType="int16", readTransform="JS(divide10.js)", writeStart="5", writeValueType="int16", writeType="holding", writeTransform="JS(multiply10.js)" ]
+        Thing data holding5Scaled [ readStart="5", readValueType="int16", readTransform="JINJA({{ (value|float) / 10 }})", writeStart="5", writeValueType="int16", writeType="holding", writeTransform="JINJA({{ 10 * (value|float) }})" ]
     }
 }
 ```
@@ -798,8 +776,6 @@ sitemap modbus_ex_scaling label="modbus_ex_scaling"
     }
 }
 ```
-
-See [transformation example](#transformation-example-scaling) for the `divide10.js` and `multiply10.js`.
 
 ### Dimmer Example
 
