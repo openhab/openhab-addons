@@ -63,7 +63,7 @@ import com.google.gson.Gson;
 public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
             THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT,
-            THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE);
+            THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE, THING_TYPE_DOORLOCK);
 
     private static final long DEFAULT_COMMAND_EXPIRY_TIME = 250; // in ms
     private static final int BRIGHTNESS_DIM_STEP = 26; // ~ 10%
@@ -137,6 +137,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                     return;
                 }
             case CHANNEL_SWITCH:
+            case CHANNEL_LOCK:
                 if (command instanceof OnOffType) {
                     newLightState.on = (command == OnOffType.ON);
                 } else {
@@ -290,6 +291,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 updateState(channelId, "alert".equals(newState.alert) ? OnOffType.ON : OnOffType.OFF);
                 break;
             case CHANNEL_SWITCH:
+            case CHANNEL_LOCK:
                 if (on != null) {
                     updateState(channelId, OnOffType.from(on));
                 }
