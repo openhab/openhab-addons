@@ -196,6 +196,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             case WARNING_DEVICE:
                 thingTypeUID = THING_TYPE_WARNING_DEVICE;
                 break;
+            case DOORLOCK:
+                thingTypeUID = THING_TYPE_DOORLOCK;
+                break;
             case CONFIGURATION_TOOL:
                 // ignore configuration tool device
                 return;

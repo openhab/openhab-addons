@@ -13,6 +13,10 @@
 		<channels>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
 	<thing-type id="windowcovering">
@@ -107,6 +111,21 @@
 		<config-description-ref uri="thing-type:deconz:light"/>
 	</thing-type>
 
+	<thing-type id="doorlock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Doorlock</label>
+		<description>A doorlock that can be locked (ON) or unlocked (OFF).</description>
+		<channels>
+			<channel typeId="lock" id="switch"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor"/>
+	</thing-type>
+
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
@@ -140,4 +159,8 @@
 		<label>Alert</label>
 	</channel-type>
 
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+	</channel-type>
 </thing:thing-descriptions>

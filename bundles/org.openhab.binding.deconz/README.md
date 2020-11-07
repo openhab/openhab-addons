@@ -29,7 +29,7 @@ These sensors are supported:
 | Color Controller                  | ZBT-Remote-ALL-RGBW               | `colorcontrol`       |
 
 
-Additionally lights, window coverings (blinds) and thermostats are supported:
+Additionally lights, window coverings (blinds), door locks and thermostats are supported:
 
 | Device type                          | Resource Type                                 | Thing type              |
 |--------------------------------------|-----------------------------------------------|-------------------------|
@@ -41,6 +41,7 @@ Additionally lights, window coverings (blinds) and thermostats are supported:
 | Blind / Window Covering              | Window covering device                        | `windowcovering`        |
 | Thermostat                           | ZHAThermostat                                 | `thermostat`            |
 | Warning Device (Siren)               | Warning device                                | `warningdevice`         |
+| Door Lock                            | A remotely operatable door lock               | `doorlock`              |
 
 Currently only light-groups are supported via the thing-type `lightgroup`.
 
@@ -159,7 +160,8 @@ Other devices support
 | brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`, `colortemperaturelight`        |                                 
 | switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                    |
 | color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`, `lightgroup`|
-| color_temperature | Number                   |     R/W     | Color temperature in kelvin. The value range is determined by each individual light          | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
+| color_temperature | Number                   |     R/W     | Color temperature in kelvin. The value range is determined by each individual light     | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
+| lock              | Switch                   |     R/W     | Lock (ON) or unlock (OFF) the doorlock| `doorlock`                                      |                 
 | position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                                |
 | heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                    |
 | valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                    |
@@ -213,6 +215,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8", lastSeenPolling=5 ]
     dimmablelight       livingroom-ceiling      "Livingroom Ceiling"        [ id="1" ]
     lightgroup          livingroom              "Livingroom"                [ id="1" ]
+    doorlock            entrance-door           "Door Lock"                 [ id="20" ]
 }
 ```
 
@@ -227,7 +230,8 @@ Contact                 Livingroom_Window       "Window Livingroom [%s]"        
 Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
 Switch                  Basement_Alarm          "Basement Alarm Triggered [%s]"                     { channel="deconz:alarmsensor:homeserver:basement-alarm:alarm" }
 Dimmer                  Livingroom_Ceiling      "Livingroom Ceiling [%d]"           <light>         { channel="deconz:dimmablelight:homeserver:livingroom-ceiling:brightness" }                 
-Color                   Livingroom              "Livingroom Light Control"
+Color                   Livingroom              "Livingroom Light Control"                          { channel="deconz:lightgroup:homeserver:livingroom:color" }
+Switch                  Entrance_Door           "Doorlock"                                          { channel="deconz:doorlock:homeserver:entrance-door:lock" }
 ```
 
 ### Events
