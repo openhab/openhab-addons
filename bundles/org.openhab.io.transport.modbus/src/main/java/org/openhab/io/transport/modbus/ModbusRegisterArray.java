@@ -12,7 +12,8 @@
  */
 package org.openhab.io.transport.modbus;
 
-import org.bouncycastle.util.Arrays;
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.util.HexUtils;
 
