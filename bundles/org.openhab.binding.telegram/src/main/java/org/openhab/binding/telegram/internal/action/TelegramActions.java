@@ -563,6 +563,15 @@ public class TelegramActions implements ThingActions {
         return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption, username, password);
     }
 
+    public static boolean sendTelegramAnimation(ThingActions actions, @Nullable String animationURL,
+            @Nullable String caption) {
+        return ((TelegramActions) actions).sendTelegramVideo(animationURL, caption);
+    }
+
+    public static boolean sendTelegramVideo(ThingActions actions, @Nullable String videoURL, @Nullable String caption) {
+        return ((TelegramActions) actions).sendTelegramVideo(videoURL, caption);
+    }
+
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String replyId, @Nullable String message) {
         return ((TelegramActions) actions).sendTelegramAnswer(replyId, message);
     }
@@ -589,18 +598,9 @@ public class TelegramActions implements ThingActions {
         return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption, username, password);
     }
 
-    public static boolean sendTelegramAnimation(ThingActions actions, @Nullable String animationURL,
-            @Nullable String caption) {
-        return ((TelegramActions) actions).sendTelegramVideo(animationURL, caption);
-    }
-
     public static boolean sendTelegramAnimation(ThingActions actions, @Nullable Long chatId,
             @Nullable String animationURL, @Nullable String caption) {
         return ((TelegramActions) actions).sendTelegramVideo(chatId, animationURL, caption);
-    }
-
-    public static boolean sendTelegramVideo(ThingActions actions, @Nullable String videoURL, @Nullable String caption) {
-        return ((TelegramActions) actions).sendTelegramVideo(videoURL, caption);
     }
 
     public static boolean sendTelegramVideo(ThingActions actions, @Nullable Long chatId, @Nullable String videoURL,
