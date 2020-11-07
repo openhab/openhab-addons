@@ -28,7 +28,9 @@ public class RemoteopenhabServerConfiguration {
     public static final String REST_PATH = "restPath";
 
     public String host = "";
+    public boolean useHttps = false;
     public int port = 8080;
+    public boolean trustedCertificate = false;
     public String restPath = "/rest";
     public String token = "";
 }

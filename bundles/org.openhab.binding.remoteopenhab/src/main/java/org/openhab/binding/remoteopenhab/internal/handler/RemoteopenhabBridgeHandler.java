@@ -31,6 +31,7 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.remoteopenhab.internal.RemoteopenhabChannelTypeProvider;
 import org.openhab.binding.remoteopenhab.internal.RemoteopenhabStateDescriptionOptionProvider;
 import org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabServerConfiguration;
@@ -100,6 +101,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
     private final Logger logger = LoggerFactory.getLogger(RemoteopenhabBridgeHandler.class);
 
+    private final HttpClient httpClient;
+    private final HttpClient httpClientTrustingCert;
     private final RemoteopenhabChannelTypeProvider channelTypeProvider;
     private final RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider;
 
@@ -110,13 +113,16 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> checkConnectionJob;
     private RemoteopenhabRestClient restClient;
 
-    public RemoteopenhabBridgeHandler(Bridge bridge, ClientBuilder clientBuilder,
-            SseEventSourceFactory eventSourceFactory, RemoteopenhabChannelTypeProvider channelTypeProvider,
+    public RemoteopenhabBridgeHandler(Bridge bridge, HttpClient httpClient, HttpClient httpClientTrustingCert,
+            ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
+            RemoteopenhabChannelTypeProvider channelTypeProvider,
             RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider, final Gson jsonParser) {
         super(bridge);
+        this.httpClient = httpClient;
+        this.httpClientTrustingCert = httpClientTrustingCert;
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.restClient = new RemoteopenhabRestClient(clientBuilder, eventSourceFactory, jsonParser);
+        this.restClient = new RemoteopenhabRestClient(httpClient, clientBuilder, eventSourceFactory, jsonParser);
     }
 
     @Override
@@ -147,7 +153,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
         URL url;
         try {
-            url = new URL("http", host, config.port, path);
+            url = new URL(config.useHttps ? "https" : "http", host, config.port, path);
         } catch (MalformedURLException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Invalid REST URL built from the settings in the thing configuration");
@@ -162,6 +168,10 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
         restClient.setRestUrl(urlStr);
         restClient.setAccessToken(config.token);
+        if (config.useHttps && config.trustedCertificate) {
+            restClient.setHttpClient(httpClientTrustingCert);
+            restClient.setTrustedCertificate(true);
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
 

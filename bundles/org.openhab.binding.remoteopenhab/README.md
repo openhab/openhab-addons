@@ -36,12 +36,14 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The `server` thing has the following configuration parameters:
 
-| Parameter | Required | Description                                                                                            |
-|-----------|----------|--------------------------------------------------------------------------------------------------------|
-| host      | yes      | The host name or IP address of the remote openHAB server.                                              |
-| port      | yes      | The HTTP port to be used to communicate with the remote openHAB server. Default is 8080.               |
-| restPath  | yes      | The subpath of the REST API on the remote openHAB server. Default is /rest                             |
-| token     | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API. |
+| Parameter          | Required | Description                                                                                                       |
+|--------------------|----------|-------------------------------------------------------------------------------------------------------------------|
+| host               | yes      | The host name or IP address of the remote openHAB server.                                                         |
+| useHttps           | no       | Set it to true in case you want to use HTTPS to communicate with the remote openHAB server. Default is false.     |
+| port               | yes      | The HTTP port to use to communicate with the remote openHAB server. Default is 8080.                              |
+| trustedCertificate | no       | Set it to true in case you want to use HTTPS even without a valid SSL certificate provided by your remote server. |
+| restPath           | yes      | The subpath of the REST API on the remote openHAB server. Default is /rest                                        |
+| token              | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API.            |
 
 The `thing` thing has the following configuration parameters:
 
@@ -76,14 +78,13 @@ For example, if your remote thing provides a trigger channel with this UID `astr
 ## Limitations
 
 * The binding will not try to communicate with an openHAB v1 server.
-* The binding only uses the HTTP protocol for the communications with the remote server (not HTTPS).
 
 ## Example
 
 ### demo.things:
 
 ```
-Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100", port=8080 ] {
+Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100", port=8443, useHttps=true, trustedCertificate=true ] {
     Thing thing tv "TV living room" [ thingUID="lgwebos:WebOSTV:tv" ]
     Thing thing astroSun "Astro sun" [ thingUID="astro:sun:local", buildChannels=false ] {
         Channels:

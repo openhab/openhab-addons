@@ -18,11 +18,29 @@
 				<required>true</required>
 			</parameter>
 
+			<parameter name="useHttps" type="boolean">
+				<label>Use HTTPS</label>
+				<description>Set it to true in case you want to use HTTPS to communicate with the remote openHAB server. Default is
+					false.</description>
+				<required>false</required>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="port" type="integer">
 				<label>Server HTTP Port</label>
-				<description>The HTTP port to be used to communicate with the remote openHAB server.</description>
+				<description>The HTTP port to use to communicate with the remote openHAB server.</description>
 				<required>true</required>
 				<default>8080</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="trustedCertificate" type="boolean">
+				<label>Trust SSL Certificate</label>
+				<description>Set it to true in case you want to use HTTPS even without a valid SSL certificate provided by your
+					remote server.</description>
+				<required>false</required>
+				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 
