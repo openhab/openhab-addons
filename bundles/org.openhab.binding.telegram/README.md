@@ -152,6 +152,10 @@ These actions will send a message to all chat ids configured for this bot.
 | sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should *always* call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
 | sendTelegramPhoto(String photoURL, String caption) | Sends a picture. The URL can be specified using the http, https, and file protocols or a base64 encoded image (simple base64 data or data URI scheme). |
 | sendTelegramPhoto(String photoURL, String caption, String username, String password) | Sends a picture which is downloaded from a username/password protected http/https address. |
+| sendTelegramAnimation(String animationURL, String caption) | Send animation files either GIF or H.264/MPEG-4 AVC video without sound. |
+| sendTelegramAnimation(Long chatId, String animationURL, String caption) | Send animation files only to 1 chat ID. |
+| sendTelegramVideo(String videoURL, String caption) | Send MP4 video files up to 50MB. |
+| sendTelegramVideo(Long chatId, String videoURL, String caption) | Send MP4 files to only 1 chat ID. |
 
 ### Actions to send messages to a particular chat
 
