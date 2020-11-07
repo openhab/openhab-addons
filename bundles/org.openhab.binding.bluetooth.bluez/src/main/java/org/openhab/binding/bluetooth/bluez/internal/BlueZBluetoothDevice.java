@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.bluez.internal;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +29,6 @@ import org.freedesktop.dbus.types.UInt16;
 import org.openhab.binding.bluetooth.BaseBluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
-import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDescriptor;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.bluez.internal.events.BlueZEvent;
@@ -278,31 +278,34 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     }
 
     @Override
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+    public CompletableFuture<@Nullable Void> writeCharacteristic(BluetoothCharacteristic characteristic, byte[] value) {
         logger.debug("writeCharacteristic()");
 
-        ensureConnected();
+        BluetoothDevice dev = device;
+        if (dev == null || !dev.isConnected()) {
+            return CompletableFuture
+                    .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
+        }
 
         BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
         if (c == null) {
             logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return false;
+            return CompletableFuture.failedFuture(
+                    new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
         }
 
+        CompletableFuture<@Nullable Void> future = new CompletableFuture<>();
         scheduler.submit(() -> {
             try {
-                c.writeValue(characteristic.getByteValue(), null);
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic,
-                        BluetoothCompletionStatus.SUCCESS);
-
+                c.writeValue(value, null);
+                future.complete(null);
             } catch (DBusException e) {
                 logger.debug("Exception occurred when trying to write characteristic '{}': {}",
                         characteristic.getUuid(), e.getMessage());
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_WRITE_COMPLETE, characteristic,
-                        BluetoothCompletionStatus.ERROR);
+                future.completeExceptionally(e);
             }
         });
-        return true;
+        return future;
     }
 
     @Override
@@ -359,8 +362,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         }
         BluetoothCharacteristic c = getCharacteristic(UUID.fromString(characteristic.getUuid()));
         if (c != null) {
-            c.setValue(event.getData());
-            notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, c, BluetoothCompletionStatus.SUCCESS);
+            notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, c, event.getData());
         }
     }
 
@@ -409,27 +411,32 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     }
 
     @Override
-    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
+    public CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic) {
+        BluetoothDevice dev = device;
+        if (dev == null || !dev.isConnected()) {
+            return CompletableFuture
+                    .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
+        }
+
         BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
         if (c == null) {
             logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return false;
+            return CompletableFuture.failedFuture(
+                    new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
         }
 
+        CompletableFuture<byte[]> future = new CompletableFuture<>();
         scheduler.submit(() -> {
             try {
                 byte[] value = c.readValue(null);
-                characteristic.setValue(value);
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
-                        BluetoothCompletionStatus.SUCCESS);
+                future.complete(value);
             } catch (DBusException e) {
                 logger.debug("Exception occurred when trying to read characteristic '{}': {}", characteristic.getUuid(),
                         e.getMessage());
-                notifyListeners(BluetoothEventType.CHARACTERISTIC_READ_COMPLETE, characteristic,
-                        BluetoothCompletionStatus.ERROR);
+                future.completeExceptionally(e);
             }
         });
-        return true;
+        return future;
     }
 
     @Override

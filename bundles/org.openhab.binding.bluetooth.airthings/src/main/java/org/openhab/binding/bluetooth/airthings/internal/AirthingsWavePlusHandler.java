@@ -24,8 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
-import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
+import org.openhab.binding.bluetooth.BluetoothUtils;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -156,8 +156,35 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
                     case IDLE:
                         logger.debug("Read data from device {}...", address);
                         BluetoothCharacteristic characteristic = device.getCharacteristic(uuid);
-                        if (characteristic != null && device.readCharacteristic(characteristic)) {
+
+                        if (characteristic != null) {
                             readState = ReadState.READING;
+                            device.readCharacteristic(characteristic).whenComplete((data, ex) -> {
+                                try {
+                                    if (data != null) {
+                                        logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(),
+                                                address, data);
+                                        updateStatus(ThingStatus.ONLINE);
+                                        sinceLastReadSec.set(0);
+                                        try {
+                                            updateChannels(
+                                                    new AirthingsWavePlusDataParser(BluetoothUtils.toIntArray(data)));
+                                        } catch (AirthingsParserException e) {
+                                            logger.warn(
+                                                    "Data parsing error occured, when parsing data from device {}, cause {}",
+                                                    address, e.getMessage(), e);
+                                        }
+                                    } else {
+                                        logger.debug("Characteristic {} from device {} failed: {}",
+                                                characteristic.getUuid(), address, ex.getMessage());
+                                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                                ex.getMessage());
+                                    }
+                                } finally {
+                                    readState = ReadState.IDLE;
+                                    disconnect();
+                                }
+                            });
                         } else {
                             logger.debug("Read data from device {} failed", address);
                             disconnect();
@@ -203,30 +230,6 @@ public class AirthingsWavePlusHandler extends BeaconBluetoothHandler {
 
         }
         execute();
-    }
-
-    @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-        try {
-            if (status == BluetoothCompletionStatus.SUCCESS) {
-                logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(), address,
-                        characteristic.getValue());
-                updateStatus(ThingStatus.ONLINE);
-                sinceLastReadSec.set(0);
-                try {
-                    updateChannels(new AirthingsWavePlusDataParser(characteristic.getValue()));
-                } catch (AirthingsParserException e) {
-                    logger.warn("Data parsing error occured, when parsing data from device {}, cause {}", address,
-                            e.getMessage(), e);
-                }
-            } else {
-                logger.debug("Characteristic {} from device {} failed", characteristic.getUuid(), address);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
-            }
-        } finally {
-            readState = ReadState.IDLE;
-            disconnect();
-        }
     }
 
     private void updateChannels(AirthingsWavePlusDataParser parser) {

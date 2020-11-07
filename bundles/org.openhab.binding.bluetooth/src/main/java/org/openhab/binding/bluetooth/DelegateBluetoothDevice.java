@@ -15,6 +15,8 @@ package org.openhab.binding.bluetooth;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -101,15 +103,21 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
-    public boolean readCharacteristic(BluetoothCharacteristic characteristic) {
+    public CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic) {
         BluetoothDevice delegate = getDelegate();
-        return delegate != null && delegate.readCharacteristic(characteristic);
+        if (delegate == null) {
+            return CompletableFuture.failedFuture(new IllegalStateException("Delegate is null"));
+        }
+        return delegate.readCharacteristic(characteristic);
     }
 
     @Override
-    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
+    public CompletableFuture<@Nullable Void> writeCharacteristic(BluetoothCharacteristic characteristic, byte[] value) {
         BluetoothDevice delegate = getDelegate();
-        return delegate != null && delegate.writeCharacteristic(characteristic);
+        if (delegate == null) {
+            return CompletableFuture.failedFuture(new IllegalStateException("Delegate is null"));
+        }
+        return delegate.writeCharacteristic(characteristic, value);
     }
 
     @Override
@@ -152,6 +160,24 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     public @Nullable BluetoothCharacteristic getCharacteristic(UUID uuid) {
         BluetoothDevice delegate = getDelegate();
         return delegate != null ? delegate.getCharacteristic(uuid) : null;
+    }
+
+    @Override
+    public boolean awaitConnection(long timeout, TimeUnit unit) throws InterruptedException {
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.awaitConnection(timeout, unit) : false;
+    }
+
+    @Override
+    public boolean awaitServiceDiscovery(long timeout, TimeUnit unit) throws InterruptedException {
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.awaitServiceDiscovery(timeout, unit) : false;
+    }
+
+    @Override
+    public boolean isServicesDiscovered() {
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.isServicesDiscovered() : false;
     }
 
     @Override

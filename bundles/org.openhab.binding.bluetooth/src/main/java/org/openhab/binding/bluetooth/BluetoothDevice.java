@@ -14,6 +14,8 @@ package org.openhab.binding.bluetooth;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,8 +70,8 @@ public abstract class BluetoothDevice {
     protected enum BluetoothEventType {
         CONNECTION_STATE,
         SCAN_RECORD,
-        CHARACTERISTIC_READ_COMPLETE,
-        CHARACTERISTIC_WRITE_COMPLETE,
+        // CHARACTERISTIC_READ_COMPLETE,
+        // CHARACTERISTIC_WRITE_COMPLETE,
         CHARACTERISTIC_UPDATED,
         DESCRIPTOR_UPDATED,
         SERVICES_DISCOVERED,
@@ -235,7 +237,7 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to read.
      * @return true if the characteristic read is started successfully
      */
-    public abstract boolean readCharacteristic(BluetoothCharacteristic characteristic);
+    public abstract CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic);
 
     /**
      * Writes a characteristic. Only a single read or write operation can be requested at once. Attempting to perform an
@@ -247,7 +249,8 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to read.
      * @return true if the characteristic write is started successfully
      */
-    public abstract boolean writeCharacteristic(BluetoothCharacteristic characteristic);
+    public abstract CompletableFuture<@Nullable Void> writeCharacteristic(BluetoothCharacteristic characteristic,
+            byte[] value);
 
     /**
      * Enables notifications for a characteristic. Only a single read or write operation can be requested at once.
@@ -366,6 +369,12 @@ public abstract class BluetoothDevice {
 
     protected abstract Collection<BluetoothDeviceListener> getListeners();
 
+    public abstract boolean awaitConnection(long timeout, TimeUnit unit) throws InterruptedException;
+
+    public abstract boolean awaitServiceDiscovery(long timeout, TimeUnit unit) throws InterruptedException;
+
+    public abstract boolean isServicesDiscovered();
+
     /**
      * Notify the listeners of an event
      *
@@ -385,19 +394,11 @@ public abstract class BluetoothDevice {
                     case SERVICES_DISCOVERED:
                         listener.onServicesDiscovered();
                         break;
-                    case CHARACTERISTIC_READ_COMPLETE:
-                        listener.onCharacteristicReadComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
-                    case CHARACTERISTIC_WRITE_COMPLETE:
-                        listener.onCharacteristicWriteComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
                     case CHARACTERISTIC_UPDATED:
-                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0]);
+                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0], (byte[]) args[1]);
                         break;
                     case DESCRIPTOR_UPDATED:
-                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0]);
+                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0], (byte[]) args[1]);
                         break;
                     case ADAPTER_CHANGED:
                         listener.onAdapterChanged((BluetoothAdapter) args[0]);

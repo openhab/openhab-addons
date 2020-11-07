@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.handler;
 
-import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
-import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
 import org.openhab.binding.bluetooth.daikinmadoka.DaikinMadokaBindingConstants;
@@ -291,8 +289,8 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
     }
 
     @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        super.onCharacteristicUpdate(characteristic);
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] msgBytes) {
+        super.onCharacteristicUpdate(characteristic, msgBytes);
 
         // Check that arguments are valid.
         if (characteristic.getUuid() == null) {
@@ -304,9 +302,8 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             return;
         }
 
-        // A message cannot be null or have a 0-byte length
-        byte[] msgBytes = characteristic.getByteValue();
-        if (msgBytes == null || msgBytes.length == 0) {
+        // A message cannot have a 0-byte length
+        if (msgBytes.length == 0) {
             return;
         }
 
@@ -359,9 +356,15 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 device.enableNotifications(charNotif);
             }
 
-            charWrite.setValue(command.getRequest());
             command.setState(BRC1HCommand.State.ENQUEUED);
-            device.writeCharacteristic(charWrite);
+            device.writeCharacteristic(charWrite, command.getRequest()).whenComplete((v, t) -> {
+                if (t != null) {
+                    logger.debug("Failed to send command {}: {}", command.getClass().getSimpleName(), t.getMessage());
+                    command.setState(BRC1HCommand.State.FAILED);
+                } else {
+                    command.setState(BRC1HCommand.State.SENT);
+                }
+            });
 
             if (this.config != null) {
                 if (!command.awaitStateChange(this.config.commandTimeout, TimeUnit.MILLISECONDS,
@@ -380,34 +383,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             Thread.sleep(200);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-    }
-
-    @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
-            BluetoothCompletionStatus status) {
-        super.onCharacteristicWriteComplete(characteristic, status);
-
-        byte[] request = characteristic.getByteValue();
-        BRC1HCommand command = currentCommand;
-
-        if (command != null) {
-            if (!Arrays.equals(request, command.getRequest())) {
-                logger.debug("Write completed for unknown command");
-                return;
-            }
-            switch (status) {
-                case SUCCESS:
-                    command.setState(BRC1HCommand.State.SENT);
-                    break;
-                case ERROR:
-                    command.setState(BRC1HCommand.State.FAILED);
-                    break;
-            }
-        } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No command found that matches request {}", HexUtils.bytesToHex(request));
-            }
         }
     }
 
