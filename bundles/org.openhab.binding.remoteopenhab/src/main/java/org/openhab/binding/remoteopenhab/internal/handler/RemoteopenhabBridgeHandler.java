@@ -101,7 +101,6 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
     private final Logger logger = LoggerFactory.getLogger(RemoteopenhabBridgeHandler.class);
 
-    private final HttpClient httpClient;
     private final HttpClient httpClientTrustingCert;
     private final RemoteopenhabChannelTypeProvider channelTypeProvider;
     private final RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider;
@@ -118,7 +117,6 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             RemoteopenhabChannelTypeProvider channelTypeProvider,
             RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider, final Gson jsonParser) {
         super(bridge);
-        this.httpClient = httpClient;
         this.httpClientTrustingCert = httpClientTrustingCert;
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;

@@ -148,7 +148,7 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
         try {
             httpClientTrustingCert.start();
         } catch (Exception e) {
-            logger.warn("Unable to start Jetty HttpClient {}", e);
+            logger.warn("Unable to start Jetty HttpClient", e);
         }
     }
 
@@ -158,7 +158,7 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
         try {
             httpClientTrustingCert.stop();
         } catch (Exception e) {
-            logger.warn("Unable to stop Jetty HttpClient {}", e);
+            logger.warn("Unable to stop Jetty HttpClient", e);
         }
     }
 

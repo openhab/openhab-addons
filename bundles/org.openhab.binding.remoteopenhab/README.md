@@ -53,6 +53,7 @@ The `thing` thing has the following configuration parameters:
 | buildChannels | no       | If set to true, a trigger channel will be automatically created and linked to each trigger channel from the remote thing. Default is true. |
 
 Setting the `buildChannels` parameter to false is for the main following advanced usages :
+
 * you don't care about the trigger channels of this remote thing and you don't want the binding to create them locally,
 * you want to define the trigger channels in your configuration file, and only the channels that you will finally need,
 * you want to set a specific channel ID rather than using the channel ID created by the binding.
