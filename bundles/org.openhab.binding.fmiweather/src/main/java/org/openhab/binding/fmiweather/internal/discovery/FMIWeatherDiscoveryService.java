@@ -15,9 +15,7 @@ package org.openhab.binding.fmiweather.internal.discovery;
 import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 import static org.openhab.binding.fmiweather.internal.discovery.CitiesOfFinland.CITIES_OF_FINLAND;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -60,8 +58,7 @@ import org.slf4j.LoggerFactory;
 public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(FMIWeatherDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_OBSERVATION, THING_TYPE_FORECAST));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_OBSERVATION, THING_TYPE_FORECAST);
     private static final long STATIONS_CACHE_MILLIS = TimeUnit.HOURS.toMillis(12);
     private static final int STATIONS_TIMEOUT_MILLIS = (int) TimeUnit.SECONDS.toMillis(10);
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
