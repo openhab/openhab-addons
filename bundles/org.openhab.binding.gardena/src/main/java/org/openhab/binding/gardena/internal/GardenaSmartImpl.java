@@ -189,7 +189,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             }
 
             if (status != 200 && status != 204 && status != 201 && status != 202) {
-                throw new GardenaException(String.format("Error %s %s", status, contentResponse.getReason()));
+                throw new GardenaException(String.format("Error %s %s, %s", status, contentResponse.getReason(), contentResponse.getContentAsString()));
             }
 
             if (result == null) {
