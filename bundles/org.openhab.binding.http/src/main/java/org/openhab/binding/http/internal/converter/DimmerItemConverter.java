@@ -93,6 +93,7 @@ public class DimmerItemConverter extends AbstractTransformingItemConverter {
                 }
                 newState = new PercentType(value);
             } catch (NumberFormatException e) {
+                // ignore
             }
         }
 

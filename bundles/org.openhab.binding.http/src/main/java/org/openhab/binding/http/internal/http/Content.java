@@ -34,11 +34,9 @@ public class Content {
         this.mediaType = mediaType;
 
         Charset finalEncoding = StandardCharsets.UTF_8;
-        if (encoding != null) {
-            try {
-                finalEncoding = Charset.forName(encoding);
-            } catch (IllegalArgumentException e) {
-            }
+        try {
+            finalEncoding = Charset.forName(encoding);
+        } catch (IllegalArgumentException e) {
         }
         this.encoding = finalEncoding;
     }

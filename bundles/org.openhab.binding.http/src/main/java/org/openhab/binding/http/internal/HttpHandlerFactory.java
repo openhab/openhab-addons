@@ -14,7 +14,6 @@ package org.openhab.binding.http.internal;
 
 import static org.openhab.binding.http.internal.HttpBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,7 +48,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.http", service = ThingHandlerFactory.class)
 public class HttpHandlerFactory extends BaseThingHandlerFactory
         implements ValueTransformationProvider, HttpClientProvider {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_URL);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_URL);
     private final Logger logger = LoggerFactory.getLogger(HttpHandlerFactory.class);
 
     private final HttpClient secureClient;

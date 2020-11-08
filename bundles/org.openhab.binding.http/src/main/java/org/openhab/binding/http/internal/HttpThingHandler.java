@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -77,7 +75,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HttpThingHandler extends BaseThingHandler {
-    private static final Set<Character> URL_PART_DELIMITER = Stream.of('/', '?', '&').collect(Collectors.toSet());
+    private static final Set<Character> URL_PART_DELIMITER = Set.of('/', '?', '&');
 
     private final Logger logger = LoggerFactory.getLogger(HttpThingHandler.class);
     private final ValueTransformationProvider valueTransformationProvider;
@@ -166,7 +164,7 @@ public class HttpThingHandler extends BaseThingHandler {
                 }
             } catch (URISyntaxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "failed to create authentication");
+                        "failed to create authentication: baseUrl is invalid");
             }
         } else {
             logger.debug("No authentication configured for thing '{}'", thing.getUID());
@@ -176,7 +174,7 @@ public class HttpThingHandler extends BaseThingHandler {
             logger.info("Using the insecure client for thing '{}'.", thing.getUID());
             httpClient = httpClientProvider.getInsecureClient();
         } else {
-            logger.debug("Using the secure client for thin '{}'.", thing.getUID());
+            logger.info("Using the secure client for thing '{}'.", thing.getUID());
             httpClient = httpClientProvider.getSecureClient();
         }
 

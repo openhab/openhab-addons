@@ -68,7 +68,7 @@ public abstract class AbstractTransformingItemConverter implements ItemValueConv
     @Override
     public void send(Command command) {
         Consumer<String> sendHttpValue = this.sendHttpValue;
-        if (sendHttpValue != null || channelConfig.mode != HttpChannelMode.READONLY) {
+        if (sendHttpValue != null && channelConfig.mode != HttpChannelMode.READONLY) {
             commandTransformations.apply(toString(command)).ifPresent(sendHttpValue);
         } else {
             throw new IllegalStateException("Read-only channel");

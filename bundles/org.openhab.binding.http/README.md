@@ -60,8 +60,8 @@ All values that are not `onValue`, `offValue`, `increaseValue`, `decreaseValue` 
 
 | parameter               | optional | default     | description |
 |-------------------------|----------|-------------|-------------|
-| `openValue`             | no      |      -      | A special value that represents `OPEN` |
-| `closedValue`           | no      |      -      | A special value that represents `CLOSED` |
+| `openValue`             | no       |      -      | A special value that represents `OPEN` |
+| `closedValue`           | no       |      -      | A special value that represents `CLOSED` |
 
 ### `dimmer`
 
@@ -74,6 +74,17 @@ All values that are not `onValue`, `offValue`, `increaseValue`, `decreaseValue` 
 | `step`                  | no       |      1      | The amount the brightness is increased/decreased on `INCREASE`/`DECREASE` |
 
 All values that are not `onValue`, `offValue`, `increaseValue`, `decreaseValue` are interpreted as brightness 0-100% and need to be numeric only.
+
+### `player`
+
+| parameter               | optional | default     | description |
+|-------------------------|----------|-------------|-------------|
+| `play`                  | yes      |      -      | A special value that represents `PLAY` |
+| `pause`                 | yes      |      -      | A special value that represents `PAUSE` |
+| `next`                  | yes      |      -      | A special value that represents `NEXT` |
+| `previous`              | yes      |      -      | A special value that represents `PREVIOUS` |
+| `fastforward`           | yes      |      -      | A special value that represents `FASTFORWARD` |
+| `rewind`                | yes      |      -      | A special value that represents `REWIND` |
 
 ### `rollershutter`
 
@@ -92,6 +103,8 @@ All values that are not `upValue`, `downValue`, `stopValue`, `moveValue` are int
 |-------------------------|----------|-------------|-------------|
 | `onValue`               | no       |      -      | A special value that represents `ON` |
 | `offValue`              | no       |      -      | A special value that represents `OFF` |
+
+**Note:** Special values need to be exact matches, i.e. no leading or trailing characters and comparison is case-sensitive.
 
 ## URL Formatting
 
@@ -114,7 +127,3 @@ is transformed to
 ```
 http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
 ```
-
-## Full Example
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._

@@ -48,7 +48,6 @@ public class HttpResponseListener extends BufferingResponseListener {
     }
 
     @Override
-    @SuppressWarnings("null")
     public void onComplete(@NonNullByDefault({}) Result result) {
         Response response = result.getResponse();
         if (logger.isTraceEnabled()) {
@@ -77,7 +76,7 @@ public class HttpResponseListener extends BufferingResponseListener {
                     future.completeExceptionally(new HttpAuthException());
                     break;
                 default:
-                    logger.info("Requesting '{}' (method='{}', content='{}') failed: {} {}", request.getURI(),
+                    logger.warn("Requesting '{}' (method='{}', content='{}') failed: {} {}", request.getURI(),
                             request.getMethod(), request.getContent(), response.getStatus(), response.getReason());
                     future.completeExceptionally(new IllegalStateException("Response - Code" + response.getStatus()));
             }

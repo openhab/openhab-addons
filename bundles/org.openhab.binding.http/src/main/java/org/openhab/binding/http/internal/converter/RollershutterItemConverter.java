@@ -92,6 +92,7 @@ public class RollershutterItemConverter extends AbstractTransformingItemConverte
                 return PercentType.ZERO;
             }
         } catch (NumberFormatException e) {
+            // ignore
         }
 
         return UnDefType.UNDEF;
