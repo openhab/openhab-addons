@@ -1195,7 +1195,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         motionAlarmEnabled = true;
                     } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                         motionAlarmEnabled = false;
-                        noMotionDetected(CHANNEL_MOTION_ALARM);
+                        noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
                     } else {
                         motionAlarmEnabled = true;
                         motionThreshold = Double.valueOf(command.toString());

@@ -19,9 +19,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
@@ -199,19 +197,6 @@ public class InstarHandler extends ChannelDuplexHandler {
                 } else {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&-io_enable=0");
                 }
-                return;
-            case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = false;
-                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-                } else {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                    ipCameraHandler.motionThreshold = Double.valueOf(command.toString());
-                    ipCameraHandler.motionThreshold = ipCameraHandler.motionThreshold / 10000;
-                }
-                ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                 return;
         }
     }
