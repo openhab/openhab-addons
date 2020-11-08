@@ -17,7 +17,6 @@ import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -64,13 +63,11 @@ public class OpenUVReportHandler extends BaseThingHandler {
     private static final DecimalType ALERT_ORANGE = new DecimalType(2);
     private static final DecimalType ALERT_RED = new DecimalType(3);
     private static final DecimalType ALERT_PURPLE = new DecimalType(4);
+    private static final State ALERT_UNDEF = HSBType.fromRGB(179, 179, 179);
 
-    private static final Map<State, HSBType> ALERT_COLORS = Map.ofEntries(
-            new AbstractMap.SimpleEntry<State, HSBType>(ALERT_GREEN, HSBType.fromRGB(85, 139, 47)),
-            new AbstractMap.SimpleEntry<State, HSBType>(ALERT_YELLOW, HSBType.fromRGB(249, 168, 37)),
-            new AbstractMap.SimpleEntry<State, HSBType>(ALERT_ORANGE, HSBType.fromRGB(239, 108, 0)),
-            new AbstractMap.SimpleEntry<State, HSBType>(ALERT_RED, HSBType.fromRGB(183, 28, 28)),
-            new AbstractMap.SimpleEntry<State, HSBType>(ALERT_PURPLE, HSBType.fromRGB(106, 27, 154)));
+    private static final Map<State, State> ALERT_COLORS = Map.of(ALERT_GREEN, HSBType.fromRGB(85, 139, 47),
+            ALERT_YELLOW, HSBType.fromRGB(249, 168, 37), ALERT_ORANGE, HSBType.fromRGB(239, 108, 0), ALERT_RED,
+            HSBType.fromRGB(183, 28, 28), ALERT_PURPLE, HSBType.fromRGB(106, 27, 154));
 
     private final Logger logger = LoggerFactory.getLogger(OpenUVReportHandler.class);
 
@@ -217,8 +214,8 @@ public class OpenUVReportHandler extends BaseThingHandler {
                         updateState(channelUID, asAlertLevel(openUVData.getUv()));
                         break;
                     case UV_COLOR:
-                        updateState(channelUID, ALERT_COLORS.getOrDefault(asAlertLevel(openUVData.getUv()),
-                                HSBType.fromRGB(179, 179, 179)));
+                        updateState(channelUID,
+                                ALERT_COLORS.getOrDefault(asAlertLevel(openUVData.getUv()), ALERT_UNDEF));
                         break;
                     case UV_MAX:
                         updateState(channelUID, asDecimalType(openUVData.getUvMax()));
