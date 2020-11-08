@@ -176,10 +176,7 @@ public class MiCloudConnector {
     }
 
     public String getDeviceStatus(String device, String country) throws MiCloudException {
-        String url = getApiUrl(country) + "/home/device_list";
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("data", "{\"dids\":[\"" + device + "\"]}");
-        final String response = request(url, map);
+        final String response = request("/home/device_list", country, "{\"dids\":[\"" + device + "\"]}");
         logger.debug("response: {}", response);
         return response;
     }
@@ -198,10 +195,7 @@ public class MiCloudConnector {
             logger.debug("Could not parse device ID ('{}')", device);
             throw new MiCloudException();
         }
-        String url = getApiUrl(country) + "/home/rpc/" + id;
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("data", command);
-        final String response = request(url, map);
+        final String response = request("/home/rpc/" + id, country, command);
         logger.debug("response: {}", response);
         return response;
     }
@@ -233,12 +227,9 @@ public class MiCloudConnector {
     }
 
     public String getDeviceString(String country) {
-        String url = getApiUrl(country) + "/home/device_list";
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("data", "{\"getVirtualModel\":false,\"getHuamiDevices\":0}");
         String resp;
         try {
-            resp = request(url, map);
+            resp = request("/home/device_list", country, "{\"getVirtualModel\":false,\"getHuamiDevices\":0}");
             logger.trace("Get devices response: {}", resp);
             if (resp.length() > 2) {
                 CloudUtil.saveDeviceInfoFile(resp, country, logger);
@@ -250,8 +241,15 @@ public class MiCloudConnector {
         return "";
     }
 
+    public String request(String urlPart, String country, String params) throws MiCloudException {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("data", params);
+        return request(urlPart, country, map);
+    }
+
     public String request(String urlPart, String country, Map<String, String> params) throws MiCloudException {
-        String url = getApiUrl(country) + urlPart;
+        String url = urlPart.trim();
+        url = getApiUrl(country) + (url.startsWith("/app") ? url.substring(4) : url);
         String response = request(url, params);
         logger.debug("Request to {} server {}. Response: {}", country, urlPart, response);
         return response;
