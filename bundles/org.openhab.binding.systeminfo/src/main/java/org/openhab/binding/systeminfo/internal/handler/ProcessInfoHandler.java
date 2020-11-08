@@ -12,19 +12,17 @@
  */
 package org.openhab.binding.systeminfo.internal.handler;
 
-import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.*;
+import static org.openhab.binding.systeminfo.internal.SystemInfoBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
+import org.openhab.binding.systeminfo.internal.model.SystemInfoInterface;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -39,23 +37,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ProcessinfoHandler} is responsible for providing real time information about the process
+ * The {@link ProcessInfoHandler} is responsible for providing real time information about the process
  *
  * @author Alexander Falkenstern - Initial contribution
  */
 @NonNullByDefault
-public class ProcessinfoHandler extends BaseThingHandler {
+public class ProcessInfoHandler extends BaseThingHandler {
 
     private BigDecimal pid = new BigDecimal(-1);
 
-    private @NonNullByDefault({}) SysteminfoInterface systeminfo;
+    private final SystemInfoInterface systeminfo;
 
-    private final Logger logger = LoggerFactory.getLogger(ProcessinfoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ProcessInfoHandler.class);
 
-    public ProcessinfoHandler(Thing thing, @Nullable SysteminfoInterface systeminfo) {
+    public ProcessInfoHandler(Thing thing, SystemInfoInterface systeminfo) {
         super(thing);
-
-        Objects.requireNonNull(systeminfo, "Systeminfo may not be null");
         this.systeminfo = systeminfo;
     }
 
@@ -83,17 +79,17 @@ public class ProcessinfoHandler extends BaseThingHandler {
                 }
                 case CHANNEL_PROCESS_LOAD: {
                     BigDecimal state = systeminfo.getProcessCpuUsage(pid);
-                    updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.PERCENT));
+                    updateState(channelUID, new QuantityType<>(state, Units.PERCENT));
                     break;
                 }
                 case CHANNEL_PROCESS_RESIDENT_MEMORY: {
                     BigDecimal state = systeminfo.getProcessResidentMemory(pid);
-                    updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.BYTE));
+                    updateState(channelUID, new QuantityType<>(state, Units.BYTE));
                     break;
                 }
                 case CHANNEL_PROCESS_VIRTUAL_MEMORY: {
                     BigDecimal state = systeminfo.getProcessVirtualMemory(pid);
-                    updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.BYTE));
+                    updateState(channelUID, new QuantityType<>(state, Units.BYTE));
                     break;
                 }
                 case CHANNEL_PROCESS_USER: {
@@ -121,22 +117,16 @@ public class ProcessinfoHandler extends BaseThingHandler {
                 logger.warn("No information for channel {} with process id {}.", channelUID, pid);
             }
             updateState(channelUID, UnDefType.UNDEF);
-        } catch (Exception exception) {
-            String message = exception.getMessage();
-            logger.debug("Unexpected error occurred while getting system information: {}.", message);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing.");
-
-        SysteminfoHandler handler = null;
+        SystemInfoHandler handler = null;
         final Thing thing = getThing();
         final Bridge bridge = getBridge();
         if (updateConfiguration(thing) && (bridge != null)) {
-            handler = (SysteminfoHandler) bridge.getHandler();
+            handler = (SystemInfoHandler) bridge.getHandler();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Thing cannot be initialized.");
         }
@@ -145,7 +135,6 @@ public class ProcessinfoHandler extends BaseThingHandler {
                 Configuration properties = channel.getConfiguration();
                 handler.changeChannelPriority(channel.getUID(), (String) properties.get(PARAMETER_PRIOIRITY));
             }
-            logger.debug("Thing is successfully initialized.");
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
@@ -155,10 +144,10 @@ public class ProcessinfoHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        SysteminfoHandler handler = null;
+        SystemInfoHandler handler = null;
         final Bridge bridge = getBridge();
         if (bridge != null) {
-            handler = (SysteminfoHandler) bridge.getHandler();
+            handler = (SystemInfoHandler) bridge.getHandler();
         }
         if (handler != null) {
             for (Channel channel : getThing().getChannels()) {
@@ -189,10 +178,8 @@ public class ProcessinfoHandler extends BaseThingHandler {
             logger.debug("Process id set to {}.", pid);
             result = true;
         } catch (ClassCastException exception) {
-            logger.debug("Channel configuration cannot be read.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, exception.getMessage());
         } catch (IllegalArgumentException exception) {
-            logger.warn("Process id is invalid. Please change the thing configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, exception.getMessage());
         }
         return result;

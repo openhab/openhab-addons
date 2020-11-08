@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.systeminfo.internal;
 
-import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.*;
+import static org.openhab.binding.systeminfo.internal.SystemInfoBindingConstants.*;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.systeminfo.internal.handler.ProcessinfoHandler;
-import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
-import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
+import org.openhab.binding.systeminfo.internal.handler.ProcessInfoHandler;
+import org.openhab.binding.systeminfo.internal.handler.SystemInfoHandler;
+import org.openhab.binding.systeminfo.internal.model.SystemInfoInterface;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -33,27 +31,22 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link SysteminfoHandlerFactory} is responsible for creating things and thing
+ * The {@link SystemInfoHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Svilen Valkanov - Initial contribution
- * @author Lyubomir Papazov - Pass systeminfo service to the SysteminfoHandler constructor
+ * @author Lyubomir Papazov - Pass systeminfo service to the SystemInfoHandler constructor
  * @author Wouter Born - Add null annotations
  * @author Alexander Falkenstern - Process information
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.systeminfo")
-public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
+public class SystemInfoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;
-    static {
-        Set<ThingTypeUID> buffer = new HashSet<>();
-        buffer.add(BRIDGE_TYPE_COMPUTER);
-        buffer.add(THING_TYPE_PROCESS);
-        SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(buffer);
-    }
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_TYPE_COMPUTER,
+            THING_TYPE_PROCESS);
 
-    private @NonNullByDefault({}) SysteminfoInterface systeminfo;
+    private @NonNullByDefault({}) SystemInfoInterface systeminfo;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -64,19 +57,19 @@ public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingHandler handler = null;
         if (BRIDGE_TYPE_COMPUTER.equals(thing.getThingTypeUID()) && (thing instanceof Bridge)) {
-            handler = new SysteminfoHandler((Bridge) thing, systeminfo);
+            handler = new SystemInfoHandler((Bridge) thing, systeminfo);
         } else if (THING_TYPE_PROCESS.equals(thing.getThingTypeUID())) {
-            handler = new ProcessinfoHandler(thing, systeminfo);
+            handler = new ProcessInfoHandler(thing, systeminfo);
         }
         return handler;
     }
 
     @Reference
-    public void bindSystemInfo(SysteminfoInterface systeminfo) {
+    public void bindSystemInfo(SystemInfoInterface systeminfo) {
         this.systeminfo = systeminfo;
     }
 
-    public void unbindSystemInfo(SysteminfoInterface systeminfo) {
+    public void unbindSystemInfo(SystemInfoInterface systeminfo) {
         this.systeminfo = null;
     }
 }

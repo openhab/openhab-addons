@@ -18,13 +18,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * {@link SysteminfoInterface} defines the methods needed to provide this binding with the required system information.
+ * {@link SystemInfoInterface} defines the methods needed to provide this binding with the required system information.
  *
  * @author Svilen Valkanov - Initial contribution
  * @author Wouter Born - Add null annotations
  */
 @NonNullByDefault
-public interface SysteminfoInterface {
+public interface SystemInfoInterface {
 
     // Operating system info
     /**

@@ -40,7 +40,7 @@ import oshi.software.os.OperatingSystem;
 import oshi.util.EdidUtil;
 
 /**
- * This implementation of {@link SysteminfoInterface} is using the open source library OSHI to provide system
+ * This implementation of {@link SystemInfoInterface} is using the open source library OSHI to provide system
  * information. OSHI is a free JNA-based (native) Operating System and Hardware Information library for Java.
  *
  * @author Svilen Valkanov - Initial contribution
@@ -53,10 +53,10 @@ import oshi.util.EdidUtil;
  * @see <a href="https://github.com/oshi/oshi">OSHI GitHub repository</a>
  */
 @NonNullByDefault
-@Component(service = SysteminfoInterface.class)
-public class OSHISysteminfo implements SysteminfoInterface {
+@Component(service = SystemInfoInterface.class)
+public class OSHISystemInfo implements SystemInfoInterface {
 
-    private final Logger logger = LoggerFactory.getLogger(OSHISysteminfo.class);
+    private final Logger logger = LoggerFactory.getLogger(OSHISystemInfo.class);
 
     private @NonNullByDefault({}) HardwareAbstractionLayer hal;
     private @NonNullByDefault({}) OperatingSystem operatingSystem;
@@ -79,8 +79,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * Some of the methods used in this constructor execute native code and require execute permissions
      *
      */
-    public OSHISysteminfo() {
-        logger.debug("OSHISysteminfo service is created");
+    public OSHISystemInfo() {
+        logger.debug("OSHISystemInfo service is created");
 
         SystemInfo systemInfo = new SystemInfo();
         hal = systemInfo.getHardware();

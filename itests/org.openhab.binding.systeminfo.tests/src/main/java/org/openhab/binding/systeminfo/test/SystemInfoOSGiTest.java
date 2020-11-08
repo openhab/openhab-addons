@@ -25,15 +25,16 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
-import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory;
-import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService;
-import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
-import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
+import org.openhab.binding.systeminfo.internal.SystemInfoBindingConstants;
+import org.openhab.binding.systeminfo.internal.SystemInfoHandlerFactory;
+import org.openhab.binding.systeminfo.internal.discovery.SystemInfoDiscoveryService;
+import org.openhab.binding.systeminfo.internal.handler.SystemInfoHandler;
+import org.openhab.binding.systeminfo.internal.model.SystemInfoInterface;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -73,21 +74,21 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * OSGi tests for the {@link SysteminfoHandler}
+ * OSGi tests for the {@link SystemInfoHandler}
  *
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papazov - Created a mock systeminfo object. This way, access to the user's OS will not be required,
  *         but mock data will be used instead, avoiding potential errors from the OS queries.
  * @author Wouter Born - Migrate Groovy to Java tests
  */
-public class SysteminfoOSGiTest extends JavaOSGiTest {
+public class SystemInfoOSGiTest extends JavaOSGiTest {
     private static final String DEFAULT_TEST_BRIDGE_NAME = "computer";
     private static final String DEFAULT_TEST_PROCESS_NAME = "process";
 
     private static final String DEFAULT_TEST_ITEM_NAME = "test";
-    private static final String DEFAULT_TEST_GROUP_ID = SysteminfoBindingConstants.CPU_GROUP_ID;
-    private static final String DEFAULT_TEST_CHANNEL_ID = SysteminfoBindingConstants.CHANNEL_CPU_LOAD;
-    private static final String DEFAULT_TEST_CHANNEL_PRIORITY = SysteminfoBindingConstants.HIGH_PRIOIRITY;
+    private static final String DEFAULT_TEST_GROUP_ID = SystemInfoBindingConstants.CPU_GROUP_ID;
+    private static final String DEFAULT_TEST_CHANNEL_ID = SystemInfoBindingConstants.CHANNEL_CPU_LOAD;
+    private static final String DEFAULT_TEST_CHANNEL_PRIORITY = SystemInfoBindingConstants.HIGH_PRIOIRITY;
     private static final int DEFAULT_DEVICE_INDEX = 0;
 
     /**
@@ -106,30 +107,30 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     private GenericItem testItem;
 
-    private SysteminfoInterface mockedSystemInfo;
+    private SystemInfoInterface mockedSystemInfo;
     private ManagedThingProvider managedThingProvider;
     private ThingRegistry thingRegistry;
     private ItemRegistry itemRegistry;
-    private SysteminfoHandlerFactory systeminfoHandlerFactory;
+    private SystemInfoHandlerFactory systeminfoHandlerFactory;
 
     @BeforeEach
     public void setUp() {
         VolatileStorageService volatileStorageService = new VolatileStorageService();
         registerService(volatileStorageService);
 
-        // Preparing the mock with OS properties, that are used in the initialize method of SysteminfoHandler
-        mockedSystemInfo = mock(SysteminfoInterface.class);
+        // Preparing the mock with OS properties, that are used in the initialize method of SystemInfoHandler
+        mockedSystemInfo = mock(SystemInfoInterface.class);
         when(mockedSystemInfo.getCpuLogicalCores()).thenReturn(BigDecimal.valueOf(2));
         when(mockedSystemInfo.getCpuPhysicalCores()).thenReturn(BigDecimal.valueOf(2));
         when(mockedSystemInfo.getOsFamily()).thenReturn("Mock OS");
         when(mockedSystemInfo.getOsManufacturer()).thenReturn("Mock OS Manufacturer");
         when(mockedSystemInfo.getOsVersion()).thenReturn("Mock Os Version");
 
-        systeminfoHandlerFactory = getService(ThingHandlerFactory.class, SysteminfoHandlerFactory.class);
+        systeminfoHandlerFactory = getService(ThingHandlerFactory.class, SystemInfoHandlerFactory.class);
 
         // Unbind oshiSystemInfo service and bind the mock service to make the systeminfobinding tests
         // independent of the external OSHI library
-        SysteminfoInterface oshiSystemInfo = getService(SysteminfoInterface.class);
+        SystemInfoInterface oshiSystemInfo = getService(SystemInfoInterface.class);
         if (oshiSystemInfo != null) {
             systeminfoHandlerFactory.unbindSystemInfo(oshiSystemInfo);
             oshiSystemInfo = null;
@@ -174,25 +175,25 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         }
     }
 
-    private void initializeProzessThing(String channelID, String acceptedItemType, int pid) {
-        ThingTypeUID bridgeTypeUID = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+    private void initializeProzessThing(String channelID, String acceptedItemType, BigDecimal pid) {
+        ThingTypeUID bridgeTypeUID = SystemInfoBindingConstants.BRIDGE_TYPE_COMPUTER;
         ThingUID bridgeUID = new ThingUID(bridgeTypeUID, DEFAULT_TEST_BRIDGE_NAME);
         systemInfoBridge = BridgeBuilder.create(bridgeTypeUID, bridgeUID).build();
         managedThingProvider.add(systemInfoBridge);
 
-        ThingTypeUID thingTypeUID = SysteminfoBindingConstants.THING_TYPE_PROCESS;
+        ThingTypeUID thingTypeUID = SystemInfoBindingConstants.THING_TYPE_PROCESS;
         ThingUID thingUID = new ThingUID(thingTypeUID, DEFAULT_TEST_PROCESS_NAME);
 
         ChannelUID channelUID = new ChannelUID(thingUID, channelID);
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SysteminfoBindingConstants.BINDING_ID, channelUID.getId());
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SystemInfoBindingConstants.BINDING_ID, channelUID.getId());
 
         Configuration channelConfig = new Configuration();
-        channelConfig.put(SysteminfoBindingConstants.PARAMETER_PRIOIRITY, DEFAULT_TEST_CHANNEL_PRIORITY);
+        channelConfig.put(SystemInfoBindingConstants.PARAMETER_PRIOIRITY, DEFAULT_TEST_CHANNEL_PRIORITY);
         Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withType(channelTypeUID)
                 .withKind(ChannelKind.STATE).withConfiguration(channelConfig).build();
 
         Configuration configuration = new Configuration();
-        configuration.put(SysteminfoBindingConstants.PROCESS_ID, new BigDecimal(pid));
+        configuration.put(SystemInfoBindingConstants.PROCESS_ID, pid);
         processInfoThing = ThingBuilder.create(thingTypeUID, thingUID).withBridge(systemInfoBridge.getUID())
                 .withConfiguration(configuration).withChannel(channel).build();
         managedThingProvider.add(processInfoThing);
@@ -211,9 +212,9 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     private void initializeThingWithChannel(String groupID, String channelID, String acceptedItemType) {
         Configuration configuration = new Configuration();
-        configuration.put(SysteminfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME,
+        configuration.put(SystemInfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME,
                 new BigDecimal(DEFAULT_TEST_INTERVAL_HIGH));
-        configuration.put(SysteminfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
+        configuration.put(SystemInfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
                 new BigDecimal(DEFAULT_TEST_INTERVAL_MEDIUM));
 
         initializeBridge(configuration, groupID, channelID, acceptedItemType, DEFAULT_TEST_CHANNEL_PRIORITY);
@@ -221,13 +222,13 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     private void initializeBridge(Configuration thingConfiguration, String groupID, String channelID,
             String acceptedItemType, String priority) {
-        ThingTypeUID thingTypeUID = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+        ThingTypeUID thingTypeUID = SystemInfoBindingConstants.BRIDGE_TYPE_COMPUTER;
         ThingUID thingUID = new ThingUID(thingTypeUID, DEFAULT_TEST_BRIDGE_NAME);
 
         ChannelUID channelUID = new ChannelUID(new ChannelGroupUID(thingUID, groupID), channelID);
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SysteminfoBindingConstants.BINDING_ID, channelID);
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SystemInfoBindingConstants.BINDING_ID, channelID);
         Configuration channelConfig = new Configuration();
-        channelConfig.put(SysteminfoBindingConstants.PARAMETER_PRIOIRITY, priority);
+        channelConfig.put(SystemInfoBindingConstants.PARAMETER_PRIOIRITY, priority);
         Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withType(channelTypeUID)
                 .withKind(ChannelKind.STATE).withConfiguration(channelConfig).build();
 
@@ -262,9 +263,9 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     }
 
     private void assertItemState(String acceptedItemType, String itemName, String priority, State expectedState) {
-        // The binding starts all refresh tasks in SysteminfoHandler.scheduleUpdates() after this delay
+        // The binding starts all refresh tasks in SystemInfoHandler.scheduleUpdates() after this delay
         try {
-            sleep(SysteminfoHandler.WAIT_TIME_CHANNEL_ITEM_LINK_INIT * 1000);
+            sleep(SystemInfoHandler.WAIT_TIME_CHANNEL_ITEM_LINK_INIT * 1000);
         } catch (InterruptedException e) {
             throw new AssertionError("Interrupted while sleeping");
         }
@@ -277,9 +278,9 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         }
 
         int waitTime;
-        if (priority.equals(SysteminfoBindingConstants.HIGH_PRIOIRITY)) {
+        if (priority.equals(SystemInfoBindingConstants.HIGH_PRIOIRITY)) {
             waitTime = DEFAULT_TEST_INTERVAL_HIGH * 1000;
-        } else if (priority.equals(SysteminfoBindingConstants.MEDIUM_PRIOIRITY)) {
+        } else if (priority.equals(SystemInfoBindingConstants.MEDIUM_PRIOIRITY)) {
             waitTime = DEFAULT_TEST_INTERVAL_MEDIUM * 1000;
         } else {
             waitTime = 100;
@@ -311,10 +312,10 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
         // invalid value - must be positive
         int refreshIntervalHigh = -5;
-        configuration.put(SysteminfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME, new BigDecimal(refreshIntervalHigh));
+        configuration.put(SystemInfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME, new BigDecimal(refreshIntervalHigh));
 
         int refreshIntervalMedium = 3;
-        configuration.put(SysteminfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
+        configuration.put(SystemInfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
                 new BigDecimal(refreshIntervalMedium));
 
         String acceptedItemType = "Number";
@@ -332,12 +333,12 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     }
 
     @Test
-    public void assertThingStatusIsUninitializedWhenThereIsNoSysteminfoServiceProvided() {
+    public void assertThingStatusIsUninitializedWhenThereIsNoSystemInfoServiceProvided() {
         // Unbind the mock service to verify the systeminfo thing will not be initialized
         // when no systeminfo service is provided
         systeminfoHandlerFactory.unbindSystemInfo(mockedSystemInfo);
 
-        ThingTypeUID thingTypeUID = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+        ThingTypeUID thingTypeUID = SystemInfoBindingConstants.BRIDGE_TYPE_COMPUTER;
         ThingUID thingUID = new ThingUID(thingTypeUID, DEFAULT_TEST_BRIDGE_NAME);
 
         systemInfoBridge = BridgeBuilder.create(thingTypeUID, thingUID).build();
@@ -352,12 +353,12 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertMediumPriorityChannelIsUpdated() {
         String acceptedItemType = "Number";
-        String priority = SysteminfoBindingConstants.MEDIUM_PRIOIRITY;
+        String priority = SystemInfoBindingConstants.MEDIUM_PRIOIRITY;
 
         Configuration configuration = new Configuration();
-        configuration.put(SysteminfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME,
+        configuration.put(SystemInfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME,
                 new BigDecimal(DEFAULT_TEST_INTERVAL_HIGH));
-        configuration.put(SysteminfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
+        configuration.put(SystemInfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
                 new BigDecimal(DEFAULT_TEST_INTERVAL_MEDIUM));
         initializeBridge(configuration, DEFAULT_TEST_GROUP_ID, DEFAULT_TEST_CHANNEL_ID, acceptedItemType, priority);
 
@@ -368,26 +369,26 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertStateOfSecondDeviceIsUpdated() {
         // This test assumes that at least 2 network interfaces are present on the test platform
-        ThingTypeUID thingTypeUID = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+        ThingTypeUID thingTypeUID = SystemInfoBindingConstants.BRIDGE_TYPE_COMPUTER;
         ThingUID thingUID = new ThingUID(thingTypeUID, DEFAULT_TEST_BRIDGE_NAME);
 
         int deviceIndex = 1;
         String acceptedItemType = "String";
-        String channelID = SysteminfoBindingConstants.NETWORK_GROUP_ID + String.valueOf(deviceIndex) + "#mac";
+        String channelID = SystemInfoBindingConstants.NETWORK_GROUP_ID + String.valueOf(deviceIndex) + "#mac";
 
         Configuration channelConfig = new Configuration();
-        channelConfig.put(SysteminfoBindingConstants.PARAMETER_PRIOIRITY, DEFAULT_TEST_CHANNEL_PRIORITY);
+        channelConfig.put(SystemInfoBindingConstants.PARAMETER_PRIOIRITY, DEFAULT_TEST_CHANNEL_PRIORITY);
 
         ChannelUID channelUID = new ChannelUID(thingUID, channelID);
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SysteminfoBindingConstants.BINDING_ID,
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(SystemInfoBindingConstants.BINDING_ID,
                 channelUID.getIdWithoutGroup());
         Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withType(channelTypeUID)
                 .withKind(ChannelKind.STATE).withConfiguration(channelConfig).build();
 
         Configuration configuration = new Configuration();
-        configuration.put(SysteminfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME,
+        configuration.put(SystemInfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME,
                 new BigDecimal(DEFAULT_TEST_INTERVAL_HIGH));
-        configuration.put(SysteminfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
+        configuration.put(SystemInfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
                 new BigDecimal(DEFAULT_TEST_INTERVAL_MEDIUM));
 
         systemInfoBridge = BridgeBuilder.create(thingTypeUID, thingUID).withConfiguration(configuration)
@@ -418,7 +419,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getCpuLoad()).thenReturn(mockedCpuLoadValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID, SysteminfoBindingConstants.CHANNEL_CPU_LOAD,
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID, SystemInfoBindingConstants.CHANNEL_CPU_LOAD,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -432,8 +433,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getCpuLoad1()).thenReturn(mockedCpuLoad1Value);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_CPU_LOAD_1, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_CPU_LOAD_1, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedCpuLoad1Value);
@@ -446,8 +447,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getCpuLoad5()).thenReturn(mockedCpuLoad5Value);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_CPU_LOAD_5, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_CPU_LOAD_5, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedCpuLoad5Value);
@@ -460,8 +461,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getCpuLoad15()).thenReturn(mockedCpuLoad15Value);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_CPU_LOAD_15, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_CPU_LOAD_15, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedCpuLoad15Value);
@@ -474,7 +475,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getCpuThreads()).thenReturn(mockedCpuThreadsValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID, SysteminfoBindingConstants.CHANNEL_THREADS,
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID, SystemInfoBindingConstants.CHANNEL_THREADS,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -488,8 +489,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getCpuUptime()).thenReturn(mockedCpuUptimeValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_CPU_UPTIME, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_CPU_UPTIME, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedCpuUptimeValue);
@@ -502,8 +503,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getCpuDescription()).thenReturn(mockedCpuDescriptionValue);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_DESCRIPTION, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_DESCRIPTION, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         StringType state = new StringType(mockedCpuDescriptionValue);
@@ -516,7 +517,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getCpuName()).thenReturn(mockedCpuNameValue);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID, SystemInfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -532,8 +533,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getSensorsCpuTemperature()).thenReturn(mockedSensorsCpuTemperatureValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_CPU_TEMPERATURE, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_CPU_TEMPERATURE, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedSensorsCpuTemperatureValue);
@@ -546,8 +547,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getSensorsCpuVoltage()).thenReturn(mockedSensorsCpuVoltageValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.CPU_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_CPU_VOLTAGE, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.CPU_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_CPU_VOLTAGE, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedSensorsCpuVoltageValue);
@@ -560,8 +561,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getMemoryAvailable()).thenReturn(mockedMemoryAvailableValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.MEMORY_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_AVAILABLE, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.MEMORY_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_AVAILABLE, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedMemoryAvailableValue);
@@ -574,7 +575,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getMemoryUsed()).thenReturn(mockedMemoryUsedValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.MEMORY_GROUP_ID, SysteminfoBindingConstants.CHANNEL_USED,
+        initializeThingWithChannel(SystemInfoBindingConstants.MEMORY_GROUP_ID, SystemInfoBindingConstants.CHANNEL_USED,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -588,7 +589,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getMemoryTotal()).thenReturn(mockedMemoryTotalValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.MEMORY_GROUP_ID, SysteminfoBindingConstants.CHANNEL_TOTAL,
+        initializeThingWithChannel(SystemInfoBindingConstants.MEMORY_GROUP_ID, SystemInfoBindingConstants.CHANNEL_TOTAL,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -602,8 +603,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getMemoryAvailablePercent()).thenReturn(mockedMemoryAvailablePercentValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.MEMORY_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_AVAILABLE_PERCENT, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.MEMORY_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_AVAILABLE_PERCENT, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedMemoryAvailablePercentValue);
@@ -616,8 +617,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getSwapAvailable()).thenReturn(mockedSwapAvailableValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.SWAP_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_AVAILABLE, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.SWAP_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_AVAILABLE, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedSwapAvailableValue);
@@ -630,7 +631,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getSwapUsed()).thenReturn(mockedSwapUsedValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.SWAP_GROUP_ID, SysteminfoBindingConstants.CHANNEL_USED,
+        initializeThingWithChannel(SystemInfoBindingConstants.SWAP_GROUP_ID, SystemInfoBindingConstants.CHANNEL_USED,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -644,7 +645,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getSwapTotal()).thenReturn(mockedSwapTotalValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.SWAP_GROUP_ID, SysteminfoBindingConstants.CHANNEL_TOTAL,
+        initializeThingWithChannel(SystemInfoBindingConstants.SWAP_GROUP_ID, SystemInfoBindingConstants.CHANNEL_TOTAL,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -658,8 +659,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getSwapAvailablePercent()).thenReturn(mockedSwapAvailablePercentValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.SWAP_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_AVAILABLE_PERCENT, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.SWAP_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_AVAILABLE_PERCENT, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedSwapAvailablePercentValue);
@@ -672,7 +673,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getStorageName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageName);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
+        initializeThingWithChannel(SystemInfoBindingConstants.STORAGE_GROUP_ID, SystemInfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -686,8 +687,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getStorageType(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageType);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_STORAGE_TYPE, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.STORAGE_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_STORAGE_TYPE, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         StringType state = new StringType(mockedStorageType);
@@ -696,15 +697,15 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     @Test
     public void assertChannelStorageDescriptionIsUpdated() throws IllegalArgumentException {
-        String channelID = SysteminfoBindingConstants.STORAGE_GROUP_ID + String.valueOf(DEFAULT_DEVICE_INDEX);
-        channelID = channelID + "#" + SysteminfoBindingConstants.CHANNEL_DESCRIPTION;
+        String channelID = SystemInfoBindingConstants.STORAGE_GROUP_ID + String.valueOf(DEFAULT_DEVICE_INDEX);
+        channelID = channelID + "#" + SystemInfoBindingConstants.CHANNEL_DESCRIPTION;
 
         String mockedStorageDescription = "Mocked Storage Description";
         when(mockedSystemInfo.getStorageDescription(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageDescription);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_DESCRIPTION, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.STORAGE_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_DESCRIPTION, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         StringType state = new StringType(mockedStorageDescription);
@@ -717,8 +718,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getStorageAvailable(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageAvailableValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_AVAILABLE, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.STORAGE_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_AVAILABLE, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedStorageAvailableValue);
@@ -731,7 +732,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getStorageUsed(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageUsedValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID, SysteminfoBindingConstants.CHANNEL_USED,
+        initializeThingWithChannel(SystemInfoBindingConstants.STORAGE_GROUP_ID, SystemInfoBindingConstants.CHANNEL_USED,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -745,8 +746,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getStorageTotal(DEFAULT_DEVICE_INDEX)).thenReturn(mockedStorageTotalValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_TOTAL, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.STORAGE_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_TOTAL, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedStorageTotalValue);
@@ -755,16 +756,16 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     @Test
     public void assertChannelStorageAvailablePercentIsUpdated() throws IllegalArgumentException {
-        String channelID = SysteminfoBindingConstants.STORAGE_GROUP_ID + String.valueOf(DEFAULT_DEVICE_INDEX);
-        channelID = channelID + "#" + SysteminfoBindingConstants.CHANNEL_AVAILABLE_PERCENT;
+        String channelID = SystemInfoBindingConstants.STORAGE_GROUP_ID + String.valueOf(DEFAULT_DEVICE_INDEX);
+        channelID = channelID + "#" + SystemInfoBindingConstants.CHANNEL_AVAILABLE_PERCENT;
 
         BigDecimal mockedStorageAvailablePercent = BigDecimal.valueOf(20);
         when(mockedSystemInfo.getStorageAvailablePercent(DEFAULT_DEVICE_INDEX))
                 .thenReturn(mockedStorageAvailablePercent);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.STORAGE_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_AVAILABLE_PERCENT, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.STORAGE_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_AVAILABLE_PERCENT, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedStorageAvailablePercent);
@@ -777,7 +778,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getDriveName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDriveNameValue);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.DRIVE_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
+        initializeThingWithChannel(SystemInfoBindingConstants.DRIVE_GROUP_ID, SystemInfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -791,8 +792,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getDriveModel(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDriveModelValue);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.DRIVE_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_DRIVE_MODEL, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.DRIVE_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_DRIVE_MODEL, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         StringType state = new StringType(mockedDriveModelValue);
@@ -807,8 +808,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getDriveSerialNumber(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDriveSerialNumber);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.DRIVE_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_DRIVE_SERIAL, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.DRIVE_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_DRIVE_SERIAL, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         StringType state = new StringType(mockedDriveSerialNumber);
@@ -821,8 +822,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getSensorsFanSpeed(DEFAULT_DEVICE_INDEX)).thenReturn(mockedSensorsCpuFanSpeedValue);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.FANS_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_FAN_SPEED, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.FANS_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_FAN_SPEED, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedSensorsCpuFanSpeedValue);
@@ -835,7 +836,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getBatteryName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedBatteryName);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.BATTERY_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
+        initializeThingWithChannel(SystemInfoBindingConstants.BATTERY_GROUP_ID, SystemInfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -850,8 +851,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
                 .thenReturn(mockedBatteryRemainingCapacity);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.BATTERY_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_CAPACITY, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.BATTERY_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_BATTERY_REMAINING_CAPACITY, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedBatteryRemainingCapacity);
@@ -864,8 +865,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getBatteryRemainingTime(DEFAULT_DEVICE_INDEX)).thenReturn(mockedBatteryRemainingTime);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.BATTERY_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_BATTERY_REMAINING_TIME, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.BATTERY_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_BATTERY_REMAINING_TIME, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedBatteryRemainingTime);
@@ -878,8 +879,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getDisplayInformation(DEFAULT_DEVICE_INDEX)).thenReturn(mockedDisplayInfo);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.DISPLAY_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_DISPLAY_INFORMATION, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.DISPLAY_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_DISPLAY_INFORMATION, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         StringType state = new StringType(mockedDisplayInfo);
@@ -892,8 +893,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getNetworkIp(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkIp);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_NETWORK_IP, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.NETWORK_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_NETWORK_IP, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         StringType state = new StringType(mockedNetworkIp);
@@ -906,8 +907,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getNetworkMac(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkMacValue);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_NETWORK_MAC, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.NETWORK_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_NETWORK_MAC, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         StringType state = new StringType(mockedNetworkMacValue);
@@ -920,8 +921,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getNetworkDataSent(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkDataSent);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_SENT, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.NETWORK_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_NETWORK_DATA_SENT, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedNetworkDataSent);
@@ -934,8 +935,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getNetworkDataReceived(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkDataReceiveed);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_NETWORK_DATA_RECEIVED, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.NETWORK_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_NETWORK_DATA_RECEIVED, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedNetworkDataReceiveed);
@@ -948,8 +949,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getNetworkPacketsSent(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkPacketsSent);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_NETWORK_PACKETS_SENT, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.NETWORK_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_NETWORK_PACKETS_SENT, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedNetworkPacketsSent);
@@ -962,8 +963,8 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getNetworkPacketsReceived(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkPacketsReceived);
 
         String acceptedItemType = "Number";
-        initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_NETWORK_PACKETS_RECEIVED, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.NETWORK_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_NETWORK_PACKETS_RECEIVED, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         DecimalType state = new DecimalType(mockedNetworkPacketsReceived);
@@ -976,7 +977,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getNetworkName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkName);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID, SysteminfoBindingConstants.CHANNEL_NAME,
+        initializeThingWithChannel(SystemInfoBindingConstants.NETWORK_GROUP_ID, SystemInfoBindingConstants.CHANNEL_NAME,
                 acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
@@ -990,18 +991,18 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         when(mockedSystemInfo.getNetworkDisplayName(DEFAULT_DEVICE_INDEX)).thenReturn(mockedNetworkAdapterName);
 
         String acceptedItemType = "String";
-        initializeThingWithChannel(SysteminfoBindingConstants.NETWORK_GROUP_ID,
-                SysteminfoBindingConstants.CHANNEL_NETWORK_INTERFACE, acceptedItemType);
+        initializeThingWithChannel(SystemInfoBindingConstants.NETWORK_GROUP_ID,
+                SystemInfoBindingConstants.CHANNEL_NETWORK_INTERFACE, acceptedItemType);
         assertThingOnline(systemInfoBridge);
 
         StringType state = new StringType(mockedNetworkAdapterName);
         assertItemState(acceptedItemType, DEFAULT_TEST_ITEM_NAME, DEFAULT_TEST_CHANNEL_PRIORITY, state);
     }
 
-    class SysteminfoDiscoveryServiceMock extends SysteminfoDiscoveryService {
+    class SystemInfoDiscoveryServiceMock extends SystemInfoDiscoveryService {
         String hostname;
 
-        SysteminfoDiscoveryServiceMock(String hostname) {
+        SystemInfoDiscoveryServiceMock(String hostname) {
             super();
             this.hostname = hostname;
         }
@@ -1039,7 +1040,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void testDiscoveryWithUnresolvedHostname() {
         String hostname = "unresolved";
-        String expectedHostname = SysteminfoDiscoveryService.DEFAULT_THING_ID;
+        String expectedHostname = SystemInfoDiscoveryService.DEFAULT_THING_ID;
 
         testDiscoveryService(expectedHostname, hostname);
     }
@@ -1047,24 +1048,24 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void testDiscoveryWithEmptyHostnameString() {
         String hostname = "";
-        String expectedHostname = SysteminfoDiscoveryService.DEFAULT_THING_ID;
+        String expectedHostname = SystemInfoDiscoveryService.DEFAULT_THING_ID;
 
         testDiscoveryService(expectedHostname, hostname);
     }
 
     private void testDiscoveryService(String expectedHostname, String hostname) {
-        SysteminfoDiscoveryService discoveryService = getService(DiscoveryService.class,
-                SysteminfoDiscoveryService.class);
+        SystemInfoDiscoveryService discoveryService = getService(DiscoveryService.class,
+                SystemInfoDiscoveryService.class);
         waitForAssert(() -> {
             assertThat(discoveryService, is(notNullValue()));
         });
-        SysteminfoDiscoveryServiceMock discoveryServiceMock = new SysteminfoDiscoveryServiceMock(hostname);
+        SystemInfoDiscoveryServiceMock discoveryServiceMock = new SystemInfoDiscoveryServiceMock(hostname);
         if (discoveryService != null) {
             unregisterService(DiscoveryService.class);
         }
         registerService(discoveryServiceMock, DiscoveryService.class.getName(), new Hashtable<>());
 
-        ThingTypeUID computerType = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+        ThingTypeUID computerType = SystemInfoBindingConstants.BRIDGE_TYPE_COMPUTER;
         ThingUID computerUID = new ThingUID(computerType, expectedHostname);
 
         discoveryServiceMock.startScan();
@@ -1078,7 +1079,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             assertFalse(results.isEmpty(), "No Thing with UID " + computerUID.getAsString() + " in inbox");
         });
 
-        inbox.approve(computerUID, SysteminfoDiscoveryService.DEFAULT_THING_LABEL, null);
+        inbox.approve(computerUID, SystemInfoDiscoveryService.DEFAULT_THING_LABEL, null);
 
         waitForAssert(() -> {
             systemInfoBridge = (Bridge) thingRegistry.get(computerUID);
@@ -1093,10 +1094,10 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     @Test
     public void assertChannelProcessThreadsIsUpdatedWithPIDse() throws IllegalArgumentException {
         String acceptedItemType = "Number";
-        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_THREADS;
+        String channelID = SystemInfoBindingConstants.CHANNEL_PROCESS_THREADS;
 
         // The pid of the System idle process in Windows
-        int pid = 0;
+        BigDecimal pid = BigDecimal.ZERO;
 
         BigDecimal mockedProcessThreadsCount = BigDecimal.valueOf(4);
         when(mockedSystemInfo.getProcessThreads(pid)).thenReturn(mockedProcessThreadsCount);
@@ -1110,10 +1111,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     @Test
     public void assertChannelProcessPathIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_PATH;
+        String channelID = SystemInfoBindingConstants.CHANNEL_PROCESS_PATH;
         String acceptedItemType = "String";
+
         // The pid of the System idle process in Windows
-        int pid = 0;
+        BigDecimal pid = BigDecimal.ZERO;
 
         String mockedProcessPath = "C:\\Users\\MockedUser\\Process";
         when(mockedSystemInfo.getProcessPath(pid)).thenReturn(mockedProcessPath);
@@ -1127,10 +1129,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     @Test
     public void assertChannelProcessNameIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channelID = SysteminfoBindingConstants.CHANNEL_NAME;
+        String channelID = SystemInfoBindingConstants.CHANNEL_NAME;
         String acceptedItemType = "String";
+
         // The pid of the System idle process in Windows
-        int pid = 0;
+        BigDecimal pid = BigDecimal.ZERO;
 
         String mockedProcessName = "MockedProcess.exe";
         when(mockedSystemInfo.getProcessName(pid)).thenReturn(mockedProcessName);
@@ -1144,10 +1147,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     @Test
     public void assertChannelProcessResidentMemoryIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_RESIDENT_MEMORY;
+        String channelID = SystemInfoBindingConstants.CHANNEL_PROCESS_RESIDENT_MEMORY;
         String acceptedItemType = "Number";
+
         // The pid of the System idle process in Windows
-        int pid = 0;
+        BigDecimal pid = BigDecimal.ZERO;
 
         BigDecimal mockedProcessMemory = BigDecimal.valueOf(450);
         when(mockedSystemInfo.getProcessResidentMemory(pid)).thenReturn(mockedProcessMemory);
@@ -1161,10 +1165,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     @Test
     public void assertChannelProcessVirtualtMemoryIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_VIRTUAL_MEMORY;
+        String channelID = SystemInfoBindingConstants.CHANNEL_PROCESS_VIRTUAL_MEMORY;
         String acceptedItemType = "Number";
+
         // The pid of the System idle process in Windows
-        int pid = 0;
+        BigDecimal pid = BigDecimal.ZERO;
 
         BigDecimal mockedProcessMemory = BigDecimal.valueOf(450);
         when(mockedSystemInfo.getProcessVirtualMemory(pid)).thenReturn(mockedProcessMemory);
@@ -1178,10 +1183,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     @Test
     public void assertChannelProcessLoadIsUpdatedWithPIDset() throws IllegalArgumentException {
-        String channelID = SysteminfoBindingConstants.CHANNEL_PROCESS_LOAD;
+        String channelID = SystemInfoBindingConstants.CHANNEL_PROCESS_LOAD;
         String acceptedItemType = "Number";
+
         // The pid of the System idle process in Windows
-        int pid = 0;
+        BigDecimal pid = BigDecimal.ZERO;
 
         BigDecimal mockedProcessLoad = BigDecimal.valueOf(3);
         when(mockedSystemInfo.getProcessCpuUsage(pid)).thenReturn(mockedProcessLoad);
@@ -1198,19 +1204,17 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         BigDecimal mockedCpuLoadValue = BigDecimal.valueOf(10.5);
         when(mockedSystemInfo.getCpuLoad()).thenReturn(mockedCpuLoadValue);
 
-        String priorityKey = SysteminfoBindingConstants.PARAMETER_PRIOIRITY;
+        String priorityKey = SystemInfoBindingConstants.PARAMETER_PRIOIRITY;
         String initialPriority = DEFAULT_TEST_CHANNEL_PRIORITY; // Evaluates to High
-        String newPriority = SysteminfoBindingConstants.LOW_PRIOIRITY;
+        String newPriority = SystemInfoBindingConstants.LOW_PRIOIRITY;
 
         String acceptedItemType = "Number";
         initializeThingWithChannel(DEFAULT_TEST_GROUP_ID, DEFAULT_TEST_CHANNEL_ID, acceptedItemType);
 
         ChannelGroupUID channelGroupUID = new ChannelGroupUID(systemInfoBridge.getUID(), DEFAULT_TEST_GROUP_ID);
         ChannelUID channelUID = new ChannelUID(channelGroupUID, DEFAULT_TEST_CHANNEL_ID);
-        SysteminfoHandler systemInfoHandler = (SysteminfoHandler) systemInfoBridge.getHandler();
-        if (systemInfoHandler == null) {
-            throw new AssertionError("SystemInfoHandler '" + systemInfoBridge.getUID() + "' is null");
-        }
+        SystemInfoHandler systemInfoHandler = (SystemInfoHandler) systemInfoBridge.getHandler();
+        assertThat(systemInfoHandler, is(notNullValue()));
 
         waitForAssert(() -> {
             Channel channel = systemInfoBridge.getChannel(channelUID);
@@ -1228,8 +1232,11 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         // Change the priority of a channel
         Configuration updatedConfig = new Configuration();
         updatedConfig.put(priorityKey, newPriority);
+
         Channel updatedCannel = systemInfoBridge.getChannel(channelUID);
-        updatedCannel = ChannelBuilder.create(updatedCannel).withConfiguration(updatedConfig).build();
+        assertThat(updatedCannel, is(notNullValue()));
+        updatedCannel = ChannelBuilder.create((@NonNull Channel) updatedCannel).withConfiguration(updatedConfig)
+                .build();
 
         systemInfoBridge = BridgeBuilder.create(systemInfoBridge.getThingTypeUID(), systemInfoBridge.getUID())
                 .withConfiguration(systemInfoBridge.getConfiguration()).withChannel(updatedCannel).build();

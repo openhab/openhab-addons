@@ -12,27 +12,26 @@
  */
 package org.openhab.binding.systeminfo.internal.handler;
 
-import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.*;
+import static org.openhab.binding.systeminfo.internal.SystemInfoBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
+import org.openhab.binding.systeminfo.internal.model.SystemInfoInterface;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -49,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SysteminfoHandler} is responsible for providing real time information about the system
+ * The {@link SystemInfoHandler} is responsible for providing real time information about the system
  * (CPU, Memory, Storage, Display and others).
  *
  * @author Svilen Valkanov - Initial contribution
@@ -58,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Falkenstern - Process information
  */
 @NonNullByDefault
-public class SysteminfoHandler extends BaseBridgeHandler {
+public class SystemInfoHandler extends BaseBridgeHandler {
     /**
      * Refresh interval for {@link #highPriorityChannels} in seconds.
      */
@@ -84,17 +83,15 @@ public class SysteminfoHandler extends BaseBridgeHandler {
      */
     public static final int WAIT_TIME_CHANNEL_ITEM_LINK_INIT = 1;
 
-    private @NonNullByDefault({}) SysteminfoInterface systeminfo;
+    private final SystemInfoInterface systeminfo;
 
     private @Nullable ScheduledFuture<?> highPriorityTasks;
     private @Nullable ScheduledFuture<?> mediumPriorityTasks;
 
-    private final Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SystemInfoHandler.class);
 
-    public SysteminfoHandler(Bridge bridge, @Nullable SysteminfoInterface systeminfo) {
+    public SystemInfoHandler(Bridge bridge, SystemInfoInterface systeminfo) {
         super(bridge);
-
-        Objects.requireNonNull(systeminfo, "Systeminfo may not be null");
         this.systeminfo = systeminfo;
     }
 
@@ -131,13 +128,13 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                         }
                         case CHANNEL_BATTERY_REMAINING_CAPACITY: {
                             BigDecimal state = systeminfo.getBatteryRemainingCapacity(deviceIndex);
-                            updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.PERCENT));
+                            updateState(channelUID, new QuantityType<>(state, Units.PERCENT));
                             break;
                         }
                         case CHANNEL_BATTERY_REMAINING_TIME: {
                             BigDecimal state = systeminfo.getBatteryRemainingTime(deviceIndex);
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.SECOND) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.SECOND) : UnDefType.UNDEF);
                             break;
                         }
                         default: {
@@ -164,26 +161,26 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                         }
                         case CHANNEL_CPU_LOAD: {
                             BigDecimal state = systeminfo.getCpuLoad();
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_CPU_LOAD_1: {
                             BigDecimal state = systeminfo.getCpuLoad1();
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_CPU_LOAD_5: {
                             BigDecimal state = systeminfo.getCpuLoad5();
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_CPU_LOAD_15: {
                             BigDecimal state = systeminfo.getCpuLoad15();
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_CPU_TEMPERATURE: {
@@ -195,12 +192,12 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                         case CHANNEL_CPU_VOLTAGE: {
                             BigDecimal state = systeminfo.getSensorsCpuVoltage();
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.VOLT) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.VOLT) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_CPU_UPTIME: {
                             BigDecimal state = systeminfo.getCpuUptime();
-                            updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.SECOND));
+                            updateState(channelUID, new QuantityType<>(state, Units.SECOND));
                             break;
                         }
                         default: {
@@ -259,31 +256,31 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                         case CHANNEL_AVAILABLE: {
                             BigDecimal state = systeminfo.getMemoryAvailable();
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.BYTE) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_TOTAL: {
                             BigDecimal state = systeminfo.getMemoryTotal();
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.BYTE) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_USED: {
                             BigDecimal state = systeminfo.getMemoryUsed();
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.BYTE) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_AVAILABLE_PERCENT: {
                             BigDecimal state = systeminfo.getMemoryAvailablePercent();
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_USED_PERCENT: {
                             BigDecimal state = systeminfo.getMemoryUsedPercent();
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         default: {
@@ -315,12 +312,12 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                         }
                         case CHANNEL_NETWORK_DATA_SENT: {
                             BigDecimal state = systeminfo.getNetworkDataSent(deviceIndex);
-                            updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.BYTE));
+                            updateState(channelUID, new QuantityType<>(state, Units.BYTE));
                             break;
                         }
                         case CHANNEL_NETWORK_DATA_RECEIVED: {
                             BigDecimal state = systeminfo.getNetworkDataReceived(deviceIndex);
-                            updateState(channelUID, new QuantityType<>(state, SmartHomeUnits.BYTE));
+                            updateState(channelUID, new QuantityType<>(state, Units.BYTE));
                             break;
                         }
                         case CHANNEL_NETWORK_PACKETS_RECEIVED: {
@@ -343,7 +340,7 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                         case CHANNEL_AVAILABLE: {
                             BigDecimal state = systeminfo.getStorageAvailable(deviceIndex);
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.BYTE) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_DESCRIPTION: {
@@ -359,25 +356,25 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                         case CHANNEL_TOTAL: {
                             BigDecimal state = systeminfo.getStorageTotal(deviceIndex);
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.BYTE) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_USED: {
                             BigDecimal state = systeminfo.getStorageUsed(deviceIndex);
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.BYTE) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_AVAILABLE_PERCENT: {
                             BigDecimal state = systeminfo.getStorageAvailablePercent(deviceIndex);
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_USED_PERCENT: {
                             BigDecimal state = systeminfo.getStorageUsedPercent(deviceIndex);
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_STORAGE_TYPE: {
@@ -395,31 +392,31 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                         case CHANNEL_AVAILABLE: {
                             BigDecimal state = systeminfo.getSwapAvailable();
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.BYTE) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_TOTAL: {
                             BigDecimal state = systeminfo.getSwapTotal();
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.BYTE) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_USED: {
                             BigDecimal state = systeminfo.getSwapUsed();
                             updateState(channelUID,
-                                    state != null ? new QuantityType<>(state, SmartHomeUnits.BYTE) : UnDefType.UNDEF);
+                                    state != null ? new QuantityType<>(state, Units.BYTE) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_AVAILABLE_PERCENT: {
                             BigDecimal state = systeminfo.getSwapAvailablePercent();
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         case CHANNEL_USED_PERCENT: {
                             BigDecimal state = systeminfo.getSwapUsedPercent();
-                            updateState(channelUID, state != null ? new QuantityType<>(state, SmartHomeUnits.PERCENT)
-                                    : UnDefType.UNDEF);
+                            updateState(channelUID,
+                                    state != null ? new QuantityType<>(state, Units.PERCENT) : UnDefType.UNDEF);
                             break;
                         }
                         default: {
@@ -435,19 +432,13 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                     logger.warn("No information for channel {} with device index {}.", channelUID, deviceIndex);
                 }
                 updateState(channelUID, UnDefType.UNDEF);
-            } catch (Exception exception) {
-                String message = exception.getMessage();
-                logger.debug("Unexpected error occurred while getting system information {}.", message);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             }
         }
     }
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing.");
-
-        Bridge bridge = getThing();
+        final Bridge bridge = getThing();
         if (updateConfiguration(bridge) && updateProperties()) {
             for (Channel channel : bridge.getChannels()) {
                 Configuration properties = channel.getConfiguration();
@@ -480,7 +471,6 @@ public class SysteminfoHandler extends BaseBridgeHandler {
                 }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, refreshIntervalMediumPriority.intValue(), TimeUnit.SECONDS);
             }
 
-            logger.debug("Thing is successfully initialized.");
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
@@ -611,7 +601,7 @@ public class SysteminfoHandler extends BaseBridgeHandler {
      * first will have deviceIndex=0, the second deviceIndex=1 ant etc).
      * When no device index is specified, default value of 0 (first device in the list) is returned.
      *
-     * @param channelID the ID of the channel
+     * @param channelUID the ID of the channel
      * @return natural number (number >=0)
      */
     private int getDeviceIndex(ChannelUID channelUID) {

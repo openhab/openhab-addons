@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.systeminfo.internal.discovery;
 
-import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.BRIDGE_TYPE_COMPUTER;
+import static org.openhab.binding.systeminfo.internal.SystemInfoBindingConstants.BRIDGE_TYPE_COMPUTER;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
+import org.openhab.binding.systeminfo.internal.SystemInfoBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovery service implementation for the Systeminfo binding. It creates {@link DiscoveryResult} with
+ * Discovery service implementation for the SystemInfo binding. It creates {@link DiscoveryResult} with
  * {@link #DEFAULT_THING_LABEL}. The discovered Thing will have id - the hostname or {@link #DEFAULT_THING_ID}'
  *
  * @author Svilen Valkanov - Initial contribution
@@ -39,11 +39,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.systeminfo")
-public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
+public class SystemInfoDiscoveryService extends AbstractDiscoveryService {
     public static final String DEFAULT_THING_ID = "unknown";
     public static final String DEFAULT_THING_LABEL = "Local computer";
 
-    private final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(SystemInfoDiscoveryService.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(BRIDGE_TYPE_COMPUTER);
 
@@ -51,7 +51,7 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
     private static final String THING_UID_VALID_CHARS = "A-Za-z0-9_-";
     private static final String HOST_NAME_SEPERATOR = "_";
 
-    public SysteminfoDiscoveryService() {
+    public SystemInfoDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
     }
 
@@ -73,7 +73,7 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
             logger.info("Hostname can not be resolved. Computer name will be set to {}.", DEFAULT_THING_ID);
         }
 
-        ThingUID computer = new ThingUID(SysteminfoBindingConstants.BRIDGE_TYPE_COMPUTER, hostname);
+        ThingUID computer = new ThingUID(SystemInfoBindingConstants.BRIDGE_TYPE_COMPUTER, hostname);
         thingDiscovered(DiscoveryResultBuilder.create(computer).withLabel(DEFAULT_THING_LABEL).build());
     }
 

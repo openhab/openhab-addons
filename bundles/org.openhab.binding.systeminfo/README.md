@@ -14,7 +14,7 @@ System information Binding provides operating system and hardware information in
 -   Network IP,name and adapter name, mac, data sent and received, packets sent and received;
 -   Process information - size of RAM memory used, CPU load, process name, path, number of threads.
 
-The binding uses [OSHI](https://github.com/oshi/oshi) API to access this information regardless of the underlyin
+The binding uses [OSHI](https://github.com/oshi/oshi) API to access this information regardless of the underlying
 platform and does not need any native parts.
 
 ## Bridge configuration
@@ -46,7 +46,7 @@ The bridge has the following properties:
 -   `os_family` - The family of the operating system
 
 If multiple storage or display devices support is needed, new thing type has to be defined.
-This is workaround until [this issue] (https://github.com/eclipse/smarthome/issues/588) is resolved and
+This is workaround until [this issue](https://github.com/eclipse/smarthome/issues/588) is resolved and
 it is possible to add dynamically channels to DSL defined thing.
 
 ## Thing configuration
@@ -67,7 +67,7 @@ The discovery service implementation tries to resolve the computer name.
 If the resolving process fails, the computer name is set to "Unknown".
 In both cases it creates a Discovery Result with bridge type  **computer**.
 
-When [this issue] (https://github.com/eclipse/smarthome/issues/1118) is resolved it will be possible to implement creation of dynamic channels (e.g. the binding will scan how much storage devices are present and create channel groups for them).
+When [this issue](https://github.com/eclipse/smarthome/issues/1118) is resolved it will be possible to implement creation of dynamic channels (e.g. the binding will scan how much storage devices are present and create channel groups for them).
 At the moment this is not supported.
 
 ## Binding configuration
@@ -111,53 +111,53 @@ several local disks could be installed with names C:\, D:\, E:\ - the first will
 deviceIndex=1 etc). If device with this index is not existing, the binding will display an error message on the console.
 
 Unfortunately this feature can't be used at the moment without manually adding these new channel groups to the thing
-description (located in ESH-INF/thing/computer.xml).
+description (located in OH-INF/thing/computer.xml).
 
 The table shows more detailed information about each channel type:
 
-| Channel ID         | Channel Description                                              | Item type | Default priority | Advanced |
-| ------------------ | :--------------------------------------------------------------: | :-------: | :--------------: ---------- |
-| load               | Recent load in percents                                          | Number    | High             | False    |
-| load1              | Load for the last 1 minute                                       | Number    | Medium           | True     |
-| load5              | Load for the last 5 minutes                                      | Number    | Medium           | True     |
-| load15             | Load for the last 15 minutes                                     | Number    | Medium           | True     |
-| threads            | Number of threads currently running                              | Number    | Medium           | True     |
-| uptime             | System uptime (time after start) in minutes                      | Number    | Medium           | True     |
-| name               | Name of the device                                               | String    | Low              | False    |
-| available          | Available size in MB                                             | Number    | High             | False    |
-| used               | Used size in MB                                                  | Number    | High             | False    |
-| total              | Total size in MB                                                 | Number    | Low              | False    |
-| availablePercent   | Available size in %                                              | Number    | High             | False    |
-| usedPercent        | Used size in %                                                   | Number    | High             | False    |
-| model              | The model of the device                                          | String    | Low              | True     |
-| serial             | The serial number of the device                                  | String    | Low              | True     |
-| description        | Description of the device                                        | String    | Low              | True     |
-| type               | Storage type                                                     | String    | Low              | True     |
-| temperature        | CPU Temperature in degrees Celsius                               | Number    | High             | True     |
-| voltage            | CPU Voltage in V                                                 | Number    | Medium           | True     |
-| speed              | Fan speed in rpm                                                 | Number    | Medium           | True     |
-| remainingTime      | Remaining time in minutes                                        | Number    | Medium           | False    |
-| remainingCapacity  | Remaining capacity in %                                          | Number    | Medium           | False    |
-| information        | Product, manufacturer, SN, width and height of the display in cm | String    | Low              | True     |
-| ip                 | Host IP address of the network                                   | String    | Low              | False    |
-| mac                | MAC address                                                      | String    | Low              | True     |
-| networkName        | The name of the network                                          | String    | Low              | False    |
-| networkDisplayName | The display name of the network                                  | String    | Low              | False    |
-| packetsSent        | Number of packets sent                                           | Number    | Medium           | True     |
-| packetsReceived    | Number of packets received                                       | Number    | Medium           | True     |
-| dataSent           | Data sent in MB                                                  | Number    | Medium           | True     |
-| dataReceived       | Data received in MB                                              | Number    | Medium           | True     |
+| Channel ID         | Channel Description                                              | Item type                | Default priority | Advanced |
+| ------------------ | :--------------------------------------------------------------: | :----------------------: | :--------------: | -------- |
+| load               | Recent load in percents                                          | Number:Dimensionless     | High             | False    |
+| load1              | Load for the last 1 minute in percents                           | Number:Dimensionless     | Medium           | True     |
+| load5              | Load for the last 5 minutes in percents                          | Number:Dimensionless     | Medium           | True     |
+| load15             | Load for the last 15 minutes in percents                         | Number:Dimensionless     | Medium           | True     |
+| threads            | Number of threads currently running                              | Number                   | Medium           | True     |
+| uptime             | System uptime (time after start) in minutes                      | Number                   | Medium           | True     |
+| name               | Name of the device                                               | String                   | Low              | False    |
+| available          | Available memory size                                            | Number:DataAmount        | High             | False    |
+| used               | Used memory size                                                 | Number:DataAmount        | High             | False    |
+| total              | Total memory size                                                | Number:DataAmount        | Low              | False    |
+| availablePercent   | Available size in %                                              | Number:Dimensionless     | High             | False    |
+| usedPercent        | Used size in %                                                   | Number:Dimensionless     | High             | False    |
+| model              | The model of the device                                          | String                   | Low              | True     |
+| serial             | The serial number of the device                                  | String                   | Low              | True     |
+| description        | Description of the device                                        | String                   | Low              | True     |
+| type               | Storage type                                                     | String                   | Low              | True     |
+| temperature        | CPU Temperature in degrees Celsius                               | Number:Temperature       | High             | True     |
+| voltage            | CPU Voltage in V                                                 | Number:ElectricPotential | Medium           | True     |
+| speed              | Fan speed in rpm                                                 | Number                   | Medium           | True     |
+| remainingTime      | Remaining time                                                   | Number:Time              | Medium           | False    |
+| remainingCapacity  | Remaining capacity in %                                          | Number:Dimensionless     | Medium           | False    |
+| information        | Product, manufacturer, SN, width and height of the display in cm | String                   | Low              | True     |
+| ip                 | Host IP address of the network                                   | String                   | Low              | False    |
+| mac                | MAC address                                                      | String                   | Low              | True     |
+| networkName        | The name of the network                                          | String                   | Low              | False    |
+| networkDisplayName | The display name of the network                                  | String                   | Low              | False    |
+| packetsSent        | Number of packets sent                                           | Number                   | Medium           | True     |
+| packetsReceived    | Number of packets received                                       | Number                   | Medium           | True     |
+| dataSent           | Data sent                                                        | Number:DataAmount        | Medium           | True     |
+| dataReceived       | Data received                                                    | Number:DataAmount        | Medium           | True     |
 
 **thing** `process`
 
-| Channel ID         | Channel Description                                              | Item type | Default priority | Advanced |
-| ------------------ | :--------------------------------------------------------------: | :-------: | :--------------: | -------- |
-| name               | Name of the process                                              | String    | Low              | False    |
-| resident           | Resident Set Size (RSS)                                          | Number    | High             | False    |
-| virtual            | Virtual Memory Size (VSZ)                                        | Number    | High             | False    |
-| user               | Name of the user this proccess runsString                        | String    | Low              | True     |
-| path               | Full path of the process                                         | String    | Low              | True     |
-| threads            | Number of threads in this process                                | Number    | Medium           | True     |
+| Channel ID         | Channel Description                                              | Item type         | Default priority | Advanced |
+| ------------------ | :--------------------------------------------------------------: | :---------------: | :--------------: | -------- |
+| name               | Name of the process                                              | String            | Low              | False    |
+| resident           | Resident Set Size (RSS)                                          | Number:DataAmount | High             | False    |
+| virtual            | Virtual Memory Size (VSZ)                                        | Number:DataAmount | High             | False    |
+| user               | Name of the user this proccess runsString                        | String            | Low              | True     |
+| path               | Full path of the process                                         | String            | Low              | True     |
+| threads            | Number of threads in this process                                | Number            | Medium           | True     |
 
 VSZ includes all memory that the process can access, including memory that is swapped out and memory that is from
 shared libraries. RSS shows how much memory is allocated to that process and is in RAM. It does not include memory

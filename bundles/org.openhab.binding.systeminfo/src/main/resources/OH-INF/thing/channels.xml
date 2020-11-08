@@ -237,7 +237,7 @@
 	<channel-type id="remainingTime">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Time</label>
-		<description>Remaining time</description>
+		<description>Remaining battery time</description>
 		<state readOnly="true" pattern="%f %unit%"/>
 		<config-description-ref uri="systeminfo:channels:mediumpriority"/>
 	</channel-type>
@@ -245,7 +245,7 @@
 	<channel-type id="remainingCapacity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Remaining Capacity</label>
-		<description>Remaining capacity</description>
+		<description>Remaining battery capacity</description>
 		<state readOnly="true" pattern="%f %%"/>
 		<config-description-ref uri="systeminfo:channels:mediumpriority"/>
 	</channel-type>
