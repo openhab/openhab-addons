@@ -586,8 +586,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 break;
             case "energy":
                 updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.WATT));
+                break;
             case "time":
                 updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.HOUR));
+                break;
             default:
                 updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
         }
