@@ -97,7 +97,9 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      */
     private void scheduleReinitialize() {
         scheduler.schedule(() -> {
-            initializeGardena();
+            if (getThing().getStatus() != ThingStatus.UNINITIALIZED) {
+                initializeGardena();
+            }
         }, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
