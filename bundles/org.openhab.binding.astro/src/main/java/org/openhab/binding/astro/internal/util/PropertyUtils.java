@@ -91,7 +91,11 @@ public class PropertyUtils {
         Method m = instance.getClass().getMethod(toGetterString(propertyName), null);
         Object result = m.invoke(instance, (Object[]) null);
         if (nestedIndex + 1 < properties.length) {
-            return getPropertyValue(result, properties, nestedIndex + 1);
+            if (result != null) {
+                return getPropertyValue(result, properties, nestedIndex + 1);
+            } else {
+                throw new NullPointerException();
+            }
         }
         return result;
     }
