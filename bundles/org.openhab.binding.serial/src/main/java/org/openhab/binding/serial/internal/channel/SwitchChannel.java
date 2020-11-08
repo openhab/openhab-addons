@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.serial.internal.channel;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
@@ -31,21 +32,24 @@ public class SwitchChannel extends DeviceChannel {
     }
 
     @Override
-    public @Nullable String mapCommand(final Command command) {
+    public Optional<String> mapCommand(final Command command) {
         String data;
 
-        if (config.onValue != null && OnOffType.ON.equals(command)) {
-            data = config.onValue;
-        } else if (config.offValue != null && OnOffType.OFF.equals(command)) {
-            data = config.offValue;
+        final String onValue = config.onValue;
+        final String offValue = config.offValue;
+
+        if (onValue != null && OnOffType.ON.equals(command)) {
+            data = onValue;
+        } else if (offValue != null && OnOffType.OFF.equals(command)) {
+            data = offValue;
         } else {
             data = command.toFullString();
         }
 
-        data = transformCommand(data);
+        final Optional<String> result = transformCommand(data);
 
-        logger.debug("Mapped command is '{}'", data);
+        logger.debug("Mapped command is '{}'", result.orElse(null));
 
-        return data;
+        return result;
     }
 }

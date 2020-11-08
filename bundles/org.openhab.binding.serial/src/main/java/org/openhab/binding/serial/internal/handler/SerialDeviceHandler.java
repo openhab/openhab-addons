@@ -69,10 +69,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
                 if (bridge != null) {
                     final SerialBridgeHandler handler = (SerialBridgeHandler) bridge.getHandler();
                     if (handler != null) {
-                        final String data = channel.mapCommand(command);
-                        if (data != null) {
-                            handler.writeString(data);
-                        }
+                        channel.mapCommand(command).ifPresent(value -> handler.writeString(value));
                     }
                 }
             }
@@ -172,11 +169,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
         final DeviceChannel channel = channels.get(channelUID);
         if (channel != null) {
-            final String state = channel.transformData(data);
-
-            if (state != null) {
-                updateState(channelUID, new StringType(state));
-            }
+            channel.transformData(data).ifPresent(value -> updateState(channelUID, new StringType(value)));
         }
     }
 }

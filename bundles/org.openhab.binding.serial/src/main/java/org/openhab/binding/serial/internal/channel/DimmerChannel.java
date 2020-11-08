@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.serial.internal.channel;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -32,17 +33,22 @@ public class DimmerChannel extends SwitchChannel {
     }
 
     @Override
-    public @Nullable String mapCommand(final Command command) {
-        String data;
+    public Optional<String> mapCommand(final Command command) {
+        Optional<String> result;
 
         if (command instanceof OnOffType) {
-            data = super.mapCommand(command);
+            result = super.mapCommand(command);
         } else {
+            String data;
+
+            final String increaseValue = config.increaseValue;
+            final String decreaseValue = config.decreaseValue;
+
             if (command instanceof IncreaseDecreaseType) {
-                if (config.increaseValue != null && IncreaseDecreaseType.INCREASE.equals(command)) {
-                    data = config.increaseValue;
-                } else if (config.decreaseValue != null && IncreaseDecreaseType.DECREASE.equals(command)) {
-                    data = config.decreaseValue;
+                if (increaseValue != null && IncreaseDecreaseType.INCREASE.equals(command)) {
+                    data = increaseValue;
+                } else if (decreaseValue != null && IncreaseDecreaseType.DECREASE.equals(command)) {
+                    data = decreaseValue;
                 } else {
                     data = command.toFullString();
                 }
@@ -50,11 +56,11 @@ public class DimmerChannel extends SwitchChannel {
                 data = formatCommand(command);
             }
 
-            data = transformCommand(data);
+            result = transformCommand(data);
 
-            logger.debug("Mapped command is '{}'", data);
+            logger.debug("Mapped command is '{}'", result.orElse(null));
         }
 
-        return data;
+        return result;
     }
 }

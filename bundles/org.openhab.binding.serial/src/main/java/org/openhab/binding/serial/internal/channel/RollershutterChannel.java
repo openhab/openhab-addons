@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.serial.internal.channel;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
@@ -33,20 +34,24 @@ public class RollershutterChannel extends DeviceChannel {
     }
 
     @Override
-    public @Nullable String mapCommand(final Command command) {
+    public Optional<String> mapCommand(final Command command) {
         String data;
 
+        final String upValue = config.upValue;
+        final String downValue = config.downValue;
+        final String stopValue = config.stopValue;
+
         if (command instanceof UpDownType) {
-            if (config.upValue != null && UpDownType.UP.equals(command)) {
-                data = config.upValue;
-            } else if (config.downValue != null && UpDownType.DOWN.equals(command)) {
-                data = config.downValue;
+            if (upValue != null && UpDownType.UP.equals(command)) {
+                data = upValue;
+            } else if (downValue != null && UpDownType.DOWN.equals(command)) {
+                data = downValue;
             } else {
                 data = command.toFullString();
             }
         } else if (command instanceof StopMoveType) {
-            if (config.stopValue != null && StopMoveType.STOP.equals(command)) {
-                data = config.stopValue;
+            if (stopValue != null && StopMoveType.STOP.equals(command)) {
+                data = stopValue;
             } else {
                 data = command.toFullString();
             }
@@ -54,10 +59,10 @@ public class RollershutterChannel extends DeviceChannel {
             data = formatCommand(command);
         }
 
-        data = transformCommand(data);
+        final Optional<String> result = transformCommand(data);
 
-        logger.debug("Mapped command is '{}'", data);
+        logger.debug("Mapped command is '{}'", result.orElse(null));
 
-        return data;
+        return result;
     }
 }

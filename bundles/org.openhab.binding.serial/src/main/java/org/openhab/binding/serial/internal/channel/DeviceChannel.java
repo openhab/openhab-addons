@@ -13,9 +13,9 @@
 package org.openhab.binding.serial.internal.channel;
 
 import java.util.IllegalFormatException;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.transform.ValueTransformation;
 import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.types.Command;
@@ -48,36 +48,34 @@ public abstract class DeviceChannel {
      * applying a format followed by a transform.
      * 
      * @param command the command to map
-     * @return the mapped data or the orginal data if no mapping found
+     * @return the mapped data if the mapping produced a result.
      */
-    public @Nullable String mapCommand(final Command command) {
-        String data = formatCommand(command);
+    public Optional<String> mapCommand(final Command command) {
+        final Optional<String> result = transformCommand(formatCommand(command));
 
-        data = transformCommand(data);
+        logger.debug("Mapped command is '{}'", result.orElse(null));
 
-        logger.debug("Mapped command is '{}'", data);
-
-        return data;
+        return result;
     }
 
     /**
      * Transform the data using the configured transform
      * 
      * @param data the data to transform
-     * @return the transformed data is the transform produced a result otherwise null.
+     * @return the transformed data if the transform produced a result.
      */
-    public @Nullable String transformData(final @Nullable String data) {
-        return data != null ? transform.apply(data).orElse(null) : null;
+    public Optional<String> transformData(final String data) {
+        return transform.apply(data);
     }
 
     /**
      * Transform the data using the configured command transform
      * 
      * @param data the command to transform
-     * @return the transformed data is the transform produced a result otherwise null.
+     * @return the transformed data if the transform produced a result.
      */
-    protected @Nullable String transformCommand(final @Nullable String data) {
-        return data != null ? commandTransform.apply(data).orElse(null) : null;
+    protected Optional<String> transformCommand(final String data) {
+        return commandTransform.apply(data);
     }
 
     /**
