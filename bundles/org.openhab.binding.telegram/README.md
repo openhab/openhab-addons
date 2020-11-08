@@ -4,9 +4,9 @@ The Telegram binding allows sending and receiving messages to and from Telegram 
 
 # Prerequisites
 
-As described in the Telegram Bot API, this is the manual procedure needed in order to get the necessary information.
+As described in the Telegram Bot API (https://core.telegram.org/bots#6-botfather), this is the manual procedure needed in order to get the necessary information.
 
-1. Create the Bot and get the Token
+1. Create a new Bot and get the Token
 
 - On a Telegram client open a chat with BotFather.
 - Send `/newbot` to BotFather and fill in all the needed information. The authentication token that is given will be needed in the next steps.
@@ -32,7 +32,9 @@ Note bots may work or not at any time so eventually you need to try another one.
 - `https://api.telegram.org/bot<token>/sendMessage?chat_id=<chatId>&text=testing`
 - Your Telegram-bot should send you a message with the text: `testing`
 
-**Notice:** By default your bot will only receive messages that either start with the '/' symbol or mention the bot by username (or if you talk to it directly). However, if you add your bot to a group you must either talk to BotFather and send the command "/setprivacy" and then disable it or you give admin rights to your bot in that group. Otherwise you will not be able to receive those messages.
+**Notice:** By default your bot will only receive messages that either start with the '/' symbol or mention the bot by username (or if you talk to it directly). 
+However, if you add your bot to a group you must either talk to BotFather and send the command "/setprivacy" and then disable it or you give admin rights to your bot in that group. 
+Otherwise you will not be able to receive those messages.
 
 ## Supported Things
 
@@ -341,4 +343,3 @@ then
     }
 end
 ```
-
