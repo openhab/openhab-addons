@@ -47,8 +47,6 @@ public class HaywardBindingConstants {
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BRIDGE);
 
-    // public static final Set<ThingTypeUID> ZONE_THING_TYPES_UIDS = Collections.singleton(ZONE_THING_TYPE);
-
     public static final Set<ThingTypeUID> THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
             Arrays.asList(HaywardBindingConstants.THING_TYPE_BACKYARD, HaywardBindingConstants.THING_TYPE_BOW,
                     HaywardBindingConstants.THING_TYPE_BRIDGE, HaywardBindingConstants.THING_TYPE_CHLORINATOR,

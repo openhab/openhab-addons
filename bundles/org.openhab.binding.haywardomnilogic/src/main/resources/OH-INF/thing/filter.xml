@@ -45,10 +45,10 @@
 	</channel-type>
 
 	<channel-type id="filterSpeed">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Filter Speed</label>
 		<description>Filter Speed in %</description>
-		<state min="0" max="100" step="1.0" pattern="%1f" readOnly="false"/>
+		<state min="0" max="100" step="1.0" pattern="%1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterState">

@@ -19,6 +19,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -53,23 +55,34 @@ public class HaywardThingHandler extends BaseThingHandler {
     public void getTelemetry(@NonNull String xmlResponse) throws Exception {
     }
 
-    public State toState(String type, String value) throws NumberFormatException {
-        if ("Number".equals(type)) {
-            return new DecimalType(value);
-        } else if ("Switch".equals(type)) {
-            return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
-        } else if ("system.power".equals(type)) {
-            return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
-        } else if ("Number:Dimensionless".equals(type)) {
-            return new DecimalType(value);
-        } else if ("Number:Temperature".equals(type)) {
-            return new DecimalType(value);
-        } else {
-            return StringType.valueOf(value);
+    public State toState(String type, String channelID, String value) throws NumberFormatException {
+
+        switch (type) {
+            case "Number":
+                return new DecimalType(value);
+            case "Switch":
+                return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+            case "system.power":
+                return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+            case "Number:Dimensionless":
+                switch (channelID) {
+                    case "chlorTimedPercent":
+                    case "filterSpeed":
+                    case "pumpSpeed":
+                        return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.PERCENT);
+                    case "chlorAvgSaltLevel":
+                    case "chlorInstantSaltLevel":
+                        return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.PARTS_PER_MILLION);
+                }
+            case "Number:Temperature":
+                return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
+            default:
+                return StringType.valueOf(value);
         }
     }
 
     public String cmdToString(Command command) {
+
         if (command == OnOffType.OFF) {
             return "0";
         } else if (command == OnOffType.ON) {
@@ -88,7 +101,7 @@ public class HaywardThingHandler extends BaseThingHandler {
         if (chan != null) {
             String acceptedItemType = chan.getAcceptedItemType();
             if (acceptedItemType != null) {
-                State state = toState(acceptedItemType, data);
+                State state = toState(acceptedItemType, channelID, data);
                 updateState(chan.getUID(), state);
             }
         }

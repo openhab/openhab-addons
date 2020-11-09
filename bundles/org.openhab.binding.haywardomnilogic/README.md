@@ -66,19 +66,19 @@ Hayward OmniLogic Connection Parameters:
 
 ### Chlorinator Channels
 
-| Channel Type ID       		| Item Type | Description                                                               | Read Write |
-|-------------------------------|-----------|---------------------------------------------------------------------------|:----------:|
-| chlorEnable       			| Switch    | Chlorinator enable														|     R/W    |
-| chlorOperatingMode    		| String    | Chlorinator operating mode												|      R     |
-| chlorTimedPercent 			| Number	| Chlorinator timed percent					                                |     R/W    |
-| chlorOperatingState   		| Number    | Chlorinator operating state												|      R     |
-| chlorScMode    				| String    | Chlorinator mode															|      R     |
-| chlorError     				| Number    | Chlorinator error															|      R     |
-| chlorAlert        			| String    | Chlorinator alert															|      R     |
-| chlorAvgSaltLevel     		| Number    | Chlorinator average salt level in Part per Million (ppm)					|      R     |
-| chlorInstantSaltLevel 		| Number    | Chlorinator instant salt level in Part per Million (ppm)    				|      R     |
-| chlorStatus     				| Number    | Chlorinator K1/K2 relay status      									    |      R     |
-		
+| Channel Type ID       		| Item Type 			| Description                                                   | Read Write |
+|-------------------------------|-----------			|---------------------------------------------------------------|:----------:|
+| chlorEnable       			| Switch    			| Chlorinator enable											|     R/W    |
+| chlorOperatingMode    		| String     			| Chlorinator operating mode									|      R     |
+| chlorTimedPercent 			| Number:Dimensionless	| Chlorinator timed percent					                    |     R/W    |
+| chlorOperatingState   		| Number    			| Chlorinator operating state									|      R     |
+ chlorScMode    				| String    			| Chlorinator mode												|      R     |
+| chlorError     				| Number    			| Chlorinator error												|      R     |
+| chlorAlert        			| String    			| Chlorinator alert												|      R     |
+| chlorAvgSaltLevel     		| Number:Dimensionless  | Chlorinator average salt level in Part per Million (ppm)		|      R     |
+| chlorInstantSaltLevel 		| Number:Dimensionless  | Chlorinator instant salt level in Part per Million (ppm)    	|      R     |
+| chlorStatus     				| Number    			| Chlorinator K1/K2 relay status      							|      R     |
+
 ### Colorlogic Light Channels
 
 | Channel Type ID       		| Item Type | Description                                                               | Read Write |
@@ -87,17 +87,13 @@ Hayward OmniLogic Connection Parameters:
 | colorLogicLightState    		| Number    | Colorlogic Light state													|      R     |
 | colorLogicLightCurrentShow 	| Number	| Colorlogic Light current show					                            |     R/W    |
 
-### Chlorine Sense and Dispense (CSAD/ORP) Channels
-
-To be developed
-
 ### Filter Channels
 
 | Channel Type ID       		| Item Type | Description                                                               | Read Write |
 |-------------------------------|-----------|---------------------------------------------------------------------------|:----------:|
 | filterEnable	    			| Switch    | Filter enable																|     R/W    |
 | filterValvePosition    		| Number    | Filter valve position														|      R     |
-| filterSpeed 					| Number	| Filter speed								                                |     R/W    |
+| filterSpeed 					| Dimmer	| Filter speed								                                |     R/W    |
 | filterState   				| Number    | Filter state																|      R     |
 | filterLastSpeed       		| Number    | Filter last speed															|      R     |
 
@@ -116,7 +112,7 @@ To be developed
 | Channel Type ID               | Item Type | Description                                                               | Read Write |
 |-------------------------------|-----------|---------------------------------------------------------------------------|:----------:|
 | pumpEnable                    | Switch    | Pump enable                                                               |      R     |
-| pumpSpeed                     | Number    | Pump speed                                                                |      R     |
+| pumpSpeed                     | Dimmer    | Pump speed                                                                |      R     |
 
 ### Relay Channels
 

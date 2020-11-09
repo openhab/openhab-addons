@@ -29,9 +29,9 @@
 
 	<channel-type id="pumpSpeed">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Pump Speed</label>
+		<label>Pump Speed in %</label>
 		<description>Pump Speed</description>
-		<state min="0" max="100" step="1.0" pattern="%1f" readOnly="false"/>
+		<state min="0" max="100" step="1.0" pattern="%1f %unit%" readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>
