@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
  * @author Matt Myers - Initial Contribution
  */
 
-// public class HaywardDiscoveryService extends AbstractDiscoveryService implements HaywardHandlerListener {
 @NonNullByDefault
 public class HaywardDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
 
@@ -395,14 +394,6 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             this.handler.setHaywardDiscoveryService(this);
         }
     }
-
-    // @Override
-    // public void setThingHandler(@Nullable ThingHandler handler) {
-    // if (handler instanceof YamahaBridgeHandler) {
-    // this.handler = (YamahaBridgeHandler) handler;
-    // this.handler.setZoneDiscoveryService(this);
-    // }
-    // }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
