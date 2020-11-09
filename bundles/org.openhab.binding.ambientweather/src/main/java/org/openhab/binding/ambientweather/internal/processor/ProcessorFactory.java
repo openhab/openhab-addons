@@ -37,6 +37,7 @@ public class ProcessorFactory {
     // Supported weather stations
     private @Nullable static Ws1400ipProcessor WS1400IP_PROCESSOR;
     private @Nullable static Ws2902aProcessor WS2902A_PROCESSOR;
+    private @Nullable static Ws2902bProcessor WS2902B_PROCESSOR;
     private @Nullable static Ws8482Processor WS8482_PROCESSOR;
     private @Nullable static Ws0900ipProcessor WS0900IP_PROCESSOR;
     private @Nullable static Ws0265Processor WS0265_PROCESSOR;
@@ -75,6 +76,14 @@ public class ProcessorFactory {
                 if (processor == null) {
                     processor = new Ws2902aProcessor();
                     WS2902A_PROCESSOR = processor;
+                }
+                return processor;
+            }
+            case "ambientweather:ws2902b": {
+                Ws2902bProcessor processor = WS2902B_PROCESSOR;
+                if (processor == null) {
+                    processor = new Ws2902bProcessor();
+                    WS2902B_PROCESSOR = processor;
                 }
                 return processor;
             }
