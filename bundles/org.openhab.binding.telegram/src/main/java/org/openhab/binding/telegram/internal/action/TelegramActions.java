@@ -20,7 +20,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -336,7 +335,7 @@ public class TelegramActions implements ThingActions {
                 logger.debug("Read file from local file system: {}", photoURL);
                 try {
                     URL url = new URL(photoURL);
-                    sendPhoto = new SendPhoto(chatId, Paths.get(url.getPath()).toFile());
+                    sendPhoto = new SendPhoto(chatId, Path.of(url.getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL: {}", photoURL);
                     return false;
@@ -459,7 +458,7 @@ public class TelegramActions implements ThingActions {
                 // Load video from local file system
                 logger.debug("Read file from local file system: {}", animationURL);
                 try {
-                    sendAnimation = new SendAnimation(chatId, Paths.get(new URL(temp).getPath()).toFile());
+                    sendAnimation = new SendAnimation(chatId, Path.of(new URL(temp).getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL, should start with http or file: {}", animationURL);
                     return false;
