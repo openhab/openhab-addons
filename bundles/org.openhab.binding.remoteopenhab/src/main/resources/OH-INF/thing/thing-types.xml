@@ -79,8 +79,8 @@
 				<required>true</required>
 			</parameter>
 
-			<parameter name="buildChannels" type="boolean">
-				<label>Automatic Channels Building</label>
+			<parameter name="buildTriggerChannels" type="boolean">
+				<label>Automatic Trigger Channels Building</label>
 				<description>If set to true, a trigger channel will be automatically created and linked to each trigger channel from
 					the remote thing.</description>
 				<required>false</required>

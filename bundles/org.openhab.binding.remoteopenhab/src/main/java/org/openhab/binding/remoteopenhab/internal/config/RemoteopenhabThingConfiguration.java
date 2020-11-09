@@ -26,5 +26,5 @@ public class RemoteopenhabThingConfiguration {
     public static final String THING_UID = "thingUID";
 
     public String thingUID = "";
-    public boolean buildChannels = true;
+    public boolean buildTriggerChannels = true;
 }

@@ -108,7 +108,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                     scheduler.execute(() -> {
                         try {
                             RemoteopenhabThing thing = client.getRemoteThing(uid);
-                            createTriggerChannels(thing, config.buildChannels);
+                            createTriggerChannels(thing, config.buildTriggerChannels);
                             RemoteopenhabStatusInfo statusInfo = thing.statusInfo;
                             if (statusInfo != null) {
                                 updateThingStatus(uid, statusInfo);

@@ -47,12 +47,12 @@ The `server` thing has the following configuration parameters:
 
 The `thing` thing has the following configuration parameters:
 
-| Parameter     | Required | Description                                 |
-|---------------|----------|---------------------------------------------|
-| thingUID      | yes      | The thing UID in the remote openHAB server. |
-| buildChannels | no       | If set to true, a trigger channel will be automatically created and linked to each trigger channel from the remote thing. Default is true. |
+| Parameter            | Required | Description                                 |
+|----------------------|----------|---------------------------------------------|
+| thingUID             | yes      | The thing UID in the remote openHAB server. |
+| buildTriggerChannels | no       | If set to true, a trigger channel will be automatically created and linked to each trigger channel from the remote thing. Default is true. |
 
-Setting the `buildChannels` parameter to false is for the main following advanced usages :
+Setting the `buildTriggerChannels` parameter to false is for the main following advanced usages :
 
 * you don't care about the trigger channels of this remote thing and you don't want the binding to create them locally,
 * you want to define the trigger channels in your configuration file, and only the channels that you will finally need,
@@ -73,7 +73,7 @@ Only basic groups (with no state) from the remote server are ignored.
 The channel ID of the created channel corresponds to the name of the item on the remote server.
 For example, if your remote item is named `MyDate`, the channel UID of the channel created by the binding will be `remoteopenhab:server:xxx:MyDate`.
 
-On the `thing` thing, if the `buildChannels` parameter is set to true, a channel is created automatically for each trigger channel defined in the remote thing.
+On the `thing` thing, if the `buildTriggerChannels` parameter is set to true, a channel is created automatically for each trigger channel defined in the remote thing.
 For example, if your remote thing provides a trigger channel with this UID `astro:sun:local:night#event`, the channel UID of the channel created by the binding will be `remoteopenhab:thing:xxx:astro_sun_local_night_event`.
 
 ## Limitations
@@ -87,7 +87,7 @@ For example, if your remote thing provides a trigger channel with this UID `astr
 ```
 Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100", port=8443, useHttps=true, trustedCertificate=true ] {
     Thing thing tv "TV living room" [ thingUID="lgwebos:WebOSTV:tv" ]
-    Thing thing astroSun "Astro sun" [ thingUID="astro:sun:local", buildChannels=false ] {
+    Thing thing astroSun "Astro sun" [ thingUID="astro:sun:local", buildTriggerChannels=false ] {
         Channels:
             Type trigger : nightEvent "Night Event" [ channelUID="astro:sun:local:night#event" ]
     }
