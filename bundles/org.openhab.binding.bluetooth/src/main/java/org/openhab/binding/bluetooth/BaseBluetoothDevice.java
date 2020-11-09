@@ -88,7 +88,7 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     private final Condition connectionCondition = deviceLock.newCondition();
     private final Condition serviceDiscoveryCondition = deviceLock.newCondition();
 
-    private boolean servicesDiscovered = false;
+    private volatile boolean servicesDiscovered = false;
 
     /**
      * Construct a Bluetooth device taking the Bluetooth address
