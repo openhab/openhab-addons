@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.generic;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,7 +70,7 @@ public class MqttChannelStateDescriptionProvider implements DynamicStateDescript
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         StateDescription description = descriptions.get(channel.getUID());
         logger.trace("Providing state description for channel {}", channel.getUID());
-        return description;
+        return Objects.equals(description, originalStateDescription) ? null : description;
     }
 
     /**
