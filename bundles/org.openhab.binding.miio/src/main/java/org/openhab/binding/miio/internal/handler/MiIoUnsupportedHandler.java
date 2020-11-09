@@ -79,7 +79,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     private String model = conf.model != null ? conf.model : "";
 
     private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-        scheduler.schedule(this::updateData, 0, TimeUnit.SECONDS);
+        scheduledJobs.add(scheduler.schedule(this::updateData, 0, TimeUnit.SECONDS));
         return true;
     });
 
@@ -116,6 +116,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
 
     @Override
     protected synchronized void updateData() {
+        removedCompletedJobs();
         if (skipUpdate()) {
             return;
         }

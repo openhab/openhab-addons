@@ -186,10 +186,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     return;
                 } else {
                     sendCommand(MiIoCommand.STOP_VACUUM);
-                    scheduler.schedule(() -> {
+                    scheduledJobs.add(scheduler.schedule(() -> {
                         sendCommand(MiIoCommand.CHARGE);
                         forceStatusUpdate();
-                    }, 2000, TimeUnit.MILLISECONDS);
+                    }, 2000, TimeUnit.MILLISECONDS));
                     return;
                 }
             }
@@ -438,6 +438,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
 
     @Override
     protected synchronized void updateData() {
+        removedCompletedJobs();
         if (!hasConnection() || skipUpdate()) {
             return;
         }

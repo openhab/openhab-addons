@@ -51,6 +51,7 @@ public class MiIoGenericHandler extends MiIoAbstractHandler {
 
     @Override
     protected synchronized void updateData() {
+        removedCompletedJobs();
         if (skipUpdate()) {
             return;
         }

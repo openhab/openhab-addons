@@ -30,7 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
-import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.openhab.binding.miio.internal.MiIoQuantiyTypes;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
@@ -86,7 +85,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private boolean hasChannelStructure;
 
     private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-        scheduler.schedule(this::updateData, 0, TimeUnit.SECONDS);
+        scheduledJobs.add(scheduler.schedule(this::updateData, 0, TimeUnit.SECONDS));
         return true;
     });
 
@@ -250,9 +249,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 }
             }
             updateDataCache.invalidateValue();
-            scheduler.schedule(() -> {
+            scheduledJobs.add(scheduler.schedule(() -> {
                 updateData();
-            }, 3000, TimeUnit.MILLISECONDS);
+            }, 3000, TimeUnit.MILLISECONDS));
         } else {
             logger.debug("Actions not loaded yet");
         }
@@ -282,6 +281,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     protected synchronized void updateData() {
         logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
+        removedCompletedJobs();
         final MiIoAsyncCommunication miioCom = getConnection();
         try {
             if (!hasConnection() || skipUpdate() || miioCom == null) {
