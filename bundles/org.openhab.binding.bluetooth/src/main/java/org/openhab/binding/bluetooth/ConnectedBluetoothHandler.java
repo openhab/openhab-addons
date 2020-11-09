@@ -46,6 +46,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     private @Nullable Future<?> pendingDisconnect;
 
     private boolean connectOnDemand;
+    private int idleDisconnectDelay = 1000;
 
     private @Nullable ScheduledExecutorService connectionTaskExecutor;
 
@@ -66,6 +67,12 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
         Object connectOnDemandRaw = getConfig().get(BluetoothBindingConstants.CONFIGURATION_CONNECT_ON_DEMAND);
         connectOnDemand = Boolean.TRUE.equals(connectOnDemandRaw);
+
+        Object idleDisconnectDelayRaw = getConfig().get(BluetoothBindingConstants.CONFIGURATION_IDLE_DISCONNECT_DELAY);
+        idleDisconnectDelay = 1000;
+        if (idleDisconnectDelayRaw instanceof Number) {
+            idleDisconnectDelay = ((Number) idleDisconnectDelayRaw).intValue();
+        }
 
         if (!connectOnDemand) {
             reconnectJob = executor.scheduleWithFixedDelay(() -> {
@@ -123,7 +130,8 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     private void scheduleDisconnect() {
         cancel(pendingDisconnect);
-        pendingDisconnect = getConnectionTaskExecutor().schedule(device::disconnect, 1, TimeUnit.SECONDS);
+        pendingDisconnect = getConnectionTaskExecutor().schedule(device::disconnect, idleDisconnectDelay,
+                TimeUnit.MILLISECONDS);
     }
 
     private void connectAndWait() throws ConnectionException, TimeoutException, InterruptedException {
