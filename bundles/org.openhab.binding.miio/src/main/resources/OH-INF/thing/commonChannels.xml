@@ -154,6 +154,11 @@
 		<label>Temperature</label>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
+	<channel-type id="temperatureC">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
