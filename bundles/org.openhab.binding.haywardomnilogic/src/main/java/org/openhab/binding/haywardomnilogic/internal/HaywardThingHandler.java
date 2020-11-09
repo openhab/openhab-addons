@@ -80,6 +80,7 @@ public class HaywardThingHandler extends BaseThingHandler {
     }
 
     public String cmdToString(Command command) {
+
         if (command == OnOffType.OFF) {
             return "0";
         } else if (command == OnOffType.ON) {
