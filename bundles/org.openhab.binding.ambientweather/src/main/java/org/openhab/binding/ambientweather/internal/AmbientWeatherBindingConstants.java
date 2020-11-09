@@ -45,6 +45,10 @@ public class AmbientWeatherBindingConstants {
     public static final String THING_TYPE_WS2902A = "ws2902a";
     public static final ThingTypeUID UID_WS2902A = new ThingTypeUID(BINDING_ID, THING_TYPE_WS2902A);
 
+    // WS-2902B series weather stations
+    public static final String THING_TYPE_WS2902B = "ws2902b";
+    public static final ThingTypeUID UID_WS2902B = new ThingTypeUID(BINDING_ID, THING_TYPE_WS2902B);
+
     // WS-8482 weather station
     public static final String THING_TYPE_WS8482 = "ws8482";
     public static final ThingTypeUID UID_WS8482 = new ThingTypeUID(BINDING_ID, THING_TYPE_WS8482);
@@ -58,8 +62,9 @@ public class AmbientWeatherBindingConstants {
     public static final ThingTypeUID UID_WS0265 = new ThingTypeUID(BINDING_ID, THING_TYPE_WS0265);
 
     // Collection of weather station thing types
-    public static final Set<ThingTypeUID> SUPPORTED_STATION_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(UID_WS1400IP, UID_WS2902A, UID_WS8482, UID_WS0900IP, UID_WS0265).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_STATION_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(UID_WS1400IP, UID_WS2902A, UID_WS2902B, UID_WS8482, UID_WS0900IP, UID_WS0265)
+                    .collect(Collectors.toSet()));
 
     // Collection of all supported thing types
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
@@ -69,6 +74,7 @@ public class AmbientWeatherBindingConstants {
     // Channel groups for specific weather stations
     public static final String CHGRP_WS1400IP = "weatherDataWs1400ip";
     public static final String CHGRP_WS2902A = "weatherDataWs2902a";
+    public static final String CHGRP_WS2902B = "weatherDataWs2902b";
     public static final String CHGRP_WS8482 = "weatherDataWs8482";
     public static final String CHGRP_WS0900IP = "weatherDataWs0900ip";
     public static final String CHGRP_WS0265 = "weatherDataWs0265";
