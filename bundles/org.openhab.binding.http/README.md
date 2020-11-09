@@ -36,12 +36,29 @@ The `image` channel-type supports `stateExtension` only.
 |-------------------------|----------|-------------|-------------|
 | `stateExtension`        | yes      |      -      | Appended to the `baseURL` for requesting states. |
 | `commandExtension`      | yes      |      -      | Appended to the `baseURL` for sending commands. If empty, same as `stateExtension`. |
-| `stateTransformation  ` | yes      |      -      | One or more transformation (concatenated with `∩`) applied to received values before updating channel. |
-| `commandTransformation` | yes      |      -      | One or more transformation (concatenated with `∩`) applied to channel value before sending to a remote. |
+| `stateTransformation  ` | yes      |      -      | One or more transformation applied to received values before updating channel. |
+| `commandTransformation` | yes      |      -      | One or more transformation applied to channel value before sending to a remote. |
 | `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READ` means receive state, `WRITE` means send commands. |
 
+Transformations need to be specified in the same format as 
 Some channels have additional parameters.
 When concatenating the `baseURL` and `stateExtions` or `commandExtension` the binding checks if a proper URL part separator (`/`, `&` or `?`) is present and adds a `/` if missing.
+
+### Value Transformations (`stateTransformation`, `commandTransformation`)
+
+Transformations can be used if the supplied value (or the required value) is different from what openHAB internal types require.
+Here are a few examples to unwrap an incoming value via `stateTransformation` from a complex response:
+
+| Received value                                                      | Tr. Service | Transformation                            |
+|---------------------------------------------------------------------|-------------|-------------------------------------------|
+| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH:$.device.status.temperature`    |
+| `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath:/device/status/temperature/text()` |
+| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX::(.*?)°`                           |
+
+Transformations can be chained by separating them with the mathematical intersection character "∩".
+Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
+
+The same mechanism works for commands (`commandTransformation`) for outgoing values. 
 
 ### `color`
 
