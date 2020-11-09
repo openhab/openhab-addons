@@ -221,8 +221,9 @@ public class VigiCruesHandler extends BaseThingHandler {
                 });
                 field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
             });
-            if (portion != null) {
-                InfoVigiCru status = apiHandler.getTronconStatus(portion);
+            String currentPortion = this.portion;
+            if (currentPortion != null) {
+                InfoVigiCru status = apiHandler.getTronconStatus(currentPortion);
                 updateAlert(ALERT, status.vicInfoVigiCru.vicNivInfoVigiCru - 1);
                 updateString(SHORT_COMMENT, status.vicInfoVigiCru.vicSituActuInfoVigiCru);
                 updateString(COMMENT, status.vicInfoVigiCru.vicQualifInfoVigiCru);
