@@ -323,7 +323,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             if (restClient.getRestApiVersion() == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "OH 1.x server not supported by the binding");
-            } else {
+            } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 List<RemoteopenhabItem> items = restClient.getRemoteItems();
 
                 createChannels(items, true);
@@ -349,7 +349,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             checkConnectionJob = scheduler.scheduleWithFixedDelay(() -> {
                 long millisSinceLastEvent = System.currentTimeMillis() - restClient.getLastEventTimestamp();
                 if (millisSinceLastEvent > CONNECTION_TIMEOUT_MILLIS) {
-                    logger.debug("Check: Disconnected from streaming events, millisSinceLastEvent={}",
+                    logger.debug("Check: Maybe disconnected from streaming events, millisSinceLastEvent={}",
                             millisSinceLastEvent);
                     checkConnection();
                 } else {
