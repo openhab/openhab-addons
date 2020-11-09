@@ -18,6 +18,7 @@ import static org.eclipse.jetty.http.HttpMethod.PUT;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -68,6 +69,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * Handler to do long polling.
      */
     private final LongPolling longPolling;
+
+    private ScheduledFuture<?> scheduledPairing;
 
     public BoschSHCBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -121,8 +124,25 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         super.dispose();
 
+        // Cancel scheduled pairing.
+        ScheduledFuture<?> scheduledPairing = this.scheduledPairing;
+        if (scheduledPairing != null) {
+            scheduledPairing.cancel(true);
+            this.scheduledPairing = null;
+        }
+
         // Stop long polling.
         this.longPolling.stop();
+
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient != null) {
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                logger.debug("HttpClient failed on bridge disposal: {}", e.getMessage());
+            }
+            this.httpClient = null;
+        }
     }
 
     @Override
@@ -134,7 +154,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * Use a delay if pairing fails and next retry is scheduled.
      */
     private void scheduleInitialAccess(BoschHttpClient httpClient) {
-        scheduler.schedule(() -> initialAccess(httpClient), 15, TimeUnit.SECONDS);
+        this.scheduledPairing = scheduler.schedule(() -> initialAccess(httpClient), 15, TimeUnit.SECONDS);
     }
 
     /**
