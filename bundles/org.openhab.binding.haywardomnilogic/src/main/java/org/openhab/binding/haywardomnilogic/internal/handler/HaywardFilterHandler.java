@@ -50,29 +50,29 @@ public class HaywardFilterHandler extends HaywardThingHandler {
 
     @Override
     public void getTelemetry(String xmlResponse) throws Exception {
-        List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
+        List<String> data = new ArrayList<>();
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
         if (bridgehandler != null) {
             systemIDs = bridgehandler.evaluateXPath("//Filter/@systemId", xmlResponse);
-            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
                 if (systemIDs.get(i).equals(thingSystemID)) {
                     // Operating Mode
                     data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(i));
 
                     // Valve Position
                     data = bridgehandler.evaluateXPath("//Filter/@valvePosition", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(i));
 
                     // Speed
                     data = bridgehandler.evaluateXPath("//Filter/@filterSpeed", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEED, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEED, data.get(i));
 
-                    if (data.get(0).equals("0")) {
+                    if (data.get(i).equals("0")) {
                         updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "0");
                     } else {
                         updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "1");
@@ -80,11 +80,11 @@ public class HaywardFilterHandler extends HaywardThingHandler {
 
                     // State
                     data = bridgehandler.evaluateXPath("//Filter/@filterState", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_FILTER_STATE, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_FILTER_STATE, data.get(i));
 
                     // lastSpeed
                     data = bridgehandler.evaluateXPath("//Filter/@lastSpeed", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i));
                 }
             }
         }

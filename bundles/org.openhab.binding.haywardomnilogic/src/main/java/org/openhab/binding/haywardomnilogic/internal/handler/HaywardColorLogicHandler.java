@@ -44,21 +44,21 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
 
     @Override
     public void getTelemetry(String xmlResponse) throws Exception {
-        List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
+        List<String> data = new ArrayList<>();
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
         if (bridgehandler != null) {
             systemIDs = bridgehandler.evaluateXPath("//ColorLogic-Light/@systemId", xmlResponse);
-            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
                 if (systemIDs.get(i).equals(thingSystemID)) {
                     // Light State
                     data = bridgehandler.evaluateXPath("//ColorLogic-Light/@lightState", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_LIGHTSTATE, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_LIGHTSTATE, data.get(i));
 
-                    if (data.get(0).equals("0")) {
+                    if (data.get(i).equals("0")) {
                         updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "0");
                     } else {
                         updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "1");

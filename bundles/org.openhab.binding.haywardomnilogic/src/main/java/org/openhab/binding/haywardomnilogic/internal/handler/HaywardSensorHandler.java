@@ -34,15 +34,15 @@ public class HaywardSensorHandler extends HaywardThingHandler {
 
     @Override
     public void getTelemetry(String xmlResponse) throws Exception {
-        List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
+        List<String> data = new ArrayList<>();
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
         if (bridgehandler != null) {
             systemIDs = bridgehandler.evaluateXPath("//Sensor/@systemId", xmlResponse);
             data = bridgehandler.evaluateXPath("//Sensor/@relayState", xmlResponse);
-            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
                 if (systemIDs.get(i).equals(thingSystemID)) {
                     updateData(HaywardBindingConstants.CHANNEL_RELAY_STATE, data.get(i));

@@ -44,7 +44,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
         if (bridgehandler != null) {
             systemIDs = bridgehandler.evaluateXPath("//Backyard/@systemId", xmlResponse);
-            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
                 if (systemIDs.get(i).equals(thingSystemID)) {
                     // Air temp

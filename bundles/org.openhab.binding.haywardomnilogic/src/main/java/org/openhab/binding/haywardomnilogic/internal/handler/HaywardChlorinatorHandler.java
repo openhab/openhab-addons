@@ -45,50 +45,50 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
 
     @Override
     public void getTelemetry(String xmlResponse) throws Exception {
-        List<String> data = new ArrayList<>();
         List<String> systemIDs = new ArrayList<>();
+        List<String> data = new ArrayList<>();
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
         if (bridgehandler != null) {
             systemIDs = bridgehandler.evaluateXPath("//Chlorinator/@systemId", xmlResponse);
-            String thingSystemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
+            String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
                 if (systemIDs.get(i).equals(thingSystemID)) {
                     // Operating Mode
                     data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(i));
 
                     // Timed Percent
                     data = bridgehandler.evaluateXPath("//Chlorinator/@Timed-Percent", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT, data.get(i));
                     this.chlorTimedPercent = data.get(0);
 
                     // scMode
                     data = bridgehandler.evaluateXPath("//Chlorinator/@scMode", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_SCMODE, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_SCMODE, data.get(i));
 
                     // Error
                     data = bridgehandler.evaluateXPath("//Chlorinator/@chlrError", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ERROR, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ERROR, data.get(i));
 
                     // Alert
                     data = bridgehandler.evaluateXPath("//Chlorinator/@chlrAlert", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ALERT, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ALERT, data.get(i));
 
                     // Average Salt Level
                     data = bridgehandler.evaluateXPath("//Chlorinator/@avgSaltLevel", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_AVGSALTLEVEL, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_AVGSALTLEVEL, data.get(i));
 
                     // Instant Salt Level
                     data = bridgehandler.evaluateXPath("//Chlorinator/@instantSaltLevel", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_INSTANTSALTLEVEL, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_INSTANTSALTLEVEL, data.get(i));
 
                     // Status
                     data = bridgehandler.evaluateXPath("//Chlorinator/@status", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS, data.get(0));
+                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_STATUS, data.get(i));
 
-                    if (data.get(0).equals("0")) {
+                    if (data.get(i).equals("0")) {
                         updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0");
                         // chlorState is used to set the chlorinator cfgState in the timedPercent command
                         this.chlorState = "2";
