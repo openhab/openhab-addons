@@ -82,7 +82,7 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
             updateAirQualityState(parsed);
 
         } catch (JsonSyntaxException e) {
-            logger.warn("Received unknown update in in-wall switch: {}", state);
+            logger.warn("Received unknown update in in-wall switch: {}, {}", state, e.getMessage());
         }
     }
 }

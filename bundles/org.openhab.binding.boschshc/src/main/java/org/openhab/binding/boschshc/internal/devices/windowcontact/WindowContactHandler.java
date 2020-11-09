@@ -63,7 +63,7 @@ public class WindowContactHandler extends BoschSHCHandler {
         try {
             updateShutterContactState(gson.fromJson(state, ShutterContactState.class));
         } catch (JsonSyntaxException e) {
-            logger.warn("Received unknown update in window contact handler: {}", state);
+            logger.warn("Received unknown update in window contact handler: {}, {}", state, e.getMessage());
         }
     }
 }
