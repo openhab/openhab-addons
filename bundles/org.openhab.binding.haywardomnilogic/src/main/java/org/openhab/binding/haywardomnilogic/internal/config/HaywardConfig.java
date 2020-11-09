@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class HaywardConfig {
-    public String hostname = "";
+    public String endpointUrl = "";
     public String username = "";
     public String password = "";
     public int alarmPollTime = 60;

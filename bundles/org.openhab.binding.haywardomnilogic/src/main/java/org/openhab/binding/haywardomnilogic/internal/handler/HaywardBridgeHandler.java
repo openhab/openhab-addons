@@ -141,7 +141,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             }
 
             updateStatus(ThingStatus.ONLINE);
-            logger.trace("Succesfully opened connection to Hayward's server: {} Username:{}", config.hostname,
+            logger.trace("Succesfully opened connection to Hayward's server: {} Username:{}", config.endpointUrl,
                     config.username);
 
             initPolling(0);
@@ -157,7 +157,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "scheduledInitialize exception");
             logger.debug("Hayward Connection thing: Unable to open connection to Hayward Server: {} Username: {}",
-                    config.hostname, config.username, e);
+                    config.endpointUrl, config.username, e);
             clearPolling(pollTelemetryFuture);
             clearPolling(pollAlarmsFuture);
             commFailureCount = 50;
@@ -395,7 +395,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String statusMessage;
 
         try {
-            ContentResponse httpResponse = sendRequestBuilder(config.hostname, HttpMethod.POST)
+            ContentResponse httpResponse = sendRequestBuilder(config.endpointUrl, HttpMethod.POST)
                     .content(new StringContentProvider(urlParameters), "text/xml; charset=utf-8")
                     .header(HttpHeader.CONTENT_LENGTH, urlParameterslength).send();
 
