@@ -144,6 +144,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current measured humidity.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="humidity-rating">
@@ -163,30 +164,35 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy consumption (Wh)</label>
 		<description>Energy consumption of the device.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="power-consumption">
 		<item-type>Number:Power</item-type>
 		<label>Power consumption (W)</label>
 		<description>Current power consumption of the device.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="purity">
 		<item-type>Number</item-type>
 		<label>Purity</label>
 		<description>Purity of the air.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="air-description">
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Overall description of the air quality.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="purity-rating">
 		<item-type>String</item-type>
 		<label>Purity Rating</label>
 		<description>Rating of the air purity.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="combined-rating">
@@ -206,12 +212,14 @@
 		<item-type>Contact</item-type>
 		<label>Window/Door contact</label>
 		<description>A window and door contact.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="latest-motion">
 		<item-type>DateTime</item-type>
 		<label>Latest motion</label>
 		<description>Timestamp of the latest motion.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="level">
@@ -232,7 +240,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Desired temperature.</description>
-		<state min="5" max="30" step="0.5" pattern="%.1f %unit%"/>
+		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
