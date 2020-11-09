@@ -49,8 +49,7 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
         if (bridge != null) {
             logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
 
-            if (command instanceof RefreshType && CHANNEL_TEMPERATURE.equals(channelUID.getId())) {
-                // Only refresh the state for CHANNEL_TEMPERATURE, the rest will be filled in too.
+            if (command instanceof RefreshType) {
                 AirQualityLevelState state = this.getState("AirQualityLevel", AirQualityLevelState.class);
                 if (state != null) {
                     updateAirQualityState(state);
