@@ -17,6 +17,7 @@ import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstan
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.AbstractMap;
 import java.util.Map;
@@ -168,9 +169,9 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             State result = UnDefType.UNDEF;
             byte[] bytes = getResource(String.format("picto/%s.svg", channelId));
             if (bytes != null) {
-                String resource = new String(bytes);
+                String resource = new String(bytes, StandardCharsets.UTF_8);
                 resource = resource.replaceAll(UNKNOWN_COLOR, ALERT_COLORS.getOrDefault(value, UNKNOWN_COLOR));
-                result = new RawType(resource.getBytes(), "image/svg+xml");
+                result = new RawType(resource.getBytes(StandardCharsets.UTF_8), "image/svg+xml");
             }
             updateState(channelIcon, result);
         }
