@@ -242,6 +242,7 @@ public class RemoteopenhabRestClient {
 
     private SseEventSource createEventSource(String restSseUrl) {
         Client client;
+        // Avoid a timeout exception after 1 minute by setting the read timeout to 0 (infinite)
         if (trustedCertificate) {
             client = clientBuilder.sslContext(httpClient.getSslContextFactory().getSslContext())
                     .hostnameVerifier(new HostnameVerifier() {
@@ -249,9 +250,11 @@ public class RemoteopenhabRestClient {
                         public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
                             return true;
                         }
-                    }).register(new RemoteopenhabStreamingRequestFilter(accessToken)).build();
+                    }).readTimeout(0, TimeUnit.SECONDS).register(new RemoteopenhabStreamingRequestFilter(accessToken))
+                    .build();
         } else {
-            client = clientBuilder.register(new RemoteopenhabStreamingRequestFilter(accessToken)).build();
+            client = clientBuilder.readTimeout(0, TimeUnit.SECONDS)
+                    .register(new RemoteopenhabStreamingRequestFilter(accessToken)).build();
         }
         SseEventSource eventSource = eventSourceFactory.newSource(client.target(restSseUrl));
         eventSource.register(this::onEvent, this::onError);
