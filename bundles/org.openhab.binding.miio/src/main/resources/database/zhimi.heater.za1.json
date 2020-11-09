@@ -24,7 +24,8 @@
 				"property": "target_temperature",
 				"friendlyName": "Target Temperature",
 				"channel": "target_temperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"channelType": "temperatureC",
 				"refresh": true,
 				"actions": [
 					{
@@ -100,8 +101,8 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperature",
-				"type": "Number",
+				"channelType": "temperatureC",
+				"type": "Number:Temperature",
 				"refresh": true,
 				"actions": []
 			},
