@@ -10,8 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigicrues.internal.json;
+package org.openhab.binding.vigicrues.internal.dto.opendatasoft;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,7 +32,7 @@ public class OpenDatasoftResponse {
     @SerializedName("nhits")
     private int nHits;
     private @Nullable Parameters parameters;
-    private Record[] records = {};
+    private List<Record> records = new ArrayList<>();
 
     public int getNHits() {
         return nHits;
@@ -44,7 +46,7 @@ public class OpenDatasoftResponse {
         return Optional.empty();
     }
 
-    public Record[] getRecords() {
-        return records;
+    public Optional<VigiCruesFields> getFirstRecord() {
+        return records.stream().findFirst().flatMap(Record::getFields);
     }
 }
