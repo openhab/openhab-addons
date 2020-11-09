@@ -162,7 +162,7 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                 command.setState(AM43Command.State.FAILED);
                 return;
             }
-            if (!resolved) {
+            if (!device.isServicesDiscovered()) {
                 logger.debug("Unable to send command {} to device {}: services not resolved", command,
                         device.getAddress());
                 command.setState(AM43Command.State.FAILED);

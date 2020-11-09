@@ -332,7 +332,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 return;
             }
 
-            if (!resolved) {
+            if (!device.isServicesDiscovered()) {
                 logger.debug("Unable to send command {} to device {}: services not resolved",
                         command.getClass().getSimpleName(), device.getAddress());
                 command.setState(BRC1HCommand.State.FAILED);
