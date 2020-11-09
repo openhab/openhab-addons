@@ -150,19 +150,19 @@
 		<label>UV Max Event</label>
 		<description>Triggers when current UV Index reaches maximum of the day</description>
 	</channel-type>
-	
+
 	<channel-type id="Alert">
-        <item-type>Number</item-type>
-        <label>UV Alert</label>
-        <state readOnly="true">
-            <options>
-                <option value="0">Low</option>
-                <option value="1">Medium</option>
-                <option value="2">High</option>
-                <option value="3">Very high</option>
-                <option value="4">Extreme</option>
-            </options>
-        </state>
-    </channel-type>
+		<item-type>Number</item-type>
+		<label>UV Alert</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Low</option>
+				<option value="1">Medium</option>
+				<option value="2">High</option>
+				<option value="3">Very high</option>
+				<option value="4">Extreme</option>
+			</options>
+		</state>
+	</channel-type>
 
 </thing:thing-descriptions>
