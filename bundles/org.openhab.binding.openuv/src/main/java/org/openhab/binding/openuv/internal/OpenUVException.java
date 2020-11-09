@@ -29,11 +29,16 @@ public class OpenUVException extends Exception {
         super(message);
     }
 
+    private boolean checkMatches(String message) {
+        String currentMessage = getMessage();
+        return currentMessage != null && currentMessage.startsWith(message);
+    }
+
     public boolean isApiKeyError() {
-        return this.getMessage().startsWith(ERROR_WRONG_KEY);
+        return checkMatches(ERROR_WRONG_KEY);
     }
 
     public boolean isQuotaError() {
-        return this.getMessage().startsWith(ERROR_QUOTA_EXCEEDED);
+        return checkMatches(ERROR_QUOTA_EXCEEDED);
     }
 }

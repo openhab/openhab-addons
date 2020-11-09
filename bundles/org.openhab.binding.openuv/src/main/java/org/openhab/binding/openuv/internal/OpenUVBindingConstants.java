@@ -39,6 +39,7 @@ public class OpenUVBindingConstants {
 
     // List of all Channel id's
     public static final String UV_INDEX = "UVIndex";
+    public static final String ALERT_LEVEL = "Alert";
     public static final String UV_COLOR = "UVColor";
     public static final String UV_MAX = "UVMax";
     public static final String UV_MAX_TIME = "UVMaxTime";

@@ -22,7 +22,6 @@ import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.openhab.binding.openuv.internal.handler.OpenUVReportHandler;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -56,9 +55,6 @@ public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
             @Reference LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
         this.gson = new GsonBuilder()
-                .registerTypeAdapter(DecimalType.class,
-                        (JsonDeserializer<DecimalType>) (json, type, jsonDeserializationContext) -> DecimalType
-                                .valueOf(json.getAsJsonPrimitive().getAsString()))
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
                                 .parse(json.getAsJsonPrimitive().getAsString())

@@ -17,6 +17,7 @@ import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +29,7 @@ import org.openhab.binding.openuv.internal.config.ReportConfiguration;
 import org.openhab.binding.openuv.internal.config.SafeExposureConfiguration;
 import org.openhab.binding.openuv.internal.json.OpenUVResult;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
@@ -56,6 +58,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenUVReportHandler extends BaseThingHandler {
+    private static final DecimalType ALERT_GREEN = DecimalType.ZERO;
+    private static final DecimalType ALERT_YELLOW = new DecimalType(1);
+    private static final DecimalType ALERT_ORANGE = new DecimalType(2);
+    private static final DecimalType ALERT_RED = new DecimalType(3);
+    private static final DecimalType ALERT_PURPLE = new DecimalType(4);
+    private static final State ALERT_UNDEF = HSBType.fromRGB(179, 179, 179);
+
+    private static final Map<State, State> ALERT_COLORS = Map.of(ALERT_GREEN, HSBType.fromRGB(85, 139, 47),
+            ALERT_YELLOW, HSBType.fromRGB(249, 168, 37), ALERT_ORANGE, HSBType.fromRGB(239, 108, 0), ALERT_RED,
+            HSBType.fromRGB(183, 28, 28), ALERT_PURPLE, HSBType.fromRGB(106, 27, 154));
+
     private final Logger logger = LoggerFactory.getLogger(OpenUVReportHandler.class);
 
     private @NonNullByDefault({}) OpenUVBridgeHandler bridgeHandler;
@@ -195,13 +208,17 @@ public class OpenUVReportHandler extends BaseThingHandler {
             if (channelTypeUID != null) {
                 switch (channelTypeUID.getId()) {
                     case UV_INDEX:
-                        updateState(channelUID, openUVData.getUv());
+                        updateState(channelUID, asDecimalType(openUVData.getUv()));
+                        break;
+                    case ALERT_LEVEL:
+                        updateState(channelUID, asAlertLevel(openUVData.getUv()));
                         break;
                     case UV_COLOR:
-                        updateState(channelUID, getAsHSB(openUVData.getUv().intValue()));
+                        updateState(channelUID,
+                                ALERT_COLORS.getOrDefault(asAlertLevel(openUVData.getUv()), ALERT_UNDEF));
                         break;
                     case UV_MAX:
-                        updateState(channelUID, openUVData.getUvMax());
+                        updateState(channelUID, asDecimalType(openUVData.getUvMax()));
                         break;
                     case OZONE:
                         updateState(channelUID, new QuantityType<>(openUVData.getOzone(), SmartHomeUnits.DOBSON_UNIT));
@@ -228,17 +245,25 @@ public class OpenUVReportHandler extends BaseThingHandler {
         }
     }
 
-    private State getAsHSB(int uv) {
-        if (uv >= 11) {
-            return HSBType.fromRGB(106, 27, 154);
-        } else if (uv >= 8) {
-            return HSBType.fromRGB(183, 28, 28);
-        } else if (uv >= 6) {
-            return HSBType.fromRGB(239, 108, 0);
-        } else if (uv >= 3) {
-            return HSBType.fromRGB(249, 168, 37);
-        } else {
-            return HSBType.fromRGB(85, 139, 47);
+    private State asDecimalType(int uv) {
+        if (uv >= 1) {
+            return new DecimalType(uv);
         }
+        return UnDefType.NULL;
+    }
+
+    private State asAlertLevel(int uv) {
+        if (uv >= 11) {
+            return ALERT_PURPLE;
+        } else if (uv >= 8) {
+            return ALERT_RED;
+        } else if (uv >= 6) {
+            return ALERT_ORANGE;
+        } else if (uv >= 3) {
+            return ALERT_YELLOW;
+        } else if (uv >= 1) {
+            return ALERT_GREEN;
+        }
+        return UnDefType.NULL;
     }
 }
