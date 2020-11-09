@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigicrues.internal.json;
+package org.openhab.binding.vigicrues.internal.dto.opendatasoft;
 
 import java.util.Optional;
 

@@ -10,24 +10,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vigicrues.internal.json;
+package org.openhab.binding.vigicrues.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * The {@link Refine} is the Java class used to map the JSON
- * response to the webservice request.
+ * Exception for errors when using the VigiCrues API
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Refine {
-    @SerializedName("nom_dept")
-    private String departmentName = "";
+public class VigiCruesException extends Exception {
+    private static final long serialVersionUID = -7781683052187130152L;
 
-    public String getDepartmentName() {
-        return departmentName;
+    public VigiCruesException(Throwable e) {
+        super(null, e);
+    }
+
+    public VigiCruesException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
+    public VigiCruesException(String msg) {
+        super(msg, null);
     }
 }
