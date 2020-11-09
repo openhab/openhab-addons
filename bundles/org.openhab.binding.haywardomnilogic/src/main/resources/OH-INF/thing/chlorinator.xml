@@ -89,8 +89,8 @@
 
 	<channel-type id="instantSaltLevel">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Instant Salt Level (ppm)</label>
-		<description>Instant Salt Level (ppm)</description>
+		<label>Instant Salt Level</label>
+		<description>Instant Salt Level</description>
 		<state pattern="%1f %unit%" readOnly="true"/>
 	</channel-type>
 
