@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.concurrent.ExecutionException;
@@ -451,17 +452,22 @@ public class TelegramActions implements ThingActions {
                     return false;
                 }
             } else {
+                String temp = animationURL;
+                if (!animationURL.toLowerCase().startsWith("file:")) {
+                    temp = "file://" + animationURL;
+                }
                 // Load video from local file system
                 logger.debug("Read file from local file system: {}", animationURL);
                 try {
-                    URL url = new URL(animationURL);
-                    sendAnimation = new SendAnimation(chatId, Paths.get(url.getPath()).toFile());
+                    sendAnimation = new SendAnimation(chatId, Paths.get(new URL(temp).getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL, should start with http or file: {}", animationURL);
                     return false;
                 }
             }
-            sendAnimation.caption(caption);
+            if (caption != null) {
+                sendAnimation.caption(caption);
+            }
             if (localHandler.getParseMode() != null) {
                 sendAnimation.parseMode(localHandler.getParseMode());
             }
@@ -488,6 +494,7 @@ public class TelegramActions implements ThingActions {
     public boolean sendTelegramVideo(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "videoURL") @Nullable String videoURL,
             @ActionInput(name = "caption") @Nullable String caption) {
+        final SendVideo sendVideo;
         if (videoURL == null) {
             logger.warn("Video URL not defined; unable to retrieve video for sending.");
             return false;
@@ -498,10 +505,8 @@ public class TelegramActions implements ThingActions {
         }
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            final SendVideo sendVideo;
             if (videoURL.toLowerCase().startsWith("http")) {
-                // load image from url
-                logger.debug("Video URL provided.");
+                logger.debug("Video http://URL provided.");
                 HttpClient client = localHandler.getClient();
                 if (client == null) {
                     return false;
@@ -524,17 +529,22 @@ public class TelegramActions implements ThingActions {
                     return false;
                 }
             } else {
-                // Load video from local file system
-                logger.debug("Read file from local file system: {}", videoURL);
+                String temp = videoURL;
+                if (!videoURL.toLowerCase().startsWith("file:")) {
+                    temp = "file://" + videoURL;
+                }
+                // Load video from local file system with file://path
+                logger.debug("Read file from local file: {}", videoURL);
                 try {
-                    URL url = new URL(videoURL);
-                    sendVideo = new SendVideo(chatId, Paths.get(url.getPath()).toFile());
+                    sendVideo = new SendVideo(chatId, Path.of(new URL(temp).getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL, should start with http or file: {}", videoURL);
                     return false;
                 }
             }
-            sendVideo.caption(caption);
+            if (caption != null) {
+                sendVideo.caption(caption);
+            }
             if (localHandler.getParseMode() != null) {
                 sendVideo.parseMode(localHandler.getParseMode());
             }
