@@ -68,12 +68,12 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         /**
          * Service which belongs to the device.
          */
-        public BoschSHCService<TState> service;
+        public final BoschSHCService<TState> service;
 
         /**
          * Channels which are affected by the state of this service.
          */
-        public Collection<String> affectedChannels;
+        public final Collection<String> affectedChannels;
     }
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
