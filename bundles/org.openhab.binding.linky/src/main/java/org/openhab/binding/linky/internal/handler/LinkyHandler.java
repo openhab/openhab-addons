@@ -252,7 +252,7 @@ public class LinkyHandler extends BaseThingHandler {
                 if (years.datas.size() > 1) {
                     updateKwhChannel(THIS_YEAR, years.datas.get(1));
                 } else {
-                    updateKwhChannel(LAST_YEAR, Double.NaN);
+                    updateKwhChannel(THIS_YEAR, Double.NaN);
                 }
             });
         }
