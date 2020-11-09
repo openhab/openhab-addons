@@ -154,12 +154,12 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void deactivate(ComponentContext componentContext) {
-        super.deactivate(componentContext);
         try {
             httpClientTrustingCert.stop();
         } catch (Exception e) {
             logger.warn("Unable to stop Jetty HttpClient", e);
         }
+        super.deactivate(componentContext);
     }
 
     /**
