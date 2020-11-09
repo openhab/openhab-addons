@@ -66,7 +66,7 @@ public class IpCameraActions implements ThingActions {
             @ActionInput(name = "secondsToRecord", label = "Seconds to Record", description = "Enter a number of how many seconds to record.") int secondsToRecord) {
         logger.debug("Recording {}.gif for {} seconds.", filename, secondsToRecord);
         IpCameraHandler localHandler = handler;
-        if(localHandler != null){
+        if (localHandler != null) {
             localHandler.recordGif(filename != null ? filename : "ipcamera", secondsToRecord);
         }
     }
