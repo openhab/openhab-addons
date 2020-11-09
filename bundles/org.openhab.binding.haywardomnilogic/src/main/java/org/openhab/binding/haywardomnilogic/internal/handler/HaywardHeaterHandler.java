@@ -47,10 +47,6 @@ public class HaywardHeaterHandler extends HaywardThingHandler {
             String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
                 if (systemIDs.get(i).equals(thingSystemID)) {
-                    // Operating Mode
-                    data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
-                    updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(i));
-
                     // State
                     data = bridgehandler.evaluateXPath("//Heater/@heaterState", xmlResponse);
                     updateData(HaywardBindingConstants.CHANNEL_HEATER_STATE, data.get(i));
