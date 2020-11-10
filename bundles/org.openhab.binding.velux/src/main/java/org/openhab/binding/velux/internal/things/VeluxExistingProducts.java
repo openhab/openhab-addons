@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.VeluxBindingConstants.MotionState;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,11 +124,16 @@ public class VeluxExistingProducts {
             return false;
         }
         VeluxProduct thisProduct = this.get(bridgeProductIndex);
-        // if the actuator is in motion to a new target position, display the target position, or otherwise display the
-        // actual position; purpose is to give faster feedback to the UI
-        int displayPosition = (productState == VeluxBindingConstants.MOTION_EXECUTING) ? productTarget
-                : productPosition;
-        if (thisProduct.setState(productState) | thisProduct.setCurrentPosition(displayPosition)
+
+        /*
+         * To accelerate feedback to the User Interface..
+         * - When the actuator is moving: display the productTarget position
+         * - When it is not moving: display the productPosition (actual) position
+         */
+        int uiDisplayPosition = ((productState > MotionState.ERROR.ordinal())
+                && (productState < MotionState.DONE.ordinal())) ? productTarget : productPosition;
+
+        if (thisProduct.setState(productState) | thisProduct.setCurrentPosition(uiDisplayPosition)
                 | thisProduct.setTarget(productTarget)) {
             dirty = true;
 
