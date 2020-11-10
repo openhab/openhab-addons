@@ -234,11 +234,14 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
 
             case GW_OPENHAB_RECEIVEONLY:
                 logger.trace(loggerFmt, "receive-only mode", "=> checking messages", "");
-                if (!connection.isMessageAvailable()) {
-                    logger.trace(loggerFmt, "no waiting messages", "=> done", "");
-                } else {
+                if (!connection.isAlive()) {
+                    logger.trace(loggerFmt, "no connection", "=> opening", "");
+                    looping = true;
+                } else if (connection.isMessageAvailable()) {
                     logger.trace(loggerFmt, "message(s) waiting", "=> start reading", "");
                     looping = true;
+                } else {
+                    logger.trace(loggerFmt, "no waiting messages", "=> done", "");
                 }
                 rcvonly = true;
                 break;
