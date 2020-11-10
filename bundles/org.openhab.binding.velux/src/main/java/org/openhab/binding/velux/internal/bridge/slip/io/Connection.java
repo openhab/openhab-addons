@@ -91,6 +91,8 @@ public class Connection implements Closeable {
         do {
             try {
                 if (!connectivity.isReady()) {
+                    // dispose old connectivity class instances (if any)
+                    resetConnection();
                     try {
                         // From configuration
                         host = bridgeInstance.veluxBridgeConfiguration().ipAddress;
@@ -163,9 +165,7 @@ public class Connection implements Closeable {
                     bridgeInstance.veluxBridgeConfiguration().retries);
         }
         logger.trace("io() on {}: shutting down connection.", host);
-        if (connectivity.isReady()) {
-            connectivity.close();
-        }
+        resetConnection();
         logger.trace("io() on {}: finishes with failure by throwing exception.", host);
         throw lastIOE;
     }
@@ -187,17 +187,13 @@ public class Connection implements Closeable {
      */
     public synchronized boolean isMessageAvailable() {
         logger.trace("isMessageAvailable() on {}: called.", host);
-        try {
-            if ((connectivity.isReady()) && (connectivity.available())) {
-                logger.trace("isMessageAvailable() on {}: there is a message waiting.", host);
-                return true;
-            }
-        } catch (IOException e) {
-            logger.trace("isMessageAvailable() on {}: lost connection due to {}.", host, e.getMessage());
-            resetConnection();
+        if (!connectivity.isReady()) {
+            logger.trace("isMessageAvailable() on {}: lost connection, there may be messages", host);
+            return false;
         }
-        logger.trace("isMessageAvailable() on {}: no message waiting.", host);
-        return false;
+        boolean result = connectivity.available();
+        logger.trace("isMessageAvailable() on {}: there are {}messages waiting.", host, result ? "" : "no ");
+        return result;
     }
 
     /**

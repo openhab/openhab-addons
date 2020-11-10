@@ -64,7 +64,6 @@ class SSLconnection implements Closeable {
      * ***** Private Objects *****
      */
 
-    private boolean ready = false;
     private @Nullable SSLSocket socket;
     private @Nullable DataOutputStream dOut;
     private @Nullable DataInputStreamWithTimeout dIn;
@@ -103,8 +102,6 @@ class SSLconnection implements Closeable {
      */
     SSLconnection() {
         logger.debug("SSLconnection() called.");
-        ready = false;
-        logger.trace("SSLconnection() finished.");
     }
 
     /**
@@ -118,7 +115,7 @@ class SSLconnection implements Closeable {
      * @throws java.net.UnknownHostException in case of continuous communication I/O failures.
      */
     SSLconnection(String host, int port, int timeoutMSecs) throws ConnectException, IOException, UnknownHostException {
-        logger.debug("SSLconnection({},{}) called.", host, port);
+        logger.debug("SSLconnection({},{},{}) called.", host, port, timeoutMSecs);
         logger.info("Starting {} bridge connection.", VeluxBindingConstants.BINDING_ID);
         SSLContext ctx = null;
         try {
@@ -141,7 +138,6 @@ class SSLconnection implements Closeable {
             socketX.setSoTimeout(ioTimeoutMSecs);
             dOut = new DataOutputStream(socketX.getOutputStream());
             dIn = new DataInputStreamWithTimeout(socketX.getInputStream());
-            ready = true;
             if (logger.isTraceEnabled()) {
                 logger.trace(
                         "SSLconnection(): connected... (ip={}, port={}, sslTimeout={}, soTimeout={}, soKeepAlive={})",
@@ -163,34 +159,23 @@ class SSLconnection implements Closeable {
      * @return <b>ready</b> as boolean for an established connection.
      */
     synchronized boolean isReady() {
-        return ready;
+        return socket != null && dIn != null && dOut != null;
     }
 
     /**
-     * Method to pass a message towards the bridge.
-     * This method gets called when we are initiating a new SLIP transaction.
-     * <p>
-     * Note that DataOutputStream and DataInputStream are buffered I/O's. The SLIP protocol requires that prior requests
-     * should have been fully sent over the socket, and their responses should have been fully read from the buffer
-     * before the next request is initiated. i.e. Both read and write buffers should already be empty. Nevertheless,
-     * just in case, we do the following..
-     * <p>
-     * 1) Flush from the read buffer any orphan response data that may have been left over from prior transactions, and
-     * 2) Flush the write buffer directly to the socket to ensure that any exceptions are raised immediately, and the
-     * KLF starts work immediately
+     * Method to pass a message towards the bridge. This method gets called when we are initiating a new SLIP
+     * transaction.
      *
-     * @param packet as Array of bytes to be transmitted towards the bridge via the established connection.
-     * @throws java.io.IOException in case of a communication I/O failure, and sets 'ready' = false
+     * @param <b>packet</b> as Array of bytes to be transmitted towards the bridge via the established connection.
+     * @throws java.io.IOException in case of a communication I/O failure
      */
     synchronized void send(byte[] packet) throws IOException {
         logger.trace("send() called, writing {} bytes.", packet.length);
+        DataOutputStream dOutX = dOut;
+        if (dOutX == null) {
+            throw new IOException("DataOutputStream not initialised");
+        }
         try {
-            DataOutputStream dOutX = dOut;
-            if (!ready || (dOutX == null)) {
-                throw new IOException();
-            }
-            // flush the read buffer if (exceptionally) there is orphan response data in it
-            // dIn.flush();
             // copy packet data to the write buffer
             dOutX.write(packet, 0, packet.length);
             // force the write buffer data to be written to the socket
@@ -203,7 +188,7 @@ class SSLconnection implements Closeable {
                 logger.trace("send() finished after having send {} bytes: {}", packet.length, sb.toString());
             }
         } catch (IOException e) {
-            ready = false;
+            close();
             throw e;
         }
     }
@@ -211,18 +196,17 @@ class SSLconnection implements Closeable {
     /**
      * Method to verify that there is message from the bridge.
      *
-     * @return <b>true</b> if there are any bytes ready to be queried using {@link SSLconnection#receive}.
-     * @throws java.io.IOException in case of a communication I/O failure.
+     * @return <b>true</b> if there are any messages ready to be queried using {@link SSLconnection#receive}.
      */
-    synchronized boolean available() throws IOException {
+    synchronized boolean available() {
         logger.trace("available() called.");
         DataInputStreamWithTimeout dInX = dIn;
-        if (!ready || (dInX == null)) {
-            throw new IOException();
+        if (dInX != null) {
+            int availableMessages = dInX.available();
+            logger.trace("available(): found {} messages ready to be read (> 0 means true).", availableMessages);
+            return availableMessages > 0;
         }
-        int availableBytes = dInX.available();
-        logger.trace("available(): found {} bytes ready to be read (> 0 means true).", availableBytes);
-        return availableBytes > 0;
+        return false;
     }
 
     /**
@@ -233,11 +217,11 @@ class SSLconnection implements Closeable {
      */
     synchronized byte[] receive() throws IOException {
         logger.trace("receive() called.");
+        DataInputStreamWithTimeout dInX = dIn;
+        if (dInX == null) {
+            throw new IOException("DataInputStreamWithTimeout not initialised");
+        }
         try {
-            DataInputStreamWithTimeout dInX = dIn;
-            if (!ready || (dInX == null)) {
-                throw new IOException();
-            }
             byte[] packet = dInX.readSlipMessage(ioTimeoutMSecs);
             if (logger.isTraceEnabled()) {
                 StringBuilder sb = new StringBuilder();
@@ -248,7 +232,7 @@ class SSLconnection implements Closeable {
             }
             return packet;
         } catch (IOException e) {
-            ready = false;
+            close();
             throw e;
         }
     }
@@ -257,30 +241,39 @@ class SSLconnection implements Closeable {
      * Destructor to tear down a connection.
      *
      * @throws java.io.IOException in case of a communication I/O failure.
+     *             But actually eats all exceptions to ensure sure that all shutdown code is executed
      */
     @Override
     public synchronized void close() throws IOException {
         logger.debug("close() called.");
-        ready = false;
         logger.info("Shutting down Velux bridge connection.");
-        // Just for avoidance of Potential null pointer access
         DataInputStreamWithTimeout dInX = dIn;
         if (dInX != null) {
-            dInX.close();
-            dIn = null;
+            try {
+                dInX.close();
+            } catch (IOException e) {
+                // eat the exception so the following will always be executed
+            }
         }
-        // Just for avoidance of Potential null pointer access
         DataOutputStream dOutX = dOut;
         if (dOutX != null) {
-            dOutX.close();
-            dOut = null;
+            try {
+                dOutX.close();
+            } catch (IOException e) {
+                // eat the exception so the following will always be executed
+            }
         }
-        // Just for avoidance of Potential null pointer access
         SSLSocket socketX = socket;
         if (socketX != null) {
-            socketX.close();
-            socket = null;
+            try {
+                socketX.close();
+            } catch (IOException e) {
+                // eat the exception so the following will always be executed
+            }
         }
+        dIn = null;
+        dOut = null;
+        socket = null;
         logger.trace("close() finished.");
     }
 }

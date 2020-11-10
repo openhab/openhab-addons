@@ -108,7 +108,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * anyway forced to go through the same serial pipeline, because they all call the same class level "synchronized"
      * method to actually communicate with the KLF bridge via its one single TCP socket connection
      */
-    private ExecutorService handleScheduler = Executors.newSingleThreadExecutor();
+    private @Nullable ExecutorService handleScheduler = null;
 
     private VeluxBridge myJsonBridge = new JsonVeluxBridge(this);
     private VeluxBridge mySlipBridge = new SlipVeluxBridge(this);
@@ -253,10 +253,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             logger.warn("initialize(): scheduler is shutdown, aborting the initialization of this bridge.");
             return;
         }
-        if (handleScheduler.isShutdown()) {
-            logger.trace("initialize(): handleScheduler is shutdown, aborting the initialization of this bridge.");
-            return;
-        }
+        handleScheduler = Executors.newSingleThreadExecutor();
         logger.trace("initialize(): preparing background initialization task.");
         // Background initialization...
         scheduler.execute(() -> {
@@ -295,7 +292,10 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             currentRefreshJob.cancel(true);
         }
         // shut down the task executor
-        handleScheduler.shutdownNow();
+        ExecutorService handleScheduler = this.handleScheduler;
+        if (handleScheduler != null) {
+            handleScheduler.shutdownNow();
+        }
         // Background execution of dispose
         scheduler.execute(() -> {
             logger.trace("dispose.scheduled(): (synchronous) logout initiated.");
@@ -402,7 +402,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     private synchronized void refreshOpenHAB() {
         logger.debug("refreshOpenHAB() initiated by {} starting cycle {}.", Thread.currentThread(), refreshCounter);
 
-        if (handleScheduler.isShutdown()) {
+        ExecutorService handleScheduler = this.handleScheduler;
+        if ((handleScheduler == null) || handleScheduler.isShutdown()) {
             logger.trace("refreshOpenHAB(): handleScheduler is shutdown, recreating a scheduler.");
             handleScheduler = Executors.newSingleThreadExecutor();
         }
@@ -499,12 +500,15 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         logger.debug("handleCommand({},{}) called.", channelUID.getAsString(), command);
 
         // Background execution of bridge related I/O
-        handleScheduler.execute(() -> {
-            logger.trace("handleCommand.scheduled({}) Start work with calling handleCommandScheduled().",
-                    Thread.currentThread());
-            handleCommandScheduled(channelUID, command);
-            logger.trace("handleCommand.scheduled({}) done.", Thread.currentThread());
-        });
+        ExecutorService handleScheduler = this.handleScheduler;
+        if (handleScheduler != null) {
+            handleScheduler.execute(() -> {
+                logger.trace("handleCommand.scheduled({}) Start work with calling handleCommandScheduled().",
+                        Thread.currentThread());
+                handleCommandScheduled(channelUID, command);
+                logger.trace("handleCommand.scheduled({}) done.", Thread.currentThread());
+            });
+        }
         logger.trace("handleCommand({}) done.", Thread.currentThread());
     }
 
