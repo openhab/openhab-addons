@@ -17,10 +17,10 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.WithingsDataModel;
 import org.openhab.binding.withings.internal.api.device.DevicesResponse;
+import org.openhab.core.thing.Thing;
 
 /**
  * @author Sven Strohschein - Initial contribution

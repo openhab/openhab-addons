@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.withings.internal.api.measure;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Sven Strohschein - Initial contribution

@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.withings.internal.api;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.withings.internal.api.device.DevicesResponse;
 
 /**

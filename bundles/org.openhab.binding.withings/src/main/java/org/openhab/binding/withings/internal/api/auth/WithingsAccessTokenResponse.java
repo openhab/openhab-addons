@@ -14,8 +14,8 @@ package org.openhab.binding.withings.internal.api.auth;
 
 import java.time.LocalDateTime;
 
-import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.binding.withings.internal.api.BaseResponse;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 
 import com.google.gson.annotations.SerializedName;
 

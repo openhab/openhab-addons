@@ -21,19 +21,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
-import org.eclipse.smarthome.core.i18n.TranslationProvider;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.withings.internal.discovery.WithingsDiscoveryService;
 import org.openhab.binding.withings.internal.handler.PersonThingHandler;
 import org.openhab.binding.withings.internal.handler.ScaleThingHandler;
@@ -41,6 +28,19 @@ import org.openhab.binding.withings.internal.handler.SleepMonitorThingHandler;
 import org.openhab.binding.withings.internal.handler.WithingsBridgeHandler;
 import org.openhab.binding.withings.internal.service.AccessTokenInitializableService;
 import org.openhab.binding.withings.internal.service.AccessTokenServiceImpl;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -111,7 +111,7 @@ public class WithingsHandlerFactory extends BaseThingHandlerFactory {
         if (bundleContext != null) {
             WithingsDiscoveryService discoveryService = new WithingsDiscoveryService(bridgeHandler, accessTokenService,
                     httpClient, localeProvider, translationProvider);
-            Map<String, @Nullable Object> configProperties = new HashMap<>();
+            Map<String, Object> configProperties = new HashMap<>();
             configProperties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, false);
             discoveryService.activate(configProperties);
             discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext

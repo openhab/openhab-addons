@@ -18,8 +18,8 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.auth.client.oauth2.*;
 import org.openhab.binding.withings.internal.config.WithingsBridgeConfiguration;
+import org.openhab.core.auth.client.oauth2.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

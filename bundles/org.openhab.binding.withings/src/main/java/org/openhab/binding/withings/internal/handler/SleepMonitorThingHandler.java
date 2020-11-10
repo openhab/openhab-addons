@@ -13,12 +13,12 @@
 package org.openhab.binding.withings.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.device.DevicesResponse;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 
 /**
  * @author Sven Strohschein - Initial contribution

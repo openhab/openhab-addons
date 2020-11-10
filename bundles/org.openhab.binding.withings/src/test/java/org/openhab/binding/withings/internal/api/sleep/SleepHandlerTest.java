@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.withings.internal.api.sleep;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.withings.internal.api.AbstractAPIHandlerTest;
 
 /**
@@ -27,7 +27,7 @@ public class SleepHandlerTest extends AbstractAPIHandlerTest {
 
     private SleepHandler sleepHandler;
 
-    @Before
+    @BeforeEach
     public void before() {
         sleepHandler = new SleepHandler(accessTokenServiceMock, httpClientMock);
     }

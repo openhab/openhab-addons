@@ -22,14 +22,6 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
-import org.eclipse.smarthome.core.i18n.TranslationProvider;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.device.DevicesHandler;
 import org.openhab.binding.withings.internal.api.device.DevicesResponse;
@@ -37,6 +29,14 @@ import org.openhab.binding.withings.internal.handler.WithingsBridgeHandler;
 import org.openhab.binding.withings.internal.service.AccessTokenService;
 import org.openhab.binding.withings.internal.service.person.Person;
 import org.openhab.binding.withings.internal.service.person.PersonHandler;
+import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public class WithingsDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    public void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 

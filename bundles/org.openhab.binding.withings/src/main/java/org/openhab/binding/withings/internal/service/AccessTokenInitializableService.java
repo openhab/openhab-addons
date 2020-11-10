@@ -15,9 +15,9 @@ package org.openhab.binding.withings.internal.service;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
-import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
 import org.openhab.binding.withings.internal.config.WithingsBridgeConfiguration;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthException;
 
 /**
  * @author Sven Strohschein - Initial contribution

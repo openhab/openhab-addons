@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.withings.internal.api.measure;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.withings.internal.api.AbstractAPIHandlerTest;
 
 /**
@@ -29,7 +29,7 @@ public class MeasuresHandlerTest extends AbstractAPIHandlerTest {
 
     private MeasuresHandler measuresHandler;
 
-    @Before
+    @BeforeEach
     public void before() {
         measuresHandler = new MeasuresHandler(accessTokenServiceMock, httpClientMock);
     }

@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.withings.internal.api.device;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.withings.internal.api.AbstractAPIHandlerTest;
 
 /**
@@ -27,7 +27,7 @@ public class DevicesHandlerTest extends AbstractAPIHandlerTest {
 
     private DevicesHandler devicesHandler;
 
-    @Before
+    @BeforeEach
     public void before() {
         devicesHandler = new DevicesHandler(accessTokenServiceMock, httpClientMock);
     }

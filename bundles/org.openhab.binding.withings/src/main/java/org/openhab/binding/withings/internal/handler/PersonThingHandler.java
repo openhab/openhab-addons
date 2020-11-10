@@ -18,12 +18,12 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.thing.*;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.WithingsDataModel;
 import org.openhab.binding.withings.internal.service.person.Person;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.thing.*;
+import org.openhab.core.types.State;
 
 /**
  * @author Sven Strohschein - Initial contribution

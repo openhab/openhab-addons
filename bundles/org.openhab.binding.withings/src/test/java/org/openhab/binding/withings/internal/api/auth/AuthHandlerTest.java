@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.withings.internal.api.auth;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
-import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.withings.internal.api.AbstractAPIHandlerTest;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -28,7 +28,7 @@ public class AuthHandlerTest extends AbstractAPIHandlerTest {
 
     private AuthHandler authHandler;
 
-    @Before
+    @BeforeEach
     public void before() {
         authHandler = new AuthHandler(accessTokenServiceMock, httpClientMock);
     }
