@@ -74,6 +74,7 @@ public enum MiIoDevices {
     FAN3("zhimi.fan.v3", "Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_SA1("zhimi.fan.sa1", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_ZA1("zhimi.fan.za1", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
+    FAN_ZA3("zhimi.fan.za3", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_ZA4("zhimi.fan.za4", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_1C("dmaker.fan.1c", "Xiaomi Mijia Smart Tower Fan", THING_TYPE_BASIC),
     FAN_P5("dmaker.fan.p5", "Xiaomi Mijia Smart Tower Fan", THING_TYPE_BASIC),
