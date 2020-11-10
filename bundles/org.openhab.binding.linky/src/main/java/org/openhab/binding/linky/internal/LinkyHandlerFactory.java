@@ -28,9 +28,12 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,6 +47,8 @@ import com.google.gson.JsonDeserializer;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
+
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private final LocaleProvider localeProvider;
     private final Gson gson;
@@ -53,11 +58,33 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory) {
         this.localeProvider = localeProvider;
-        this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID);
         this.gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
                 (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
                         .parse(json.getAsJsonPrimitive().getAsString(), formatter))
                 .create();
+        this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID);
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
+        httpClient.setFollowRedirects(false);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
+        }
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.warn("Unable to stop Jetty HttpClient {}", e.getMessage());
+        }
     }
 
     @Override
@@ -69,10 +96,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (supportsThingType(thingTypeUID)) {
-            return new LinkyHandler(thing, localeProvider, gson, httpClient);
-        }
-
-        return null;
+        return supportsThingType(thingTypeUID) ? new LinkyHandler(thing, localeProvider, gson, httpClient) : null;
     }
 }
