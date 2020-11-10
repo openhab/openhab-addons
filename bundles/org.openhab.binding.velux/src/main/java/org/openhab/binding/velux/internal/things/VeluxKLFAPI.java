@@ -343,11 +343,7 @@ public class VeluxKLFAPI {
         }
 
         public static Command get(short thisTypeId) {
-            if (LOOKUPTYPEID2ENUM.containsKey(thisTypeId)) {
-                return LOOKUPTYPEID2ENUM.get(thisTypeId);
-            } else {
-                return Command.UNDEFTYPE;
-            }
+            return LOOKUPTYPEID2ENUM.getOrDefault(thisTypeId, Command.UNDEFTYPE);
         }
     }
 }

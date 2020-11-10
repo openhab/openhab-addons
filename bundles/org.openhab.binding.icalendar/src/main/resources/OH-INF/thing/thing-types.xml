@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="calendar">
+	<bridge-type id="calendar">
 		<label>Calendar</label>
 		<description>Calendar based on an iCal calendar.</description>
 
@@ -55,7 +55,7 @@
 			</parameter>
 		</config-description>
 
-	</thing-type>
+	</bridge-type>
 
 	<channel-type id="event_current_title">
 		<item-type>String</item-type>
@@ -99,4 +99,113 @@
 		<description>End of the next event in calendar</description>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="result_start">
+		<item-type>DateTime</item-type>
+		<label>Start of Result</label>
+		<description>Start of the found result in calendar</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="result_end">
+		<item-type>DateTime</item-type>
+		<label>End of Result</label>
+		<description>End of the found result in calendar</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="result_title">
+		<item-type>String</item-type>
+		<label>Title of Result</label>
+		<description>Title of the found result in calendar</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-group-type id="result">
+		<label>Result Event</label>
+		<description>A resulting event found by filter</description>
+		<channels>
+			<channel typeId="result_start" id="begin"/>
+			<channel typeId="result_end" id="end"/>
+			<channel typeId="result_title" id="title"/>
+		</channels>
+	</channel-group-type>
+
+
+	<thing-type id="eventfilter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="calendar"/>
+		</supported-bridge-type-refs>
+		<label>Event Filter</label>
+		<description>Filtered Events from the calendar</description>
+
+		<config-description>
+			<parameter-group name="general">
+				<label>General Filter Options</label>
+			</parameter-group>
+			<parameter-group name="datetime_based">
+				<label>Date and Time based Filter</label>
+			</parameter-group>
+			<parameter-group name="text_based">
+				<label>Text based Filter</label>
+			</parameter-group>
+
+			<parameter name="maxEvents" type="integer" min="0" groupName="general">
+				<label>Maximum Matches</label>
+				<required>true</required>
+			</parameter>
+			<parameter name="refreshTime" type="integer" min="1" groupName="general" unit="min">
+				<label>Refresh Time</label>
+				<description>The frequency in minutes the channels get refreshed</description>
+				<required>true</required>
+				<default>15</default>
+			</parameter>
+			<parameter name="datetimeUnit" type="text" groupName="datetime_based">
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="MINUTE">minute</option>
+					<option value="HOUR">hour</option>
+					<option value="DAY">day</option>
+					<option value="WEEK">week</option>
+				</options>
+				<default>HOUR</default>
+				<label>Date or Time Unit for Start and End</label>
+			</parameter>
+			<parameter name="datetimeStart" type="integer" groupName="datetime_based">
+				<label>Start</label>
+				<description>Start date/time amount to find events relative to "now" (inclusive)</description>
+			</parameter>
+			<parameter name="datetimeEnd" type="integer" groupName="datetime_based">
+				<label>End</label>
+				<description>End date/time amount to find events relative to "now" (exclusive)</description>
+			</parameter>
+			<parameter name="datetimeRound" type="boolean" groupName="datetime_based">
+				<label>Round to Date/Time unit</label>
+				<description>Setting this will round start and end date/time to the unit down (e.g. if unit is day: start and end
+					will be rounded to 0:00 day time)</description>
+			</parameter>
+			<parameter name="textEventField" type="text" groupName="text_based">
+				<label>Event Field</label>
+				<description>iCal field to match</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="SUMMARY">summary/subject</option>
+					<option value="DESCRIPTION">description/content</option>
+					<option value="COMMENT">comment</option>
+					<option value="CONTACT">contact</option>
+					<option value="LOCATION">location</option>
+				</options>
+			</parameter>
+			<parameter name="textEventValue" type="text" groupName="text_based">
+				<label>Event Value</label>
+			</parameter>
+			<parameter name="textValueType" type="text" groupName="text_based">
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="REGEX">Regular Expression</option>
+					<option value="TEXT">Text</option>
+				</options>
+				<default>TEXT</default>
+				<label>Value Type</label>
+				<description>"text" checks the value for containment, "regular expression" matches whole value</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 </thing:thing-descriptions>

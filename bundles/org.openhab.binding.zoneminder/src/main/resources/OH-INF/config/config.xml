@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:zoneminder:server">
+		<parameter-group name="url-info">
+			<label>ZoneMinder URL Information</label>
+		</parameter-group>
+		<parameter-group name="config-info">
+			<label>Bridge Configuration</label>
+		</parameter-group>
+		<parameter-group name="auth-info">
+			<label>Authentication Information</label>
+		</parameter-group>
+		<parameter name="refreshInterval" type="integer" min="2" unit="s" required="true" groupName="config-info">
+			<label>Refresh Interval</label>
+			<description>Interval in seconds at which monitor status is updated</description>
+			<default>5</default>
+		</parameter>
+		<parameter name="discoveryEnabled" type="boolean" required="true" groupName="config-info">
+			<label>Discovery Enabled</label>
+			<description>Enable/disable automatic discovery</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="discoveryInterval" type="integer" min="60" unit="s" required="true" groupName="config-info">
+			<label>Monitor Discovery Interval</label>
+			<description>Specifies time in seconds in which the binding will attempt to discover monitors</description>
+			<default>300</default>
+		</parameter>
+		<parameter name="defaultAlarmDuration" type="integer" unit="s" required="false" groupName="config-info">
+			<label>Default Alarm Duration</label>
+			<description>Duration in seconds after which the alarm will be turned off</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="defaultImageRefreshInterval" type="integer" unit="s" required="false"
+			groupName="config-info">
+			<label>Default Image Refresh Interval</label>
+			<description>Interval in seconds at which monitor image snapshot will be updated</description>
+		</parameter>
+		<parameter name="host" type="text" required="true" groupName="url-info">
+			<label>Server</label>
+			<description>ZoneMinder server name or IP address</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="useSSL" type="boolean" required="true" groupName="url-info">
+			<label>Use https</label>
+			<description>Enables use of https for connection to ZoneMinder</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="portNumber" type="integer" min="1" max="65535" required="false" groupName="url-info">
+			<label>Port Number</label>
+			<description>Port Number (leave blank if Zoneminder installed on default port)</description>
+		</parameter>
+		<parameter name="urlPath" type="text" required="true" groupName="url-info">
+			<label>URL Path</label>
+			<description>URL path (Default is /zm. Use / if Zoneminder installed under the root directory)</description>
+			<default>/zm</default>
+		</parameter>
+		<parameter name="user" type="text" required="false" groupName="auth-info">
+			<label>User Name</label>
+			<description>User name (if authentication enabled in ZoneMinder)</description>
+		</parameter>
+		<parameter name="pass" type="text" required="false" groupName="auth-info">
+			<label>Password</label>
+			<description>Password (if authentication enabled in ZoneMinder)</description>
+			<context>password</context>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:zoneminder:monitor">
+		<parameter name="monitorId" type="text" required="true">
+			<label>Monitor Id</label>
+			<description>Id of the monitor</description>
+		</parameter>
+		<parameter name="imageRefreshInterval" type="integer" unit="s" required="false" min="1">
+			<label>Image Refresh Interval</label>
+			<description>Interval in seconds with which monitor image is refreshed</description>
+		</parameter>
+		<parameter name="alarmDuration" type="integer" unit="s" required="false">
+			<label>Alarm Duration</label>
+			<description>Duration in seconds after which the alarm will be turned off</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

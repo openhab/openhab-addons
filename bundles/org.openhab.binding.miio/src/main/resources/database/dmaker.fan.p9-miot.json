@@ -1,236 +1,232 @@
 {
-    "deviceMapping": {
-        "id": [
-            "dmaker.fan.p9",
-            "dmaker.fan.p10"
-        ],
-        "propertyMethod": "get_properties",
-        "maxProperties": 2,
-        "channels": [
-            {
-                "property": "manufacturer",
-                "siid": 1,
-                "piid": 1,
-                "friendlyName": "Device Information-Device Manufacturer",
-                "channel": "Manufacturer",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "model",
-                "siid": 1,
-                "piid": 2,
-                "friendlyName": "Device Information-Device Model",
-                "channel": "Model",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "serial-number",
-                "siid": 1,
-                "piid": 3,
-                "friendlyName": "Device Information-Device Serial Number",
-                "channel": "SerialNumber",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "firmware-revision",
-                "siid": 1,
-                "piid": 4,
-                "friendlyName": "Device Information-Current Firmware Version",
-                "channel": "FirmwareRevision",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "on",
-                "siid": 2,
-                "piid": 1,
-                "friendlyName": "Fan-Switch Status",
-                "channel": "On",
-                "channelType": "miot_bool",
-                "type": "Switch",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "ONOFFBOOL"
-                    }
-                ]
-            },
-            {
-                "property": "fan-level",
-                "siid": 2,
-                "piid": 2,
-                "friendlyName": "Fan-Fan Level",
-                "channel": "FanLevel",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "mode",
-                "siid": 2,
-                "piid": 4,
-                "friendlyName": "Fan-Mode",
-                "channel": "Mode",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "horizontal-swing",
-                "siid": 2,
-                "piid": 5,
-                "friendlyName": "Fan-Horizontal Swing",
-                "channel": "HorizontalSwing",
-                "channelType": "miot_bool",
-                "type": "Switch",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "ONOFFBOOL"
-                    }
-                ]
-            },
-            {
-                "property": "horizontal-angle",
-                "siid": 2,
-                "piid": 6,
-                "friendlyName": "Fan-Horizontal Angle",
-                "channel": "HorizontalAngle",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "alarm",
-                "siid": 2,
-                "piid": 7,
-                "friendlyName": "Fan-Alarm",
-                "channel": "Alarm",
-                "channelType": "miot_bool",
-                "type": "Switch",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "ONOFFBOOL"
-                    }
-                ]
-            },
-            {
-                "property": "off-delay-time",
-                "siid": 2,
-                "piid": 8,
-                "friendlyName": "Fan-Power Off Delay Time",
-                "channel": "OffDelayTime",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "brightness",
-                "siid": 2,
-                "piid": 9,
-                "friendlyName": "Fan-Brightness",
-                "channel": "Brightness",
-                "channelType": "miot_bool",
-                "type": "Switch",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "ONOFFBOOL"
-                    }
-                ]
-            },
-            {
-                "property": "motor-control",
-                "siid": 2,
-                "piid": 10,
-                "friendlyName": "Fan-Motor Control",
-                "channel": "MotorControl",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "speed-level",
-                "siid": 2,
-                "piid": 11,
-                "friendlyName": "Fan-Speed Level",
-                "channel": "SpeedLevel",
-                "channelType": "miot_uint8",
-                "type": "Number",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "physical-controls-locked",
-                "siid": 3,
-                "piid": 1,
-                "friendlyName": "Physical Control Locked-Physical Control Locked",
-                "channel": "PhysicalControlsLocked",
-                "channelType": "miot_bool",
-                "type": "Switch",
-                "refresh": true,
-                "actions": [
-                    {
-                        "command": "set_properties",
-                        "parameterType": "ONOFFBOOL"
-                    }
-                ]
-            }
-        ]
-    }
+	"deviceMapping": {
+		"id": [
+			"dmaker.fan.p9",
+			"dmaker.fan.p10"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "manufacturer",
+				"siid": 1,
+				"piid": 1,
+				"friendlyName": "Device Information-Device Manufacturer",
+				"channel": "Manufacturer",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "model",
+				"siid": 1,
+				"piid": 2,
+				"friendlyName": "Device Information-Device Model",
+				"channel": "Model",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "serial-number",
+				"siid": 1,
+				"piid": 3,
+				"friendlyName": "Device Information-Device Serial Number",
+				"channel": "SerialNumber",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "firmware-revision",
+				"siid": 1,
+				"piid": 4,
+				"friendlyName": "Device Information-Current Firmware Version",
+				"channel": "FirmwareRevision",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fan-Switch Status",
+				"channel": "On",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "fan-level",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Fan-Fan Level",
+				"channel": "FanLevel",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Fan-Mode",
+				"channel": "Mode",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "horizontal-swing",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Fan-Horizontal Swing",
+				"channel": "HorizontalSwing",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "horizontal-angle",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Fan-Horizontal Angle",
+				"channel": "HorizontalAngle",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Fan-Alarm",
+				"channel": "Alarm",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "off-delay-time",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Fan-Power Off Delay Time",
+				"channel": "OffDelayTime",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Fan-Brightness",
+				"channel": "Brightness",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "motor-control",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Fan-Motor Control",
+				"channel": "MotorControl",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "speed-level",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Fan-Speed Level",
+				"channel": "SpeedLevel",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Physical Control Locked-Physical Control Locked",
+				"channel": "PhysicalControlsLocked",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			}
+		]
+	}
 }

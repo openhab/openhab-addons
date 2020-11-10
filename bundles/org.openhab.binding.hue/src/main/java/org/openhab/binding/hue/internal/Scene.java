@@ -144,7 +144,8 @@ public class Scene {
         if (getGroupId() == null) {
             return getLightIds().stream().allMatch(id -> group.getLightIds().contains(id));
         } else {
-            return group.getId().contentEquals(getGroupId());
+            String groupId = getGroupId();
+            return groupId != null ? group.getId().contentEquals(groupId) : false;
         }
     }
 

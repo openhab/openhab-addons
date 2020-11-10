@@ -40,6 +40,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -52,6 +53,7 @@ import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
+import org.snmp4j.Snmp;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.SnmpConstants;
@@ -175,6 +177,15 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         if (event == null) {
             return;
         }
+
+        if (event.getSource() instanceof Snmp) {
+            // Always cancel async request when response has been received
+            // otherwise a memory leak is created! Not canceling a request
+            // immediately can be useful when sending a request to a broadcast
+            // address (Comment is taken from the snmp4j API doc).
+            ((Snmp) event.getSource()).cancel(event.getRequest(), this);
+        }
+
         PDU response = event.getResponse();
         if (response == null) {
             Exception e = event.getError();
@@ -190,6 +201,9 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             return;
         }
         timeoutCounter = 0;
+        if (ThingHandlerHelper.isHandlerInitialized(this)) {
+            updateStatus(ThingStatus.ONLINE);
+        }
         logger.trace("{} received {}", thing.getUID(), response);
 
         response.getVariableBindings().forEach(variable -> {
@@ -413,7 +427,6 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         try {
             target.setAddress(new UdpAddress(InetAddress.getByName(config.hostname), config.port));
             targetAddressString = ((UdpAddress) target.getAddress()).getInetAddress().getHostAddress();
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             return true;
         } catch (UnknownHostException e) {
             target.setAddress(null);

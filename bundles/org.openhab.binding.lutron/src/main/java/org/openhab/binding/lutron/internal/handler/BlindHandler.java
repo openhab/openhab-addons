@@ -17,7 +17,9 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 import java.math.BigDecimal;
 
 import org.openhab.binding.lutron.internal.config.BlindConfig;
-import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.OutputCommand;
+import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.lip.TargetType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
@@ -37,16 +39,6 @@ import org.slf4j.LoggerFactory;
  * @author Bob Adair - Initial contribution based on Alan Tong's DimmerHandler
  */
 public class BlindHandler extends LutronHandler {
-    private static final Integer ACTION_LIFTLEVEL = 1;
-    private static final Integer ACTION_TILTLEVEL = 9;
-    private static final Integer ACTION_LIFTTILTLEVEL = 10;
-    private static final Integer ACTION_STARTRAISINGTILT = 11;
-    private static final Integer ACTION_STARTLOWERINGTILT = 12;
-    private static final Integer ACTION_STOPTILT = 13;
-    private static final Integer ACTION_STARTRAISINGLIFT = 14;
-    private static final Integer ACTION_STARTLOWERINGLIFT = 15;
-    private static final Integer ACTION_STOPLIFT = 16;
-    private static final Integer ACTION_POSITION_UPDATE = 32; // undocumented in integration protocol guide
     private static final Integer PARAMETER_POSITION_UPDATE = 2; // undocumented in integration protocol guide
 
     private int tiltMax = 100; // max 50 for horizontal sheer, 100 for venetian
@@ -96,8 +88,9 @@ public class BlindHandler extends LutronHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
-            queryOutput(ACTION_LIFTLEVEL); // handleUpdate() will set thing status to online when response arrives
-            queryOutput(ACTION_TILTLEVEL);
+            queryOutput(TargetType.BLIND, OutputCommand.ACTION_LIFTLEVEL);
+            // handleUpdate() will set thing status to online when response arrives
+            queryOutput(TargetType.BLIND, OutputCommand.ACTION_TILTLEVEL);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -107,9 +100,9 @@ public class BlindHandler extends LutronHandler {
     public void channelLinked(ChannelUID channelUID) {
         // Refresh state when new item is linked.
         if (channelUID.getId().equals(CHANNEL_BLINDLIFTLEVEL)) {
-            queryOutput(ACTION_LIFTLEVEL);
+            queryOutput(TargetType.BLIND, OutputCommand.ACTION_LIFTLEVEL);
         } else if (channelUID.getId().equals(CHANNEL_BLINDTILTLEVEL)) {
-            queryOutput(ACTION_TILTLEVEL);
+            queryOutput(TargetType.BLIND, OutputCommand.ACTION_TILTLEVEL);
         }
     }
 
@@ -125,30 +118,30 @@ public class BlindHandler extends LutronHandler {
     private void handleLiftCommand(Command command) {
         if (command instanceof PercentType) {
             int level = ((PercentType) command).intValue();
-            output(ACTION_LIFTLEVEL, level, 0);
+            output(TargetType.BLIND, OutputCommand.ACTION_LIFTLEVEL, level, null, null);
         } else if (command.equals(UpDownType.UP)) {
-            output(ACTION_STARTRAISINGLIFT);
+            output(TargetType.BLIND, OutputCommand.ACTION_STARTRAISINGLIFT, null, null, null);
         } else if (command.equals(UpDownType.DOWN)) {
-            output(ACTION_STARTLOWERINGLIFT);
+            output(TargetType.BLIND, OutputCommand.ACTION_STARTLOWERINGLIFT, null, null, null);
         } else if (command.equals(StopMoveType.STOP)) {
-            output(ACTION_STOPLIFT);
+            output(TargetType.BLIND, OutputCommand.ACTION_STOPLIFT, null, null, null);
         } else if (command instanceof RefreshType) {
-            queryOutput(ACTION_LIFTLEVEL);
+            queryOutput(TargetType.BLIND, OutputCommand.ACTION_LIFTLEVEL);
         }
     }
 
     private void handleTiltCommand(Command command) {
         if (command instanceof PercentType) {
             int level = ((PercentType) command).intValue();
-            output(ACTION_TILTLEVEL, Math.min(level, tiltMax), 0);
+            output(TargetType.BLIND, OutputCommand.ACTION_TILTLEVEL, Math.min(level, tiltMax), null, null);
         } else if (command.equals(UpDownType.UP)) {
-            output(ACTION_STARTRAISINGTILT);
+            output(TargetType.BLIND, OutputCommand.ACTION_STARTRAISINGTILT, null, null, null);
         } else if (command.equals(UpDownType.DOWN)) {
-            output(ACTION_STARTLOWERINGTILT);
+            output(TargetType.BLIND, OutputCommand.ACTION_STARTLOWERINGTILT, null, null, null);
         } else if (command.equals(StopMoveType.STOP)) {
-            output(ACTION_STOPTILT);
+            output(TargetType.BLIND, OutputCommand.ACTION_STOPTILT, null, null, null);
         } else if (command instanceof RefreshType) {
-            queryOutput(ACTION_TILTLEVEL);
+            queryOutput(TargetType.BLIND, OutputCommand.ACTION_TILTLEVEL);
         }
     }
 
@@ -159,21 +152,21 @@ public class BlindHandler extends LutronHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
 
-            if (ACTION_LIFTLEVEL.toString().equals(parameters[0])) {
+            if (OutputCommand.ACTION_LIFTLEVEL.toString().equals(parameters[0])) {
                 BigDecimal liftLevel = new BigDecimal(parameters[1]);
                 logger.trace("Blind {} received lift level: {}", getIntegrationId(), liftLevel);
                 updateState(CHANNEL_BLINDLIFTLEVEL, new PercentType(liftLevel));
-            } else if (ACTION_TILTLEVEL.toString().equals(parameters[0])) {
+            } else if (OutputCommand.ACTION_TILTLEVEL.toString().equals(parameters[0])) {
                 BigDecimal tiltLevel = new BigDecimal(parameters[1]);
                 logger.trace("Blind {} received tilt level: {}", getIntegrationId(), tiltLevel);
                 updateState(CHANNEL_BLINDTILTLEVEL, new PercentType(tiltLevel));
-            } else if (ACTION_LIFTTILTLEVEL.toString().equals(parameters[0]) && parameters.length > 2) {
+            } else if (OutputCommand.ACTION_LIFTTILTLEVEL.toString().equals(parameters[0]) && parameters.length > 2) {
                 BigDecimal liftLevel = new BigDecimal(parameters[1]);
                 BigDecimal tiltLevel = new BigDecimal(parameters[2]);
                 logger.trace("Blind {} received lift/tilt level: {} {}", getIntegrationId(), liftLevel, tiltLevel);
                 updateState(CHANNEL_BLINDLIFTLEVEL, new PercentType(liftLevel));
                 updateState(CHANNEL_BLINDTILTLEVEL, new PercentType(tiltLevel));
-            } else if (ACTION_POSITION_UPDATE.toString().equals(parameters[0])
+            } else if (OutputCommand.ACTION_POSITION_UPDATE.toString().equals(parameters[0])
                     && PARAMETER_POSITION_UPDATE.toString().equals(parameters[1]) && parameters.length >= 3) {
                 BigDecimal level = new BigDecimal(parameters[2]);
                 logger.trace("Blind {} received lift level position update: {}", getIntegrationId(), level);

@@ -24,12 +24,17 @@ import java.util.List;
  */
 public class Area {
     private String name;
+    private Integer integrationId;
     private List<DeviceNode> deviceNodes;
     private List<Output> outputs;
     private List<Area> areas;
 
     public String getName() {
         return name;
+    }
+
+    public Integer getIntegrationId() {
+        return integrationId;
     }
 
     public List<DeviceNode> getDeviceNodes() {

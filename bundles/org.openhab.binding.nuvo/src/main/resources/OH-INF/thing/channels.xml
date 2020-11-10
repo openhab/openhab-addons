@@ -135,8 +135,9 @@
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
-				<description>Communication Port (serial over IP). For IP connection to the Nuvo amplifier</description>
-				<default>4444</default>
+				<description>Communication Port (serial over IP). For IP connection to the Nuvo amplifier. Use port 5006 with MPS4
+					server.</description>
+				<default>5006</default>
 			</parameter>
 			<parameter name="numZones" type="integer" min="1" max="20" required="true">
 				<label>Number of Zones</label>

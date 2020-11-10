@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.kaleidescape.internal;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.kaleidescape.internal.handler.KaleidescapeHandler;
@@ -30,16 +27,15 @@ import org.slf4j.LoggerFactory;
  * Some automation actions to be used with a {@link KaleidescapeThingActions}
  *
  * @author Michael Lobstein - initial contribution
- *
  */
 @ThingActionsScope(name = "kaleidescape")
 @NonNullByDefault
-public class KaleidescapeThingActions implements ThingActions, IKaleidescapeThingActions {
+public class KaleidescapeThingActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeThingActions.class);
 
     private @Nullable KaleidescapeHandler handler;
 
-    @RuleAction(label = "sendKCommand", description = "Action that sends raw command to the kaleidescape zone")
+    @RuleAction(label = "send a raw command", description = "Action that sends raw command to the kaleidescape zone.")
     public void sendKCommand(@ActionInput(name = "sendKCommand") String kCommand) {
         KaleidescapeHandler localHandler = handler;
         if (localHandler != null) {
@@ -51,8 +47,8 @@ public class KaleidescapeThingActions implements ThingActions, IKaleidescapeThin
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void sendKCommand(@Nullable ThingActions actions, String kCommand) throws IllegalArgumentException {
-        invokeMethodOf(actions).sendKCommand(kCommand);
+    public static void sendKCommand(ThingActions actions, String kCommand) throws IllegalArgumentException {
+        ((KaleidescapeThingActions) actions).sendKCommand(kCommand);
     }
 
     @Override
@@ -62,27 +58,6 @@ public class KaleidescapeThingActions implements ThingActions, IKaleidescapeThin
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return this.handler;
-    }
-
-    private static IKaleidescapeThingActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(KaleidescapeThingActions.class.getName())) {
-            if (actions instanceof KaleidescapeThingActions) {
-                return (IKaleidescapeThingActions) actions;
-            } else {
-                return (IKaleidescapeThingActions) Proxy.newProxyInstance(
-                        IKaleidescapeThingActions.class.getClassLoader(),
-                        new Class[] { IKaleidescapeThingActions.class },
-                        (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException("Actions is not an instance of KaleidescapeThingActions");
+        return handler;
     }
 }

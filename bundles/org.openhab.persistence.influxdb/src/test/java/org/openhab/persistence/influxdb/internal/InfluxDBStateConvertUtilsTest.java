@@ -13,7 +13,8 @@
 package org.openhab.persistence.influxdb.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -22,6 +23,8 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.NumberItem;
@@ -40,7 +43,13 @@ public class InfluxDBStateConvertUtilsTest {
     @Test
     public void convertDecimalState() {
         DecimalType decimalType = new DecimalType(new BigDecimal("1.12"));
-        assertThat((Double) InfluxDBStateConvertUtils.stateToObject(decimalType), closeTo(1.12, 0.01));
+        assertThat(InfluxDBStateConvertUtils.stateToObject(decimalType), is(new BigDecimal("1.12")));
+    }
+
+    @Test
+    public void convertIntegerDecimalState() {
+        DecimalType decimalType = new DecimalType(12L);
+        assertThat(InfluxDBStateConvertUtils.stateToObject(decimalType), is(new BigDecimal("12")));
     }
 
     @Test
@@ -57,9 +66,10 @@ public class InfluxDBStateConvertUtilsTest {
         assertThat(InfluxDBStateConvertUtils.stateToObject(type), equalTo(nowInMillis));
     }
 
-    @Test
-    public void convertDecimalToState() {
-        BigDecimal val = new BigDecimal("1.12");
+    @ParameterizedTest
+    @ValueSource(strings = { "1.12", "25" })
+    public void convertDecimalToState(String number) {
+        BigDecimal val = new BigDecimal(number);
         NumberItem item = new NumberItem("name");
         assertThat(InfluxDBStateConvertUtils.objectToState(val, item), equalTo(new DecimalType(val)));
     }

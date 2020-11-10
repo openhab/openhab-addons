@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.discovery;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_SMART_HOME_THING_TYPES_UIDS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_SMART_HOME_DEVICE_GROUP;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
@@ -62,7 +60,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
     }
 
     public void activate() {
-        activate(new Hashtable<String, @Nullable Object>());
+        activate(new Hashtable<String, Object>());
     }
 
     @Override
@@ -122,7 +120,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
 
     @Override
     @Activate
-    public void activate(@Nullable Map<String, @Nullable Object> config) {
+    public void activate(@Nullable Map<String, Object> config) {
         super.activate(config);
         if (config != null) {
             modified(config);
@@ -171,7 +169,8 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                     continue;
                 }
 
-                if (Stream.of(shd.capabilities).noneMatch(capability -> capability != null
+                JsonSmartHomeCapabilities.SmartHomeCapability[] capabilities = shd.capabilities;
+                if (capabilities == null || Stream.of(capabilities).noneMatch(capability -> capability != null
                         && Constants.SUPPORTED_INTERFACES.contains(capability.interfaceName))) {
                     // No supported interface found
                     continue;

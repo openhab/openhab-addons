@@ -75,11 +75,7 @@ public enum EirFlags {
             initMapping();
         }
 
-        if (codeMapping.get(eirFlag) == null) {
-            return UNKNOWN;
-        }
-
-        return codeMapping.get(eirFlag);
+        return codeMapping.getOrDefault(eirFlag, UNKNOWN);
     }
 
     /**

@@ -72,8 +72,8 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     private final Set<GroupAddress> groupAddresses = new HashSet<>();
     private final Set<GroupAddress> groupAddressesWriteBlockedOnce = new HashSet<>();
     private final Set<OutboundSpec> groupAddressesRespondingSpec = new HashSet<>();
-    private final Map<GroupAddress, @Nullable ScheduledFuture<?>> readFutures = new HashMap<>();
-    private final Map<ChannelUID, @Nullable ScheduledFuture<?>> channelFutures = new HashMap<>();
+    private final Map<GroupAddress, ScheduledFuture<?>> readFutures = new HashMap<>();
+    private final Map<ChannelUID, ScheduledFuture<?>> channelFutures = new HashMap<>();
     private int readInterval;
 
     public DeviceThingHandler(Thing thing) {

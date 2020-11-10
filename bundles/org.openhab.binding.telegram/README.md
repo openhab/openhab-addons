@@ -155,7 +155,7 @@ These actions will send a message to all chat ids configured for this bot.
 
 ### Actions to send messages to a particular chat
 
-Just put the chat id (must be a long value!) as the first argument to one of the above mentioned APIs:
+Just put the chat id (must be a long value!) followed by an "L" as the first argument to one of the above mentioned APIs:
 
 ```
 telegramAction.sendTelegram(1234567L, "Hello world!")

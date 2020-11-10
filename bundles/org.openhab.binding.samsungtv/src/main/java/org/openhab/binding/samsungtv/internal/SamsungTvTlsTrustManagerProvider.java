@@ -16,7 +16,7 @@ import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
-import org.openhab.core.io.net.http.TrustAllTrustMananger;
+import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -35,6 +35,6 @@ public class SamsungTvTlsTrustManagerProvider implements TlsTrustManagerProvider
 
     @Override
     public X509ExtendedTrustManager getTrustManager() {
-        return TrustAllTrustMananger.getInstance();
+        return TrustAllTrustManager.getInstance();
     }
 }

@@ -43,7 +43,10 @@ public class SensorId {
      * - characters are case-insensitive
      * - hubs ("1F.xxxxxxxxxxxx/aux/") may be repeated
      */
-    public SensorId(String fullPath) {
+    public SensorId(@Nullable String fullPath) {
+        if (fullPath == null) {
+            throw new IllegalArgumentException();
+        }
         Matcher matcher = SENSOR_ID_PATTERN.matcher(fullPath);
         if (matcher.matches() && matcher.groupCount() == 2) {
             path = matcher.group(1) == null ? "" : matcher.group(1);

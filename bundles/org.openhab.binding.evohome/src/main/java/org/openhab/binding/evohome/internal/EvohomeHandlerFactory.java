@@ -47,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class EvohomeHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final HttpClient httpClient;
 

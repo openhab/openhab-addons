@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Geofence Sensor -->
+	<thing-type id="geofencesensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Geofence Sensor</label>
+		<description>A sensor providing geofence based presence detection.</description>
+
+		<channels>
+			<channel id="presence" typeId="system.motion"/>
+			<channel id="last_updated" typeId="last_updated"/>
+		</channels>
+
+		<representation-property>uniqueId</representation-property>
+
+		<config-description-ref uri="thing-type:hue:geofencesensor"/>
+	</thing-type>
+</thing:thing-descriptions>

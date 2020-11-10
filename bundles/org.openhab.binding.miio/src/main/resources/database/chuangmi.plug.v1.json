@@ -8,6 +8,7 @@
 				"property": "on",
 				"friendlyName": "Power",
 				"channel": "power",
+				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -21,6 +22,7 @@
 				"property": "usb_on",
 				"friendlyName": "USB",
 				"channel": "usb",
+				"channelType": "usb",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -30,6 +32,16 @@
 						"parameterType": "ONOFFPARA"
 					}
 				]
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"channelType": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
 			}
 		]
 	}

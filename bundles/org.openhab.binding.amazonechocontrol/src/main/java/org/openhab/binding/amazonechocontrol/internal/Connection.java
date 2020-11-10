@@ -1490,7 +1490,7 @@ public class Connection {
             JsonArray ttsVolumeNodesToExecute = new JsonArray();
             for (int i = 0; i < devices.length; i++) {
                 if (ttsVolumes[i] != null && (standardVolumes == null || !ttsVolumes[i].equals(standardVolumes[i]))) {
-                    Map<String, @Nullable Object> volumeParameters = new HashMap<>();
+                    Map<String, Object> volumeParameters = new HashMap<>();
                     volumeParameters.put("value", ttsVolumes[i]);
                     ttsVolumeNodesToExecute
                             .add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));

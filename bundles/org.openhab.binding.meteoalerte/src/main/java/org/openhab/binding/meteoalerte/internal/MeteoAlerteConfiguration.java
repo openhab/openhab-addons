@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MeteoAlerteConfiguration {
     public String department = "";
-    public Integer refresh = 1440;
+    public int refresh = 1440;
 }

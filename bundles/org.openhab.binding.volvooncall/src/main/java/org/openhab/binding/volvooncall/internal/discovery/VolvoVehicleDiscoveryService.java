@@ -63,7 +63,7 @@ public class VolvoVehicleDiscoveryService extends AbstractDiscoveryService imple
     }
 
     @Override
-    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    public void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 

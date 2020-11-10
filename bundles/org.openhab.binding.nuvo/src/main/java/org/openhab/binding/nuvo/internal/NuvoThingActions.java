@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.nuvo.internal;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nuvo.internal.handler.NuvoHandler;
@@ -30,17 +27,16 @@ import org.slf4j.LoggerFactory;
  * Some automation actions to be used with a {@link NuvoThingActions}
  *
  * @author Michael Lobstein - initial contribution
- *
  */
 @ThingActionsScope(name = "nuvo")
 @NonNullByDefault
-public class NuvoThingActions implements ThingActions, INuvoThingActions {
+public class NuvoThingActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(NuvoThingActions.class);
 
     private @Nullable NuvoHandler handler;
 
-    @RuleAction(label = "sendNuvoCommand", description = "Action that sends raw command to the amplifer")
+    @RuleAction(label = "send a raw command", description = "Send a raw command to the amplifier.")
     public void sendNuvoCommand(@ActionInput(name = "sendNuvoCommand") String rawCommand) {
         NuvoHandler localHandler = handler;
         if (localHandler != null) {
@@ -52,9 +48,8 @@ public class NuvoThingActions implements ThingActions, INuvoThingActions {
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
-    public static void sendNuvoCommand(@Nullable ThingActions actions, String rawCommand)
-            throws IllegalArgumentException {
-        invokeMethodOf(actions).sendNuvoCommand(rawCommand);
+    public static void sendNuvoCommand(ThingActions actions, String rawCommand) {
+        ((NuvoThingActions) actions).sendNuvoCommand(rawCommand);
     }
 
     @Override
@@ -64,25 +59,6 @@ public class NuvoThingActions implements ThingActions, INuvoThingActions {
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return this.handler;
-    }
-
-    private static INuvoThingActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(NuvoThingActions.class.getName())) {
-            if (actions instanceof NuvoThingActions) {
-                return (INuvoThingActions) actions;
-            } else {
-                return (INuvoThingActions) Proxy.newProxyInstance(INuvoThingActions.class.getClassLoader(),
-                        new Class[] { INuvoThingActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException("Actions is not an instance of NuvoThingActions");
+        return handler;
     }
 }

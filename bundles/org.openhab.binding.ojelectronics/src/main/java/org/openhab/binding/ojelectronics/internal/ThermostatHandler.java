@@ -158,7 +158,7 @@ public class ThermostatHandler extends BaseThingHandler {
         updateState(BindingConstants.CHANNEL_OWD5_GROUPNAME, StringType.valueOf(thermostat.groupName));
     }
 
-    private String getRegulationMode(int regulationMode) {
+    private @Nullable String getRegulationMode(int regulationMode) {
         return REGULATION_MODES.get(regulationMode);
     }
 

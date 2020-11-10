@@ -218,7 +218,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public String getUser() {
-        return thing.getProperties().get(PROPERTY_SPOTIFY_USER);
+        return thing.getProperties().getOrDefault(PROPERTY_SPOTIFY_USER, "");
     }
 
     @Override

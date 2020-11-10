@@ -13,6 +13,7 @@
 package org.openhab.io.transport.modbus.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Exception representing situation where transaction id of the response does not match request
@@ -33,7 +34,7 @@ public class ModbusUnexpectedTransactionIdException extends ModbusTransportExcep
     }
 
     @Override
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return String.format("Transaction id of request (%d) does not equal response (%d). Slave response is invalid.",
                 requestId, responseId);
     }

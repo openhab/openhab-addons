@@ -145,7 +145,10 @@ public class OpenAPIUtils {
         }
     }
 
-    public static boolean checkRequiredFirmware(String modelId, String currentFirmwareVersion) {
+    public static boolean checkRequiredFirmware(@Nullable String modelId, @Nullable String currentFirmwareVersion) {
+        if (modelId == null || currentFirmwareVersion == null) {
+            return false;
+        }
         int[] currentVer = getFirmwareVersionNumbers(currentFirmwareVersion);
 
         int[] requiredVer = getFirmwareVersionNumbers(

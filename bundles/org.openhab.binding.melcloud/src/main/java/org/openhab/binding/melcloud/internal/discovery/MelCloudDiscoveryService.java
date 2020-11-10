@@ -61,7 +61,7 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    protected void activate(Map<String, @Nullable Object> configProperties) {
+    protected void activate(Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 
@@ -72,7 +72,7 @@ public class MelCloudDiscoveryService extends AbstractDiscoveryService
 
     @Override
     @Modified
-    protected void modified(Map<String, @Nullable Object> configProperties) {
+    protected void modified(Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 

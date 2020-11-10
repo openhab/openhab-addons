@@ -31,6 +31,7 @@ import org.openhab.binding.modbus.sunspec.internal.parser.CommonModelParser;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
@@ -282,8 +283,12 @@ public class SunspecDiscoveryProcess {
             return;
         }
 
-        ThingUID thingUID = new ThingUID(SUPPORTED_THING_TYPES_UIDS.get(block.moduleID), handler.getUID(),
-                Integer.toString(block.address));
+        ThingTypeUID thingTypeUID = SUPPORTED_THING_TYPES_UIDS.get(block.moduleID);
+        if (thingTypeUID == null) {
+            logger.warn("Found model block but no corresponding thing type UID present: {}", block.moduleID);
+            return;
+        }
+        ThingUID thingUID = new ThingUID(thingTypeUID, handler.getUID(), Integer.toString(block.address));
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(PROPERTY_VENDOR, commonBlock.manufacturer);

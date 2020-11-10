@@ -1,0 +1,171 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.bceiling1",
+			"philips.light.bceiling2",
+			"philips.light.lnblight1",
+			"philips.light.lnblight2",
+			"philips.light.lnlrlight",
+			"philips.light.lrceiling"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"channelType": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"channelType": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
+					}
+				]
+			},
+			{
+				"property": "cct",
+				"friendlyName": "Correlated Color Temperature",
+				"channel": "cct",
+				"channelType": "cct",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_cct",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "snm",
+				"friendlyName": "Scene",
+				"channel": "scene",
+				"channelType": "scene",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "apply_fixed_scene",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "dv",
+				"friendlyName": "DV",
+				"channel": "dv",
+				"channelType": "dv",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": []
+			},
+			{
+				"property": "sw",
+				"friendlyName": "Switch",
+				"channel": "sw",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_scene_switch",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "bl",
+				"friendlyName": "Night Light",
+				"channel": "bl",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "enable_bl",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "ms",
+				"friendlyName": "MiBand Notifications",
+				"channel": "ms",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "enable_mibs",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "ac",
+				"friendlyName": "Auto Ambiance",
+				"channel": "ac",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "enable_ac",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Delay Off",
+				"channel": "delayoff",
+				"channelType": "delayoff",
+				"type": "Switch",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "delay_off",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "mb",
+				"friendlyName": "MiBand",
+				"channel": "mb",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "enable_mb",
+						"parameterType": "NUMBER"
+					}
+				]
+			}
+		],
+		"experimental": true
+	}
+}
