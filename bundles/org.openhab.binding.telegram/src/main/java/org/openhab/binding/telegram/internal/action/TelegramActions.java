@@ -332,12 +332,16 @@ public class TelegramActions implements ThingActions {
                     logger.warn("Download from {} failed with exception: {}", photoURL, e.getMessage());
                     return false;
                 }
-            } else if (photoURL.toLowerCase().startsWith("file:") || photoURL.toLowerCase().endsWith(".jpg")) {
+            } else if (photoURL.toLowerCase().startsWith("file:") || photoURL.toLowerCase().endsWith(".jpg")
+                    || photoURL.toLowerCase().endsWith(".jpeg")) {
                 // Load image from local file system
                 logger.debug("Read file from local file system: {}", photoURL);
+                String temp = photoURL;
+                if (!photoURL.toLowerCase().startsWith("file:")) {
+                    temp = "file://" + photoURL;
+                }
                 try {
-                    URL url = new URL(photoURL);
-                    sendPhoto = new SendPhoto(chatId, Path.of(url.getPath()).toFile());
+                    sendPhoto = new SendPhoto(chatId, Path.of(new URL(temp).getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL: {}", photoURL);
                     return false;
@@ -367,7 +371,9 @@ public class TelegramActions implements ThingActions {
                     return false;
                 }
             }
-            sendPhoto.caption(caption);
+            if (caption != null) {
+                sendPhoto.caption(caption);
+            }
             if (localHandler.getParseMode() != null) {
                 sendPhoto.parseMode(localHandler.getParseMode());
             }
