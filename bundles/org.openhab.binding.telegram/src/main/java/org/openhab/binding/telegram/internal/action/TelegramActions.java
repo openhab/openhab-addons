@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -318,7 +317,10 @@ public class TelegramActions implements ThingActions {
                             "Basic " + B64Code.encode(username + ":" + password, StandardCharsets.ISO_8859_1)));
                 }
                 try {
-                    ContentResponse contentResponse = request.send();
+                    // API has 10mb limit to jpg file size, without this it can only accept 2mb
+                    FutureResponseListener listener = new FutureResponseListener(request, 10 * 1024 * 1024);
+                    request.send(listener);
+                    ContentResponse contentResponse = listener.get();
                     if (contentResponse.getStatus() == 200) {
                         byte[] fileContent = contentResponse.getContent();
                         sendPhoto = new SendPhoto(chatId, fileContent);
@@ -326,11 +328,11 @@ public class TelegramActions implements ThingActions {
                         logger.warn("Download from {} failed with status: {}", photoURL, contentResponse.getStatus());
                         return false;
                     }
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     logger.warn("Download from {} failed with exception: {}", photoURL, e.getMessage());
                     return false;
                 }
-            } else if (photoURL.toLowerCase().startsWith("file")) {
+            } else if (photoURL.toLowerCase().startsWith("file:") || photoURL.toLowerCase().endsWith(".jpg")) {
                 // Load image from local file system
                 logger.debug("Read file from local file system: {}", photoURL);
                 try {
