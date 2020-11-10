@@ -330,8 +330,10 @@ public class TelegramActions implements ThingActions {
                     return false;
                 }
             } else if (photoURL.toLowerCase().startsWith("file:") || photoURL.toLowerCase().endsWith(".jpg")
-                    || photoURL.toLowerCase().endsWith(".jpeg") || photoURL.toLowerCase().endsWith(".png")
-                    || photoURL.toLowerCase().endsWith(".webp")) {
+                    || photoURL.toLowerCase().endsWith(".jpeg") || photoURL.toLowerCase().endsWith(".jpe")
+                    || photoURL.toLowerCase().endsWith(".jif") || photoURL.toLowerCase().endsWith(".jfif")
+                    || photoURL.toLowerCase().endsWith(".jfi") || photoURL.toLowerCase().endsWith(".png")
+                    || photoURL.toLowerCase().endsWith(".webp") || photoURL.toLowerCase().endsWith(".gif")) {
                 logger.debug("Read file from local file system: {}", photoURL);
                 String temp = photoURL;
                 if (!photoURL.toLowerCase().startsWith("file:")) {
