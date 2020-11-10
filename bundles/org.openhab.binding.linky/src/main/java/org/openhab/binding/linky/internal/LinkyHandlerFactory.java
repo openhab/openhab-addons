@@ -73,7 +73,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.warn("Unable to start Jetty HttpClient {}", e);
+            logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
         }
     }
 
@@ -83,7 +83,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
         try {
             httpClient.stop();
         } catch (Exception e) {
-            logger.warn("Unable to stop Jetty HttpClient {}", e);
+            logger.warn("Unable to stop Jetty HttpClient {}", e.getMessage());
         }
     }
 
