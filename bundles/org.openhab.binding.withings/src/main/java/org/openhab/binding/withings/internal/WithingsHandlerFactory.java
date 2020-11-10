@@ -31,7 +31,6 @@ import org.openhab.binding.withings.internal.service.AccessTokenServiceImpl;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -59,16 +58,14 @@ public class WithingsHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final AccessTokenInitializableService accessTokenService;
     private final HttpClient httpClient;
-    private final TimeZoneProvider timeZoneProvider;
     private final LocaleProvider localeProvider;
     private final TranslationProvider translationProvider;
 
     @Activate
     public WithingsHandlerFactory(final @Reference OAuthFactory oAuthFactory,
-            final @Reference HttpClientFactory httpClientFactory, final @Reference TimeZoneProvider timeZoneProvider,
-            final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider translationProvider) {
+            final @Reference HttpClientFactory httpClientFactory, final @Reference LocaleProvider localeProvider,
+            final @Reference TranslationProvider translationProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.timeZoneProvider = timeZoneProvider;
         this.localeProvider = localeProvider;
         this.translationProvider = translationProvider;
         this.accessTokenService = new AccessTokenServiceImpl(oAuthFactory);
