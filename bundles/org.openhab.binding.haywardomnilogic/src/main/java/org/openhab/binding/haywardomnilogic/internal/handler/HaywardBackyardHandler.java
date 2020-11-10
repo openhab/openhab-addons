@@ -83,7 +83,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
         String xmlResponse = bridgehandler.httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
-            logger.error("Hayward getAlarmList XML response was empty");
+            logger.debug("Hayward getAlarmList XML response was empty");
             return false;
         }
 
@@ -91,7 +91,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
                 .evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
 
         if (!(status.equals("0"))) {
-            logger.error("Hayward getAlarm XML response: {}", xmlResponse);
+            logger.trace("Hayward getAlarm XML response: {}", xmlResponse);
             return false;
         }
 
@@ -109,7 +109,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
                 updateData("backyardAlarm" + String.format("%01d", i + 1), alarmStr);
             }
         } else {
-            logger.error("Hayward getAlarms XML response: {}", xmlResponse);
+            logger.trace("Hayward getAlarms XML response: {}", xmlResponse);
             return false;
         }
         return true;

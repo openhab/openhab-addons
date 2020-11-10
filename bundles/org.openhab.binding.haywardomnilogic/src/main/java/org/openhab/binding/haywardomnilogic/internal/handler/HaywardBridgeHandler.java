@@ -141,7 +141,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             }
 
             updateStatus(ThingStatus.ONLINE);
-            logger.trace("Succesfully opened connection to Hayward's server: {} Username:{}", config.endpointUrl,
+            logger.debug("Succesfully opened connection to Hayward's server: {} Username:{}", config.endpointUrl,
                     config.username);
 
             initPolling(0);
@@ -377,7 +377,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 values.add(nodes.item(i).getNodeValue());
             }
         } catch (XPathExpressionException e) {
-            logger.error("XPathExpression exception:", e);
+            logger.warn("XPathExpression exception:", e);
         }
         return values;
     }
@@ -416,9 +416,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                             urlParameters);
                     logger.trace("Hayward Connection thing:  {} Hayward http response: {} {}", getCallingMethod(),
                             statusMessage, xmlResponse);
-                } else if (logger.isDebugEnabled()) {
-                    logger.debug("Hayward Connection thing:  {} Hayward http response: {}", getCallingMethod(),
-                            statusMessage);
                 }
                 return xmlResponse;
             } else {

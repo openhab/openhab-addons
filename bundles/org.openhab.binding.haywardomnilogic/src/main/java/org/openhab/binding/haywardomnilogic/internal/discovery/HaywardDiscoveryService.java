@@ -76,7 +76,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             String xmlResults = handler.getMspConfig();
             mspConfigDiscovery(xmlResults);
         } catch (Exception e) {
-            logger.debug("Exception during discovery scan", e);
+            logger.warn("Exception during discovery scan", e);
         }
     }
 
@@ -232,7 +232,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void onBackyardDiscovered(int systemID, String label) {
-        logger.debug("Hayward Backyard {} Discovered: {}", systemID, label);
+        logger.trace("Hayward Backyard {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_BACKYARD, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
@@ -245,7 +245,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void onBOWDiscovered(int systemID, String label) {
-        logger.debug("Hayward BOW {} Discovered: {}", systemID, label);
+        logger.trace("Hayward BOW {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_BOW, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
@@ -258,7 +258,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void onChlorinatorDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.debug("Hayward Chlorinator {} Discovered: {}", systemID, label);
+        logger.trace("Hayward Chlorinator {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_CHLORINATOR, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
@@ -273,7 +273,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void onColorLogicDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.debug("Hayward Color Logic Light {} Discovered: {}", systemID, label);
+        logger.trace("Hayward Color Logic Light {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_COLORLOGIC, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
@@ -289,7 +289,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
 
     public void onFilterDiscovered(int systemID, String label, String bowID, String bowName, String minPumpSpeed,
             String maxPumpSpeed, String minPumpRpm, String maxPumpRpm) {
-        logger.debug("Hayward Filter {} Discovered: {}", systemID, label);
+        logger.trace("Hayward Filter {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_FILTER, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
@@ -308,7 +308,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void onHeaterDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.debug("Hayward Heater {} Discovered: {}", systemID, label);
+        logger.trace("Hayward Heater {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_HEATER, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
@@ -324,7 +324,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
 
     public void onPumpDiscovered(int systemID, String label, String bowID, String bowName, String property1,
             String property2, String property3, String property4) {
-        logger.debug("Hayward Pump {} Discovered: {}", systemID, label);
+        logger.trace("Hayward Pump {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_PUMP, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
@@ -343,7 +343,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void onRelayDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.debug("Hayward Relay {} Discovered: {}", systemID, label);
+        logger.trace("Hayward Relay {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_RELAY, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
@@ -358,7 +358,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void onSensorDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.debug("Hayward Sensor {} Discovered: {}", systemID, label);
+        logger.trace("Hayward Sensor {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_SENSOR, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
@@ -373,7 +373,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void onVirtualHeaterDiscovered(int systemID, String label, String bowID, String bowName) {
-        logger.debug("Hayward Virtual Heater {} Discovered: {}", systemID, label);
+        logger.trace("Hayward Virtual Heater {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_VIRTUALHEATER, handler.getThing().getUID(),
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();

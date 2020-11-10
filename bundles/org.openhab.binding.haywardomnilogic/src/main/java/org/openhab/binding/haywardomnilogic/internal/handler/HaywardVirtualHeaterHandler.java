@@ -114,7 +114,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                                 + "</Parameters></Request>";
                         break;
                     default:
-                        logger.error("haywardCommand Unsupported type {}", channelUID);
+                        logger.warn("haywardCommand Unsupported type {}", channelUID);
                         return;
                 }
 
@@ -123,7 +123,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                 String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse).get(0);
 
                 if (!(status.equals("0"))) {
-                    logger.error("haywardCommand XML response: {}", xmlResponse);
+                    logger.debug("haywardCommand XML response: {}", xmlResponse);
                     return;
                 }
             } catch (Exception e) {
