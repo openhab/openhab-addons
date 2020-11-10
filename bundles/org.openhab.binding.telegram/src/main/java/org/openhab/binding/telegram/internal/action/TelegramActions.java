@@ -297,14 +297,11 @@ public class TelegramActions implements ThingActions {
             logger.warn("chatId not defined; action skipped.");
             return false;
         }
-
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
             final SendPhoto sendPhoto;
-
             if (photoURL.toLowerCase().startsWith("http")) {
-                // load image from url
-                logger.debug("Photo URL provided.");
+                logger.debug("Http based URL for photo provided.");
                 HttpClient client = localHandler.getClient();
                 if (client == null) {
                     return false;
@@ -333,8 +330,8 @@ public class TelegramActions implements ThingActions {
                     return false;
                 }
             } else if (photoURL.toLowerCase().startsWith("file:") || photoURL.toLowerCase().endsWith(".jpg")
-                    || photoURL.toLowerCase().endsWith(".jpeg")) {
-                // Load image from local file system
+                    || photoURL.toLowerCase().endsWith(".jpeg") || photoURL.toLowerCase().endsWith(".png")
+                    || photoURL.toLowerCase().endsWith(".webp")) {
                 logger.debug("Read file from local file system: {}", photoURL);
                 String temp = photoURL;
                 if (!photoURL.toLowerCase().startsWith("file:")) {
@@ -347,8 +344,7 @@ public class TelegramActions implements ThingActions {
                     return false;
                 }
             } else {
-                // Load image from provided base64 image
-                logger.debug("Photo base64 provided; converting to binary.");
+                logger.debug("Base64 image provided; converting to binary.");
                 final String photoB64Data;
                 if (photoURL.startsWith("data:")) { // support data URI scheme
                     String[] photoURLParts = photoURL.split(",");
