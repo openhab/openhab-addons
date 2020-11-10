@@ -72,7 +72,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
     private Charset charset = Charset.defaultCharset();
 
-    private @Nullable String data;
+    private @Nullable String lastValue;
 
     private final AtomicBoolean readerActive = new AtomicBoolean(false);
     private @Nullable ScheduledFuture<?> reader;
@@ -85,7 +85,11 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
-            refresh(channelUID.getId());
+            final String lastValue = this.lastValue;
+
+            if (lastValue != null) {
+                refresh(channelUID.getId(), lastValue);
+            }
         } else {
             switch (channelUID.getId()) {
                 case STRING_CHANNEL:
@@ -194,7 +198,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             this.reader = null;
         }
 
-        data = null;
+        lastValue = null;
     }
 
     @Override
@@ -224,11 +228,10 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
      * Refreshes the channel with the last received data
      *
      * @param channelId the channel to refresh
+     * @param channelId the data to use
      */
-    private void refresh(final String channelId) {
-        final String data = this.data;
-
-        if (data == null || !isLinked(channelId)) {
+    private void refresh(final String channelId, final String data) {
+        if (!isLinked(channelId)) {
             return;
         }
 
@@ -279,11 +282,10 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
             } else {
                 final String result = sb.toString();
-                data = result;
 
                 triggerChannel(TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
-                refresh(STRING_CHANNEL);
-                refresh(BINARY_CHANNEL);
+                refresh(STRING_CHANNEL, result);
+                refresh(BINARY_CHANNEL, result);
 
                 result.lines().forEach(l -> getThing().getThings().forEach(t -> {
                     final SerialDeviceHandler device = (SerialDeviceHandler) t.getHandler();
@@ -291,6 +293,8 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                         device.handleData(l);
                     }
                 }));
+
+                lastValue = result;
 
                 if (readerActive.compareAndSet(true, false)) {
                     // Check we haven't received more data while processing

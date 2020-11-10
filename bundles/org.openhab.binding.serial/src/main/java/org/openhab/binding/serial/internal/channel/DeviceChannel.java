@@ -34,12 +34,12 @@ public abstract class DeviceChannel {
 
     protected final ChannelConfig config;
 
-    private final ValueTransformation transform;
+    private final ValueTransformation stateTransform;
     private final ValueTransformation commandTransform;
 
     protected DeviceChannel(final ValueTransformationProvider valueTransformationProvider, final ChannelConfig config) {
         this.config = config;
-        transform = valueTransformationProvider.getValueTransformation(config.stateTransformation);
+        stateTransform = valueTransformationProvider.getValueTransformation(config.stateTransformation);
         commandTransform = valueTransformationProvider.getValueTransformation(config.commandTransformation);
     }
 
@@ -65,7 +65,7 @@ public abstract class DeviceChannel {
      * @return the transformed data if the transform produced a result.
      */
     public Optional<String> transformData(final String data) {
-        return transform.apply(data);
+        return stateTransform.apply(data);
     }
 
     /**

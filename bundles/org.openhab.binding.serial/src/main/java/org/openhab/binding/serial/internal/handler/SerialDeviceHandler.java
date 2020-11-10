@@ -47,9 +47,9 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     private final ValueTransformationProvider valueTransformationProvider;
 
-    private @NonNullByDefault({}) Pattern devicePattern;
+    private @Nullable Pattern devicePattern;
 
-    private @Nullable String data;
+    private @Nullable String lastValue;
 
     private final Map<ChannelUID, DeviceChannel> channels = new HashMap<>();
 
@@ -61,7 +61,14 @@ public class SerialDeviceHandler extends BaseThingHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
-            refresh(channelUID);
+            final String lastValue = this.lastValue;
+
+            if (lastValue != null) {
+                final DeviceChannel channel = channels.get(channelUID);
+                if (channel != null) {
+                    refresh(channelUID, channel, lastValue);
+                }
+            }
         } else {
             final DeviceChannel channel = channels.get(channelUID);
             if (channel != null) {
@@ -113,7 +120,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         channels.clear();
-        data = null;
+        lastValue = null;
         super.dispose();
     }
 
@@ -123,9 +130,11 @@ public class SerialDeviceHandler extends BaseThingHandler {
      * @param data the line of data
      */
     public void handleData(final String data) {
-        if (devicePattern.matcher(data).matches()) {
-            this.data = data;
-            channels.keySet().forEach(this::refresh);
+        final Pattern devicePattern = this.devicePattern;
+
+        if (devicePattern != null && devicePattern.matcher(data).matches()) {
+            channels.forEach((channelUID, channel) -> refresh(channelUID, channel, data));
+            this.lastValue = data;
         }
     }
 
@@ -160,16 +169,11 @@ public class SerialDeviceHandler extends BaseThingHandler {
      *
      * @param channelId the channel to refresh
      */
-    private void refresh(final ChannelUID channelUID) {
-        final String data = this.data;
-
-        if (data == null || !isLinked(channelUID)) {
+    private void refresh(final ChannelUID channelUID, final DeviceChannel channel, final String data) {
+        if (!isLinked(channelUID)) {
             return;
         }
 
-        final DeviceChannel channel = channels.get(channelUID);
-        if (channel != null) {
-            channel.transformData(data).ifPresent(value -> updateState(channelUID, new StringType(value)));
-        }
+        channel.transformData(data).ifPresent(value -> updateState(channelUID, new StringType(value)));
     }
 }

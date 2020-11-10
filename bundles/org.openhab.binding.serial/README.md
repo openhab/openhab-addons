@@ -65,35 +65,35 @@ The channels supported by the `serialBridge` are:
 
 | Channel  | Type             | Description                                                                                              |
 |----------|------------------|----------------------------------------------------------------------------------------------------------|
-| string   | String           | Channel for sending/receiving data as a string to/from the serial port. The channel will update its state to a StringType that is the data received from the serial port. A command sent to this channel will be sent out as data through the serial port. |
-| binary   | String           | Channel for sending/receiving data in Base64 format to/from the serial port. The channel will update its state to a StringType which is the string representation of a RawType that contains the data received from the serial port. A command sent to this channel must be encoded as the string representation of a RawType, e.g. "data:application/octet-stream;base64 MjA7MDU7Q3Jlc3RhO0lEPTI4MDE7VEVNUD0yNTtIVU09NTU7QkFUPU9LOwo=" |
-| data     | system.rawbutton | Trigger which emits `PRESSED` events (no `RELEASED` events) whenever data is available on the serial port                                                                                                                                     |
+| `string`   | String           | Channel for sending/receiving data as a string to/from the serial port. The channel will update its state to a StringType that is the data received from the serial port. A command sent to this channel will be sent out as data through the serial port. |
+| `binary`   | String           | Channel for sending/receiving data in Base64 format to/from the serial port. The channel will update its state to a StringType which is the string representation of a RawType that contains the data received from the serial port. A command sent to this channel must be encoded as the string representation of a RawType, e.g. `"data:application/octet-stream;base64 MjA7MDU7Q3Jlc3RhO0lEPTI4MDE7VEVNUD0yNTtIVU09NTU7QkFUPU9LOwo="` |
+| `data`     | system.rawbutton | Trigger which emits `PRESSED` events (no `RELEASED` events) whenever data is available on the serial port                                                                                                                                     |
 
 
 The channels supported by the `serialDevice` are:
 
 | Channel Type  | Type             | Description                                                                                              |
 |---------------|------------------|----------------------------------------------------------------------------------------------------------|
-| string | String | Channel for receiving string based commands. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can be formatted and transformed before sending to the device. |
-| number | Number | Channel for receiving number based commands. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can be formatted and transformed before sending to the device. |
-| dimmer | Dimmer | Channel for receiving commands from a Dimmer. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the ON, OFF, INCREASE and DECREASE commands. |
-| switch | Switch | Channel for receiving commands from a Switch. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the ON and OFF commands. |
-| rollershutter | Rollershutter | Channel for receiving commands from a Rollershutter. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the UP, DOWN and STOP commands. |
+| `string` | String | Channel for receiving string based commands. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can be formatted and transformed before sending to the device. |
+| `number` | Number | Channel for receiving number based commands. The channel can be configured to apply a transform on the received data to convert to the channel state. Commands received by the channel can be formatted and transformed before sending to the device. |
+| `dimmer` | Dimmer | Channel for receiving commands from a Dimmer. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the ON, OFF, INCREASE and DECREASE commands. |
+| `switch` | Switch | Channel for receiving commands from a Switch. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the ON and OFF commands. |
+| `rollershutter` | Rollershutter | Channel for receiving commands from a Rollershutter. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the UP, DOWN and STOP commands. |
 
 The configuration for the `serialBridge` channels consists of the following parameters:
 
 | Parameter        | Description                                                                            | Supported Channels |
 |------------------|----------------------------------------------------------------------------------------|--------------------|
-| stateTransformation | One or more transformation (concatenated with `∩`) used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.* | string, number, dimmer, switch, rollershutter |
-| commandTransformation | One or more transformation (concatenated with `∩`) used to convert command to device data, e.g. JS:device.js | string, number, dimmer, switch, rollershutter |
-| commandFormat | Format string applied to the command before transform, e.g. ID=671;COMMAND=%s | string, number, dimmer, rollershutter |
-| onValue | Send this value when receiving an ON command | switch, dimmer |
-| offValue | Send this value when receiving an OFF command | switch, dimmer |
-| increaseValue | Send this value when receiving an INCREASE command | dimmer |
-| descreaseValue | Send this value when receiving a DECREASE command | dimmer |
-| upValue | Send this value when receiving an UP command | rollershutter |
-| downValue | Send this value when receiving a DOWN command | rollershutter |
-| stopValue | Send this value when receiving a STOP command | rollershutter |
+| `stateTransformation` | One or more transformation (concatenated with `∩`) used to convert device data to channel state, e.g. `REGEX:.*?STATE=(.*?);.*` | string, number, dimmer, switch, rollershutter |
+| `commandTransformation` | One or more transformation (concatenated with `∩`) used to convert command to device data, e.g. `JS:device.js` | string, number, dimmer, switch, rollershutter |
+| `commandFormat` | Format string applied to the command before transform, e.g. `ID=671;COMMAND=%s` | string, number, dimmer, rollershutter |
+| `onValue` | Send this value when receiving an ON command | switch, dimmer |
+| `offValue` | Send this value when receiving an OFF command | switch, dimmer |
+| `increaseValue` | Send this value when receiving an INCREASE command | dimmer |
+| `decreaseValue` | Send this value when receiving a DECREASE command | dimmer |
+| `upValue` | Send this value when receiving an UP command | rollershutter |
+| `downValue` | Send this value when receiving a DOWN command | rollershutter |
+| `stopValue` | Send this value when receiving a STOP command | rollershutter |
 
 
 ## Full Example

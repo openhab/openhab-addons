@@ -18,7 +18,6 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
-				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
 			</parameter>
@@ -92,7 +91,6 @@
 			<parameter name="patternMatch" type="text">
 				<label>Patern Match</label>
 				<context>pattern-match</context>
-				<limitToOptions>false</limitToOptions>
 				<required>true</required>
 				<description>Regular expression used to identify device from received data (must match the whole line)</description>
 			</parameter>
