@@ -35,20 +35,20 @@ public class GreeException extends Exception {
     private static final long serialVersionUID = -2337258558995287405L;
     private static String EX_NONE = "none";
 
-    public GreeException(Exception exception) {
+    public GreeException(@Nullable Exception exception) {
         super(exception);
     }
 
-    public GreeException(String message) {
+    public GreeException(@Nullable String message) {
         super(message);
     }
 
-    public GreeException(String message, Exception exception) {
+    public GreeException(@Nullable String message, @Nullable Exception exception) {
         super(message, exception);
     }
 
     @Override
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return isEmpty() ? "" : nonNullString(super.getMessage());
     }
 

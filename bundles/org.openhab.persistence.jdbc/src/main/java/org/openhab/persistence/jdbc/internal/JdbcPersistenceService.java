@@ -12,8 +12,6 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -156,7 +154,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         if (!checkDBAccessability()) {
             logger.warn("JDBC::query: database not connected, query aborted for item '{}'", filter.getItemName());
-            return Collections.emptyList();
+            return List.of();
         }
 
         // Get the item name from the filter
@@ -168,7 +166,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
             item = itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e1) {
             logger.error("JDBC::query: unable to get item for itemName: '{}'. Ignore and give up!", itemName);
-            return Collections.emptyList();
+            return List.of();
         }
 
         if (item instanceof GroupItem) {
@@ -177,11 +175,11 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
             logger.debug("JDBC::query: item is instanceof GroupItem '{}'", itemName);
             if (item == null) {
                 logger.debug("JDBC::query: BaseItem of GroupItem is null. Ignore and give up!");
-                return Collections.emptyList();
+                return List.of();
             }
             if (item instanceof GroupItem) {
                 logger.debug("JDBC::query: BaseItem of GroupItem is a GroupItem too. Ignore and give up!");
-                return Collections.emptyList();
+                return List.of();
             }
         }
 
@@ -196,8 +194,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
         }
 
         long timerStart = System.currentTimeMillis();
-        List<HistoricItem> items = new ArrayList<>();
-        items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
+        List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
 
         logger.debug("JDBC::query: query for {} returned {} rows in {} ms", item.getName(), items.size(),
                 System.currentTimeMillis() - timerStart);
@@ -224,6 +221,6 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
 
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
-        return Collections.emptyList();
+        return List.of(PersistenceStrategy.Globals.CHANGE);
     }
 }

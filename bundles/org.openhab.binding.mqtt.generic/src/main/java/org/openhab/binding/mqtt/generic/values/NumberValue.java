@@ -61,10 +61,12 @@ public class NumberValue extends Value {
     }
 
     protected boolean checkConditions(BigDecimal newValue, DecimalType oldvalue) {
+        BigDecimal min = this.min;
         if (min != null && newValue.compareTo(min) == -1) {
             logger.trace("Number not accepted as it is below the configured minimum");
             return false;
         }
+        BigDecimal max = this.max;
         if (max != null && newValue.compareTo(max) == 1) {
             logger.trace("Number not accepted as it is above the configured maximum");
             return false;

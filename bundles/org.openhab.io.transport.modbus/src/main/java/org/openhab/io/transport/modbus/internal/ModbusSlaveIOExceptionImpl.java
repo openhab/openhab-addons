@@ -15,6 +15,7 @@ package org.openhab.io.transport.modbus.internal;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.exception.ModbusSlaveIOException;
 
 import net.wimpi.modbus.ModbusIOException;
@@ -40,7 +41,7 @@ public class ModbusSlaveIOExceptionImpl extends ModbusSlaveIOException {
     }
 
     @Override
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return String.format("Modbus IO Error with cause=%s, EOF=%s, message='%s', cause2=%s",
                 error.getClass().getSimpleName(),
                 error instanceof ModbusIOException ? ((ModbusIOException) error).isEOF() : "?", error.getMessage(),

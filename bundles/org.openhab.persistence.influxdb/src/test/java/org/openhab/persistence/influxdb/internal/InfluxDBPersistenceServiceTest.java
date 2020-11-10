@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,8 +39,8 @@ public class InfluxDBPersistenceServiceTest {
 
     private @Mock InfluxDBRepository influxDBRepository;
 
-    private Map<String, @Nullable Object> validConfig;
-    private Map<String, @Nullable Object> invalidConfig;
+    private Map<String, Object> validConfig;
+    private Map<String, Object> invalidConfig;
 
     @BeforeEach
     public void before() {

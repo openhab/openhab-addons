@@ -123,7 +123,7 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
      * will update all channels provided in the map
      */
     @Override
-    public void updateChannelStatus(Map<Channel, @Nullable State> values) {
+    public void updateChannelStatus(Map<Channel, State> values) {
         logger.debug("Handling channel update.");
 
         for (Channel channel : values.keySet()) {

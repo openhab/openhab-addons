@@ -1,0 +1,56 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="channelconfig" targetNamespace="channelconfig" xmlns:xa="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="channels" type="channelTypeDescriptions"/>
+    <xs:complexType name="itemType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="type" use="required"/>
+                <xs:attribute type="xs:string" name="unit" default=""/>
+                <xs:attribute type="xs:string" name="statePattern"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="serviceType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="deviceType" use="required"/>
+                <xs:attribute type="xs:string" name="serviceId" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="parameterType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="name" use="required"/>
+                <xs:attribute type="xs:string" name="thingParameter" use="required"/>
+                <xs:attribute type="xs:string" name="pattern"/>
+                <xs:attribute type="xs:boolean" name="internalOnly" default="false"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="actionType">
+        <xs:sequence>
+            <xs:element type="parameterType" name="parameter" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+        <xs:attribute type="xs:string" name="argument"/>
+        <xs:attribute type="xs:string" name="postProcessor"/>
+    </xs:complexType>
+    <xs:complexType name="channelTypeDescription">
+        <xs:sequence>
+            <xs:element type="itemType" name="item"/>
+            <xs:element type="serviceType" name="service"/>
+            <xs:element type="actionType" name="getAction" minOccurs="0"/>
+            <xs:element type="actionType" name="setAction" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+        <xs:attribute type="xs:string" name="label"/>
+        <xs:attribute type="xs:string" name="description"/>
+        <xs:attribute type="xs:boolean" name="advanced" default="false"/>
+    </xs:complexType>
+    <xs:complexType name="channelTypeDescriptions">
+        <xs:sequence>
+            <xs:element type="channelTypeDescription" name="channel" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

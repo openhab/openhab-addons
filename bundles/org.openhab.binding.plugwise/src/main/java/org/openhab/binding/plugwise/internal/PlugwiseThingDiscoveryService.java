@@ -102,7 +102,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     private @Nullable ScheduledFuture<?> watchJob;
     private CurrentRoleCall currentRoleCall = new CurrentRoleCall();
 
-    private final Map<MACAddress, @Nullable DiscoveredNode> discoveredNodes = new ConcurrentHashMap<>();
+    private final Map<MACAddress, DiscoveredNode> discoveredNodes = new ConcurrentHashMap<>();
 
     public PlugwiseThingDiscoveryService(PlugwiseStickHandler stickHandler) throws IllegalArgumentException {
         super(DISCOVERED_THING_TYPES_UIDS, 1, true);
@@ -309,16 +309,16 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
                 }
             }
 
-            Iterator<Entry<MACAddress, @Nullable DiscoveredNode>> it = discoveredNodes.entrySet().iterator();
+            Iterator<Entry<MACAddress, DiscoveredNode>> it = discoveredNodes.entrySet().iterator();
             while (it.hasNext()) {
-                Entry<MACAddress, @Nullable DiscoveredNode> entry = it.next();
+                Entry<MACAddress, DiscoveredNode> entry = it.next();
                 DiscoveredNode node = entry.getValue();
-                if (node != null && (System.currentTimeMillis() - node.lastRequestMillis) > (MESSAGE_TIMEOUT * 1000)
+                if (System.currentTimeMillis() - node.lastRequestMillis > (MESSAGE_TIMEOUT * 1000)
                         && node.attempts < MESSAGE_RETRY_ATTEMPTS) {
                     logger.debug("Resending timed out information request message to node ({})", node.macAddress);
                     updateInformation(node.macAddress);
                     node.attempts++;
-                } else if (node != null && node.attempts >= MESSAGE_RETRY_ATTEMPTS) {
+                } else if (node.attempts >= MESSAGE_RETRY_ATTEMPTS) {
                     logger.debug("Giving up on information request for node ({})", node.macAddress);
                     it.remove();
                 }

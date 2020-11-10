@@ -467,7 +467,10 @@ public class KM200ThingHandler extends BaseThingHandler {
                         continue;
                     }
                     /* Search for new services in sub path */
-                    addChannels(serObj.serviceTreeMap.get(subKey), thing, subChannels, subKey + "_");
+                    KM200ServiceObject obj = serObj.serviceTreeMap.get(subKey);
+                    if (obj != null) {
+                        addChannels(obj, thing, subChannels, subKey + "_");
+                    }
                     break;
                 case DATA_TYPE_ERROR_LIST:
                     if ("nbrErrors".equals(subKey) || "error".equals(subKey)) {

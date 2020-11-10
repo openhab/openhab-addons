@@ -38,7 +38,11 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Class responsible for parsing incoming LEAP messages
+ * Class responsible for parsing incoming LEAP messages. Calls back to an object implementing the
+ * LeapMessageParserCallbacks interface.
+ *
+ * Thanks to the authors of the pylutron-caseta Python API (github.com/gurumitts/pylutron-caseta), which I used as a
+ * reference when first researching the LEAP protocol.
  *
  * @author Bob Adair - Initial contribution
  */

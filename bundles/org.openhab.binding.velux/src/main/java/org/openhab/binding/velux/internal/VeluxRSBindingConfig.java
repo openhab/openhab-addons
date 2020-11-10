@@ -204,6 +204,6 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     public String getSceneName(Integer level) {
         logger.trace("getSceneName({}) called.", level);
         logger.trace("getSceneName() returning {}.", mapDescending.get(level));
-        return mapDescending.get(level);
+        return mapDescending.getOrDefault(level, "null");
     }
 }

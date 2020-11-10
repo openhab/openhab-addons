@@ -70,7 +70,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     // ConcurrentHashMap of devices registered to this BridgeHandler
     // association is: ownId (String) -> OpenWebNetThingHandler, with ownId = WHO.WHERE
-    private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
+    private Map<String, OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
 
     protected @Nullable OpenGateway gateway;
     private boolean isBusGateway = false;

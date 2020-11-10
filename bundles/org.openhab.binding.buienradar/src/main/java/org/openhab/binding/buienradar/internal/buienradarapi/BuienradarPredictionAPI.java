@@ -162,7 +162,8 @@ public class BuienradarPredictionAPI implements PredictionAPI {
                 actual = Optional.of(prediction.getActualDateTime());
                 predictions.add(prediction);
             } catch (BuienradarParseException e) {
-                errors.add(e.getMessage());
+                String error = e.getMessage();
+                errors.add(error != null ? error : "null");
             }
         }
         if (!errors.isEmpty()) {

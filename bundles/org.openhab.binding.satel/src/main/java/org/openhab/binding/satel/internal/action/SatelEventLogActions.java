@@ -59,6 +59,7 @@ public class SatelEventLogActions implements ThingActions {
         logger.debug("satel.readEvent called with input: index={}", index);
 
         Map<String, Object> result = new HashMap<>();
+        SatelEventLogHandler handler = this.handler;
         if (handler != null) {
             handler.readEvent(index == null ? -1 : index.intValue()).ifPresent(event -> {
                 result.put("index", event.getIndex());

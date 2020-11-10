@@ -16,8 +16,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,6 +26,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.items.Metadata;
@@ -62,14 +65,19 @@ public class ItemToStorePointCreatorTest {
         metadataRegistry = null;
     }
 
-    @Test
-    public void convertBasicItem() {
-        NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
+    @ParameterizedTest
+    @MethodSource
+    public void convertBasicItem(Number number) {
+        NumberItem item = ItemTestHelper.createNumberItem("myitem", number);
         InfluxPoint point = instance.convert(item, null);
 
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
         assertThat("Must Store item name", point.getTags(), hasEntry("item", item.getName()));
-        assertThat(point.getValue(), equalTo(new BigInteger("5")));
+        assertThat(point.getValue(), equalTo(new BigDecimal(number.toString())));
+    }
+
+    private static Stream<Number> convertBasicItem() {
+        return Stream.of(5, 5.5, 5L);
     }
 
     @Test

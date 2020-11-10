@@ -105,12 +105,10 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 config = getThing().getConfiguration();
 
-                radioHelper = thing.getProperties().containsKey(PROPERTY_SIGNAL_LEVELS)
-                        ? new RadioHelper(thing.getProperties().get(PROPERTY_SIGNAL_LEVELS))
-                        : null;
-                batteryHelper = thing.getProperties().containsKey(PROPERTY_BATTERY_LEVELS)
-                        ? new BatteryHelper(thing.getProperties().get(PROPERTY_BATTERY_LEVELS))
-                        : null;
+                String signalLevel = thing.getProperties().get(PROPERTY_SIGNAL_LEVELS);
+                radioHelper = signalLevel != null ? new RadioHelper(signalLevel) : null;
+                String batteryLevel = thing.getProperties().get(PROPERTY_BATTERY_LEVELS);
+                batteryHelper = batteryLevel != null ? new BatteryHelper(batteryLevel) : null;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Pending parent object initialization");
 
                 initializeThing();

@@ -13,6 +13,7 @@
 package org.openhab.io.transport.modbus.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
@@ -45,7 +46,7 @@ public class ModbusConnectionException extends ModbusTransportException {
     }
 
     @Override
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return String.format("Error connecting to endpoint %s", endpoint);
     }
 

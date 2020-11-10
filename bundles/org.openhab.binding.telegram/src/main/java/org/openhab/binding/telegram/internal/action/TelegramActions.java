@@ -255,6 +255,9 @@ public class TelegramActions implements ThingActions {
     public boolean sendTelegram(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "args") @Nullable Object... args) {
+        if (message == null) {
+            return false;
+        }
         return sendTelegram(chatId, String.format(message, args));
     }
 
@@ -444,7 +447,14 @@ public class TelegramActions implements ThingActions {
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String chatId, @Nullable String replyId,
             @Nullable String message) {
-        return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
+        if (actions instanceof TelegramActions) {
+            if (chatId == null) {
+                return false;
+            }
+            return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
+        } else {
+            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
+        }
     }
 
     @Override

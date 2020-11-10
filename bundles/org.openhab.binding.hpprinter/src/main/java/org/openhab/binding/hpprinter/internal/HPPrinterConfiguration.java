@@ -25,8 +25,10 @@ public class HPPrinterConfiguration {
     public static final String IP_ADDRESS = "ipAddress";
     public static final String USAGE_INTERVAL = "usageInterval";
     public static final String STATUS_INTERVAL = "statusInterval";
+    public static final String UUID = "uuid";
 
     public @Nullable String ipAddress;
     public int usageInterval;
     public int statusInterval;
+    public @Nullable String uuid;
 }

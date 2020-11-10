@@ -499,8 +499,7 @@ public class AccountServlet extends HttpServlet {
         html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
         List<JsonMusicProvider> musicProviders = connection.getMusicProviders();
         for (JsonMusicProvider musicProvider : musicProviders) {
-            @Nullable
-            List<@Nullable String> properties = musicProvider.supportedProperties;
+            List<String> properties = musicProvider.supportedProperties;
             String providerId = musicProvider.id;
             String displayName = musicProvider.displayName;
             if (properties != null && properties.contains("Alexa.Music.PlaySearchPhrase")
@@ -557,7 +556,7 @@ public class AccountServlet extends HttpServlet {
         }
 
         if (playLists != null) {
-            Map<String, @Nullable PlayList @Nullable []> playlistMap = playLists.playlists;
+            Map<String, PlayList @Nullable []> playlistMap = playLists.playlists;
             if (playlistMap != null && !playlistMap.isEmpty()) {
                 html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
 
@@ -697,9 +696,10 @@ public class AccountServlet extends HttpServlet {
         }
     }
 
-    void returnError(HttpServletResponse resp, String errorMessage) {
+    void returnError(HttpServletResponse resp, @Nullable String errorMessage) {
         try {
-            resp.getWriter().write("<html>" + StringEscapeUtils.escapeHtml(errorMessage) + "<br><a href='" + servletUrl
+            String message = errorMessage != null ? errorMessage : "null";
+            resp.getWriter().write("<html>" + StringEscapeUtils.escapeHtml(message) + "<br><a href='" + servletUrl
                     + "'>Try again</a></html>");
         } catch (IOException e) {
             logger.info("Returning error message failed", e);

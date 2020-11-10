@@ -36,8 +36,8 @@ import org.openhab.core.types.Command;
  * Tests for presentable calendar.
  *
  * @author Michael Wodniok - Initial contribution.
- *
  * @author Andrew Fiddian-Green - Tests for Command Tag code
+ * @author Michael Wodniok - Extended Tests for filtered Events
  *
  */
 public class BiweeklyPresentableCalendarTest {
@@ -541,5 +541,48 @@ public class BiweeklyPresentableCalendarTest {
         cmd7 = cmdTags.get(7).getCommand();
         assertNotNull(cmd7);
         assertEquals(QuantityType.class, cmd7.getClass());
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testGetFilteredEventsBetween() {
+        Event[] expectedFilteredEvents1 = new Event[] {
+                new Event("Test Series in UTC", Instant.parse("2019-09-12T09:05:00Z"),
+                        Instant.parse("2019-09-12T09:10:00Z"), ""),
+                new Event("Test Event in UTC+2", Instant.parse("2019-09-14T08:00:00Z"),
+                        Instant.parse("2019-09-14T09:00:00Z"), "") };
+        List<Event> realFilteredEvents1 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
+                Instant.parse("2019-09-15T06:00:00Z"), null, 3);
+        assertArrayEquals(expectedFilteredEvents1, realFilteredEvents1.toArray(new Event[0]));
+
+        Event[] expectedFilteredEvents2 = new Event[] {
+                new Event("Evt", Instant.parse("2019-11-10T10:00:00Z"), Instant.parse("2019-11-10T11:45:00Z"), ""),
+                new Event("Evt", Instant.parse("2019-11-17T10:00:00Z"), Instant.parse("2019-11-17T11:45:00Z"), ""),
+                new Event("Evt", Instant.parse("2019-12-01T10:00:00Z"), Instant.parse("2019-12-01T11:45:00Z"), "") };
+        List<Event> realFilteredEvents2 = calendar2.getFilteredEventsBetween(Instant.parse("2019-11-08T06:00:00Z"),
+                Instant.parse("2019-12-31T06:00:00Z"), null, 3);
+        assertArrayEquals(expectedFilteredEvents2, realFilteredEvents2.toArray(new Event[] {}));
+
+        Event[] expectedFilteredEvents3 = new Event[] { new Event("Test Event in UTC+2",
+                Instant.parse("2019-09-14T08:00:00Z"), Instant.parse("2019-09-14T09:00:00Z"), "") };
+        List<Event> realFilteredEvents3 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
+                Instant.parse("2019-09-15T06:00:00Z"),
+                new EventTextFilter(EventTextFilter.Field.SUMMARY, "utc+2", EventTextFilter.Type.TEXT), 3);
+        assertArrayEquals(expectedFilteredEvents3, realFilteredEvents3.toArray(new Event[] {}));
+
+        Event[] expectedFilteredEvents4 = new Event[] { new Event("Test Series in UTC",
+                Instant.parse("2019-09-12T09:05:00Z"), Instant.parse("2019-09-12T09:10:00Z"), "") };
+        List<Event> realFilteredEvents4 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
+                Instant.parse("2019-09-15T06:00:00Z"),
+                new EventTextFilter(EventTextFilter.Field.SUMMARY, ".*UTC$", EventTextFilter.Type.REGEX), 3);
+        assertArrayEquals(expectedFilteredEvents4, realFilteredEvents4.toArray(new Event[] {}));
+
+        List<Event> realFilteredEvents5 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-15T06:00:00Z"),
+                Instant.parse("2019-09-12T06:00:00Z"), null, 3);
+        assertEquals(0, realFilteredEvents5.size());
+
+        List<Event> realFilteredEvents6 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-15T06:00:00Z"),
+                Instant.parse("2019-12-31T00:00:00Z"), null, 3);
+        assertEquals(0, realFilteredEvents6.size());
     }
 }

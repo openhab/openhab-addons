@@ -479,6 +479,30 @@ then
 end
 ```
 
+**Available icons:**
+- NONE
+- OFF
+- ON
+- OPEN
+- CLOSED
+- ERROR
+- OK
+- INFO
+- NEW_MESSAGE
+- SERVICE
+- SIGNAL_GREEN
+- SIGNAL_YELLOW
+- SIGNAL_RED
+
+**Available colors (only HM-Dis-WM55):**
+- NONE(=WHITE)
+- WHITE
+- RED
+- ORANGE
+- YELLOW
+- GREEN
+- BLUE
+
 ### HmIP-WRCD
 
 The HmIP-WRCD display lines can be set via a combined parameter:

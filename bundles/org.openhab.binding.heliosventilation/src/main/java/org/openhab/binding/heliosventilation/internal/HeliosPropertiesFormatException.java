@@ -13,6 +13,7 @@
 package org.openhab.binding.heliosventilation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link HeliosPropertiesFormatException} class defines an exception to describe parsing format errors
@@ -41,7 +42,7 @@ public class HeliosPropertiesFormatException extends Exception {
     }
 
     @Override
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return "Cannot parse '" + fullSpec + "' for datapoint '" + channelName + "': " + reason;
     }
 }

@@ -46,7 +46,6 @@ import org.openhab.binding.miio.internal.robot.StatusDTO;
 import org.openhab.binding.miio.internal.robot.StatusType;
 import org.openhab.binding.miio.internal.robot.VacuumErrorType;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -84,7 +83,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
     private static final float MAP_SCALE = 2.0f;
     private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
-    private static final String MAP_PATH = OpenHAB.getUserDataFolder() + File.separator + BINDING_ID + File.separator;
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
 
@@ -588,7 +586,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     RRMapDraw rrMap = RRMapDraw.loadImage(new ByteArrayInputStream(mapData));
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     if (logger.isDebugEnabled()) {
-                        final String mapPath = MAP_PATH + map + DATEFORMATTER.format(new Date()) + ".rrmap";
+                        final String mapPath = BINDING_USERDATA_PATH + File.separator + map
+                                + DATEFORMATTER.format(new Date()) + ".rrmap";
                         CloudUtil.writeBytesToFileNio(mapData, mapPath);
                         logger.debug("Mapdata saved to {}", mapPath);
                     }

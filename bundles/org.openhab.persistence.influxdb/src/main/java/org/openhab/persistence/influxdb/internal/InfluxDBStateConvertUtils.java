@@ -69,9 +69,9 @@ public class InfluxDBStateConvertUtils {
         } else if (state instanceof PointType) {
             value = point2String((PointType) state);
         } else if (state instanceof DecimalType) {
-            value = convertBigDecimalToNum(((DecimalType) state).toBigDecimal());
+            value = ((DecimalType) state).toBigDecimal();
         } else if (state instanceof QuantityType<?>) {
-            value = convertBigDecimalToNum(((QuantityType<?>) state).toBigDecimal());
+            value = ((QuantityType<?>) state).toBigDecimal();
         } else if (state instanceof OnOffType) {
             value = state == OnOffType.ON ? DIGITAL_VALUE_ON : DIGITAL_VALUE_OFF;
         } else if (state instanceof OpenClosedType) {
@@ -165,22 +165,5 @@ public class InfluxDBStateConvertUtils {
             buf.append(point.getAltitude().toString());
         }
         return buf.toString(); // latitude, longitude, altitude
-    }
-
-    /**
-     * This method returns an integer if possible if not a double is returned. This is an optimization
-     * for influxdb because integers have less overhead.
-     *
-     * @param value the BigDecimal to be converted
-     * @return A double if possible else a double is returned.
-     */
-    private static Object convertBigDecimalToNum(BigDecimal value) {
-        Object convertedValue;
-        if (value.scale() == 0) {
-            convertedValue = value.toBigInteger();
-        } else {
-            convertedValue = value.doubleValue();
-        }
-        return convertedValue;
     }
 }

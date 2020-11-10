@@ -70,7 +70,7 @@ public class RdsDataPoints {
      * the Map, and b) by pointClass (which we do indirectly "double dereferenced"
      * via this index
      */
-    private final Map<String, @Nullable String> indexClassToId = new HashMap<>();
+    private final Map<String, String> indexClassToId = new HashMap<>();
 
     @SerializedName("totalCount")
     private @Nullable String totalCount;
@@ -323,11 +323,11 @@ public class RdsDataPoints {
                         throw new RdsCloudException("existing vs. new point class mismatch");
                     }
 
-                    myPoint.refreshValueFrom((BasePoint) newPoint);
+                    myPoint.refreshValueFrom(newPoint);
 
                     if (logger.isDebugEnabled()) {
                         logger.debug("refresh {}.{}: {} << {}", getDescription(), myPoint.getPointClass(),
-                                myPoint.getState(), ((BasePoint) newPoint).getState());
+                                myPoint.getState(), newPoint.getState());
                     }
                 }
             }
@@ -349,9 +349,7 @@ public class RdsDataPoints {
         if (points != null) {
             indexClassToId.clear();
             for (Entry<String, @Nullable BasePoint> entry : points.entrySet()) {
-                @Nullable
                 String pointKey = entry.getKey();
-                @Nullable
                 BasePoint pointValue = entry.getValue();
                 if (pointValue != null) {
                     indexClassToId.put(pointValue.getPointClass(), pointKey);

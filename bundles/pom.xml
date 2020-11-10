@@ -121,6 +121,7 @@
     <module>org.openhab.binding.heos</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.hpprinter</module>
+    <module>org.openhab.binding.http</module>
     <module>org.openhab.binding.hue</module>
     <module>org.openhab.binding.hydrawise</module>
     <module>org.openhab.binding.hyperion</module>
@@ -232,6 +233,8 @@
     <module>org.openhab.binding.pushbullet</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
+    <module>org.openhab.binding.revogi</module>
+    <module>org.openhab.binding.remoteopenhab</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
@@ -276,8 +279,10 @@
     <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.touchwand</module>
     <module>org.openhab.binding.tplinksmarthome</module>
+    <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>
+    <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.upnpcontrol</module>
     <module>org.openhab.binding.upb</module>
     <module>org.openhab.binding.urtsi</module>
@@ -296,6 +301,7 @@
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
     <module>org.openhab.binding.wlanthermo</module>
+    <module>org.openhab.binding.wled</module>
     <module>org.openhab.binding.xmltv</module>
     <module>org.openhab.binding.xmppclient</module>
     <module>org.openhab.binding.yamahareceiver</module>
@@ -320,7 +326,17 @@
     <module>org.openhab.voice.voicerss</module>
   </modules>
 
+  <properties>
+    <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
+    <dep.noembedding/>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>org.lastnpe.eea</groupId>
+      <artifactId>eea-all</artifactId>
+      <version>2.1.0</version>
+    </dependency>
     <!-- openHAB core -->
     <dependency>
       <groupId>org.openhab.core.bom</groupId>
@@ -364,10 +380,6 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
-  <properties>
-    <dep.noembedding/>
-  </properties>
 
   <build>
     <pluginManagement>
@@ -473,13 +485,29 @@
             <configuration>
               <includeScope>runtime</includeScope>
               <includeTypes>jar</includeTypes>
-              <excludeGroupIds>javax.activation,org.apache.karaf.features</excludeGroupIds>
+              <excludeGroupIds>javax.activation,org.apache.karaf.features,org.lastnpe.eea</excludeGroupIds>
               <excludeArtifactIds>${dep.noembedding}</excludeArtifactIds>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
               <overWriteReleases>true</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
               <excludeTransitive>true</excludeTransitive>
               <type>jar</type>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-eea</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.lastnpe.eea</groupId>
+                  <artifactId>eea-all</artifactId>
+                  <version>2.1.0</version>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
             </configuration>
           </execution>
         </executions>

@@ -56,7 +56,10 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
     }
 
     public void removeBluetoothDevice(BluetoothDevice device) {
-        device.removeListener(devices.remove(device));
+        BluetoothDeviceListener listener = devices.remove(device);
+        if (listener != null) {
+            device.removeListener(listener);
+        }
     }
 
     @Override

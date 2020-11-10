@@ -13,7 +13,6 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
-import static org.openhab.binding.deconz.internal.Util.buildUrl;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.SmartHomeUnits.PERCENT;
 
@@ -23,12 +22,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorState;
 import org.openhab.binding.deconz.internal.dto.ThermostatConfig;
-import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -121,32 +121,14 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
 
         }
 
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
-            return;
-        }
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey, "sensors", config.id,
-                "config");
-
-        String json = gson.toJson(newConfig);
-        logger.trace("Sending {} to sensor {} via {}", json, config.id, url);
-        asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
-            String bodyContent = v.getBody();
-            logger.trace("Result code={}, body={}", v.getResponseCode(), bodyContent);
-            if (!bodyContent.contains("success")) {
-                logger.debug("Sending command {} to channel {} failed: {}", command, channelUID, bodyContent);
-            }
-
-        }).exceptionally(e -> {
-            logger.debug("Sending command {} to channel {} failed:", command, channelUID, e);
-            return null;
-        });
+        sendCommand(newConfig, command, channelUID, null);
     }
 
     @Override
     protected void valueUpdated(ChannelUID channelUID, SensorConfig newConfig) {
         super.valueUpdated(channelUID, newConfig);
-        String mode = newConfig.mode != null ? newConfig.mode.name() : ThermostatMode.UNKNOWN.name();
+        ThermostatMode thermostatMode = newConfig.mode;
+        String mode = thermostatMode != null ? thermostatMode.name() : ThermostatMode.UNKNOWN.name();
         String channelID = channelUID.getId();
         switch (channelID) {
             case CHANNEL_HEATSETPOINT:
@@ -156,9 +138,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                 updateQuantityTypeChannel(channelID, newConfig.offset, CELSIUS, 1.0 / 100);
                 break;
             case CHANNEL_THERMOSTAT_MODE:
-                if (mode != null) {
-                    updateState(channelUID, new StringType(mode));
-                }
+                updateState(channelUID, new StringType(mode));
                 break;
         }
     }
@@ -190,7 +170,13 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         if (command instanceof DecimalType) {
             newTemperature = ((DecimalType) command).toBigDecimal();
         } else if (command instanceof QuantityType) {
-            newTemperature = ((QuantityType) command).toUnit(CELSIUS).toBigDecimal();
+            @SuppressWarnings("unchecked")
+            QuantityType<Temperature> temperatureCelsius = ((QuantityType<Temperature>) command).toUnit(CELSIUS);
+            if (temperatureCelsius != null) {
+                newTemperature = temperatureCelsius.toBigDecimal();
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

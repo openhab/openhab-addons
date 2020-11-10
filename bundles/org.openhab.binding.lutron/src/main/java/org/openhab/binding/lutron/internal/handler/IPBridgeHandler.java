@@ -25,7 +25,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.lutron.internal.StringUtils;
 import org.openhab.binding.lutron.internal.config.IPBridgeConfig;
 import org.openhab.binding.lutron.internal.discovery.LutronDeviceDiscoveryService;
 import org.openhab.binding.lutron.internal.net.TelnetSession;
