@@ -13,7 +13,6 @@
 
 package org.openhab.binding.haywardomnilogic.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -52,11 +51,10 @@ public class HaywardThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public void getTelemetry(@NonNull String xmlResponse) throws Exception {
+    public void getTelemetry(String xmlResponse) throws Exception {
     }
 
     public State toState(String type, String channelID, String value) throws NumberFormatException {
-
         switch (type) {
             case "Number":
                 return new DecimalType(value);
@@ -82,7 +80,6 @@ public class HaywardThingHandler extends BaseThingHandler {
     }
 
     public String cmdToString(Command command) {
-
         if (command == OnOffType.OFF) {
             return "0";
         } else if (command == OnOffType.ON) {
