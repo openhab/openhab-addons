@@ -13,6 +13,7 @@
 package org.openhab.binding.velux.internal.things;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.VeluxBindingConstants.MotionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +143,8 @@ public class VeluxProduct {
         this.powerMode = powerMode;
         this.serialNumber = serialNumber;
         this.state = state;
-        this.currentPosition = currentPosition;
+        this.currentPosition = (state > MotionState.ERROR.ordinal()) && (state < MotionState.DONE.ordinal()) ? target
+                : currentPosition;
         this.target = target;
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
