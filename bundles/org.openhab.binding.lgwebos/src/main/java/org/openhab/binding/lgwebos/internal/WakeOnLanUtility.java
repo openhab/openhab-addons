@@ -77,18 +77,19 @@ public class WakeOnLanUtility {
 
         String[] cmds = Stream.of(COMMAND.split(" ")).map(arg -> String.format(arg, hostName)).toArray(String[]::new);
         String response = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(CMD_TIMEOUT_MS), cmds);
-        Matcher matcher = MAC_REGEX.matcher(response);
         String macAddress = null;
 
-        while (matcher.find()) {
-            String group = matcher.group();
+        if (response != null) {
+            Matcher matcher = MAC_REGEX.matcher(response);
+            while (matcher.find()) {
+                String group = matcher.group();
 
-            if (group.length() == 17) {
-                macAddress = group;
-                break;
+                if (group.length() == 17) {
+                    macAddress = group;
+                    break;
+                }
             }
         }
-
         if (macAddress != null) {
             LOGGER.debug("MAC address of host {} is {}", hostName, macAddress);
         } else {
