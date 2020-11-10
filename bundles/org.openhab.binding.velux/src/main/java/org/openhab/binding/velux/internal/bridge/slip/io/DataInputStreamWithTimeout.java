@@ -161,25 +161,40 @@ class DataInputStreamWithTimeout implements Closeable {
         return new byte[0];
     }
 
+    /**
+     * Get the number of incoming messages in the queue
+     *
+     * @return the number of incoming messages in the queue
+     */
     public int available() {
         int size = slipMessageQueue.size();
         logger.trace("available() => slip message count {}", size);
         return size;
     }
 
+    /**
+     * Clear the queue
+     */
     public void flush() {
         logger.trace("flush() called");
         slipMessageQueue.clear();
     }
 
+    /**
+     * If necessary start the polling thread
+     */
     private void startPolling() {
-        if (pollThread == null) {
+        Thread pollThreadX = this.pollThread;
+        if (pollThreadX != null) {
             logger.trace("startPolling()");
-            Thread pollThreadX = pollThread = new Thread(pollRunner);
+            pollThreadX = pollThread = new Thread(pollRunner);
             pollThreadX.start();
         }
     }
 
+    /**
+     * Stop the polling thread
+     */
     private void stopPolling() {
         Thread pollThreadX = this.pollThread;
         if (pollThreadX != null) {
