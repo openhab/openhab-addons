@@ -170,10 +170,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
         channelConfigsExt = SecondGenerationChannelConfiguration.getChannelConfigurationExt();
         channelConfigsExtExt = SecondGenerationChannelConfiguration.getChannelConfigurationExtExt();
 
+        // Temporary value during initializing
         updateStatus(ThingStatus.UNKNOWN);
 
+        // Start update as configured
         secondGenerationPoller = scheduler.scheduleWithFixedDelay(() -> {
-
             try {
                 refresh();
                 updateStatus(ThingStatus.ONLINE);
@@ -269,7 +270,8 @@ public class SecondGenerationHandler extends BaseThingHandler {
         }
     }
 
-    // Helper method to handleCommand method
+    // Help method of handleCommand to with SecondGenerationConfigurationHandler.executeConfigurationChanges method send
+    // configuration changes.
     public final void preSetExecuteConfigurationChanges(HttpClient httpClient, String url, String username,
             String password, String dxsEntriesConf, String valueConfiguration) {
         try {
