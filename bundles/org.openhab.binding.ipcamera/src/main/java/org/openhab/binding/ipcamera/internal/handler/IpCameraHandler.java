@@ -1206,14 +1206,19 @@ public class IpCameraHandler extends BaseThingHandler {
                 case CHANNEL_START_STREAM:
                     Ffmpeg localHLS;
                     if (OnOffType.ON.equals(command)) {
-                        setupFfmpegFormat(FFmpegFormat.HLS);
                         localHLS = ffmpegHLS;
+                        if (localHLS == null) {
+                            setupFfmpegFormat(FFmpegFormat.HLS);
+                            localHLS = ffmpegHLS;
+                        }
                         if (localHLS != null) {
-                            localHLS.setKeepAlive(-1);// will keep running till manually stopped.
+                            localHLS.setKeepAlive(-1);// Now will run till manually stopped.
+                            localHLS.startConverting();
                         }
                     } else {
                         localHLS = ffmpegHLS;
                         if (localHLS != null) {
+                            // Still runs but will be able to auto stop when the HLS stream is no longer used.
                             localHLS.setKeepAlive(1);
                         }
                     }

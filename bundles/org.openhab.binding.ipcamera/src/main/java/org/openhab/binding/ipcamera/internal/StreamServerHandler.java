@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -103,9 +104,12 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
                                 localFfmpeg.startConverting();
                             } else {
                                 localFfmpeg.setKeepAlive(8);
+                                sendFile(ctx, httpRequest.uri(), "application/x-mpegurl");
+                                return;
                             }
+                            // Allow files to be created, or you get old m3u8 from the last time this ran.
+                            TimeUnit.MILLISECONDS.sleep(4500);
                             sendFile(ctx, httpRequest.uri(), "application/x-mpegurl");
-                            // ctx.close();
                             return;
                         case "/ipcamera.mpd":
                             sendFile(ctx, httpRequest.uri(), "application/dash+xml");

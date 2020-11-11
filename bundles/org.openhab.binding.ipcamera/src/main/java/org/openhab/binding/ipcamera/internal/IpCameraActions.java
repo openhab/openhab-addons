@@ -45,7 +45,7 @@ public class IpCameraActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "record an MP4", description = "Record MP4 to a set filename if given, or if filename is null to ipcamera.mp4")
+    @RuleAction(label = "record a MP4", description = "Record MP4 to a set filename if given, or if filename is null to ipcamera.mp4")
     public void recordMP4(
             @ActionInput(name = "filename", label = "Filename", description = "Name that the recording will have once created, don't include the .mp4.") @Nullable String filename,
             @ActionInput(name = "secondsToRecord", label = "Seconds to Record", description = "Enter a number of how many seconds to record.") int secondsToRecord) {
