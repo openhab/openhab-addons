@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.telegram.internal.action;
 
+import static org.openhab.binding.telegram.internal.TelegramBindingConstants.PHOTO_EXTENSIONS;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,13 +21,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -33,6 +33,7 @@ import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.B64Code;
@@ -49,8 +50,10 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import com.pengrad.telegrambot.request.EditMessageReplyMarkup;
+import com.pengrad.telegrambot.request.SendAnimation;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
+import com.pengrad.telegrambot.request.SendVideo;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 
@@ -296,14 +299,12 @@ public class TelegramActions implements ThingActions {
             logger.warn("chatId not defined; action skipped.");
             return false;
         }
-
+        String lowercasePhotoUrl = photoURL.toLowerCase();
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
             final SendPhoto sendPhoto;
-
-            if (photoURL.toLowerCase().startsWith("http")) {
-                // load image from url
-                logger.debug("Photo URL provided.");
+            if (lowercasePhotoUrl.startsWith("http")) {
+                logger.debug("Http based URL for photo provided.");
                 HttpClient client = localHandler.getClient();
                 if (client == null) {
                     return false;
@@ -316,7 +317,10 @@ public class TelegramActions implements ThingActions {
                             "Basic " + B64Code.encode(username + ":" + password, StandardCharsets.ISO_8859_1)));
                 }
                 try {
-                    ContentResponse contentResponse = request.send();
+                    // API has 10mb limit to jpg file size, without this it can only accept 2mb
+                    FutureResponseListener listener = new FutureResponseListener(request, 10 * 1024 * 1024);
+                    request.send(listener);
+                    ContentResponse contentResponse = listener.get();
                     if (contentResponse.getStatus() == 200) {
                         byte[] fileContent = contentResponse.getContent();
                         sendPhoto = new SendPhoto(chatId, fileContent);
@@ -324,23 +328,25 @@ public class TelegramActions implements ThingActions {
                         logger.warn("Download from {} failed with status: {}", photoURL, contentResponse.getStatus());
                         return false;
                     }
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     logger.warn("Download from {} failed with exception: {}", photoURL, e.getMessage());
                     return false;
                 }
-            } else if (photoURL.toLowerCase().startsWith("file")) {
-                // Load image from local file system
+            } else if (lowercasePhotoUrl.startsWith("file:")
+                    || PHOTO_EXTENSIONS.stream().anyMatch(lowercasePhotoUrl::endsWith)) {
                 logger.debug("Read file from local file system: {}", photoURL);
+                String temp = photoURL;
+                if (!lowercasePhotoUrl.startsWith("file:")) {
+                    temp = "file://" + photoURL;
+                }
                 try {
-                    URL url = new URL(photoURL);
-                    sendPhoto = new SendPhoto(chatId, Paths.get(url.getPath()).toFile());
+                    sendPhoto = new SendPhoto(chatId, Path.of(new URL(temp).getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL: {}", photoURL);
                     return false;
                 }
             } else {
-                // Load image from provided base64 image
-                logger.debug("Photo base64 provided; converting to binary.");
+                logger.debug("Base64 image provided; converting to binary.");
                 final String photoB64Data;
                 if (photoURL.startsWith("data:")) { // support data URI scheme
                     String[] photoURLParts = photoURL.split(",");
@@ -356,14 +362,16 @@ public class TelegramActions implements ThingActions {
                 InputStream is = Base64.getDecoder()
                         .wrap(new ByteArrayInputStream(photoB64Data.getBytes(StandardCharsets.UTF_8)));
                 try {
-                    byte[] photoBytes = IOUtils.toByteArray(is);
+                    byte[] photoBytes = is.readAllBytes();
                     sendPhoto = new SendPhoto(chatId, photoBytes);
                 } catch (IOException e) {
                     logger.warn("Malformed base64 string: {}", e.getMessage());
                     return false;
                 }
             }
-            sendPhoto.caption(caption);
+            if (caption != null) {
+                sendPhoto.caption(caption);
+            }
             if (localHandler.getParseMode() != null) {
                 sendPhoto.parseMode(localHandler.getParseMode());
             }
@@ -394,6 +402,162 @@ public class TelegramActions implements ThingActions {
         return sendTelegramPhoto(photoURL, caption, null, null);
     }
 
+    @RuleAction(label = "send animation", description = "Send an Animation using the Telegram API.")
+    public boolean sendTelegramAnimation(@ActionInput(name = "animationURL") @Nullable String animationURL,
+            @ActionInput(name = "caption") @Nullable String caption) {
+        TelegramHandler localHandler = handler;
+        if (localHandler != null) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
+                if (!sendTelegramAnimation(chatId, animationURL, caption)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @RuleAction(label = "send animation", description = "Send an Animation using the Telegram API.")
+    public boolean sendTelegramAnimation(@ActionInput(name = "chatId") @Nullable Long chatId,
+            @ActionInput(name = "animationURL") @Nullable String animationURL,
+            @ActionInput(name = "caption") @Nullable String caption) {
+        if (animationURL == null) {
+            logger.warn("Animation URL not defined; unable to retrieve video for sending.");
+            return false;
+        }
+        if (chatId == null) {
+            logger.warn("chatId not defined; action skipped.");
+            return false;
+        }
+        TelegramHandler localHandler = handler;
+        if (localHandler != null) {
+            final SendAnimation sendAnimation;
+            if (animationURL.toLowerCase().startsWith("http")) {
+                // load image from url
+                logger.debug("Animation URL provided.");
+                HttpClient client = localHandler.getClient();
+                if (client == null) {
+                    return false;
+                }
+                Request request = client.newRequest(animationURL).method(HttpMethod.GET).timeout(30, TimeUnit.SECONDS);
+                try {
+                    // 50mb limit to file size
+                    FutureResponseListener listener = new FutureResponseListener(request, 50 * 1024 * 1024);
+                    request.send(listener);
+                    ContentResponse contentResponse = listener.get();
+                    if (contentResponse.getStatus() == 200) {
+                        byte[] fileContent = contentResponse.getContent();
+                        sendAnimation = new SendAnimation(chatId, fileContent);
+                    } else {
+                        logger.warn("Download from {} failed with status: {}", animationURL,
+                                contentResponse.getStatus());
+                        return false;
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.warn("Download from {} failed with exception: {}", animationURL, e.getMessage());
+                    return false;
+                }
+            } else {
+                String temp = animationURL;
+                if (!animationURL.toLowerCase().startsWith("file:")) {
+                    temp = "file://" + animationURL;
+                }
+                // Load video from local file system
+                logger.debug("Read file from local file system: {}", animationURL);
+                try {
+                    sendAnimation = new SendAnimation(chatId, Path.of(new URL(temp).getPath()).toFile());
+                } catch (MalformedURLException e) {
+                    logger.warn("Malformed URL, should start with http or file: {}", animationURL);
+                    return false;
+                }
+            }
+            if (caption != null) {
+                sendAnimation.caption(caption);
+            }
+            if (localHandler.getParseMode() != null) {
+                sendAnimation.parseMode(localHandler.getParseMode());
+            }
+            return evaluateResponse(localHandler.execute(sendAnimation));
+        }
+        return false;
+    }
+
+    @RuleAction(label = "send video", description = "Send a Video using the Telegram API.")
+    public boolean sendTelegramVideo(@ActionInput(name = "videoURL") @Nullable String videoURL,
+            @ActionInput(name = "caption") @Nullable String caption) {
+        TelegramHandler localHandler = handler;
+        if (localHandler != null) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
+                if (!sendTelegramVideo(chatId, videoURL, caption)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @RuleAction(label = "send video", description = "Send a Video using the Telegram API.")
+    public boolean sendTelegramVideo(@ActionInput(name = "chatId") @Nullable Long chatId,
+            @ActionInput(name = "videoURL") @Nullable String videoURL,
+            @ActionInput(name = "caption") @Nullable String caption) {
+        final SendVideo sendVideo;
+        if (videoURL == null) {
+            logger.warn("Video URL not defined; unable to retrieve video for sending.");
+            return false;
+        }
+        if (chatId == null) {
+            logger.warn("chatId not defined; action skipped.");
+            return false;
+        }
+        TelegramHandler localHandler = handler;
+        if (localHandler != null) {
+            if (videoURL.toLowerCase().startsWith("http")) {
+                logger.debug("Video http://URL provided.");
+                HttpClient client = localHandler.getClient();
+                if (client == null) {
+                    return false;
+                }
+                Request request = client.newRequest(videoURL).method(HttpMethod.GET).timeout(30, TimeUnit.SECONDS);
+                try {
+                    // 50mb limit to file size
+                    FutureResponseListener listener = new FutureResponseListener(request, 50 * 1024 * 1024);
+                    request.send(listener);
+                    ContentResponse contentResponse = listener.get();
+                    if (contentResponse.getStatus() == 200) {
+                        byte[] fileContent = contentResponse.getContent();
+                        sendVideo = new SendVideo(chatId, fileContent);
+                    } else {
+                        logger.warn("Download from {} failed with status: {}", videoURL, contentResponse.getStatus());
+                        return false;
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.warn("Download from {} failed with exception: {}", videoURL, e.getMessage());
+                    return false;
+                }
+            } else {
+                String temp = videoURL;
+                if (!videoURL.toLowerCase().startsWith("file:")) {
+                    temp = "file://" + videoURL;
+                }
+                // Load video from local file system with file://path
+                logger.debug("Read file from local file: {}", videoURL);
+                try {
+                    sendVideo = new SendVideo(chatId, Path.of(new URL(temp).getPath()).toFile());
+                } catch (MalformedURLException e) {
+                    logger.warn("Malformed URL, should start with http or file: {}", videoURL);
+                    return false;
+                }
+            }
+            if (caption != null) {
+                sendVideo.caption(caption);
+            }
+            if (localHandler.getParseMode() != null) {
+                sendVideo.parseMode(localHandler.getParseMode());
+            }
+            return evaluateResponse(localHandler.execute(sendVideo));
+        }
+        return false;
+    }
+
     // legacy delegate methods
     /* APIs without chatId parameter */
     public static boolean sendTelegram(ThingActions actions, @Nullable String format, @Nullable Object... args) {
@@ -412,6 +576,15 @@ public class TelegramActions implements ThingActions {
     public static boolean sendTelegramPhoto(ThingActions actions, @Nullable String photoURL, @Nullable String caption,
             @Nullable String username, @Nullable String password) {
         return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption, username, password);
+    }
+
+    public static boolean sendTelegramAnimation(ThingActions actions, @Nullable String animationURL,
+            @Nullable String caption) {
+        return ((TelegramActions) actions).sendTelegramVideo(animationURL, caption);
+    }
+
+    public static boolean sendTelegramVideo(ThingActions actions, @Nullable String videoURL, @Nullable String caption) {
+        return ((TelegramActions) actions).sendTelegramVideo(videoURL, caption);
     }
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String replyId, @Nullable String message) {
@@ -438,6 +611,16 @@ public class TelegramActions implements ThingActions {
     public static boolean sendTelegramPhoto(ThingActions actions, @Nullable Long chatId, @Nullable String photoURL,
             @Nullable String caption, @Nullable String username, @Nullable String password) {
         return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption, username, password);
+    }
+
+    public static boolean sendTelegramAnimation(ThingActions actions, @Nullable Long chatId,
+            @Nullable String animationURL, @Nullable String caption) {
+        return ((TelegramActions) actions).sendTelegramVideo(chatId, animationURL, caption);
+    }
+
+    public static boolean sendTelegramVideo(ThingActions actions, @Nullable Long chatId, @Nullable String videoURL,
+            @Nullable String caption) {
+        return ((TelegramActions) actions).sendTelegramVideo(chatId, videoURL, caption);
     }
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable Long chatId, @Nullable String replyId,
