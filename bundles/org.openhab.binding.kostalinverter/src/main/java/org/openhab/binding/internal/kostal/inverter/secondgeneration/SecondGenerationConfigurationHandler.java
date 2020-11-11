@@ -82,7 +82,8 @@ public class SecondGenerationConfigurationHandler {
             loginPostJsonResponse.content(new StringContentProvider(loginPostJsonData));
             ContentResponse loginPostJsonDataContentResponse = loginPostJsonResponse.send();
 
-            String loginPostResponse = new String(loginPostJsonDataContentResponse.getContent());
+            String loginPostResponse = new String(loginPostJsonDataContentResponse.getContent(),
+                    StandardCharsets.UTF_8);
 
             JsonObject loginPostJsonObject = (JsonObject) new JsonParser()
                     .parse(transformJsonResponse(loginPostResponse));
@@ -132,8 +133,7 @@ public class SecondGenerationConfigurationHandler {
         return transformJsonObject;
     }
 
-    static String extractSessionId(JsonObject extractJsonObject)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    static String extractSessionId(JsonObject extractJsonObject) throws TimeoutException {
         // Method extractSessionId extracts sessionId from JsonObject
         String extractSessionId = "";
         JsonArray extractJsonArray = extractJsonObject.getAsJsonArray("session");

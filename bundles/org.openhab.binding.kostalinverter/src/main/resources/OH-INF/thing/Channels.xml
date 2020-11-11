@@ -577,71 +577,71 @@
 	</channel-type>
 	<channel-type id="device-local-dc-power-pv">
 		<item-type>Number:Power</item-type>
-		<label>Dc Power PV</label>
+		<label>DC Power PV</label>
 		<description>Current power from all solar panels</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc1-voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Dc1 Voltage</label>
-		<description>Current voltage from solar panels, Dc1</description>
+		<label>DC1 Voltage</label>
+		<description>Current voltage from solar panels, DC1</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc1-current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Dc1 Current</label>
-		<description>Current current from solar panels, Dc1</description>
+		<label>DC1 Current</label>
+		<description>Current current from solar panels, DC1</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc1-power">
 		<item-type>Number:Power</item-type>
-		<label>Dc1 Power</label>
-		<description>Current power from solar panels, Dc1</description>
+		<label>DC1 Power</label>
+		<description>Current power from solar panels, DC1</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc2-voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Dc2 Voltage</label>
-		<description>Current voltage from solar panels, Dc2</description>
+		<label>DC2 Voltage</label>
+		<description>Current voltage from solar panels, DC2</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc2-current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Dc2 Current</label>
-		<description>Current current from solar panels, Dc2</description>
+		<label>DC2 Current</label>
+		<description>Current current from solar panels, DC2</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc2-power">
 		<item-type>Number:Power</item-type>
-		<label>Dc2 Power</label>
-		<description>Current power from solar panels, Dc2</description>
+		<label>DC2 Power</label>
+		<description>Current power from solar panels, DC2</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc3-voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Dc3 Voltage</label>
-		<description>Current voltage from solar panels, Dc3</description>
+		<label>DC3 Voltage</label>
+		<description>Current voltage from solar panels, DC3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc3-current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Dc3 Current</label>
-		<description>Current current from solar panels, Dc3</description>
+		<label>DC3 Current</label>
+		<description>Current current from solar panels, DC3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc3-power">
 		<item-type>Number:Power</item-type>
-		<label>Dc3 Power</label>
-		<description>Current power from solar panels, Dc3</description>
+		<label>DC3 Power</label>
+		<description>Current power from solar panels, DC3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -832,83 +832,83 @@
 		<label>Charge Time End</label>
 		<description>Set charge time end</description>
 		<category>Energy</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-type">
 		<item-type>String</item-type>
 		<label>Battery Type</label>
 		<description>Set battery type</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-usage-consumption">
 		<item-type>String</item-type>
 		<label>Battery usage Consumption</label>
 		<description>Set battery usage consumption</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-usage-strategy">
 		<item-type>String</item-type>
 		<label>Battery Usage Strategy</label>
 		<description>Set battery usage strategy</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-smart-battery-control">
 		<item-type>Switch</item-type>
 		<label>Smart Battery Control</label>
 		<description>Set smart battery control</description>
 		<category>Switch</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-smart-battery-control-text">
 		<item-type>String</item-type>
 		<label>Smart Battery Control Text</label>
 		<description>Set smart battery control text</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-charge-time-from">
 		<item-type>String</item-type>
 		<label>Battery Charge Time From</label>
 		<description>Set battery charge time from</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-charge-time-to">
 		<item-type>String</item-type>
 		<label>Battery Charge Time To</label>
 		<description>Set battery charge time to</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-max-depth-of-discharge">
 		<item-type>String</item-type>
 		<label>Max Depth Of Discharge</label>
 		<description>Set max depth of discharge</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-shadow-management">
 		<item-type>String</item-type>
 		<label>Shadow Management</label>
 		<description>Set shadow management</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-external-module-control">
 		<item-type>String</item-type>
 		<label>External Module Control</label>
 		<description>Set external module control</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-inverter-name">
 		<item-type>String</item-type>
 		<label>Inverter Name</label>
 		<description>Set inverter name</description>
 		<category>String</category>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

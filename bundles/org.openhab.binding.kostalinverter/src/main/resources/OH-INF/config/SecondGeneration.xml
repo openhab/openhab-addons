@@ -9,16 +9,16 @@
 			<description>URL to inverter.</description>
 			<context>url</context>
 		</parameter>
-		<parameter name="username" type="text" required="false">
+		<parameter name="username" type="text" required="true">
 			<label>Username</label>
 			<description>The username for the inverter.</description>
 		</parameter>
-		<parameter name="password" type="text" required="false">
+		<parameter name="password" type="text" required="true">
 			<label>Password</label>
 			<description>The password for the inverter.</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" min="1" unit="s" required="false">
+		<parameter name="refreshInterval" type="integer" min="1" unit="s" required="true">
 			<label>Refresh Interval</label>
 			<description>Refresh Interval in seconds.</description>
 			<default>60</default>

@@ -72,7 +72,7 @@ None
 | gridOutputPower          | Number:Power         | Current output power to the grid                |         R          |              
 | yieldDay                      | Number:Energy        | Total produced power today                       |          R          |                
 | yieldTotal                    | Number:Energy         | Total produced power                           |             R           |                      
-| operatingStatus           | Number:One             | Current operating status, 0 = Standby, 3 = WO-IDLE                       |          R          |                        
+| operatingStatus           | Number:Domensionless             | Current operating status, 0 = Standby, 3 = WO-IDLE                       |          R          |                        
 | gridVoltageL1             | Number:ElectricPotential  | Current output voltage to the grid, L1 |    R         |
 | gridCurrentL1             | Number:ElectricCurrent    | Current output current to the grid, L1  |    R    |
 | gridPowerL1               | Number:Power              | Current output power to the grid, L1  |    R    |
@@ -123,14 +123,14 @@ The following Channels are writeable
 
 | Channel Type ID           | Item Type                 | Description                                                 |  Read Write  |
 |-------------------------------|---------------------------|-------------------------------------------------------|-----------------|    
-| chargeTimeEnd             | String          | Set charge time end, Value = 00:00  |    W    |
+| chargeTimeEnd             | Number:Time     | Set charge time end, Value = 00:00  |    W    |
 | batteryType               | String          | Set battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV  |   W    |
 | batteryUsageConsumption   | String          | Set battery usage consumption, Value = 100  |    W    |
 | batteryUsageStrategy      | String          | Set battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |    W    |             
 | smartBatteryControl       | Switch          | Set smart battery control, Value = False / True  |    W    |
 | smartBatteryControlText   | String          | Set smart battery control text, Value = False / True  |    W    |
-| batterChargeTimeFrom      | String          | Set battery charge time from, Value = 00:00  |    W    |
-| batteryChargeTimeTo       | String          | Set battery charge time to, Value = 23:59  |    W    |
+| batterChargeTimeFrom      | Number:Time     | Set battery charge time from, Value = 00:00  |    W    |
+| batteryChargeTimeTo       | Number:Time     | Set battery charge time to, Value = 23:59  |    W    |
 | maxDepthOfDischarge       | String          | Set max depth of discharge (SoC), Value = 10  |    W    |
 | shadowManagement          | String          | Set shadow management, Value = 0 = No shadow management enabled, Value = 1 = Shadow management enabled for DC-Input String 1, Value = 2 = Shadow  management enabled for DC-Input String 2,  Value = 3 = Shadow management enabled for DC-Input String 1 and 2  |    W    |
 | externalModuleControl     | String          | Set external module control, Value = 0 = True  |    W    |

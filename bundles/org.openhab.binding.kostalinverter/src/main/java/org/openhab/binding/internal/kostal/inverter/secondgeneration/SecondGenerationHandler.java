@@ -197,7 +197,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
     public void dispose() {
         final ScheduledFuture<?> secondGenerationLocalPoller = secondGenerationPoller;
 
-        if (secondGenerationLocalPoller != null && !secondGenerationLocalPoller.isCancelled()) {
+        if (secondGenerationLocalPoller != null) {
             secondGenerationLocalPoller.cancel(true);
             secondGenerationPoller = null;
         }
