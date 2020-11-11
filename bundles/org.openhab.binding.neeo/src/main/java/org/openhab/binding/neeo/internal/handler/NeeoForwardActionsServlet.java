@@ -20,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -52,6 +53,9 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     @Nullable
     private final String forwardChain;
 
+    /** The {@link ClientBuilder} to use */
+    private final ClientBuilder clientBuilder;
+
     /** The scheduler to use to schedule recipe execution */
     private final ScheduledExecutorService scheduler;
 
@@ -62,7 +66,8 @@ public class NeeoForwardActionsServlet extends HttpServlet {
      * @param callback a non-null {@link Callback}
      * @param forwardChain a possibly null, possibly empty forwarding chain
      */
-    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Callback callback, @Nullable String forwardChain) {
+    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Callback callback, @Nullable String forwardChain,
+            ClientBuilder clientBuilder) {
         super();
 
         Objects.requireNonNull(scheduler, "scheduler cannot be null");
@@ -71,6 +76,7 @@ public class NeeoForwardActionsServlet extends HttpServlet {
         this.scheduler = scheduler;
         this.callback = callback;
         this.forwardChain = forwardChain;
+        this.clientBuilder = clientBuilder;
     }
 
     /**
@@ -94,7 +100,7 @@ public class NeeoForwardActionsServlet extends HttpServlet {
         final String fc = forwardChain;
         if (fc != null && StringUtils.isNotEmpty(fc)) {
             scheduler.execute(() -> {
-                try (final HttpRequest request = new HttpRequest()) {
+                try (final HttpRequest request = new HttpRequest(clientBuilder)) {
                     for (final String forwardUrl : fc.split(",")) {
                         if (StringUtils.isNotEmpty(forwardUrl)) {
                             final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);

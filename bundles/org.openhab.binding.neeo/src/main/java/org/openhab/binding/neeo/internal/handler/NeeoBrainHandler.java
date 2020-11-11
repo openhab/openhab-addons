@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.servlet.ServletException;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -73,6 +74,9 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
     /** The {@link NetworkAddressService} to use */
     private final NetworkAddressService networkAddressService;
 
+    /** The {@link ClientBuilder} to use */
+    private final ClientBuilder clientBuilder;
+
     /** GSON implementation - only used to deserialize {@link NeeoAction} */
     private final Gson gson = new Gson();
 
@@ -112,7 +116,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
      * @param networkAddressService the non-null {@link NetworkAddressService}
      */
     NeeoBrainHandler(Bridge bridge, int servicePort, HttpService httpService,
-            NetworkAddressService networkAddressService) {
+            NetworkAddressService networkAddressService, ClientBuilder clientBuilder) {
         super(bridge);
 
         Objects.requireNonNull(bridge, "bridge cannot be null");
@@ -122,6 +126,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
         this.servicePort = servicePort;
         this.httpService = httpService;
         this.networkAddressService = networkAddressService;
+        this.clientBuilder = clientBuilder;
     }
 
     /**
@@ -164,7 +169,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
                         "Brain IP Address must be specified");
                 return;
             }
-            final NeeoBrainApi api = new NeeoBrainApi(ipAddress);
+            final NeeoBrainApi api = new NeeoBrainApi(ipAddress, clientBuilder);
             final NeeoBrain brain = api.getBrain();
             final String brainId = getNeeoBrainId();
 
@@ -199,7 +204,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
                                     }
                                 }
                             }
-                        }, config.getForwardChain());
+                        }, config.getForwardChain(), clientBuilder);
 
                 NeeoUtil.checkInterrupt();
                 try {

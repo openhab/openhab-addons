@@ -47,8 +47,8 @@ public class HttpRequest implements AutoCloseable {
     /**
      * Instantiates a new request
      */
-    public HttpRequest() {
-        client = ClientBuilder.newClient();
+    public HttpRequest(ClientBuilder clientBuilder) {
+        client = clientBuilder.newClient();
 
         if (logger.isDebugEnabled()) {
             client.register(new LoggingFilter(new Slf4LoggingAdapter(logger), true));
