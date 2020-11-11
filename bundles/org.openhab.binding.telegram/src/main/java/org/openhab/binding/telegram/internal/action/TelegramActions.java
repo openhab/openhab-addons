@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.telegram.internal.action;
 
+import static org.openhab.binding.telegram.internal.TelegramBindingConstants.PHOTO_EXTENSIONS;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -297,10 +299,11 @@ public class TelegramActions implements ThingActions {
             logger.warn("chatId not defined; action skipped.");
             return false;
         }
+        String lowercasePhotoUrl = photoURL.toLowerCase();
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
             final SendPhoto sendPhoto;
-            if (photoURL.toLowerCase().startsWith("http")) {
+            if (lowercasePhotoUrl.startsWith("http")) {
                 logger.debug("Http based URL for photo provided.");
                 HttpClient client = localHandler.getClient();
                 if (client == null) {
@@ -329,14 +332,11 @@ public class TelegramActions implements ThingActions {
                     logger.warn("Download from {} failed with exception: {}", photoURL, e.getMessage());
                     return false;
                 }
-            } else if (photoURL.toLowerCase().startsWith("file:") || photoURL.toLowerCase().endsWith(".jpg")
-                    || photoURL.toLowerCase().endsWith(".jpeg") || photoURL.toLowerCase().endsWith(".jpe")
-                    || photoURL.toLowerCase().endsWith(".jif") || photoURL.toLowerCase().endsWith(".jfif")
-                    || photoURL.toLowerCase().endsWith(".jfi") || photoURL.toLowerCase().endsWith(".png")
-                    || photoURL.toLowerCase().endsWith(".webp") || photoURL.toLowerCase().endsWith(".gif")) {
+            } else if (lowercasePhotoUrl.startsWith("file:")
+                    || PHOTO_EXTENSIONS.stream().anyMatch(lowercasePhotoUrl::endsWith)) {
                 logger.debug("Read file from local file system: {}", photoURL);
                 String temp = photoURL;
-                if (!photoURL.toLowerCase().startsWith("file:")) {
+                if (!lowercasePhotoUrl.startsWith("file:")) {
                     temp = "file://" + photoURL;
                 }
                 try {
