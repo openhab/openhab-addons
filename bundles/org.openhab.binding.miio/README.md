@@ -134,6 +134,7 @@ or in case of unknown models include the model information of a similar device t
 | Mi Smart Pedestal Fan        | miio:basic       | [zhimi.fan.v3](#zhimi-fan-v3) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
+| Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za3](#zhimi-fan-za3) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.1c](#dmaker-fan-1c) | Yes       |            |
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p5](#dmaker-fan-p5) | Yes       |            |
@@ -1095,6 +1096,23 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | acPower          | Switch  | AC Power                            |            |
 | move             | String  | Move Direction                      |            |
 
+### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za3">zhimi.fan.za3</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| angleEnable      | Switch  | Rotation                            |            |
+| usedhours        | Number  | Run Time                            |            |
+| angle            | Number  | Angle                               |            |
+| poweroffTime     | Number  | Timer                               |            |
+| buzzer           | Number  | Buzzer                              |            |
+| led_b            | Number  | LED                                 |            |
+| child_lock       | Switch  | Child Lock                          |            |
+| speedLevel       | Number  | Speed Level                         |            |
+| speed            | Number  | Speed                               |            |
+| naturalLevel     | Number  | Natural Level                       |            |
+| move             | String  | Move Direction                      |            |
+
 ### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za4">zhimi.fan.za4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
@@ -1825,7 +1843,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               | If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware |
 | usb              | Switch  | USB                                 |            |
-| temperature      | Number  | Temperature                         |            |
+| temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
 ### Mi Power-plug (<a name="chuangmi-plug-m3">chuangmi.plug.m3</a>) Channels
@@ -1850,7 +1868,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               | If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware |
 | usb              | Switch  | USB                                 |            |
-| temperature      | Number  | Temperature                         |            |
+| temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
 ### Mi Smart Plug (<a name="chuangmi-plug-hmi208">chuangmi.plug.hmi208</a>) Channels
@@ -1859,7 +1877,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               | If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware |
 | usb              | Switch  | USB                                 |            |
-| temperature      | Number  | Temperature                         |            |
+| temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
 ### Qing Mi Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
@@ -3968,6 +3986,26 @@ Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
+### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.za3) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Xiaomi Mi Smart Pedestal Fan" <status>
+Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
+Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
+Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
+Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
+Number buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
+Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
+Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
+Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
+```
+
 ### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.za4) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -4862,7 +4900,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Power-plug v3" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
-Number temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
@@ -4896,7 +4934,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Smart Plug" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
-Number temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
@@ -4908,7 +4946,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Smart Plug" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
-Number temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
