@@ -89,7 +89,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing the OASIS alarm");
+        logger.debug("Initializing the alarm: {}", getThing().getUID());
         thingConfig = getConfigAs(JablotronDeviceConfig.class);
         future = scheduler.scheduleWithFixedDelay(this::updateAlarmStatus, 1, thingConfig.getRefresh(),
                 TimeUnit.SECONDS);
@@ -149,7 +149,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected synchronized boolean updateAlarmStatus() {
-        logger.debug("Updating OASIS status");
+        logger.debug("Updating status of alarm: {}", getThing().getUID());
         JablotronDataUpdateResponse dataUpdate = sendGetStatusRequest();
         if (dataUpdate == null) {
             return false;

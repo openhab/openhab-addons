@@ -106,6 +106,11 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     private void updateAlarmThing(JablotronDiscoveredService service) {
         for (Thing th : getThing().getThings()) {
+            if (ThingStatus.ONLINE != th.getStatus()) {
+                logger.debug("Thing {} is not online", th.getUID());
+                continue;
+            }
+
             JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
             if (handler == null) {
