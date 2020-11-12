@@ -85,7 +85,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private boolean hasChannelStructure;
 
     private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-        scheduledJobs.add(scheduler.schedule(this::updateData, 0, TimeUnit.SECONDS));
+        scheduledJobs.add(miIoScheduler.schedule(this::updateData, 0, TimeUnit.SECONDS));
         return true;
     });
 
@@ -249,7 +249,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 }
             }
             updateDataCache.invalidateValue();
-            scheduledJobs.add(scheduler.schedule(() -> {
+            scheduledJobs.add(miIoScheduler.schedule(() -> {
                 updateData();
             }, 3000, TimeUnit.MILLISECONDS));
         } else {

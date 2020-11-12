@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +40,7 @@ import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -68,6 +70,8 @@ import com.google.gson.JsonParser;
 public abstract class MiIoAbstractHandler extends BaseThingHandler implements MiIoMessageListener {
     protected static final int MAX_QUEUE = 5;
     protected static final Gson GSON = new GsonBuilder().create();
+
+    protected ScheduledExecutorService miIoScheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
 
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected CopyOnWriteArraySet<ScheduledFuture<?>> scheduledJobs = new CopyOnWriteArraySet<>();
@@ -124,6 +128,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     public void initialize() {
         logger.debug("Initializing Mi IO device handler '{}' with thingType {}", getThing().getUID(),
                 getThing().getThingTypeUID());
+
+        miIoScheduler = ThreadPoolManager.getScheduledPool(getThing().getUID().getAsString());
+
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
         if (configuration.host == null || configuration.host.isEmpty()) {
@@ -137,10 +144,10 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         cloudServer = (configuration.cloudServer != null) ? configuration.cloudServer : "";
         isIdentified = false;
-        scheduledJobs.add(scheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS));
+        scheduledJobs.add(miIoScheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS));
         int pollingPeriod = configuration.refreshInterval;
         if (pollingPeriod > 0) {
-            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            pollingJob = miIoScheduler.scheduleWithFixedDelay(() -> {
                 try {
                     updateData();
                 } catch (Exception e) {
@@ -150,7 +157,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
         } else {
             logger.debug("Polling job disabled. for '{}'", getThing().getUID());
-            scheduledJobs.add(scheduler.schedule(this::updateData, 10, TimeUnit.SECONDS));
+            scheduledJobs.add(miIoScheduler.schedule(this::updateData, 10, TimeUnit.SECONDS));
         }
         updateStatus(ThingStatus.OFFLINE);
     }
@@ -194,17 +201,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     @Override
     public void dispose() {
         logger.debug("Disposing Xiaomi Mi IO handler '{}'", getThing().getUID());
+        miIoScheduler.shutdownNow();
         final ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
             this.pollingJob = null;
         }
-        for (ScheduledFuture<?> s : scheduledJobs) {
-            if (!s.isDone()) {
-                s.cancel(true);
-            }
-        }
-        scheduledJobs.clear();
         final @Nullable MiIoAsyncCommunication miioCom = this.miioCom;
         if (miioCom != null) {
             lastId = miioCom.getId();
@@ -212,6 +214,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             miioCom.close();
             this.miioCom = null;
         }
+        for (ScheduledFuture<?> s : scheduledJobs) {
+            if (!s.isDone()) {
+                s.cancel(true);
+            }
+        }
+        scheduledJobs.clear();
+        miIoScheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
     }
 
     protected int sendCommand(MiIoCommand command) {
@@ -486,7 +495,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             pollingJob.cancel(true);
             this.pollingJob = null;
         }
-        scheduledJobs.add(scheduler.schedule(() -> {
+        scheduledJobs.add(miIoScheduler.schedule(() -> {
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withLabel(miDevice.getDescription());
             updateThing(thingBuilder.build());

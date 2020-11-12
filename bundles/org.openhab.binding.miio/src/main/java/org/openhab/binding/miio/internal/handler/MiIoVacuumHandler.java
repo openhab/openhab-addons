@@ -186,7 +186,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     return;
                 } else {
                     sendCommand(MiIoCommand.STOP_VACUUM);
-                    scheduledJobs.add(scheduler.schedule(() -> {
+                    scheduledJobs.add(miIoScheduler.schedule(() -> {
                         sendCommand(MiIoCommand.CHARGE);
                         forceStatusUpdate();
                     }, 2000, TimeUnit.MILLISECONDS));
@@ -203,7 +203,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 sendCommand(MiIoCommand.PAUSE);
             } else if (command.toString().equals("dock")) {
                 sendCommand(MiIoCommand.STOP_VACUUM);
-                scheduler.schedule(() -> {
+                miIoScheduler.schedule(() -> {
                     sendCommand(MiIoCommand.CHARGE);
                     forceStatusUpdate();
                 }, 2000, TimeUnit.MILLISECONDS);
@@ -245,7 +245,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
 
     private void forceStatusUpdate() {
         status.invalidateValue();
-        scheduler.schedule(() -> {
+        miIoScheduler.schedule(() -> {
             status.getValue();
         }, 3000, TimeUnit.MILLISECONDS);
     }
@@ -516,7 +516,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     String mapresponse = response.getResult().getAsJsonArray().get(0).getAsString();
                     if (!mapresponse.contentEquals("retry") && !mapresponse.contentEquals(lastMap)) {
                         lastMap = mapresponse;
-                        scheduler.submit(() -> updateState(CHANNEL_VACUUM_MAP, getMap(mapresponse)));
+                        miIoScheduler.submit(() -> updateState(CHANNEL_VACUUM_MAP, getMap(mapresponse)));
                     }
                 }
                 break;

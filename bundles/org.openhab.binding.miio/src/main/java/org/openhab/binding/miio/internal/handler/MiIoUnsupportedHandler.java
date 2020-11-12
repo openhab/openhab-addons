@@ -79,7 +79,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     private String model = conf.model != null ? conf.model : "";
 
     private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-        scheduledJobs.add(scheduler.schedule(this::updateData, 0, TimeUnit.SECONDS));
+        scheduledJobs.add(miIoScheduler.schedule(this::updateData, 0, TimeUnit.SECONDS));
         return true;
     });
 
