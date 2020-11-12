@@ -14,6 +14,7 @@ package org.openhab.binding.senechome.internal;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -78,7 +79,7 @@ public class SenecHomeApi {
                 .content(new StringContentProvider(gson.toJson(new SenecHomeResponse()))).send();
 
         if (response.getStatus() == HttpStatus.OK_200) {
-            return gson.fromJson(response.getContentAsString(), SenecHomeResponse.class);
+            return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
         } else {
             logger.trace("Got unexpected response code {}", response.getStatus());
             throw new IOException("Got unexpected response code " + response.getStatus());

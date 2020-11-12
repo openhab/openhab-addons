@@ -231,10 +231,8 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
         if (result.get("Result").equals("OK")) {
             String xml = result.get("SourceList");
-
-            Map<String, String> list = parseSourceList(xml);
-            if (list != null) {
-                id = list.get(source);
+            if (xml != null) {
+                id = parseSourceList(xml).get(source);
             }
         } else {
             logger.warn("Source list query failed, result='{}'", result.get("Result"));

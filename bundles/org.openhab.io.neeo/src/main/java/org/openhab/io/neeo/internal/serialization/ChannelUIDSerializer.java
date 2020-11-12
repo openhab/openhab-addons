@@ -36,12 +36,8 @@ import com.google.gson.JsonSerializer;
 public class ChannelUIDSerializer implements JsonSerializer<ChannelUID>, JsonDeserializer<ChannelUID> {
 
     @Override
-    public ChannelUID deserialize(@Nullable JsonElement elm, @Nullable Type type,
-            @Nullable JsonDeserializationContext context) throws JsonParseException {
-        Objects.requireNonNull(elm, "elm cannot be null");
-        Objects.requireNonNull(type, "type cannot be null");
-        Objects.requireNonNull(context, "context cannot be null");
-
+    public @Nullable ChannelUID deserialize(JsonElement elm, Type type, JsonDeserializationContext context)
+            throws JsonParseException {
         if (elm.isJsonNull()) {
             throw new JsonParseException("Not a valid ChannelUID: (null)");
         }

@@ -14,6 +14,7 @@ package org.openhab.binding.wlanthermo.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -134,10 +135,10 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
         try {
             // Update objects with data from device
             String json = httpClient.GET(config.getUri("/data")).getContentAsString();
-            data = gson.fromJson(json, Data.class);
+            data = Objects.requireNonNull(gson.fromJson(json, Data.class));
             logger.debug("Received at /data: {}", json);
             json = httpClient.GET(config.getUri("/settings")).getContentAsString();
-            settings = gson.fromJson(json, Settings.class);
+            settings = Objects.requireNonNull(gson.fromJson(json, Settings.class));
             logger.debug("Received at /settings: {}", json);
 
             // Update channels

@@ -65,14 +65,16 @@ public class DummyMetadataRegistry implements MetadataRegistry {
         for (RegistryChangeListener<Metadata> l : listeners) {
             l.added(element);
         }
-        return put;
+        return element;
     }
 
     @Override
     public @Nullable Metadata update(Metadata element) {
         Metadata put = items.put(element.getUID(), element);
-        for (RegistryChangeListener<Metadata> l : listeners) {
-            l.updated(put, element);
+        if (put != null) {
+            for (RegistryChangeListener<Metadata> l : listeners) {
+                l.updated(put, element);
+            }
         }
         return put;
     }
@@ -80,8 +82,10 @@ public class DummyMetadataRegistry implements MetadataRegistry {
     @Override
     public @Nullable Metadata remove(MetadataKey key) {
         Metadata put = items.remove(key);
-        for (RegistryChangeListener<Metadata> l : listeners) {
-            l.removed(put);
+        if (put != null) {
+            for (RegistryChangeListener<Metadata> l : listeners) {
+                l.removed(put);
+            }
         }
         return put;
     }

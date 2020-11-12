@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * KVVBridgeHandler encapsulates the communication with the KVV API.
@@ -106,11 +107,15 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         DepartureResult result;
         try {
             result = new Gson().fromJson(data, DepartureResult.class);
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
             logger.debug("Failed to parse departure data", e);
             logger.debug("Server returned '{}'", data);
             this.wasOffline = true;
+            return null;
+        }
+
+        if (result == null) {
             return null;
         }
 
@@ -132,7 +137,6 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         /**
          * Creates a new @{link Cache}.
          *
-         * @param updateInterval the @{code updateInterval}
          */
         public Cache() {
             this.updateInterval = KVVBindingConstants.CACHE_DEFAULT_UPDATEINTERVAL;

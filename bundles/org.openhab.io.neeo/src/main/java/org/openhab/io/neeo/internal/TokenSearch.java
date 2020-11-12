@@ -110,7 +110,7 @@ public class TokenSearch {
 
                 final Map<@NonNull String, String> properties = thing.getProperties();
                 final String vendor = properties.get(Thing.PROPERTY_VENDOR);
-                if (StringUtils.isNotEmpty(vendor)) {
+                if (vendor != null && !vendor.isEmpty()) {
                     score += search(vendor, needles);
                 }
 

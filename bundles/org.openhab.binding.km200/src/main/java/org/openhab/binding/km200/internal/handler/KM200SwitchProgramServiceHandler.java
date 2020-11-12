@@ -354,7 +354,7 @@ public class KM200SwitchProgramServiceHandler {
                                     firstVal = (BigDecimal) setpObject.serviceTreeMap.get(key).getValue();
                                 } else {
                                     BigDecimal nextVal = (BigDecimal) setpObject.serviceTreeMap.get(key).getValue();
-                                    if (null != nextVal) {
+                                    if (null != nextVal && null != firstVal) {
                                         if (nextVal.compareTo(firstVal) > 0) {
                                             positiveSwitch = key;
                                         } else {

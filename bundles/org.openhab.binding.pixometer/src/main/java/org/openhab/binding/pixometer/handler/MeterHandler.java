@@ -16,6 +16,7 @@ import static org.openhab.binding.pixometer.internal.PixometerBindingConstants.*
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -253,7 +254,7 @@ public class MeterHandler extends BaseThingHandler {
 
             ReadingInstance latestReading = gson.fromJson(new JsonParser().parse(urlResponse), ReadingInstance.class);
 
-            return new MeterState(latestReading);
+            return new MeterState(Objects.requireNonNull(latestReading));
         } catch (IOException e) {
             logger.debug("Exception while refreshing cache for Meter {}: {}", getThing().getUID(), e.getMessage(), e);
             return null;

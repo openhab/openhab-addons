@@ -16,11 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -440,8 +436,7 @@ public class DeviceFeature {
     static {
         // read features from xml file and store them in a map
         InputStream input = DeviceFeature.class.getResourceAsStream("/device_features.xml");
-        if (input != null) {
-            readFeatureTemplates(input);
-        }
+        Objects.requireNonNull(input);
+        readFeatureTemplates(input);
     }
 }
