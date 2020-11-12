@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -186,7 +187,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BaseBluetoothDev
     @Override
     public BD getDevice(BluetoothAddress address) {
         synchronized (devices) {
-            return devices.computeIfAbsent(address, this::createDevice);
+            return Objects.requireNonNull(devices.computeIfAbsent(address, this::createDevice));
         }
     }
 

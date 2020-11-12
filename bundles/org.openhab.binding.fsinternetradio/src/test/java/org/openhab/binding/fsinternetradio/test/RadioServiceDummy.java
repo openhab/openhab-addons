@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletException;
@@ -134,7 +135,7 @@ public class RadioServiceDummy extends HttpServlet {
         Collection<String> requestParameterNames = Collections.list(request.getParameterNames());
         if (queryString != null && requestParameterNames.contains(VALUE)) {
             StringBuffer fullUrl = request.getRequestURL().append("?").append(queryString);
-            int value = Integer.parseInt(request.getParameter(VALUE));
+            int value = Integer.parseInt(Objects.requireNonNullElse(request.getParameter(VALUE), ""));
             requestParameters.put(value, fullUrl.toString());
         }
 

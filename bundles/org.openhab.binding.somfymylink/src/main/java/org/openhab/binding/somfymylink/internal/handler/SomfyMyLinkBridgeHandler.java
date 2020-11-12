@@ -23,10 +23,7 @@ import java.io.Writer;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -351,7 +348,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             throw new SomfyMyLinkException("Incomplete message.");
         }
 
-        return gson.fromJson(jsonObj, responseType);
+        return Objects.requireNonNull(gson.fromJson(jsonObj, responseType));
     }
 
     private Socket getConnection() throws IOException, SomfyMyLinkException {

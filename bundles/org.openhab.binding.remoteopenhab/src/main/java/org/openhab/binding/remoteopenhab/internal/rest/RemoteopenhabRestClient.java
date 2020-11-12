@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -286,12 +287,12 @@ public class RemoteopenhabRestClient {
                     break;
                 case "ItemAddedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "added");
-                    item = jsonParser.fromJson(event.payload, Item.class);
+                    item = Objects.requireNonNull(jsonParser.fromJson(event.payload, Item.class));
                     listeners.forEach(listener -> listener.onItemAdded(item));
                     break;
                 case "ItemRemovedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "removed");
-                    item = jsonParser.fromJson(event.payload, Item.class);
+                    item = Objects.requireNonNull(jsonParser.fromJson(event.payload, Item.class));
                     listeners.forEach(listener -> listener.onItemRemoved(item));
                     break;
                 case "ItemUpdatedEvent":

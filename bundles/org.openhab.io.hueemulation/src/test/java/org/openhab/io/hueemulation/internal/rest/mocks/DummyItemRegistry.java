@@ -66,14 +66,16 @@ public class DummyItemRegistry implements ItemRegistry {
         for (RegistryChangeListener<Item> l : listeners) {
             l.added(element);
         }
-        return put;
+        return element;
     }
 
     @Override
     public @Nullable Item update(Item element) {
         Item put = items.put(element.getUID(), element);
-        for (RegistryChangeListener<Item> l : listeners) {
-            l.updated(put, element);
+        if (put != null) {
+            for (RegistryChangeListener<Item> l : listeners) {
+                l.updated(put, element);
+            }
         }
         return put;
     }
@@ -81,8 +83,10 @@ public class DummyItemRegistry implements ItemRegistry {
     @Override
     public @Nullable Item remove(String key) {
         Item put = items.remove(key);
-        for (RegistryChangeListener<Item> l : listeners) {
-            l.removed(put);
+        if (put != null) {
+            for (RegistryChangeListener<Item> l : listeners) {
+                l.removed(put);
+            }
         }
         return put;
     }
@@ -139,8 +143,10 @@ public class DummyItemRegistry implements ItemRegistry {
     @Override
     public @Nullable Item remove(String itemName, boolean recursive) {
         Item put = items.remove(itemName);
-        for (RegistryChangeListener<Item> l : listeners) {
-            l.removed(put);
+        if (put != null) {
+            for (RegistryChangeListener<Item> l : listeners) {
+                l.removed(put);
+            }
         }
         return put;
     }

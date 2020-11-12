@@ -97,7 +97,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
                 createResult(deviceFinder.getDevices());
             }
         } catch (GreeException e) {
-            logger.info("Discovery: {}", messages.get("discovery.exception", e.getMessage()));
+            logger.info("Discovery: {}", messages.get("discovery.exception", e.getMessageString()));
         } catch (SocketException | RuntimeException e) {
             logger.warn("Discovery: {}", messages.get("discovery.exception", "RuntimeException"), e);
         }

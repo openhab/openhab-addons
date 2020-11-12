@@ -16,12 +16,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -162,8 +157,10 @@ public class HueBridgeNupnpDiscovery extends AbstractDiscoveryService {
         try {
             Gson gson = new Gson();
             String json = doGetRequest(DISCOVERY_URL);
-            return gson.fromJson(json, new TypeToken<List<BridgeJsonParameters>>() {
-            }.getType());
+            List<BridgeJsonParameters> bridgeParameters = gson.fromJson(json,
+                    new TypeToken<List<BridgeJsonParameters>>() {
+                    }.getType());
+            return Objects.requireNonNull(bridgeParameters);
         } catch (IOException e) {
             logger.debug("Philips Hue NUPnP service not reachable. Can't discover bridges");
         } catch (JsonParseException je) {

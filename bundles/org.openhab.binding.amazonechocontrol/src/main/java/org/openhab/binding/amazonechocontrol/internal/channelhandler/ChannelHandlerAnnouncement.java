@@ -14,6 +14,7 @@ package org.openhab.binding.amazonechocontrol.internal.channelhandler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -91,7 +92,7 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                         body = e.getLocalizedMessage();
                     }
                 }
-                thingHandler.startAnnouncment(device, speak, body, title, volume);
+                thingHandler.startAnnouncment(device, speak, Objects.requireNonNullElse(body, ""), title, volume);
             }
             refreshChannel();
         }

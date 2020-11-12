@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -123,7 +124,7 @@ public class AbstractFMIResponseParsingTest {
         try {
             Method parseMethod = Client.class.getDeclaredMethod("parseMultiPointCoverageXml", String.class);
             parseMethod.setAccessible(true);
-            return (FMIResponse) parseMethod.invoke(client, content);
+            return Objects.requireNonNull((FMIResponse) parseMethod.invoke(client, content));
         } catch (InvocationTargetException e) {
             throw e.getTargetException();
         } catch (Exception e) {
@@ -137,9 +138,9 @@ public class AbstractFMIResponseParsingTest {
     @SuppressWarnings("unchecked")
     protected Set<Location> parseStations(String content) {
         try {
-            Method parseMethod = Client.class.getDeclaredMethod("parseStations", String.class);
+            Method parseMethod = Objects.requireNonNull(Client.class.getDeclaredMethod("parseStations", String.class));
             parseMethod.setAccessible(true);
-            return (Set<Location>) parseMethod.invoke(client, content);
+            return Objects.requireNonNull((Set<Location>) parseMethod.invoke(client, content));
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e.getTargetException());
         } catch (Exception e) {

@@ -20,10 +20,7 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -238,6 +235,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         }
 
         Device bridgeDevice = deviceStructMan.getBridgeDevice();
+        if (bridgeDevice == null) {
+            logger.debug("Failed to get bridge device, re-scheduling startClient.");
+            scheduleRestartClient(true);
+            return;
+        }
         setBridgeProperties(bridgeDevice);
         bridgeId = bridgeDevice.getId();
         startWebsocket();
@@ -533,7 +535,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                     case BaseEvent.TYPE_NEW_MESSAGE_RECEIVED:
                     case BaseEvent.TYPE_MESSAGE_CREATED:
                         final MessageEvent messageEvent = gson.fromJson(msg, MessageEvent.class);
-                        handleNewMessageReceivedEvent(messageEvent);
+                        handleNewMessageReceivedEvent(Objects.requireNonNull(messageEvent));
                         break;
 
                     case BaseEvent.TYPE_MESSAGE_DELETED:

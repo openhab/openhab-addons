@@ -121,7 +121,9 @@ public class DigiplexZoneHandler extends BaseThingHandler {
         this.bridgeHandler = (DigiplexBridgeHandler) bridge.getHandler();
 
         String nodeParm = getThing().getProperties().get(DigiplexBindingConstants.PROPERTY_ZONE_NO);
-        zoneNo = Integer.parseInt(nodeParm);
+        if (nodeParm != null) {
+            zoneNo = Integer.parseInt(nodeParm);
+        }
         String areaParm = getThing().getProperties().get(DigiplexBindingConstants.PROPERTY_AREA_NO);
         if (areaParm != null) {
             areaNo = Integer.parseInt(areaParm);

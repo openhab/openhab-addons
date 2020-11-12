@@ -131,7 +131,10 @@ public class WebSocketConnection {
             return;
         }
 
-        listener.messageReceived(changedMessage.id, gson.fromJson(message, expectedMessageType));
+        DeconzBaseMessage deconzMessage = gson.fromJson(message, expectedMessageType);
+        if (deconzMessage != null) {
+            listener.messageReceived(changedMessage.id, deconzMessage);
+        }
     }
 
     @OnWebSocketError

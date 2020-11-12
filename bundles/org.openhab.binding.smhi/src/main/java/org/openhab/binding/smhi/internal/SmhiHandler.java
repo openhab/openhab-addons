@@ -372,11 +372,13 @@ public class SmhiHandler extends BaseThingHandler {
         // See https://github.com/openhab/openhab-webui/issues/212
         Set<Integer> hours = new TreeSet<>();
         Set<Integer> days = new TreeSet<>();
-        if (config.hourlyForecasts != null) {
-            hours.addAll(config.hourlyForecasts);
+        List<Integer> hourlyForecasts = config.hourlyForecasts;
+        if (hourlyForecasts != null) {
+            hours.addAll(hourlyForecasts);
         }
-        if (config.dailyForecasts != null) {
-            days.addAll(config.dailyForecasts);
+        List<Integer> dailyForecasts = config.dailyForecasts;
+        if (dailyForecasts != null) {
+            days.addAll(dailyForecasts);
         }
 
         for (int i : hours) {

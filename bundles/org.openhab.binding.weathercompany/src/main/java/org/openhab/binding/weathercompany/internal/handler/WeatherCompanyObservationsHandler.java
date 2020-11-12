@@ -14,6 +14,7 @@ package org.openhab.binding.weathercompany.internal.handler;
 
 import static org.openhab.binding.weathercompany.internal.WeatherCompanyBindingConstants.*;
 
+import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -136,7 +137,8 @@ public class WeatherCompanyObservationsHandler extends WeatherCompanyAbstractHan
         }
         try {
             logger.debug("Handler: Parsing PWS observations response: {}", response);
-            PwsObservationsDTO pwsObservations = gson.fromJson(response, PwsObservationsDTO.class);
+            PwsObservationsDTO pwsObservations = Objects
+                    .requireNonNull(gson.fromJson(response, PwsObservationsDTO.class));
             logger.debug("Handler: Successfully parsed PWS observations response object");
             updateStatus(ThingStatus.ONLINE);
             updatePwsObservations(pwsObservations);

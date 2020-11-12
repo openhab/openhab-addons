@@ -30,9 +30,8 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class ResourceTypeDeserializer implements JsonDeserializer<ResourceType> {
     @Override
-    public ResourceType deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
-            @Nullable JsonDeserializationContext context) throws JsonParseException {
-        String s = json != null ? json.getAsString() : null;
-        return s == null ? ResourceType.UNKNOWN : ResourceType.fromString(s);
+    public @Nullable ResourceType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        return ResourceType.fromString(json.getAsString());
     }
 }

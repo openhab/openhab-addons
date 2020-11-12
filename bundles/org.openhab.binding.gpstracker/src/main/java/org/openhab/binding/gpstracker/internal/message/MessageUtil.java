@@ -51,7 +51,7 @@ public class MessageUtil {
     public LocationMessage fromJson(String json) {
         for (String pattern : PATTERNS) {
             Class<? extends LocationMessage> c = MESSAGE_TYPES.get(pattern);
-            if (json.matches(pattern)) {
+            if (c != null && json.matches(pattern)) {
                 return gson.fromJson(json, c);
             }
         }
