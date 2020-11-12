@@ -113,7 +113,6 @@ public class LongPolling {
             String subscriptionId = response.getResult();
             return subscriptionId;
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
-            logger.error("Error on subscribe request", e);
             throw new LongPollingFailedException("Error on subscribe request", e);
         }
     }
