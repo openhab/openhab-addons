@@ -36,7 +36,7 @@
 		<description>
 			This channel shows the brightness of the environment of the device in Lux.
 		</description>
-		<state readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="isOpen">
 		<item-type>Contact</item-type>
