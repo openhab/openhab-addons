@@ -139,7 +139,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
         if (unitUpdateListeners.containsKey(unitData.getId().toString())) {
             TouchWandUnitUpdateListener updateListener = unitUpdateListeners.get(unitData.getId().toString());
             updateListener.onItemStatusUpdate(unitData);
-
         }
     }
 

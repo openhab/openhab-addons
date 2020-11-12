@@ -62,7 +62,7 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
                 touchWandUnitDataAlarmSensor.setHasPowerMeter(false);
             }
 
-            if (!jsonObject.get("status").isJsonNull()) { // Sometimes status in null
+            if (!jsonObject.get("status").isJsonNull()) { // Sometimes status is null
                 touchWandUnitDataAlarmSensor.setStatus(jsonObject.get("status").getAsString());
             }
 
