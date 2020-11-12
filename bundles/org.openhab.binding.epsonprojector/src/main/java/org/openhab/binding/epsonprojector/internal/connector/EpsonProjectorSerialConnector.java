@@ -17,7 +17,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
-import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -33,16 +34,18 @@ import org.slf4j.LoggerFactory;
  * Connector for serial port communication.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Michael Lobstein - Improvements for OH3
  */
+@NonNullByDefault
 public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, SerialPortEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorSerialConnector.class);
-
     private final String serialPortName;
-    private InputStream in = null;
-    private OutputStream out = null;
-    private SerialPortManager serialPortManager = null;
-    private SerialPort serialPort = null;
+    private final SerialPortManager serialPortManager;
+
+    private @Nullable InputStream in = null;
+    private @Nullable OutputStream out = null;
+    private @Nullable SerialPort serialPort = null;
 
     public EpsonProjectorSerialConnector(SerialPortManager serialPortManager, String serialPort) {
         this.serialPortManager = serialPortManager;
@@ -53,32 +56,35 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
     public void connect() throws EpsonProjectorException {
         try {
             logger.debug("Open connection to serial port '{}'", serialPortName);
-            if (serialPortManager == null) {
-                throw new IllegalStateException("The SerialPortManager has not been not initialized");
-            }
 
             SerialPortIdentifier serialPortIdentifier = serialPortManager.getIdentifier(serialPortName);
 
             if (serialPortIdentifier == null) {
                 throw new IOException("Unknown serial port");
             }
-            serialPort = serialPortIdentifier.open(this.getClass().getName(), 2000);
+            SerialPort serialPort = serialPortIdentifier.open(this.getClass().getName(), 2000);
             serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialPort.enableReceiveThreshold(1);
             serialPort.disableReceiveTimeout();
 
-            in = serialPort.getInputStream();
-            out = serialPort.getOutputStream();
+            InputStream in = serialPort.getInputStream();
+            OutputStream out = serialPort.getOutputStream();
 
-            out.flush();
-            if (in.markSupported()) {
-                in.reset();
+            if (in != null && out != null) {
+                out.flush();
+                if (in.markSupported()) {
+                    in.reset();
+                }
+
+                // RXTX serial port library causes high CPU load
+                // Start event listener, which will just sleep and slow down event loop
+                serialPort.addEventListener(this);
+                serialPort.notifyOnDataAvailable(true);
+
+                this.serialPort = serialPort;
+                this.in = in;
+                this.out = out;
             }
-
-            // RXTX serial port library causes high CPU load
-            // Start event listener, which will just sleep and slow down event loop
-            serialPort.addEventListener(this);
-            serialPort.notifyOnDataAvailable(true);
         } catch (PortInUseException | UnsupportedCommOperationException | IOException | TooManyListenersException e) {
             throw new EpsonProjectorException(e);
         }
@@ -86,21 +92,33 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
 
     @Override
     public void disconnect() throws EpsonProjectorException {
+        InputStream in = this.in;
+        OutputStream out = this.out;
+        SerialPort serialPort = this.serialPort;
+
         if (out != null) {
             logger.debug("Close serial out stream");
-            IOUtils.closeQuietly(out);
-            out = null;
+            try {
+                out.close();
+            } catch (IOException e) {
+                logger.warn("Error occurred when closing tcp out stream", e);
+            }
+            this.out = null;
         }
         if (in != null) {
             logger.debug("Close serial in stream");
-            IOUtils.closeQuietly(in);
-            in = null;
+            try {
+                in.close();
+            } catch (IOException e) {
+                logger.warn("Error occurred when closing tcp in stream", e);
+            }
+            this.in = null;
         }
         if (serialPort != null) {
             logger.debug("Close serial port");
             serialPort.close();
             serialPort.removeEventListener();
-            serialPort = null;
+            this.serialPort = null;
         }
 
         logger.debug("Closed");
@@ -108,26 +126,35 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
 
     @Override
     public String sendMessage(String data, int timeout) throws EpsonProjectorException {
+        InputStream in = this.in;
+        OutputStream out = this.out;
+
         if (in == null || out == null) {
             connect();
+            in = this.in;
+            out = this.out;
         }
 
         try {
-            // flush input stream
-            if (in.markSupported()) {
-                in.reset();
-            } else {
-                while (in.available() > 0) {
-                    int availableBytes = in.available();
+            if (in != null && out != null) {
+                // flush input stream
+                if (in.markSupported()) {
+                    in.reset();
+                } else {
+                    while (in.available() > 0) {
+                        int availableBytes = in.available();
 
-                    if (availableBytes > 0) {
-                        byte[] tmpData = new byte[availableBytes];
-                        in.read(tmpData, 0, availableBytes);
+                        if (availableBytes > 0) {
+                            byte[] tmpData = new byte[availableBytes];
+                            in.read(tmpData, 0, availableBytes);
+                        }
                     }
                 }
-            }
 
-            return sendMmsg(data, timeout);
+                return sendMmsg(data, timeout);
+            } else {
+                return "";
+            }
         } catch (IOException e) {
             logger.debug("IO error occurred...reconnect and resend ones");
             disconnect();
@@ -153,34 +180,39 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
     }
 
     private String sendMmsg(String data, int timeout) throws IOException, EpsonProjectorException {
-        out.write(data.getBytes());
-        out.write("\r\n".getBytes());
-        out.flush();
-
         String resp = "";
 
-        long startTime = System.currentTimeMillis();
-        long elapsedTime = 0;
+        InputStream in = this.in;
+        OutputStream out = this.out;
 
-        while (elapsedTime < timeout) {
-            int availableBytes = in.available();
-            if (availableBytes > 0) {
-                byte[] tmpData = new byte[availableBytes];
-                int readBytes = in.read(tmpData, 0, availableBytes);
-                resp = resp.concat(new String(tmpData, 0, readBytes));
+        if (in != null && out != null) {
+            out.write(data.getBytes());
+            out.write("\r\n".getBytes());
+            out.flush();
 
-                if (resp.contains(":")) {
-                    return resp;
+            long startTime = System.currentTimeMillis();
+            long elapsedTime = 0;
+
+            while (elapsedTime < timeout) {
+                int availableBytes = in.available();
+                if (availableBytes > 0) {
+                    byte[] tmpData = new byte[availableBytes];
+                    int readBytes = in.read(tmpData, 0, availableBytes);
+                    resp = resp.concat(new String(tmpData, 0, readBytes));
+
+                    if (resp.contains(":")) {
+                        return resp;
+                    }
+                } else {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new EpsonProjectorException(e);
+                    }
                 }
-            } else {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    throw new EpsonProjectorException(e);
-                }
+
+                elapsedTime = System.currentTimeMillis() - startTime;
             }
-
-            elapsedTime = System.currentTimeMillis() - startTime;
         }
 
         return resp;

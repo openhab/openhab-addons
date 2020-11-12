@@ -13,14 +13,20 @@
 package org.openhab.binding.epsonprojector.internal.enums;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Valid values for Source.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Yannick Schaus - Refactoring
+ * @author Michael Lobstein - Improvements for OH3
  */
+@NonNullByDefault
 public enum Source {
+    UNKNOWN(0x00),
     COMPONENT(0x14),
     PC_DSUB(0x20),
     HDMI1(0x30),
@@ -31,12 +37,16 @@ public enum Source {
 
     private final int value;
 
-    private Source(int value) {
+    Source(int value) {
         this.value = value;
     }
 
     public static Source forValue(int value) {
-        return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        try {
+            return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        } catch (NoSuchElementException e) {
+            return UNKNOWN;
+        }
     }
 
     public int toInt() {

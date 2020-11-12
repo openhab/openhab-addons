@@ -13,37 +13,57 @@
 package org.openhab.binding.epsonprojector.internal.enums;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Valid values for ColorMode.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Yannick Schaus - Refactoring
+ * @author Michael Lobstein - Improvements for OH3
  */
+@NonNullByDefault
 public enum ColorMode {
-    CINEMANIGHT(0x05),
+    SRGB(0x01),
+    NORMAL(0x02),
+    MEETING(0x03),
+    PRESENTATION(0x04),
+    THEATER(0x05),
     DYNAMIC(0x06),
     NATURAL(0x07),
+    SPORTS(0x08),
     HD(0x09),
-    SILVER(0x0A),
-    XVCOLOR(0x0B),
-    LIVINGROOM(0x0C),
+    CUSTOM(0x10),
+    BLACKBOARD(0x11),
+    WHITEBOARD(0x12),
     THX(0x13),
+    PHOTO(0x14),
     CINEMA(0x15),
+    UNKNOWN16(0x16),
     CINEMA3D(0x17),
     DYNAMIC3D(0x18),
     THX3D(0x19),
     BWCINEMA(0x20),
+    SILVER(0x0A),
+    XVCOLOR(0x0B),
+    LIVINGROOM(0x0C),
+    DICOMSIM(0x0F),
     ERROR(0xFF);
 
     private final int value;
 
-    private ColorMode(int value) {
+    ColorMode(int value) {
         this.value = value;
     }
 
     public static ColorMode forValue(int value) {
-        return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        try {
+            return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        } catch (NoSuchElementException e) {
+            return ERROR;
+        }
     }
 
     public int toInt() {

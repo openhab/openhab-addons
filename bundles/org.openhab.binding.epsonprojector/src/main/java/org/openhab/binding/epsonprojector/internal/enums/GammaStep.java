@@ -13,13 +13,18 @@
 package org.openhab.binding.epsonprojector.internal.enums;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Valid values for GammaStep.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Yannick Schaus - Refactoring
+ * @author Michael Lobstein - Improvements for OH3
  */
+@NonNullByDefault
 public enum GammaStep {
     TONE1(0x00),
     TONE2(0x01),
@@ -34,12 +39,16 @@ public enum GammaStep {
 
     private final int value;
 
-    private GammaStep(int value) {
+    GammaStep(int value) {
         this.value = value;
     }
 
     public static GammaStep forValue(int value) {
-        return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        try {
+            return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        } catch (NoSuchElementException e) {
+            return ERROR;
+        }
     }
 
     public int toInt() {

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.epsonprojector.internal.enums;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Valid values for Epson switch commands.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Yannick Schaus - Refactoring
  */
+@NonNullByDefault
 public enum Switch {
     ON,
     OFF;

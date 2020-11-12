@@ -13,13 +13,18 @@
 package org.openhab.binding.epsonprojector.internal.enums;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Valid values for AspectRatio.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Yannick Schaus - Refactoring
+ * @author Michael Lobstein - Improvements for OH3
  */
+@NonNullByDefault
 public enum AspectRatio {
     NORMAL(0x00),
     AUTO(0x30),
@@ -32,12 +37,16 @@ public enum AspectRatio {
 
     private final int value;
 
-    private AspectRatio(int value) {
+    AspectRatio(int value) {
         this.value = value;
     }
 
     public static AspectRatio forValue(int value) {
-        return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        try {
+            return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        } catch (NoSuchElementException e) {
+            return ERROR;
+        }
     }
 
     public int toInt() {

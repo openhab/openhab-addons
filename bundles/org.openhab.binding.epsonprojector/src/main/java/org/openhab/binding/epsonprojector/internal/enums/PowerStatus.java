@@ -13,13 +13,18 @@
 package org.openhab.binding.epsonprojector.internal.enums;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Valid values for PowerStatus.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Yannick Schaus - Refactoring
+ * @author Michael Lobstein - Improvements for OH3
  */
+@NonNullByDefault
 public enum PowerStatus {
     STANDBY(0x00),
     ON(0x01),
@@ -31,12 +36,16 @@ public enum PowerStatus {
 
     private final int value;
 
-    private PowerStatus(int value) {
+    PowerStatus(int value) {
         this.value = value;
     }
 
     public static PowerStatus forValue(int value) {
-        return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        try {
+            return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
+        } catch (NoSuchElementException e) {
+            return ERROR;
+        }
     }
 
     public int toInt() {

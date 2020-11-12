@@ -10,15 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.epsonprojector.internal;
+package org.openhab.binding.epsonprojector.internal.handler;
 
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.epsonprojector.internal.EpsonProjectorCommandType;
+import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice;
+import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
+import org.openhab.binding.epsonprojector.internal.configuration.EpsonProjectorConfiguration;
 import org.openhab.binding.epsonprojector.internal.enums.AspectRatio;
 import org.openhab.binding.epsonprojector.internal.enums.Background;
 import org.openhab.binding.epsonprojector.internal.enums.Color;
@@ -50,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Pauli Anttila, Yannick Schaus - Initial contribution
+ * @author Michael Lobstein - Improvements for OH3
  */
 @NonNullByDefault
 public class EpsonProjectorHandler extends BaseThingHandler {
@@ -57,11 +61,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorHandler.class);
 
-    private @Nullable EpsonProjectorDevice device;
+    private EpsonProjectorDevice device = new EpsonProjectorDevice();
     private @Nullable ScheduledFuture<?> pollingJob;
-    private @Nullable SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
-    public EpsonProjectorHandler(Thing thing, @Nullable SerialPortManager serialPortManager) {
+    public EpsonProjectorHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
         this.serialPortManager = serialPortManager;
     }
@@ -84,31 +88,31 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     public void initialize() {
         scheduler.execute(() -> {
             EpsonProjectorConfiguration config = getConfigAs(EpsonProjectorConfiguration.class);
-            String serialPort = (config.serialPort != null) ? config.serialPort : "";
-            String host = (config.host != null) ? config.host : "";
-            if (StringUtils.isNotEmpty(serialPort)) {
+            final String serialPort = config.serialPort;
+            final String host = config.host;
+            final Integer port = config.port;
+            final Integer pollingInterval = config.pollingInterval;
+
+            if (serialPort != null && !serialPort.equals("")) {
                 device = new EpsonProjectorDevice(serialPortManager, serialPort);
-            } else if (StringUtils.isNotEmpty(host) && config.port > 0) {
-                device = new EpsonProjectorDevice(host, config.port);
+            } else if (host != null && !host.equals("") && port > 0) {
+                device = new EpsonProjectorDevice(host, port);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
             }
 
             try {
-                if (device != null) {
-                    device.connect();
-                    updateStatus(ThingStatus.ONLINE);
+                device.connect();
+                updateStatus(ThingStatus.ONLINE);
 
-                    List<Channel> channels = this.thing.getChannels();
+                List<Channel> channels = this.thing.getChannels();
 
-                    pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                        for (Channel channel : channels) {
-                            updateChannelState(channel);
-                        }
-                    }, 0, (config.pollingInterval > 0) ? config.pollingInterval : DEFAULT_POLLING_INTERVAL,
-                            TimeUnit.MILLISECONDS);
-                }
+                pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                    for (Channel channel : channels) {
+                        updateChannelState(channel);
+                    }
+                }, 0, (pollingInterval > 0) ? pollingInterval : DEFAULT_POLLING_INTERVAL, TimeUnit.MILLISECONDS);
             } catch (EpsonProjectorException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -117,8 +121,10 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
+            this.pollingJob = null;
         }
         closeConnection();
         super.dispose();
@@ -142,11 +148,6 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     private State queryDataFromDevice(EpsonProjectorCommandType commandType) {
         EpsonProjectorDevice remoteController = device;
-
-        if (remoteController == null) {
-            logger.error("Device is not initialized: '{}'", this.thing.getUID());
-            return UnDefType.UNDEF;
-        }
 
         try {
             if (!remoteController.isConnected()) {
@@ -283,11 +284,6 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     private void sendDataToDevice(EpsonProjectorCommandType commandType, Command command) {
         EpsonProjectorDevice remoteController = device;
 
-        if (remoteController == null) {
-            logger.error("Device is not initialized: '{}'", this.thing.getUID());
-            return;
-        }
-
         try {
             if (!remoteController.isConnected()) {
                 remoteController.connect();
@@ -420,14 +416,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     private void closeConnection() {
         EpsonProjectorDevice remoteController = device;
-
-        if (remoteController != null) {
-            try {
-                logger.debug("Closing connection to device '{}'", this.thing.getUID());
-                remoteController.disconnect();
-            } catch (EpsonProjectorException e) {
-                logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
-            }
+        try {
+            logger.debug("Closing connection to device '{}'", this.thing.getUID());
+            remoteController.disconnect();
+        } catch (EpsonProjectorException e) {
+            logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
         }
     }
 }

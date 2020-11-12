@@ -17,7 +17,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +27,18 @@ import org.slf4j.LoggerFactory;
  * Connector for TCP communication.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Michael Lobstein - Improvements for OH3
  */
+@NonNullByDefault
 public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorTcpConnector.class);
-
     private final String ip;
     private final int port;
-    private Socket socket = null;
-    private InputStream in = null;
-    private OutputStream out = null;
+
+    private @Nullable Socket socket = null;
+    private @Nullable InputStream in = null;
+    private @Nullable OutputStream out = null;
 
     public EpsonProjectorTcpConnector(String ip, int port) {
         this.ip = ip;
@@ -47,7 +50,8 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
         logger.debug("Open connection to address'{}:{}'", ip, port);
 
         try {
-            socket = new Socket(ip, port);
+            Socket socket = new Socket(ip, port);
+            this.socket = socket;
             in = socket.getInputStream();
             out = socket.getOutputStream();
         } catch (IOException e) {
@@ -57,14 +61,28 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
 
     @Override
     public void disconnect() throws EpsonProjectorException {
+        OutputStream out = this.out;
+
         if (out != null) {
             logger.debug("Close tcp out stream");
-            IOUtils.closeQuietly(out);
+            try {
+                out.close();
+            } catch (IOException e) {
+                logger.warn("Error occurred when closing tcp out stream", e);
+            }
         }
+
+        InputStream in = this.in;
         if (in != null) {
             logger.debug("Close tcp in stream");
-            IOUtils.closeQuietly(in);
+            try {
+                in.close();
+            } catch (IOException e) {
+                logger.warn("Error occurred when closing tcp in stream", e);
+            }
         }
+
+        Socket socket = this.socket;
         if (socket != null) {
             logger.debug("Closing socket");
             try {
@@ -74,35 +92,43 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             }
         }
 
-        socket = null;
-        out = null;
-        in = null;
+        this.socket = null;
+        this.out = null;
+        this.in = null;
 
         logger.debug("Closed");
     }
 
     @Override
     public String sendMessage(String data, int timeout) throws EpsonProjectorException {
+        InputStream in = this.in;
+        OutputStream out = this.out;
+
         if (in == null || out == null) {
             connect();
+            in = this.in;
+            out = this.out;
         }
 
         try {
-            // flush input stream
-            if (in.markSupported()) {
-                in.reset();
-            } else {
-                while (in.available() > 0) {
-                    int availableBytes = in.available();
+            if (in != null) {
+                // flush input stream
+                if (in.markSupported()) {
+                    in.reset();
+                } else {
+                    while (in.available() > 0) {
+                        int availableBytes = in.available();
 
-                    if (availableBytes > 0) {
-                        byte[] tmpData = new byte[availableBytes];
-                        in.read(tmpData, 0, availableBytes);
+                        if (availableBytes > 0) {
+                            byte[] tmpData = new byte[availableBytes];
+                            in.read(tmpData, 0, availableBytes);
+                        }
                     }
                 }
+                return sendMmsg(data, timeout);
+            } else {
+                return "";
             }
-
-            return sendMmsg(data, timeout);
         } catch (IOException e) {
             logger.debug("IO error occurred...reconnect and resend ones");
             disconnect();
@@ -119,36 +145,41 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
     }
 
     private String sendMmsg(String data, int timeout) throws IOException, EpsonProjectorException {
-        out.write(data.getBytes());
-        out.write("\r\n".getBytes());
-        out.flush();
-
         String resp = "";
 
-        long startTime = System.currentTimeMillis();
-        long elapsedTime = 0;
+        InputStream in = this.in;
+        OutputStream out = this.out;
 
-        while (elapsedTime < timeout) {
-            int availableBytes = in.available();
-            if (availableBytes > 0) {
-                byte[] tmpData = new byte[availableBytes];
-                int readBytes = in.read(tmpData, 0, availableBytes);
-                resp = resp.concat(new String(tmpData, 0, readBytes));
+        if (in != null && out != null) {
+            out.write(data.getBytes());
+            out.write("\r\n".getBytes());
+            out.flush();
 
-                if (resp.contains(":")) {
-                    return resp;
+            long startTime = System.currentTimeMillis();
+            long elapsedTime = 0;
+
+            while (elapsedTime < timeout) {
+                int availableBytes = in.available();
+                if (availableBytes > 0) {
+                    byte[] tmpData = new byte[availableBytes];
+                    int readBytes = in.read(tmpData, 0, availableBytes);
+                    resp = resp.concat(new String(tmpData, 0, readBytes));
+
+                    if (resp.contains(":")) {
+                        return resp;
+                    }
+                } else {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new EpsonProjectorException(e);
+                    }
                 }
-            } else {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    throw new EpsonProjectorException(e);
-                }
+
+                elapsedTime = System.currentTimeMillis() - startTime;
             }
 
-            elapsedTime = System.currentTimeMillis() - startTime;
         }
-
         return resp;
     }
 }

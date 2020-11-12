@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorConnector;
+import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorDefaultConnector;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorSerialConnector;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorTcpConnector;
 import org.openhab.binding.epsonprojector.internal.enums.AspectRatio;
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  * @author Yannick Schaus - Refactoring
+ * @author Michael Lobstein - Improvements for OH3
  */
 @NonNullByDefault
 public class EpsonProjectorDevice {
@@ -58,10 +60,10 @@ public class EpsonProjectorDevice {
     private Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
 
     private EpsonProjectorConnector connection;
-    private boolean connected;
-    private boolean ready;
+    private boolean connected = false;
+    private boolean ready = false;
 
-    public EpsonProjectorDevice(@Nullable SerialPortManager serialPortManager, String serialPort) {
+    public EpsonProjectorDevice(SerialPortManager serialPortManager, String serialPort) {
         connection = new EpsonProjectorSerialConnector(serialPortManager, serialPort);
         ready = true;
     }
@@ -69,6 +71,11 @@ public class EpsonProjectorDevice {
     public EpsonProjectorDevice(String ip, int port) {
         connection = new EpsonProjectorTcpConnector(ip, port);
         ready = true;
+    }
+
+    public EpsonProjectorDevice() {
+        connection = new EpsonProjectorDefaultConnector();
+        ready = false;
     }
 
     private synchronized @Nullable String sendQuery(String query, int timeout) throws EpsonProjectorException {

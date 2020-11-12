@@ -13,16 +13,19 @@
 package org.openhab.binding.epsonprojector.internal.enums;
 
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.NoSuchElementException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Messages for documented error codes.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Yannick Schaus - Refactoring
+ * @author Michael Lobstein - Improvements for OH3
  */
+@NonNullByDefault
 public enum ErrorMessage {
-
     NO_ERROR(0, "No error"),
     ERROR1(1, "Fan error"),
     ERROR3(3, "Lamp failure at power on"),
@@ -58,7 +61,10 @@ public enum ErrorMessage {
     }
 
     public static String forCode(int code) {
-        Optional<ErrorMessage> error = Arrays.stream(values()).filter(e -> e.code == code).findFirst();
-        return (error.isPresent()) ? error.get().getMessage() : "Unknown error";
+        try {
+            return Arrays.stream(values()).filter(e -> e.code == code).findFirst().get().getMessage();
+        } catch (NoSuchElementException e) {
+            return "Unknown error";
+        }
     }
 }

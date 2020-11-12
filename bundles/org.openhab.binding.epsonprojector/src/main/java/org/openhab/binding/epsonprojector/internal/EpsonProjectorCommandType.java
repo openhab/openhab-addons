@@ -14,6 +14,7 @@ package org.openhab.binding.epsonprojector.internal;
 
 import java.io.InvalidClassException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.StringItem;
@@ -25,6 +26,7 @@ import org.openhab.core.library.items.SwitchItem;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public enum EpsonProjectorCommandType {
     POWER("Power", SwitchItem.class),
     POWER_STATE("PowerState", StringItem.class),
