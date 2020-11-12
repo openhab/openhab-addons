@@ -62,7 +62,8 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     }
 
     public TemperatureUnit getTemperatureUnit() {
-        String temperatureUnitStr = this.thing.getProperties().get(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT);
+        String temperatureUnitStr = this.thing.getProperties()
+                .getOrDefault(TadoBindingConstants.PROPERTY_HOME_TEMPERATURE_UNIT, "CELSIUS");
         return TemperatureUnit.valueOf(temperatureUnitStr);
     }
 
