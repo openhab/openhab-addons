@@ -74,7 +74,7 @@ Following channels are currently available:
 | position#location                             | Location             | Location of the car                              |                                                  |
 | position#locationTimestamp                    | DateTime             | Timestamp of the latest confirmed location       |                                                  |
 | tyrePressure#frontLeftTyre                    | Number               | Tyrepressure front left tyre                     | Normal / LowSoft                                 |
-| tyrePressure#frontRightTyr                    | Number               | Tyrepressure front right tyre                    | Normal / LowSoft                                 |
+| tyrePressure#frontRightTyre                   | Number               | Tyrepressure front right tyre                    | Normal / LowSoft                                 |
 | tyrePressure#rearLeftTyre                     | Number               | Tyrepressure rear left tyre                      | Normal / LowSoft                                 |
 | tyrePressure#rearRightTyre                    | Number               | Tyrepressure rear right tyre                     | Normal / LowSoft                                 |
 | other#averageSpeed                            | Number:Speed         | Average speed                                    |                                                  |
