@@ -95,10 +95,9 @@ public class LongPolling {
     }
 
     /**
-     * Subscribe to events and store the subscription ID needed for long polling
-     *
-     * Method is synchronous.
+     * Subscribe to events and store the subscription ID needed for long polling.
      * 
+     * @param httpClient Http client to use for sending subscription request
      * @return Subscription id
      */
     private String subscribe(BoschHttpClient httpClient) throws LongPollingFailedException {
