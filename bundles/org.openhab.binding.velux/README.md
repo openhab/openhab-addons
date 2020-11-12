@@ -232,11 +232,13 @@ Frame label="Velux Windows" {
 
 [=> download sample sitemaps file for textual configuration](./doc/conf/sitemaps/velux.sitemap)
 
-### Rules
+### Rule for closing windows after a period of time
 
-**Rule for closing windows after a period of time**:
-Especially in the colder months, it is advisable to close the window after adequate ventilation. Therefore, automatic closing after one minute is good to save on heating costs.
+Especially in the colder months, it is advisable to close the window after adequate ventilation.
+Therefore, automatic closing after one minute is good to save on heating costs.
 However, to allow the case of intentional prolonged opening, an automatic closure is made only with the window fully open.
+
+Example:
 
 ```java
 rule "V_WINDOW_changed"
@@ -251,7 +253,7 @@ then
 		if (windowState == 0) {
 			logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
 			var int interval = 1
-				createTimer(now.plusMinutes(interval)) [ |
+			createTimer(now.plusMinutes(interval)) [ |
 					logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
 					sendCommand(V_WINDOW,100)
 					V_WINDOW.postUpdate(100)
@@ -267,6 +269,27 @@ end
 ```
 
 [=> download sample rules file for textual configuration](./doc/conf/rules/velux.rules)
+
+### Rule for rebooting the Bridge
+
+This binding includes a rule action to reboot the Velux Bridge by remote command:
+
+- `boolean isRebooting = rebootBridge()`
+
+_Warning: use this command carefully..._
+
+Example:
+
+```java
+rule "Reboot KLF 200"
+when
+	...
+then
+	val veluxActions = getActions("velux","velux:klf200:myhubname")
+	val isRebooting = veluxActions.rebootBridge()
+	logWarn("Rules", "Velux KLF 200 rebooting: " + isRebooting)
+end
+```
 
 ## Debugging
 
