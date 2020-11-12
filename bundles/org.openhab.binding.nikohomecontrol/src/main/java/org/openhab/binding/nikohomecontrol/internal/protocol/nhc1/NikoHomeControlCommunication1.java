@@ -328,6 +328,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         for (Map<String, String> location : data) {
             String id = location.get("id");
             String name = location.get("name");
+            if (id == null || name == null) {
+                logger.debug("id or name null, ignoring entry");
+                continue;
+            }
             NhcLocation1 nhcLocation1 = new NhcLocation1(name);
             locations.put(id, nhcLocation1);
         }
@@ -337,8 +341,11 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         logger.debug("Niko Home Control: list actions");
 
         for (Map<String, String> action : data) {
-
             String id = action.get("id");
+            if (id == null) {
+                logger.debug("id not found in action {}", action);
+                continue;
+            }
             String value1 = action.get("value1");
             int state = ((value1 == null) || value1.isEmpty() ? 0 : Integer.parseInt(value1));
             String value2 = action.get("value2");
@@ -349,6 +356,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             if (!actions.containsKey(id)) {
                 // Initial instantiation of NhcAction class for action object
                 String name = action.get("name");
+                if (name == null) {
+                    logger.debug("name not found in action {}", action);
+                    continue;
+                }
                 String type = action.get("type");
                 ActionType actionType = ActionType.GENERIC;
                 switch (type) {
@@ -371,8 +382,8 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 }
                 String locationId = action.get("location");
                 String location = "";
-                if (!locationId.isEmpty()) {
-                    location = locations.get(locationId).getName();
+                if (locationId != null && !locationId.isEmpty()) {
+                    location = locations.getOrDefault(locationId, new NhcLocation1("")).getName();
                 }
                 NhcAction nhcAction = new NhcAction1(id, name, actionType, location, this, scheduler);
                 if (actionType == ActionType.ROLLERSHUTTER) {
@@ -405,6 +416,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         for (Map<String, String> thermostat : data) {
             try {
                 String id = thermostat.get("id");
+                if (id == null) {
+                    logger.debug("skipping thermostat {}, id not found", thermostat);
+                    continue;
+                }
                 int measured = parseIntOrThrow(thermostat.get("measured"));
                 int setpoint = parseIntOrThrow(thermostat.get("setpoint"));
                 int mode = parseIntOrThrow(thermostat.get("mode"));
@@ -528,6 +543,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
 
     private void eventGetAlarms(Map<String, String> data) {
         String alarmText = data.get("text");
+        if (alarmText == null) {
+            logger.debug("message does not contain alarmtext: {}", data);
+            return;
+        }
         switch (data.getOrDefault("type", "")) {
             case "0":
                 logger.debug("Niko Home Control: alarm - {}", alarmText);

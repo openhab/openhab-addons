@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.harmonyhub.internal.handler.HarmonyHubHandler;
@@ -253,8 +252,8 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
                         String friendlyName = properties.get("friendlyName");
                         String hostName = properties.get("host_name");
                         String ip = properties.get("ip");
-                        if (StringUtils.isNotBlank(friendlyName) && StringUtils.isNotBlank(hostName)
-                                && StringUtils.isNotBlank(ip) && !responses.contains(hostName)) {
+                        if (friendlyName != null && !friendlyName.isBlank() && hostName != null && !hostName.isBlank()
+                                && ip != null && !ip.isBlank() && !responses.contains(hostName)) {
                             responses.add(hostName);
                             hubDiscovered(ip, friendlyName, hostName);
                         }

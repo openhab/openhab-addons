@@ -63,7 +63,7 @@ public abstract class CommandHandler {
     /**
      * Implements what to do when an openHAB command is received
      *
-     * @param config the configuration for the item that generated the command
+     * @param conf the configuration for the item that generated the command
      * @param cmd the openhab command issued
      * @param device the Insteon device to which this command applies
      */

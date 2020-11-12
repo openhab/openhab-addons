@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bsblan.internal;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,15 +41,8 @@ public class BsbLanBindingConstants {
     public static final String PARAMETER_CHANNEL_DESCRIPTION = "description";
     public static final String PARAMETER_CHANNEL_DATATYPE = "datatype";
 
-    public static final Set<String> WRITEABLE_CHANNELS = new HashSet<String>() {
-
-        private static final long serialVersionUID = 1L;
-        {
-            add(PARAMETER_CHANNEL_NUMBER_VALUE);
-            add(PARAMETER_CHANNEL_STRING_VALUE);
-            add(PARAMETER_CHANNEL_SWITCH_VALUE);
-        }
-    };
+    public static final Set<String> WRITEABLE_CHANNELS = Set.of(PARAMETER_CHANNEL_NUMBER_VALUE,
+            PARAMETER_CHANNEL_STRING_VALUE, PARAMETER_CHANNEL_SWITCH_VALUE);
 
     public static final int MIN_REFRESH_INTERVAL = 5;
     public static final int DEFAULT_REFRESH_INTERVAL = 60;

@@ -422,7 +422,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
             String tableName = tableNameResolver.fromItem(dynamoItem);
             Deque<DynamoDBItem<?>> batch = batchesByTable.computeIfAbsent(tableName, new Function<>() {
                 @Override
-                public Deque<DynamoDBItem<?>> apply(@Nullable String t) {
+                public @Nullable Deque<DynamoDBItem<?>> apply(@Nullable String t) {
                     return new ArrayDeque<>();
                 }
             });

@@ -70,6 +70,10 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService imple
 
         String id = message.getDeviceId();
         ThingTypeUID uid = RFXComBindingConstants.PACKET_TYPE_THING_TYPE_UID_MAP.get(message.getPacketType());
+        if (uid == null) {
+            logger.debug("cannot find uid for message {}", message);
+            return;
+        }
         ThingUID thingUID = new ThingUID(uid, bridge, id.replace(ID_DELIMITER, "_"));
 
         if (!bridgeHandler.getConfiguration().disableDiscovery) {

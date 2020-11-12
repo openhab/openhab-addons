@@ -213,7 +213,7 @@ public class EnedisHttpApi {
     public UserInfo getUserInfo() throws LinkyException {
         final String user_info_url = URL_APPS_LINCS + "/userinfos";
         String data = getData(user_info_url);
-        return gson.fromJson(data, UserInfo.class);
+        return Objects.requireNonNull(gson.fromJson(data, UserInfo.class));
     }
 
     private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)

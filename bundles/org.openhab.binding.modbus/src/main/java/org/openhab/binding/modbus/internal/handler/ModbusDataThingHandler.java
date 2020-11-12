@@ -17,12 +17,7 @@ import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -922,7 +917,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     }
 
     private ChannelUID getChannelUID(String channelID) {
-        return channelCache.computeIfAbsent(channelID, id -> new ChannelUID(getThing().getUID(), id));
+        return Objects
+                .requireNonNull(channelCache.computeIfAbsent(channelID, id -> new ChannelUID(getThing().getUID(), id)));
     }
 
     private void updateStatusIfChanged(ThingStatus status) {

@@ -204,7 +204,7 @@ public class NeeoApi implements AutoCloseable {
         try (HttpRequest req = new HttpRequest()) {
             final HttpResponse res = req.sendGetCommand(sysInfo);
             if (res.getHttpCode() == HttpStatus.OK_200) {
-                return GSON.fromJson(res.getContent(), NeeoSystemInfo.class);
+                return Objects.requireNonNull(GSON.fromJson(res.getContent(), NeeoSystemInfo.class));
             } else {
                 throw res.createException();
             }

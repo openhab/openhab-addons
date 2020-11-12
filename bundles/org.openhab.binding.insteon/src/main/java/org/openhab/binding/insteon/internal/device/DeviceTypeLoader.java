@@ -74,7 +74,7 @@ public class DeviceTypeLoader {
      * Reads the device types from input stream and stores them in memory for
      * later access.
      *
-     * @param is the input stream from which to read
+     * @param in the input stream from which to read
      */
     public void loadDeviceTypesXML(InputStream in) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -204,20 +204,18 @@ public class DeviceTypeLoader {
     public static synchronized DeviceTypeLoader instance() {
         if (deviceTypeLoader.getDeviceTypes().isEmpty()) {
             InputStream input = DeviceTypeLoader.class.getResourceAsStream("/device_types.xml");
-            if (input != null) {
-                try {
+            try {
+                if (input != null) {
                     deviceTypeLoader.loadDeviceTypesXML(input);
-                } catch (ParserConfigurationException e) {
-                    logger.warn("parser config error when reading device types xml file: ", e);
-                } catch (SAXException e) {
-                    logger.warn("SAX exception when reading device types xml file: ", e);
-                } catch (IOException e) {
-                    logger.warn("I/O exception when reading device types xml file: ", e);
+                } else {
+                    logger.warn("Resource stream is null, cannot read xml file.");
                 }
-                logger.debug("loaded {} devices: ", deviceTypeLoader.getDeviceTypes().size());
-                deviceTypeLoader.logDeviceTypes();
-            } else {
-                logger.warn("unable to get device types xml file as a resource");
+            } catch (ParserConfigurationException e) {
+                logger.warn("parser config error when reading device types xml file: ", e);
+            } catch (SAXException e) {
+                logger.warn("SAX exception when reading device types xml file: ", e);
+            } catch (IOException e) {
+                logger.warn("I/O exception when reading device types xml file: ", e);
             }
         }
         return deviceTypeLoader;

@@ -5,6 +5,7 @@
 package org.openhab.binding.lametrictime.api.common.impl.typeadapters.imported;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -51,6 +52,9 @@ public abstract class CustomizedTypeAdapterFactory<C> implements TypeAdapterFact
             {
                 JsonElement tree = elementAdapter.read(in);
                 afterRead(tree);
+                if (tree == null) {
+                    throw new IOException("null reader");
+                }
                 return delegate.fromJsonTree(tree);
             }
         };

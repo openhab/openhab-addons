@@ -16,6 +16,7 @@ import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -1145,11 +1146,10 @@ public class RotelSimuConnector extends RotelConnector {
         String label;
         if (considerFollowMain && source.getName().equals(RotelSource.CAT1_FOLLOW_MAIN.getName())) {
             label = "SOURCE";
-        } else if (sourcesLabels.get(source) != null) {
-            label = sourcesLabels.get(source);
         } else {
-            label = source.getLabel();
+            label = Objects.requireNonNullElse(sourcesLabels.get(source), source.getLabel());
         }
+
         return label;
     }
 }

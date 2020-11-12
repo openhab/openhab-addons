@@ -533,14 +533,14 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         channels.sort((c1, c2) -> {
             String label1 = c1.getLabel();
             String label2 = c2.getLabel();
-            if (label1 == null && label2 != null) {
+            if (label1 != null && label2 != null) {
+                return label1.compareTo(label2);
+            } else if (label1 == null && label2 != null) {
                 return 1;
             } else if (label1 != null && label2 == null) {
                 return -1;
-            } else if (label1 == null && label2 == null) {
-                return 0;
             } else {
-                return label1.compareTo(label2);
+                return 0;
             }
         });
         ThingBuilder builder = editThing();

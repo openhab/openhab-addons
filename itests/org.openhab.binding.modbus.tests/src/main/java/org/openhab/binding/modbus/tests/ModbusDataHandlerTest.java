@@ -20,11 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
@@ -207,6 +203,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 assertThat(String.format("Could not determine correct item type for %s", channelId), item,
                         is(notNullValue()));
                 assertNotNull(item);
+                Objects.requireNonNull(item);
                 addItem(item);
                 toBeLinked.put(itemName, channelUID);
             }

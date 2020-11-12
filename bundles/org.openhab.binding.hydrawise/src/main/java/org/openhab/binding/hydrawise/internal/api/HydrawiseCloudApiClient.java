@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hydrawise.internal.api;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -89,7 +90,7 @@ public class HydrawiseCloudApiClient {
     public StatusScheduleResponse getStatusSchedule(int controllerId)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
         String json = doGet(String.format(STATUS_SCHEDUE_URL, apiKey, controllerId));
-        StatusScheduleResponse response = gson.fromJson(json, StatusScheduleResponse.class);
+        StatusScheduleResponse response = Objects.requireNonNull(gson.fromJson(json, StatusScheduleResponse.class));
         throwExceptionIfResponseError(response);
         return response;
     }
@@ -104,13 +105,13 @@ public class HydrawiseCloudApiClient {
     public CustomerDetailsResponse getCustomerDetails()
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
         String json = doGet(String.format(CUSTOMER_DETAILS_URL, apiKey));
-        CustomerDetailsResponse response = gson.fromJson(json, CustomerDetailsResponse.class);
+        CustomerDetailsResponse response = Objects.requireNonNull(gson.fromJson(json, CustomerDetailsResponse.class));
         throwExceptionIfResponseError(response);
         return response;
     }
 
     /***
-     * Sets the controller with supplied {@value id} as the current controller
+     * Sets the controller with supplied {@param id} as the current controller
      *
      * @param id
      * @return SetControllerResponse
@@ -121,7 +122,7 @@ public class HydrawiseCloudApiClient {
     public SetControllerResponse setController(int id)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException, HydrawiseCommandException {
         String json = doGet(String.format(SET_CONTROLLER_URL, apiKey, id));
-        SetControllerResponse response = gson.fromJson(json, SetControllerResponse.class);
+        SetControllerResponse response = Objects.requireNonNull(gson.fromJson(json, SetControllerResponse.class));
         throwExceptionIfResponseError(response);
         if (!response.message.equals("OK")) {
             throw new HydrawiseCommandException(response.message);
@@ -271,7 +272,7 @@ public class HydrawiseCloudApiClient {
     private String relayCommand(String url)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException, HydrawiseCommandException {
         String json = doGet(url);
-        SetZoneResponse response = gson.fromJson(json, SetZoneResponse.class);
+        SetZoneResponse response = Objects.requireNonNull(gson.fromJson(json, SetZoneResponse.class));
         throwExceptionIfResponseError(response);
         if ("error".equals(response.messageType)) {
             throw new HydrawiseCommandException(response.message);

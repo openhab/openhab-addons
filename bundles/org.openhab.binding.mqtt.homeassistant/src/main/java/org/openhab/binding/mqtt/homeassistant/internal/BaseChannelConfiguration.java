@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,7 +55,7 @@ public abstract class BaseChannelConfiguration {
      */
     public static <C extends BaseChannelConfiguration> C fromString(final String configJSON, final Gson gson,
             final Class<C> clazz) {
-        return gson.fromJson(configJSON, clazz);
+        return Objects.requireNonNull(gson.fromJson(configJSON, clazz));
     }
 
     /**

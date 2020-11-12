@@ -17,10 +17,7 @@ import static org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.net.UnknownHostException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.CoAP.Code;
@@ -389,6 +386,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     continue;
                 }
                 CoIotDescrSen sen = sensorMap.get(s.id);
+                Objects.requireNonNull(sen);
                 // find matching sensor definition from device description, use the Link ID as index
                 sen = coiot.fixDescription(sen, blkMap);
                 if (!blkMap.containsKey(sen.links)) {
