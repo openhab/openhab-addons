@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,7 +67,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private long refreshInterval;
     private long hardRefreshInterval;
 
-    private final Client client = ClientBuilder.newClient();
     private @Nullable HDPowerViewWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable ScheduledFuture<?> hardRefreshFuture;
@@ -116,7 +114,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        webTargets = new HDPowerViewWebTargets(client, host);
+        webTargets = new HDPowerViewWebTargets(ClientBuilder.newClient(), host);
         refreshInterval = config.refresh;
         hardRefreshInterval = config.hardRefresh;
         schedulePoll();
