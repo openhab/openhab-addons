@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBinding;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.VeluxItemType;
+import org.openhab.binding.velux.internal.action.VeluxActions;
 import org.openhab.binding.velux.internal.bridge.VeluxBridge;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeActuators;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeDeviceStatus;
@@ -37,6 +40,7 @@ import org.openhab.binding.velux.internal.bridge.VeluxBridgeSetHouseStatusMonito
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeWLANConfig;
 import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
+import org.openhab.binding.velux.internal.bridge.common.RunReboot;
 import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
@@ -59,9 +63,11 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -452,8 +458,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             return;
         }
         logger.trace("syncChannelsWithProducts(): there are some existing products with changed parameters.");
-        outer: for (VeluxProduct product : bridgeParameters.actuators.getChannel().existingProducts
-                .valuesOfModified()) {
+        for (VeluxProduct product : bridgeParameters.actuators.getChannel().existingProducts.valuesOfModified()) {
             logger.trace("syncChannelsWithProducts(): actuator {} has changed values.", product.getProductName());
             ProductBridgeIndex productPbi = product.getBridgeProductIndex();
             logger.trace("syncChannelsWithProducts(): bridge index is {}.", productPbi);
@@ -473,17 +478,19 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 // Handle value inversion
                 boolean isInverted = channel2VeluxActuator.get(channelUID).isInverted();
                 logger.trace("syncChannelsWithProducts(): isInverted is {}.", isInverted);
-                VeluxProductPosition position = new VeluxProductPosition(product.getCurrentPosition());
-                if (position.isValid()) {
-                    PercentType positionAsPercent = position.getPositionAsPercentType(isInverted);
-                    logger.debug("syncChannelsWithProducts(): updating channel {} to position {}%.", channelUID,
-                            positionAsPercent);
-                    updateState(channelUID, positionAsPercent);
-                } else {
-                    logger.trace("syncChannelsWithProducts(): update of channel {} to position {} skipped.", channelUID,
-                            position);
+                if (!product.isManualOpen()) {
+                    VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
+                    if (position.isValid()) {
+                        PercentType positionAsPercent = position.getPositionAsPercentType(isInverted);
+                        logger.debug("syncChannelsWithProducts(): updating channel {} to position {}%.", channelUID,
+                                positionAsPercent);
+                        updateState(channelUID, positionAsPercent);
+                        break;
+                    }
                 }
-                break outer;
+                logger.trace("syncChannelsWithProducts(): update of channel {} to position 'UNDEFINED'.", channelUID);
+                updateState(channelUID, UnDefType.UNDEF);
+                break;
             }
         }
         logger.trace("syncChannelsWithProducts(): resetting dirty flag.");
@@ -719,5 +726,35 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         ThingProperty.setValue(this, VeluxBindingConstants.PROPERTY_BRIDGE_TIMESTAMP_SUCCESS,
                 new java.util.Date(thisBridge.lastSuccessfulCommunication()).toString());
         logger.trace("handleCommandScheduled({}) done.", Thread.currentThread());
+    }
+
+    /**
+     * Method called by an OpenHAB Rules Action to issue a reboot command to the hub.
+     *
+     * @return true if the command could be issued
+     */
+    public Boolean runReboot() {
+        logger.info("runReboot() called on {}", getThing().getUID());
+        RunReboot bcp = thisBridge.bridgeAPI().runReboot();
+        ExecutorService handleScheduler = this.handleScheduler;
+        if (bcp != null && handleScheduler != null) {
+            // background execution of reboot process
+            handleScheduler.execute(() -> {
+                if (thisBridge.bridgeCommunicate(bcp)) {
+                    logger.info("Reboot command {}sucessfully sent to {}", bcp.isCommunicationSuccessful() ? "" : "un",
+                            getThing().getUID());
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Register the reboot action
+     */
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(VeluxActions.class);
     }
 }

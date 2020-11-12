@@ -13,7 +13,6 @@
 package org.openhab.binding.velux.internal.things;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velux.internal.VeluxBindingConstants.MotionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +57,24 @@ public class VeluxProduct {
         }
     }
 
+    // State (of movement) of an actuator
+    private static enum State {
+        NON_EXECUTING(0),
+        ERROR(1),
+        NOT_USED(2),
+        WAITING_FOR_POWER(3),
+        EXECUTING(4),
+        DONE(5),
+        MANUAL_OVERRIDE(0x80),
+        UNKNOWN(0xFF);
+
+        public final int value;
+
+        private State(int value) {
+            this.value = value;
+        }
+    }
+
     // Class internal
 
     private VeluxProductName name;
@@ -71,7 +88,7 @@ public class VeluxProduct {
     private int variation = 0;
     private int powerMode = 0;
     private String serialNumber = VeluxProductSerialNo.UNKNOWN;
-    private int state = 0;
+    private int state = State.UNKNOWN.value;
     private int currentPosition = 0;
     private int target = 0;
     private int remainingTime = 0;
@@ -143,8 +160,7 @@ public class VeluxProduct {
         this.powerMode = powerMode;
         this.serialNumber = serialNumber;
         this.state = state;
-        this.currentPosition = (state > MotionState.ERROR.ordinal()) && (state < MotionState.DONE.ordinal()) ? target
-                : currentPosition;
+        this.currentPosition = currentPosition;
         this.target = target;
         this.remainingTime = remainingTime;
         this.timeStamp = timeStamp;
@@ -334,5 +350,22 @@ public class VeluxProduct {
      */
     public int getTimeStamp() {
         return timeStamp;
+    }
+
+    /**
+     * @return <b>currentPosition</b> if the actuator is stationary, or <b>target</b> position if in motion
+     */
+    public int getDisplayPosition() {
+        if (((state & 0xf) > State.ERROR.value) && ((state & 0xf) < State.DONE.value)) {
+            return target;
+        }
+        return currentPosition;
+    }
+
+    /**
+     * @return true if the actuator has been manually opened
+     */
+    public boolean isManualOpen() {
+        return (state & State.MANUAL_OVERRIDE.value) != 0;
     }
 }
