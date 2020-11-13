@@ -191,7 +191,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected void removedCompletedJobs() {
-        scheduledJobs.removeIf(Future::isDone);
+        scheduledJobs.removeIf(ScheduledFuture::isDone);
     }
 
     @Override
