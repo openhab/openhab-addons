@@ -91,14 +91,12 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             if (thisBridgeHandler.thisBridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful()) {
                 try {
                     VeluxProduct product = bcp.getProduct();
-                    if (!product.isManualOpen()) {
-                        VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
-                        if (position.isValid()) {
-                            PercentType posPercent = position.getPositionAsPercentType(veluxActuator.isInverted());
-                            LOGGER.trace("handleRefresh(): position of actuator is {}%.", posPercent);
-                            newState = posPercent;
-                            break;
-                        }
+                    VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
+                    if (position.isValid()) {
+                        PercentType posPercent = position.getPositionAsPercentType(veluxActuator.isInverted());
+                        LOGGER.trace("handleRefresh(): position of actuator is {}%.", posPercent);
+                        newState = posPercent;
+                        break;
                     }
                     LOGGER.trace("handleRefresh(): position of actuator is 'UNDEFINED'.");
                     newState = UnDefType.UNDEF;

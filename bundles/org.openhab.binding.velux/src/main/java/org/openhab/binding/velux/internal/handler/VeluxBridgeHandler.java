@@ -478,15 +478,13 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 // Handle value inversion
                 boolean isInverted = channel2VeluxActuator.get(channelUID).isInverted();
                 logger.trace("syncChannelsWithProducts(): isInverted is {}.", isInverted);
-                if (!product.isManualOpen()) {
-                    VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
-                    if (position.isValid()) {
-                        PercentType positionAsPercent = position.getPositionAsPercentType(isInverted);
-                        logger.debug("syncChannelsWithProducts(): updating channel {} to position {}%.", channelUID,
-                                positionAsPercent);
-                        updateState(channelUID, positionAsPercent);
-                        break;
-                    }
+                VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
+                if (position.isValid()) {
+                    PercentType positionAsPercent = position.getPositionAsPercentType(isInverted);
+                    logger.debug("syncChannelsWithProducts(): updating channel {} to position {}%.", channelUID,
+                            positionAsPercent);
+                    updateState(channelUID, positionAsPercent);
+                    break;
                 }
                 logger.trace("syncChannelsWithProducts(): update of channel {} to position 'UNDEFINED'.", channelUID);
                 updateState(channelUID, UnDefType.UNDEF);
