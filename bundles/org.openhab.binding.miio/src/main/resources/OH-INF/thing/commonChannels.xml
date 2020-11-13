@@ -534,4 +534,122 @@
 			</options>
 		</command>
 	</channel-type>
+	<channel-type id="MijiaVacuumV2_status">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Status</label>
+		<state>
+			<options>
+				<option value="1">Idle</option>
+				<option value="2">Sweeping</option>
+				<option value="3">Paused</option>
+				<option value="4">Error</option>
+				<option value="5">Charging</option>
+				<option value="6">Go Charging</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_fault">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Device Fault</label>
+		<state>
+			<options>
+				<option value="0">No Faults</option>
+				<option value="1">Left-wheel-error</option>
+				<option value="2">Right-wheel-error</option>
+				<option value="3">Cliff-error</option>
+				<option value="4">Low-battery-error</option>
+				<option value="5">Bump-error</option>
+				<option value="6">Main-brush-error</option>
+				<option value="7">Side-brush-error</option>
+				<option value="8">Fan-motor-error</option>
+				<option value="9">Dustbin-error</option>
+				<option value="10">Charging-error</option>
+				<option value="11">No-wate-error</option>
+				<option value="12">Pick-up-error</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_mode">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Mode</label>
+		<state>
+			<options>
+				<option value="1">Auto-clean</option>
+				<option value="2">Spot-clean</option>
+				<option value="3">Wallflow-clean</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_target-water-level">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Target Water Level</label>
+		<state>
+			<options>
+				<option value="1">Level1</option>
+				<option value="2">Level2</option>
+				<option value="3">Level3</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_fan-level">
+		<item-type>Number</item-type>
+		<label>Robot Cleaner - Fan Level</label>
+		<state>
+			<options>
+				<option value="0">Silence</option>
+				<option value="1">Stanrd</option>
+				<option value="2">Middle</option>
+				<option value="3">Enchance</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_charging-state">
+		<item-type>Number</item-type>
+		<label>Battery - Charging State</label>
+		<state>
+			<options>
+				<option value="0">Not-charging</option>
+				<option value="1">Charging</option>
+				<option value="2">Charging-competely</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_language">
+		<item-type>Number</item-type>
+		<label>Language - Language</label>
+		<state>
+			<options>
+				<option value="0">English</option>
+				<option value="1">简体中文</option>
+				<option value="2">Español</option>
+				<option value="3">Русский</option>
+				<option value="4">Italiano</option>
+				<option value="5">Français</option>
+				<option value="6">Deutsch</option>
+				<option value="7">한국어</option>
+				<option value="8">Polski</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_mop-status">
+		<item-type>Number</item-type>
+		<label>Other Status - Mop Status</label>
+		<state>
+			<options>
+				<option value="0">Mop UnInstall</option>
+				<option value="1">Mop Install</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="MijiaVacuumV2_action">
+		<item-type>String</item-type>
+		<label>Robot Cleaner - Actions</label>
+		<state>
+			<options>
+				<option value="start">Start Vacuum</option>
+				<option value="stop">Stop Vacuum</option>
+				<option value="dock">Go-To Dock</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>
