@@ -72,8 +72,7 @@ A `upnprenderer` has the following optional configuration parameters:
 
 * `notificationvolumeadjustment`: volume adjustment from current volume in percent (range -100 to +100) for notifications when no volume is set in `playSound` command, default 10.
 
-* `maxnotificationduration`: maximum duration for notifications, default 15s.
-  When set to 0s, there will not be a maximum duration.
+* `maxnotificationduration`: maximum duration for notifications (default 15s), no maximum duration when set to 0s.
 
 The full syntax for manual configuration is:
 
@@ -316,7 +315,6 @@ BasicUI has a number of limitations that impact the way some of the channels can
   This cannot be done with BasicUI, but can be achieved with rules.
 
 * The player control in BasicUI does not support fast forward or rewind.
-  This can be done through rules.
 
 None of these are limitations when using the main UI.
 

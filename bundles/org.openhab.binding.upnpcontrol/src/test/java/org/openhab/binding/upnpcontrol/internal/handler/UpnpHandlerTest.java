@@ -57,7 +57,7 @@ public class UpnpHandlerTest {
 
     private final Logger logger = LoggerFactory.getLogger(UpnpHandlerTest.class);
 
-    private static final ScheduledExecutorService testScheduler = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
 
     protected @Nullable UpnpHandler handler;
 
@@ -146,7 +146,7 @@ public class UpnpHandlerTest {
             return null;
         }).when(executor).scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(), any(TimeUnit.class));
         doAnswer(invocation -> {
-            return testScheduler.schedule((Runnable) invocation.getArguments()[0], 500, TimeUnit.MILLISECONDS);
+            return SCHEDULER.schedule((Runnable) invocation.getArguments()[0], 500, TimeUnit.MILLISECONDS);
         }).when(executor).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
     }
 

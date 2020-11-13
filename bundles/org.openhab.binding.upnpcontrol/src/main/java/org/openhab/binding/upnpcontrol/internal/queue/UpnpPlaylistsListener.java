@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.upnpcontrol.internal.queue;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for updating playlists list in multiple handlers.
  *
  * @author Mark Herwege - Initial contribution
  *
  */
+@NonNullByDefault
 public interface UpnpPlaylistsListener {
 
     public void playlistsListChanged();

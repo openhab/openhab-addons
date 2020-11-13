@@ -47,16 +47,15 @@ public class UpnpXMLParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpnpXMLParser.class);
 
-    private static final MessageFormat METADATA_FORMAT = new MessageFormat(
-            "<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
-                    + "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" "
-                    + "xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\">"
-                    + "<item id=\"{0}\" parentID=\"{1}\" restricted=\"true\"><dc:title>{2}</dc:title>"
-                    + "<upnp:class>{3}</upnp:class><upnp:album>{4}</upnp:album>"
-                    + "<upnp:albumArtURI>{5}</upnp:albumArtURI><dc:creator>{6}</dc:creator>"
-                    + "<upnp:artist>{7}</upnp:artist><dc:publisher>{8}</dc:publisher>"
-                    + "<upnp:genre>{9}</upnp:genre><upnp:originalTrackNumber>{10}</upnp:originalTrackNumber>"
-                    + "</item></DIDL-Lite>");
+    private static final String METADATA_PATTERN = "<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
+            + "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" "
+            + "xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\">"
+            + "<item id=\"{0}\" parentID=\"{1}\" restricted=\"true\"><dc:title>{2}</dc:title>"
+            + "<upnp:class>{3}</upnp:class><upnp:album>{4}</upnp:album>"
+            + "<upnp:albumArtURI>{5}</upnp:albumArtURI><dc:creator>{6}</dc:creator>"
+            + "<upnp:artist>{7}</upnp:artist><dc:publisher>{8}</dc:publisher>"
+            + "<upnp:genre>{9}</upnp:genre><upnp:originalTrackNumber>{10}</upnp:originalTrackNumber>"
+            + "</item></DIDL-Lite>";
 
     private enum Element {
         TITLE,
@@ -414,7 +413,8 @@ public class UpnpXMLParser {
         String genre = StringEscapeUtils.escapeXml(entry.getGenre());
         Integer trackNumber = entry.getOriginalTrackNumber();
 
-        String metadata = METADATA_FORMAT.format(new Object[] { id, parentId, title, upnpClass, album, albumArtUri,
+        final MessageFormat messageFormat = new MessageFormat(METADATA_PATTERN);
+        String metadata = messageFormat.format(new Object[] { id, parentId, title, upnpClass, album, albumArtUri,
                 creator, artist, publisher, genre, trackNumber });
 
         return metadata;
