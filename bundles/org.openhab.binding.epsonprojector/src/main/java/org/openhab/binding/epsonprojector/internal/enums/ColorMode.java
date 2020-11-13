@@ -30,7 +30,7 @@ public enum ColorMode {
     NORMAL(0x02),
     MEETING(0x03),
     PRESENTATION(0x04),
-    THEATER(0x05),
+    CINEMANIGHT(0x05),
     DYNAMIC(0x06),
     NATURAL(0x07),
     SPORTS(0x08),

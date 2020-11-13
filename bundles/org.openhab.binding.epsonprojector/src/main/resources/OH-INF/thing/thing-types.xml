@@ -6,7 +6,7 @@
 
 	<thing-type id="projector">
 		<label>Epson Projector</label>
-		<description>An Epson projector which supports the ESC/VP21 protocol over a serial port</description>
+		<description>An Epson projector which supports the ESC/VP21 protocol</description>
 
 		<channels>
 			<channel id="power" typeId="power"/>
@@ -16,31 +16,21 @@
 			<channel id="verticalkeystone" typeId="verticalkeystone"/>
 			<channel id="horizontalkeystone" typeId="horizontalkeystone"/>
 			<channel id="autokeystone" typeId="autokeystone"/>
+			<channel id="freeze" typeId="freeze"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
 			<channel id="luminance" typeId="luminance"/>
 			<channel id="source" typeId="source"/>
-			<channel id="directsource" typeId="directsource"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
 			<channel id="density" typeId="density"/>
 			<channel id="tint" typeId="tint"/>
-			<channel id="sharpness" typeId="sharpness"/>
 			<channel id="colortemperature" typeId="colortemperature"/>
 			<channel id="fleshtemperature" typeId="fleshtemperature"/>
 			<channel id="colormode" typeId="colormode"/>
 			<channel id="horizontalposition" typeId="horizontalposition"/>
 			<channel id="verticalposition" typeId="verticalposition"/>
-			<channel id="tracking" typeId="tracking"/>
-			<channel id="sync" typeId="sync"/>
-			<channel id="offsetred" typeId="offsetred"/>
-			<channel id="offsetgreen" typeId="offsetgreen"/>
-			<channel id="offsetblue" typeId="offsetblue"/>
-			<channel id="gainred" typeId="gainred"/>
-			<channel id="gaingreen" typeId="gaingreen"/>
-			<channel id="gainblue" typeId="gainblue"/>
 			<channel id="gamma" typeId="gamma"/>
-			<channel id="gammastep" typeId="gammastep"/>
-			<channel id="color" typeId="color"/>
+			<channel id="volume" typeId="volume"/>
 			<channel id="mute" typeId="mute"/>
 			<channel id="horizontalreverse" typeId="horizontalreverse"/>
 			<channel id="verticalreverse" typeId="verticalreverse"/>
@@ -53,22 +43,21 @@
 			<parameter name="serialPort" type="text" required="false">
 				<label>Serial Port</label>
 				<context>serial-port</context>
-				<description>Serial port device name that is connected to the Epson projector to control, e.g. COM1 on Windows,
-					/dev/ttyS0 on Linux or /dev/tty.PL2303-0000103D on Mac</description>
+				<description>Serial Port to Use for Connecting to the Epson Projector</description>
 			</parameter>
 			<parameter name="host" type="text" required="false">
 				<label>Host</label>
 				<context>network-address</context>
-				<description>IP address (for serial communication over TCP, leave the serial port parameter blank)</description>
+				<description>IP address (For Serial Communication over TCP, Leave the Serial Port Parameter Blank)</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false">
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
-				<description>Port (for serial communication over TCP, leave the serial port parameter blank)</description>
+				<description>Port (For Serial Communication over TCP, Leave the Serial Port Parameter Blank)</description>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" required="false">
+			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
 				<label>Polling interval</label>
-				<description>Polling interval in milliseconds to update channel states</description>
-				<default>10000</default>
+				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
+				<default>10</default>
 			</parameter>
 		</config-description>
 
@@ -77,44 +66,51 @@
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>
-		<description>Powers the device on or off.</description>
+		<description>Powers the Projector On or Off</description>
 	</channel-type>
 	<channel-type id="powerstate">
 		<item-type>String</item-type>
 		<label>Power State</label>
-		<description>Retrieves the actual power state of the device.</description>
+		<description>Retrieves the Actual Power State of the Projector</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lamptime">
 		<item-type>Number</item-type>
 		<label>Lamp Time</label>
-		<description>Retrieves the lamp hours.</description>
+		<description>Retrieves the Lamp Hours</description>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 	<channel-type id="keycode" advanced="true">
 		<item-type>Number</item-type>
 		<label>KeyCode</label>
-		<description>Handles the KeyCode Epson command</description>
+		<description>Send a KEY Operation Command to the Projector</description>
 	</channel-type>
 	<channel-type id="verticalkeystone" advanced="true">
 		<item-type>Number</item-type>
 		<label>VerticalKeystone</label>
-		<description>Handles the VerticalKeystone Epson command</description>
+		<description>Retrieves or Set the Vertical Keystone</description>
+		<state min="-30" max="30" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="horizontalkeystone" advanced="true">
 		<item-type>Number</item-type>
 		<label>HorizontalKeystone</label>
-		<description>Handles the HorizontalKeystone Epson command</description>
+		<description>Retrieves or Set the Horizontal Keystone</description>
+		<state min="-30" max="30" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="autokeystone" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>AutoKeystone</label>
-		<description>Handles the AutoKeystone Epson command</description>
+		<description>Turn the Auto Keystone On or Off</description>
+	</channel-type>
+	<channel-type id="freeze" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Freeze</label>
+		<description>Turn the Freeze Mode On or Off</description>
 	</channel-type>
 	<channel-type id="aspectratio" advanced="true">
 		<item-type>String</item-type>
 		<label>Aspect Ratio</label>
-		<description>Retrieves or set the aspect ratio.</description>
+		<description>Retrieves or Set the Aspect Ratio</description>
 		<state>
 			<options>
 				<option value="NORMAL">NORMAL</option>
@@ -124,13 +120,19 @@
 				<option value="WIDE">WIDE</option>
 				<option value="ANAMORPHIC">ANAMORPHIC</option>
 				<option value="SQUEEZE">SQUEEZE</option>
+				<option value="RATIO4X3">RATIO4X3</option>
+				<option value="ZOOM4X3">ZOOM4X3</option>
+				<option value="RATIO16X9">RATIO16X9</option>
+				<option value="UP16X9">UP16X9</option>
+				<option value="DOWN16X9">DOWN16X9</option>
+				<option value="REAL">REAL</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="luminance">
 		<item-type>String</item-type>
 		<label>Luminance</label>
-		<description>Retrieves or set the ECO mode.</description>
+		<description>Retrieves or Set the ECO mode</description>
 		<state>
 			<options>
 				<option value="NORMAL">NORMAL</option>
@@ -141,65 +143,58 @@
 	<channel-type id="source">
 		<item-type>String</item-type>
 		<label>Source</label>
-		<description>Retrieves or select the input source.</description>
+		<description>Retrieves or Select the Input Source</description>
 		<state>
 			<options>
-				<option value="HDMI1">HDMI1</option>
-				<option value="HDMI2">HDMI2</option>
-				<option value="COMPONENT">COMPONENT</option>
-				<option value="PC_DSUB">PC_DSUB</option>
-				<option value="VIDEO">VIDEO</option>
-				<option value="SVIDEO">SVIDEO</option>
+				<option value="30">HDMI1</option>
+				<option value="A0">HDMI2</option>
+				<option value="14">Component</option>
+				<option value="20">PC DSUB</option>
+				<option value="41">Video</option>
+				<option value="42">S-Video</option>
 			</options>
 		</state>
-	</channel-type>
-	<channel-type id="directsource" advanced="true">
-		<item-type>Number</item-type>
-		<label>DirectSource</label>
-		<description>Handles the DirectSource Epson command</description>
 	</channel-type>
 	<channel-type id="brightness" advanced="true">
 		<item-type>Number</item-type>
 		<label>Brightness</label>
-		<description>Handles the Brightness Epson command</description>
-		<state min="0" max="100"></state>
+		<description>Retrieves or Set the Brightness</description>
+		<state min="-24" max="24" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="contrast" advanced="true">
 		<item-type>Number</item-type>
 		<label>Contrast</label>
-		<description>Handles the Contrast Epson command</description>
-		<state min="0" max="100"></state>
+		<description>Retrieves or Set the Contrast</description>
+		<state min="-24" max="24" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="density" advanced="true">
 		<item-type>Number</item-type>
-		<label>Density</label>
-		<description>Handles the Density Epson command</description>
-		<state min="0" max="100"></state>
+		<label>Density (Color Saturation)</label>
+		<description>Retrieves or Set the Density</description>
+		<state min="-32" max="32" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="tint" advanced="true">
 		<item-type>Number</item-type>
 		<label>Tint</label>
-		<description>Handles the Tint Epson command</description>
-	</channel-type>
-	<channel-type id="sharpness" advanced="true">
-		<item-type>Number</item-type>
-		<label>Sharpness</label>
-		<description>Handles the Sharpness Epson command</description>
+		<description>Retrieves or Set the Tint</description>
+		<state min="-32" max="32" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="colortemperature" advanced="true">
 		<item-type>Number</item-type>
-		<label>ColorTemperature</label>
-		<description>Handles the ColorTemperature Epson command</description>
+		<label>Color Temperature</label>
+		<description>Retrieves or Set the Color Temperature</description>
+		<state min="0" max="9" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="fleshtemperature" advanced="true">
 		<item-type>Number</item-type>
-		<label>FleshTemperature</label>
-		<description>Handles the FleshTemperature Epson command</description>
+		<label>Flesh Temperature</label>
+		<description>Retrieves or Set the Flesh Temperature</description>
+		<state min="0" max="6" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="colormode">
 		<item-type>String</item-type>
 		<label>Color Mode</label>
-		<description>Retrieves or set the color mode.</description>
+		<description>Retrieves or Set the Color Mode</description>
 		<state>
 			<options>
 				<option value="DYNAMIC">DYNAMIC</option>
@@ -213,93 +208,71 @@
 				<option value="CINEMA3D">CINEMA3D</option>
 				<option value="DYNAMIC3D">DYNAMIC3D</option>
 				<option value="THX3D">THX3D</option>
+				<option value="SRGB">SRGB</option>
+				<option value="NORMAL">NORMAL</option>
+				<option value="MEETING">MEETING</option>
+				<option value="PRESENTATION">PRESENTATION</option>
+				<option value="SPORTS">SPORTS</option>
+				<option value="CUSTOM">CUSTOM</option>
+				<option value="BLACKBOARD">BLACKBOARD</option>
+				<option value="WHITEBOARD">WHITEBOARD</option>
+				<option value="PHOTO">PHOTO</option>
+				<option value="SILVER">SILVER</option>
+				<option value="XVCOLOR">XVCOLOR</option>
+				<option value="DICOMSIM">DICOMSIM</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="horizontalposition" advanced="true">
 		<item-type>Number</item-type>
 		<label>HorizontalPosition</label>
-		<description>Handles the HorizontalPosition Epson command</description>
+		<description>Retrieves or Set the Horizontal Position</description>
 	</channel-type>
 	<channel-type id="verticalposition" advanced="true">
 		<item-type>Number</item-type>
 		<label>VerticalPosition</label>
-		<description>Handles the VerticalPosition Epson command</description>
-	</channel-type>
-	<channel-type id="tracking" advanced="true">
-		<item-type>Number</item-type>
-		<label>Tracking</label>
-		<description>Handles the Tracking Epson command</description>
-	</channel-type>
-	<channel-type id="sync" advanced="true">
-		<item-type>Number</item-type>
-		<label>Sync</label>
-		<description>Handles the Sync Epson command</description>
-	</channel-type>
-	<channel-type id="offsetred" advanced="true">
-		<item-type>Number</item-type>
-		<label>OffsetRed</label>
-		<description>Handles the OffsetRed Epson command</description>
-	</channel-type>
-	<channel-type id="offsetgreen" advanced="true">
-		<item-type>Number</item-type>
-		<label>OffsetGreen</label>
-		<description>Handles the OffsetGreen Epson command</description>
-	</channel-type>
-	<channel-type id="offsetblue" advanced="true">
-		<item-type>Number</item-type>
-		<label>OffsetBlue</label>
-		<description>Handles the OffsetBlue Epson command</description>
-	</channel-type>
-	<channel-type id="gainred" advanced="true">
-		<item-type>Number</item-type>
-		<label>GainRed</label>
-		<description>Handles the GainRed Epson command</description>
-	</channel-type>
-	<channel-type id="gaingreen" advanced="true">
-		<item-type>Number</item-type>
-		<label>GainGreen</label>
-		<description>Handles the GainGreen Epson command</description>
-	</channel-type>
-	<channel-type id="gainblue" advanced="true">
-		<item-type>Number</item-type>
-		<label>GainBlue</label>
-		<description>Handles the GainBlue Epson command</description>
+		<description>Retrieves or Set the Vertical Position</description>
 	</channel-type>
 	<channel-type id="gamma" advanced="true">
 		<item-type>String</item-type>
 		<label>Gamma</label>
-		<description>Handles the Gamma Epson command</description>
+		<description>Retrieves or Set the Gamma</description>
+		<state>
+			<options>
+				<option value="G2_0">G2_0</option>
+				<option value="G2_1">G2_1</option>
+				<option value="G2_2">G2_2</option>
+				<option value="G2_3">G2_3</option>
+				<option value="G2_4">G2_4</option>
+				<option value="CUSTOM">CUSTOM</option>
+			</options>
+		</state>
 	</channel-type>
-	<channel-type id="gammastep" advanced="true">
+	<channel-type id="volume" advanced="true">
 		<item-type>Number</item-type>
-		<label>GammaStep</label>
-		<description>Handles the GammaStep Epson command</description>
-	</channel-type>
-	<channel-type id="color" advanced="true">
-		<item-type>String</item-type>
-		<label>Color</label>
-		<description>Handles the Color Epson command</description>
+		<label>Volume</label>
+		<description>Retrieves or Set the Volume</description>
+		<state min="0" max="20" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="mute" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Mute</label>
-		<description>Handles the Mute Epson command</description>
+		<label>AV Mute</label>
+		<description>Turn the AV Mute On or Off</description>
 	</channel-type>
 	<channel-type id="horizontalreverse" advanced="true">
 		<item-type>Switch</item-type>
 		<label>HorizontalReverse</label>
-		<description>Handles the HorizontalReverse Epson command</description>
+		<description>Turn the Horizontal Reverse On or Off</description>
 	</channel-type>
 	<channel-type id="verticalreverse" advanced="true">
 		<item-type>Switch</item-type>
 		<label>VerticalReverse</label>
-		<description>Handles the VerticalReverse Epson command</description>
+		<description>Turn the Vertical Reverse On or Off</description>
 	</channel-type>
 	<channel-type id="background" advanced="true">
 		<item-type>String</item-type>
 		<label>Background</label>
-		<description>Handles the Background Epson command</description>
+		<description>Select the Background</description>
 		<state>
 			<options>
 				<option value="BLACK">BLACK</option>
@@ -311,13 +284,13 @@
 	<channel-type id="errcode" advanced="true">
 		<item-type>Number</item-type>
 		<label>ErrCode</label>
-		<description>Retrieves the last error code.</description>
+		<description>Retrieves the Last Error Code</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="errmessage" advanced="true">
 		<item-type>String</item-type>
 		<label>ErrMessage</label>
-		<description>Retrieves the description of the last error.</description>
+		<description>Retrieves the Description of the Last Error</description>
 		<state readOnly="true"/>
 	</channel-type>
 

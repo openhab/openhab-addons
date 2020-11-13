@@ -64,7 +64,7 @@ public enum ErrorMessage {
         try {
             return Arrays.stream(values()).filter(e -> e.code == code).findFirst().get().getMessage();
         } catch (NoSuchElementException e) {
-            return "Unknown error";
+            return "Unknown error code: " + code;
         }
     }
 }

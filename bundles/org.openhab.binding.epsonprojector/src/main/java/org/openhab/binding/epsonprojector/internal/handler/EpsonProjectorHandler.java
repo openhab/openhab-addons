@@ -24,12 +24,10 @@ import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
 import org.openhab.binding.epsonprojector.internal.configuration.EpsonProjectorConfiguration;
 import org.openhab.binding.epsonprojector.internal.enums.AspectRatio;
 import org.openhab.binding.epsonprojector.internal.enums.Background;
-import org.openhab.binding.epsonprojector.internal.enums.Color;
 import org.openhab.binding.epsonprojector.internal.enums.ColorMode;
 import org.openhab.binding.epsonprojector.internal.enums.Gamma;
 import org.openhab.binding.epsonprojector.internal.enums.Luminance;
 import org.openhab.binding.epsonprojector.internal.enums.PowerStatus;
-import org.openhab.binding.epsonprojector.internal.enums.Source;
 import org.openhab.binding.epsonprojector.internal.enums.Switch;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
@@ -57,13 +55,15 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EpsonProjectorHandler extends BaseThingHandler {
-    public static final int DEFAULT_POLLING_INTERVAL = 10000;
+    public static final int DEFAULT_POLLING_INTERVAL_SEC = 10;
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorHandler.class);
 
     private EpsonProjectorDevice device = new EpsonProjectorDevice();
     private @Nullable ScheduledFuture<?> pollingJob;
     private final SerialPortManager serialPortManager;
+
+    private boolean isPowerOn = false;
 
     public EpsonProjectorHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
@@ -95,7 +95,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
             if (serialPort != null && !serialPort.equals("")) {
                 device = new EpsonProjectorDevice(serialPortManager, serialPort);
-            } else if (host != null && !host.equals("") && port > 0) {
+            } else if (host != null && !host.equals("") && port > 0 && port < 65535) {
                 device = new EpsonProjectorDevice(host, port);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
@@ -103,16 +103,20 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             }
 
             try {
+                updateStatus(ThingStatus.OFFLINE);
                 device.connect();
-                updateStatus(ThingStatus.ONLINE);
 
                 List<Channel> channels = this.thing.getChannels();
 
                 pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                     for (Channel channel : channels) {
-                        updateChannelState(channel);
+                        // only query power & lamp time when projector is off
+                        if (isPowerOn || (channel.getUID().getId().equals("power")
+                                || channel.getUID().getId().equals("lamptime"))) {
+                            updateChannelState(channel);
+                        }
                     }
-                }, 0, (pollingInterval > 0) ? pollingInterval : DEFAULT_POLLING_INTERVAL, TimeUnit.MILLISECONDS);
+                }, 0, (pollingInterval > 0) ? pollingInterval : DEFAULT_POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
             } catch (EpsonProjectorException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -132,7 +136,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     private void updateChannelState(Channel channel) {
         try {
-            if (!isLinked(channel.getUID())) {
+            if (!isLinked(channel.getUID()) && !channel.getUID().getId().equals("power")) {
                 return;
             }
 
@@ -140,12 +144,17 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
             State state = queryDataFromDevice(epsonCommand);
 
-            updateState(channel.getUID(), state);
+            if (state != null && isLinked(channel.getUID())) {
+                updateState(channel.getUID(), state);
+                if (this.getThing().getStatus() != ThingStatus.ONLINE)
+                    updateStatus(ThingStatus.ONLINE);
+            }
         } catch (IllegalArgumentException e) {
             logger.warn("Unknown channel {}", channel.getUID().getId());
         }
     }
 
+    @Nullable
     private State queryDataFromDevice(EpsonProjectorCommandType commandType) {
         EpsonProjectorDevice remoteController = device;
 
@@ -156,8 +165,8 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
             switch (commandType) {
                 case AKEYSTONE:
-                    int autoKeystone = remoteController.getAutoKeystone();
-                    return new DecimalType(autoKeystone);
+                    Switch autoKeystone = remoteController.getAutoKeystone();
+                    return autoKeystone == Switch.ON ? OnOffType.ON : OnOffType.OFF;
                 case ASPECT_RATIO:
                     AspectRatio aspectRatio = remoteController.getAspectRatio();
                     return new StringType(aspectRatio.toString());
@@ -167,9 +176,6 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case BRIGHTNESS:
                     int brightness = remoteController.getBrightness();
                     return new DecimalType(brightness);
-                case COLOR:
-                    Color color = remoteController.getColor();
-                    return new StringType(color.toString());
                 case COLOR_MODE:
                     ColorMode colorMode = remoteController.getColorMode();
                     return new StringType(colorMode.toString());
@@ -182,9 +188,6 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case DENSITY:
                     int density = remoteController.getDensity();
                     return new DecimalType(density);
-                case DIRECT_SOURCE:
-                    int directSource = remoteController.getDirectSource();
-                    return new DecimalType(directSource);
                 case ERR_CODE:
                     int err = remoteController.getError();
                     return new DecimalType(err);
@@ -194,21 +197,12 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case FLESH_TEMP:
                     int fleshColor = remoteController.getFleshColor();
                     return new DecimalType(fleshColor);
-                case GAIN_BLUE:
-                    int gainBlue = remoteController.getGainBlue();
-                    return new DecimalType(gainBlue);
-                case GAIN_GREEN:
-                    int gainGreen = remoteController.getGainGreen();
-                    return new DecimalType(gainGreen);
-                case GAIN_RED:
-                    int gainRed = remoteController.getGainRed();
-                    return new DecimalType(gainRed);
+                case FREEZE:
+                    Switch freeze = remoteController.getFreeze();
+                    return freeze == Switch.ON ? OnOffType.ON : OnOffType.OFF;
                 case GAMMA:
                     Gamma gamma = remoteController.getGamma();
                     return new StringType(gamma.toString());
-                case GAMMA_STEP:
-                    logger.warn("Get '{}' not implemented!", commandType.toString());
-                    return UnDefType.UNDEF;
                 case HKEYSTONE:
                     int hKeystone = remoteController.getHorizontalKeystone();
                     return new DecimalType(hKeystone);
@@ -229,39 +223,29 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case MUTE:
                     Switch mute = remoteController.getMute();
                     return mute == Switch.ON ? OnOffType.ON : OnOffType.OFF;
-                case OFFSET_BLUE:
-                    int offsetBlue = remoteController.getOffsetBlue();
-                    return new DecimalType(offsetBlue);
-                case OFFSET_GREEN:
-                    int offsetGreen = remoteController.getOffsetGreen();
-                    return new DecimalType(offsetGreen);
-                case OFFSET_RED:
-                    int offsetRed = remoteController.getOffsetRed();
-                    return new DecimalType(offsetRed);
                 case POWER:
                     PowerStatus powerStatus = remoteController.getPowerStatus();
-                    return powerStatus == PowerStatus.ON ? OnOffType.ON : OnOffType.OFF;
+                    if (powerStatus == PowerStatus.ON || powerStatus == PowerStatus.WARMUP) {
+                        isPowerOn = true;
+                        return OnOffType.ON;
+                    } else {
+                        isPowerOn = false;
+                        return OnOffType.OFF;
+                    }
                 case POWER_STATE:
                     PowerStatus powerStatus1 = remoteController.getPowerStatus();
                     return new StringType(powerStatus1.toString());
-                case SHARP:
-                    logger.warn("Get '{}' not implemented!", commandType.toString());
-                    return UnDefType.UNDEF;
                 case SOURCE:
-                    Source source = remoteController.getSource();
-                    return new StringType(source.toString());
-                case SYNC:
-                    int sync = remoteController.getSync();
-                    return new DecimalType(sync);
+                    return new StringType(remoteController.getSource());
                 case TINT:
                     int tint = remoteController.getTint();
                     return new DecimalType(tint);
-                case TRACKING:
-                    int tracking = remoteController.getTracking();
-                    return new DecimalType(tracking);
                 case VKEYSTONE:
                     int vKeystone = remoteController.getVerticalKeystone();
                     return new DecimalType(vKeystone);
+                case VOLUME:
+                    int volume = remoteController.getVolume();
+                    return new DecimalType(volume);
                 case VPOSITION:
                     int vPosition = remoteController.getVerticalPosition();
                     return new DecimalType(vPosition);
@@ -273,9 +257,9 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
             }
         } catch (EpsonProjectorException e) {
-            // some commands are invalid depending on the state of the device, for instance if it's in standby mode
             logger.debug("Couldn't execute command '{}'", commandType, e);
-            // closeConnection();
+            closeConnection();
+            return null;
         }
 
         return UnDefType.UNDEF;
@@ -291,7 +275,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
             switch (commandType) {
                 case AKEYSTONE:
-                    remoteController.setAutoKeystone(((DecimalType) command).intValue());
+                    remoteController.setAutoKeystone((command == OnOffType.ON ? Switch.ON : Switch.OFF));
                     break;
                 case ASPECT_RATIO:
                     remoteController.setAspectRatio(AspectRatio.valueOf(command.toString()));
@@ -301,9 +285,6 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     break;
                 case BRIGHTNESS:
                     remoteController.setBrightness(((DecimalType) command).intValue());
-                    break;
-                case COLOR:
-                    remoteController.setColor(Color.valueOf(command.toString()));
                     break;
                 case COLOR_MODE:
                     remoteController.setColorMode(ColorMode.valueOf(command.toString()));
@@ -317,9 +298,6 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case DENSITY:
                     remoteController.setDensity(((DecimalType) command).intValue());
                     break;
-                case DIRECT_SOURCE:
-                    remoteController.setDirectSource(((DecimalType) command).intValue());
-                    break;
                 case ERR_CODE:
                     logger.error("'{}' is read only parameter", commandType);
                     break;
@@ -329,20 +307,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case FLESH_TEMP:
                     remoteController.setFleshColor(((DecimalType) command).intValue());
                     break;
-                case GAIN_BLUE:
-                    remoteController.setGainBlue(((DecimalType) command).intValue());
-                    break;
-                case GAIN_GREEN:
-                    remoteController.setGainGreen(((DecimalType) command).intValue());
-                    break;
-                case GAIN_RED:
-                    remoteController.setGainRed(((DecimalType) command).intValue());
+                case FREEZE:
+                    remoteController.setFreeze(command == OnOffType.ON ? Switch.ON : Switch.OFF);
                     break;
                 case GAMMA:
                     remoteController.setGamma(Gamma.valueOf(command.toString()));
-                    break;
-                case GAMMA_STEP:
-                    logger.warn("Set '{}' not implemented!", commandType.toString());
                     break;
                 case HKEYSTONE:
                     remoteController.setHorizontalKeystone(((DecimalType) command).intValue());
@@ -365,38 +334,29 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case MUTE:
                     remoteController.setMute((command == OnOffType.ON ? Switch.ON : Switch.OFF));
                     break;
-                case OFFSET_BLUE:
-                    remoteController.setOffsetBlue(((DecimalType) command).intValue());
-                    break;
-                case OFFSET_GREEN:
-                    remoteController.setOffsetGreen(((DecimalType) command).intValue());
-                    break;
-                case OFFSET_RED:
-                    remoteController.setOffsetRed(((DecimalType) command).intValue());
-                    break;
                 case POWER:
-                    remoteController.setPower((command == OnOffType.ON ? Switch.ON : Switch.OFF));
+                    if (command == OnOffType.ON) {
+                        remoteController.setPower(Switch.ON);
+                        isPowerOn = true;
+                    } else {
+                        remoteController.setPower(Switch.OFF);
+                        isPowerOn = false;
+                    }
                     break;
                 case POWER_STATE:
                     logger.error("'{}' is read only parameter", commandType);
                     break;
-                case SHARP:
-                    logger.warn("Set '{}' not implemented!", commandType.toString());
-                    break;
                 case SOURCE:
-                    remoteController.setSource(Source.valueOf(command.toString()));
-                    break;
-                case SYNC:
-                    remoteController.setSync(((DecimalType) command).intValue());
+                    remoteController.setSource(command.toString());
                     break;
                 case TINT:
                     remoteController.setTint(((DecimalType) command).intValue());
                     break;
-                case TRACKING:
-                    remoteController.setTracking(((DecimalType) command).intValue());
-                    break;
                 case VKEYSTONE:
                     remoteController.setVerticalKeystone(((DecimalType) command).intValue());
+                    break;
+                case VOLUME:
+                    remoteController.setVolume(((DecimalType) command).intValue());
                     break;
                 case VPOSITION:
                     remoteController.setVerticalPosition(((DecimalType) command).intValue());
@@ -419,6 +379,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
         try {
             logger.debug("Closing connection to device '{}'", this.thing.getUID());
             remoteController.disconnect();
+            updateStatus(ThingStatus.OFFLINE);
         } catch (EpsonProjectorException e) {
             logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
         }

@@ -14,7 +14,7 @@ The projector thing cannot be auto-discovered, it has to be configured by settin
 - _serialPort_: Serial port device name that is connected to the Epson projector to control, e.g. COM1 on Windows, /dev/ttyS0 on Linux or /dev/tty.PL2303-0000103D on Mac
 - _host_: IP address (for serial communication over TCP, leave the serial port parameter blank)
 - _port_: Port (for serial communication over TCP, leave the serial port parameter blank)
-- _pollingInterval_: Polling interval in milliseconds to update channel states
+- _pollingInterval_: Polling interval in seconds to update channel states
 
 ## Channels
 
@@ -26,32 +26,23 @@ The projector thing cannot be auto-discovered, it has to be configured by settin
 | KeyCode | Number |  |  | 
 | VerticalKeystone | Number |  |  | 
 | HorizontalKeystone | Number |  |  | 
-| AutoKeystone | Number |  |  | 
+| AutoKeystone | Switch |  |  | 
+| Freeze | Switch |  |  | 
 | AspectRatio | String | Retrieves or set the aspect ratio. |  | 
 | Luminance | String | Retrieves or set the ECO mode. |  | 
-| Source | String | Retrieves or select the input source. |  | 
-| DirectSource | Number |  |  | 
+| Source | String | Retrieves or select the input source. |  |  
 | Brightness | Number |  |  | 
 | Contrast | Number |  |  | 
 | Density | Number |  |  | 
-| Tint | Number |  |  | 
-| Sharpness | Number |  |  | 
+| Tint | Number |  |  |  
 | ColorTemperature | Number |  |  | 
 | FleshTemperature | Number |  |  | 
 | ColorMode | String | Retrieves or set the color mode. |  | 
 | HorizontalPosition | Number |  |  | 
 | VerticalPosition | Number |  |  | 
-| Tracking | Number |  |  | 
-| Sync | Number |  |  | 
-| OffsetRed | Number |  |  | 
-| OffsetGreen | Number |  |  | 
-| OffsetBlue | Number |  |  | 
-| GainRed | Number |  |  | 
-| GainGreen | Number |  |  | 
-| GainBlue | Number |  |  | 
+
 | Gamma | String |  |  | 
-| GammaStep | Number |  |  | 
-| Color | String |  |  | 
+| Volume | Number |  |  | 
 | Mute | Switch |  |  | 
 | HorizontalReverse | Switch |  |  | 
 | VerticalReverse | Switch |  |  | 
@@ -66,20 +57,20 @@ items/epson.items
 ```
 Switch epsonPower                          { channel="epsonprojector:hometheater:power" }
 String epsonSource        "Source [%s]"    { channel="epsonprojector:hometheater:source" }
-Number epsonDirectSource  "Direct Source"  { channel="epsonprojector:hometheater:directsource"}
 
+Switch epsonVolume             { channel="epsonprojector:hometheater:volume" }
 Switch epsonMute               { channel="epsonprojector:hometheater:mute" }
 
 Switch epsonHorizontalReverse  { channel="epsonprojector:hometheater:horizontalreverse" }
 Switch epsonVerticalReverse    { channel="epsonprojector:hometheater:verticalreverse" }
 
-String epsonAspectRatio       "AspectRatio [%s]"        { channel="epsonprojector:hometheater:aspectratio" }
-String epsonColorMode         "ColorMode [%s]"          { channel="epsonprojector:hometheater:colormode" }
+String epsonAspectRatio       "Aspect Ratio [%s]"        { channel="epsonprojector:hometheater:aspectratio" }
+String epsonColorMode         "Color Mode [%s]"          { channel="epsonprojector:hometheater:colormode" }
 Number epsonColorTemperature  "Color Temperature [%d]"  <colorwheel>   { channel="epsonprojector:hometheater:colortemperature" }
 
-Number epsonLampTime    "Lamp Time [%d h]"  <switch>       { channel="epsonprojector:hometheater:lamptime" }
-Number epsonErrCode     "ErrCode [%d]"      <"siren-on">   { channel="epsonprojector:hometheater:errcode" }
-String epsonErrMessage  "ErrMessage [%s]"   <"siren-off">  { channel="epsonprojector:hometheater:errmessage" }
+Number epsonLampTime    "Lamp Time [%d h]"   <switch>       { channel="epsonprojector:hometheater:lamptime" }
+Number epsonErrCode     "Error Code [%d]"    <"siren-on">   { channel="epsonprojector:hometheater:errcode" }
+String epsonErrMessage  "Error Message [%s]" <"siren-off">  { channel="epsonprojector:hometheater:errmessage" }
 ```
 
 sitemaps/epson.sitemap
@@ -89,9 +80,9 @@ sitemap epson label="Epson Projector Demo"
 {
     Frame label="Controls" {
         Switch     item=epsonPower         label="Power"
-        Text       item=epsonSource
-        Selection  item=epsonDirectSource  label="DirectSource" mappings=[20="COMPONENT", 32="PC", 48=HDMI1, 160=HDMI2, 65=VIDEO, 66=SVIDEO]
-        Switch     item=epsonMute label="Mute"
+        Selection  item=epsonSource label="Source" mappings=["30"="HDMI1", "A0"="HDMI2", "14"="Component", "20"="PC DSUB", "41"="Video", "42"="S-Video"]
+        Text       item=epsonVolume label="Volume"
+        Switch     item=epsonMute label="AV Mute"
     }
     Frame label="Flip Projection" {
         Switch  item=epsonHorizontalReverse label="Horizontal Reverse"
