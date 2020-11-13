@@ -89,6 +89,7 @@ public enum MiIoDevices {
     HUMIDIFIER("zhimi.humidifier.v1", "Mi Humdifier", THING_TYPE_BASIC),
     LUMI_C11("lumi.ctrl_neutral1.v1", "Light Control (Wall Switch)", THING_TYPE_UNSUPPORTED),
     LUMI_C12("lumi.ctrl_neutral2.v1", "Light Control (Wall Switch)", THING_TYPE_UNSUPPORTED),
+    LUMI_CURTAIN_HAGL05("lumi.curtain.hagl05", "Xiaomi youpin Curtain Controller (Wi-Fi)", THING_TYPE_BASIC),
     MRBOND_AIRER_M1PRO("mrbond.airer.m1pro", "Mr Bond M1 Pro Smart Clothes Dryer", THING_TYPE_BASIC),
     MRBOND_AIRER_M1S("mrbond.airer.m1s", "Mr Bond M1 Smart Clothes Dryer", THING_TYPE_BASIC),
     MRBOND_AIRER_M1SUPER("mrbond.airer.m1super", "Mr Bond M1 Super Smart Clothes Dryer", THING_TYPE_BASIC),

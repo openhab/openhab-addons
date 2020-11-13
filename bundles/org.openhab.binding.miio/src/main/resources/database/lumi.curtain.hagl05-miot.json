@@ -1,0 +1,136 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.curtain.hagl05"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Curtain Fault",
+				"channel": "Fault",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "current-position",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Curtain Position",
+				"channel": "CurrentPosition",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Curtain Status",
+				"channel": "Status",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "target-position",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Curtain Target Position",
+				"channel": "TargetPosition",
+				"channelType": "miot_uint8",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "manual-enabled",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Curtain_cfg - Manual Enabled",
+				"channel": "ManualEnabled",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "polarity",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Curtain_cfg - Polarity",
+				"channel": "Polarity",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "pos-limit",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Curtain_cfg - Position Limit",
+				"channel": "PosLimit",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "en-night-tip-light",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Curtain_cfg - Light",
+				"channel": "EnNightTipLight",
+				"channelType": "miot_int32",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "run-time",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Curtain_cfg - Runtime",
+				"channel": "RunTime",
+				"channelType": "miot_int32",
+				"type": "Number:Time",
+				"refresh": true,
+				"actions": []
+			}
+		],
+		"experimental": true
+	}
+}
