@@ -175,10 +175,10 @@
 	</channel-type>
 
 	<channel-type id="purity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Purity</label>
-		<description>Purity of the air.</description>
-		<state readOnly="true"/>
+		<description>Purity of the air. A higher value indicates a higher pollution.</description>
+		<state min="500" max="5500" pattern="%.1f ppm" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="air-description">

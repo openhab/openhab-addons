@@ -25,7 +25,7 @@ Binding for the Bosch Smart Home Controller.
 **Thing Type ID**: `in-wall-switch`
 
 | Channel Type ID    | Item Type     | Description                                  |
-| ------------------ | ------------- | -------------------------------------------- |
+|--------------------|---------------|----------------------------------------------|
 | power-switch       | Switch        | Current state of the switch.                 |
 | power-consumption  | Number:Power  | Current power consumption (W) of the device. |
 | energy-consumption | Number:Energy | Energy consumption of the device.            |
@@ -34,23 +34,23 @@ Binding for the Bosch Smart Home Controller.
 
 **Thing Type ID**: `twinguard`
 
-| Channel Type ID    | Item Type            | Description                                   |
-| ------------------ | -------------------- | --------------------------------------------- |
-| temperature        | Number:Temperature   | Current measured temperature.                 |
-| temperature-rating | String               | Rating of the currently measured temperature. |
-| humidity           | Number:Dimensionless | Current measured humidity.                    |
-| humidity-rating    | String               | Rating of current measured humidity.          |
-| purity             | String               | Purity of the air.                            |
-| purity-rating      | String               | Rating of current measured purity.            |
-| air-description    | String               | Overall description of the air quality.       |
-| combined-rating    | String               | Combined rating of the air quality.           |
+| Channel Type ID    | Item Type            | Description                                                                                       |
+|--------------------|----------------------|---------------------------------------------------------------------------------------------------|
+| temperature        | Number:Temperature   | Current measured temperature.                                                                     |
+| temperature-rating | String               | Rating of the currently measured temperature.                                                     |
+| humidity           | Number:Dimensionless | Current measured humidity.                                                                        |
+| humidity-rating    | String               | Rating of current measured humidity.                                                              |
+| purity             | Number:Dimensionless | Purity of the air (ppm). Range from 500 to 5500 ppm. A higher value indicates a higher pollution. |
+| purity-rating      | String               | Rating of current measured purity.                                                                |
+| air-description    | String               | Overall description of the air quality.                                                           |
+| combined-rating    | String               | Combined rating of the air quality.                                                               |
 
 ### Bosch Window/Door contacts
 
 **Thing Type ID**: `window-contact`
 
 | Channel Type ID | Item Type | Description                  |
-| --------------- | --------- | ---------------------------- |
+|-----------------|-----------|------------------------------|
 | contact         | Contact   | Contact state of the device. |
 
 ### Bosch Motion Detector
@@ -58,7 +58,7 @@ Binding for the Bosch Smart Home Controller.
 **Thing Type ID**: `motion-detector`
 
 | Channel Type ID | Item Type | Description                    |
-| --------------- | --------- | ------------------------------ |
+|-----------------|-----------|--------------------------------|
 | latest-motion   | DateTime  | The date of the latest motion. |
 
 ### Bosch Shutter Control in-wall
@@ -66,7 +66,7 @@ Binding for the Bosch Smart Home Controller.
 **Thing Type ID**: `shutter-control`
 
 | Channel Type ID | Item Type     | Description                              |
-| --------------- | ------------- | ---------------------------------------- |
+|-----------------|---------------|------------------------------------------|
 | level           | Rollershutter | Current open ratio (0 to 100, Step 0.5). |
 
 ### Bosch Thermostat
@@ -74,7 +74,7 @@ Binding for the Bosch Smart Home Controller.
 **Thing Type ID**: `thermostat`
 
 | Channel Type ID       | Item Type            | Description                                    |
-| --------------------- | -------------------- | ---------------------------------------------- |
+|-----------------------|----------------------|------------------------------------------------|
 | temperature           | Number:Temperature   | Current measured temperature.                  |
 | valve-tappet-position | Number:Dimensionless | Current open ratio of valve tappet (0 to 100). |
 
@@ -83,7 +83,7 @@ Binding for the Bosch Smart Home Controller.
 **Thing Type ID**: `climate-control`
 
 | Channel Type ID      | Item Type          | Description                   |
-| -------------------- | ------------------ | ----------------------------- |
+|----------------------|--------------------|-------------------------------|
 | temperature          | Number:Temperature | Current measured temperature. |
 | setpoint-temperature | Number:Temperature | Desired temperature.          |
 
