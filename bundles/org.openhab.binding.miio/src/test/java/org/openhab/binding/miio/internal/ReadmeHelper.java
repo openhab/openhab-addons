@@ -79,8 +79,13 @@ public class ReadmeHelper {
     }
 
     private StringWriter deviceList() {
+        long items = Arrays.asList(MiIoDevices.values()).stream()
+                .filter(device -> !device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED)).count();
+        String devicesCount = String.format("Currently the miio binding supports %d different models.", items);
+        LOGGER.info(devicesCount);
         StringWriter sw = new StringWriter();
-
+        sw.write(devicesCount);
+        sw.write("\r\n\r\n");
         sw.write(
                 "| Device                       | ThingType        | Device Model           | Supported | Remark     |\r\n");
         sw.write(

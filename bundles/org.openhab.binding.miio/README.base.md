@@ -100,10 +100,10 @@ Besides the regular configuration (like ip address, token) the modelId needs to 
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
 Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
 
-## Supported property test
+## Supported property test for unsupported devices
 
 The unsupported device has a test channel with switch. When switching on, all known properties are tested, this may take few minutes.
-A test report will be shown in the log and is saved in the userdata/miio folder.
+A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
 If supported properties are found, an experimental database file is saved to the conf/misc/miio folder (see below chapter).
 The thing will go offline and will come back online as basic device, supporting the found channels.
 The database file may need to be modified to display the right channel names.
