@@ -14,6 +14,52 @@
 		</channels>
 	</channel-group-type>
 
+	<!-- Generic channels -->
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Generic Color Channel</label>
+	</channel-type>
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Generic Contact Channel</label>
+	</channel-type>
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Generic DateTime Channel</label>
+	</channel-type>
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Generic Dimmer Channel</label>
+	</channel-type>
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Generic Image Channel</label>
+	</channel-type>
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Generic Location Channel</label>
+	</channel-type>
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Generic Number Channel</label>
+	</channel-type>
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Generic Player Channel</label>
+	</channel-type>
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Generic Rollershutter Channel</label>
+	</channel-type>
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>Generic String Channel</label>
+	</channel-type>
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Generic Switch Channel</label>
+	</channel-type>
+
 	<!-- Network channels -->
 	<channel-type id="ssid" advanced="true">
 		<item-type>String</item-type>

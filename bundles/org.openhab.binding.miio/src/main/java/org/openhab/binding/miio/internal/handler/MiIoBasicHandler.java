@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miio.internal.handler;
 
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -452,6 +452,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             thingBuilder.withoutChannel(new ChannelUID(getThing().getUID(), channel));
         }
         ChannelBuilder newChannel = ChannelBuilder.create(channelUID, datatype).withLabel(friendlyName);
+        boolean useGenericChannelType = false;
         if (!channelType.isBlank()) {
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(channelType);
             if (channelTypeRegistry.getChannelType(channelTypeUID) != null) {
@@ -459,7 +460,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             } else {
                 logger.debug("ChannelType '{}' is not available. Check the Json file for {}", channelTypeUID,
                         getThing().getUID());
+                useGenericChannelType = true;
             }
+        } else {
+            useGenericChannelType = true;
+        }
+        if (useGenericChannelType) {
+            newChannel = newChannel.withType(new ChannelTypeUID(BINDING_ID, datatype.toLowerCase()));
         }
         thingBuilder.withChannel(newChannel.build());
         return channelUID;
