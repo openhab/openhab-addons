@@ -20,11 +20,11 @@
 		</channels>
 
 		<properties>
-			<property name="vendor">Hayward</property>
-			<property name="minPumpSpeed"></property>
-			<property name="maxPumpSpeed"></property>
-			<property name="minPumpRPM"></property>
-			<property name="maxPumpRPM"></property>
+			<property name="Vendor">Hayward</property>
+			<property name="Min Pump Percent"></property>
+			<property name="Max Pump Percent"></property>
+			<property name="Min Pump RPM"></property>
+			<property name="Max Pump RPM"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 

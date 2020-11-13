@@ -14,11 +14,13 @@
 package org.openhab.binding.haywardomnilogic.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -55,6 +57,8 @@ public class HaywardThingHandler extends BaseThingHandler {
     }
 
     public State toState(String type, String channelID, String value) throws NumberFormatException {
+        HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
+
         switch (type) {
             case "Number":
                 return new DecimalType(value);
@@ -73,7 +77,11 @@ public class HaywardThingHandler extends BaseThingHandler {
                         return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.PARTS_PER_MILLION);
                 }
             case "Number:Temperature":
-                return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
+                if (bridgehandler.account.units.equals("Standard")) {
+                    return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
+                } else {
+                    return new QuantityType<>(Integer.parseInt(value), SIUnits.CELSIUS);
+                }
             default:
                 return StringType.valueOf(value);
         }

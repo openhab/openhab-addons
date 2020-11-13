@@ -90,6 +90,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         List<String> property3 = new ArrayList<>();
         List<String> property4 = new ArrayList<>();
 
+        // Get Units (Standard, Metric)
+        property1 = handler.evaluateXPath("//System/Units/text()", xmlResponse);
+        handler.account.units = property1.get(0);
+
+        // Get Variable Speed Pump Units (percent, RPM)
+        property2 = handler.evaluateXPath("//System/Msp-Vsp-Speed-Format/text()", xmlResponse);
+        handler.account.vspSpeedFormat = property2.get(0);
+
         // Find Backyard
         names = handler.evaluateXPath("//Backyard/Name/text()", xmlResponse);
 

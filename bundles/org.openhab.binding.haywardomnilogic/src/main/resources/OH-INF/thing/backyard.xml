@@ -23,7 +23,9 @@
 		</channels>
 
 		<properties>
-			<property name="vendor">Hayward</property>
+			<property name="Vendor">Hayward</property>
+			<property name="Units"></property>
+			<property name="VSP Speed Format"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 

@@ -30,4 +30,6 @@ public class HaywardAccount {
     public String firstName = "";
     public String lastName = "";
     public String roleType = "";
+    public String units = "";
+    public String vspSpeedFormat = "";
 }

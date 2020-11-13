@@ -95,10 +95,10 @@ public class HaywardBindingConstants {
     public static final String CHANNEL_FILTER_STATE = "filterState";
     public static final String CHANNEL_FILTER_LASTSPEED = "filterLastSpeed";
 
-    public static final String PROPERTY_FILTER_MINPUMPSPEED = "minPumpSpeed";
-    public static final String PROPERTY_FILTER_MAXPUMPSPEED = "maxPumpSpeed";
-    public static final String PROPERTY_FILTER_MINPUMPRPM = "minPumpRPM";
-    public static final String PROPERTY_FILTER_MAXPUMPRPM = "maxPumpRPM";
+    public static final String PROPERTY_FILTER_MINPUMPSPEED = "Min Pump Percent";
+    public static final String PROPERTY_FILTER_MAXPUMPSPEED = "Max Pump Percent";
+    public static final String PROPERTY_FILTER_MINPUMPRPM = "Min Pump RPM";
+    public static final String PROPERTY_FILTER_MAXPUMPRPM = "Max Pump RPM";
 
     // List of all Channel ids (heater)
     public static final String CHANNEL_HEATER_STATE = "heaterState";
@@ -109,10 +109,10 @@ public class HaywardBindingConstants {
     public static final String CHANNEL_PUMP_ENABLE = "pumpEnable";
     public static final String CHANNEL_PUMP_SPEED = "pumpSpeed";
 
-    public static final String PROPERTY_PUMP_MINPUMPSPEED = "minPumpSpeed";
-    public static final String PROPERTY_PUMP_MAXPUMPSPEED = "minPumpSpeed";
-    public static final String PROPERTY_PUMP_MINPUMPRPM = "minPumpRPM";
-    public static final String PROPERTY_PUMP_MAXPUMPRPM = "maxPumpRPM";
+    public static final String PROPERTY_PUMP_MINPUMPSPEED = "Min Pump Speed";
+    public static final String PROPERTY_PUMP_MAXPUMPSPEED = "Min Pump Speed";
+    public static final String PROPERTY_PUMP_MINPUMPRPM = "Min Pump RPM";
+    public static final String PROPERTY_PUMP_MAXPUMPRPM = "Max Pump RPM";
 
     // List of all Channel ids (relay)
     public static final String CHANNEL_RELAY_STATE = "relayState";

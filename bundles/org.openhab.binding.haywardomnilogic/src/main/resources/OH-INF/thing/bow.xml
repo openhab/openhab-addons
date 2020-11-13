@@ -17,7 +17,7 @@
 		</channels>
 
 		<properties>
-			<property name="vendor">Hayward</property>
+			<property name="Vendor">Hayward</property>
 		</properties>
 		<representation-property>systemID</representation-property>
 
