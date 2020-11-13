@@ -1289,7 +1289,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | ManualEnabled    | Number  | Curtain_cfg - Manual Enabled        |            |
 | Polarity         | Number  | Curtain_cfg - Polarity              |            |
 | PosLimit         | Number  | Curtain_cfg - Position Limit        |            |
-| EnNightTipLight  | Number  | Curtain_cfg - Light                 |            |
+| EnNightTipLight  | Switch  | Set night tip light                 |            |
 | RunTime          | Number:Time | Curtain_cfg - Runtime               |            |
 
 ### Mr Bond M1 Pro Smart Clothes Dryer (<a name="mrbond-airer-m1pro">mrbond.airer.m1pro</a>) Channels
@@ -4231,7 +4231,7 @@ Number TargetPosition "Curtain Target Position" (G_curtain) {channel="miio:basic
 Number ManualEnabled "Curtain_cfg - Manual Enabled" (G_curtain) {channel="miio:basic:curtain:ManualEnabled"}
 Number Polarity "Curtain_cfg - Polarity" (G_curtain) {channel="miio:basic:curtain:Polarity"}
 Number PosLimit "Curtain_cfg - Position Limit" (G_curtain) {channel="miio:basic:curtain:PosLimit"}
-Number EnNightTipLight "Curtain_cfg - Light" (G_curtain) {channel="miio:basic:curtain:EnNightTipLight"}
+Switch EnNightTipLight "Set night tip light" (G_curtain) {channel="miio:basic:curtain:EnNightTipLight"}
 Number:Time RunTime "Curtain_cfg - Runtime" (G_curtain) {channel="miio:basic:curtain:RunTime"}
 ```
 

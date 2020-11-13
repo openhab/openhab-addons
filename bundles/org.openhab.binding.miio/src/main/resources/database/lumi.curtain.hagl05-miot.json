@@ -107,10 +107,10 @@
 				"property": "en-night-tip-light",
 				"siid": 4,
 				"piid": 4,
-				"friendlyName": "Curtain_cfg - Light",
+				"friendlyName": "Set night tip light",
 				"channel": "EnNightTipLight",
 				"channelType": "miot_int32",
-				"type": "Number",
+				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
