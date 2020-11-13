@@ -30,7 +30,8 @@ The binding needs a token from the Xiaomi Mi Device in order to be able to contr
 The binding can retrieve the needed tokens from the Xiaomi cloud. 
 Go to the binding config page and enter your cloud username and password. 
 The server(s) to which your devices are connected need to be entered as well. 
-Use the one of the regional servers: ru,us,tw,sg,cn,de. Multiple servers can be separated with comma, or leave blank to test all known servers.
+Use the one of the regional servers: cn,de,i2,tw,ru,sg,us.
+Multiple servers can be separated with comma, or leave blank to test all known servers.
 
 ## Tokens without cloud access
 
@@ -50,7 +51,8 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 ## Binding Configuration
 
 No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
-The list of the known countries and related severs is [here](#Country-Servers)
+The list of the known countries and related severs is [here](#Country-Servers).
+
 After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud. 
 For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
 
@@ -6484,6 +6486,7 @@ Number usedhours "Run Time" (G_heater) {channel="miio:basic:heater:usedhours"}
 ### <a name="Country-Servers">Country Servers</a>
 
 Known country Servers: cn, de, i2, ru, sg, us
+
 Mapping of countries in mihome app to server:
 
 | Country                  | Country Code | Server |
