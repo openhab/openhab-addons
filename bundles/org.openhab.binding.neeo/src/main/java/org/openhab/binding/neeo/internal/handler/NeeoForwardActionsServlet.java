@@ -16,14 +16,12 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -87,10 +85,11 @@ public class NeeoForwardActionsServlet extends HttpServlet {
      * @param resp the non-null response
      */
     @Override
-    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
-            throws ServletException, IOException {
-        Objects.requireNonNull(req, "req cannot be null");
-        Objects.requireNonNull(resp, "resp cannot be null");
+    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
+        if (req == null || resp == null) {
+            logger.warn("doPost called with req={}, resp={}, non-null required.", req, resp);
+            return;
+        }
 
         final String json = IOUtils.toString(req.getReader());
         logger.debug("handleForwardActions {}", json);
@@ -98,11 +97,11 @@ public class NeeoForwardActionsServlet extends HttpServlet {
         callback.post(json);
 
         final String fc = forwardChain;
-        if (fc != null && StringUtils.isNotEmpty(fc)) {
+        if (fc != null && !fc.isEmpty()) {
             scheduler.execute(() -> {
                 try (final HttpRequest request = new HttpRequest(clientBuilder)) {
                     for (final String forwardUrl : fc.split(",")) {
-                        if (StringUtils.isNotEmpty(forwardUrl)) {
+                        if (forwardUrl != null && !forwardUrl.isEmpty()) {
                             final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
                             if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
                                 logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,

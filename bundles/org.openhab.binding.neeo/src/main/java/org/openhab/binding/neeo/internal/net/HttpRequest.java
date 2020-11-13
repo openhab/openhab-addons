@@ -89,6 +89,8 @@ public class HttpRequest implements AutoCloseable {
         NeeoUtil.requireNotEmpty(uri, "uri cannot be empty");
         Objects.requireNonNull(body, "body cannot be null");
 
+        logger.trace("sendPostJsonCommand: target={}, body={}", uri, body);
+
         try {
             final Builder request = client.target(uri).request(MediaType.APPLICATION_JSON);
 
