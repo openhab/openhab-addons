@@ -84,7 +84,7 @@ or in case of unknown models include the model information of a similar device t
 
 # Mi IO Devices
 
-Currently the miio binding supports 204 different models.
+Currently the miio binding supports more than 200 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
