@@ -54,7 +54,7 @@ public class OmnikInverter {
 
     private byte[] generateMagicPacket() {
         ByteBuffer serialByteBuffer = ByteBuffer.allocate(8).putInt(serialNumber).putInt(serialNumber);
-        byte[] serialBytes = serialByteBuffer.flip().array();
+        byte[] serialBytes = serialByteBuffer.array();
         ArrayUtils.reverse(serialBytes);
 
         byte checksumCount = 115;
