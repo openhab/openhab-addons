@@ -83,7 +83,11 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         this.http = http;
         this.gson = gson;
         String websocketID = thing.getUID().getAsString().replace(':', '-');
-        websocketID = websocketID.length() < 3 ? websocketID : websocketID.substring(websocketID.length() - 20);
+        if (websocketID.length() < 4) {
+            websocketID = "openHAB-deconz-" + websocketID;
+        } else if (websocketID.length() > 20) {
+            websocketID = websocketID.substring(websocketID.length() - 20);
+        }
         this.websocket = new WebSocketConnection(this, webSocketFactory.createWebSocketClient(websocketID), gson);
     }
 
