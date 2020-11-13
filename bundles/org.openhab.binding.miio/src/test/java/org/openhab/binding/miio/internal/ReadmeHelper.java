@@ -182,7 +182,9 @@ public class ReadmeHelper {
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
                 if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
-                    LOGGER.info("id :" + id + " not found");
+                    LOGGER.info("id : {} " + id
+                            + " not found. Suggested line to add to MiIoDevices.java: {}(\"{}\", \"{}\", THING_TYPE_BASIC),",
+                            id, id.toUpperCase().replace(".", "_"), id, id);
                 }
             }
         }
