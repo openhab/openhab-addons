@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
@@ -52,15 +54,18 @@ public class NeeoDeviceKeys {
     /** The brain's url */
     private final String brainUrl;
 
+    private final ClientBuilder clientBuilder;
+
     /**
      * Creates the object from the context and brainUrl
      *
      * @param brainUrl the non-empty brain url
      */
-    NeeoDeviceKeys(String brainUrl) {
+    NeeoDeviceKeys(String brainUrl, ClientBuilder clientBuilder) {
         NeeoUtil.requireNotEmpty(brainUrl, "brainUrl cannot be empty");
 
         this.brainUrl = brainUrl;
+        this.clientBuilder = clientBuilder;
     }
 
     /**
@@ -69,7 +74,7 @@ public class NeeoDeviceKeys {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void refresh() throws IOException {
-        try (HttpRequest request = new HttpRequest()) {
+        try (HttpRequest request = new HttpRequest(clientBuilder)) {
             logger.debug("Getting existing device mappings from {}{}", brainUrl, NeeoConstants.PROJECTS_HOME);
             final HttpResponse resp = request.sendGetCommand(brainUrl + NeeoConstants.PROJECTS_HOME);
             if (resp.getHttpCode() != HttpStatus.OK_200) {
