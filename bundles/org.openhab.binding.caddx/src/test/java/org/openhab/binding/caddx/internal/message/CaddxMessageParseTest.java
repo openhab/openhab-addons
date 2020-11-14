@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.caddx.internal.CaddxMessage;
 import org.openhab.binding.caddx.internal.CaddxMessageReaderUtil;
@@ -42,22 +42,12 @@ public class CaddxMessageParseTest {
     }
     // @formatter:on
 
-    @Test
+    @ParameterizedTest
     @MethodSource("data")
     public void testParsing(String messageName, String property, String value) {
         CaddxMessage message = CaddxMessageReaderUtil.readCaddxMessage(messageName);
 
         assertNotNull(message, "Should not be null");
-        /*
-         * assertEquals(property + " should have length: " + value.length(), value.length(),
-         * message.getPropertyById(property).length());
-         */
-        assertEquals(property + " should be: " + value, value, message.getPropertyById(property));
-
-        /*
-         * assertEquals("Should not have any unknown cosem objects", 0, telegram.getUnknownCosemObjects().size());
-         * assertEquals("Expected number of objects", numberOfCosemObjects,
-         * telegram.getCosemObjects().stream().mapToInt(co -> co.getCosemValues().size()).sum());
-         */
+        assertEquals(value, message.getPropertyById(property), property + " should be: " + value);
     }
 }
