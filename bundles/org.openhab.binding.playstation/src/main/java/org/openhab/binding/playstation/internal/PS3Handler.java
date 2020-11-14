@@ -74,6 +74,7 @@ public class PS3Handler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(PS3Configuration.class);
+        isDisposed = false;
 
         updateStatus(ThingStatus.ONLINE);
         setupRefreshTimer();
