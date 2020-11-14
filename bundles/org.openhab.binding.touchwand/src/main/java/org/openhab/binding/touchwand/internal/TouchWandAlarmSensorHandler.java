@@ -14,6 +14,8 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
+import java.util.ArrayList;
+
 import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Temperature;
 
@@ -28,7 +30,9 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 
 /**
@@ -45,6 +49,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
     private static final int BATT_LEVEL_LOW_HYS = 5;
 
     private boolean isBatteryLow = false;
+    private boolean isFirstUpdateTouchWandUnitState = true;
 
     public TouchWandAlarmSensorHandler(Thing thing) {
         super(thing);
@@ -54,6 +59,10 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
         if (unitData instanceof TouchWandUnitDataAlarmSensor) {
             TouchWandUnitDataAlarmSensor sensor = (TouchWandUnitDataAlarmSensor) unitData;
+            if (isFirstUpdateTouchWandUnitState) {
+                removeUnsupportedChannels(sensor);
+                isFirstUpdateTouchWandUnitState = false;
+            }
             updateBatteryLevel(sensor);
             updateIllumination(sensor);
             updateChannelLeak(sensor);
@@ -121,5 +130,44 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
                 updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(sensor.value, SIUnits.CELSIUS));
             }
         }
+    }
+
+    void removeUnsupportedChannels(TouchWandUnitDataAlarmSensor unitData) {
+        ArrayList<Channel> toBeRemovedChannels = new ArrayList<>(thing.getChannels());
+
+        for (BinarySensorEvent bSensor : unitData.getCurrStatus().getbSensorsStatus()) {
+            switch (bSensor.sensorType) {
+                case SENSOR_TYPE_MOTION:
+                    toBeRemovedChannels.remove(thing.getChannel(CHANNEL_MOTION));
+                    break;
+                case SENSOR_TYPE_DOOR_WINDOW:
+                    toBeRemovedChannels.remove(thing.getChannel(CHANNEL_DOORWINDOW));
+                    break;
+                case SENSOR_TYPE_LEAK:
+                    Channel channel = thing.getChannel(CHANNEL_LEAK);
+                    toBeRemovedChannels.remove(channel);
+                    break;
+            }
+        }
+
+        for (Sensor sensor : unitData.getCurrStatus().getSensorsStatus()) {
+            switch (sensor.type) {
+                case SENSOR_TYPE_TEMPERATURE:
+                    toBeRemovedChannels.remove(thing.getChannel(CHANNEL_TEMPERATURE));
+                    break;
+                case SENSOR_TYPE_LUMINANCE:
+                    toBeRemovedChannels.remove(thing.getChannel(CHANNEL_ILLUMINATION));
+                    break;
+            }
+        }
+
+        if (unitData.getHasBattery()) {
+            toBeRemovedChannels.remove(thing.getChannel(CHANNEL_BATTERY_LEVEL));
+            toBeRemovedChannels.remove(thing.getChannel(CHANNEL_BATTERY_LOW));
+        }
+
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withoutChannels(toBeRemovedChannels);
+        updateThing(thingBuilder.build());
     }
 }

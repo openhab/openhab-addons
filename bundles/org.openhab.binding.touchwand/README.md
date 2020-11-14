@@ -43,11 +43,8 @@ No thing configuration is needed
 
 ## Channels 
 
-
 note **Touchwand Wanderfull™** supports various types of alarm sensors such as water leak, door/window sensor and motion sensor.
-in order to keep the Alarm Sensor generic and support all AlarmSensor types, All the alarm sensor channels are available for each sensor
-but only the relevant ones will be updates with the relevant values.
-It is the user responsibility to use the proper channels for the sensors.
+Alarm Sensor thing represents a generic sensor, relevant sensor channels will be displayed once a sensor is added as a Thing.
 
 
 | Channel Type ID   | Item Type          | Description                                                                                                                             

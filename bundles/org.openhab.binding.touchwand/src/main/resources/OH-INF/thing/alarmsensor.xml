@@ -34,7 +34,7 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Illumination</label>
 		<description>
-			This channel shows the brightness of the environment of the device in Lux.
+			This channel shows the brightness of the environment in Lux.
 		</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
