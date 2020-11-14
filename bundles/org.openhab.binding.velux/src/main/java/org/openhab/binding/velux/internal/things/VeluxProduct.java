@@ -362,19 +362,21 @@ public class VeluxProduct {
      * @return The display position of the actuator
      */
     public int getDisplayPosition() {
-        // manual override flag is set: the position is 'unknown'
+        // manual override flag set: position is 'unknown'
         if ((state & State.MANUAL_OVERRIDE.value) != 0) {
             return VeluxProductPosition.VPP_VELUX_UNKNOWN;
         }
-        // no need to check other conditions if targetPosition is same as currentPosition or invalid
-        if ((targetPosition != currentPosition) && (new VeluxProductPosition(targetPosition).isValid())) {
+        // only check other conditions if targetPosition is valid and differs from currentPosition
+        if ((targetPosition != currentPosition) && (targetPosition <= VeluxProductPosition.VPP_VELUX_MAX)
+                && (targetPosition >= VeluxProductPosition.VPP_VELUX_MIN)) {
             int state = this.state & 0xf;
-            // actuator is in motion to a targetPosition: for quicker UI update, return targetPosition
+            // actuator is in motion: for quicker UI update, return targetPosition
             if ((state > State.ERROR.value) && (state < State.DONE.value)) {
                 return targetPosition;
             }
-            // motion completed but currentPosition invalid: return targetPosition instead
-            if ((state == State.DONE.value) && !(new VeluxProductPosition(currentPosition).isValid())) {
+            // motion complete but currentPosition is not valid: return targetPosition
+            if ((state == State.DONE.value) && ((currentPosition > VeluxProductPosition.VPP_VELUX_MAX)
+                    || (currentPosition < VeluxProductPosition.VPP_VELUX_MIN))) {
                 return targetPosition;
             }
         }

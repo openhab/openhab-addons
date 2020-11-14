@@ -58,9 +58,10 @@ public class VeluxProductPosition {
 
     private static final int VPP_OPENHAB_MIN = 0;
     private static final int VPP_OPENHAB_MAX = 100;
-    private static final int VPP_VELUX_MIN = 0x0000;
-    private static final int VPP_VELUX_MAX = 0xc800;
-    protected static final int VPP_VELUX_UNKNOWN = 0xF7FF;
+
+    public static final int VPP_VELUX_MIN = 0x0000;
+    public static final int VPP_VELUX_MAX = 0xc800;
+    public static final int VPP_VELUX_UNKNOWN = 0xF7FF;
 
     private static final int VPP_VELUX_PERCENTAGE_MIN = 0xc900;
     private static final int VPP_VELUX_PERCENTAGE_MAX = 0xd0d0;
