@@ -70,8 +70,8 @@ public class OmnikInverterHandler extends BaseThingHandler {
         OmnikInverterConfiguration config = getConfigAs(OmnikInverterConfiguration.class);
 
         inverter = new OmnikInverter(config.hostname, config.port, config.serial);
-        pollJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 10, TimeUnit.SECONDS);
         updateStatus(ThingStatus.UNKNOWN);
+        pollJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 10, TimeUnit.SECONDS);
     }
 
     @Override
