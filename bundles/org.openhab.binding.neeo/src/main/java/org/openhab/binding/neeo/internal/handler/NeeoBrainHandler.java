@@ -189,19 +189,18 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             if (config.isEnableForwardActions()) {
                 NeeoUtil.checkInterrupt();
 
-                forwardActionServlet = new NeeoForwardActionsServlet(scheduler,
-                        json -> {
-                            triggerChannel(NeeoConstants.CHANNEL_BRAIN_FOWARDACTIONS, json);
+                forwardActionServlet = new NeeoForwardActionsServlet(scheduler, json -> {
+                    triggerChannel(NeeoConstants.CHANNEL_BRAIN_FOWARDACTIONS, json);
 
-                            final NeeoAction action = Objects.requireNonNull(gson.fromJson(json, NeeoAction.class));
+                    final NeeoAction action = Objects.requireNonNull(gson.fromJson(json, NeeoAction.class));
 
-                            for (final Thing child : getThing().getThings()) {
-                                final ThingHandler th = child.getHandler();
-                                if (th instanceof NeeoRoomHandler) {
-                                    ((NeeoRoomHandler) th).processAction(action);
-                                }
-                            }
-                        }, config.getForwardChain(), clientBuilder);
+                    for (final Thing child : getThing().getThings()) {
+                        final ThingHandler th = child.getHandler();
+                        if (th instanceof NeeoRoomHandler) {
+                            ((NeeoRoomHandler) th).processAction(action);
+                        }
+                    }
+                }, config.getForwardChain(), clientBuilder);
 
                 NeeoUtil.checkInterrupt();
                 try {
