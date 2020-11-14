@@ -114,6 +114,9 @@ After validation, please share the logfile and json files on the openHAB forum o
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
 The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
+During the start of the binding the exact path used in your system will be printed in the debug log. 
+Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …`
+If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
 For format, please check the current database files in openHAB GitHub.
 
@@ -152,6 +155,12 @@ _Cloud connectivity is not working_
 The most common problem is a wrong userId/password. Try to fix your userId/password.
 If it still fails, you're bit out of luck. You may try to restart OpenHAB (not just the binding) to clean the cookies. 
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
+
+_My Roborock vacuum is not found or not reacting_
+Did you link the vacuum with the Roborock app? 
+This won't work, the Roborock app is using a different communication method. 
+Reset your vacuum and connect it to the Xiaomi MiHome app. 
+This will change the communication method and the Mi IO binding can communicate with the vacuum.
 
 
 # Channels

@@ -23,7 +23,10 @@ Of course, you can add multiple Things, e.g. for getting measures for different 
 
 ## Discovery
 
-This binding does not handle auto-discovery.
+You can discover stations based upon the system location.
+Select Vigicrues binding and click scan in order to discover new stations. 
+The first scan will proceed with stations located in a radius of 10 km. 
+This radius will increase by 10 km at each new scan.
 
 ## Binding Configuration
 
@@ -41,13 +44,31 @@ The thing has a few configuration parameters:
 
 ## Channels
 
+Once created, at first initialization, the thing will discover its capabilities (available data) using the webservices apis.
+Channels will be presented depending upon actual available data.
+
 The VigiCrues information that retrieved are made available with these channels:
 
-| Channel ID       | Item Type                 | Description                   |
-|------------------|---------------------------|-------------------------------|
-| observation-time | DateTime                  | Date and time of measurement  |
-| flow             | Number:VolumetricFlowRate | Volume of water per time unit |
-| height           | Number:Length             | Water height of the river     |
+| Channel ID       | Item Type                 | Description                                                |
+|------------------|---------------------------|------------------------------------------------------------|
+| observation-time | DateTime                  | Date and time of measurement                               |
+| flow             | Number:VolumetricFlowRate | Volume of water per time unit                              |
+| height           | Number:Length             | Water height of the river                                  |
+| relative-height  | Number:Dimensionless      | Current water level toward lowest historical flood         |
+| relative-flow    | Number:Dimensionless      | Current water flow tower lowest historical flood           |
+| alert (*)        | Number                    | Flooding alert level of the portion related to the station |
+| alert-icon       | Image                     | Pictogram associated to the alert level                    |
+| short-comment    | String                    | Description of the alert level                             |
+| comment          | String                    | Detailed informations regarding the ongoing event          |
+
+(*) Each alert level is described by a color : 
+
+| Code | Color  | Description                               |
+|------|--------|-------------------------------------------|
+| 0    | Green  | No particular vigilance                   |
+| 1    | Yellow | Be attentive to the flooding situation    |
+| 2    | Orange | Be "very vigilant" in the concerned areas |
+| 3    | Red    | Absolute vigilance required               |
 
 
 ## Full Example

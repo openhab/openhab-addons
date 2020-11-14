@@ -96,7 +96,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         String family = getLogoFamily();
         logger.debug("Get start address of {} LOGO! for {} blocks.", family, kind);
 
-        Map<?, @Nullable Layout> memory = LOGO_MEMORY_BLOCK.get(family);
+        Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(family);
         Layout layout = (memory != null) ? memory.get(kind) : null;
         return layout != null ? layout.address : INVALID;
     }
@@ -111,7 +111,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         String family = getLogoFamily();
         logger.debug("Get data buffer length of {} LOGO! for {} blocks.", family, kind);
 
-        Map<?, @Nullable Layout> memory = LOGO_MEMORY_BLOCK.get(family);
+        Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(family);
         Layout layout = (memory != null) ? memory.get(kind) : null;
         return layout != null ? layout.length : 0;
     }
@@ -186,7 +186,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         logger.debug("Get base address of {} LOGO! for block {} .", family, name);
 
         String block = name.split("\\.")[0];
-        Map<?, @Nullable Layout> memory = LOGO_MEMORY_BLOCK.get(family);
+        Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(family);
         if (isValid(name) && !block.isEmpty() && (memory != null)) {
             if (Character.isDigit(block.charAt(1))) {
                 layout = memory.get(block.substring(0, 1));
@@ -280,6 +280,10 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
     }
 
     protected static String getBlockFromChannel(final @Nullable Channel channel) {
-        return channel == null ? NOT_SUPPORTED : channel.getProperties().get(BLOCK_PROPERTY);
+        if (channel == null) {
+            return NOT_SUPPORTED;
+        }
+        String block = channel.getProperties().get(BLOCK_PROPERTY);
+        return block == null ? NOT_SUPPORTED : block;
     }
 }

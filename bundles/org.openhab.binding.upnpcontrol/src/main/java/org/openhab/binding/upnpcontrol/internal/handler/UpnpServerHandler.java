@@ -207,7 +207,13 @@ public class UpnpServerHandler extends UpnpHandler {
                                 // No parent found, so make it the root directory
                                 browseTarget = DIRECTORY_ROOT;
                             }
-                            currentEntry = parentMap.get(browseTarget);
+                            UpnpEntry entry = parentMap.get(browseTarget);
+                            if (entry == null) {
+                                logger.info("Browse target not found. Exiting.");
+                                return;
+                            }
+                            currentEntry = entry;
+
                         }
                         updateState(CURRENTID, StringType.valueOf(currentEntry.getId()));
                         logger.debug("Browse target {}", browseTarget);
@@ -349,8 +355,8 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     /**
-     * Method that does a UPnP browse on a content directory. Results will be retrieved in the {@link onValueReceived}
-     * method.
+     * Method that does a UPnP browse on a content directory. Results will be retrieved in the
+     * {@link #onValueReceived(String, String, String)} method.
      *
      * @param objectID content directory object
      * @param browseFlag BrowseMetaData or BrowseDirectChildren
@@ -373,8 +379,8 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     /**
-     * Method that does a UPnP search on a content directory. Results will be retrieved in the {@link onValueReceived}
-     * method.
+     * Method that does a UPnP search on a content directory. Results will be retrieved in the
+     * {@link #onValueReceived(String, String, String)} method.
      *
      * @param containerID content directory container
      * @param searchCriteria search criteria, examples:

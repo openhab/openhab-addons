@@ -19,6 +19,7 @@
 			<channel id="latest-title" typeId="latest-title"/>
 			<channel id="latest-description" typeId="latest-description"/>
 			<channel id="latest-date" typeId="latest-date"/>
+			<channel id="latest-link" typeId="latest-link"/>
 			<channel id="author" typeId="author"/>
 			<channel id="description" typeId="description"/>
 			<channel id="title" typeId="title"/>
@@ -52,7 +53,7 @@
 	<channel-type id="latest-description">
 		<item-type>String</item-type>
 		<label>Latest Description</label>
-		<description>Contains the description of last feed entry.</description>
+		<description>Contains the description of the last feed entry.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -61,6 +62,13 @@
 		<label>Latest Published Date</label>
 		<description>Contains the published date of the last feed entry.</description>
 		<state readOnly="true" pattern="%tc %n"/>
+	</channel-type>
+
+	<channel-type id="latest-link">
+		<item-type>String</item-type>
+		<label>Latest Link</label>
+		<description>Contains the link of the last feed entry.</description>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="author" advanced="true">

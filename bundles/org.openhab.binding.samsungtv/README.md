@@ -101,7 +101,7 @@ Values are confirmed to work on UE50MU6179.
 | Browser       | `Internet`         | Built-in WWW browser              |
 | Netflix       | `Netflix`          | Netflix App                       |
 | Prime Video   | `Prime Video`      | Prime Video App                   |
-| YouTube       | `YouTube`          | Prime Video App                   |
+| YouTube       | `YouTube`          | YouTube App                       |
 | ZDF Mediathek | `ZDF mediathek`    | German public TV broadcasting app |
 
 As part of discovery, log file `/var/log/openhab2/openhab.log` will contain a debug line with installed apps.

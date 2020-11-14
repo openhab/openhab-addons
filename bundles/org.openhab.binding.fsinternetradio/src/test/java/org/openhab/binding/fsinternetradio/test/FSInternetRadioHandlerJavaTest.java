@@ -21,10 +21,7 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
@@ -148,6 +145,7 @@ public class FSInternetRadioHandlerJavaTest extends JavaTest {
     private static @NonNull Channel getChannel(final @NonNull Thing thing, final @NonNull String channelId) {
         final Channel channel = thing.getChannel(channelId);
         assertNotNull(channel);
+        Objects.requireNonNull(channel);
         return channel;
     }
 

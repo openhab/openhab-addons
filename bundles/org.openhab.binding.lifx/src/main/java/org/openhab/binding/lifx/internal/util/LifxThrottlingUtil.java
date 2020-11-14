@@ -79,7 +79,7 @@ public final class LifxThrottlingUtil {
      */
     private static List<LifxLightCommunicationTracker> trackers = new CopyOnWriteArrayList<>();
 
-    private static Map<MACAddress, @Nullable LifxLightCommunicationTracker> macTrackerMapping = new ConcurrentHashMap<>();
+    private static Map<MACAddress, LifxLightCommunicationTracker> macTrackerMapping = new ConcurrentHashMap<>();
 
     public static void lock(@Nullable MACAddress mac) {
         if (mac != null) {

@@ -75,14 +75,14 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     @Activate
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         logger.debug("Activating Bluetooth discovery service");
         super.activate(configProperties);
     }
 
     @Override
     @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void modified(@Nullable Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -170,7 +170,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
     private class DiscoveryCache {
 
         private final Map<BluetoothAdapter, SnapshotFuture> discoveryFutures = new HashMap<>();
-        private final Map<BluetoothAdapter, @Nullable Set<DiscoveryResult>> discoveryResults = new ConcurrentHashMap<>();
+        private final Map<BluetoothAdapter, Set<DiscoveryResult>> discoveryResults = new ConcurrentHashMap<>();
 
         private @Nullable BluetoothDeviceSnapshot latestSnapshot;
 

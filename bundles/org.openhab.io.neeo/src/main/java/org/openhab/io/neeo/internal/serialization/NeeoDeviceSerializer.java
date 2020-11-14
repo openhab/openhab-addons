@@ -84,12 +84,8 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
     }
 
     @Override
-    public NeeoDevice deserialize(@Nullable JsonElement elm, @Nullable Type type,
-            @Nullable JsonDeserializationContext jsonContext) throws JsonParseException {
-        Objects.requireNonNull(elm, "elm cannot be null");
-        Objects.requireNonNull(type, "type cannot be null");
-        Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
-
+    public @Nullable NeeoDevice deserialize(JsonElement elm, Type type, JsonDeserializationContext jsonContext)
+            throws JsonParseException {
         if (!(elm instanceof JsonObject)) {
             throw new JsonParseException("Element not an instance of JsonObject: " + elm);
         }

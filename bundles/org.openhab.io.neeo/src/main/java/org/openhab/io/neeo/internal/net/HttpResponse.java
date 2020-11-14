@@ -101,7 +101,7 @@ public class HttpResponse {
             return "";
         }
 
-        return new String(contents, StandardCharsets.UTF_8);
+        return new String(localContents, StandardCharsets.UTF_8);
     }
 
     /**

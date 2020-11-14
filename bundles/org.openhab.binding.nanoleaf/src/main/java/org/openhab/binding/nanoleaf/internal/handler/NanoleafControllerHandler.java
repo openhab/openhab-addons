@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -123,16 +124,17 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         setDeviceType(config.deviceType);
 
         try {
+            Map<String, String> properties = getThing().getProperties();
             if (StringUtils.isEmpty(getAddress()) || StringUtils.isEmpty(String.valueOf(getPort()))) {
                 logger.warn("No IP address and port configured for the Nanoleaf controller");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noIp");
                 stopAllJobs();
-            } else if (!StringUtils.isEmpty(getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))
-                    && !OpenAPIUtils.checkRequiredFirmware(getThing().getProperties().get(Thing.PROPERTY_MODEL_ID),
-                            getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))) {
+            } else if (!StringUtils.isEmpty(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))
+                    && !OpenAPIUtils.checkRequiredFirmware(properties.get(Thing.PROPERTY_MODEL_ID),
+                            properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
                 logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
-                        getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION), API_MIN_FW_VER_LIGHTPANELS);
+                        properties.get(Thing.PROPERTY_FIRMWARE_VERSION), API_MIN_FW_VER_LIGHTPANELS);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.nanoleaf.controller.incompatibleFirmware");
                 stopAllJobs();
@@ -492,9 +494,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                         if (line.startsWith("data:")) {
                             String json = line.substring(5).trim(); // supposed to be JSON
                             try {
-                                @Nullable
                                 TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
-                                handleTouchEvents(touchEvents);
+                                handleTouchEvents(Objects.requireNonNull(touchEvents));
                             } catch (JsonSyntaxException jse) {
                                 logger.error("couldn't parse touch event json {}", json);
                             }
@@ -644,9 +645,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private ControllerInfo receiveControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
         ContentResponse controllerlInfoJSON = OpenAPIUtils.sendOpenAPIRequest(OpenAPIUtils.requestBuilder(httpClient,
                 getControllerConfig(), API_GET_CONTROLLER_INFO, HttpMethod.GET));
-        @Nullable
         ControllerInfo controllerInfo = gson.fromJson(controllerlInfoJSON.getContentAsString(), ControllerInfo.class);
-        return controllerInfo;
+        return Objects.requireNonNull(controllerInfo);
     }
 
     private void sendStateCommand(String channel, Command command) throws NanoleafException {

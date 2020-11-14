@@ -20,11 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
@@ -33,7 +29,6 @@ import java.util.function.Function;
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
@@ -208,6 +203,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 assertThat(String.format("Could not determine correct item type for %s", channelId), item,
                         is(notNullValue()));
                 assertNotNull(item);
+                Objects.requireNonNull(item);
                 addItem(item);
                 toBeLinked.put(itemName, channelUID);
             }
@@ -561,7 +557,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     }
 
     @Test
-    @Disabled("See: https://github.com/openhab/openhab-addons/issues/8880")
     public void testOnRegistersNaNFloatInRegisters() throws InvalidSyntaxException {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "default", ModbusConstants.ValueType.FLOAT32, null, new ModbusRegisterArray(

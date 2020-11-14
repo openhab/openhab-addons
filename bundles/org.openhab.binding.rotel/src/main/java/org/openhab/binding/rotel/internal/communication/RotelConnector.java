@@ -984,7 +984,7 @@ public abstract class RotelConnector {
             } else {
                 for (RotelSource src : sourcesLabels.keySet()) {
                     String label = sourcesLabels.get(src);
-                    if (value.startsWith(label)) {
+                    if (label != null && value.startsWith(label)) {
                         if (source == null || sourcesLabels.get(source).length() < label.length()) {
                             source = src;
                         }

@@ -134,6 +134,7 @@ or in case of unknown models include the model information of a similar device t
 | Mi Smart Pedestal Fan        | miio:basic       | [zhimi.fan.v3](#zhimi-fan-v3) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
+| Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za3](#zhimi-fan-za3) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.1c](#dmaker-fan-1c) | Yes       |            |
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p5](#dmaker-fan-p5) | Yes       |            |
@@ -151,6 +152,8 @@ or in case of unknown models include the model information of a similar device t
 | Mr Bond M1 Pro Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mr Bond M1 Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mr Bond M1 Super Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Scishare smart capsule coffee machine | miio:basic       | [scishare.coffee.s1102](#scishare-coffee-s1102) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Scishare smart capsule coffee machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Philips Eyecare Smart Lamp 2 | miio:basic       | [philips.light.sread1](#philips-light-sread1) | Yes       |            |
 | Xiaomi Philips Eyecare Smart Lamp 2 | miio:basic       | [philips.light.sread2](#philips-light-sread2) | Yes       |            |
 | Xiaomi Philips LED Ceiling Lamp | miio:basic       | [philips.light.ceiling](#philips-light-ceiling) | Yes       |            |
@@ -348,6 +351,9 @@ After validation, please share the logfile and json files on the openHAB forum o
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
 The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
+During the start of the binding the exact path used in your system will be printed in the debug log. 
+Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …`
+If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
 For format, please check the current database files in openHAB GitHub.
 
@@ -386,6 +392,12 @@ _Cloud connectivity is not working_
 The most common problem is a wrong userId/password. Try to fix your userId/password.
 If it still fails, you're bit out of luck. You may try to restart OpenHAB (not just the binding) to clean the cookies. 
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
+
+_My Roborock vacuum is not found or not reacting_
+Did you link the vacuum with the Roborock app? 
+This won't work, the Roborock app is using a different communication method. 
+Reset your vacuum and connect it to the Xiaomi MiHome app. 
+This will change the communication method and the Mi IO binding can communicate with the vacuum.
 
 
 # Channels
@@ -1086,6 +1098,23 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | acPower          | Switch  | AC Power                            |            |
 | move             | String  | Move Direction                      |            |
 
+### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za3">zhimi.fan.za3</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| angleEnable      | Switch  | Rotation                            |            |
+| usedhours        | Number  | Run Time                            |            |
+| angle            | Number  | Angle                               |            |
+| poweroffTime     | Number  | Timer                               |            |
+| buzzer           | Number  | Buzzer                              |            |
+| led_b            | Number  | LED                                 |            |
+| child_lock       | Switch  | Child Lock                          |            |
+| speedLevel       | Number  | Speed Level                         |            |
+| speed            | Number  | Speed                               |            |
+| naturalLevel     | Number  | Natural Level                       |            |
+| move             | String  | Move Direction                      |            |
+
 ### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za4">zhimi.fan.za4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
@@ -1285,6 +1314,26 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | airer_location   | Number  | Airer Location                      |            |
 | disinfect        | Switch  | disinfect                           |            |
 | distime          | Number  | Disinfect Time                      |            |
+
+### Xiaomi Scishare smart capsule coffee machine (<a name="scishare-coffee-s1102">scishare.coffee.s1102</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| Status           | String  | status                              |            |
+| expresso         | Number  | Brew Expresso                       | Value is the amount of coffee in ml. 2nd parameter in the json db is the water temperature |
+| expresso         | Number  | Brew Americano                      | Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90 |
+| boil             | Number  | Boil water                          | Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature |
+
+### Xiaomi Scishare smart capsule coffee machine (<a name="scishare-coffee-s1301">scishare.coffee.s1301</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| Status           | String  | status                              |            |
+| expresso         | Number  | Brew Expresso                       | Value is the amount of coffee in ml. 2nd parameter in the json db is the water temperature |
+| expresso         | Number  | Brew Americano                      | Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90 |
+| boil             | Number  | Boil water                          | Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature |
 
 ### Xiaomi Philips Eyecare Smart Lamp 2 (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
 
@@ -1816,7 +1865,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               | If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware |
 | usb              | Switch  | USB                                 |            |
-| temperature      | Number  | Temperature                         |            |
+| temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
 ### Mi Power-plug (<a name="chuangmi-plug-m3">chuangmi.plug.m3</a>) Channels
@@ -1841,7 +1890,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               | If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware |
 | usb              | Switch  | USB                                 |            |
-| temperature      | Number  | Temperature                         |            |
+| temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
 ### Mi Smart Plug (<a name="chuangmi-plug-hmi208">chuangmi.plug.hmi208</a>) Channels
@@ -1850,7 +1899,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               | If this channel does not respond to on/off replace the model with chuangmi.plug.v3old in the config or upgrade firmware |
 | usb              | Switch  | USB                                 |            |
-| temperature      | Number  | Temperature                         |            |
+| temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
 ### Qing Mi Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
@@ -1863,6 +1912,9 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | power_price      | Number  | power_price                         |            |
 | current          | Number  | Current                             |            |
 | temperature      | Number  | Temperature                         |            |
+| lp_autooff       | Number  | Low Power Auto Off                  |            |
+| lp_autooff_delay | Number  | Low Power Limit Time                |            |
+| lp_threshold     | Number  | Low Power Threshold                 |            |
 
 ### Mi Power-strip v2 (<a name="zimi-powerstrip-v2">zimi.powerstrip.v2</a>) Channels
 
@@ -1874,6 +1926,9 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | power_price      | Number  | power_price                         |            |
 | current          | Number  | Current                             |            |
 | temperature      | Number  | Temperature                         |            |
+| lp_autooff       | Number  | Low Power Auto Off                  |            |
+| lp_autooff_delay | Number  | Low Power Limit Time                |            |
+| lp_threshold     | Number  | Low Power Threshold                 |            |
 
 ### Xiaomi Mijia vacuum V-RVCLM21B (<a name="viomi-vacuum-v6">viomi.vacuum.v6</a>) Channels
 
@@ -3107,13 +3162,13 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| target_temperature | Number  | Target Temperature                  |            |
+| target_temperature | Number:Temperature | Target Temperature                  |            |
 | brightness       | Number  | Brightness                          |            |
 | buzzer           | Switch  | Buzzer Status                       |            |
 | relative_humidity | Number  | Relative Humidity                   |            |
 | childlock        | Switch  | Child Lock                          |            |
 | HWSwitch         | Switch  | HW Switch                           |            |
-| temperature      | Number  | Temperature                         |            |
+| temperature      | Number:Temperature | Temperature                         |            |
 | usedhours        | Number  | Run Time                            |            |
 
 
@@ -3953,6 +4008,26 @@ Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
+### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.za3) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Xiaomi Mi Smart Pedestal Fan" <status>
+Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
+Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
+Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
+Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
+Number buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
+Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
+Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
+Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
+```
+
 ### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.za4) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -4193,6 +4268,32 @@ Number drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
 Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
 Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
 Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
+```
+
+### Xiaomi Scishare smart capsule coffee machine (scishare.coffee.s1102) item file lines
+
+note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_coffee "Xiaomi Scishare smart capsule coffee machine" <status>
+Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
+String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
+Number expresso "Brew Expresso" (G_coffee) {channel="miio:basic:coffee:expresso"}
+Number expresso "Brew Americano" (G_coffee) {channel="miio:basic:coffee:expresso"}
+Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
+```
+
+### Xiaomi Scishare smart capsule coffee machine (scishare.coffee.s1301) item file lines
+
+note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_coffee "Xiaomi Scishare smart capsule coffee machine" <status>
+Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
+String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
+Number expresso "Brew Expresso" (G_coffee) {channel="miio:basic:coffee:expresso"}
+Number expresso "Brew Americano" (G_coffee) {channel="miio:basic:coffee:expresso"}
+Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
 ```
 
 ### Xiaomi Philips Eyecare Smart Lamp 2 (philips.light.sread1) item file lines
@@ -4847,7 +4948,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Power-plug v3" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
-Number temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
@@ -4881,7 +4982,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Smart Plug" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
-Number temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
@@ -4893,7 +4994,7 @@ note: Autogenerated example. Replace the id (plug) in the channel with your own.
 Group G_plug "Mi Smart Plug" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
-Number temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
+Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
@@ -4909,6 +5010,9 @@ Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
 Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
 Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
 Number temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
+Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
+Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
+Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
 ### Mi Power-strip v2 (zimi.powerstrip.v2) item file lines
@@ -4923,6 +5027,9 @@ Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
 Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
 Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
 Number temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
+Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
+Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
+Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
 ### Xiaomi Mijia vacuum V-RVCLM21B (viomi.vacuum.v6) item file lines
@@ -6408,13 +6515,13 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 ```java
 Group G_heater "Zhimi Heater" <status>
 Switch power "Power" (G_heater) {channel="miio:basic:heater:power"}
-Number target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
 Number brightness "Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch buzzer "Buzzer Status" (G_heater) {channel="miio:basic:heater:buzzer"}
 Number relative_humidity "Relative Humidity" (G_heater) {channel="miio:basic:heater:relative_humidity"}
 Switch childlock "Child Lock" (G_heater) {channel="miio:basic:heater:childlock"}
 Switch HWSwitch "HW Switch" (G_heater) {channel="miio:basic:heater:HWSwitch"}
-Number temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
 Number usedhours "Run Time" (G_heater) {channel="miio:basic:heater:usedhours"}
 ```
 

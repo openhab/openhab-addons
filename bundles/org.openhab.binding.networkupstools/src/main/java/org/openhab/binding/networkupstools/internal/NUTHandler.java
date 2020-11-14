@@ -64,7 +64,7 @@ public class NUTHandler extends BaseThingHandler {
      * Map to cache user configured channels with their configuration. Channels are dynamically created at
      * initialization phase of the thing.
      */
-    private final Map<ChannelUID, @Nullable NUTDynamicChannelConfiguration> userChannelToNutMap = new HashMap<>();
+    private final Map<ChannelUID, NUTDynamicChannelConfiguration> userChannelToNutMap = new HashMap<>();
     /**
      * Cache of the UPS status. When expired makes a call to the NUT server is done to get the actual status. Expires at
      * the

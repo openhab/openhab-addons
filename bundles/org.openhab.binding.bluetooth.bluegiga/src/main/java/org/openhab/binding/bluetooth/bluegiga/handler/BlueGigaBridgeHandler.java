@@ -141,10 +141,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     // Our BT address
     private @Nullable BluetoothAddress address;
 
-    // Map of Bluetooth devices known to this bridge.
-    // This is all devices we have heard on the network - not just things bound to the bridge
-    private final Map<BluetoothAddress, BlueGigaBluetoothDevice> devices = new ConcurrentHashMap<>();
-
     // Map of open connections
     private final Map<Integer, BluetoothAddress> connections = new ConcurrentHashMap<>();
 
@@ -707,14 +703,9 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                 // We use the scan event to add any devices we hear to the devices list
                 // The device gets created, and then manages itself for discovery etc.
                 BluetoothAddress sender = new BluetoothAddress(scanEvent.getSender());
-                if (!devices.containsKey(sender)) {
-                    BlueGigaBluetoothDevice device;
-                    logger.debug("BlueGiga adding new device to adaptor {}: {}", address, sender);
-                    device = new BlueGigaBluetoothDevice(this, new BluetoothAddress(scanEvent.getSender()),
-                            scanEvent.getAddressType());
-                    devices.put(sender, device);
-                    deviceDiscovered(device);
-                }
+                BlueGigaBluetoothDevice device = getDevice(sender);
+                device.setAddressType(scanEvent.getAddressType());
+                deviceDiscovered(device);
             } else {
                 logger.trace("Ignore BlueGigaScanResponseEvent as initialization is not complete");
             }

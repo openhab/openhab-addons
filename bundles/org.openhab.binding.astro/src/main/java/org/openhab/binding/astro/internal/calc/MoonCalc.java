@@ -13,6 +13,7 @@
 package org.openhab.binding.astro.internal.calc;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Calendar;
 
 import org.openhab.binding.astro.internal.model.Eclipse;
@@ -233,7 +234,7 @@ public class MoonCalc {
         rounded = Math.floor(rounded) + riseMinute;
 
         BigDecimal bd = new BigDecimal(Double.toString(rounded));
-        bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
 

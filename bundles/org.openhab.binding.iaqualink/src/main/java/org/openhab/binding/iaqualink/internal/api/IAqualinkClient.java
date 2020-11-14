@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -120,7 +121,7 @@ public class IAqualinkClient {
             if (response.getStatus() != HttpStatus.OK_200) {
                 throw new IOException(response.getReason());
             }
-            return gson.fromJson(response.getContentAsString(), AccountInfo.class);
+            return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), AccountInfo.class));
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new IOException(e);
         }
@@ -347,7 +348,7 @@ public class IAqualinkClient {
      * @throws NotAuthorizedException
      */
     private <T> T getAqualinkObject(URI uri, Type typeOfT) throws IOException, NotAuthorizedException {
-        return gson.fromJson(getRequest(uri), typeOfT);
+        return Objects.requireNonNull(gson.fromJson(getRequest(uri), typeOfT));
     }
 
     /**
@@ -383,11 +384,8 @@ public class IAqualinkClient {
 
     class HomeDeserializer implements JsonDeserializer<Home> {
         @Override
-        public Home deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
-                @Nullable JsonDeserializationContext context) throws JsonParseException {
-            if (json == null) {
-                throw new JsonParseException("No JSON");
-            }
+        public @Nullable Home deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             JsonArray homeScreen = jsonObject.getAsJsonArray("home_screen");
             JsonObject home = new JsonObject();
@@ -408,11 +406,8 @@ public class IAqualinkClient {
 
     class OneTouchDeserializer implements JsonDeserializer<OneTouch[]> {
         @Override
-        public OneTouch[] deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
-                @Nullable JsonDeserializationContext context) throws JsonParseException {
-            if (json == null) {
-                throw new JsonParseException("No JSON");
-            }
+        public OneTouch @Nullable [] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             JsonArray oneTouchScreen = jsonObject.getAsJsonArray("onetouch_screen");
             List<OneTouch> list = new ArrayList<>();
@@ -429,7 +424,7 @@ public class IAqualinkClient {
                                         oneTouchJson.add(oneTouchEntry.getKey(), oneTouchEntry.getValue());
                                     });
                                 });
-                                list.add(gsonInternal.fromJson(oneTouchJson, OneTouch.class));
+                                list.add(Objects.requireNonNull(gsonInternal.fromJson(oneTouchJson, OneTouch.class)));
                             }
                         }
                     });
@@ -441,11 +436,8 @@ public class IAqualinkClient {
 
     class AuxDeserializer implements JsonDeserializer<Auxiliary[]> {
         @Override
-        public Auxiliary[] deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
-                @Nullable JsonDeserializationContext context) throws JsonParseException {
-            if (json == null) {
-                throw new JsonParseException("No JSON");
-            }
+        public Auxiliary @Nullable [] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             JsonArray auxScreen = jsonObject.getAsJsonArray("devices_screen");
             List<Auxiliary> list = new ArrayList<>();
@@ -462,7 +454,7 @@ public class IAqualinkClient {
                                         auxJson.add(auxEntry.getKey(), auxEntry.getValue());
                                     });
                                 });
-                                list.add(gsonInternal.fromJson(auxJson, Auxiliary.class));
+                                list.add(Objects.requireNonNull(gsonInternal.fromJson(auxJson, Auxiliary.class)));
                             }
                         }
                     });

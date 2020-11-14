@@ -12,11 +12,7 @@
  */
 package org.openhab.io.hueemulation.internal.rest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -285,7 +281,8 @@ public class Schedules implements RegistryChangeListener<Rule> {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
 
-        final HueChangeScheduleEntry changeRequest = cs.gson.fromJson(body, HueChangeScheduleEntry.class);
+        final HueChangeScheduleEntry changeRequest = Objects
+                .requireNonNull(cs.gson.fromJson(body, HueChangeScheduleEntry.class));
 
         Rule rule = ruleRegistry.remove(id);
         if (rule == null) {

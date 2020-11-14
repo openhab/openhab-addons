@@ -49,7 +49,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.powermax")
 public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final SerialPortManager serialPortManager;
     private final TimeZoneProvider timeZoneProvider;

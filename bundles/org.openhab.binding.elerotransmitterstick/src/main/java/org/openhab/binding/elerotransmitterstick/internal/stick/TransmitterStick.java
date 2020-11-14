@@ -159,7 +159,7 @@ public class TransmitterStick {
         private static final long serialVersionUID = -3216360253151368826L;
 
         public DueCommandSet() {
-            super(new Comparator<Command>() {
+            super(new Comparator<>() {
                 /**
                  * Due commands are sorted by priority first and then by delay.
                  */

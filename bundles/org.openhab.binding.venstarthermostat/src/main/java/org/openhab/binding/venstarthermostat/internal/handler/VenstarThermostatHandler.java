@@ -20,13 +20,7 @@ import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -341,7 +335,8 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             }
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
             log.debug("Unable to fetch info data", e);
-            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = e.getMessage();
+            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
         } catch (VenstarAuthenticationException e) {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }
@@ -364,7 +359,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             if (!isFutureValid(localUpdatesTask)) {
                 return;
             }
-            infoData = gson.fromJson(response, VenstarInfoData.class);
+            infoData = Objects.requireNonNull(gson.fromJson(response, VenstarInfoData.class));
             updateUnits(infoData);
             updateIfChanged(CHANNEL_HEATING_SETPOINT, getHeatingSetpoint());
             updateIfChanged(CHANNEL_COOLING_SETPOINT, getCoolingSetpoint());
@@ -376,7 +371,8 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             goOnline();
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
             log.debug("Unable to fetch info data", e);
-            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = e.getMessage();
+            goOffline(ThingStatusDetail.COMMUNICATION_ERROR, message != null ? message : "");
         } catch (VenstarAuthenticationException e) {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }

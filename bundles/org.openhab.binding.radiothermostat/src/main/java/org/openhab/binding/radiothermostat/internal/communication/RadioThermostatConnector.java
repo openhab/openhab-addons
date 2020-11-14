@@ -152,6 +152,10 @@ public class RadioThermostatConnector {
      * @return a valid URL for the thermostat's JSON interface
      */
     private String buildRequestURL(String resource) {
+        String hostName = this.hostName;
+        if (hostName == null) {
+            throw new IllegalStateException("hostname must not be null");
+        }
         String urlStr = URL.replace("%hostName%", hostName);
         urlStr = urlStr.replace("%resource%", resource);
 

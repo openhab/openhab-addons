@@ -209,9 +209,10 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         try {
             String command = commandString.trim();
             String param = "[]";
-            int loc = command.indexOf("[");
-            loc = (loc > 0 ? loc : command.indexOf("{"));
-            if (loc > 0) {
+            int sb = command.indexOf("[");
+            int cb = command.indexOf("{");
+            if (Math.max(sb, cb) > 0) {
+                int loc = (Math.min(sb, cb) > 0 ? Math.min(sb, cb) : Math.max(sb, cb));
                 param = command.substring(loc).trim();
                 command = command.substring(0, loc).trim();
             }
@@ -276,8 +277,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         disconnected("No Response from device");
     }
 
-    protected void disconnected(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
+    protected void disconnected(@Nullable String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                message != null ? message : "");
         final MiIoAsyncCommunication miioCom = this.miioCom;
         if (miioCom != null) {
             lastId = miioCom.getId();

@@ -17,7 +17,6 @@ import java.math.BigDecimal;
 import java.net.SocketException;
 import java.net.URLEncoder;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -64,16 +63,12 @@ public class NukiHttpClient {
         String configIp = (String) configuration.get(NukiBindingConstants.CONFIG_IP);
         BigDecimal configPort = (BigDecimal) configuration.get(NukiBindingConstants.CONFIG_PORT);
         String configApiToken = (String) configuration.get(NukiBindingConstants.CONFIG_API_TOKEN);
-        ArrayList<String> parameters = new ArrayList<>();
-        parameters.add(configIp);
-        parameters.add(configPort.toString());
-        parameters.add(configApiToken);
-        if (additionalArguments != null) {
-            for (String argument : additionalArguments) {
-                parameters.add(argument);
-            }
-        }
-        String uri = String.format(uriTemplate, parameters.toArray());
+        String[] parameters = new String[additionalArguments.length + 3];
+        parameters[0] = configIp;
+        parameters[1] = configPort.toString();
+        parameters[2] = configApiToken;
+        System.arraycopy(additionalArguments, 0, parameters, 3, additionalArguments.length);
+        String uri = String.format(uriTemplate, parameters);
         logger.trace("prepareUri(...):URI[{}]", uri);
         return uri;
     }

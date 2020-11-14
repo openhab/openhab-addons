@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -204,7 +205,7 @@ public class RemoteopenhabRestClient {
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
             }
-            return jsonParser.fromJson(jsonResponse, RemoteopenhabThing.class);
+            return Objects.requireNonNull(jsonParser.fromJson(jsonResponse, RemoteopenhabThing.class));
         } catch (RemoteopenhabException | JsonSyntaxException e) {
             throw new RemoteopenhabException(
                     "Failed to get the remote thing " + uid + " using the things REST API: " + e.getMessage(), e);
@@ -366,12 +367,12 @@ public class RemoteopenhabRestClient {
                     break;
                 case "ItemAddedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "added");
-                    item = jsonParser.fromJson(event.payload, RemoteopenhabItem.class);
+                    item = Objects.requireNonNull(jsonParser.fromJson(event.payload, RemoteopenhabItem.class));
                     itemsListeners.forEach(listener -> listener.onItemAdded(item));
                     break;
                 case "ItemRemovedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "removed");
-                    item = jsonParser.fromJson(event.payload, RemoteopenhabItem.class);
+                    item = Objects.requireNonNull(jsonParser.fromJson(event.payload, RemoteopenhabItem.class));
                     itemsListeners.forEach(listener -> listener.onItemRemoved(item));
                     break;
                 case "ItemUpdatedEvent":
@@ -395,12 +396,12 @@ public class RemoteopenhabRestClient {
                     break;
                 case "ThingAddedEvent":
                     thingUID = extractThingUIDFromTopic(event.topic, event.type, "added");
-                    thing = jsonParser.fromJson(event.payload, RemoteopenhabThing.class);
+                    thing = Objects.requireNonNull(jsonParser.fromJson(event.payload, RemoteopenhabThing.class));
                     thingsListeners.forEach(listener -> listener.onThingAdded(thing));
                     break;
                 case "ThingRemovedEvent":
                     thingUID = extractThingUIDFromTopic(event.topic, event.type, "removed");
-                    thing = jsonParser.fromJson(event.payload, RemoteopenhabThing.class);
+                    thing = Objects.requireNonNull(jsonParser.fromJson(event.payload, RemoteopenhabThing.class));
                     thingsListeners.forEach(listener -> listener.onThingRemoved(thing));
                     break;
                 case "ChannelTriggeredEvent":

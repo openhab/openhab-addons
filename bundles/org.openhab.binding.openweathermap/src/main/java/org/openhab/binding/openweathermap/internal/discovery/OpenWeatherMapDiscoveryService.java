@@ -66,7 +66,7 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 

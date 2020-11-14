@@ -17,6 +17,7 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -72,17 +73,6 @@ public class EnedisHttpApi {
     }
 
     public void initialize() throws LinkyException {
-        httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
-        httpClient.setFollowRedirects(false);
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            throw new LinkyException("Unable to start Jetty HttpClient", e);
-        }
-        connect();
-    }
-
-    private void connect() throws LinkyException {
         addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
 
         logger.debug("Starting login process for user : {}", config.username);
@@ -125,8 +115,8 @@ public class EnedisHttpApi {
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
             if (authData.callbacks.size() < 2 || authData.callbacks.get(0).input.size() == 0
-                    || authData.callbacks.get(1).input.size() == 0
-                    || !config.username.contentEquals(authData.callbacks.get(0).input.get(0).valueAsString())) {
+                    || authData.callbacks.get(1).input.size() == 0 || !config.username
+                            .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
                 throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
             }
 
@@ -184,12 +174,7 @@ public class EnedisHttpApi {
     }
 
     public void dispose() throws LinkyException {
-        try {
-            disconnect();
-            httpClient.stop();
-        } catch (Exception e) {
-            throw new LinkyException("Error stopping Jetty client", e);
-        }
+        disconnect();
     }
 
     private void addCookie(String key, String value) {
@@ -228,7 +213,7 @@ public class EnedisHttpApi {
     public UserInfo getUserInfo() throws LinkyException {
         final String user_info_url = URL_APPS_LINCS + "/userinfos";
         String data = getData(user_info_url);
-        return gson.fromJson(data, UserInfo.class);
+        return Objects.requireNonNull(gson.fromJson(data, UserInfo.class));
     }
 
     private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)

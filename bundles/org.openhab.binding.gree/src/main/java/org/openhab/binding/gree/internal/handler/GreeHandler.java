@@ -122,7 +122,7 @@ public class GreeHandler extends BaseThingHandler {
             message = messages.get("thinginit.failed");
             logger.info("{}: {}", thingId, message);
         } catch (GreeException e) {
-            logger.info("{}: {}", thingId, messages.get("thinginit.exception", e.getMessage()));
+            logger.info("{}: {}", thingId, messages.get("thinginit.exception", e.getMessageString()));
         } catch (IOException e) {
             logger.warn("{}: {}", thingId, messages.get("thinginit.exception", "I/O Error"), e);
         } catch (RuntimeException e) {
@@ -158,7 +158,7 @@ public class GreeHandler extends BaseThingHandler {
                         logger.debug("{}: Command {} failed for channel {}, retry", thingId, command, channelId);
                     } else {
                         String message = logInfo(
-                                messages.get("command.exception", command, channelId) + ": " + e.getMessage());
+                                messages.get("command.exception", command, channelId) + ": " + e.getMessageString());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
                     }
                 } catch (IllegalArgumentException e) {
@@ -379,7 +379,7 @@ public class GreeHandler extends BaseThingHandler {
                 if (e.getCause() != null) {
                     subcode = " (" + e.getCause().getMessage() + ")";
                 }
-                String message = messages.get("update.exception", e.getMessage() + subcode);
+                String message = messages.get("update.exception", e.getMessageString() + subcode);
                 if (getThing().getStatus() == ThingStatus.OFFLINE) {
                     logger.debug("{}: Thing still OFFLINE ({})", thingId, message);
                 } else {
@@ -472,7 +472,7 @@ public class GreeHandler extends BaseThingHandler {
                 updateState(channelID, state);
             }
         } catch (GreeException e) {
-            logger.info("{}: {}", thingId, messages.get("channel.exception", channelID, e.getMessage()));
+            logger.info("{}: {}", thingId, messages.get("channel.exception", channelID, e.getMessageString()));
         } catch (RuntimeException e) {
             logger.warn("{}: {}", thingId, messages.get("channel.exception", "RuntimeException"), e);
         }

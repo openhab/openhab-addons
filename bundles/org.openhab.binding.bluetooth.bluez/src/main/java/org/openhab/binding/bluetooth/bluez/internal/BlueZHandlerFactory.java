@@ -48,7 +48,7 @@ public class BlueZHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(BlueZAdapterConstants.THING_TYPE_BLUEZ);
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> serviceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
     private final DeviceManagerFactory deviceManagerFactory;
 

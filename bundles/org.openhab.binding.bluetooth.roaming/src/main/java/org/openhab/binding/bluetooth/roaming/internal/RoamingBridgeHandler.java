@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth.roaming.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Stream;
@@ -216,8 +217,8 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
     public RoamingBluetoothDevice getDevice(BluetoothAddress address) {
         // this will only get called by a bluetooth device handler
         synchronized (devices) {
-            RoamingBluetoothDevice roamingDevice = devices.computeIfAbsent(address,
-                    addr -> new RoamingBluetoothDevice(this, addr));
+            RoamingBluetoothDevice roamingDevice = Objects
+                    .requireNonNull(devices.computeIfAbsent(address, addr -> new RoamingBluetoothDevice(this, addr)));
 
             adapters.stream().filter(this::isRoamingMember)
                     .forEach(adapter -> roamingDevice.addBluetoothDevice(adapter.getDevice(address)));
