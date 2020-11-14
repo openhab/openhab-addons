@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
+import java.util.Date;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
@@ -37,12 +39,8 @@ import org.slf4j.LoggerFactory;
 public class ThingHandlerPartition extends CaddxBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ThingHandlerPartition.class);
+    private long lastRefreshTime = 0;
 
-    /**
-     * Constructor.
-     *
-     * @param thing
-     */
     public ThingHandlerPartition(Thing thing) {
         super(thing, CaddxThingType.PARTITION);
     }
@@ -69,12 +67,14 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
         }
 
         if (command instanceof RefreshType) {
-            if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_ARMED)) {
+            // Refresh only if 2 seconds have passed from the last refresh
+            if (new Date().getTime() - lastRefreshTime > 2000) {
                 cmd = CaddxBindingConstants.PARTITION_STATUS_REQUEST;
                 data = String.format("%d", getPartitionNumber() - 1);
             } else {
                 return;
             }
+            lastRefreshTime = new Date().getTime();
         } else if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_SECONDARY_COMMAND)) {
             cmd = channelUID.getId();
             data = String.format("%s,%d", command.toString(), (1 << getPartitionNumber() - 1));
