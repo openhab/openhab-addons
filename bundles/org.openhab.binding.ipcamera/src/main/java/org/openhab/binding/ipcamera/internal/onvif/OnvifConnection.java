@@ -282,8 +282,7 @@ public class OnvifConnection {
             case GotoPreset:
                 return "<GotoPreset xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken><PresetToken>"
-                        + presetTokens.get(presetTokenIndex)
-                        + "</PresetToken><Speed><PanTilt x=\"0.0\" y=\"0.0\" space=\"\"></PanTilt><Zoom x=\"0.0\" space=\"\"></Zoom></Speed></GotoPreset>";
+                        + presetTokens.get(presetTokenIndex) + "</PresetToken></GotoPreset>";
             case GetPresets:
                 return "<GetPresets xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken></GetPresets>";
@@ -362,14 +361,16 @@ public class OnvifConnection {
     HttpRequest requestBuilder(RequestType requestType, String xAddr) {
         logger.trace("Sending ONVIF request:{}", requestType);
         String security = "";
-        String extraEnvelope = " xmlns:a=\"http://www.w3.org/2005/08/addressing\"";
+        String extraEnvelope = "";
         String headerTo = "";
         String getXmlCache = getXml(requestType);
         if (requestType.equals(RequestType.CreatePullPointSubscription) || requestType.equals(RequestType.PullMessages)
                 || requestType.equals(RequestType.Renew) || requestType.equals(RequestType.Unsubscribe)) {
             headerTo = "<a:To s:mustUnderstand=\"1\">http://" + ipAddress + xAddr + "</a:To>";
+            extraEnvelope = " xmlns:a=\"http://www.w3.org/2005/08/addressing\"";
         }
-        if (!password.isEmpty()) {
+        String headers;
+        if (!password.isEmpty() && !requestType.equals(RequestType.GetSystemDateAndTime)) {
             String nonce = createNonce();
             String dateTime = getUTCdateTime();
             String digest = createDigest(nonce, dateTime);
@@ -381,17 +382,15 @@ public class OnvifConnection {
                     + encodeBase64(nonce)
                     + "</Nonce><Created xmlns=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">"
                     + dateTime + "</Created></UsernameToken></Security>";
-        }
-        String headers = "<s:Header>" + security + headerTo + "</s:Header>";
-
-        if (requestType.equals(RequestType.GetSystemDateAndTime)) {
-            extraEnvelope = "";
+            headers = "<s:Header>" + security + headerTo + "</s:Header>";
+        } else {// GetSystemDateAndTime must not be password protected as per spec.
             headers = "";
         }
-
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"), xAddr);
-        request.headers().add("Content-Type", "application/soap+xml");
-        request.headers().add("charset", "utf-8");
+        String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
+        request.headers().add("Content-Type",
+                "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
+        request.headers().add("Charset", "utf-8");
         if (onvifPort != 80) {
             request.headers().set("Host", ipAddress + ":" + onvifPort);
         } else {
@@ -403,7 +402,6 @@ public class OnvifConnection {
                 + headers
                 + "<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
                 + getXmlCache + "</s:Body></s:Envelope>";
-        String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
         request.headers().add("SOAPAction", "\"" + actionString + "/" + requestType + "\"");
         ByteBuf bbuf = Unpooled.copiedBuffer(fullXml, StandardCharsets.UTF_8);
         request.headers().set("Content-Length", bbuf.readableBytes());
