@@ -32,7 +32,7 @@ public enum PowerStatus {
     COOLDOWN(0x03),
     STANDBYNETWORKON(0x04),
     ABNORMALSTANDBY(0x05),
-    ERROR(0xFF);
+    UNKNOWN(0xFF);
 
     private final int value;
 
@@ -44,7 +44,7 @@ public enum PowerStatus {
         try {
             return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
         } catch (NoSuchElementException e) {
-            return ERROR;
+            return UNKNOWN;
         }
     }
 

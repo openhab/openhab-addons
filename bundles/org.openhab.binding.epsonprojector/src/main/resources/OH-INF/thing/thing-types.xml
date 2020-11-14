@@ -11,30 +11,30 @@
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="powerstate" typeId="powerstate"/>
-			<channel id="lamptime" typeId="lamptime"/>
-			<channel id="keycode" typeId="keycode"/>
-			<channel id="verticalkeystone" typeId="verticalkeystone"/>
-			<channel id="horizontalkeystone" typeId="horizontalkeystone"/>
-			<channel id="autokeystone" typeId="autokeystone"/>
-			<channel id="freeze" typeId="freeze"/>
-			<channel id="aspectratio" typeId="aspectratio"/>
-			<channel id="luminance" typeId="luminance"/>
 			<channel id="source" typeId="source"/>
+			<channel id="aspectratio" typeId="aspectratio"/>
+			<channel id="colormode" typeId="colormode"/>
+			<channel id="freeze" typeId="freeze"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="luminance" typeId="luminance"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
 			<channel id="density" typeId="density"/>
 			<channel id="tint" typeId="tint"/>
 			<channel id="colortemperature" typeId="colortemperature"/>
 			<channel id="fleshtemperature" typeId="fleshtemperature"/>
-			<channel id="colormode" typeId="colormode"/>
-			<channel id="horizontalposition" typeId="horizontalposition"/>
-			<channel id="verticalposition" typeId="verticalposition"/>
 			<channel id="gamma" typeId="gamma"/>
-			<channel id="volume" typeId="volume"/>
-			<channel id="mute" typeId="mute"/>
-			<channel id="horizontalreverse" typeId="horizontalreverse"/>
+			<channel id="autokeystone" typeId="autokeystone"/>
+			<channel id="verticalkeystone" typeId="verticalkeystone"/>
+			<channel id="horizontalkeystone" typeId="horizontalkeystone"/>
+			<channel id="verticalposition" typeId="verticalposition"/>
+			<channel id="horizontalposition" typeId="horizontalposition"/>
 			<channel id="verticalreverse" typeId="verticalreverse"/>
+			<channel id="horizontalreverse" typeId="horizontalreverse"/>
 			<channel id="background" typeId="background"/>
+			<channel id="keycode" typeId="keycode"/>
+			<channel id="lamptime" typeId="lamptime"/>
 			<channel id="errcode" typeId="errcode"/>
 			<channel id="errmessage" typeId="errmessage"/>
 		</channels>
@@ -71,7 +71,7 @@
 	<channel-type id="powerstate">
 		<item-type>String</item-type>
 		<label>Power State</label>
-		<description>Retrieves the Actual Power State of the Projector</description>
+		<description>Retrieves the Textual Power State of the Projector</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lamptime">
@@ -87,30 +87,30 @@
 	</channel-type>
 	<channel-type id="verticalkeystone" advanced="true">
 		<item-type>Number</item-type>
-		<label>VerticalKeystone</label>
-		<description>Retrieves or Set the Vertical Keystone</description>
+		<label>Vertical Keystone</label>
+		<description>Retrieve or Set the Vertical Keystone</description>
 		<state min="-30" max="30" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="horizontalkeystone" advanced="true">
 		<item-type>Number</item-type>
-		<label>HorizontalKeystone</label>
-		<description>Retrieves or Set the Horizontal Keystone</description>
+		<label>Horizontal Keystone</label>
+		<description>Retrieve or Set the Horizontal Keystone</description>
 		<state min="-30" max="30" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="autokeystone" advanced="true">
 		<item-type>Switch</item-type>
-		<label>AutoKeystone</label>
+		<label>Auto Keystone</label>
 		<description>Turn the Auto Keystone On or Off</description>
 	</channel-type>
-	<channel-type id="freeze" advanced="true">
+	<channel-type id="freeze">
 		<item-type>Switch</item-type>
-		<label>Freeze</label>
-		<description>Turn the Freeze Mode On or Off</description>
+		<label>Freeze Image</label>
+		<description>Turn the Freeze Screen Mode On or Off</description>
 	</channel-type>
-	<channel-type id="aspectratio" advanced="true">
+	<channel-type id="aspectratio">
 		<item-type>String</item-type>
 		<label>Aspect Ratio</label>
-		<description>Retrieves or Set the Aspect Ratio</description>
+		<description>Retrieve or Set the Aspect Ratio</description>
 		<state>
 			<options>
 				<option value="NORMAL">NORMAL</option>
@@ -132,7 +132,7 @@
 	<channel-type id="luminance">
 		<item-type>String</item-type>
 		<label>Luminance</label>
-		<description>Retrieves or Set the ECO mode</description>
+		<description>Retrieve or Set the Lamp Mode</description>
 		<state>
 			<options>
 				<option value="NORMAL">NORMAL</option>
@@ -143,7 +143,7 @@
 	<channel-type id="source">
 		<item-type>String</item-type>
 		<label>Source</label>
-		<description>Retrieves or Select the Input Source</description>
+		<description>Retrieve or Set the Input Source</description>
 		<state>
 			<options>
 				<option value="30">HDMI1</option>
@@ -158,43 +158,43 @@
 	<channel-type id="brightness" advanced="true">
 		<item-type>Number</item-type>
 		<label>Brightness</label>
-		<description>Retrieves or Set the Brightness</description>
+		<description>Retrieve or Set the Brightness</description>
 		<state min="-24" max="24" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="contrast" advanced="true">
 		<item-type>Number</item-type>
 		<label>Contrast</label>
-		<description>Retrieves or Set the Contrast</description>
+		<description>Retrieve or Set the Contrast</description>
 		<state min="-24" max="24" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="density" advanced="true">
 		<item-type>Number</item-type>
 		<label>Density (Color Saturation)</label>
-		<description>Retrieves or Set the Density</description>
+		<description>Retrieve or Set the Density</description>
 		<state min="-32" max="32" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="tint" advanced="true">
 		<item-type>Number</item-type>
 		<label>Tint</label>
-		<description>Retrieves or Set the Tint</description>
+		<description>Retrieve or Set the Tint</description>
 		<state min="-32" max="32" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="colortemperature" advanced="true">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
-		<description>Retrieves or Set the Color Temperature</description>
+		<description>Retrieve or Set the Color Temperature</description>
 		<state min="0" max="9" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="fleshtemperature" advanced="true">
 		<item-type>Number</item-type>
 		<label>Flesh Temperature</label>
-		<description>Retrieves or Set the Flesh Temperature</description>
+		<description>Retrieve or Set the Flesh Temperature</description>
 		<state min="0" max="6" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="colormode">
 		<item-type>String</item-type>
 		<label>Color Mode</label>
-		<description>Retrieves or Set the Color Mode</description>
+		<description>Retrieve or Set the Color Mode</description>
 		<state>
 			<options>
 				<option value="DYNAMIC">DYNAMIC</option>
@@ -225,18 +225,20 @@
 	</channel-type>
 	<channel-type id="horizontalposition" advanced="true">
 		<item-type>Number</item-type>
-		<label>HorizontalPosition</label>
-		<description>Retrieves or Set the Horizontal Position</description>
+		<label>Horizontal Position</label>
+		<description>Retrieve or Set the Horizontal Position</description>
+		<state min="-23" max="26" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="verticalposition" advanced="true">
 		<item-type>Number</item-type>
-		<label>VerticalPosition</label>
-		<description>Retrieves or Set the Vertical Position</description>
+		<label>Vertical Position</label>
+		<description>Retrieve or Set the Vertical Position</description>
+		<state min="-8" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="gamma" advanced="true">
 		<item-type>String</item-type>
 		<label>Gamma</label>
-		<description>Retrieves or Set the Gamma</description>
+		<description>Retrieve or Set the Gamma Setting</description>
 		<state>
 			<options>
 				<option value="G2_0">G2_0</option>
@@ -248,31 +250,31 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="volume" advanced="true">
+	<channel-type id="volume">
 		<item-type>Number</item-type>
 		<label>Volume</label>
-		<description>Retrieves or Set the Volume</description>
+		<description>Retrieve or Set the Volume</description>
 		<state min="0" max="20" step="1" pattern="%d"/>
 	</channel-type>
-	<channel-type id="mute" advanced="true">
+	<channel-type id="mute">
 		<item-type>Switch</item-type>
 		<label>AV Mute</label>
 		<description>Turn the AV Mute On or Off</description>
 	</channel-type>
 	<channel-type id="horizontalreverse" advanced="true">
 		<item-type>Switch</item-type>
-		<label>HorizontalReverse</label>
+		<label>Horizontal Reverse</label>
 		<description>Turn the Horizontal Reverse On or Off</description>
 	</channel-type>
 	<channel-type id="verticalreverse" advanced="true">
 		<item-type>Switch</item-type>
-		<label>VerticalReverse</label>
+		<label>Vertical Reverse</label>
 		<description>Turn the Vertical Reverse On or Off</description>
 	</channel-type>
 	<channel-type id="background" advanced="true">
 		<item-type>String</item-type>
 		<label>Background</label>
-		<description>Select the Background</description>
+		<description>Select the Background Color/Logo</description>
 		<state>
 			<options>
 				<option value="BLACK">BLACK</option>

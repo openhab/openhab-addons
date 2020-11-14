@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.epsonprojector.internal.handler;
 
+import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.*;
+
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.epsonprojector.internal.EpsonProjectorCommandException;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorCommandType;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorDevice;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
@@ -55,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EpsonProjectorHandler extends BaseThingHandler {
-    public static final int DEFAULT_POLLING_INTERVAL_SEC = 10;
+    private static final int DEFAULT_POLLING_INTERVAL_SEC = 10;
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorHandler.class);
 
@@ -111,8 +114,8 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                     for (Channel channel : channels) {
                         // only query power & lamp time when projector is off
-                        if (isPowerOn || (channel.getUID().getId().equals("power")
-                                || channel.getUID().getId().equals("lamptime"))) {
+                        if (isPowerOn || (channel.getUID().getId().equals(CHANNEL_TYPE_POWER)
+                                || channel.getUID().getId().equals(CHANNEL_TYPE_LAMPTIME))) {
                             updateChannelState(channel);
                         }
                     }
@@ -136,7 +139,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     private void updateChannelState(Channel channel) {
         try {
-            if (!isLinked(channel.getUID()) && !channel.getUID().getId().equals("power")) {
+            if (!isLinked(channel.getUID()) && !channel.getUID().getId().equals(CHANNEL_TYPE_POWER)) {
                 return;
             }
 
@@ -144,10 +147,12 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
             State state = queryDataFromDevice(epsonCommand);
 
+            if (state != null && this.getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+
             if (state != null && isLinked(channel.getUID())) {
                 updateState(channel.getUID(), state);
-                if (this.getThing().getStatus() != ThingStatus.ONLINE)
-                    updateStatus(ThingStatus.ONLINE);
             }
         } catch (IllegalArgumentException e) {
             logger.warn("Unknown channel {}", channel.getUID().getId());
@@ -161,6 +166,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
         try {
             if (!remoteController.isConnected()) {
                 remoteController.connect();
+            }
+
+            if (!remoteController.isReady()) {
+                logger.debug("Refusing command {} while not ready", commandType.toString());
+                return null;
             }
 
             switch (commandType) {
@@ -225,6 +235,10 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return mute == Switch.ON ? OnOffType.ON : OnOffType.OFF;
                 case POWER:
                     PowerStatus powerStatus = remoteController.getPowerStatus();
+                    if (isLinked(CHANNEL_TYPE_POWERSTATE)) {
+                        updateState(CHANNEL_TYPE_POWERSTATE, new StringType(powerStatus.toString()));
+                    }
+
                     if (powerStatus == PowerStatus.ON || powerStatus == PowerStatus.WARMUP) {
                         isPowerOn = true;
                         return OnOffType.ON;
@@ -233,8 +247,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                         return OnOffType.OFF;
                     }
                 case POWER_STATE:
-                    PowerStatus powerStatus1 = remoteController.getPowerStatus();
-                    return new StringType(powerStatus1.toString());
+                    return null;
                 case SOURCE:
                     return new StringType(remoteController.getSource());
                 case TINT:
@@ -256,8 +269,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     logger.warn("Unknown '{}' command!", commandType);
                     return UnDefType.UNDEF;
             }
+        } catch (EpsonProjectorCommandException e) {
+            logger.debug("Error executing command '{}', {}", commandType, e.getMessage());
+            return UnDefType.UNDEF;
         } catch (EpsonProjectorException e) {
-            logger.debug("Couldn't execute command '{}'", commandType, e);
+            logger.debug("Couldn't execute command '{}', {}", commandType, e.getMessage());
             closeConnection();
             return null;
         }
@@ -271,6 +287,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
         try {
             if (!remoteController.isConnected()) {
                 remoteController.connect();
+            }
+
+            if (!remoteController.isReady()) {
+                logger.debug("Refusing command '{}' while not ready", commandType.toString());
+                return;
             }
 
             switch (commandType) {
@@ -299,10 +320,10 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.setDensity(((DecimalType) command).intValue());
                     break;
                 case ERR_CODE:
-                    logger.error("'{}' is read only parameter", commandType);
+                    logger.warn("'{}' is read only parameter", commandType);
                     break;
                 case ERR_MESSAGE:
-                    logger.error("'{}' is read only parameter", commandType);
+                    logger.warn("'{}' is read only parameter", commandType);
                     break;
                 case FLESH_TEMP:
                     remoteController.setFleshColor(((DecimalType) command).intValue());
@@ -326,7 +347,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.sendKeyCode(((DecimalType) command).intValue());
                     break;
                 case LAMP_TIME:
-                    logger.error("'{}' is read only parameter", commandType);
+                    logger.warn("'{}' is read only parameter", commandType);
                     break;
                 case LUMINANCE:
                     remoteController.setLuminance(Luminance.valueOf(command.toString()));
@@ -344,7 +365,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     }
                     break;
                 case POWER_STATE:
-                    logger.error("'{}' is read only parameter", commandType);
+                    logger.warn("'{}' is read only parameter", commandType);
                     break;
                 case SOURCE:
                     remoteController.setSource(command.toString());
@@ -368,8 +389,10 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     logger.warn("Unknown '{}' command!", commandType);
                     break;
             }
+        } catch (EpsonProjectorCommandException e) {
+            logger.debug("Error executing command '{}', {}", commandType, e.getMessage());
         } catch (EpsonProjectorException e) {
-            logger.warn("Couldn't execute command '{}'", commandType, e);
+            logger.warn("Couldn't execute command '{}', {}", commandType, e.getMessage());
             closeConnection();
         }
     }

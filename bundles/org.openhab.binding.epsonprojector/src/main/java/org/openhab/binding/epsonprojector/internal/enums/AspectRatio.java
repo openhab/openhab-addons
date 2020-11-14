@@ -39,7 +39,7 @@ public enum AspectRatio {
     WIDE(0x70),
     ANAMORPHIC(0x80),
     SQUEEZE(0x90),
-    ERROR(0xFF);
+    UNKNOWN(0xFF);
 
     private final int value;
 
@@ -51,7 +51,7 @@ public enum AspectRatio {
         try {
             return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
         } catch (NoSuchElementException e) {
-            return ERROR;
+            return UNKNOWN;
         }
     }
 

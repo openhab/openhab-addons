@@ -101,7 +101,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             try {
                 out.close();
             } catch (IOException e) {
-                logger.warn("Error occurred when closing tcp out stream", e);
+                logger.debug("Error occurred when closing serial out stream", e);
             }
             this.out = null;
         }
@@ -110,7 +110,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             try {
                 in.close();
             } catch (IOException e) {
-                logger.warn("Error occurred when closing tcp in stream", e);
+                logger.debug("Error occurred when closing serial in stream", e);
             }
             this.in = null;
         }
@@ -156,7 +156,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                 return "";
             }
         } catch (IOException e) {
-            logger.debug("IO error occurred...reconnect and resend ones");
+            logger.debug("IO error occurred...reconnect and resend once");
             disconnect();
             connect();
 

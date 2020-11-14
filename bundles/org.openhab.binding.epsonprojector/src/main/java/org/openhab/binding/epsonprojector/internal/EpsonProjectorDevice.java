@@ -48,31 +48,38 @@ public class EpsonProjectorDevice {
     protected final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(THING_HANDLER_THREADPOOL_NAME);
 
-    private static final int[] mapColorTemperature = new int[] { 0, 25, 51, 76, 102, 128, 153, 179, 204, 230 };
-    private static final int[] mapFleshTemperature = new int[] { 0, 36, 73, 109, 146, 182, 219 };
-
-    private static final int[] map64 = new int[] { 0, 3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59, 63, 66,
+    private static final int[] MAP64 = new int[] { 0, 3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59, 63, 66,
             70, 74, 78, 82, 86, 90, 94, 98, 102, 106, 110, 114, 118, 122, 126, 129, 133, 137, 141, 145, 149, 153, 157,
             161, 165, 169, 173, 177, 181, 185, 189, 192, 196, 200, 204, 208, 212, 216, 220, 224, 228, 232, 236, 240,
             244, 248, 252 };
 
-    private static final int[] map60 = new int[] { 0, 4, 8, 12, 16, 20, 25, 29, 33, 37, 41, 46, 50, 54, 58, 62, 67, 71,
+    private static final int[] MAP60 = new int[] { 0, 4, 8, 12, 16, 20, 25, 29, 33, 37, 41, 46, 50, 54, 58, 62, 67, 71,
             75, 79, 83, 88, 92, 96, 100, 104, 109, 113, 117, 121, 125, 130, 134, 138, 142, 146, 151, 155, 159, 163, 167,
             172, 176, 180, 184, 188, 193, 197, 201, 205, 209, 214, 218, 222, 226, 230, 235, 239, 243, 247, 251 };
 
-    private static final int[] map48 = new int[] { 0, 5, 10, 15, 20, 26, 31, 36, 41, 47, 52, 57, 62, 67, 73, 78, 83, 88,
+    private static final int[] MAP49 = new int[] { 0, 5, 10, 15, 20, 25, 30, 35, 40, 46, 51, 56, 61, 66, 71, 76, 81, 87,
+            92, 97, 102, 107, 112, 117, 122, 128, 133, 138, 143, 148, 153, 158, 163, 168, 174, 179, 184, 189, 194, 199,
+            204, 209, 215, 220, 225, 230, 235, 240, 245, 250 };
+
+    private static final int[] MAP48 = new int[] { 0, 5, 10, 15, 20, 26, 31, 36, 41, 47, 52, 57, 62, 67, 73, 78, 83, 88,
             94, 99, 104, 109, 114, 120, 125, 130, 135, 141, 146, 151, 156, 161, 167, 172, 177, 182, 188, 193, 198, 203,
             208, 214, 219, 224, 229, 235, 240, 245, 250 };
 
-    private static final int[] map20 = new int[] { 0, 12, 24, 36, 48, 60, 73, 85, 97, 109, 121, 134, 146, 158, 170, 182,
+    private static final int[] MAP20 = new int[] { 0, 12, 24, 36, 48, 60, 73, 85, 97, 109, 121, 134, 146, 158, 170, 182,
             195, 207, 219, 231, 243 };
+
+    private static final int[] MAP18 = new int[] { 0, 13, 26, 40, 53, 67, 80, 94, 107, 121, 134, 148, 161, 175, 188,
+            202, 215, 229, 242 };
+
+    private static final int[] MAP_COLOR_TEMP = new int[] { 0, 25, 51, 76, 102, 128, 153, 179, 204, 230 };
+    private static final int[] MAP_FLESH_COLOR = new int[] { 0, 36, 73, 109, 146, 182, 219 };
 
     private static final int DEFAULT_TIMEOUT = 5 * 1000;
     private static final int POWER_ON_TIMEOUT = 100 * 1000;
     private static final int POWER_OFF_TIMEOUT = 130 * 1000;
 
+    private static final String ON = "ON";
     private static final String ERR = "ERR";
-    private static final String ERR_INT = "255";
 
     private Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
 
@@ -97,11 +104,12 @@ public class EpsonProjectorDevice {
         ready = false;
     }
 
-    private synchronized @Nullable String sendQuery(String query, int timeout) throws EpsonProjectorException {
-        if (!ready) {
-            logger.debug("Refusing command {} while not ready", query);
-        }
+    public boolean isReady() {
+        return ready;
+    }
 
+    private synchronized @Nullable String sendQuery(String query, int timeout)
+            throws EpsonProjectorCommandException, EpsonProjectorException {
         logger.debug("Query: '{}'", query);
         String response = connection.sendMessage(query, timeout);
 
@@ -113,11 +121,11 @@ public class EpsonProjectorDevice {
         logger.debug("Response: '{}'", response);
 
         if (ERR.equals(response)) {
-            logger.debug("Error response received for command: {}", query);
+            throw new EpsonProjectorCommandException("Error response received for command: " + query);
         }
 
         if ("PWR OFF".equals(query) && ":".equals(response)) {
-            // When PWR OFF command is sent, next command can be send after 10 seconds after the colon is received
+            // When PWR OFF command is sent, next command can be sent 10 seconds after the colon is received
             logger.debug("Refusing further commands for 10 seconds to power OFF completion");
             ready = false;
             scheduler.scheduleWithFixedDelay(() -> {
@@ -128,7 +136,7 @@ public class EpsonProjectorDevice {
         return response;
     }
 
-    private String splitResponse(String response) throws EpsonProjectorException {
+    private String splitResponse(@Nullable String response) throws EpsonProjectorException {
         if (response != null && !"".equals(response)) {
             String[] pieces = response.split("=");
 
@@ -136,28 +144,24 @@ public class EpsonProjectorDevice {
                 throw new EpsonProjectorException("Invalid response from projector: " + response);
             }
 
-            String str = pieces[1].trim();
-
-            return str;
+            return pieces[1].trim();
         } else {
             throw new EpsonProjectorException("No response received");
         }
     }
 
-    protected void sendCommand(String command, int timeout) throws EpsonProjectorException {
+    protected void sendCommand(String command, int timeout)
+            throws EpsonProjectorCommandException, EpsonProjectorException {
         sendQuery(command, timeout);
     }
 
-    protected void sendCommand(String command) throws EpsonProjectorException {
+    protected void sendCommand(String command) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(command, DEFAULT_TIMEOUT);
     }
 
-    protected int queryInt(String query, int timeout, int radix) throws EpsonProjectorException {
+    protected int queryInt(String query, int timeout, int radix)
+            throws EpsonProjectorCommandException, EpsonProjectorException {
         String response = sendQuery(query, timeout);
-
-        if (ERR.equals(response)) {
-            return Integer.parseInt(ERR_INT, radix);
-        }
 
         String str = splitResponse(response);
 
@@ -170,30 +174,26 @@ public class EpsonProjectorDevice {
         return Integer.parseInt(str, radix);
     }
 
-    protected int queryInt(String query, int timeout) throws EpsonProjectorException {
+    protected int queryInt(String query, int timeout) throws EpsonProjectorCommandException, EpsonProjectorException {
         return queryInt(query, timeout, 10);
     }
 
-    protected int queryInt(String query) throws EpsonProjectorException {
+    protected int queryInt(String query) throws EpsonProjectorCommandException, EpsonProjectorException {
         return queryInt(query, DEFAULT_TIMEOUT, 10);
     }
 
-    protected int queryHexInt(String query, int timeout) throws EpsonProjectorException {
+    protected int queryHexInt(String query, int timeout)
+            throws EpsonProjectorCommandException, EpsonProjectorException {
         return queryInt(query, timeout, 16);
     }
 
-    protected int queryHexInt(String query) throws EpsonProjectorException {
+    protected int queryHexInt(String query) throws EpsonProjectorCommandException, EpsonProjectorException {
         return queryInt(query, DEFAULT_TIMEOUT, 16);
     }
 
-    protected String queryString(String query) throws EpsonProjectorException {
+    protected String queryString(String query) throws EpsonProjectorCommandException, EpsonProjectorException {
         String response = sendQuery(query, DEFAULT_TIMEOUT);
-
-        if (ERR.equals(response)) {
-            return ERR;
-        } else {
-            return splitResponse(response);
-        }
+        return splitResponse(response);
     }
 
     public void connect() throws EpsonProjectorException {
@@ -213,60 +213,59 @@ public class EpsonProjectorDevice {
     /*
      * Power
      */
-    public PowerStatus getPowerStatus() throws EpsonProjectorException {
+    public PowerStatus getPowerStatus() throws EpsonProjectorCommandException, EpsonProjectorException {
         int val = queryInt("PWR?");
-        PowerStatus retval = PowerStatus.forValue(val);
-        return retval;
+        return PowerStatus.forValue(val);
     }
 
-    public void setPower(Switch value) throws EpsonProjectorException {
+    public void setPower(Switch value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("PWR %s", value.name()), value == Switch.ON ? POWER_ON_TIMEOUT : POWER_OFF_TIMEOUT);
     }
 
     /*
      * Key code
      */
-    public void sendKeyCode(int value) throws EpsonProjectorException {
+    public void sendKeyCode(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("KEY %02X", value));
     }
 
     /*
      * Vertical Keystone
      */
-    public int getVerticalKeystone() throws EpsonProjectorException {
+    public int getVerticalKeystone() throws EpsonProjectorCommandException, EpsonProjectorException {
         int vkey = queryInt("VKEYSTONE?");
-        for (int i = 0; i < map60.length; i++) {
-            if (vkey == map60[i]) {
+        for (int i = 0; i < MAP60.length; i++) {
+            if (vkey == MAP60[i]) {
                 return i - 30;
             }
         }
         return 0;
     }
 
-    public void setVerticalKeystone(int value) throws EpsonProjectorException {
+    public void setVerticalKeystone(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
         value = value + 30;
         if (value >= 0 && value <= 60) {
-            sendCommand(String.format("VKEYSTONE %d", map60[value]));
+            sendCommand(String.format("VKEYSTONE %d", MAP60[value]));
         }
     }
 
     /*
      * Horizontal Keystone
      */
-    public int getHorizontalKeystone() throws EpsonProjectorException {
+    public int getHorizontalKeystone() throws EpsonProjectorCommandException, EpsonProjectorException {
         int hkey = queryInt("HKEYSTONE?");
-        for (int i = 0; i < map60.length; i++) {
-            if (hkey == map60[i]) {
+        for (int i = 0; i < MAP60.length; i++) {
+            if (hkey == MAP60[i]) {
                 return i - 30;
             }
         }
         return 0;
     }
 
-    public void setHorizontalKeystone(int value) throws EpsonProjectorException {
+    public void setHorizontalKeystone(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
         value = value + 30;
         if (value >= 0 && value <= 60) {
-            sendCommand(String.format("HKEYSTONE %d", map60[value]));
+            sendCommand(String.format("HKEYSTONE %d", MAP60[value]));
         }
     }
 
@@ -274,286 +273,315 @@ public class EpsonProjectorDevice {
      * Auto Keystone
      */
 
-    public Switch getAutoKeystone() throws EpsonProjectorException {
-        int val = queryInt("AUTOKEYSTONE?");
-        return val == 0 ? Switch.OFF : Switch.ON;
+    public Switch getAutoKeystone() throws EpsonProjectorCommandException, EpsonProjectorException {
+        String val = queryString("AUTOKEYSTONE?");
+        return val.equals(ON) ? Switch.ON : Switch.OFF;
     }
 
-    public void setAutoKeystone(Switch value) throws EpsonProjectorException {
+    public void setAutoKeystone(Switch value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("AUTOKEYSTONE %s", value.name()), DEFAULT_TIMEOUT);
     }
 
     /*
      * Freeze
      */
-    public Switch getFreeze() throws EpsonProjectorException {
+    public Switch getFreeze() throws EpsonProjectorCommandException, EpsonProjectorException {
         String val = queryString("FREEZE?");
-        return val.equals("OFF") ? Switch.OFF : Switch.ON;
+        return val.equals(ON) ? Switch.ON : Switch.OFF;
     }
 
-    public void setFreeze(Switch value) throws EpsonProjectorException {
+    public void setFreeze(Switch value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("FREEZE %s", value.name()), DEFAULT_TIMEOUT);
     }
 
     /*
      * Aspect Ratio
      */
-    public AspectRatio getAspectRatio() throws EpsonProjectorException {
+    public AspectRatio getAspectRatio() throws EpsonProjectorCommandException, EpsonProjectorException {
         int val = queryHexInt("ASPECT?");
-        AspectRatio retval = AspectRatio.forValue(val);
-        return retval;
+        return AspectRatio.forValue(val);
     }
 
-    public void setAspectRatio(AspectRatio value) throws EpsonProjectorException {
+    public void setAspectRatio(AspectRatio value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("ASPECT %02X", value.toInt()));
     }
 
     /*
      * Luminance
      */
-    public Luminance getLuminance() throws EpsonProjectorException {
+    public Luminance getLuminance() throws EpsonProjectorCommandException, EpsonProjectorException {
         int val = queryHexInt("LUMINANCE?");
-        Luminance retval = Luminance.forValue(val);
-        return retval;
+        return Luminance.forValue(val);
     }
 
-    public void setLuminance(Luminance value) throws EpsonProjectorException {
+    public void setLuminance(Luminance value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("LUMINANCE %02X", value.toInt()));
     }
 
     /*
      * Source
      */
-    public String getSource() throws EpsonProjectorException {
+    public String getSource() throws EpsonProjectorCommandException, EpsonProjectorException {
         return queryString("SOURCE?");
     }
 
-    public void setSource(String value) throws EpsonProjectorException {
+    public void setSource(String value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("SOURCE %s", value));
     }
 
     /*
      * Brightness
      */
-    public int getBrightness() throws EpsonProjectorException {
+    public int getBrightness() throws EpsonProjectorCommandException, EpsonProjectorException {
         int brt = queryInt("BRIGHT?");
-        for (int i = 0; i < map48.length; i++) {
-            if (brt == map48[i]) {
+        for (int i = 0; i < MAP48.length; i++) {
+            if (brt == MAP48[i]) {
                 return i - 24;
             }
         }
         return 0;
     }
 
-    public void setBrightness(int value) throws EpsonProjectorException {
+    public void setBrightness(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
         value = value + 24;
         if (value >= 0 && value <= 48) {
-            sendCommand(String.format("BRIGHT %d", map48[value]));
+            sendCommand(String.format("BRIGHT %d", MAP48[value]));
         }
     }
 
     /*
      * Contrast
      */
-    public int getContrast() throws EpsonProjectorException {
+    public int getContrast() throws EpsonProjectorCommandException, EpsonProjectorException {
         int con = queryInt("CONTRAST?");
-        for (int i = 0; i < map48.length; i++) {
-            if (con == map48[i]) {
+        for (int i = 0; i < MAP48.length; i++) {
+            if (con == MAP48[i]) {
                 return i - 24;
             }
         }
         return 0;
     }
 
-    public void setContrast(int value) throws EpsonProjectorException {
+    public void setContrast(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
         value = value + 24;
         if (value >= 0 && value <= 48) {
-            sendCommand(String.format("CONTRAST %d", map48[value]));
+            sendCommand(String.format("CONTRAST %d", MAP48[value]));
         }
     }
 
     /*
      * Density
      */
-    public int getDensity() throws EpsonProjectorException {
+    public int getDensity() throws EpsonProjectorCommandException, EpsonProjectorException {
         int den = queryInt("DENSITY?");
-        for (int i = 0; i < map64.length; i++) {
-            if (den == map64[i]) {
+        for (int i = 0; i < MAP64.length; i++) {
+            if (den == MAP64[i]) {
                 return i - 32;
             }
         }
         return 0;
     }
 
-    public void setDensity(int value) throws EpsonProjectorException {
+    public void setDensity(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
         value = value + 32;
         if (value >= 0 && value <= 64) {
-            sendCommand(String.format("DENSITY %d", map64[value]));
+            sendCommand(String.format("DENSITY %d", MAP64[value]));
         }
     }
 
     /*
      * Tint
      */
-    public int getTint() throws EpsonProjectorException {
+    public int getTint() throws EpsonProjectorCommandException, EpsonProjectorException {
         int tint = queryInt("TINT?");
-        for (int i = 0; i < map64.length; i++) {
-            if (tint == map64[i]) {
+        for (int i = 0; i < MAP64.length; i++) {
+            if (tint == MAP64[i]) {
                 return i - 32;
             }
         }
         return 0;
     }
 
-    public void setTint(int value) throws EpsonProjectorException {
+    public void setTint(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
         value = value + 32;
         if (value >= 0 && value <= 64) {
-            sendCommand(String.format("TINT %d", map64[value]));
+            sendCommand(String.format("TINT %d", MAP64[value]));
         }
     }
 
     /*
      * Color Temperature
      */
-    public int getColorTemperature() throws EpsonProjectorException {
-        return queryInt("CTEMP?"); // TODO
-    }
-
-    public void setColorTemperature(int value) throws EpsonProjectorException {
-        sendCommand(String.format("CTEMP %d", value)); // TODO
-    }
-
-    /*
-     * Flesh Color
-     */
-    public int getFleshColor() throws EpsonProjectorException {
-        return queryHexInt("FCOLOR?"); // TODO
-    }
-
-    public void setFleshColor(int value) throws EpsonProjectorException {
-        sendCommand(String.format("FCOLOR %02X", value)); // TODO
-    }
-
-    /*
-     * Color Mode
-     */
-    public ColorMode getColorMode() throws EpsonProjectorException {
-        int val = queryHexInt("CMODE?");
-        ColorMode retval = ColorMode.forValue(val);
-        return retval;
-    }
-
-    public void setColorMode(ColorMode value) throws EpsonProjectorException {
-        sendCommand(String.format("CMODE %02X", value.toInt()));
-    }
-
-    /*
-     * Horizontal Position
-     */
-    public int getHorizontalPosition() throws EpsonProjectorException {
-        return queryInt("HPOS?"); // TODO
-    }
-
-    public void setHorizontalPosition(int value) throws EpsonProjectorException {
-        sendCommand(String.format("HPOS %d", value)); // TODO
-    }
-
-    /*
-     * Vertical Position
-     */
-    public int getVerticalPosition() throws EpsonProjectorException {
-        return queryInt("VPOS?"); // TODO
-    }
-
-    public void setVerticalPosition(int value) throws EpsonProjectorException {
-        sendCommand(String.format("VPOS %d", value)); // TODO
-    }
-
-    /*
-     * Gamma
-     */
-    public Gamma getGamma() throws EpsonProjectorException {
-        int val = queryHexInt("GAMMA?");
-        Gamma retval = Gamma.forValue(val);
-        return retval;
-    }
-
-    public void setGamma(Gamma value) throws EpsonProjectorException {
-        sendCommand(String.format("GAMMA %02X", value.toInt()));
-    }
-
-    /*
-     * Volume
-     */
-    public int getVolume() throws EpsonProjectorException {
-        int vol = queryInt("VOL?");
-        for (int i = 0; i < map20.length; i++) {
-            if (vol == map20[i]) {
+    public int getColorTemperature() throws EpsonProjectorCommandException, EpsonProjectorException {
+        int ctemp = queryInt("CTEMP?");
+        for (int i = 0; i < MAP_COLOR_TEMP.length; i++) {
+            if (ctemp == MAP_COLOR_TEMP[i]) {
                 return i;
             }
         }
         return 0;
     }
 
-    public void setVolume(int value) throws EpsonProjectorException {
+    public void setColorTemperature(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
+        if (value >= 0 && value <= 9) {
+            sendCommand(String.format("CTEMP %d", MAP_COLOR_TEMP[value]));
+        }
+    }
+
+    /*
+     * Flesh Color
+     */
+    public int getFleshColor() throws EpsonProjectorCommandException, EpsonProjectorException {
+        int fclr = queryInt("FCOLOR?");
+        for (int i = 0; i < MAP_FLESH_COLOR.length; i++) {
+            if (fclr == MAP_FLESH_COLOR[i]) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public void setFleshColor(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
+        if (value >= 0 && value <= 6) {
+            sendCommand(String.format("FCOLOR %d", MAP_FLESH_COLOR[value]));
+        }
+    }
+
+    /*
+     * Color Mode
+     */
+    public ColorMode getColorMode() throws EpsonProjectorCommandException, EpsonProjectorException {
+        int val = queryHexInt("CMODE?");
+        return ColorMode.forValue(val);
+    }
+
+    public void setColorMode(ColorMode value) throws EpsonProjectorCommandException, EpsonProjectorException {
+        sendCommand(String.format("CMODE %02X", value.toInt()));
+    }
+
+    /*
+     * Horizontal Position
+     */
+    public int getHorizontalPosition() throws EpsonProjectorCommandException, EpsonProjectorException {
+        int hpos = queryInt("HPOS?");
+        for (int i = 0; i < MAP49.length; i++) {
+            if (hpos == MAP49[i]) {
+                return i - 23;
+            }
+        }
+        return 0;
+    }
+
+    public void setHorizontalPosition(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
+        value = value + 23;
+        if (value >= 0 && value <= 49) {
+            sendCommand(String.format("HPOS %d", MAP49[value]));
+        }
+    }
+
+    /*
+     * Vertical Position
+     */
+    public int getVerticalPosition() throws EpsonProjectorCommandException, EpsonProjectorException {
+        int vpos = queryInt("VPOS?");
+        for (int i = 0; i < MAP18.length; i++) {
+            if (vpos == MAP18[i]) {
+                return i - 8;
+            }
+        }
+        return 0;
+    }
+
+    public void setVerticalPosition(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
+        value = value + 8;
+        if (value >= 0 && value <= 18) {
+            sendCommand(String.format("VPOS %d", MAP18[value]));
+        }
+    }
+
+    /*
+     * Gamma
+     */
+    public Gamma getGamma() throws EpsonProjectorCommandException, EpsonProjectorException {
+        int val = queryHexInt("GAMMA?");
+        return Gamma.forValue(val);
+    }
+
+    public void setGamma(Gamma value) throws EpsonProjectorCommandException, EpsonProjectorException {
+        sendCommand(String.format("GAMMA %02X", value.toInt()));
+    }
+
+    /*
+     * Volume
+     */
+    public int getVolume() throws EpsonProjectorCommandException, EpsonProjectorException {
+        int vol = queryInt("VOL?");
+        for (int i = 0; i < MAP20.length; i++) {
+            if (vol == MAP20[i]) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public void setVolume(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
         if (value >= 0 && value <= 20) {
-            sendCommand(String.format("VOL %d", map20[value]));
+            sendCommand(String.format("VOL %d", MAP20[value]));
         }
     }
 
     /*
      * AV Mute
      */
-    public Switch getMute() throws EpsonProjectorException {
+    public Switch getMute() throws EpsonProjectorCommandException, EpsonProjectorException {
         String val = queryString("MUTE?");
-        return val.equals("OFF") ? Switch.OFF : Switch.ON;
+        return val.equals(ON) ? Switch.ON : Switch.OFF;
     }
 
-    public void setMute(Switch value) throws EpsonProjectorException {
+    public void setMute(Switch value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("MUTE %s", value.name()));
     }
 
     /*
      * Horizontal Reverse
      */
-    public Switch getHorizontalReverse() throws EpsonProjectorException {
+    public Switch getHorizontalReverse() throws EpsonProjectorCommandException, EpsonProjectorException {
         String val = queryString("HREVERSE?");
-        return val.equals("OFF") ? Switch.OFF : Switch.ON;
+        return val.equals(ON) ? Switch.ON : Switch.OFF;
     }
 
-    public void setHorizontalReverse(Switch value) throws EpsonProjectorException {
+    public void setHorizontalReverse(Switch value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("HREVERSE %s", value.name()));
     }
 
     /*
      * Vertical Reverse
      */
-    public Switch getVerticalReverse() throws EpsonProjectorException {
+    public Switch getVerticalReverse() throws EpsonProjectorCommandException, EpsonProjectorException {
         String val = queryString("VREVERSE?");
-        return val.equals("OFF") ? Switch.OFF : Switch.ON;
+        return val.equals(ON) ? Switch.ON : Switch.OFF;
     }
 
-    public void setVerticalReverse(Switch value) throws EpsonProjectorException {
+    public void setVerticalReverse(Switch value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("VREVERSE %s", value.name()));
     }
 
     /*
      * Background Select for AV Mute
      */
-    public Background getBackground() throws EpsonProjectorException {
+    public Background getBackground() throws EpsonProjectorCommandException, EpsonProjectorException {
         int val = queryHexInt("MSEL?");
-        Background retval = Background.forValue(val);
-        return retval;
+        return Background.forValue(val);
     }
 
-    public void setBackground(Background value) throws EpsonProjectorException {
+    public void setBackground(Background value) throws EpsonProjectorCommandException, EpsonProjectorException {
         sendCommand(String.format("MSEL %02X", value.toInt()));
     }
 
     /*
      * Lamp Time (hours)
      */
-    public int getLampTime() throws EpsonProjectorException {
+    public int getLampTime() throws EpsonProjectorCommandException, EpsonProjectorException {
         long current = System.currentTimeMillis();
 
         // only do lamp time query once per ~5 minute interval
@@ -567,14 +595,14 @@ public class EpsonProjectorDevice {
     /*
      * Error Code
      */
-    public int getError() throws EpsonProjectorException {
+    public int getError() throws EpsonProjectorCommandException, EpsonProjectorException {
         return queryHexInt("ERR?");
     }
 
     /*
      * Error Code Description
      */
-    public String getErrorString() throws EpsonProjectorException {
+    public String getErrorString() throws EpsonProjectorCommandException, EpsonProjectorException {
         int err = queryInt("ERR?");
         return ErrorMessage.forCode(err);
     }

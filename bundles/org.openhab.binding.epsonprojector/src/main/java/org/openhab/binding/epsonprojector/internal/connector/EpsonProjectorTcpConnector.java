@@ -68,7 +68,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             try {
                 out.close();
             } catch (IOException e) {
-                logger.warn("Error occurred when closing tcp out stream", e);
+                logger.debug("Error occurred when closing tcp out stream", e);
             }
         }
 
@@ -78,7 +78,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             try {
                 in.close();
             } catch (IOException e) {
-                logger.warn("Error occurred when closing tcp in stream", e);
+                logger.debug("Error occurred when closing tcp in stream", e);
             }
         }
 
@@ -88,7 +88,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.warn("Error occurred when closing tcp socket", e);
+                logger.debug("Error occurred when closing tcp socket", e);
             }
         }
 
@@ -130,7 +130,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
                 return "";
             }
         } catch (IOException e) {
-            logger.debug("IO error occurred...reconnect and resend ones");
+            logger.debug("IO error occurred...reconnect and resend once");
             disconnect();
             connect();
 
@@ -178,7 +178,6 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
 
                 elapsedTime = System.currentTimeMillis() - startTime;
             }
-
         }
         return resp;
     }

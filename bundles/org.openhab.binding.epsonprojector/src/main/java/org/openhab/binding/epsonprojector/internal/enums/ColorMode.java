@@ -50,7 +50,7 @@ public enum ColorMode {
     XVCOLOR(0x0B),
     LIVINGROOM(0x0C),
     DICOMSIM(0x0F),
-    ERROR(0xFF);
+    UNKNOWN(0xFF);
 
     private final int value;
 
@@ -62,7 +62,7 @@ public enum ColorMode {
         try {
             return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
         } catch (NoSuchElementException e) {
-            return ERROR;
+            return UNKNOWN;
         }
     }
 

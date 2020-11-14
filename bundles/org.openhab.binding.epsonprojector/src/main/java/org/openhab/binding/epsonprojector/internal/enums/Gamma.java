@@ -32,7 +32,7 @@ public enum Gamma {
     G2_3(0x23),
     G2_4(0x24),
     CUSTOM(0xF0),
-    ERROR(0xFF);
+    UNKNOWN(0xFF);
 
     private final int value;
 
@@ -44,7 +44,7 @@ public enum Gamma {
         try {
             return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
         } catch (NoSuchElementException e) {
-            return ERROR;
+            return UNKNOWN;
         }
     }
 

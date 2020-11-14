@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum Luminance {
     NORMAL(0x00),
     ECO(0x01),
-    ERROR(0xFF);
+    UNKNOWN(0xFF);
 
     private final int value;
 
@@ -40,7 +40,7 @@ public enum Luminance {
         try {
             return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
         } catch (NoSuchElementException e) {
-            return ERROR;
+            return UNKNOWN;
         }
     }
 

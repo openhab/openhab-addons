@@ -29,7 +29,7 @@ public enum Background {
     BLACK(0x00),
     BLUE(0x01),
     LOGO(0x02),
-    ERROR(0xFF);
+    UNKNOWN(0xFF);
 
     private final int value;
 
@@ -41,7 +41,7 @@ public enum Background {
         try {
             return Arrays.stream(values()).filter(e -> e.value == value).findFirst().get();
         } catch (NoSuchElementException e) {
-            return ERROR;
+            return UNKNOWN;
         }
     }
 
