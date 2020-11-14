@@ -17,6 +17,8 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.neeo.internal.models.ExecuteResult;
@@ -44,7 +46,10 @@ public class NeeoBrainApi implements AutoCloseable {
     private final Gson gson = NeeoUtil.getGson();
 
     /** The {@link HttpRequest} used for making requests */
-    private final AtomicReference<HttpRequest> request = new AtomicReference<>(new HttpRequest());
+    private final AtomicReference<HttpRequest> request;
+
+    /** The {@link ClientBuilder} to use */
+    private final ClientBuilder clientBuilder;
 
     /** The IP address of the neeo brain */
     private final NeeoUrlBuilder urlBuilder;
@@ -54,11 +59,14 @@ public class NeeoBrainApi implements AutoCloseable {
      *
      * @param ipAddress the non-empty ip address
      */
-    public NeeoBrainApi(String ipAddress) {
+    public NeeoBrainApi(String ipAddress, ClientBuilder clientBuilder) {
         NeeoUtil.requireNotEmpty(ipAddress, "ipAddress cannot be empty");
 
         this.urlBuilder = new NeeoUrlBuilder(
                 NeeoConstants.PROTOCOL + ipAddress + ":" + NeeoConstants.DEFAULT_BRAIN_PORT);
+        this.clientBuilder = clientBuilder;
+
+        request = new AtomicReference<>(new HttpRequest(clientBuilder));
     }
 
     /**
@@ -232,7 +240,7 @@ public class NeeoBrainApi implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        NeeoUtil.close(request.getAndSet(new HttpRequest()));
+        NeeoUtil.close(request.getAndSet(new HttpRequest(clientBuilder)));
     }
 
     /**
