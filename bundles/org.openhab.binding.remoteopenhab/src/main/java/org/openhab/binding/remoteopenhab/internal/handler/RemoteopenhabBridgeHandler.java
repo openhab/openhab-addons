@@ -337,7 +337,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                 restartStreamingUpdates();
             }
         } catch (RemoteopenhabException e) {
-            logger.debug("{}", e.getMessage(), e);
+            logger.debug("{}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             stopStreamingUpdates();
         }

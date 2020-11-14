@@ -114,7 +114,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                                 updateThingStatus(uid, statusInfo);
                             }
                         } catch (RemoteopenhabException e) {
-                            logger.debug("{}", e.getMessage(), e);
+                            logger.debug("{}", e.getMessage());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     });

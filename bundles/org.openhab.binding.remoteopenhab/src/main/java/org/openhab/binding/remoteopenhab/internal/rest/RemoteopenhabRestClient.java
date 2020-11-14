@@ -144,7 +144,7 @@ public class RemoteopenhabRestClient {
             topicNamespace = restApi.runtimeInfo != null ? "openhab" : "smarthome";
             logger.debug("topic namespace = {}", topicNamespace);
         } catch (RemoteopenhabException | JsonSyntaxException e) {
-            throw new RemoteopenhabException("Failed to execute the root REST API", e);
+            throw new RemoteopenhabException("Failed to execute the root REST API: " + e.getMessage(), e);
         }
     }
 
@@ -157,7 +157,8 @@ public class RemoteopenhabRestClient {
             }
             return Arrays.asList(jsonParser.fromJson(jsonResponse, RemoteopenhabItem[].class));
         } catch (RemoteopenhabException | JsonSyntaxException e) {
-            throw new RemoteopenhabException("Failed to get the list of remote items using the items REST API", e);
+            throw new RemoteopenhabException(
+                    "Failed to get the list of remote items using the items REST API: " + e.getMessage(), e);
         }
     }
 
@@ -166,8 +167,8 @@ public class RemoteopenhabRestClient {
             String url = String.format("%s/%s/state", getRestApiUrl("items"), itemName);
             return executeUrl(HttpMethod.GET, url, "text/plain", null, null);
         } catch (RemoteopenhabException e) {
-            throw new RemoteopenhabException(
-                    "Failed to get the state of remote item " + itemName + " using the items REST API", e);
+            throw new RemoteopenhabException("Failed to get the state of remote item " + itemName
+                    + " using the items REST API: " + e.getMessage(), e);
         }
     }
 
@@ -178,8 +179,8 @@ public class RemoteopenhabRestClient {
             executeUrl(HttpMethod.POST, url, "application/json", stream, "text/plain");
             stream.close();
         } catch (RemoteopenhabException | IOException e) {
-            throw new RemoteopenhabException(
-                    "Failed to send command to the remote item " + itemName + " using the items REST API", e);
+            throw new RemoteopenhabException("Failed to send command to the remote item " + itemName
+                    + " using the items REST API: " + e.getMessage(), e);
         }
     }
 
@@ -191,7 +192,8 @@ public class RemoteopenhabRestClient {
             }
             return Arrays.asList(jsonParser.fromJson(jsonResponse, RemoteopenhabThing[].class));
         } catch (RemoteopenhabException | JsonSyntaxException e) {
-            throw new RemoteopenhabException("Failed to get the list of remote things using the things REST API", e);
+            throw new RemoteopenhabException(
+                    "Failed to get the list of remote things using the things REST API: " + e.getMessage(), e);
         }
     }
 
@@ -204,8 +206,8 @@ public class RemoteopenhabRestClient {
             }
             return jsonParser.fromJson(jsonResponse, RemoteopenhabThing.class);
         } catch (RemoteopenhabException | JsonSyntaxException e) {
-            throw new RemoteopenhabException("Failed to get the remote thing \" + uid + \" using the things REST API",
-                    e);
+            throw new RemoteopenhabException(
+                    "Failed to get the remote thing " + uid + " using the things REST API: " + e.getMessage(), e);
         }
     }
 

@@ -52,6 +52,8 @@ The `thing` thing has the following configuration parameters:
 | thingUID             | yes      | The thing UID in the remote openHAB server. |
 | buildTriggerChannels | no       | If set to true, a trigger channel will be automatically created and linked to each trigger channel from the remote thing. Default is true. |
 
+Please note that if your remote server is an openHAB v3 server, you will need to define a valid token on your bridge thing to have your things correctly initialized.
+
 Setting the `buildTriggerChannels` parameter to false is for the main following advanced usages :
 
 * you don't care about the trigger channels of this remote thing and you don't want the binding to create them locally,
