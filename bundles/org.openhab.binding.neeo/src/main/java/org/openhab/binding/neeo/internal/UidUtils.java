@@ -96,8 +96,8 @@ public class UidUtils {
     public static String createChannelId(@Nullable String groupId, String channelId, @Nullable String channelKey) {
         NeeoUtil.requireNotEmpty(channelId, "channelId cannot be empty");
 
-        return ((groupId != null && !groupId.isEmpty()) ? "" : (groupId + "#"))
-                + ((channelKey != null && !channelKey.isEmpty()) ? channelId : (channelId + DELIMITER + channelKey));
+        return ((groupId == null || groupId.isEmpty()) ? "" : (groupId + "#"))
+                + ((channelKey == null || channelKey.isEmpty()) ? channelId : (channelId + DELIMITER + channelKey));
     }
 
     /**
@@ -124,6 +124,6 @@ public class UidUtils {
     public static ChannelUID createChannelUID(ThingUID thingUid, String groupId, String channelId,
             @Nullable String channelKey) {
         return new ChannelUID(thingUid, groupId,
-                channelId + ((channelKey != null && !channelKey.isEmpty()) ? "" : (DELIMITER + channelKey)));
+                channelId + ((channelKey == null || channelKey.isEmpty()) ? "" : (DELIMITER + channelKey)));
     }
 }

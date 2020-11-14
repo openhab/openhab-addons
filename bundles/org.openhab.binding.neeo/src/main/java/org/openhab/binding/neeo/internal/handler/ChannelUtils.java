@@ -54,7 +54,7 @@ class ChannelUtils {
                 channels.add(ChannelBuilder
                         .create(UidUtils.createChannelUID(thingUid, NeeoConstants.DEVICE_GROUP_MACROS_ID,
                                 NeeoConstants.DEVICE_CHANNEL_STATUS, key), "Switch")
-                        .withLabel(label == null || label.isEmpty() ? key : label)
+                        .withLabel((label == null || label.isEmpty()) ? key : label)
                         .withType(NeeoConstants.DEVICE_MACRO_STATUS_UID).build());
             }
         }
@@ -140,7 +140,7 @@ class ChannelUtils {
             final String key = recipe.getKey();
             if (key != null && !key.isEmpty()) {
                 final String name = recipe.getName();
-                final String recipeLabel = (name == null || name.isEmpty()) ? key : recipe.getName();
+                final String recipeLabel = (name == null || name.isEmpty()) ? key : name;
                 final String nameLabel = recipeLabel + " Name (" + recipe.getType() + ")";
                 final String typeLabel = recipeLabel + " Type (" + recipe.getType() + ")";
                 final String enabledLabel = recipeLabel + " Enabled (" + recipe.getType() + ")";

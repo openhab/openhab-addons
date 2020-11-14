@@ -165,7 +165,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             logger.trace("Brain-UID {}: config is {}", thing.getUID(), config);
 
             final String ipAddress = config.getIpAddress();
-            if (ipAddress == null || !ipAddress.isEmpty()) {
+            if (ipAddress == null || ipAddress.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Brain IP Address must be specified");
                 return;

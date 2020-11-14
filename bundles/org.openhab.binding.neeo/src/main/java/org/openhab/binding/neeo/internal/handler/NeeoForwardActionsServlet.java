@@ -91,21 +91,19 @@ public class NeeoForwardActionsServlet extends HttpServlet {
 
         callback.post(json);
 
-        if (!forwardChain.isEmpty()) {
-            scheduler.execute(() -> {
-                try (final HttpRequest request = new HttpRequest(clientBuilder)) {
-                    for (final String forwardUrl : forwardChain.split(",")) {
-                        if (forwardUrl != null && !forwardUrl.isEmpty()) {
-                            final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
-                            if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
-                                logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,
-                                        httpResponse.getHttpCode());
-                            }
+        scheduler.execute(() -> {
+            try (final HttpRequest request = new HttpRequest(clientBuilder)) {
+                for (final String forwardUrl : forwardChain.split(",")) {
+                    if (forwardUrl != null && !forwardUrl.isEmpty()) {
+                        final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
+                        if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
+                            logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,
+                                    httpResponse.getHttpCode());
                         }
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     interface Callback {
