@@ -31,7 +31,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.servlet.ServletException;
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
@@ -130,7 +129,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Handles any {@Commands} sent - this bridge has no commands and does nothing
+     * Handles any {@link Command} sent - this bridge has no commands and does nothing
      *
      * @see
      *      org.openhab.core.thing.binding.ThingHandler#handleCommand(org.openhab.core.thing.ChannelUID,
@@ -166,7 +165,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             logger.trace("Brain-UID {}: config is {}", thing.getUID(), config);
 
             final String ipAddress = config.getIpAddress();
-            if (ipAddress == null || StringUtils.isEmpty(ipAddress)) {
+            if (ipAddress == null || !ipAddress.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Brain IP Address must be specified");
                 return;
@@ -259,9 +258,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
      * @param value a possibly null, possibly empty key
      */
     private void addProperty(Map<String, String> properties, String key, @Nullable String value) {
-        Objects.requireNonNull(properties, "properties cannot be null");
-        NeeoUtil.requireNotEmpty(key, "key cannot be empty");
-        if (value != null && StringUtils.isNotEmpty(value)) {
+        if (value != null && !value.isEmpty()) {
             properties.put(key, value);
         }
     }

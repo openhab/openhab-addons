@@ -14,13 +14,13 @@ package org.openhab.binding.neeo.internal.handler;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -73,7 +73,7 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     }
 
     /**
-     * Processes the post action from the NEEO brain. Simply get's the specified json and then forwards it on (if
+     * Processes the post action from the NEEO brain. Simply gets the specified json and then forwards it on (if
      * needed)
      *
      * @param req the non-null request
@@ -86,7 +86,7 @@ public class NeeoForwardActionsServlet extends HttpServlet {
             return;
         }
 
-        final String json = IOUtils.toString(req.getReader());
+        final String json = req.getReader().lines().collect(Collectors.joining("\n"));
         logger.debug("handleForwardActions {}", json);
 
         callback.post(json);
