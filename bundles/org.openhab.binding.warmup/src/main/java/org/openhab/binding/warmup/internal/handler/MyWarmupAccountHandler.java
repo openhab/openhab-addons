@@ -90,7 +90,6 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
             queryResponse = api.getStatus();
         } catch (MyWarmupApiException e) {
             queryResponse = null;
-            cancelRefresh();
         } finally {
             if (queryResponse != null) {
                 updateStatus(ThingStatus.ONLINE);

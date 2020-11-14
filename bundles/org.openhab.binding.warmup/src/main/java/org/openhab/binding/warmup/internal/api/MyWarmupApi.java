@@ -51,7 +51,6 @@ public class MyWarmupApi {
 
     private MyWarmupConfigurationDTO configuration;
     private @Nullable String authToken;
-    private int failCount = 0;
 
     /**
      * Construct the API client
@@ -74,38 +73,29 @@ public class MyWarmupApi {
         this.configuration = configuration;
     }
 
-    private Boolean validateSession() throws MyWarmupApiException {
+    private boolean validateSession() throws MyWarmupApiException {
         if (authToken == null) {
             return authenticate();
         }
         return true;
     }
 
-    private Boolean authenticate() throws MyWarmupApiException {
-        try {
-            String body = GSON.toJson(new AuthRequestDTO(configuration.username, configuration.password,
-                    WarmupBindingConstants.AUTH_METHOD, WarmupBindingConstants.AUTH_APP_ID));
+    private boolean authenticate() throws MyWarmupApiException {
 
-            ContentResponse response = callWarmup(WarmupBindingConstants.APP_ENDPOINT, body, false);
+        String body = GSON.toJson(new AuthRequestDTO(configuration.username, configuration.password,
+                WarmupBindingConstants.AUTH_METHOD, WarmupBindingConstants.AUTH_APP_ID));
 
-            AuthResponseDTO ar = GSON.fromJson(response.getContentAsString(), AuthResponseDTO.class);
+        ContentResponse response = callWarmup(WarmupBindingConstants.APP_ENDPOINT, body, false);
 
-            if (ar.getStatus().getResult().equals("success")) {
-                authToken = ar.getResponse().getToken();
-                failCount = 0;
-                return true;
-            } else {
-                logger.debug("Authentication failure {}", response.getContentAsString());
-                throw new MyWarmupApiException("Authentication Failed");
-            }
-        } catch (MyWarmupApiException e) {
-            failCount++;
-            if (failCount > 2) {
-                logger.warn("Multiple authentication failures: {}", e.getMessage());
-                throw new MyWarmupApiException(e.getMessage());
-            }
+        AuthResponseDTO ar = GSON.fromJson(response.getContentAsString(), AuthResponseDTO.class);
+
+        if (ar.getStatus().getResult().equals("success")) {
+            authToken = ar.getResponse().getToken();
+            return true;
+        } else {
+            logger.debug("Authentication failure {}", response.getContentAsString());
+            throw new MyWarmupApiException("Authentication Failed");
         }
-        return false;
     }
 
     /**
