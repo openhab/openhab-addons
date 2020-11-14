@@ -13,7 +13,6 @@
 package org.openhab.binding.neeo.internal.handler;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.servlet.http.HttpServlet;
@@ -48,7 +47,6 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     private final Callback callback;
 
     /** The forwarding chain */
-    @Nullable
     private final String forwardChain;
 
     /** The {@link ClientBuilder} to use */
@@ -64,12 +62,9 @@ public class NeeoForwardActionsServlet extends HttpServlet {
      * @param callback a non-null {@link Callback}
      * @param forwardChain a possibly null, possibly empty forwarding chain
      */
-    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Callback callback, @Nullable String forwardChain,
+    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Callback callback, String forwardChain,
             ClientBuilder clientBuilder) {
         super();
-
-        Objects.requireNonNull(scheduler, "scheduler cannot be null");
-        Objects.requireNonNull(callback, "callback cannot be null");
 
         this.scheduler = scheduler;
         this.callback = callback;
@@ -96,11 +91,10 @@ public class NeeoForwardActionsServlet extends HttpServlet {
 
         callback.post(json);
 
-        final String fc = forwardChain;
-        if (fc != null && !fc.isEmpty()) {
+        if (!forwardChain.isEmpty()) {
             scheduler.execute(() -> {
                 try (final HttpRequest request = new HttpRequest(clientBuilder)) {
-                    for (final String forwardUrl : fc.split(",")) {
+                    for (final String forwardUrl : forwardChain.split(",")) {
                         if (forwardUrl != null && !forwardUrl.isEmpty()) {
                             final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
                             if (httpResponse.getHttpCode() != HttpStatus.OK_200) {

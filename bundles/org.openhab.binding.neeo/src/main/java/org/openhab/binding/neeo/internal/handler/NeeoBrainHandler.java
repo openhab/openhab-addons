@@ -163,6 +163,8 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             NeeoUtil.checkInterrupt();
 
             final NeeoBrainConfig config = getBrainConfig();
+            logger.trace("Brain-UID {}: config is {}", thing.getUID(), config);
+
             final String ipAddress = config.getIpAddress();
             if (ipAddress == null || StringUtils.isEmpty(ipAddress)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -186,7 +188,8 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             addProperty(properties, "Last Change", String.valueOf(brain.getLastChange()));
             updateProperties(properties);
 
-            if (config.isEnableForwardActions()) {
+            String forwardChain = config.getForwardChain();
+            if (config.isEnableForwardActions() && forwardChain != null && !forwardChain.isEmpty()) {
                 NeeoUtil.checkInterrupt();
 
                 forwardActionServlet = new NeeoForwardActionsServlet(scheduler, json -> {
@@ -200,7 +203,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
                             ((NeeoRoomHandler) th).processAction(action);
                         }
                     }
-                }, config.getForwardChain(), clientBuilder);
+                }, forwardChain, clientBuilder);
 
                 NeeoUtil.checkInterrupt();
                 try {
@@ -240,7 +243,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred connecting to brain: " + e.getMessage());
         } catch (InterruptedException e) {
-            logger.debug("Initializtion was interrupted", e);
+            logger.debug("Initialization was interrupted", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Initialization was interrupted");
         } finally {
