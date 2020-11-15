@@ -246,7 +246,6 @@ class SSLconnection implements Closeable {
     @Override
     public synchronized void close() throws IOException {
         logger.debug("close() called.");
-        logger.info("Shutting down Velux bridge connection.");
         DataInputStreamWithTimeout dInX = dIn;
         if (dInX != null) {
             try {
@@ -265,6 +264,7 @@ class SSLconnection implements Closeable {
         }
         SSLSocket socketX = socket;
         if (socketX != null) {
+            logger.info("Shutting down Velux bridge connection.");
             try {
                 socketX.close();
             } catch (IOException e) {
