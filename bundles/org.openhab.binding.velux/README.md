@@ -300,6 +300,29 @@ then
 end
 ```
 
+### Rule for checking if a Window has been manually opened
+
+In the case that a window has been manually opened, if you try to move it via the binding, its `position` Channel will become `UNDEF`.
+You can exploit this behaviour in a rule to check regularly if a window has been manually opened.
+
+```java
+rule "Every 10 minutes, check if window is in manual mode"
+when
+	Time cron "0 0/10 * * * ?" // every 10 minutes
+then
+	if (Velux_Window.state != UNDEF) {
+		// command the window to its actual position; this will either
+		// - succeed: the actual position will not change, or
+		// - fail: the position becomes UNDEF (logged next time this rule executes)
+		Velux_Window.sendCommand(Velux_Window.state)
+	} else {
+		logWarn("Rules", "Velux in Manual mode, trying to close again")
+		// try to close it
+		Velux_Window.sendCommand(0)
+	}
+end
+```
+
 ## Debugging
 
 For those who are interested in more detailed insight of the processing of this binding, a deeper look can be achieved by increased loglevel.
