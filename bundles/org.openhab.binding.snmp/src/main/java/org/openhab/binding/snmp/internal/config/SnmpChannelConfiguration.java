@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.snmp.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.snmp.internal.SnmpChannelMode;
 import org.openhab.binding.snmp.internal.SnmpDatatype;
 
@@ -20,14 +22,15 @@ import org.openhab.binding.snmp.internal.SnmpDatatype;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class SnmpChannelConfiguration {
-    public String oid;
+    public @Nullable String oid;
     public SnmpChannelMode mode = SnmpChannelMode.READ;
-    public SnmpDatatype datatype;
+    public @Nullable SnmpDatatype datatype;
 
-    public String onvalue;
-    public String offvalue;
-    public String exceptionValue;
+    public @Nullable String onvalue;
+    public @Nullable String offvalue;
+    public @Nullable String exceptionValue;
 
     public boolean doNotLogException = false;
 }
