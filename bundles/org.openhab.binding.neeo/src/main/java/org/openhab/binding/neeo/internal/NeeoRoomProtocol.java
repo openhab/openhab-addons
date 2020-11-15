@@ -14,7 +14,6 @@ package org.openhab.binding.neeo.internal;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -252,7 +251,7 @@ public class NeeoRoomProtocol {
 
         final NeeoScenario scenario = neeoRoom.getScenarios().getScenario(scenarioKey);
         if (scenario != null) {
-            final boolean isActive = Arrays.asList(activeScenarios.get()).contains(scenarioKey);
+            final boolean isActive = activeScenarios.get().contains(scenarioKey);
             callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_SCENARIO_ID,
                     NeeoConstants.ROOM_CHANNEL_STATUS, scenarioKey), OnOffType.from(isActive));
         }
@@ -267,7 +266,7 @@ public class NeeoRoomProtocol {
             logger.debug("API is null [likely bridge is offline]");
         } else {
             try {
-                final List<String> activeScenarios = new ArrayList<>(Arrays.asList(api.getActiveScenarios()));
+                final List<String> activeScenarios = api.getActiveScenarios();
                 final List<String> oldScenarios = this.activeScenarios.getAndSet(activeScenarios);
 
                 if (!activeScenarios.equals(oldScenarios)) {
