@@ -17,7 +17,6 @@ import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -72,7 +71,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
      * keeps track of the current state for handling of increase/decrease
      */
     private @Nullable AVMFritzBaseModel state;
-    private @Nullable AVMFritzDeviceConfiguration config;
+    private @Nullable String identifier;
 
     /**
      * Constructor
@@ -86,7 +85,11 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
 
     @Override
     public void initialize() {
-        config = getConfigAs(AVMFritzDeviceConfiguration.class);
+        final AVMFritzDeviceConfiguration config = getConfigAs(AVMFritzDeviceConfiguration.class);
+        final String newIdentifier = config.ain;
+        if (newIdentifier != null && !newIdentifier.isBlank()) {
+            this.identifier = newIdentifier;
+        }
 
         registerStatusListener(this);
 
@@ -100,14 +103,14 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
         super.dispose();
     }
 
+    @SuppressWarnings({ "null", "unused" })
     @Override
     public void onDeviceListAdded(List<AVMFritzBaseModel> devicelist) {
         final String identifier = getIdentifier();
         final Predicate<AVMFritzBaseModel> predicate = identifier == null ? it -> thing.getUID().equals(getThingUID(it))
                 : it -> identifier.equals(it.getIdentifier());
-        final Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream().filter(predicate).findFirst();
-        if (optionalDevice.isPresent()) {
-            final AVMFritzBaseModel device = optionalDevice.get();
+        final AVMFritzBaseModel device = devicelist.stream().filter(predicate).findFirst().orElse(null);
+        if (device != null) {
             devicelist.remove(device);
             listeners.stream().forEach(listener -> listener.onDeviceUpdated(thing.getUID(), device));
         } else {
@@ -125,9 +128,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
     public void onDeviceUpdated(ThingUID thingUID, AVMFritzBaseModel device) {
         if (thing.getUID().equals(thingUID)) {
             // save AIN to config for FRITZ!Powerline 546E stand-alone
-            if (config == null) {
-                updateConfiguration(device);
-            }
+            updateConfiguration(device);
 
             logger.debug("Update self '{}' with device model: {}", thingUID, device);
             if (device.getPresent() == 1) {
@@ -311,7 +312,6 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
      * @return the AIN
      */
     public @Nullable String getIdentifier() {
-        AVMFritzDeviceConfiguration localConfig = config;
-        return localConfig != null ? localConfig.ain : null;
+        return identifier;
     }
 }

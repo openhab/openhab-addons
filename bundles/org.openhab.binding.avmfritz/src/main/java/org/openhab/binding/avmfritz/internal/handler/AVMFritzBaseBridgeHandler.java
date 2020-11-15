@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -270,11 +269,10 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 .collect(Collectors.toMap(it -> it.getIdentifier(), Function.identity()));
         getThing().getThings().forEach(childThing -> {
             final AVMFritzBaseThingHandler childHandler = (AVMFritzBaseThingHandler) childThing.getHandler();
+            // if (childHandler != null && ThingHandlerHelper.isHandlerInitialized(childHandler)) {
             if (childHandler != null) {
-                final Optional<AVMFritzBaseModel> optionalDevice = Optional
-                        .ofNullable(deviceIdentifierMap.get(childHandler.getIdentifier()));
-                if (optionalDevice.isPresent()) {
-                    final AVMFritzBaseModel device = optionalDevice.get();
+                final AVMFritzBaseModel device = deviceIdentifierMap.get(childHandler.getIdentifier());
+                if (device != null) {
                     deviceList.remove(device);
                     listeners.forEach(listener -> listener.onDeviceUpdated(childThing.getUID(), device));
                 } else {
