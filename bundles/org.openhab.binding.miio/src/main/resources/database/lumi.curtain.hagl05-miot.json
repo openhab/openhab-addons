@@ -12,7 +12,7 @@
 				"piid": 1,
 				"friendlyName": "Curtain - Device Fault",
 				"channel": "fault",
-				"channelType": "LumiCurtainHagl05fault",
+				"channelType": "LumiCurtainHagl05_fault",
 				"type": "Number",
 				"refresh": true,
 				"actions": [],
@@ -41,7 +41,7 @@
 				"piid": 6,
 				"friendlyName": "Curtain - Status",
 				"channel": "status",
-				"channelType": "LumiCurtainHagl05status",
+				"channelType": "LumiCurtainHagl05_status",
 				"type": "Number",
 				"refresh": true,
 				"actions": [],
@@ -83,7 +83,7 @@
 				"piid": 1,
 				"friendlyName": "curtain_cfg - Manual Enabled",
 				"channel": "manual-enabled",
-				"channelType": "LumiCurtainHagl05manual-enabled",
+				"channelType": "LumiCurtainHagl05_manual-enabled",
 				"type": "Number",
 				"refresh": true,
 				"actions": [
@@ -110,7 +110,7 @@
 				"piid": 2,
 				"friendlyName": "curtain_cfg - Polarity",
 				"channel": "polarity",
-				"channelType": "LumiCurtainHagl05polarity",
+				"channelType": "LumiCurtainHagl05_polarity",
 				"type": "Number",
 				"refresh": true,
 				"actions": [
@@ -137,7 +137,7 @@
 				"piid": 3,
 				"friendlyName": "curtain_cfg - Position Limit",
 				"channel": "pos-limit",
-				"channelType": "LumiCurtainHagl05pos-limit",
+				"channelType": "LumiCurtainHagl05_pos-limit",
 				"type": "Number",
 				"refresh": true,
 				"actions": [
@@ -164,7 +164,7 @@
 				"piid": 4,
 				"friendlyName": "Set Night Tip Light",
 				"channel": "en-night-tip-light",
-				"channelType": "LumiCurtainHagl05en-night-tip-light",
+				"channelType": "LumiCurtainHagl05_en-night-tip-light",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
