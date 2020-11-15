@@ -13,16 +13,16 @@
 package org.openhab.binding.remoteopenhab.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Event received through the SSE connection.
+ * Payload from ChannelTriggerEvent events received through the SSE connection.
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class Event {
+public class RemoteopenhabChannelTriggerEvent {
 
-    public String type = "";
-    public String topic = "";
-    public String payload = "";
+    public String channel = "";
+    public @Nullable String event;
 }

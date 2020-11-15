@@ -12,20 +12,17 @@
  */
 package org.openhab.binding.remoteopenhab.internal.data;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Part of {@link Item} containing the state description
+ * Event received through the SSE connection.
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class StateDescription {
+public class RemoteopenhabEvent {
 
-    public String pattern = "";
-    public boolean readOnly;
-    public @Nullable List<Option> options;
+    public String type = "";
+    public String topic = "";
+    public String payload = "";
 }

@@ -15,20 +15,14 @@ package org.openhab.binding.remoteopenhab.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link RemoteopenhabInstanceConfiguration} is responsible for holding
- * configuration informations associated to a remote openHAB server
- * thing type
+ * The {@link RemoteopenhabTriggerChannelConfiguration} is responsible for holding
+ * configuration informations associated to a remote openHAB trigger channel
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class RemoteopenhabInstanceConfiguration {
-    public static final String HOST = "host";
-    public static final String PORT = "port";
-    public static final String REST_PATH = "restPath";
+public class RemoteopenhabTriggerChannelConfiguration {
+    public static final String CHANNEL_UID = "channelUID";
 
-    public String host = "";
-    public int port = 8080;
-    public String restPath = "/rest";
-    public String token = "";
+    public String channelUID = "";
 }

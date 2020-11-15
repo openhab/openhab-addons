@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class RestApiEndpoint {
+public class RemoteopenhabRestApiEndpoint {
 
     public String type = "";
     public String url = "";

@@ -12,16 +12,26 @@
  */
 package org.openhab.binding.remoteopenhab.internal.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Part of {@link StateDescription} containing one state option
+ * Response to the API GET /rest/things
+ * Also payload from ThingAddedEvent / ThingRemovedEvent events received through the SSE connection.
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class Option {
+public class RemoteopenhabThing {
 
-    public String value = "";
     public String label = "";
+    @SerializedName("UID")
+    public String uid = "";
+    public @Nullable RemoteopenhabStatusInfo statusInfo;
+    public List<RemoteopenhabChannel> channels = new ArrayList<>();
 }
