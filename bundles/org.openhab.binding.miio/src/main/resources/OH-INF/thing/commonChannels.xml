@@ -463,6 +463,66 @@
 		<item-type>Switch</item-type>
 		<label>Generic Bool</label>
 	</channel-type>
+	<channel-type id="LumiCurtainHagl05_fault">
+		<item-type>Number</item-type>
+		<label>Curtain - Device Fault</label>
+		<state>
+			<options>
+				<option value="0">No faults</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_status">
+		<item-type>Number</item-type>
+		<label>Curtain - Status</label>
+		<state>
+			<options>
+				<option value="0">Stopped</option>
+				<option value="1">Opening</option>
+				<option value="2">Closing</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_manual-enabled">
+		<item-type>Number</item-type>
+		<label>curtain_cfg - manual_enabled</label>
+		<state>
+			<options>
+				<option value="0">Disable</option>
+				<option value="1">Enable</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_polarity">
+		<item-type>Number</item-type>
+		<label>curtain_cfg - polarity</label>
+		<state>
+			<options>
+				<option value="0">Positive</option>
+				<option value="1">Reverse</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_pos-limit">
+		<item-type>Number</item-type>
+		<label>curtain_cfg - pos_limit</label>
+		<state>
+			<options>
+				<option value="0">Unlimit</option>
+				<option value="1">Limit</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="LumiCurtainHagl05_en-night-tip-light">
+		<item-type>Switch</item-type>
+		<label>curtain_cfg - en_night_tip_light</label>
+		<state>
+			<options>
+				<option value="0">Disable</option>
+				<option value="1">Enable</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="vacuumaction">
 		<item-type>Number</item-type>
 		<label>Vacuum Action</label>
