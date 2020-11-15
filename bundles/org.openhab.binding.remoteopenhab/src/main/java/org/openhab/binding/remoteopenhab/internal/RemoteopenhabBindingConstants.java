@@ -31,6 +31,14 @@ public class RemoteopenhabBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
+    public static final ThingTypeUID THING_TYPE_THING = new ThingTypeUID(BINDING_ID, "thing");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(BRIDGE_TYPE_SERVER);
+    // All supported Bridge types
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections.singleton(BRIDGE_TYPE_SERVER);
+
+    // All supported Thing types
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_THING);
+
+    // List of all channel types
+    public static final String CHANNEL_TYPE_TRIGGER = "trigger";
 }
