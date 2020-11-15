@@ -24,10 +24,9 @@
 		<representation-property>groupId</representation-property>
 
 		<config-description>
-			<parameter name="groupId" type="text">
+			<parameter name="groupId" type="text" required="true">
 				<label>Group ID</label>
 				<description>The group identifier identifies one certain hue group or room.</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
 				<label>Fade Time</label>
