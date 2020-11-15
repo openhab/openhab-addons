@@ -94,10 +94,9 @@
 		<kind>trigger</kind>
 		<label>Trigger Channel</label>
 		<config-description>
-			<parameter name="channelUID" type="text">
+			<parameter name="channelUID" type="text" required="true">
 				<label>Remote Channel UID</label>
 				<description>The channel UID in the remote openHAB server.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</channel-type>
