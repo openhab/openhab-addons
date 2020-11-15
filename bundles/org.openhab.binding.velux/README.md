@@ -129,7 +129,7 @@ The supported Channels and their associated channel types are shown below.
 | downtime    | Number    | Time interval (sec) between last successful and most recent device interaction. |
 | doDetection | Switch    | Command to activate bridge detection mode.                                      |
 
-### Channels for "window", "rollershutter" Things
+### Channels for "window" / "rollershutter" Things
 
 The supported Channels and their associated channel types are shown below.
 
@@ -138,6 +138,11 @@ The supported Channels and their associated channel types are shown below.
 | position     | Rollershutter | Actual position of the window or device.        |
 | limitMinimum | Rollershutter | Minimum limit position of the window or device. |
 | limitMaximum | Rollershutter | Maximum limit position of the window or device. |
+
+The `position` Channel will as a general rule indicate the actual position of the window (resp. roller shutter) in percent (0% .. 100%).
+When a window is in motion towards a new target position, the Channel will display the target position.
+And when the motion has completed, it will display the final actual position.
+In case of errors, (e.g. a window is commanded to a target position when it has been opened manually), the Channel will display as `UNDEF`.
 
 ### Channels for "actuator" Things
 
@@ -149,6 +154,8 @@ The supported Channels and their associated channel types are shown below.
 | state        | Switch        | Device control (ON, OFF).                       |
 | limitMinimum | Rollershutter | Minimum limit position of the window or device. |
 | limitMaximum | Rollershutter | Maximum limit position of the window or device. |
+
+See the section above for "window" / "rollershutter" Things for further information concerning the `position` Channel.
 
 ### Channels for "scene" Things
 
@@ -166,6 +173,8 @@ The supported Channel and its associated channel type is shown below.
 | Channel      | Data Type     | Description                             |
 |--------------|---------------|-----------------------------------------|
 | position     | Rollershutter | Position of the virtual roller shutter. |
+
+See the section above for "window" / "rollershutter" Things for further information concerning the `position` Channel.
 
 ### Channels for "information" Thing
 
