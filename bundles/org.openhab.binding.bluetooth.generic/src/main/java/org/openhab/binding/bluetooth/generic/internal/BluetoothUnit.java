@@ -359,7 +359,5 @@ public enum BluetoothUnit {
 
         public interface MassFlowRate extends Quantity<MassFlowRate> {
         }
-
     }
-
 }
