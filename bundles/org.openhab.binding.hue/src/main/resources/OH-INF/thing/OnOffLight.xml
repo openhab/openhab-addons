@@ -20,10 +20,9 @@
 		<representation-property>uniqueId</representation-property>
 
 		<config-description>
-			<parameter name="lightId" type="text">
+			<parameter name="lightId" type="text" required="true">
 				<label>Light ID</label>
 				<description>The light identifier identifies one certain hue light.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>
