@@ -18,11 +18,29 @@
 				<required>true</required>
 			</parameter>
 
+			<parameter name="useHttps" type="boolean">
+				<label>Use HTTPS</label>
+				<description>Set it to true in case you want to use HTTPS to communicate with the remote openHAB server. Default is
+					false.</description>
+				<required>false</required>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="port" type="integer">
 				<label>Server HTTP Port</label>
-				<description>The HTTP port to be used to communicate with the remote openHAB server.</description>
+				<description>The HTTP port to use to communicate with the remote openHAB server.</description>
 				<required>true</required>
 				<default>8080</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="trustedCertificate" type="boolean">
+				<label>Trust SSL Certificate</label>
+				<description>Set it to true in case you want to use HTTPS even without a valid SSL certificate provided by your
+					remote server.</description>
+				<required>false</required>
+				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -43,5 +61,44 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
+
+	<thing-type id="thing">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+
+		<label>Remote Thing</label>
+		<description>A thing from the remote openHAB server.</description>
+
+		<representation-property>thingUID</representation-property>
+
+		<config-description>
+			<parameter name="thingUID" type="text">
+				<label>Remote Thing UID</label>
+				<description>The thing UID in the remote openHAB server.</description>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="buildTriggerChannels" type="boolean">
+				<label>Automatic Trigger Channels Building</label>
+				<description>If set to true, a trigger channel will be automatically created and linked to each trigger channel from
+					the remote thing.</description>
+				<required>false</required>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="trigger">
+		<kind>trigger</kind>
+		<label>Trigger Channel</label>
+		<config-description>
+			<parameter name="channelUID" type="text" required="true">
+				<label>Remote Channel UID</label>
+				<description>The channel UID in the remote openHAB server.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
 
 </thing:thing-descriptions>

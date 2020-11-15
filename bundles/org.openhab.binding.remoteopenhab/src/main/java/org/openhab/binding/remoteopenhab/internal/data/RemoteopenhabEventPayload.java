@@ -13,20 +13,15 @@
 package org.openhab.binding.remoteopenhab.internal.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Response to the API GET /rest/items
- * Also payload from ItemAddedEvent / ItemRemovedEvent / ItemUpdatedEvent events received through the SSE connection.
+ * Payload from ItemStateEvent / GroupItemStateChangedEvent events received through the SSE connection.
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class Item {
+public class RemoteopenhabEventPayload {
 
-    public String name = "";
     public String type = "";
-    public String state = "";
-    public String groupType = "";
-    public @Nullable StateDescription stateDescription;
+    public String value = "";
 }
