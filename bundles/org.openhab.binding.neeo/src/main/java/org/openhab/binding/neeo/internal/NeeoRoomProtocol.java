@@ -13,6 +13,7 @@
 package org.openhab.binding.neeo.internal;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +54,7 @@ public class NeeoRoomProtocol {
     private final NeeoRoom neeoRoom;
 
     /** The currently active scenarios */
-    private final AtomicReference<String[]> activeScenarios = new AtomicReference<>(new String[0]);
+    private final AtomicReference<List<String>> activeScenarios = new AtomicReference<>(new ArrayList<>());
 
     /**
      * Instantiates a new neeo room protocol.
@@ -123,20 +124,23 @@ public class NeeoRoomProtocol {
     private void processScenarioChange(String scenarioKey, boolean launch) {
         NeeoUtil.requireNotEmpty(scenarioKey, "scenarioKey cannot be empty");
 
-        final List<String> activeScenarios = Arrays.asList(this.activeScenarios.get());
-        final int idx = activeScenarios.indexOf(scenarioKey);
+        final List<String> activeScenarios = this.activeScenarios.get();
 
-        // already set that way
-        if ((idx < 0 && !launch) || (idx >= 0 && launch)) {
-            return;
-        } else if (idx >= 0) {
-            activeScenarios.remove(scenarioKey);
+        if (activeScenarios.contains(scenarioKey)) {
+            if (launch) {
+                return;
+            } else {
+                activeScenarios.remove(scenarioKey);
+            }
         } else {
-            activeScenarios.add(scenarioKey);
+            if (launch) {
+                activeScenarios.add(scenarioKey);
+            } else {
+                return;
+            }
         }
 
-        this.activeScenarios.set(activeScenarios.toArray(String[]::new));
-
+        this.activeScenarios.set(activeScenarios);
         refreshScenarioStatus(scenarioKey);
     }
 
@@ -263,9 +267,8 @@ public class NeeoRoomProtocol {
             logger.debug("API is null [likely bridge is offline]");
         } else {
             try {
-                final String[] apiScenarios = api.getActiveScenarios();
-                final List<String> activeScenarios = Arrays.asList(apiScenarios);
-                final List<String> oldScenarios = Arrays.asList(this.activeScenarios.getAndSet(apiScenarios));
+                final List<String> activeScenarios = new ArrayList<>(Arrays.asList(api.getActiveScenarios()));
+                final List<String> oldScenarios = this.activeScenarios.getAndSet(activeScenarios);
 
                 if (!activeScenarios.equals(oldScenarios)) {
                     activeScenarios.forEach(this::refreshScenarioStatus);
