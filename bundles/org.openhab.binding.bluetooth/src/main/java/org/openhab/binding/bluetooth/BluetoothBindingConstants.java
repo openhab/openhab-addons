@@ -30,7 +30,6 @@ public class BluetoothBindingConstants {
     public static final String BINDING_ID = "bluetooth";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_CONNECTED = new ThingTypeUID(BINDING_ID, "connected");
     public static final ThingTypeUID THING_TYPE_BEACON = new ThingTypeUID(BINDING_ID, "beacon");
 
     // List of all Channel Type IDs
