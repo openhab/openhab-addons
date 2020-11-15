@@ -24,16 +24,21 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.irobot.internal.RawMQTT;
 import org.openhab.binding.irobot.internal.RoombaConfiguration;
-import org.openhab.binding.irobot.internal.RoombaMqttBrokerConnection;
 import org.openhab.binding.irobot.internal.dto.IdentProtocol;
 import org.openhab.binding.irobot.internal.dto.IdentProtocol.IdentData;
 import org.openhab.binding.irobot.internal.dto.MQTTProtocol;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
+import org.openhab.core.io.transport.mqtt.MqttConnectionState;
+import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.io.transport.mqtt.reconnect.PeriodicReconnectStrategy;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -62,7 +67,7 @@ import com.google.gson.stream.JsonReader;
  * @author Pavel Fedin - Rewrite for 900 series
  */
 @NonNullByDefault
-public class RoombaHandler extends BaseThingHandler {
+public class RoombaHandler extends BaseThingHandler implements MqttConnectionObserver, MqttMessageSubscriber {
     private final Logger logger = LoggerFactory.getLogger(RoombaHandler.class);
     private final Gson gson = new Gson();
     private static final int RECONNECT_DELAY_SEC = 5; // In seconds
@@ -71,7 +76,7 @@ public class RoombaHandler extends BaseThingHandler {
     // The real one is set in initialize()
     private RoombaConfiguration config = new RoombaConfiguration();
     private @Nullable String blid = null;
-    private @Nullable RoombaMqttBrokerConnection connection;
+    private @Nullable MqttBrokerConnection connection;
     private Hashtable<String, State> lastState = new Hashtable<>();
     private MQTTProtocol.@Nullable Schedule lastSchedule = null;
     private boolean autoPasses = true;
@@ -181,12 +186,14 @@ public class RoombaHandler extends BaseThingHandler {
     }
 
     private void sendRequest(MQTTProtocol.Request request) {
-        RoombaMqttBrokerConnection conn = connection;
+        MqttBrokerConnection conn = connection;
 
         if (conn != null) {
             String json = gson.toJson(request);
             logger.trace("Sending {}: {}", request.getTopic(), json);
-            conn.publish(request.getTopic(), json.getBytes());
+            // 1 here actually corresponds to MQTT qos 0 (AT_MOST_ONCE). Only this value is accepted
+            // by Roomba, others just cause it to reject the command and drop the connection.
+            conn.publish(request.getTopic(), json.getBytes(), 1, false);
         }
     }
 
@@ -272,8 +279,33 @@ public class RoombaHandler extends BaseThingHandler {
             }
 
             // BLID is used as both client ID and username. The name of BLID also came from Roomba980-python
-            connection = new RoombaMqttBrokerConnection(config.ipaddress, blid, this);
-            connection.start(blid, config.password);
+            MqttBrokerConnection connection = new MqttBrokerConnection(config.ipaddress, RawMQTT.ROOMBA_MQTT_PORT, true,
+                    blid);
+
+            this.connection = connection;
+
+            // Disable sending UNSUBSCRIBE request before disconnecting becuase Roomba doesn't like it.
+            // It just swallows the request and never sends any response, so stop() method never completes.
+            connection.setUnsubscribeOnStop(false);
+            connection.setCredentials(blid, config.password);
+            connection.setTrustManagers(RawMQTT.getTrustManagers());
+            // 1 here actually corresponds to MQTT qos 0 (AT_MOST_ONCE). Only this value is accepted
+            // by Roomba, others just cause it to reject the command and drop the connection.
+            connection.setQos(1);
+            // MQTT connection reconnects itself, so we don't have to call scheduleReconnect()
+            // when it breaks. Just set the period in ms.
+            connection.setReconnectStrategy(
+                    new PeriodicReconnectStrategy(RECONNECT_DELAY_SEC * 1000, RECONNECT_DELAY_SEC * 1000));
+            connection.start().exceptionally(e -> {
+                connectionStateChanged(MqttConnectionState.DISCONNECTED, e);
+                return false;
+            }).thenAccept(v -> {
+                if (!v) {
+                    connectionStateChanged(MqttConnectionState.DISCONNECTED, new TimeoutException("Timeout"));
+                } else {
+                    connectionStateChanged(MqttConnectionState.CONNECTED, null);
+                }
+            });
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduleReconnect();
@@ -282,7 +314,7 @@ public class RoombaHandler extends BaseThingHandler {
 
     private synchronized void disconnect() {
         Future<?> reconnectReq = this.reconnectReq;
-        RoombaMqttBrokerConnection connection = this.connection;
+        MqttBrokerConnection connection = this.connection;
 
         if (reconnectReq != null) {
             reconnectReq.cancel(false);
@@ -291,6 +323,7 @@ public class RoombaHandler extends BaseThingHandler {
 
         if (connection != null) {
             connection.stop();
+            logger.trace("Closed connection to {}", config.ipaddress);
             this.connection = null;
         }
     }
@@ -303,14 +336,7 @@ public class RoombaHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void onDisconnected(Throwable error) {
-        String message = error.getMessage();
-
-        logger.warn("MQTT connection failed: {}", message);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-        scheduleReconnect();
-    }
-
+    @Override
     public void processMessage(String topic, byte[] payload) {
         String jsonStr = new String(payload);
         MQTTProtocol.StateMessage msg;
@@ -499,6 +525,49 @@ public class RoombaHandler extends BaseThingHandler {
     private void reportProperty(String property, @Nullable String value) {
         if (value != null) {
             updateProperty(property, value);
+        }
+    }
+
+    @Override
+    public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
+        if (state == MqttConnectionState.CONNECTED) {
+            MqttBrokerConnection connection = this.connection;
+
+            if (connection == null) {
+                // This would be very strange, but Eclipse forces us to do the check
+                logger.warn("Established connection without broker pointer");
+                return;
+            }
+
+            updateStatus(ThingStatus.ONLINE);
+
+            // Roomba sends us two topics:
+            // "wifistat" - reports singnal strength and current robot position
+            // "$aws/things/<BLID>/shadow/update" - the rest of messages
+            // Subscribe to everything since we're interested in both
+            connection.subscribe("#", this).exceptionally(e -> {
+                logger.warn("MQTT subscription failed: {}", e.getMessage());
+                return false;
+            }).thenAccept(v -> {
+                if (!v) {
+                    logger.warn("Subscription timeout");
+                } else {
+                    logger.trace("Subscription done");
+                }
+            });
+
+        } else {
+            String message;
+
+            if (error != null) {
+                message = error.getMessage();
+                logger.warn("MQTT connection failed: {}", message);
+            } else {
+                message = null;
+                logger.warn("MQTT connection failed for unspecified reason");
+            }
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 }
