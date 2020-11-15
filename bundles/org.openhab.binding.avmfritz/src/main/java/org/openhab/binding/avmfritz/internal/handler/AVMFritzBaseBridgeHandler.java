@@ -125,7 +125,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
 
         String localIpAddress = config.ipAddress;
-        if (localIpAddress == null || localIpAddress.trim().isEmpty()) {
+        if (localIpAddress == null || localIpAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'ipAddress' parameter must be configured.");
             configValid = false;
