@@ -151,7 +151,7 @@ public class RemoteopenhabRestClient {
 
     public List<RemoteopenhabItem> getRemoteItems() throws RemoteopenhabException {
         try {
-            String url = String.format("%s?recursive=fasle", getRestApiUrl("items"));
+            String url = String.format("%s?recursive=false", getRestApiUrl("items"));
             String jsonResponse = executeUrl(HttpMethod.GET, url, "application/json", null, null);
             if (jsonResponse.isEmpty()) {
                 throw new RemoteopenhabException("JSON response is empty");
