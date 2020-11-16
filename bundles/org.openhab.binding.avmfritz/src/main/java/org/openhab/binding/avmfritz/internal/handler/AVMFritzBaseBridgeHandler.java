@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -126,7 +125,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
 
         String localIpAddress = config.ipAddress;
-        if (localIpAddress == null || localIpAddress.trim().isEmpty()) {
+        if (localIpAddress == null || localIpAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'ipAddress' parameter must be configured.");
             configValid = false;
@@ -271,10 +270,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         getThing().getThings().forEach(childThing -> {
             final AVMFritzBaseThingHandler childHandler = (AVMFritzBaseThingHandler) childThing.getHandler();
             if (childHandler != null) {
-                final Optional<AVMFritzBaseModel> optionalDevice = Optional
-                        .ofNullable(deviceIdentifierMap.get(childHandler.getIdentifier()));
-                if (optionalDevice.isPresent()) {
-                    final AVMFritzBaseModel device = optionalDevice.get();
+                final AVMFritzBaseModel device = deviceIdentifierMap.get(childHandler.getIdentifier());
+                if (device != null) {
                     deviceList.remove(device);
                     listeners.forEach(listener -> listener.onDeviceUpdated(childThing.getUID(), device));
                 } else {
