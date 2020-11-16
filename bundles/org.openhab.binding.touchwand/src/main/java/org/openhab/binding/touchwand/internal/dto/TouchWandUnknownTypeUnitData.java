@@ -13,41 +13,26 @@
 
 package org.openhab.binding.touchwand.internal.dto;
 
+import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.TYPE_UNKNOWN;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Csc} implements Csc data class.
+ * The {@link TouchWandUnknownTypeUnitData} implements unknown unit data
+ * property.
+ * It makes the code generic in case parsing error or unknown types
  *
  * @author Roie Geron - Initial contribution
  */
 @NonNullByDefault
-public class Csc {
+public class TouchWandUnknownTypeUnitData extends TouchWandUnitData {
 
-    private int sceneNo = 0;
-    private long ts = 0;
-    private int keyAttr = 0;
-
-    public int getSceneNo() {
-        return sceneNo;
+    public TouchWandUnknownTypeUnitData() {
+        this.setType(TYPE_UNKNOWN);
     }
 
-    public void setSceneNo(int sceneNo) {
-        this.sceneNo = sceneNo;
-    }
-
-    public long getTs() {
-        return ts;
-    }
-
-    public void setTs(long ts) {
-        this.ts = ts;
-    }
-
-    public int getKeyAttr() {
-        return keyAttr;
-    }
-
-    public void setKeyAttr(int keyAttr) {
-        this.keyAttr = keyAttr;
+    @Override
+    public Integer getCurrStatus() {
+        return 0;
     }
 }
