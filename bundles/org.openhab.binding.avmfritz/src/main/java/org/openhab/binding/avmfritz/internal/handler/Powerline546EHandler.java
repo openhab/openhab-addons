@@ -23,7 +23,6 @@ import java.util.function.Predicate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -72,7 +71,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
      * keeps track of the current state for handling of increase/decrease
      */
     private @Nullable AVMFritzBaseModel state;
-    private @Nullable AVMFritzDeviceConfiguration config;
+    private @Nullable String identifier;
 
     /**
      * Constructor
@@ -86,32 +85,28 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
 
     @Override
     public void initialize() {
-        config = getConfigAs(AVMFritzDeviceConfiguration.class);
-
+        final AVMFritzDeviceConfiguration config = getConfigAs(AVMFritzDeviceConfiguration.class);
+        final String newIdentifier = config.ain;
         registerStatusListener(this);
+        if (newIdentifier != null && !newIdentifier.trim().isEmpty()) {
+            this.identifier = newIdentifier;
+        }
 
         super.initialize();
     }
 
     @Override
-    public void dispose() {
-        unregisterStatusListener(this);
-
-        super.dispose();
-    }
-
-    @Override
     public void onDeviceListAdded(List<AVMFritzBaseModel> devicelist) {
-        final String identifier = getIdentifier();
-        final Predicate<AVMFritzBaseModel> predicate = identifier == null ? it -> thing.getUID().equals(getThingUID(it))
-                : it -> identifier.equals(it.getIdentifier());
+        final String ain = getIdentifier();
+        final Predicate<AVMFritzBaseModel> predicate = ain == null ? it -> thing.getUID().equals(getThingUID(it))
+                : it -> ain.equals(it.getIdentifier());
         final Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream().filter(predicate).findFirst();
         if (optionalDevice.isPresent()) {
             final AVMFritzBaseModel device = optionalDevice.get();
             devicelist.remove(device);
-            listeners.stream().forEach(listener -> listener.onDeviceUpdated(thing.getUID(), device));
+            onDeviceUpdated(thing.getUID(), device);
         } else {
-            listeners.stream().forEach(listener -> listener.onDeviceGone(thing.getUID()));
+            onDeviceGone(thing.getUID());
         }
         super.onDeviceListAdded(devicelist);
     }
@@ -125,8 +120,8 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
     public void onDeviceUpdated(ThingUID thingUID, AVMFritzBaseModel device) {
         if (thing.getUID().equals(thingUID)) {
             // save AIN to config for FRITZ!Powerline 546E stand-alone
-            if (config == null) {
-                updateConfiguration(device);
+            if (this.identifier == null) {
+                this.identifier = device.getIdentifier();
             }
 
             logger.debug("Update self '{}' with device model: {}", thingUID, device);
@@ -183,17 +178,6 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
         Map<String, String> editProperties = editProperties();
         editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
         updateProperties(editProperties);
-    }
-
-    /**
-     * Updates thing configuration.
-     *
-     * @param device the {@link AVMFritzBaseModel}
-     */
-    private void updateConfiguration(AVMFritzBaseModel device) {
-        Configuration editConfig = editConfiguration();
-        editConfig.put(CONFIG_AIN, device.getIdentifier());
-        updateConfiguration(editConfig);
     }
 
     /**
@@ -311,7 +295,6 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
      * @return the AIN
      */
     public @Nullable String getIdentifier() {
-        AVMFritzDeviceConfiguration localConfig = config;
-        return localConfig != null ? localConfig.ain : null;
+        return identifier;
     }
 }
