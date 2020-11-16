@@ -16,38 +16,28 @@ package org.openhab.binding.touchwand.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Csc} implements Csc data class.
+ * The {@link TouchWandUnitDataAlarmSensor} implements Alarm Sensor unit
+ * data property.
  *
  * @author Roie Geron - Initial contribution
  */
 @NonNullByDefault
-public class Csc {
+public class TouchWandUnitDataAlarmSensor extends TouchWandUnitData {
 
-    private int sceneNo = 0;
-    private long ts = 0;
-    private int keyAttr = 0;
+    private TouchWandAlarmSensorCurrentStatus currStatus = new TouchWandAlarmSensorCurrentStatus();
 
-    public int getSceneNo() {
-        return sceneNo;
+    @Override
+    public TouchWandAlarmSensorCurrentStatus getCurrStatus() {
+        return this.currStatus;
     }
 
-    public void setSceneNo(int sceneNo) {
-        this.sceneNo = sceneNo;
+    public class AlarmEventType {
+        public int eventsNum;
+        public String description = "";
     }
 
-    public long getTs() {
-        return ts;
-    }
-
-    public void setTs(long ts) {
-        this.ts = ts;
-    }
-
-    public int getKeyAttr() {
-        return keyAttr;
-    }
-
-    public void setKeyAttr(int keyAttr) {
-        this.keyAttr = keyAttr;
+    public class SensorType {
+        public int type;
+        public String description = "";
     }
 }

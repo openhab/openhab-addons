@@ -8,18 +8,19 @@ TouchWand products are compatible with most major Z-Wave products, IP controlled
 
 ## Supported Things
 
-This binding supports switches, shutters dimmers and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
+This binding supports switches, shutters dimmers alarm sensors and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
 
-## Control 
+## Control and Status 
 
 1. **switch**  - control - ON/OFF
 2. **shutter** - control - UP/DOWN/STOP
 3. **dimmer**  - control - ON/OFF/BRIGHTNESS
 4. **wallcontroller** - control - LONG/SHORT
+5. **alarmsensor** - status channels depend on alarm sensor type
 
 ## Discovery
 
-After adding TouchWand Hub the auto discovery will add all switches dimmers and shutters to the inbox.
+After adding TouchWand Hub the auto discovery will add all switches dimmers alarm sensors and shutters to the inbox.
 
 ## Bridge Configuration
 
@@ -29,7 +30,7 @@ After adding TouchWand Hub the auto discovery will add all switches dimmers and 
 |-------------------|-----------------------------------------------------------------------|---------|----------|
 | username          | Touchwand hub username                                                | string  | yes      |
 | password          | Touchwand hub password                                                | string  | yes      |
-| ipAddress         | Touchwand hub hotname or IP address                                   | string  | yes      |
+| ipAddress         | Touchwand hub hostname or IP address                                  | string  | yes      |
 | port              | Management port (default 80)                                          | integer | no       |
 | statusrefresh     | Unit status refresh interval in seconds                               | integer | no       |
 | addSecondaryUnits | If the controller is primary, add secondary controllers units as well | bool    | no       |
@@ -39,6 +40,29 @@ After adding TouchWand Hub the auto discovery will add all switches dimmers and 
 ## Thing Configuration
 
 No thing configuration is needed
+
+## Channels 
+
+note **Touchwand Wanderfull™** supports various types of alarm sensors such as water leak, door/window sensor and motion sensor.
+Alarm Sensor thing represents a generic sensor, relevant sensor channels will be displayed once a sensor is added as a Thing.
+
+
+| Channel Type ID   | Item Type          | Description                                                                                                                             
+|-------------------|--------------------|-----------------------------------------------------------------------|
+| switch            | Switch             | This channel supports switching the device on and off.                |
+| shutter           | Rollershutter      | This channel controls the shutter position                            |
+| brightness        | Dimmer             | This channel supports adjusting the brightness value.                 |
+| illumination      | Number:Illuminance | This channel shows the current illuminance measured by the sensor.    |
+| temperature       | Number:Temperature | This channel shows the current temperature measured by the sensor.    |
+| leak              | Switch             | This channel alert when water leak is detected by the sensor          |
+| motion            | Switch             | This channel alert when motion detected by the sensor.                |
+| isOpen            | Contact            | This channel shows the status of Door/Window sensor.                  |
+| battery_level     | Number             | This channel shows the battery level.                                 |
+| battery_low       | Switch             | This channel indicates whether the battery is low or not.             |
+| wallaction        | String             | This channel indicate SHORT or LONG wallcontroller button pressed     |
+
+
+
 
 ## Full Example
 
