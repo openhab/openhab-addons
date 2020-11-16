@@ -78,6 +78,10 @@ public class TouchWandUnitFromJson {
                 touchWandUnit = new TouchWandUnknownTypeUnitData();
         }
 
+        if (touchWandUnit == null) {
+            touchWandUnit = new TouchWandUnknownTypeUnitData();
+        }
+
         return touchWandUnit;
     }
 

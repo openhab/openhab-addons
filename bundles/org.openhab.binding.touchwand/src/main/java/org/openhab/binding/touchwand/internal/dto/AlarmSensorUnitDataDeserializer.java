@@ -44,28 +44,28 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
 
         TouchWandUnitDataAlarmSensor touchWandUnitDataAlarmSensor = new TouchWandUnitDataAlarmSensor();
 
-        JsonElement myJson = json;
-        if (myJson != null) {
-            JsonObject jsonObject = myJson.getAsJsonObject();
-            touchWandUnitDataAlarmSensor.setId(jsonObject.get("id").getAsInt());
-            touchWandUnitDataAlarmSensor.setName(jsonObject.get("name").getAsString());
-            touchWandUnitDataAlarmSensor.setConnectivity(jsonObject.get("connectivity").getAsString());
-            touchWandUnitDataAlarmSensor.setType(jsonObject.get("type").getAsString());
-            touchWandUnitDataAlarmSensor.setHasBattery(jsonObject.get("hasBattery").getAsBoolean());
-            JsonElement powerMeterElement = jsonObject.get("hasPowerMeter");
-            if (powerMeterElement != null && !powerMeterElement.isJsonNull()) {
-                touchWandUnitDataAlarmSensor.setHasPowerMeter(powerMeterElement.getAsBoolean());
-            } else {
-                touchWandUnitDataAlarmSensor.setHasPowerMeter(false);
-            }
+        JsonObject jsonObject = json.getAsJsonObject();
+        touchWandUnitDataAlarmSensor.setId(jsonObject.get("id").getAsInt());
+        touchWandUnitDataAlarmSensor.setName(jsonObject.get("name").getAsString());
+        touchWandUnitDataAlarmSensor.setConnectivity(jsonObject.get("connectivity").getAsString());
+        touchWandUnitDataAlarmSensor.setType(jsonObject.get("type").getAsString());
+        touchWandUnitDataAlarmSensor.setHasBattery(jsonObject.get("hasBattery").getAsBoolean());
+        JsonElement powerMeterElement = jsonObject.get("hasPowerMeter");
+        if (powerMeterElement != null && !powerMeterElement.isJsonNull()) {
+            touchWandUnitDataAlarmSensor.setHasPowerMeter(powerMeterElement.getAsBoolean());
+        } else {
+            touchWandUnitDataAlarmSensor.setHasPowerMeter(false);
+        }
 
-            JsonElement status = jsonObject.get("status");
-            if (status != null && !status.isJsonNull()) { // Sometimes status is null
-                touchWandUnitDataAlarmSensor.setStatus(jsonObject.get("status").getAsString());
-            }
+        JsonElement status = jsonObject.get("status");
+        if (status != null && !status.isJsonNull()) { // Sometimes status is null
+            touchWandUnitDataAlarmSensor.setStatus(jsonObject.get("status").getAsString());
+        }
 
-            JsonObject currentStatusObj = builder.create().fromJson(jsonObject.get("currStatus").getAsJsonObject(),
-                    JsonObject.class);
+        JsonObject currentStatusObj = builder.create().fromJson(jsonObject.get("currStatus").getAsJsonObject(),
+                JsonObject.class);
+
+        if (currentStatusObj != null) {
 
             TouchWandAlarmSensorCurrentStatus touchWandUnitDataAlarmSensorCurrentStatus = touchWandUnitDataAlarmSensor
                     .getCurrStatus();
@@ -91,8 +91,10 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
                     case "alarm":
                         Alarm alarm = gson.fromJson(entry.getValue().getAsJsonObject(), Alarm.class);
                         TouchWandAlarmSensorCurrentStatus.AlarmEvent alarmEvent = new TouchWandAlarmSensorCurrentStatus.AlarmEvent();
-                        alarmEvent.alarm = alarm;
-                        alarmEvent.alarmType = index;
+                        if (alarm != null) {
+                            alarmEvent.alarm = alarm;
+                            alarmEvent.alarmType = index;
+                        }
                         touchWandUnitDataAlarmSensor.getCurrStatus().getAlarmsStatus().add(alarmEvent);
                         break;
                     case "sensor":
@@ -104,8 +106,10 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
                     case "bsensor":
                         BinarySensor bsensor = gson.fromJson(entry.getValue().getAsJsonObject(), BinarySensor.class);
                         TouchWandAlarmSensorCurrentStatus.BinarySensorEvent bsensorevent = new TouchWandAlarmSensorCurrentStatus.BinarySensorEvent();
-                        bsensorevent.sensor = bsensor;
-                        bsensorevent.sensorType = index;
+                        if (bsensor != null) {
+                            bsensorevent.sensor = bsensor;
+                            bsensorevent.sensorType = index;
+                        }
                         touchWandUnitDataAlarmSensor.getCurrStatus().getbSensorsStatus().add(bsensorevent);
                         break;
                     default:
