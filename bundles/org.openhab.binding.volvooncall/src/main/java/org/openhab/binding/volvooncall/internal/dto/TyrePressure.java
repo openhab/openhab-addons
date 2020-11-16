@@ -13,7 +13,8 @@
 package org.openhab.binding.volvooncall.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.StringType;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link TyrePressure} is responsible for storing
@@ -23,10 +24,20 @@ import org.openhab.core.library.types.StringType;
  */
 @NonNullByDefault
 public class TyrePressure {
-    public @NonNullByDefault({}) StringType frontLeftTyrePressure;
-    public @NonNullByDefault({}) StringType frontRightTyrePressure;
-    public @NonNullByDefault({}) StringType rearLeftTyrePressure;
-    public @NonNullByDefault({}) StringType rearRightTyrePressure;
+
+    public enum PressureLevel {
+        @SerializedName("Normal")
+        NORMAL,
+        @SerializedName("LowSoft")
+        LOW_SOFT,
+        UNKNOWN;
+    }
+
+    public PressureLevel frontLeftTyrePressure = PressureLevel.UNKNOWN;
+    public PressureLevel frontRightTyrePressure = PressureLevel.UNKNOWN;
+    public PressureLevel rearLeftTyrePressure = PressureLevel.UNKNOWN;
+    public PressureLevel rearRightTyrePressure = PressureLevel.UNKNOWN;
+
     /*
      * Currently unused in the binding, maybe interesting in the future
      * private ZonedDateTime timestamp;
