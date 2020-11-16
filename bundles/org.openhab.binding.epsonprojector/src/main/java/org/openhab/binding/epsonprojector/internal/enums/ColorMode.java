@@ -46,6 +46,8 @@ public enum ColorMode {
     DYNAMIC3D(0x18),
     THX3D(0x19),
     BWCINEMA(0x20),
+    UNKNOWN21(0x21),
+    DIGITALCINEMA(0x22),
     SILVER(0x0A),
     XVCOLOR(0x0B),
     LIVINGROOM(0x0C),

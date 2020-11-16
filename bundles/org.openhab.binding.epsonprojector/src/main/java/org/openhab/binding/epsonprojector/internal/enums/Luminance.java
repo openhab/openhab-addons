@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum Luminance {
     NORMAL(0x00),
     ECO(0x01),
+    MEDIUM(0x02),
     UNKNOWN(0xFF);
 
     private final int value;

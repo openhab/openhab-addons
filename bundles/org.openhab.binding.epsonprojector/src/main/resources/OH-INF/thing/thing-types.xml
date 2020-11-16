@@ -137,6 +137,7 @@
 			<options>
 				<option value="NORMAL">NORMAL</option>
 				<option value="ECO">ECO</option>
+				<option value="MEDIUM">MEDIUM</option>
 			</options>
 		</state>
 	</channel-type>
@@ -203,6 +204,7 @@
 				<option value="CINEMA">CINEMA</option>
 				<option value="CINEMANIGHT">CINEMANIGHT</option>
 				<option value="BWCINEMA">BWCINEMA</option>
+				<option value="DIGITALCINEMA">DIGITALCINEMA</option>
 				<option value="HD">HD</option>
 				<option value="THX">THX</option>
 				<option value="CINEMA3D">CINEMA3D</option>
