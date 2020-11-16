@@ -269,7 +269,6 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 .collect(Collectors.toMap(it -> it.getIdentifier(), Function.identity()));
         getThing().getThings().forEach(childThing -> {
             final AVMFritzBaseThingHandler childHandler = (AVMFritzBaseThingHandler) childThing.getHandler();
-            // if (childHandler != null && ThingHandlerHelper.isHandlerInitialized(childHandler)) {
             if (childHandler != null) {
                 final AVMFritzBaseModel device = deviceIdentifierMap.get(childHandler.getIdentifier());
                 if (device != null) {
