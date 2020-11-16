@@ -18,6 +18,7 @@ import static org.openhab.core.thing.ThingStatus.*;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -28,6 +29,7 @@ import org.openhab.binding.plugwise.internal.PlugwiseCommunicationHandler;
 import org.openhab.binding.plugwise.internal.PlugwiseDeviceTask;
 import org.openhab.binding.plugwise.internal.PlugwiseInitializationException;
 import org.openhab.binding.plugwise.internal.PlugwiseMessagePriority;
+import org.openhab.binding.plugwise.internal.PlugwiseThingDiscoveryService;
 import org.openhab.binding.plugwise.internal.PlugwiseUtils;
 import org.openhab.binding.plugwise.internal.config.PlugwiseStickConfig;
 import org.openhab.binding.plugwise.internal.listener.PlugwiseMessageListener;
@@ -48,6 +50,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,6 +123,11 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
 
     public @Nullable MACAddress getCirclePlusMAC() {
         return circlePlusMAC;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(PlugwiseThingDiscoveryService.class);
     }
 
     public @Nullable MACAddress getStickMAC() {

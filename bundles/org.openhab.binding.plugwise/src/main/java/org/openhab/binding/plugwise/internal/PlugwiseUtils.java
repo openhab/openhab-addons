@@ -43,17 +43,17 @@ public final class PlugwiseUtils {
     }
 
     public static DeviceType getDeviceType(ThingTypeUID uid) {
-        if (uid.equals(THING_TYPE_CIRCLE)) {
+        if (THING_TYPE_CIRCLE.equals(uid)) {
             return CIRCLE;
-        } else if (uid.equals(THING_TYPE_CIRCLE_PLUS)) {
+        } else if (THING_TYPE_CIRCLE_PLUS.equals(uid)) {
             return CIRCLE_PLUS;
-        } else if (uid.equals(THING_TYPE_SCAN)) {
+        } else if (THING_TYPE_SCAN.equals(uid)) {
             return SCAN;
-        } else if (uid.equals(THING_TYPE_SENSE)) {
+        } else if (THING_TYPE_SENSE.equals(uid)) {
             return SENSE;
-        } else if (uid.equals(THING_TYPE_STEALTH)) {
+        } else if (THING_TYPE_STEALTH.equals(uid)) {
             return STEALTH;
-        } else if (uid.equals(THING_TYPE_SWITCH)) {
+        } else if (THING_TYPE_SWITCH.equals(uid)) {
             return SWITCH;
         } else {
             return UNKNOWN;
@@ -106,7 +106,6 @@ public final class PlugwiseUtils {
         return upperCamel.substring(0, 1).toLowerCase() + upperCamel.substring(1);
     }
 
-    @SuppressWarnings("null")
     public static boolean updateProperties(Map<String, String> properties, InformationResponseMessage message) {
         boolean update = false;
 
