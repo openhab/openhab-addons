@@ -16,7 +16,6 @@ package org.openhab.binding.touchwand.internal.dto;
 import java.lang.reflect.Type;
 import java.util.Map.Entry;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.touchwand.internal.dto.TouchWandAlarmSensorCurrentStatus.Alarm;
 import org.openhab.binding.touchwand.internal.dto.TouchWandAlarmSensorCurrentStatus.BinarySensor;
 
@@ -40,8 +39,8 @@ public class AlarmSensorUnitDataDeserializer implements JsonDeserializer<TouchWa
     static GsonBuilder builder = new GsonBuilder();
 
     @Override
-    public TouchWandUnitDataAlarmSensor deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
-            @Nullable JsonDeserializationContext context) throws JsonParseException {
+    public TouchWandUnitDataAlarmSensor deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
 
         TouchWandUnitDataAlarmSensor touchWandUnitDataAlarmSensor = new TouchWandUnitDataAlarmSensor();
 
