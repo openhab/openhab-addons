@@ -73,16 +73,16 @@ Following channels are currently available:
 | tank#distanceToEmpty                          | Number:Length        | Distance till tank is empty                      |                                                  |
 | position#location                             | Location             | Location of the car                              |                                                  |
 | position#locationTimestamp                    | DateTime             | Timestamp of the latest confirmed location       |                                                  |
-| tyrePressure#frontLeftTyre                    | String               | Tyrepressure front left tyre                     | Normal / LowSoft                                 |
-| tyrePressure#frontRightTyr                    | String               | Tyrepressure front right tyre                    | Normal / LowSoft                                 |
-| tyrePressure#rearLeftTyre                     | String               | Tyrepressure rear left tyre                      | Normal / LowSoft                                 |
-| tyrePressure#rearRightTyre                    | String               | Tyrepressure rear right tyre                     | Normal / LowSoft                                 |
+| tyrePressure#frontLeftTyre                    | Number               | Tyrepressure front left tyre                     | Normal / LowSoft                                 |
+| tyrePressure#frontRightTyre                   | Number               | Tyrepressure front right tyre                    | Normal / LowSoft                                 |
+| tyrePressure#rearLeftTyre                     | Number               | Tyrepressure rear left tyre                      | Normal / LowSoft                                 |
+| tyrePressure#rearRightTyre                    | Number               | Tyrepressure rear right tyre                     | Normal / LowSoft                                 |
 | other#averageSpeed                            | Number:Speed         | Average speed                                    |                                                  |
 | other#engineRunning                           | Switch               | Is the car engine running                        |                                                  |
 | other#remoteHeater                            | Switch               | Start the car remote heater                      | Only if property 'remoteHeater' is true (see thing properties above)                                                 |
 | other#preclimatization                        | Switch               | Start the car preclimatization                   | Only if property 'preclimatization' is true (see thing properties above)                                                 |
-| other#brakeFluidLevel                         | String               | Brake fluid level                                | Normal / Low / VeryLow                                                 |
-| other#washerFluidLevel                        | String               | Washer fluid level                               | Normal / Low / VeryLow                                                 |
+| other#brakeFluidLevel                         | Number               | Brake fluid level                                | Normal / Low / VeryLow                                                 |
+| other#washerFluidLevel                        | Number               | Washer fluid level                               | Normal / Low / VeryLow                                                 |
 | other#serviceWarning                          | String               | Warning if service is needed                     |                                                 |
 | other#bulbFailure                             | Switch               | ON if at least one bulb is reported as failed    |                                                 |
 | battery#batteryLevel                          | Number:Dimensionless | Battery level                                    | Only for Plugin hybrid / Twin Engine models     |
@@ -144,7 +144,7 @@ Switch Voc_DoorsCarLocked           "Verouillée"                            (gV
 Number:Length Voc_Odometer          "Kilométrage [%d %unit%]"               (gVoc)     {channel="volvooncall:vehicle:glh:XC60:odometer#odometer"}
 Number:Dimensionless Voc_FuelLevel  "Fuel Level"                <sewerage>  (gVoc)     {channel="volvooncall:vehicle:glh:XC60:tank#fuelLevel"}
 Switch Voc_Fuel_Alert               "Niveau Carburant"          <siren>     (gVoc)   {channel="volvooncall:vehicle:glh:XC60:tank#fuelAlert"}
-String Voc_Fluid_Message            "Lave Glace"                    (gVoc)                  {channel="volvooncall:vehicle:glh:XC60:other#washerFluidLevel"}
+Number Voc_Fluid_Message            "Lave Glace"                    (gVoc)                  {channel="volvooncall:vehicle:glh:XC60:other#washerFluidLevel"}
 Location Voc_Location               "Location"                      (gVoc)                  {channel="volvooncall:vehicle:glh:XC60:position#location"}
 DateTime Voc_Location_LUD           "Timestamp [%1$tH:%1$tM]"   <time>      (gVoc)                  {channel="volvooncall:vehicle:glh:XC60:position#locationTimestamp"}
 Switch Voc_Fluid_Alert              "Alerte Lave Glace"         <siren>     (gVoc)
