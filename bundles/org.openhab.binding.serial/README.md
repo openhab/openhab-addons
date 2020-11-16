@@ -28,7 +28,7 @@ A trigger channel is also provided which triggers when data is received.
 
 A Serial Device thing (`serialDevice`) can be used to represent data matching a defined pattern as a device. 
 The serial port may be providing data for many different devices/sensors, such as a temperature sensor or a doorbell. 
-Usually such devices can be indentified by performing a pattern match on the received data. 
+Usually such devices can be identified by performing a pattern match on the received data. 
 For example, a Serial Device could be configured to represent a temperature sensor.
 
 The thing will only update its channels if the received data matches the defined pattern. 

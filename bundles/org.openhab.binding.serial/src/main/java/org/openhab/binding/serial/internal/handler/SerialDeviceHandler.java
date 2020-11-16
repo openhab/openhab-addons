@@ -113,8 +113,11 @@ public class SerialDeviceHandler extends BaseThingHandler {
             }
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-        bridgeStatusChanged(getBridgeStatus());
+        if (getBridgeStatus().getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
@@ -136,20 +139,6 @@ public class SerialDeviceHandler extends BaseThingHandler {
             channels.forEach((channelUID, channel) -> refresh(channelUID, channel, data));
             this.lastValue = data;
         }
-    }
-
-    @Override
-    public void bridgeStatusChanged(final ThingStatusInfo bridgeStatusInfo) {
-        if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
-            return;
-        }
-
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && getThing().getStatus() == ThingStatus.UNKNOWN) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            return;
-        }
-
-        super.bridgeStatusChanged(bridgeStatusInfo);
     }
 
     /**

@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
@@ -70,7 +71,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
     private @Nullable InputStream inputStream;
     private @Nullable OutputStream outputStream;
 
-    private Charset charset = Charset.defaultCharset();
+    private Charset charset = StandardCharsets.UTF_8;
 
     private @Nullable String lastValue;
 
