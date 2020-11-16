@@ -15,6 +15,8 @@ package org.openhab.binding.plugwise.internal;
 import static java.util.stream.Collectors.*;
 import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,6 +46,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,13 +60,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
-        implements PlugwiseMessageListener, PlugwiseStickStatusListener {
+        implements PlugwiseMessageListener, PlugwiseStickStatusListener, ThingHandlerService {
 
     private static class CurrentRoleCall {
         private boolean isRoleCalling;
         private int currentNodeID;
         private int attempts;
-        private long lastRequestMillis;
+        private Instant lastRequest = Instant.MIN;
     }
 
     private static class DiscoveredNode {
@@ -70,7 +74,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         private final Map<String, String> properties = new HashMap<>();
         private DeviceType deviceType = DeviceType.UNKNOWN;
         private int attempts;
-        private long lastRequestMillis;
+        private Instant lastRequest = Instant.MIN;
 
         public DiscoveredNode(MACAddress macAddress) {
             this.macAddress = macAddress;
@@ -87,16 +91,16 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     private static final int MIN_NODE_ID = 0;
     private static final int MAX_NODE_ID = 63;
-    private static final int DISCOVERY_INTERVAL = 180;
 
-    private static final int WATCH_INTERVAL = 1;
-
-    private static final int MESSAGE_TIMEOUT = 15;
     private static final int MESSAGE_RETRY_ATTEMPTS = 5;
+
+    private static final Duration DISCOVERY_INTERVAL = Duration.ofMinutes(3);
+    private static final Duration MESSAGE_TIMEOUT = Duration.ofSeconds(15);
+    private static final Duration WATCH_INTERVAL = Duration.ofSeconds(1);
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseThingDiscoveryService.class);
 
-    private final PlugwiseStickHandler stickHandler;
+    private @NonNullByDefault({}) PlugwiseStickHandler stickHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable ScheduledFuture<?> watchJob;
@@ -104,10 +108,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     private final Map<MACAddress, DiscoveredNode> discoveredNodes = new ConcurrentHashMap<>();
 
-    public PlugwiseThingDiscoveryService(PlugwiseStickHandler stickHandler) throws IllegalArgumentException {
+    public PlugwiseThingDiscoveryService() throws IllegalArgumentException {
         super(DISCOVERED_THING_TYPES_UIDS, 1, true);
-        this.stickHandler = stickHandler;
-        this.stickHandler.addStickStatusListener(this);
     }
 
     @Override
@@ -118,6 +120,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         stopDiscoveryWatchJob();
     }
 
+    @Override
     public void activate() {
         super.activate(new HashMap<>());
     }
@@ -138,7 +141,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    protected void deactivate() {
+    public void deactivate() {
         super.deactivate();
         stickHandler.removeMessageListener(this);
         stickHandler.removeStickStatusListener(this);
@@ -147,8 +150,10 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
     private void discoverNewNodeDetails(MACAddress macAddress) {
         if (!isAlreadyDiscovered(macAddress)) {
             logger.debug("Discovered new node ({})", macAddress);
-            discoveredNodes.put(macAddress, new DiscoveredNode(macAddress));
+            DiscoveredNode node = new DiscoveredNode(macAddress);
+            discoveredNodes.put(macAddress, node);
             updateInformation(macAddress);
+            node.lastRequest = Instant.now();
         } else {
             logger.debug("Already discovered node ({})", macAddress);
         }
@@ -182,6 +187,11 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     private ThingStatus getStickStatus() {
         return stickHandler.getThing().getStatus();
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return stickHandler;
     }
 
     private void handleAnnounceAwakeRequest(AnnounceAwakeRequestMessage message) {
@@ -267,7 +277,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
                 currentRoleCall.attempts++;
             }
             currentRoleCall.currentNodeID = nodeID;
-            currentRoleCall.lastRequestMillis = System.currentTimeMillis();
+            currentRoleCall.lastRequest = Instant.now();
         } else {
             logger.warn("Invalid node ID for role call: {}", nodeID);
         }
@@ -275,6 +285,14 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     private void sendMessage(Message message) {
         stickHandler.sendMessage(message, PlugwiseMessagePriority.UPDATE_AND_DISCOVERY);
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof PlugwiseStickHandler) {
+            stickHandler = (PlugwiseStickHandler) handler;
+            stickHandler.addStickStatusListener(this);
+        }
     }
 
     @Override
@@ -288,7 +306,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
         ScheduledFuture<?> localDiscoveryJob = discoveryJob;
         if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(discoveryRunnable, 0, DISCOVERY_INTERVAL, TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(discoveryRunnable, 0, DISCOVERY_INTERVAL.toMillis(),
+                    TimeUnit.MILLISECONDS);
         }
     }
 
@@ -297,7 +316,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
         Runnable watchRunnable = () -> {
             if (currentRoleCall.isRoleCalling) {
-                if ((System.currentTimeMillis() - currentRoleCall.lastRequestMillis) > (MESSAGE_TIMEOUT * 1000)
+                Duration durationSinceLastRequest = Duration.between(currentRoleCall.lastRequest, Instant.now());
+                if (durationSinceLastRequest.compareTo(MESSAGE_TIMEOUT) > 0
                         && currentRoleCall.attempts < MESSAGE_RETRY_ATTEMPTS) {
                     logger.debug("Resending timed out role call message for node with ID {} on Circle+ ({})",
                             currentRoleCall.currentNodeID, getCirclePlusMAC());
@@ -313,10 +333,11 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
             while (it.hasNext()) {
                 Entry<MACAddress, DiscoveredNode> entry = it.next();
                 DiscoveredNode node = entry.getValue();
-                if (System.currentTimeMillis() - node.lastRequestMillis > (MESSAGE_TIMEOUT * 1000)
-                        && node.attempts < MESSAGE_RETRY_ATTEMPTS) {
+                Duration durationSinceLastRequest = Duration.between(node.lastRequest, Instant.now());
+                if (durationSinceLastRequest.compareTo(MESSAGE_TIMEOUT) > 0 && node.attempts < MESSAGE_RETRY_ATTEMPTS) {
                     logger.debug("Resending timed out information request message to node ({})", node.macAddress);
                     updateInformation(node.macAddress);
+                    node.lastRequest = Instant.now();
                     node.attempts++;
                 } else if (node.attempts >= MESSAGE_RETRY_ATTEMPTS) {
                     logger.debug("Giving up on information request for node ({})", node.macAddress);
@@ -332,8 +353,8 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
         ScheduledFuture<?> localWatchJob = watchJob;
         if (localWatchJob == null || localWatchJob.isCancelled()) {
-            watchJob = scheduler.scheduleWithFixedDelay(watchRunnable, WATCH_INTERVAL, WATCH_INTERVAL,
-                    TimeUnit.SECONDS);
+            watchJob = scheduler.scheduleWithFixedDelay(watchRunnable, WATCH_INTERVAL.toMillis(),
+                    WATCH_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
         }
     }
 
