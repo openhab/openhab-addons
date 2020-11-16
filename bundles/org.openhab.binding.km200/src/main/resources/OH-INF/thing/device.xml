@@ -9,6 +9,8 @@
 		<description>The KM200 binding is communicating with a Buderus Logamatic web KM200 / KM100 / KM50. It is possible to
 			receive and send parameters like string or float values.</description>
 
+		<representation-property>ip4Address</representation-property>
+
 		<config-description>
 			<parameter name="ip4Address" type="text" required="true">
 				<label>IP4 Address</label>
