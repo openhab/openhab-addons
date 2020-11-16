@@ -1033,7 +1033,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         inputOptions += " -threads 1 -skip_frame nokey -hide_banner -loglevel warning";
                     }
                     ffmpegSnapshot = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
-                            "-an -vsync vfr -update 1",
+                            cameraConfig.getSnapshotOptions(),
                             "http://127.0.0.1:" + cameraConfig.getServerPort() + "/snapshot.jpg",
                             cameraConfig.getUser(), cameraConfig.getPassword());
                 }
