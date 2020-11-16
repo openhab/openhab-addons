@@ -250,6 +250,17 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                     return;
                 }
                 break;
+            case NUMERIC_FORM:
+                ChangerX2Entry cx2en = e.changerX2Entry;
+                if (cx2en != null) {
+                    reqUpdate = prepareRequest(buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2en.address
+                            + "&changetox2=" + command.format("%.2f")));
+                    reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
+                } else {
+                    logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);
+                    return;
+                }
+                break;
             case READ_ONLY_NUMERIC:
             case READ_ONLY_STATE:
             case READ_ONLY_SWITCH:
