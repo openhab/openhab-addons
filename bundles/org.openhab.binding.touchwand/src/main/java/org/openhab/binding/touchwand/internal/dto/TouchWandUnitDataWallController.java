@@ -13,23 +13,22 @@
 
 package org.openhab.binding.touchwand.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TouchWandUnitDataWallController} implements WallController unit
  * property.
  *
  * @author Roie Geron - Initial contribution
  */
+@NonNullByDefault
 public class TouchWandUnitDataWallController extends TouchWandUnitData {
 
-    private CurrStatus currStatus;
+    private CurrStatus currStatus = new CurrStatus();
 
     @Override
-    public Integer getCurrStatus() {
-        if (currStatus != null) {
-            return currStatus.getCsc().getKeyAttr();
-        } else {
-            return 0;
-        }
+    public Csc getCurrStatus() {
+        return currStatus.getCsc();
     }
 
     public void setCurrStatus(CurrStatus currStatus) {
