@@ -103,7 +103,7 @@ public class ReadmeHelper {
                         remark = dev.getDevice().getReadmeComment();
                         final Boolean experimental = dev.getDevice().getExperimental();
                         if (experimental != null && experimental.booleanValue()) {
-                            remark += (remark.isBlank() ? "" : " ")
+                            remark += (remark.isBlank() ? "" : "<br />")
                                     + "Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses";
                         }
                     }
