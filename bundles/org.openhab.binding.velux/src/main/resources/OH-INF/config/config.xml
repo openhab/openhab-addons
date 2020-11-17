@@ -47,7 +47,7 @@
 			<label>@text/config.velux.bridge.timeoutMsecs.label</label>
 			<description>@text/config.velux.bridge.timeoutMsecs.description</description>
 			<required>false</required>
-			<default>1000</default>
+			<default>2000</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="retries" type="integer" min="0" step="1" max="10">
