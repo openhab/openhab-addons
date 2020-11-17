@@ -142,7 +142,7 @@
 				"property": "use-time",
 				"siid": 8,
 				"piid": 7,
-				"friendlyName": "private-service - Use Time",
+				"friendlyName": "Private-Service - Use Time",
 				"channel": "use-time",
 				"channelType": "time",
 				"type": "Number:Time",

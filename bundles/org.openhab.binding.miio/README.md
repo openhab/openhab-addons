@@ -3242,7 +3242,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | brightness       | Dimmer  | Indicator Light - Brightness        |            |
 | physical-controls-locked | Switch  | Physical Control Locked - Physical Controls Locked |            |
-| use-time         | Number:Time | private-service - Use Time          |            |
+| use-time         | Number:Time | Private-Service - Use Time          |            |
 
 ### Zhimi Heater (<a name="zhimi-heater-zb1">zhimi.heater.zb1</a>) Channels
 
@@ -3257,8 +3257,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | brightness       | Dimmer  | Indicator Light - Brightness        |            |
 | physical-controls-locked | Switch  | Physical Control Locked - Physical Controls Locked |            |
-| use-time         | Number:Time | private-service - Use Time          |            |
-| country-code     | Number  | private-service - country-code      | Value mapping [0="未知",1="US 美国",82="KR 韩国",44="EU 欧洲",81="JP 日本",7="RU 俄罗斯",86="CN  中国",852="HK 香港",886="TW 台湾",33="FR 法国"] |
+| use-time         | Number:Time | Private-Service - Use Time          |            |
+| country-code     | Number  | Private-Service - Country-Code      | Value mapping [0="Unknown",1="US",82="KR",44="EU",81="JP",7="RU",86="CN",852="HK",886="TW",33="FR"] |
 
 
 
@@ -6678,7 +6678,7 @@ Number relative-humidity "Environment - Relative Humidity" (G_heater) {channel="
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
 Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch physical-controls-locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
-Number:Time use-time "private-service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
+Number:Time use-time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
 ```
 
 ### Zhimi Heater (zhimi.heater.zb1) item file lines
@@ -6696,8 +6696,8 @@ Number relative-humidity "Environment - Relative Humidity" (G_heater) {channel="
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
 Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch physical-controls-locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
-Number:Time use-time "private-service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
-Number country-code "private-service - country-code" (G_heater) {channel="miio:basic:heater:country-code"}
+Number:Time use-time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
+Number country-code "Private-Service - Country-Code" (G_heater) {channel="miio:basic:heater:country-code"}
 ```
 
 

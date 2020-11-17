@@ -90,7 +90,7 @@
 	</channel-type>
 	<channel-type id="time">
 		<item-type>Number:Time</item-type>
-		<label>hours</label>
+		<label>Hours</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -732,7 +732,7 @@
 	</channel-type>
 	<channel-type id="ZhimiHeaterZb1_country-code">
 		<item-type>Number</item-type>
-		<label>private-service - country-code</label>
+		<label>Private-Service - Country-Code</label>
 		<state>
 			<options>
 				<option value="0">Unknown</option>
