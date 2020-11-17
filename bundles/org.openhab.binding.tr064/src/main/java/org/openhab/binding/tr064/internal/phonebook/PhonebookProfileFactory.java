@@ -30,7 +30,6 @@ import org.openhab.core.config.core.ConfigOptionProvider;
 import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.i18n.LocalizedKey;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.UID;
 import org.openhab.core.thing.profiles.Profile;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
@@ -90,28 +89,22 @@ public class PhonebookProfileFactory implements ProfileFactory, ProfileTypeProvi
     }
 
     private ProfileType createLocalizedProfileType(ProfileType profileType, @Nullable Locale locale) {
-        final LocalizedKey localizedKey = getLocalizedProfileTypeKey(profileType.getUID(), locale);
+        final LocalizedKey localizedKey = new LocalizedKey(profileType.getUID(),
+                locale != null ? locale.toLanguageTag() : null);
 
         final ProfileType cachedlocalizedProfileType = localizedProfileTypeCache.get(localizedKey);
         if (cachedlocalizedProfileType != null) {
             return cachedlocalizedProfileType;
         }
 
-        final ProfileType localizedProfileType = localize(profileType, locale);
+        final ProfileType localizedProfileType = profileTypeI18nLocalizationService.createLocalizedProfileType(bundle,
+                profileType, locale);
         if (localizedProfileType != null) {
             localizedProfileTypeCache.put(localizedKey, localizedProfileType);
             return localizedProfileType;
         } else {
             return profileType;
         }
-    }
-
-    private @Nullable ProfileType localize(ProfileType profileType, @Nullable Locale locale) {
-        return profileTypeI18nLocalizationService.createLocalizedProfileType(bundle, profileType, locale);
-    }
-
-    private LocalizedKey getLocalizedProfileTypeKey(UID uid, @Nullable Locale locale) {
-        return new LocalizedKey(uid, locale != null ? locale.toLanguageTag() : null);
     }
 
     /**
