@@ -44,22 +44,22 @@
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
-    <channel-type id="controlsetpointrequested">
-        <item-type>Number:Temperature</item-type>
-        <label>Control Setpoint Requested</label>
-        <description>Central heating water setpoint requested by Thermostat</description>
-        <category>Temperature</category>
-        <state readOnly="true" pattern="%.1f %unit%"></state>
-    </channel-type>
-    
-    <channel-type id="controlsetpointoverride">
-        <item-type>Number:Temperature</item-type>
-        <label>Control Setpoint Override</label>
-        <description>Central heating water setpoint configured on OTGW</description>
-        <category>Temperature</category>
-        <state pattern="%.1f %unit%"></state>
-    </channel-type>
-    
+	<channel-type id="controlsetpointrequested">
+		<item-type>Number:Temperature</item-type>
+		<label>Control Setpoint Requested</label>
+		<description>Central heating water setpoint requested by Thermostat</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="controlsetpointoverride">
+		<item-type>Number:Temperature</item-type>
+		<label>Control Setpoint Override</label>
+		<description>Central heating water setpoint configured on OTGW</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+
 	<channel-type id="dhwtemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Domestic Hot Water Temperature</label>
@@ -121,19 +121,19 @@
 		<description>Central heating enabled set at boiler</description>
 		<state readOnly="true"></state>
 	</channel-type>
-    
-    <channel-type id="ch_enablerequested">
-        <item-type>Switch</item-type>
-        <label>Central Heating Enabled Thermostat</label>
-        <description>Central heating enabled requested by thermostat</description>
-        <state readOnly="true"></state>
-    </channel-type>
-    
-    <channel-type id="ch_enableoverride">
-        <item-type>Switch</item-type>
-        <label>Central Heating Overridden</label>
-        <description>Central heating enabled overridden at OTGW</description>
-    </channel-type>
+
+	<channel-type id="ch_enablerequested">
+		<item-type>Switch</item-type>
+		<label>Central Heating Enabled Thermostat</label>
+		<description>Central heating enabled requested by thermostat</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ch_enableoverride">
+		<item-type>Switch</item-type>
+		<label>Central Heating Overridden</label>
+		<description>Central heating enabled overridden at OTGW</description>
+	</channel-type>
 
 	<channel-type id="ch_mode">
 		<item-type>Switch</item-type>

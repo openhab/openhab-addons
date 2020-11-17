@@ -130,7 +130,7 @@ public class Message {
         // thermostat, and it's ID is equal to the previous message, then this is an
         // override sent by the OpenTherm Gateway
         return other != null && this.getID() == other.getID()
-                && ("R".equals(this.getCode()) || "A".equals(this.getCode()));
+                && (CodeType.R.equals(this.getCode()) || CodeType.A.equals(this.getCode()));
     }
 
     @Override

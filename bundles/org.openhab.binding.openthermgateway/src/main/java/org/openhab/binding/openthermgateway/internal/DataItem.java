@@ -73,7 +73,8 @@ public class DataItem {
         this(id, msg, byteType, dataType, bit, subject, unit, null);
     }
 
-    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject, CodeType filteredCode) {
+    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject,
+            CodeType filteredCode) {
         this(id, msg, byteType, dataType, bit, subject, null, filteredCode);
     }
 
