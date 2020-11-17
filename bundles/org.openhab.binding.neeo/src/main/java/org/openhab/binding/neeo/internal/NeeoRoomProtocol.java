@@ -123,14 +123,14 @@ public class NeeoRoomProtocol {
     private void processScenarioChange(String scenarioKey, boolean launch) {
         NeeoUtil.requireNotEmpty(scenarioKey, "scenarioKey cannot be empty");
 
-        List<String> activeScenarios;
+        List<String> oldActiveScenarios;
         List<String> newActiveScenarios;
 
         do {
-            activeScenarios = new ArrayList<>(this.activeScenarios.get());
-            newActiveScenarios = new ArrayList<>(activeScenarios);
+            oldActiveScenarios = this.activeScenarios.get();
+            newActiveScenarios = new ArrayList<>(oldActiveScenarios);
 
-            if (activeScenarios.contains(scenarioKey)) {
+            if (newActiveScenarios.contains(scenarioKey)) {
                 if (launch) {
                     return;
                 } else {
@@ -143,7 +143,7 @@ public class NeeoRoomProtocol {
                     return;
                 }
             }
-        } while (!this.activeScenarios.compareAndSet(activeScenarios, newActiveScenarios));
+        } while (!this.activeScenarios.compareAndSet(oldActiveScenarios, newActiveScenarios));
 
         refreshScenarioStatus(scenarioKey);
     }
