@@ -113,7 +113,7 @@ public class VeluxBindingConstants {
     public static final String PROPERTY_BRIDGE_TIMESTAMP_SUCCESS = "connectionSuccess";
     public static final String PROPERTY_BRIDGE_TIMESTAMP_ATTEMPT = "connectionAttempt";
     public static final String PROPERTY_BRIDGE_FIRMWARE = "firmware";
-    public static final String PROPERTY_BRIDGE_IPADDRESS = "ipAddress";
+    public static final String PROPERTY_BRIDGE_ADDRESS = "address";
     public static final String PROPERTY_BRIDGE_SUBNETMASK = "subnetMask";
     public static final String PROPERTY_BRIDGE_DEFAULTGW = "defaultGW";
     public static final String PROPERTY_BRIDGE_DHCP = "DHCP";

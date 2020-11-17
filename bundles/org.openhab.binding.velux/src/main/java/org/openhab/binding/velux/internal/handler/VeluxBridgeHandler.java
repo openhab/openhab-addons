@@ -588,7 +588,9 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                         case BRIDGE_FIRMWARE:
                             newState = ChannelBridgeFirmware.handleRefresh(channelUID, channelId, this);
                             break;
-                        case BRIDGE_IPADDRESS:
+                        case BRIDGE_ADDRESS:
+                            // delete legacy property name entry (if any) and fall through
+                            ThingProperty.setValue(this, VeluxBridgeConfiguration.BRIDGE_IPADDRESS, null);
                         case BRIDGE_SUBNETMASK:
                         case BRIDGE_DEFAULTGW:
                         case BRIDGE_DHCP:
@@ -643,11 +645,14 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     if (itemType.isChannel()) {
                         logger.debug("handleCommandScheduled(): updating channel {} to {}.", channelUID, newState);
                         updateState(channelUID, newState);
-                    }
-                    if (itemType.isProperty()) {
-                        logger.debug("handleCommandScheduled(): updating property {} to {}.", channelUID, newState);
-                        ThingProperty.setValue(this, itemType.getIdentifier(), newState.toString());
-
+                    } else if (itemType.isProperty()) {
+                        // if property value is 'unknown', null it completely
+                        String val = newState.toString();
+                        if (VeluxBindingConstants.UNKNOWN.equals(val)) {
+                            val = null;
+                        }
+                        logger.debug("handleCommandScheduled(): updating property {} to {}.", channelUID, val);
+                        ThingProperty.setValue(this, itemType.getIdentifier(), val);
                     }
                 } else {
                     logger.info("handleCommandScheduled({},{}): updating of item {} (type {}) failed.",
@@ -681,6 +686,20 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     case SCENE_ACTION:
                         ChannelSceneAction.handleCommand(channelUID, channelId, command, this);
                         break;
+
+                    /*
+                     * NOTA BENE: Setting of a scene silent mode is no longer supported via the KLF API (i.e. the
+                     * GW_SET_NODE_VELOCITY_REQ/CFM command set is no longer supported in the API), so the binding can
+                     * no longer explicitly support a Channel with such a function. Therefore the silent mode Channel
+                     * type was removed from the binding implementation.
+                     *
+                     * By contrast scene actions can still be called with a silent mode argument, so a silent mode
+                     * Configuration Parameter has been introduced as a means for the user to set this argument.
+                     *
+                     * Strictly speaking the following case statement will now never be called, so in theory it,
+                     * AND ALL THE CLASSES BEHIND, could be deleted from the binding CODE BASE. But out of prudence
+                     * it is retained anyway 'just in case'.
+                     */
                     case SCENE_SILENTMODE:
                         ChannelSceneSilentmode.handleCommand(channelUID, channelId, command, this);
                         break;

@@ -100,9 +100,10 @@ The Velux Bridge in API version one (firmware version 0.1.1.*) allows activating
 So besides the bridge, only one real Thing type exists, namely "scene".
 This type of Thing is configured by means of its scene name in the hub.
 
-| Configuration Parameter | Default                | Required | Description                                               |
-|-------------------------|------------------------|:--------:|-----------------------------------------------------------|
-| sceneName               |                        |   Yes    | Name of the scene in the hub.                             |
+| Configuration Parameter | Default                | Required | Description                                                           |
+|-------------------------|------------------------|:--------:|-----------------------------------------------------------------------|
+| sceneName               |                        |   Yes    | Name of the scene in the hub.                                         |
+| velocity                |                        |   No     | The speed at which the scene will be executed (deafult, silent, fast) |
 
 ### Thing Configuration for "vshutter"
 
@@ -142,7 +143,7 @@ The supported Channels and their associated channel types are shown below.
 The `position` Channel will as a general rule indicate the actual position of the window (resp. roller shutter) in percent (0% .. 100%).
 When a window is in motion towards a new target position, the Channel will display the target position.
 And when the motion has completed, it will display the final actual position.
-In case of errors, (e.g. a window is commanded to a target position when it has been opened manually), the Channel will display as `UNDEF`.
+In case the Bridge cannot determine the position (e.g. a window is commanded to a target position when it has been opened manually) the it will display as `UNDEF`.
 
 ### Channels for "actuator" Things
 
@@ -197,13 +198,13 @@ The bridge Thing provides the following properties.
 
 | Property          | Description                                                     |
 |-------------------|-----------------------------------------------------------------|
+| address           | IP address of the Bridge                                        |
 | check             | Result of the check of current item configuration               |
 | connectionAttempt | Date-Time of last connection attampt                            |
 | connectionSuccess | Date-Time of last successful connection attampt                 |
 | defaultGW         | IP address of the Default Gateway of the Bridge                 |
 | DHCP              | Flag whether automatic IP configuration is enabled              |
 | firmware          | Software version of the Bridge                                  |
-| ipAddress         | IP address of the Bridge                                        |
 | products          | List of all recognized products                                 |
 | scenes            | List of all defined scenes                                      |
 | subnetMask        | IP subnetmask of the Bridge                                     |
@@ -302,7 +303,7 @@ end
 
 ### Rule for checking if a Window has been manually opened
 
-In the case that a window has been manually opened, if you try to move it via the binding, its `position` Channel will become `UNDEF`.
+In the case that a window has been manually opened, and you then try to move it via the binding, its `position` will become `UNDEF`.
 You can exploit this behaviour in a rule to check regularly if a window has been manually opened.
 
 ```java
