@@ -129,8 +129,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
         logger.debug("Locating action for {} channel '{}': '{}'", getThing().getUID(), channelUID.getId(), command);
         if (!actions.isEmpty()) {
-            MiIoBasicChannel miIoBasicChannel = actions.get(channelUID);
-            if (miIoBasicChannel != null) {
+            if (actions.containsKey(channelUID)) {
+                MiIoBasicChannel miIoBasicChannel = actions.get(channelUID);
                 int valuePos = 0;
                 for (MiIoDeviceAction action : miIoBasicChannel.getActions()) {
                     @Nullable
@@ -227,7 +227,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             parameters.add(value);
                         }
                     }
-                    cmd = cmd + parameters.toString();
+                    if (action.isMiOtAction() && parameters.size() > 0 && parameters.get(0).isJsonObject()) {
+                        // hack as unlike any other commands miot actions parameters appear to be send as a json object
+                        // instead of a json array
+                        cmd = cmd + parameters.get(0).getAsJsonObject().toString();
+                    } else {
+                        cmd = cmd + parameters.toString();
+                    }
                     if (value != null) {
                         logger.debug("Sending command {}", cmd);
                         sendCommand(cmd);
