@@ -41,14 +41,14 @@ public class MDnsHostnameResolver implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(MDnsHostnameResolver.class);
 
     // timing constants
-    private final static int BUFFER_SIZE = 256;
-    private final static int SLEEP_MSECS = 100;
-    private final static int WARMUP_MSECS = 10;
-    private final static int TIMEOUT_MSECS = 1000;
+    private static final int BUFFER_SIZE = 256;
+    private static final int SLEEP_MSECS = 100;
+    private static final int WARMUP_MSECS = 10;
+    private static final int TIMEOUT_MSECS = 1000;
 
     // dns communication constants
-    private final static int MDNS_PORT = 5353;
-    private final static String MDNS_ADDR = "224.0.0.251";
+    private static final int MDNS_PORT = 5353;
+    private static final String MDNS_ADDR = "224.0.0.251";
 
     // dns flag constants
     private static final short FLAGS_QR = (short) 0x8000;
@@ -180,11 +180,11 @@ public class MDnsHostnameResolver implements Closeable {
 
                         // check if the name in the payload matches the hostName
                         if (name.contentEquals(hostName)) {
-                            short _type = dataStream.readShort();
-                            short _class = (short) (CLASS_MASK & dataStream.readShort());
+                            short typ = dataStream.readShort();
+                            short clazz = (short) (CLASS_MASK & dataStream.readShort());
 
                             // check if it is an IPv4 address
-                            if (_type == TYPE_A && _class == CLASS_IN) {
+                            if (typ == TYPE_A && clazz == CLASS_IN) {
                                 @SuppressWarnings("unused")
                                 int ttl = dataStream.readInt();
                                 short dataLen = dataStream.readShort();
@@ -244,7 +244,6 @@ public class MDnsHostnameResolver implements Closeable {
 
         // create a datagram socket
         try (DatagramSocket socket = new DatagramSocket()) {
-
             // warm up the listener thread
             startListener();
             Thread.sleep(WARMUP_MSECS);

@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class DataInputStreamWithTimeout implements Closeable {
 
-    private static final int QUEUE_SIZE = 32;
+    private static final int QUEUE_SIZE = 512;
     private static final int BUFFER_SIZE = 512;
     private static final int SLEEP_INTERVAL_MSECS = 50;
 
@@ -60,26 +60,26 @@ class DataInputStreamWithTimeout implements Closeable {
      * SLIP packets are placed in a {@link ConcurrentLinkedQueue}.
      */
     private Runnable pollRunner = () -> {
-        byte _byte;
-        byte[] _bytes = new byte[BUFFER_SIZE];
+        byte byt;
+        byte[] buf = new byte[BUFFER_SIZE];
         int i = 0;
         pollException = "";
         slipMessageQueue.clear();
         while (!Thread.interrupted()) {
             try {
-                _bytes[i] = _byte = (byte) inputStream.read();
-                if (_byte == SLIP_MARK) {
+                buf[i] = byt = (byte) inputStream.read();
+                if (byt == SLIP_MARK) {
                     if (i > 0) {
                         // the minimal slip message is 7 bytes [MM PP LL CC CC KK MM]
-                        if ((i > 5) && (_bytes[0] == SLIP_MARK)) {
-                            slipMessageQueue.offer(Arrays.copyOfRange(_bytes, 0, i + 1));
+                        if ((i > 5) && (buf[0] == SLIP_MARK)) {
+                            slipMessageQueue.offer(Arrays.copyOfRange(buf, 0, i + 1));
                             if (slipMessageQueue.size() > QUEUE_SIZE) {
                                 logger.warn("pollRunner() => slip message queue overflow => PLEASE REPORT !!");
                                 slipMessageQueue.poll();
                             }
                         }
                         i = 0;
-                        _bytes[0] = SLIP_MARK;
+                        buf[0] = SLIP_MARK;
                         continue;
                     }
                 }
