@@ -72,7 +72,7 @@ None
 | gridOutputPower          | Number:Power         | Current output power to the grid                |         R          |              
 | yieldDay                      | Number:Energy        | Total produced power today                       |          R          |                
 | yieldTotal                    | Number:Energy         | Total produced power                           |             R           |                      
-| operatingStatus           | Number:Domensionless             | Current operating status, 0 = Standby, 3 = WO-IDLE                       |          R          |                        
+| operatingStatus           | Number:Dimensionless             | Current operating status, 0 = Standby, 3 = WO-IDLE                       |          R          |                        
 | gridVoltageL1             | Number:ElectricPotential  | Current output voltage to the grid, L1 |    R         |
 | gridCurrentL1             | Number:ElectricCurrent    | Current output current to the grid, L1  |    R    |
 | gridPowerL1               | Number:Power              | Current output power to the grid, L1  |    R    |
@@ -121,7 +121,7 @@ None
 
 The following Channels are writeable
 
-| Channel Type ID           | Item Type                 | Description                                                 |  Read Write  |
+| Channel Type ID           | Item Type                 | Description                                                 |  Write  |
 |-------------------------------|---------------------------|-------------------------------------------------------|-----------------|    
 | chargeTimeEnd             | Number:Time     | Set charge time end, Value = 00:00  |    W    |
 | batteryType               | String          | Set battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV  |   W    |
@@ -353,23 +353,9 @@ Number:Time                     Loginterval             "Log Interval[%.2f %unit
 String                          S0InPulseCnt            "S0 In Pulse Counter[%s]"               <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:s0InPulseCnt" }
 Number:Dimensionless            OwnConsRateTotal        "Own Cons Rate Total[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsRateTotal" } 
 Number:Dimensionless            AutonomyDegreeTotal     "Autonomy Degree Total[%.2f %unit%]"    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:autonomyDegreeTotal" } 
-
-Number:Dimensionless            ChargeLevelBattery      "Charge Level Battery[%.2f %unit%]"     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:chargeLevelBattery" }
-Number:Dimensionless            GridLimitation          "Grid Limitation[%.2f %unit%]"          <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:gridLimitation" }
 Number:ElectricPotential        BatteryVoltage          "Battery Voltage[%.2f %unit%]"          <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryVoltage" }
 Number:Dimensionless            BatStateOfCharge        "Bat State Of Charge[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batStateOfCharge" }
-
-String                          BatteryType             "Battery Type[%s]"                      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryType" }
-String                          BatteryUsageConsumption "Battery Usage Consumption[%s]"         <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryUsageConsumption" }
-String                          BatteryUsageStrategy    "Battery Usage Strategy[%s]"            <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryUsageStrategy" }
-Switch                          SmartBatteryControl     "Smart Battery Control[%s]"             <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:smartBatteryControl" }
-String                          SmartBatteryControlText "Smart Battery ControlText[%s]"         <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:smartBatteryControlText" } 
-String                          BatteryChargeTimeFrom   "Battery Charge Time From[%s]"          <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryChargeTimeFrom" }
-String                          BatteryChargeTimeTo     "Battery Charge Time To[%s]"            <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryChargeTimeTo" }
-String                          MaxDephtOfDischarge     "Max Depht Of Discharge[%s]"            <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:maxDephtOfDischarge" }
-String                          ShadowManagement        "Shadow Management[%s]"                 <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:shadowManagement" }
-String                          ExternalModuleControl   "External Module Control[%s]"           <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:externalModuleControl" }
-String                          InverterName            "InverterName[%s]"                      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:inverterName" }
+Number:Energy                   SelfConsumption         "Self Consumption[%.2f %unit%]"         <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:selfConsumption" } 
 
 ```
 

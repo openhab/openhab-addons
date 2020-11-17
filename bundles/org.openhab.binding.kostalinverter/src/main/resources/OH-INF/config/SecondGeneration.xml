@@ -5,17 +5,17 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:kostalpiko1020_config">
 		<parameter name="url" type="text" required="true">
-			<label> Inverter URL</label>
-			<description>URL to inverter.</description>
-			<context>url</context>
+			<label> IP Address</label>
+			<description>IP address of the inverter.</description>
+			<context>network-address</context>
 		</parameter>
 		<parameter name="username" type="text" required="true">
 			<label>Username</label>
-			<description>The username for the inverter.</description>
+			<description>The username to the inverter.</description>
 		</parameter>
 		<parameter name="password" type="text" required="true">
 			<label>Password</label>
-			<description>The password for the inverter.</description>
+			<description>The password to the inverter.</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="1" unit="s" required="true">

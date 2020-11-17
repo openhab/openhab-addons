@@ -15,6 +15,7 @@ package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -29,7 +30,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -62,9 +62,13 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
 
-    private List<SecondGenerationChannelConfiguration> channelConfigs = new ArrayList<>();
-    private List<SecondGenerationChannelConfiguration> channelConfigsExt = new ArrayList<>();
-    private List<SecondGenerationChannelConfiguration> channelConfigsExtExt = new ArrayList<>();
+    private List<SecondGenerationChannelConfiguration> channelConfigs = new ArrayList<>(23);
+    private List<SecondGenerationChannelConfiguration> channelConfigsExt = new ArrayList<>(23);
+    private List<SecondGenerationChannelConfiguration> channelConfigsExtExt = new ArrayList<>(3);
+    private List<SecondGenerationChannelConfiguration> channelConfigsAll = new ArrayList<>(49);
+
+    private @Nullable SecondGenerationInverterConfig inverterConfig;
+    private @Nullable Gson gson;
 
     public SecondGenerationHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -73,12 +77,12 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        final @Nullable SecondGenerationBindingConstants handleCommandConfig;
-        handleCommandConfig = getConfigAs(SecondGenerationBindingConstants.class);
-
-        String url = handleCommandConfig.url.toString();
-        String username = handleCommandConfig.username;
-        String password = handleCommandConfig.password;
+        @SuppressWarnings("null")
+        String url = inverterConfig.url;
+        @SuppressWarnings("null")
+        String username = inverterConfig.userName;
+        @SuppressWarnings("null")
+        String password = inverterConfig.password;
         String valueConfiguration = "";
         String dxsEntriesConf = "";
 
@@ -166,9 +170,18 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        // Set channel configuration parameters
         channelConfigs = SecondGenerationChannelConfiguration.getChannelConfiguration();
         channelConfigsExt = SecondGenerationChannelConfiguration.getChannelConfigurationExt();
         channelConfigsExtExt = SecondGenerationChannelConfiguration.getChannelConfigurationExtExt();
+
+        // Set inverter configuration parameters
+        final SecondGenerationInverterConfig inverterConfig = getConfigAs(SecondGenerationInverterConfig.class);
+        this.inverterConfig = inverterConfig;
+
+        // Initialize Gson object gson
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        this.gson = gson;
 
         // Temporary value during initializing
         updateStatus(ThingStatus.UNKNOWN);
@@ -191,7 +204,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
             } catch (TimeoutException e) {
                 logger.debug("Communication with inverter timed out, exception {}", e.getMessage());
             }
-        }, 0, SecondGenerationBindingConstants.REFRESHINTERVAL_SEC, TimeUnit.SECONDS);
+        }, 0, SecondGenerationInverterConfig.REFRESHINTERVAL_SEC, TimeUnit.SECONDS);
     }
 
     @Override
@@ -204,14 +217,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
+    @SuppressWarnings({ "null", "unchecked" })
     private void refresh() throws InterruptedException, ExecutionException, TimeoutException {
-        final @Nullable SecondGenerationBindingConstants refreshConfig;
-        refreshConfig = getConfigAs(SecondGenerationBindingConstants.class);
-
-        String dxsEntriesCall = refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
+        String dxsEntriesCall = inverterConfig.url.toString() + "/api/dxs.json?dxsEntries="
                 + channelConfigs.get(0).dxsEntries;
-        String dxsEntriesCallExt = refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
+        String dxsEntriesCallExt = inverterConfig.url.toString() + "/api/dxs.json?dxsEntries="
                 + channelConfigsExt.get(0).dxsEntries;
 
         for (int i = 1; i < channelConfigs.size(); i++) {
@@ -221,12 +231,9 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
         String jsonDxsEntriesResponse = callURL(dxsEntriesCall);
         String jsonDxsEntriesResponseExt = callURL(dxsEntriesCallExt);
-        String jsonDxsEntriesResponseExtExt = callURL(refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
+        String jsonDxsEntriesResponseExtExt = callURL(inverterConfig.url.toString() + "/api/dxs.json?dxsEntries="
                 + channelConfigsExtExt.get(0).dxsEntries + "&dxsEntries=" + channelConfigsExtExt.get(1).dxsEntries
                 + "&dxsEntries=" + channelConfigsExtExt.get(2).dxsEntries);
-
-        // Get Gson object
-        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         // Parse result
         SecondGenerationDxsEntriesContainerDTO dxsEntriesContainer = gson.fromJson(jsonDxsEntriesResponse,
@@ -236,37 +243,53 @@ public class SecondGenerationHandler extends BaseThingHandler {
         SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExtExt = gson.fromJson(jsonDxsEntriesResponseExtExt,
                 SecondGenerationDxsEntriesContainerDTO.class);
 
-        String[] channelPostsAll = new String[49];
+        // Create channel-posts array's
+        String[] channelPosts = new String[23];
+        String[] channelPostsExt = new String[23];
+        String[] channelPostsExtExt = new String[3];
 
         // Fill channelPosts with each item value
-        int channelPostsCounterAll = 0;
+        int channelPostsCounter = 0;
         for (SecondGenerationDxsEntries dxsentries : dxsEntriesContainer.dxsEntries) {
-            channelPostsAll[channelPostsCounterAll] = dxsentries.getName();
-            channelPostsCounterAll++;
+            channelPosts[channelPostsCounter] = dxsentries.getName();
+            channelPostsCounter++;
         }
 
+        // Fill channelPostsExt with each item value
+        int channelPostsCounterExt = 0;
         for (SecondGenerationDxsEntries dxsentriesExt : dxsEntriesContainerExt.dxsEntries) {
-            channelPostsAll[channelPostsCounterAll] = dxsentriesExt.getName();
-            channelPostsCounterAll++;
+            channelPostsExt[channelPostsCounterExt] = dxsentriesExt.getName();
+            channelPostsCounterExt++;
         }
 
+        // Fill channelPostsExt with each item value
+        int channelPostsCounterExtExt = 0;
         for (SecondGenerationDxsEntries dxsentriesExtExt : dxsEntriesContainerExtExt.dxsEntries) {
-            channelPostsAll[channelPostsCounterAll] = dxsentriesExtExt.getName();
-            channelPostsCounterAll++;
+            channelPostsExtExt[channelPostsCounterExtExt] = dxsentriesExtExt.getName();
+            channelPostsCounterExtExt++;
         }
+
+        // Create Arrays and Lists which will be used for updating
+        List<String> channelPostsTemp = new ArrayList<String>(Arrays.asList(channelPosts));
+        channelPostsTemp.addAll(Arrays.asList(channelPostsExt));
+        channelPostsTemp.addAll(Arrays.asList(channelPostsExtExt));
+        Object[] channelPostsTemp1 = channelPostsTemp.toArray();
+        String[] channelPostsAll = Arrays.copyOf(channelPostsTemp1, channelPostsTemp1.length, String[].class);
+
+        channelConfigsAll = combineChannelConfigLists(channelConfigs, channelConfigsExt, channelConfigsExtExt);
 
         // Create and update actual values for each channelPost
-        int channelValuesCounter = 0;
+        int channelValuesCounterAll = 0;
 
-        for (SecondGenerationChannelConfiguration cConfig : channelConfigs) {
-            Channel channel = getThing().getChannel(cConfig.id);
-            State state = getState(channelPostsAll[channelValuesCounter], cConfig.unit);
+        for (SecondGenerationChannelConfiguration cConfig : channelConfigsAll) {
+            String channel = cConfig.id;
+            State state = getState(channelPostsAll[channelValuesCounterAll], cConfig.unit);
 
             // Update the channels
             if (state != null) {
-                updateState(channel.getUID().getId(), state);
-                channelValuesCounter++;
+                updateState(channel, state);
             }
+            channelValuesCounterAll++;
         }
     }
 
@@ -285,9 +308,8 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     public final String callURL(String dxsEntriesCall)
             throws InterruptedException, ExecutionException, TimeoutException {
-        String jsonDxsresponse = httpClient.GET(dxsEntriesCall).getContentAsString();
-
-        return jsonDxsresponse;
+        String jsonDxsResponse = httpClient.GET(dxsEntriesCall).getContentAsString();
+        return jsonDxsResponse;
     }
 
     private State getState(String value, @Nullable Unit<?> unit) {
@@ -301,5 +323,17 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 return UnDefType.UNDEF;
             }
         }
+    }
+
+    // Method to concatenate channelConfigs Lists to one List
+    public final List<SecondGenerationChannelConfiguration> combineChannelConfigLists(
+            @SuppressWarnings("unchecked") List<SecondGenerationChannelConfiguration>... args) {
+        List<SecondGenerationChannelConfiguration> combinedChannelConfigLists = new ArrayList<>();
+        for (List<SecondGenerationChannelConfiguration> list : args) {
+            for (SecondGenerationChannelConfiguration i : list) {
+                combinedChannelConfigLists.add(i);
+            }
+        }
+        return combinedChannelConfigLists;
     }
 }

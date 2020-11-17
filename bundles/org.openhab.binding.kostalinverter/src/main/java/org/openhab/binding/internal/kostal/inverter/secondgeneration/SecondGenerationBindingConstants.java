@@ -28,14 +28,6 @@ public class SecondGenerationBindingConstants {
 
     private static final String BINDING_ID = "kostalinverter";
 
-    public static final long REFRESHINTERVAL_SEC = 60;
-
-    public String url = "";
-    public String username = "";
-    public String password = "";
-    public String dxsIdConf = "";
-    public String valueConf = "";
-
     // List of all Thing Type UIDs
     public static final ThingTypeUID SECOND_GENERATION_INVERTER = new ThingTypeUID(BINDING_ID,
             "kostalinverterpiko1020");
@@ -89,7 +81,7 @@ public class SecondGenerationBindingConstants {
     public static final String CHANNEL_OWNCONSRATE_TOTAL = "ownConsRateTotal";
     public static final String CHANNEL_AUTONOMYDEGREE_TOTAL = "autonomyDegreeTotal";
 
-    public static final String CHANNEL_BATTERYVOLTAGE = "batteryVoltage";
+    public static final String CHANNEL_BATTERYVOLTAGE_SECONDGEN = "batteryVoltageSecondGen";
     public static final String CHANNEL_BATSTATEOFCHARGE = "batStateOfCharge";
     public static final String CHANNEL_SELFCONSUMPTION = "selfConsumption";
 

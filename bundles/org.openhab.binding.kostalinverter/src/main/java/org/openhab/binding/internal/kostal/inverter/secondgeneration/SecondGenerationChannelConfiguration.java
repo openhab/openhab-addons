@@ -48,7 +48,7 @@ public class SecondGenerationChannelConfiguration {
     }
 
     public static List<SecondGenerationChannelConfiguration> getChannelConfiguration() {
-        final List<SecondGenerationChannelConfiguration> channelConfiguration = new ArrayList<>();
+        final List<SecondGenerationChannelConfiguration> channelConfiguration = new ArrayList<>(23);
 
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_GRIDOUTPUTPOWER, "td", 4, SmartHomeUnits.WATT, "67109120"));
@@ -102,7 +102,7 @@ public class SecondGenerationChannelConfiguration {
     }
 
     public static List<SecondGenerationChannelConfiguration> getChannelConfigurationExt() {
-        final List<SecondGenerationChannelConfiguration> channelConfigurationExt = new ArrayList<>();
+        final List<SecondGenerationChannelConfiguration> channelConfigurationExt = new ArrayList<>(23);
 
         channelConfigurationExt.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_AKTHOMECONSUMTIONSOLAR, "td", 73, SmartHomeUnits.WATT,
@@ -110,9 +110,9 @@ public class SecondGenerationChannelConfiguration {
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_AKTHOMECONSUMPTIONBAT,
                         "td", 76, SmartHomeUnits.WATT, "83886592"));
-        channelConfigurationExt.add(
-                new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_AKTHOMECONSUMPTIONBAT,
-                        "td", 79, SmartHomeUnits.WATT_HOUR, "83886848"));
+        channelConfigurationExt.add(new SecondGenerationChannelConfiguration(
+                SecondGenerationBindingConstants.CHANNEL_AKTHOMECONSUMPTIONGRID, "td", 79, SmartHomeUnits.WATT_HOUR,
+                "83886848"));
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_PHASESELHOMECONSUMPL1,
                         "td", 82, SmartHomeUnits.WATT, "83887106"));
@@ -171,10 +171,11 @@ public class SecondGenerationChannelConfiguration {
     }
 
     public static List<SecondGenerationChannelConfiguration> getChannelConfigurationExtExt() {
-        final List<SecondGenerationChannelConfiguration> channelConfigurationExtExt = new ArrayList<>();
+        final List<SecondGenerationChannelConfiguration> channelConfigurationExtExt = new ArrayList<>(3);
 
         channelConfigurationExtExt.add(new SecondGenerationChannelConfiguration(
-                SecondGenerationBindingConstants.CHANNEL_BATTERYVOLTAGE, "td", 142, SmartHomeUnits.VOLT, "33556226"));
+                SecondGenerationBindingConstants.CHANNEL_BATTERYVOLTAGE_SECONDGEN, "td", 142, SmartHomeUnits.VOLT,
+                "33556226"));
         channelConfigurationExtExt
                 .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_BATSTATEOFCHARGE,
                         "td", 145, SmartHomeUnits.PERCENT, "33556229"));

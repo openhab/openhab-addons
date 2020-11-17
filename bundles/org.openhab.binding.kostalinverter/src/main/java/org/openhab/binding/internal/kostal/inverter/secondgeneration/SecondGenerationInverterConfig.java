@@ -15,7 +15,7 @@ package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SecondGenerationSourceConfig} class defines constants, which are
+ * The {@link SecondGenerationInverterConfig} class defines constants, which are
  * used in the second generation part of the binding.
  *
  * @author Christian Schneider - Initial contribution
@@ -24,11 +24,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-public class SecondGenerationSourceConfig {
+public class SecondGenerationInverterConfig {
+    public static final long REFRESHINTERVAL_SEC = 60;
+
     public String url = "";
     public String userName = "";
     public String password = "";
-    public int refreshInterval;
     public String dxsIdConf = "";
     public String valueConf = "";
 }
