@@ -84,7 +84,7 @@ or in case of unknown models include the model information of a similar device t
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 200 different models.
+Currently the miio binding supports more than 210 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -332,6 +332,8 @@ Currently the miio binding supports more than 200 different models.
 | Yeelight yilai ceiling       | miio:basic       | [yilai.light.ceiling2](#yilai-light-ceiling2) | Yes       |            |
 | Yeelight yilai ceiling       | miio:basic       | [yilai.light.ceiling3](#yilai-light-ceiling3) | Yes       |            |
 | Zhimi Heater                 | miio:basic       | [zhimi.heater.za1](#zhimi-heater-za1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhimi Heater                 | miio:basic       | [zhimi.heater.za2](#zhimi-heater-za2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhimi Heater                 | miio:basic       | [zhimi.heater.zb1](#zhimi-heater-zb1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 
 
 # Advanced: Unsupported devices
@@ -1300,11 +1302,11 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | current-position | Number  | Curtain - Current Position          |            |
 | status           | Number  | Curtain - Status                    | Value mapping [0="Stopped",1="Opening",2="Closing"] |
 | target-position  | Number  | Curtain - Target Position           |            |
-| manual-enabled   | Number  | curtain_cfg - manual_enabled        | Value mapping [0="Disable",1="Enable"] |
-| polarity         | Number  | curtain_cfg - polarity              | Value mapping [0="Positive",1="Reverse"] |
-| pos-limit        | Number  | curtain_cfg - pos_limit             | Value mapping [0="Unlimit",1="Limit"] |
-| en-night-tip-light | Switch  | Set night tip light                 | Value mapping [0="Disable",1="Enable"] |
-| run-time         | Number  | curtain_cfg - run_time              |            |
+| manual-enabled   | Number  | curtain_cfg - Manual Enabled        | Value mapping [0="Disable",1="Enable"] |
+| polarity         | Number  | curtain_cfg - Polarity              | Value mapping [0="Positive",1="Reverse"] |
+| pos-limit        | Number  | curtain_cfg - Position Limit        | Value mapping [0="Unlimit",1="Limit"] |
+| en-night-tip-light | Switch  | Set Night Tip Light                 | Value mapping [0="Disable",1="Enable"] |
+| run-time         | Number  | curtain_cfg - Run-time              |            |
 
 ### Mr Bond M1 Pro Smart Clothes Dryer (<a name="mrbond-airer-m1pro">mrbond.airer.m1pro</a>) Channels
 
@@ -3227,6 +3229,37 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | usedhours        | Number  | Run Time                            |            |
 
+### Zhimi Heater (<a name="zhimi-heater-za2">zhimi.heater.za2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| fault            | Number  | Heater - Device Fault               |            |
+| on               | Switch  | Heater - Power                      |            |
+| target-temperature | Number:Temperature | Heater - Target Temperature         |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| countdown-time   | Number:Time | Countdown - Countdown Time          |            |
+| relative-humidity | Number  | Environment - Relative Humidity     |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| brightness       | Dimmer  | Indicator Light - Brightness        |            |
+| physical-controls-locked | Switch  | Physical Control Locked - Physical Controls Locked |            |
+| use-time         | Number:Time | private-service - Use Time          |            |
+
+### Zhimi Heater (<a name="zhimi-heater-zb1">zhimi.heater.zb1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| fault            | Number  | Heater - Device Fault               |            |
+| on               | Switch  | Heater - Power                      |            |
+| target-temperature | Number:Temperature | Heater - Target Temperature         |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| countdown-time   | Number:Time | Countdown - Countdown Time          |            |
+| relative-humidity | Number  | Environment - Relative Humidity     |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| brightness       | Dimmer  | Indicator Light - Brightness        |            |
+| physical-controls-locked | Switch  | Physical Control Locked - Physical Controls Locked |            |
+| use-time         | Number:Time | private-service - Use Time          |            |
+| country-code     | Number  | private-service - country-code      | Value mapping [0="未知",1="US 美国",82="KR 韩国",44="EU 欧洲",81="JP 日本",7="RU 俄罗斯",86="CN  中国",852="HK 香港",886="TW 台湾",33="FR 法国"] |
+
 
 
 
@@ -4291,11 +4324,11 @@ Number fault "Curtain - Device Fault" (G_curtain) {channel="miio:basic:curtain:f
 Number current-position "Curtain - Current Position" (G_curtain) {channel="miio:basic:curtain:current-position"}
 Number status "Curtain - Status" (G_curtain) {channel="miio:basic:curtain:status"}
 Number target-position "Curtain - Target Position" (G_curtain) {channel="miio:basic:curtain:target-position"}
-Number manual-enabled "curtain_cfg - manual_enabled" (G_curtain) {channel="miio:basic:curtain:manual-enabled"}
-Number polarity "curtain_cfg - polarity" (G_curtain) {channel="miio:basic:curtain:polarity"}
-Number pos-limit "curtain_cfg - pos_limit" (G_curtain) {channel="miio:basic:curtain:pos-limit"}
-Switch en-night-tip-light "Set night tip light" (G_curtain) {channel="miio:basic:curtain:en-night-tip-light"}
-Number run-time "curtain_cfg - run_time" (G_curtain) {channel="miio:basic:curtain:run-time"}
+Number manual-enabled "curtain_cfg - Manual Enabled" (G_curtain) {channel="miio:basic:curtain:manual-enabled"}
+Number polarity "curtain_cfg - Polarity" (G_curtain) {channel="miio:basic:curtain:polarity"}
+Number pos-limit "curtain_cfg - Position Limit" (G_curtain) {channel="miio:basic:curtain:pos-limit"}
+Switch en-night-tip-light "Set Night Tip Light" (G_curtain) {channel="miio:basic:curtain:en-night-tip-light"}
+Number run-time "curtain_cfg - Run-time" (G_curtain) {channel="miio:basic:curtain:run-time"}
 ```
 
 ### Mr Bond M1 Pro Smart Clothes Dryer (mrbond.airer.m1pro) item file lines
@@ -6628,6 +6661,43 @@ Switch childlock "Child Lock" (G_heater) {channel="miio:basic:heater:childlock"}
 Switch HWSwitch "HW Switch" (G_heater) {channel="miio:basic:heater:HWSwitch"}
 Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
 Number usedhours "Run Time" (G_heater) {channel="miio:basic:heater:usedhours"}
+```
+
+### Zhimi Heater (zhimi.heater.za2) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_heater "Zhimi Heater" <status>
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number:Temperature target-temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown-time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
+Number relative-humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical-controls-locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
+Number:Time use-time "private-service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
+```
+
+### Zhimi Heater (zhimi.heater.zb1) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_heater "Zhimi Heater" <status>
+Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
+Number:Temperature target-temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
+Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown-time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
+Number relative-humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
+Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical-controls-locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
+Number:Time use-time "private-service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
+Number country-code "private-service - country-code" (G_heater) {channel="miio:basic:heater:country-code"}
 ```
 
 
