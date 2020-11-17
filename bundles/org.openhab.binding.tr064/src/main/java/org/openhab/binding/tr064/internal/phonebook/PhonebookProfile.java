@@ -18,9 +18,15 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.profiles.*;
+import org.openhab.core.thing.profiles.ProfileCallback;
+import org.openhab.core.thing.profiles.ProfileContext;
+import org.openhab.core.thing.profiles.ProfileType;
+import org.openhab.core.thing.profiles.ProfileTypeBuilder;
+import org.openhab.core.thing.profiles.ProfileTypeUID;
+import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -37,8 +43,11 @@ import org.slf4j.LoggerFactory;
 public class PhonebookProfile implements StateProfile {
     public static final ProfileTypeUID PHONEBOOK_PROFILE_TYPE_UID = new ProfileTypeUID(
             TransformationService.TRANSFORM_PROFILE_SCOPE, "PHONEBOOK");
-    public static final ProfileType PHONEBOOK_PROFILE_TYPE = ProfileTypeBuilder
-            .newState(PhonebookProfile.PHONEBOOK_PROFILE_TYPE_UID, "Phonebook").build();
+    public static final ProfileType PHONEBOOK_PROFILE_TYPE = ProfileTypeBuilder //
+            .newState(PHONEBOOK_PROFILE_TYPE_UID, "Phonebook") //
+            .withSupportedItemTypesOfChannel(CoreItemFactory.CALL, CoreItemFactory.STRING) //
+            .withSupportedItemTypes(CoreItemFactory.STRING) //
+            .build();
 
     public static final String PHONEBOOK_PARAM = "phonebook";
     private static final String MATCH_COUNT_PARAM = "matchCount";

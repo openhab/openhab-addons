@@ -3,14 +3,16 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
 	<config-description uri="profile:transform:PHONEBOOK">
 		<parameter name="phonebook" type="text" required="true">
 			<label>Phonebook</label>
 			<description>The name of the the phonebook</description>
 		</parameter>
-		<parameter name="matchCount" type="text" required="false">
+		<parameter name="matchCount" type="integer" min="0" step="1">
 			<label>Match Count</label>
 			<description>The number of digits matching the incoming value, counted from far right (default is 0 = all matching)</description>
+			<default>0</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
