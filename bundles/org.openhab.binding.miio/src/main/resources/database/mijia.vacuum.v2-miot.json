@@ -544,6 +544,6 @@
 				"readmeComment": "Value mapping [0\u003d\"MopUninstall\",1\u003d\"MopInstall\"]"
 			}
 		],
-		"readmeComment": "Action commands are unknown at this time. According to spec identified actions for execution are:\r\n`action{\"did\":\"vacuum-start-sweep\",\"siid\":2,\"aiid\":1,\"in\":[]}`\r\n`action{\"did\":\"vacuum-stop-sweeping\",\"siid\":2,\"aiid\":2,\"in\":[]}`\r\n`action{\"did\":\"vacuum-start-charge\",\"siid\":2,\"aiid\":3,\"in\":[]}`\r\n`action{\"did\":\"filter-reset-filter-life\",\"siid\":11,\"aiid\":1,\"in\":[]}`\r\n`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":14,\"aiid\":1,\"in\":[]}`\r\n`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":15,\"aiid\":1,\"in\":[]}`\r\n. Please test and feedback if they are working to they can be linked to a channel."
+		"readmeComment": "Action commands are unknown at this time. According to spec identified actions for execution are:<br />`action{\"did\":\"vacuum-start-sweep\",\"siid\":2,\"aiid\":1,\"in\":[]}`<br />`action{\"did\":\"vacuum-stop-sweeping\",\"siid\":2,\"aiid\":2,\"in\":[]}`<br />`action{\"did\":\"vacuum-start-charge\",\"siid\":2,\"aiid\":3,\"in\":[]}`<br />`action{\"did\":\"filter-reset-filter-life\",\"siid\":11,\"aiid\":1,\"in\":[]}`<br />`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":14,\"aiid\":1,\"in\":[]}`<br />`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":15,\"aiid\":1,\"in\":[]}`.<br />Please test and feedback if they are working to they can be linked to a channel."
 	}
 }

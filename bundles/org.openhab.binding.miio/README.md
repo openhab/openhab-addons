@@ -157,14 +157,7 @@ Currently the miio binding supports more than 200 different models.
 | Mr Bond M1 Pro Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mr Bond M1 Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mr Bond M1 Super Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-|  Xiaomi Mi Robot Vacuum MOP Essential | miio:basic       | [mijia.vacuum.v2](#mijia-vacuum-v2) | Yes       | Action commands are unknown at this time. According to spec identified actions for execution are:
-`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`
-`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`
-`action{"did":"vacuum-start-charge","siid":2,"aiid":3,"in":[]}`
-`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`
-`action{"did":"brush-cleaner-reset-brush-life","siid":14,"aiid":1,"in":[]}`
-`action{"did":"brush-cleaner-reset-brush-life","siid":15,"aiid":1,"in":[]}`
-. Please test and feedback if they are working to they can be linked to a channel. |
+| Xiaomi Mi Robot Vacuum MOP Essential | miio:basic       | [mijia.vacuum.v2](#mijia-vacuum-v2) | Yes       | Action commands are unknown at this time. According to spec identified actions for execution are:<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"vacuum-start-charge","siid":2,"aiid":3,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":14,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":15,"aiid":1,"in":[]}`<br />. Please test and feedback if they are working to they can be linked to a channel. |
 | Xiaomi Scishare smart capsule coffee machine | miio:basic       | [scishare.coffee.s1102](#scishare-coffee-s1102) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Scishare smart capsule coffee machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels. Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Philips Eyecare Smart Lamp 2 | miio:basic       | [philips.light.sread1](#philips-light-sread1) | Yes       |            |
@@ -1300,11 +1293,11 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | current-position | Number  | Curtain - Current Position          |            |
 | status           | Number  | Curtain - Status                    | Value mapping [0="Stopped",1="Opening",2="Closing"] |
 | target-position  | Number  | Curtain - Target Position           |            |
-| manual-enabled   | Number  | curtain_cfg - manual_enabled        | Value mapping [0="Disable",1="Enable"] |
-| polarity         | Number  | curtain_cfg - polarity              | Value mapping [0="Positive",1="Reverse"] |
-| pos-limit        | Number  | curtain_cfg - pos_limit             | Value mapping [0="Unlimit",1="Limit"] |
-| en-night-tip-light | Switch  | Set night tip light                 | Value mapping [0="Disable",1="Enable"] |
-| run-time         | Number  | curtain_cfg - run_time              |            |
+| manual-enabled   | Number  | curtain_cfg - Manual Enabled        | Value mapping [0="Disable",1="Enable"] |
+| polarity         | Number  | curtain_cfg - Polarity              | Value mapping [0="Positive",1="Reverse"] |
+| pos-limit        | Number  | curtain_cfg - Position Limit        | Value mapping [0="Unlimit",1="Limit"] |
+| en-night-tip-light | Switch  | Set Night Tip Light                 | Value mapping [0="Disable",1="Enable"] |
+| run-time         | Number  | curtain_cfg - Run-time              |            |
 
 ### Mr Bond M1 Pro Smart Clothes Dryer (<a name="mrbond-airer-m1pro">mrbond.airer.m1pro</a>) Channels
 
@@ -1342,7 +1335,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | disinfect        | Switch  | disinfect                           |            |
 | distime          | Number  | Disinfect Time                      |            |
 
-###  Xiaomi Mi Robot Vacuum MOP Essential (<a name="mijia-vacuum-v2">mijia.vacuum.v2</a>) Channels
+### Xiaomi Mi Robot Vacuum MOP Essential (<a name="mijia-vacuum-v2">mijia.vacuum.v2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -4291,11 +4284,11 @@ Number fault "Curtain - Device Fault" (G_curtain) {channel="miio:basic:curtain:f
 Number current-position "Curtain - Current Position" (G_curtain) {channel="miio:basic:curtain:current-position"}
 Number status "Curtain - Status" (G_curtain) {channel="miio:basic:curtain:status"}
 Number target-position "Curtain - Target Position" (G_curtain) {channel="miio:basic:curtain:target-position"}
-Number manual-enabled "curtain_cfg - manual_enabled" (G_curtain) {channel="miio:basic:curtain:manual-enabled"}
-Number polarity "curtain_cfg - polarity" (G_curtain) {channel="miio:basic:curtain:polarity"}
-Number pos-limit "curtain_cfg - pos_limit" (G_curtain) {channel="miio:basic:curtain:pos-limit"}
-Switch en-night-tip-light "Set night tip light" (G_curtain) {channel="miio:basic:curtain:en-night-tip-light"}
-Number run-time "curtain_cfg - run_time" (G_curtain) {channel="miio:basic:curtain:run-time"}
+Number manual-enabled "curtain_cfg - Manual Enabled" (G_curtain) {channel="miio:basic:curtain:manual-enabled"}
+Number polarity "curtain_cfg - Polarity" (G_curtain) {channel="miio:basic:curtain:polarity"}
+Number pos-limit "curtain_cfg - Position Limit" (G_curtain) {channel="miio:basic:curtain:pos-limit"}
+Switch en-night-tip-light "Set Night Tip Light" (G_curtain) {channel="miio:basic:curtain:en-night-tip-light"}
+Number run-time "curtain_cfg - Run-time" (G_curtain) {channel="miio:basic:curtain:run-time"}
 ```
 
 ### Mr Bond M1 Pro Smart Clothes Dryer (mrbond.airer.m1pro) item file lines
@@ -4343,12 +4336,12 @@ Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
 Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 ```
 
-###  Xiaomi Mi Robot Vacuum MOP Essential (mijia.vacuum.v2) item file lines
+### Xiaomi Mi Robot Vacuum MOP Essential (mijia.vacuum.v2) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_vacuum " Xiaomi Mi Robot Vacuum MOP Essential" <status>
+Group G_vacuum "Xiaomi Mi Robot Vacuum MOP Essential" <status>
 String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
 Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
