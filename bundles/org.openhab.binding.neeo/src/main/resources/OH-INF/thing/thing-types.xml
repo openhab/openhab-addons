@@ -30,7 +30,6 @@
 			<parameter name="forwardChain" type="text">
 				<label>Forward Chaining</label>
 				<description>Comma delimited list of URLs to forward NEEO brain actions to</description>
-				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="checkStatusInterval" type="integer">
