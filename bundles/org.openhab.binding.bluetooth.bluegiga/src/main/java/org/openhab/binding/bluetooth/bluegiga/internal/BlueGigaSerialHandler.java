@@ -65,6 +65,9 @@ public class BlueGigaSerialHandler {
 
         flush();
         parserThread = createBlueGigaBLEHandler();
+        parserThread.setUncaughtExceptionHandler((t, th) -> {
+            logger.warn("BluegigaSerialHandler terminating due to unhandled error", th);
+        });
         parserThread.setDaemon(true);
         parserThread.start();
         int tries = 0;
@@ -232,83 +235,83 @@ public class BlueGigaSerialHandler {
         }
     }
 
-    private Thread createBlueGigaBLEHandler() {
-        final int framecheckParams[] = new int[] { 0x00, 0x7F, 0xC0, 0xF8, 0xE0 };
-        return new Thread("BlueGigaBLEHandler") {
-            @Override
-            public void run() {
-                int exceptionCnt = 0;
-                logger.trace("BlueGiga BLE thread started");
-                int[] inputBuffer = new int[BLE_MAX_LENGTH];
-                int inputCount = 0;
-                int inputLength = 0;
+    private void inboundMessageHandlerLoop() {
+        final int[] framecheckParams = { 0x00, 0x7F, 0xC0, 0xF8, 0xE0 };
 
-                while (!close) {
-                    try {
-                        int val = inputStream.read();
-                        if (val == -1) {
-                            continue;
-                        }
+        int exceptionCnt = 0;
+        logger.trace("BlueGiga BLE thread started");
+        int[] inputBuffer = new int[BLE_MAX_LENGTH];
+        int inputCount = 0;
+        int inputLength = 0;
 
-                        inputBuffer[inputCount++] = val;
+        while (!close) {
+            try {
+                int val = inputStream.read();
+                if (val == -1) {
+                    continue;
+                }
 
-                        if (inputCount == 1) {
-                            if (inputStream.markSupported()) {
-                                inputStream.mark(BLE_MAX_LENGTH);
-                            }
-                        }
+                inputBuffer[inputCount++] = val;
 
-                        if (inputCount < 4) {
-                            // The BGAPI protocol has no packet framing, and no error detection, so we do a few
-                            // sanity checks on the header to try and allow resyncronisation should there be an
-                            // error.
-                            // Byte 0: Check technology type is bluetooth and high length is 0
-                            // Byte 1: Check length is less than 64 bytes
-                            // Byte 2: Check class ID is less than 8
-                            // Byte 3: Check command ID is less than 16
-                            if ((val & framecheckParams[inputCount]) != 0) {
-                                logger.debug("BlueGiga framing error byte {} = {}", inputCount, val);
-                                if (inputStream.markSupported()) {
-                                    inputStream.reset();
-                                }
-                                inputCount = 0;
-                                continue;
-                            }
-                        } else if (inputCount == 4) {
-                            // Process the header to get the length
-                            inputLength = inputBuffer[1] + (inputBuffer[0] & 0x02 << 8) + 4;
-                            if (inputLength > 64) {
-                                logger.debug("BLE length larger than 64 bytes ({})", inputLength);
-                            }
-                        }
-                        if (inputCount == inputLength) {
-                            // End of packet reached - process
-                            BlueGigaResponse responsePacket = BlueGigaResponsePackets.getPacket(inputBuffer);
-
-                            if (logger.isTraceEnabled()) {
-                                logger.trace("BLE RX: {}", printHex(inputBuffer, inputLength));
-                                logger.trace("BLE RX: {}", responsePacket);
-                            }
-                            if (responsePacket != null) {
-                                notifyEventListeners(responsePacket);
-                            }
-
-                            inputCount = 0;
-                            exceptionCnt = 0;
-                        }
-
-                    } catch (final IOException e) {
-                        logger.debug("BlueGiga BLE IOException: ", e);
-
-                        if (exceptionCnt++ > 10) {
-                            logger.error("BlueGiga BLE exception count exceeded, closing handler");
-                            close = true;
-                            notifyEventListeners(e);
-                        }
+                if (inputCount == 1) {
+                    if (inputStream.markSupported()) {
+                        inputStream.mark(BLE_MAX_LENGTH);
                     }
                 }
-                logger.debug("BlueGiga BLE exited.");
+
+                if (inputCount < 4) {
+                    // The BGAPI protocol has no packet framing, and no error detection, so we do a few
+                    // sanity checks on the header to try and allow resyncronisation should there be an
+                    // error.
+                    // Byte 0: Check technology type is bluetooth and high length is 0
+                    // Byte 1: Check length is less than 64 bytes
+                    // Byte 2: Check class ID is less than 8
+                    // Byte 3: Check command ID is less than 16
+                    if ((val & framecheckParams[inputCount]) != 0) {
+                        logger.debug("BlueGiga framing error byte {} = {}", inputCount, val);
+                        if (inputStream.markSupported()) {
+                            inputStream.reset();
+                        }
+                        inputCount = 0;
+                        continue;
+                    }
+                } else if (inputCount == 4) {
+                    // Process the header to get the length
+                    inputLength = inputBuffer[1] + (inputBuffer[0] & 0x02 << 8) + 4;
+                    if (inputLength > 64) {
+                        logger.debug("BLE length larger than 64 bytes ({})", inputLength);
+                    }
+                }
+                if (inputCount == inputLength) {
+                    // End of packet reached - process
+                    BlueGigaResponse responsePacket = BlueGigaResponsePackets.getPacket(inputBuffer);
+
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("BLE RX: {}", printHex(inputBuffer, inputLength));
+                        logger.trace("BLE RX: {}", responsePacket);
+                    }
+                    if (responsePacket != null) {
+                        notifyEventListeners(responsePacket);
+                    }
+
+                    inputCount = 0;
+                    exceptionCnt = 0;
+                }
+
+            } catch (final IOException e) {
+                logger.debug("BlueGiga BLE IOException: ", e);
+
+                if (exceptionCnt++ > 10) {
+                    logger.error("BlueGiga BLE exception count exceeded, closing handler");
+                    close = true;
+                    notifyEventListeners(e);
+                }
             }
-        };
+        }
+        logger.debug("BlueGiga BLE exited.");
+    }
+
+    private Thread createBlueGigaBLEHandler() {
+        return new Thread(this::inboundMessageHandlerLoop, "BlueGigaBLEHandler");
     }
 }
