@@ -52,6 +52,15 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
         this.parentFuture = parent;
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     *
+     * @implSpec
+     *           This implementation returns a new HeritableFuture instance that uses
+     *           the current instance as a parent. Cancellation of the child will result in
+     *           cancellation of the parent.
+     */
     @Override
     public <U> CompletableFuture<U> newIncompleteFuture() {
         return new HeritableFuture<>(this);
@@ -61,11 +70,22 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
         synchronized (futureLock) {
             var future = futureSupplier.get();
             if (future != this) {
-                parentFuture = future;
+                if (isCancelled()) {
+                    future.cancel(true);
+                } else {
+                    parentFuture = future;
+                }
             }
         }
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     *
+     * @implSpec
+     *           This implementation cancels this future first, then cancels the parent future.
+     */
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         if (completeExceptionally(new CancellationException())) {
@@ -81,28 +101,93 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
         return isCancelled();
     }
 
-    private <V, U> Function<V, ? extends CompletionStage<U>> wrapComposeFunction(
-            Function<V, ? extends CompletionStage<U>> fn) {
-        return fn.andThen(r -> {
-            // the parent future has completed so we can safely assign a new future
-            setParentFuture(r::toCompletableFuture);
-            return r;
-        });
-    }
-
+    /**
+     *
+     * {@inheritDoc}
+     *
+     * @implSpec
+     *           This implementation will treat the future returned by the function as a parent future.
+     */
     @Override
     public <U> CompletableFuture<U> thenCompose(Function<? super T, ? extends CompletionStage<U>> fn) {
-        return super.thenCompose(wrapComposeFunction(fn));
+        return new ComposeFunctionWrapper<>(fn, false, null).returnedFuture;
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     *
+     * @implSpec
+     *           This implementation will treat the future returned by the function as a parent future.
+     */
     @Override
     public <U> CompletableFuture<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn) {
-        return super.thenComposeAsync(wrapComposeFunction(fn));
+        return new ComposeFunctionWrapper<>(fn, true, null).returnedFuture;
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     *
+     * @implSpec
+     *           This implementation will treat the future returned by the function as a parent future.
+     */
     @Override
     public <U> CompletableFuture<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn,
             Executor executor) {
-        return super.thenComposeAsync(wrapComposeFunction(fn), executor);
+        return new ComposeFunctionWrapper<>(fn, true, executor).returnedFuture;
+    }
+
+    private class ComposeFunctionWrapper<U> implements Function<T, CompletionStage<U>> {
+
+        private final Object fieldsLock = new Object();
+        private final Function<? super T, ? extends CompletionStage<U>> fn;
+        private @Nullable HeritableFuture<U> composedFuture;
+        private @Nullable CompletionStage<U> innerStage;
+        // The final composed future to be used by users of this wrapper class
+        final HeritableFuture<U> returnedFuture;
+
+        public ComposeFunctionWrapper(Function<? super T, ? extends CompletionStage<U>> fn, boolean async,
+                Executor executor) {
+            this.fn = fn;
+
+            var f = (HeritableFuture<U>) thenCompose(async, executor);
+            synchronized (fieldsLock) {
+                this.composedFuture = f;
+                var stage = innerStage;
+                if (stage != null) {
+                    // getting here means that the `apply` function was run before `composedFuture` was initialized.
+                    f.setParentFuture(stage::toCompletableFuture);
+                }
+            }
+            this.returnedFuture = f;
+        }
+
+        private CompletableFuture<U> thenCompose(boolean async, Executor executor) {
+            if (!async) {
+                return HeritableFuture.super.thenCompose(this);
+            }
+            if (executor == null) {
+                return HeritableFuture.super.thenComposeAsync(this);
+            }
+            return HeritableFuture.super.thenComposeAsync(this, executor);
+        }
+
+        @Override
+        public CompletionStage<U> apply(T t) {
+            CompletionStage<U> stage = fn.apply(t);
+            synchronized (fieldsLock) {
+                var f = composedFuture;
+                if (f == null) {
+                    // We got here before the wrapper finished initializing, so that
+                    // means that the enclosing future was already complete at the time `super.thenCompose` was called.
+                    // In which case the best we can do is save this stage so that the constructor can finish the job.
+                    innerStage = stage;
+                } else {
+                    f.setParentFuture(stage::toCompletableFuture);
+                }
+            }
+            return stage;
+        }
     }
 }
