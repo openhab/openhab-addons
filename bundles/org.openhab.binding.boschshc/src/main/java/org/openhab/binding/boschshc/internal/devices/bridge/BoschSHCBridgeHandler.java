@@ -70,7 +70,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      */
     private final LongPolling longPolling;
 
-    private ScheduledFuture<?> scheduledPairing;
+    private @Nullable ScheduledFuture<?> scheduledPairing;
 
     public BoschSHCBridgeHandler(Bridge bridge) {
         super(bridge);
