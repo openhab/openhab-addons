@@ -9,7 +9,7 @@ To only build the Bosch SHC binding code execute
 ## Execute
 
 After compiling a new ``org.openhab.binding.boschshc.jar`` 
-copy it into the ``addons`` for of your openHAB test instance.
+copy it into the ``addons`` folder of your openHAB test instance.
 
 For the first time the jar is loaded automatically as a bundle.
 If the jar is updated, your need to execute:
