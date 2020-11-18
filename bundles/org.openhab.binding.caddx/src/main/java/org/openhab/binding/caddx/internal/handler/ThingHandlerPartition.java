@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
-import java.util.Date;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
@@ -68,13 +66,13 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
 
         if (command instanceof RefreshType) {
             // Refresh only if 2 seconds have passed from the last refresh
-            if (new Date().getTime() - lastRefreshTime > 2000) {
+            if (System.currentTimeMillis() - lastRefreshTime > 2000) {
                 cmd = CaddxBindingConstants.PARTITION_STATUS_REQUEST;
                 data = String.format("%d", getPartitionNumber() - 1);
             } else {
                 return;
             }
-            lastRefreshTime = new Date().getTime();
+            lastRefreshTime = System.currentTimeMillis();
         } else if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_SECONDARY_COMMAND)) {
             cmd = channelUID.getId();
             data = String.format("%s,%d", command.toString(), (1 << getPartitionNumber() - 1));
