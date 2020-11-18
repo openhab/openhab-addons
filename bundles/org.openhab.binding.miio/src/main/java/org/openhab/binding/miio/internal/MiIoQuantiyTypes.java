@@ -38,6 +38,9 @@ public enum MiIoQuantiyTypes {
     SECOND(SmartHomeUnits.SECOND),
     MINUTE(SmartHomeUnits.MINUTE),
     HOUR(SmartHomeUnits.HOUR),
+    SECONDS(SmartHomeUnits.SECOND),
+    MINUTES(SmartHomeUnits.MINUTE),
+    HOURS(SmartHomeUnits.HOUR),
     AMPERE(SmartHomeUnits.AMPERE),
     WATT(SmartHomeUnits.WATT);
 
