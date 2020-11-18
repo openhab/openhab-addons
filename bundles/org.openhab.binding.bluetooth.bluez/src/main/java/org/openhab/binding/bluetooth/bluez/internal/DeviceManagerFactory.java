@@ -125,5 +125,4 @@ public class DeviceManagerFactory {
         }
         this.deviceManagerWrapperFuture = null;
     }
-
 }
