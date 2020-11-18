@@ -177,7 +177,6 @@
 			<channel id="condition-id" typeId="condition-id"/>
 			<channel id="icon" typeId="condition-icon"/>
 			<channel id="icon-id" typeId="condition-icon-id"/>
-			<channel id="temperature" typeId="system.outdoor-temperature"/>
 			<channel id="morning-temperature" typeId="morning-temperature"/>
 			<channel id="day-temperature" typeId="day-temperature"/>
 			<channel id="evening-temperature" typeId="evening-temperature"/>
