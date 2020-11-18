@@ -49,6 +49,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
     private final Logger logger = LoggerFactory.getLogger(MieleApplianceDiscoveryService.class);
 
     private static final int SEARCH_TIME = 60;
+    private static final String DEVICE_CLASS = "dc";
 
     private MieleBridgeHandler mieleBridgeHandler;
 
@@ -99,7 +100,8 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
             Map<String, Object> properties = new HashMap<>(2);
 
-            properties.put(PROTOCOL_PROPERTY_NAME, appliance.getProtocol());
+            properties.put(PROTOCOL_NAME,
+                    appliance.getProtocol() == PROTOCOL_LAN ? PROTOCOL_WIFI : appliance.getProtocol());
             properties.put(APPLIANCE_ID, appliance.getApplianceId());
 
             for (JsonElement dc : appliance.DeviceClasses) {

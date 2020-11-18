@@ -122,7 +122,7 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
 
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
         if (thingUID == null) {
-            String hostID = (String) configuration.get(HOST);
+            String hostID = (String) configuration.get(IP_ADDRESS);
             thingUID = new ThingUID(thingTypeUID, hostID);
         }
         return thingUID;

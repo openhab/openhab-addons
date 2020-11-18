@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -45,6 +45,8 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
 
         String channelID = channelUID.getId();
         String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String protocol = (String) getThing().getConfiguration().getProperties().get(PROTOCOL_NAME);
+        protocol = protocol == PROTOCOL_WIFI ? PROTOCOL_LAN : protocol;
 
         CoffeeMachineChannelSelector selector = (CoffeeMachineChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -54,9 +56,9 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOn");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "switchOn");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOff");
+                            result = bridgeHandler.invokeOperation(protocol, uid, modelID, "switchOff");
                         }
                         break;
                     }

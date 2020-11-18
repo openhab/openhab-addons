@@ -144,12 +144,11 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onApplianceStateChanged(String UID, DeviceClassObject dco) {
-        String myUID = ((String) getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
-                + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
         String modelID = StringUtils.right(dco.DeviceClass,
                 dco.DeviceClass.length() - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length());
 
-        if (myUID.equals(UID)) {
+        if (uid.equals(UID)) {
             if (modelID.equals(this.modelID)) {
                 for (JsonElement prop : dco.Properties.getAsJsonArray()) {
                     try {
@@ -177,10 +176,9 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onAppliancePropertyChanged(String UID, DeviceProperty dp) {
-        String myUID = ((String) getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
-                + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        if (myUID.equals(UID)) {
+        if (uid.equals(UID)) {
             try {
                 DeviceMetaData dmd = null;
                 if (dp.Metadata == null) {
@@ -209,7 +207,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 try {
                     selector = getValueSelectorFromMieleID(dp.Name);
                 } catch (Exception h) {
-                    logger.trace("{} is not a valid channel for a {}", dp.Name, modelID);
+                    logger.trace("{} is not a valid channel for a {}, its raw value would be '{}'", dp.Name, modelID,
+                            dp.Value);
                 }
 
                 String dpValue = StringUtils.trim(StringUtils.strip(dp.Value));
