@@ -20,6 +20,7 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -39,7 +40,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Connor Petty - Initial contribution
  *
  */
-// @NonNullByDefault - Can't be added
+@NonNullByDefault
 public class HeritableFuture<T> extends CompletableFuture<T> {
 
     protected final Object futureLock = new Object();
@@ -109,6 +110,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *           This implementation will treat the future returned by the function as a parent future.
      */
     @Override
+    @NonNullByDefault({}) // the generics here don't play well with the null checker
     public <U> CompletableFuture<U> thenCompose(Function<? super T, ? extends CompletionStage<U>> fn) {
         return new ComposeFunctionWrapper<>(fn, false, null).returnedFuture;
     }
@@ -121,6 +123,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *           This implementation will treat the future returned by the function as a parent future.
      */
     @Override
+    @NonNullByDefault({}) // the generics here don't play well with the null checker
     public <U> CompletableFuture<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn) {
         return new ComposeFunctionWrapper<>(fn, true, null).returnedFuture;
     }
@@ -133,11 +136,24 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      *           This implementation will treat the future returned by the function as a parent future.
      */
     @Override
+    @NonNullByDefault({}) // the generics here don't play well with the null checker
     public <U> CompletableFuture<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn,
             Executor executor) {
         return new ComposeFunctionWrapper<>(fn, true, executor).returnedFuture;
     }
 
+    /**
+     * This class is responsible for wrapping the supplied compose function.
+     * The instant the function returns the next CompletionStage, the parentFuture of the downstream HeritableFuture
+     * will be reassigned to the completion stage. This way cancellations of
+     * downstream futures will be able to reach the future returned by the supplied function.
+     *
+     * Most of the complexity going on in this class is due to the fact that the compose function might be
+     * called while calling `super.thenCompose`. This would happen if the current future is already complete
+     * since the next stage would be started immediately either on the current thread or asynchronously.
+     *
+     * @param <U> the type to be returned by the composed future
+     */
     private class ComposeFunctionWrapper<U> implements Function<T, CompletionStage<U>> {
 
         private final Object fieldsLock = new Object();
@@ -148,7 +164,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
         final HeritableFuture<U> returnedFuture;
 
         public ComposeFunctionWrapper(Function<? super T, ? extends CompletionStage<U>> fn, boolean async,
-                Executor executor) {
+                @Nullable Executor executor) {
             this.fn = fn;
 
             var f = (HeritableFuture<U>) thenCompose(async, executor);
@@ -163,7 +179,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
             this.returnedFuture = f;
         }
 
-        private CompletableFuture<U> thenCompose(boolean async, Executor executor) {
+        private CompletableFuture<U> thenCompose(boolean async, @Nullable Executor executor) {
             if (!async) {
                 return HeritableFuture.super.thenCompose(this);
             }
