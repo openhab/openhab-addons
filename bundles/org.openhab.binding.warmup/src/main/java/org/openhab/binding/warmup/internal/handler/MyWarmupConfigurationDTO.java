@@ -21,5 +21,5 @@ public class MyWarmupConfigurationDTO {
 
     public String username;
     public String password;
-    public int refreshIntervalSec;
+    public int refreshInterval;
 }

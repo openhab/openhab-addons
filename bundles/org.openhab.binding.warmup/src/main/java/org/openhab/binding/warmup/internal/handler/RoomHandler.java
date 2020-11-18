@@ -85,11 +85,11 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                         } else {
                             updateStatus(ThingStatus.ONLINE);
 
-                            updateProperty("Id", room.getId());
-                            updateProperty("Serial Number", serialNumber);
-                            updateProperty("Name", room.getName());
-                            updateProperty("Location Id", location.getId());
-                            updateProperty("Location", location.getName());
+                            updateProperty(PROPERTY_ROOM_ID, room.getId());
+                            updateProperty(PROPERTY_SERIAL_NUMBER, serialNumber);
+                            updateProperty(PROPERTY_ROOM_NAME, room.getName());
+                            updateProperty(PROPERTY_LOCATION_ID, location.getId());
+                            updateProperty(PROPERTY_LOCATION_NAME, location.getName());
 
                             updateState(CHANNEL_CURRENT_TEMPERATURE, parseTemperature(room.getCurrentTemperature()));
                             updateState(CHANNEL_TARGET_TEMPERATURE, parseTemperature(room.getTargetTemperature()));
@@ -120,7 +120,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             try {
                 final MyWarmupAccountHandler localBridgeHandler = bridgeHandler;
                 if (localBridgeHandler != null && config != null) {
-                    final int overrideDuration = config.getOverrideDurationMin();
+                    final int overrideDuration = config.getOverrideDuration();
                     if (overrideDuration > 0) {
                         localBridgeHandler.getApi().setOverride(locationId, roomId, value, overrideDuration);
                         refreshFromServer();

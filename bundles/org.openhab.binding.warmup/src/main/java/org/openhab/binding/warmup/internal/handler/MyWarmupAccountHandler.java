@@ -54,9 +54,9 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         MyWarmupConfigurationDTO config = getConfigAs(MyWarmupConfigurationDTO.class);
-        if (config.refreshIntervalSec >= 10) {
+        if (config.refreshInterval >= 10) {
             api.setConfiguration(config);
-            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshFromServer, 0, config.refreshIntervalSec,
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshFromServer, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

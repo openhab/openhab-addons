@@ -11,7 +11,7 @@ The binding api implementation has been derived from the implementations at http
 
 ### Bridge
 
-Credentials to my.warmup.com which allow the rest of the system to function
+Credentials to my.warmup.com which allow the rest of the system to function.
 
 ### Room
 
@@ -28,20 +28,20 @@ Once credentials are successfully added to the bridge, any rooms (devices) detec
 
 ### My Warmup Account
 
-| name               | type    | description                                     | required | default |
-|--------------------|---------|-------------------------------------------------|----------|---------|
-| username           | String  | Username for my.warmup.com                      | true     |         |
-| password           | String  | Password for my.warmup.com                      | true     |         |
-| refreshIntervalSec | Integer | Interval in seconds between automatic refreshes | true     | 300     |
+| config parameter | type    | description                                     | required | default |
+|------------------|---------|-------------------------------------------------|----------|---------|
+| username         | String  | Username for my.warmup.com                      | true     |         |
+| password         | String  | Password for my.warmup.com                      | true     |         |
+| refreshInterval  | Integer | Interval in seconds between automatic refreshes | true     | 300     |
 
 ### Room
 
 Rooms are configured automatically with a Serial Number on discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. The only supported temperature change is an override, through a default duration configured on the thing. This defaults to 60 minutes.
 
-| name                | type    | description                                             | required | default |
-|---------------------|---------|---------------------------------------------------------|----------|---------|
-| serialNumber        | String  | Device Serial Number, excluding last 3 characters       | true     |         |
-| overrideDurationMin | Integer | Duration of override when target temperature is changed | true     | 60      |
+| config parameter | type    | description                                                        | required | default |
+|------------------|---------|--------------------------------------------------------------------|----------|---------|
+| serialNumber     | String  | Device Serial Number, excluding last 3 characters                  | true     |         |
+| overrideDuration | Integer | Duration in minutes of override when target temperature is changed | true     | 60      |
 
 
 ## Channels

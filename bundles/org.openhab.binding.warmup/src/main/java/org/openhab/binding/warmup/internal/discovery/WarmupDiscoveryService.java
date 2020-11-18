@@ -28,6 +28,7 @@ import org.openhab.binding.warmup.internal.model.query.RoomDTO;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -90,18 +91,18 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService
             ThingUID localBridgeUID = this.bridgeUID;
             if (localBridgeUID != null && deviceSN != null) {
                 final Map<String, Object> roomProperties = new HashMap<>();
-                roomProperties.put("serialNumber", deviceSN);
-                roomProperties.put("Serial Number", deviceSN);
+                roomProperties.put(Thing.PROPERTY_SERIAL_NUMBER, deviceSN);
+                roomProperties.put(PROPERTY_SERIAL_NUMBER, deviceSN);
 
-                roomProperties.put("Id", room.getId());
-                roomProperties.put("Name", room.getName());
-                roomProperties.put("Location Id", location.getId());
-                roomProperties.put("Location", location.getName());
+                roomProperties.put(PROPERTY_ROOM_ID, room.getId());
+                roomProperties.put(PROPERTY_ROOM_NAME, room.getName());
+                roomProperties.put(PROPERTY_LOCATION_ID, location.getId());
+                roomProperties.put(PROPERTY_LOCATION_NAME, location.getName());
 
                 ThingUID roomThingUID = new ThingUID(THING_TYPE_ROOM, localBridgeUID, deviceSN);
                 thingDiscovered(DiscoveryResultBuilder.create(roomThingUID).withBridge(localBridgeUID)
                         .withProperties(roomProperties).withLabel(location.getName() + " - " + room.getName())
-                        .withRepresentationProperty("serialNumber").build());
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build());
 
                 discoveredThings.add(roomThingUID);
             }

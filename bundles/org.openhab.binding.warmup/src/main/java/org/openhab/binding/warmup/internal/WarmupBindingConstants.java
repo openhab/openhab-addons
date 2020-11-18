@@ -52,6 +52,13 @@ public class WarmupBindingConstants {
 
     public static final String FROST_PROTECTION_MODE = "anti_frost";
 
+    // Property Labels
+    public static final String PROPERTY_ROOM_ID = "Id";
+    public static final String PROPERTY_ROOM_NAME = "Name";
+    public static final String PROPERTY_SERIAL_NUMBER = "Serial Number";
+    public static final String PROPERTY_LOCATION_ID = "Location Id";
+    public static final String PROPERTY_LOCATION_NAME = "Location";
+
     // Web Service Endpoints
     public static final String APP_ENDPOINT = "https://api.warmup.com/apps/app/v1";
     public static final String QUERY_ENDPOINT = "https://apil.warmup.com/graphql";
