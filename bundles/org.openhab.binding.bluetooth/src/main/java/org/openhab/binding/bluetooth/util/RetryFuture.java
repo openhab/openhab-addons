@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * This is a utility class that allows adding {@link CompletableFuture} capabilities to a {@link Callable}.
  * The provided callable will be executed asynchronously and the result will be used
  * to complete the {@code RetryFuture} instance. As per its namesake, the RetryFuture allows
- * the callable to reschedule itself when it throws a {@link RetryException}. Any other exception
+ * the callable to reschedule itself by throwing a {@link RetryException}. Any other exception
  * will simply complete the RetryFuture exceptionally as per {@link CompletableFuture#completeExceptionally(Throwable)}.
  *
  * @author Connor Petty - Initial contribution

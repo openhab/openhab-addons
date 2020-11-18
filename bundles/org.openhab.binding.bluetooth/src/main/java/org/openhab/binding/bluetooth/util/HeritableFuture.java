@@ -35,7 +35,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * for HeritableFuture to be garbage collected as upstream futures complete. It is highly
  * advisable to only use a HeritableFuture for defining finite (preferably small) task trees. Do not use
  * HeritableFuture in situations where you would endlessly append new tasks otherwise you will eventually
- * cause an OutOfMemoryException.
+ * cause an OutOfMemoryError.
  *
  * @author Connor Petty - Initial contribution
  *
@@ -148,7 +148,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
      * will be reassigned to the completion stage. This way cancellations of
      * downstream futures will be able to reach the future returned by the supplied function.
      *
-     * Most of the complexity going on in this class is due to the fact that the compose function might be
+     * Most of the complexity going on in this class is due to the fact that the apply function might be
      * called while calling `super.thenCompose`. This would happen if the current future is already complete
      * since the next stage would be started immediately either on the current thread or asynchronously.
      *
