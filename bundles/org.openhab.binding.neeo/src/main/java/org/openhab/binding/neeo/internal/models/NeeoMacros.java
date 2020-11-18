@@ -15,7 +15,6 @@ package org.openhab.binding.neeo.internal.models;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -59,7 +58,7 @@ public class NeeoMacros {
     @Nullable
     public NeeoMacro getMacro(String key) {
         for (NeeoMacro macro : getMacros()) {
-            if (StringUtils.equalsIgnoreCase(key, macro.getKey())) {
+            if (key.equalsIgnoreCase(macro.getKey())) {
                 return macro;
             }
         }

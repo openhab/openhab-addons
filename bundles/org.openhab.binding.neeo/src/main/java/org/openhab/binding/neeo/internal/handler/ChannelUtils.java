@@ -14,9 +14,7 @@ package org.openhab.binding.neeo.internal.handler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.neeo.internal.NeeoConstants;
 import org.openhab.binding.neeo.internal.UidUtils;
@@ -47,18 +45,16 @@ class ChannelUtils {
      * @return a non-null but possibly empty list of {@link Channel} s
      */
     static List<Channel> generateChannels(ThingUID thingUid, NeeoDevice device) {
-        Objects.requireNonNull(thingUid, "thingUid cannot be null");
-        Objects.requireNonNull(device, "device cannot be null");
-
         final List<Channel> channels = new ArrayList<>();
         for (NeeoMacro macro : device.getMacros().getMacros()) {
             final String key = macro.getKey();
-            if (key != null && StringUtils.isNotEmpty(key)) {
-                final String label = StringUtils.isEmpty(macro.getName()) ? macro.getLabel() : macro.getName();
+            if (key != null && !key.isEmpty()) {
+                String name = macro.getName();
+                final String label = (name == null || name.isEmpty()) ? macro.getLabel() : name;
                 channels.add(ChannelBuilder
                         .create(UidUtils.createChannelUID(thingUid, NeeoConstants.DEVICE_GROUP_MACROS_ID,
                                 NeeoConstants.DEVICE_CHANNEL_STATUS, key), "Switch")
-                        .withLabel(label == null || StringUtils.isEmpty(label) ? key : label)
+                        .withLabel((label == null || label.isEmpty()) ? key : label)
                         .withType(NeeoConstants.DEVICE_MACRO_STATUS_UID).build());
             }
         }
@@ -74,9 +70,6 @@ class ChannelUtils {
      * @return a non-null but possibly empty list of {@link Channel} s
      */
     static List<Channel> generateChannels(ThingUID thingUid, NeeoRoom room) {
-        Objects.requireNonNull(thingUid, "thingUid cannot be null");
-        Objects.requireNonNull(room, "room cannot be null");
-
         final List<Channel> channels = new ArrayList<>();
         channels.addAll(generateStateChannels(thingUid));
         channels.addAll(generateScenarioChannels(thingUid, room.getScenarios()));
@@ -91,8 +84,6 @@ class ChannelUtils {
      * @return a non-null but possibly empty list of {@link Channel} s
      */
     private static List<Channel> generateStateChannels(ThingUID thingUid) {
-        Objects.requireNonNull(thingUid, "thingUid cannot be null");
-
         final List<Channel> channels = new ArrayList<>();
         channels.add(ChannelBuilder
                 .create(UidUtils.createChannelUID(thingUid, NeeoConstants.ROOM_GROUP_STATE_ID,
@@ -109,20 +100,15 @@ class ChannelUtils {
      * @return a non-null but possibly empty list of {@link Channel} s
      */
     private static List<Channel> generateScenarioChannels(ThingUID thingUid, NeeoScenarios scenarios) {
-        Objects.requireNonNull(thingUid, "thingUid cannot be null");
-        Objects.requireNonNull(scenarios, "scenarios cannot be null");
-
         final List<Channel> channels = new ArrayList<>();
         for (NeeoScenario scenario : scenarios.getScenarios()) {
             final String key = scenario.getKey();
-            if (key != null && StringUtils.isNotEmpty(key)) {
-                final String scenarioLabel = StringUtils.isEmpty(scenario.getName()) ? null : scenario.getName();
-                final String nameLabel = (scenarioLabel == null || StringUtils.isEmpty(scenarioLabel) ? key
-                        : scenarioLabel) + " Name";
-                final String configuredLabel = (scenarioLabel == null || StringUtils.isEmpty(scenarioLabel) ? key
-                        : scenarioLabel) + " Configured";
-                final String statusLabel = (scenarioLabel == null || StringUtils.isEmpty(scenarioLabel) ? key
-                        : scenarioLabel) + " Status";
+            if (key != null && !key.isEmpty()) {
+                final String name = scenario.getName();
+                final String scenarioLabel = (name == null || name.isEmpty()) ? key : name;
+                final String nameLabel = scenarioLabel + " Name";
+                final String configuredLabel = scenarioLabel + " Configured";
+                final String statusLabel = scenarioLabel + " Status";
 
                 channels.add(ChannelBuilder
                         .create(UidUtils.createChannelUID(thingUid, NeeoConstants.ROOM_GROUP_SCENARIO_ID,
@@ -149,22 +135,16 @@ class ChannelUtils {
      * @return a non-null but possibly empty list of {@link Channel} s
      */
     private static List<Channel> generateRecipeChannels(ThingUID thingUid, NeeoRecipes recipes) {
-        Objects.requireNonNull(thingUid, "thingUid cannot be null");
-        Objects.requireNonNull(recipes, "recipes cannot be null");
-
         final List<Channel> channels = new ArrayList<>();
         for (NeeoRecipe recipe : recipes.getRecipes()) {
             final String key = recipe.getKey();
-            if (key != null && StringUtils.isNotEmpty(key)) {
-                final String recipeLabel = StringUtils.isEmpty(recipe.getName()) ? null : recipe.getName();
-                final String nameLabel = (recipeLabel == null || StringUtils.isEmpty(recipeLabel) ? key : recipeLabel)
-                        + " Name (" + recipe.getType() + ")";
-                final String typeLabel = (recipeLabel == null || StringUtils.isEmpty(recipeLabel) ? key : recipeLabel)
-                        + " Type (" + recipe.getType() + ")";
-                final String enabledLabel = (recipeLabel == null || StringUtils.isEmpty(recipeLabel) ? key
-                        : recipeLabel) + " Enabled (" + recipe.getType() + ")";
-                final String statusLabel = (recipeLabel == null || StringUtils.isEmpty(recipeLabel) ? key : recipeLabel)
-                        + " Status (" + recipe.getType() + ")";
+            if (key != null && !key.isEmpty()) {
+                final String name = recipe.getName();
+                final String recipeLabel = (name == null || name.isEmpty()) ? key : name;
+                final String nameLabel = recipeLabel + " Name (" + recipe.getType() + ")";
+                final String typeLabel = recipeLabel + " Type (" + recipe.getType() + ")";
+                final String enabledLabel = recipeLabel + " Enabled (" + recipe.getType() + ")";
+                final String statusLabel = recipeLabel + " Status (" + recipe.getType() + ")";
 
                 channels.add(ChannelBuilder
                         .create(UidUtils.createChannelUID(thingUid, NeeoConstants.ROOM_GROUP_RECIPE_ID,

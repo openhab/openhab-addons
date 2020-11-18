@@ -13,15 +13,14 @@
 package org.openhab.binding.neeo.internal.handler;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -48,7 +47,6 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     private final Callback callback;
 
     /** The forwarding chain */
-    @Nullable
     private final String forwardChain;
 
     /** The {@link ClientBuilder} to use */
@@ -64,12 +62,9 @@ public class NeeoForwardActionsServlet extends HttpServlet {
      * @param callback a non-null {@link Callback}
      * @param forwardChain a possibly null, possibly empty forwarding chain
      */
-    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Callback callback, @Nullable String forwardChain,
+    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Callback callback, String forwardChain,
             ClientBuilder clientBuilder) {
         super();
-
-        Objects.requireNonNull(scheduler, "scheduler cannot be null");
-        Objects.requireNonNull(callback, "callback cannot be null");
 
         this.scheduler = scheduler;
         this.callback = callback;
@@ -78,7 +73,7 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     }
 
     /**
-     * Processes the post action from the NEEO brain. Simply get's the specified json and then forwards it on (if
+     * Processes the post action from the NEEO brain. Simply gets the specified json and then forwards it on (if
      * needed)
      *
      * @param req the non-null request
@@ -91,27 +86,24 @@ public class NeeoForwardActionsServlet extends HttpServlet {
             return;
         }
 
-        final String json = IOUtils.toString(req.getReader());
+        final String json = req.getReader().lines().collect(Collectors.joining("\n"));
         logger.debug("handleForwardActions {}", json);
 
         callback.post(json);
 
-        final String fc = forwardChain;
-        if (fc != null && !fc.isEmpty()) {
-            scheduler.execute(() -> {
-                try (final HttpRequest request = new HttpRequest(clientBuilder)) {
-                    for (final String forwardUrl : fc.split(",")) {
-                        if (forwardUrl != null && !forwardUrl.isEmpty()) {
-                            final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
-                            if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
-                                logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,
-                                        httpResponse.getHttpCode());
-                            }
+        scheduler.execute(() -> {
+            try (final HttpRequest request = new HttpRequest(clientBuilder)) {
+                for (final String forwardUrl : forwardChain.split(",")) {
+                    if (forwardUrl != null && !forwardUrl.isEmpty()) {
+                        final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
+                        if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
+                            logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,
+                                    httpResponse.getHttpCode());
                         }
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     interface Callback {
