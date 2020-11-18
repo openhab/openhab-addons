@@ -610,20 +610,19 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
                 break;
             case NOTIFICATION_ENABLE:
                 boolean success = event.getResult() == BgApiResponse.SUCCESS;
-
-                ((BlueGigaBluetoothCharacteristic) procedureCharacteristic).setNotificationEnabled(success);
                 if (!success) {
                     logger.debug("write to descriptor failed");
                 }
+                ((BlueGigaBluetoothCharacteristic) procedureCharacteristic).setNotificationEnabled(success);
                 procedureProgress = BlueGigaProcedure.NONE;
                 procedureCharacteristic = null;
                 break;
             case NOTIFICATION_DISABLE:
                 success = event.getResult() == BgApiResponse.SUCCESS;
-                ((BlueGigaBluetoothCharacteristic) procedureCharacteristic).setNotificationEnabled(!success);
                 if (!success) {
                     logger.debug("write to descriptor failed");
                 }
+                ((BlueGigaBluetoothCharacteristic) procedureCharacteristic).setNotificationEnabled(!success);
                 procedureProgress = BlueGigaProcedure.NONE;
                 procedureCharacteristic = null;
                 break;

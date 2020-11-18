@@ -17,6 +17,11 @@ import java.util.UUID;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 
 /**
+ * The {@link BlueGigaBluetoothCharacteristic} class extends BluetoothCharacteristic
+ * to provide write access to certain BluetoothCharacteristic fields that BlueGiga
+ * may not be initially aware of during characteristic construction but must be discovered
+ * later.
+ *
  * @author Connor Petty - Initial contribution
  *
  */

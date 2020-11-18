@@ -125,9 +125,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("BlueGiga");
 
-    // The serial port.
-    // private Optional<SerialPort> serialPort = Optional.empty();
-
     private BlueGigaConfiguration configuration = new BlueGigaConfiguration();
 
     // The serial port input stream.
@@ -159,7 +156,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     private CompletableFuture<SerialPort> serialPortFuture = CompletableFuture
             .failedFuture(new IllegalStateException("Uninitialized"));
 
-    private @Nullable Future<?> initTask;
     private @Nullable ScheduledFuture<?> removeInactiveDevicesTask;
     private @Nullable ScheduledFuture<?> discoveryTask;
 
@@ -182,7 +178,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                 var localFuture = serialPortFuture;
                 logger.debug("Initialize BlueGiga");
                 logger.debug("Using configuration: {}", configuration);
-                // stop();
 
                 String serialPortName = configuration.port;
                 int baudRate = 115200;
@@ -285,8 +280,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                 return null;
             });
 
-            // initTask = executor.scheduleWithFixedDelay(this::start, 0, INITIALIZATION_INTERVAL_SEC,
-            // TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
         }
@@ -759,9 +752,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
         if (event instanceof BlueGigaConnectionStatusEvent) {
             BlueGigaConnectionStatusEvent connectionEvent = (BlueGigaConnectionStatusEvent) event;
-            BluetoothAddress address = new BluetoothAddress(connectionEvent.getAddress());
-            connections.put(connectionEvent.getConnection(), address);
-            getDevice(address).bluegigaEventReceived(event);
+            connections.put(connectionEvent.getConnection(), new BluetoothAddress(connectionEvent.getAddress()));
         }
 
         if (event instanceof BlueGigaDisconnectedEvent) {
