@@ -13,7 +13,10 @@
 package org.openhab.binding.neeo.internal;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * The class provides the API for communicating with a NEEO brain
@@ -162,7 +166,7 @@ public class NeeoBrainApi implements AutoCloseable {
      * @return the non-null, possibly empty list of active scenarios keys
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public String[] getActiveScenarios() throws IOException {
+    public List<String> getActiveScenarios() throws IOException {
         final String url = urlBuilder.append(NeeoConstants.GET_ACTIVESCENARIOS).toString();
 
         final HttpRequest rqst = request.get();
@@ -171,7 +175,9 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return Objects.requireNonNull(gson.fromJson(resp.getContent(), String[].class));
+        Type arrayListType = new TypeToken<ArrayList<String>>() {
+        }.getType();
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), arrayListType));
     }
 
     /**

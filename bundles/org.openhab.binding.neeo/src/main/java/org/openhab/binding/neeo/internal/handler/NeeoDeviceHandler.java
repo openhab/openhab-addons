@@ -13,6 +13,7 @@
 package org.openhab.binding.neeo.internal.handler;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -20,8 +21,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
@@ -104,11 +105,11 @@ public class NeeoDeviceHandler extends BaseThingHandler {
         }
 
         final String localGroupId = channelUID.getGroupId();
-        final String groupId = localGroupId == null || StringUtils.isEmpty(localGroupId) ? "" : localGroupId;
+        final String groupId = localGroupId == null || localGroupId.isEmpty() ? "" : localGroupId;
         final String channelId = channelIds[0];
         final String channelKey = channelIds.length > 1 ? channelIds[1] : "";
 
-        if (StringUtils.isEmpty(groupId)) {
+        if (groupId.isEmpty()) {
             logger.debug("GroupID for channel is null - ignoring command: {}", channelUID);
             return;
         }
@@ -176,14 +177,14 @@ public class NeeoDeviceHandler extends BaseThingHandler {
         final NeeoDeviceConfig config = getConfigAs(NeeoDeviceConfig.class);
 
         final String roomKey = getRoomKey();
-        if (roomKey == null || StringUtils.isEmpty(roomKey)) {
+        if (roomKey == null || roomKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Room key (from the parent room bridge) was not found");
             return;
         }
 
         final String deviceKey = config.getDeviceKey();
-        if (deviceKey == null || StringUtils.isEmpty(deviceKey)) {
+        if (deviceKey == null || deviceKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Device key was not found or empty");
             return;
@@ -225,7 +226,8 @@ public class NeeoDeviceHandler extends BaseThingHandler {
                     properties.put("Shutdown Delay", toString(timing.getShutdownDelay()));
                 }
 
-                properties.put("Device Capabilities", StringUtils.join(details.getDeviceCapabilities(), ','));
+                properties.put("Device Capabilities",
+                        Arrays.stream(details.getDeviceCapabilities()).collect(Collectors.joining(",")));
             }
 
             final ThingBuilder thingBuilder = editThing();
@@ -292,7 +294,7 @@ public class NeeoDeviceHandler extends BaseThingHandler {
     private void addProperty(Map<String, String> properties, String key, @Nullable String value) {
         Objects.requireNonNull(properties, "properties cannot be null");
         NeeoUtil.requireNotEmpty(key, "key cannot be empty");
-        if (value != null && StringUtils.isNotEmpty(value)) {
+        if (value != null && !value.isEmpty()) {
             properties.put(key, value);
         }
     }

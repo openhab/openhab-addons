@@ -15,7 +15,6 @@ package org.openhab.binding.neeo.internal.models;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -59,7 +58,7 @@ public class NeeoScenarios {
     @Nullable
     public NeeoScenario getScenario(String key) {
         for (NeeoScenario scenario : getScenarios()) {
-            if (StringUtils.equalsIgnoreCase(key, scenario.getKey())) {
+            if (key.equalsIgnoreCase(scenario.getKey())) {
                 return scenario;
             }
         }

@@ -15,7 +15,6 @@ package org.openhab.binding.neeo.internal.models;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -59,7 +58,7 @@ public class NeeoDevices {
     @Nullable
     public NeeoDevice getDevice(String key) {
         for (NeeoDevice device : getDevices()) {
-            if (StringUtils.equalsIgnoreCase(key, device.getKey())) {
+            if (key.equalsIgnoreCase(device.getKey())) {
                 return device;
             }
         }

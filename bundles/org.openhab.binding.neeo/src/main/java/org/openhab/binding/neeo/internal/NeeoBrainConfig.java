@@ -132,4 +132,11 @@ public class NeeoBrainConfig {
     public void setCheckStatusInterval(int checkStatusInterval) {
         this.checkStatusInterval = checkStatusInterval;
     }
+
+    @Override
+    public String toString() {
+        return "NeeoBrainConfig{" + "ipAddress='" + ipAddress + '\'' + ", enableForwardActions=" + enableForwardActions
+                + ", forwardChain='" + forwardChain + '\'' + ", discoverEmptyRooms=" + discoverEmptyRooms
+                + ", checkStatusInterval=" + checkStatusInterval + '}';
+    }
 }
