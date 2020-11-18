@@ -104,7 +104,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private final Object synchronizeConnection = new Object();
     private Map<String, Device> jsonSerialNumberDeviceMapping = new HashMap<>();
     private Map<String, SmartHomeBaseDevice> jsonIdSmartHomeDeviceMapping = new HashMap<>();
-    private Map<String, SmartHomeDevice> jsonSerialNumberSmartHomeDeviceMapping = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> checkDataJob;
     private @Nullable ScheduledFuture<?> checkLoginJob;
@@ -655,7 +654,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             String deviceWakeWord = null;
             for (WakeWord wakeWord : wakeWords) {
                 if (wakeWord != null) {
-                    if (serialNumber != null && serialNumber.equals(wakeWord.deviceSerialNumber)) {
+                    if (serialNumber.equals(wakeWord.deviceSerialNumber)) {
                         deviceWakeWord = wakeWord.wakeWord;
                         break;
                     }
@@ -781,8 +780,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 default:
                     String payload = pushCommand.payload;
                     if (payload != null && payload.startsWith("{") && payload.endsWith("}")) {
-                        JsonCommandPayloadPushDevice devicePayload = gson.fromJson(payload,
-                                JsonCommandPayloadPushDevice.class);
+                        JsonCommandPayloadPushDevice devicePayload = Objects
+                                .requireNonNull(gson.fromJson(payload, JsonCommandPayloadPushDevice.class));
                         DopplerId dopplerId = devicePayload.dopplerId;
                         if (dopplerId != null) {
                             handlePushDeviceCommand(dopplerId, command, payload);
@@ -801,7 +800,11 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     private void handlePushActivity(@Nullable String payload) {
-        JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload, JsonCommandPayloadPushActivity.class);
+        if (payload == null) {
+            return;
+        }
+        JsonCommandPayloadPushActivity pushActivity = Objects
+                .requireNonNull(gson.fromJson(payload, JsonCommandPayloadPushActivity.class));
 
         Key key = pushActivity.key;
         if (key == null) {
@@ -879,19 +882,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         smartHomeDeviceHandlers
                 .forEach(child -> child.setDeviceAndUpdateThingState(this, findSmartDeviceHomeJson(child)));
 
-        if (smartHomeDevices != null) {
-            Map<String, SmartHomeDevice> newJsonSerialNumberSmartHomeDeviceMapping = new HashMap<>();
-            for (Object smartDevice : smartHomeDevices) {
-                if (smartDevice instanceof SmartHomeDevice) {
-                    SmartHomeDevice shd = (SmartHomeDevice) smartDevice;
-                    String entityId = shd.entityId;
-                    if (entityId != null) {
-                        newJsonSerialNumberSmartHomeDeviceMapping.put(entityId, shd);
-                    }
-                }
-            }
-            jsonSerialNumberSmartHomeDeviceMapping = newJsonSerialNumberSmartHomeDeviceMapping;
-        }
         if (smartHomeDevices != null) {
             return smartHomeDevices;
         }

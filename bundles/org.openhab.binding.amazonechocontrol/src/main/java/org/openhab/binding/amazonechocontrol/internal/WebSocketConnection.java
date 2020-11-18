@@ -79,7 +79,7 @@ public class WebSocketConnection {
         webSocketClient = new WebSocketClient(sslContextFactory);
         try {
             String host;
-            if (StringUtils.equalsIgnoreCase(amazonSite, "amazon.com")) {
+            if (amazonSite.equalsIgnoreCase("amazon.com")) {
                 host = "dp-gw-na-js." + amazonSite;
             } else {
                 host = "dp-gw-na." + amazonSite;
@@ -196,7 +196,6 @@ public class WebSocketConnection {
     }
 
     @WebSocket(maxTextMessageSize = 64 * 1024, maxBinaryMessageSize = 64 * 1024)
-    @SuppressWarnings("unused")
     public class AmazonEchoControlWebSocket {
         int msgCounter = -1;
         int messageId;

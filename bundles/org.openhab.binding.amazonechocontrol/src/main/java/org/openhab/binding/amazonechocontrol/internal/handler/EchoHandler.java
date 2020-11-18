@@ -1234,12 +1234,10 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         this.logger.debug("Handle push command {}", command);
         switch (command) {
             case "PUSH_VOLUME_CHANGE":
-                JsonCommandPayloadPushVolumeChange volumeChange = gson.fromJson(payload,
-                        JsonCommandPayloadPushVolumeChange.class);
+                JsonCommandPayloadPushVolumeChange volumeChange = Objects
+                        .requireNonNull(gson.fromJson(payload, JsonCommandPayloadPushVolumeChange.class));
                 Connection connection = this.findConnection();
-                @Nullable
                 Integer volumeSetting = volumeChange.volumeSetting;
-                @Nullable
                 Boolean muted = volumeChange.isMuted;
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));

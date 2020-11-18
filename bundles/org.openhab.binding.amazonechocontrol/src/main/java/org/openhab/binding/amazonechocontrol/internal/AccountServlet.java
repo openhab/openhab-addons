@@ -128,15 +128,18 @@ public class AccountServlet extends HttpServlet {
         doVerb("POST", req, resp);
     }
 
-    void doVerb(String verb, @Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
-            throws ServletException, IOException {
+    void doVerb(String verb, @Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
         if (req == null) {
             return;
         }
         if (resp == null) {
             return;
         }
-        String baseUrl = req.getRequestURI().substring(servletUrl.length());
+        String requestUri = req.getRequestURI();
+        if (requestUri == null) {
+            return;
+        }
+        String baseUrl = requestUri.substring(servletUrl.length());
         String uri = baseUrl;
         String queryString = req.getQueryString();
         if (queryString != null && queryString.length() > 0) {
@@ -146,7 +149,12 @@ public class AccountServlet extends HttpServlet {
         Connection connection = this.account.findConnection();
         if (connection != null && uri.equals("/changedomain")) {
             Map<String, String[]> map = req.getParameterMap();
-            String domain = map.get("domain")[0];
+            String[] domainArray = map.get("domain");
+            if (domainArray == null) {
+                logger.warn("Could not determine domain");
+                return;
+            }
+            String domain = domainArray[0];
             String loginData = connection.serializeLoginData();
             Connection newConnection = new Connection(null, this.gson);
             if (newConnection.tryRestoreLogin(loginData, domain)) {
@@ -192,15 +200,20 @@ public class AccountServlet extends HttpServlet {
 
             postDataBuilder.append(name);
             postDataBuilder.append('=');
-            String value = map.get(name)[0];
+            String value = "";
             if (name.equals("failedSignInCount")) {
                 value = "ape:AA==";
+            } else {
+                String[] strings = map.get(name);
+                if (strings != null && strings[0] != null) {
+                    value = strings[0];
+                }
             }
             postDataBuilder.append(URLEncoder.encode(value, StandardCharsets.UTF_8.name()));
         }
 
         uri = req.getRequestURI();
-        if (!uri.startsWith(servletUrl)) {
+        if (uri == null || !uri.startsWith(servletUrl)) {
             returnError(resp, "Invalid request uri '" + uri + "'");
             return;
         }
@@ -221,15 +234,18 @@ public class AccountServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
         if (req == null) {
             return;
         }
         if (resp == null) {
             return;
         }
-        String baseUrl = req.getRequestURI().substring(servletUrl.length());
+        String requestUri = req.getRequestURI();
+        if (requestUri == null) {
+            return;
+        }
+        String baseUrl = requestUri.substring(servletUrl.length());
         String uri = baseUrl;
         String queryString = req.getQueryString();
         if (queryString != null && queryString.length() > 0) {
@@ -598,8 +614,9 @@ public class AccountServlet extends HttpServlet {
             if (state == null) {
                 continue;
             }
-            if ((state.deviceSerialNumber == null && device.serialNumber == null)
-                    || (state.deviceSerialNumber != null && state.deviceSerialNumber.equals(device.serialNumber))) {
+            String stateDeviceSerialNumber = state.deviceSerialNumber;
+            if ((stateDeviceSerialNumber == null && device.serialNumber == null)
+                    || (stateDeviceSerialNumber != null && stateDeviceSerialNumber.equals(device.serialNumber))) {
                 PairedDevice[] pairedDeviceList = state.pairedDeviceList;
                 if (pairedDeviceList != null && pairedDeviceList.length > 0) {
                     html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
