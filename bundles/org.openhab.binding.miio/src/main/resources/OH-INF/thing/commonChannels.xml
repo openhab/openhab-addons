@@ -82,6 +82,18 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- Generic Numeric QtyType channels -->
+	<channel-type id="temperatureRW">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="time">
+		<item-type>Number:Time</item-type>
+		<label>Hours</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
 	<!-- Common Actions channels -->
 	<channel-type id="commands" advanced="true">
 		<item-type>String</item-type>
@@ -709,6 +721,30 @@
 				<option value="start">Start Vacuum</option>
 				<option value="stop">Stop Vacuum</option>
 				<option value="dock">Go-To Dock</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="ZhimiHeaterZa2_target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Heater - Target Temperature</label>
+		<state min="16" max="28" step="1" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="ZhimiHeaterZb1_country-code">
+		<item-type>Number</item-type>
+		<label>Private-Service - Country-Code</label>
+		<state>
+			<options>
+				<option value="0">Unknown</option>
+				<option value="1">US</option>
+				<option value="7">RU</option>
+				<option value="33">FR</option>
+				<option value="44">EU</option>
+				<option value="81">JP</option>
+				<option value="82">KR</option>
+				<option value="86">CN</option>
+				<option value="852">HK</option>
+				<option value="886">TW</option>
 			</options>
 		</state>
 	</channel-type>
