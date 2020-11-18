@@ -66,11 +66,11 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
         return new HeritableFuture<>(this);
     }
 
-    protected void setParentFuture(Supplier<Future<?>> futureSupplier) {
+    protected void setParentFuture(Supplier<@Nullable Future<?>> futureSupplier) {
         synchronized (futureLock) {
             var future = futureSupplier.get();
             if (future != this) {
-                if (isCancelled()) {
+                if (isCancelled() && future != null) {
                     future.cancel(true);
                 } else {
                     parentFuture = future;
