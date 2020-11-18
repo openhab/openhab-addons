@@ -91,9 +91,14 @@ public class VeluxBindingConstants {
     // Definitions of different set of Things
     public static final Set<ThingTypeUID> SUPPORTED_THINGS_BINDING = new HashSet<>(Arrays.asList(THING_TYPE_BINDING));
     public static final Set<ThingTypeUID> SUPPORTED_THINGS_BRIDGE = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE));
+
     public static final Set<ThingTypeUID> SUPPORTED_THINGS_ITEMS = new HashSet<>(
             Arrays.asList(THING_TYPE_VELUX_SCENE, THING_TYPE_VELUX_ACTUATOR, THING_TYPE_VELUX_ROLLERSHUTTER,
                     THING_TYPE_VELUX_WINDOW, THING_TYPE_VELUX_VSHUTTER));
+
+    public static final Set<ThingTypeUID> DISCOVERABLE_THINGS = new HashSet<>(
+            Arrays.asList(THING_TYPE_VELUX_SCENE, THING_TYPE_VELUX_ACTUATOR, THING_TYPE_VELUX_ROLLERSHUTTER,
+                    THING_TYPE_VELUX_WINDOW, THING_TYPE_VELUX_VSHUTTER, THING_TYPE_BINDING, THING_TYPE_BRIDGE));
 
     // *** List of all Channel ids ***
 
