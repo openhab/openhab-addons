@@ -30,6 +30,7 @@ public class BluetoothDescriptor {
 
     protected final BluetoothCharacteristic characteristic;
     protected final UUID uuid;
+    protected final int handle;
     protected byte[] value;
 
     /**
@@ -38,9 +39,10 @@ public class BluetoothDescriptor {
      * @param characteristic the characteristic that this class describes
      * @param uuid the uuid of the descriptor
      */
-    public BluetoothDescriptor(BluetoothCharacteristic characteristic, UUID uuid) {
+    public BluetoothDescriptor(BluetoothCharacteristic characteristic, UUID uuid, int handle) {
         this.characteristic = characteristic;
         this.uuid = uuid;
+        this.handle = handle;
     }
 
     /**
@@ -68,6 +70,15 @@ public class BluetoothDescriptor {
      */
     public UUID getUuid() {
         return uuid;
+    }
+
+    /**
+     * Returns the handle for this descriptor
+     *
+     * @return the handle for the descriptor
+     */
+    public int getHandle() {
+        return handle;
     }
 
     /**
