@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
-import java.util.Date;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -77,7 +76,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             if (CaddxBindingConstants.PANEL_LOG_MESSAGE_N_0.equals(channelUID.getId())) {
                 cmd = CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST;
                 data = "";
-            } else if (new Date().getTime() - lastRefreshTime > 2000) {
+            } else if (System.currentTimeMillis() - lastRefreshTime > 2000) {
                 // Refresh only if 2 seconds have passed from the last refresh
                 cmd = CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST;
                 data = "";
@@ -86,7 +85,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             }
 
             bridgeHandler.sendCommand(cmd, data);
-            lastRefreshTime = new Date().getTime();
+            lastRefreshTime = System.currentTimeMillis();
         } else {
             logger.debug("Unknown command {}", command);
         }

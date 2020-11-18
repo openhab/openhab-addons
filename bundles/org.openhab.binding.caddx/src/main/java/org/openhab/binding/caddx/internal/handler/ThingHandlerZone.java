@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
-import java.util.Date;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -76,14 +74,14 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
         if (command instanceof RefreshType) {
             // Refresh only if 2 seconds have passed from the last refresh
-            if (new Date().getTime() - lastRefreshTime > 2000) {
+            if (System.currentTimeMillis() - lastRefreshTime > 2000) {
                 cmd1 = CaddxBindingConstants.ZONE_STATUS_REQUEST;
                 cmd2 = CaddxBindingConstants.ZONE_NAME_REQUEST;
                 data = String.format("%d", getZoneNumber() - 1);
             } else {
                 return;
             }
-            lastRefreshTime = new Date().getTime();
+            lastRefreshTime = System.currentTimeMillis();
         } else if (channelUID.getId().equals(CaddxBindingConstants.ZONE_BYPASSED)) {
             cmd1 = CaddxBindingConstants.ZONE_BYPASSED;
             cmd2 = CaddxBindingConstants.ZONE_STATUS_REQUEST;
