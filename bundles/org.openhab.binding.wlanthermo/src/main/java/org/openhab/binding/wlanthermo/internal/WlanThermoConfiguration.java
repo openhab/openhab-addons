@@ -18,12 +18,12 @@ import java.net.URISyntaxException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link WlanThermoMiniConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link WlanThermoConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Schlipp - Initial contribution
  */
 @NonNullByDefault
-public class WlanThermoMiniConfiguration {
+public class WlanThermoConfiguration {
 
     /**
      * IP Address of WlanThermo.

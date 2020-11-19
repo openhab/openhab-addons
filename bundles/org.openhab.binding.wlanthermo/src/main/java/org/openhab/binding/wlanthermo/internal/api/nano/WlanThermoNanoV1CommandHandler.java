@@ -30,12 +30,12 @@ import org.openhab.binding.wlanthermo.internal.api.nano.data.System;
 import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
 
 /**
- * The {@link WlanThermoNanoCommandHandler} is responsible for mapping the Commands to the respective data fields
+ * The {@link WlanThermoNanoV1CommandHandler} is responsible for mapping the Commands to the respective data fields
  * of the API.
  *
  * @author Christian Schlipp - Initial contribution
  */
-public class WlanThermoNanoCommandHandler {
+public class WlanThermoNanoV1CommandHandler {
 
     public State getState(ChannelUID channelUID, Data data, Settings settings) {
         State state = null;

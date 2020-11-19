@@ -27,11 +27,20 @@ public class WlanThermoBindingConstants {
     private static final String BINDING_ID = "wlanthermo";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_WLANTHERMO_NANO = new ThingTypeUID(BINDING_ID, "nano");
+    public static final ThingTypeUID THING_TYPE_WLANTHERMO_NANO_V1 = new ThingTypeUID(BINDING_ID, "nano");
     public static final ThingTypeUID THING_TYPE_WLANTHERMO_MINI = new ThingTypeUID(BINDING_ID, "mini");
+    public static final ThingTypeUID THING_TYPE_WLANTHERMO_ESP32 = new ThingTypeUID(BINDING_ID, "esp32");
 
     // ThreadPool
     public static final String WLANTHERMO_THREAD_POOL = "wlanthermo";
+
+    // Properties
+    public static final String PROPERTY_MODEL = "model";
+    public static final String PROPERTY_SERIAL = "serial";
+    public static final String PROPERTY_ESP32_BT_ENABLED = "esp32_bt_enabled";
+    public static final String PROPERTY_ESP32_PM_ENABLED = "esp32_pm_enabled";
+    public static final String PROPERTY_ESP32_TEMP_CHANNELS = "esp32_temp_channels";
+    public static final String PROPERTY_ESP32_PM_CHANNELS = "esp32_pm_channels";
 
     // List of all Channel ids
     // System Channels
@@ -43,16 +52,7 @@ public class WlanThermoBindingConstants {
     public static final String SYSTEM_CPU_LOAD = "cpu_load";
     public static final String SYSTEM_CPU_TEMP = "cpu_temp";
 
-    public static final String CHANNEL0 = "channel0";
-    public static final String CHANNEL1 = "channel1";
-    public static final String CHANNEL2 = "channel2";
-    public static final String CHANNEL3 = "channel3";
-    public static final String CHANNEL4 = "channel4";
-    public static final String CHANNEL5 = "channel5";
-    public static final String CHANNEL6 = "channel6";
-    public static final String CHANNEL7 = "channel7";
-    public static final String CHANNEL8 = "channel8";
-    public static final String CHANNEL9 = "channel9";
+    public static final String CHANNEL_PREFIX = "channel";
 
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_TYP = "typ";

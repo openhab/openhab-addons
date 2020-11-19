@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wlanthermo.internal;
+package org.openhab.binding.wlanthermo.internal.api.mini;
 
 import java.net.URISyntaxException;
 import java.util.concurrent.*;
@@ -25,6 +25,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
+import org.openhab.binding.wlanthermo.internal.WlanThermoConfiguration;
 import org.openhab.binding.wlanthermo.internal.api.mini.builtin.App;
 import org.openhab.binding.wlanthermo.internal.api.mini.builtin.WlanThermoMiniCommandHandler;
 import org.slf4j.Logger;
@@ -44,7 +46,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(WlanThermoMiniHandler.class);
     private final WlanThermoMiniCommandHandler wlanThermoMiniCommandHandler = new WlanThermoMiniCommandHandler();
 
-    private WlanThermoMiniConfiguration config = new WlanThermoMiniConfiguration();
+    private WlanThermoConfiguration config = new WlanThermoConfiguration();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> pollingScheduler;
     private final ScheduledExecutorService scheduler = ThreadPoolManager
@@ -60,7 +62,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing WlanThermo Mini!");
-        config = getConfigAs(WlanThermoMiniConfiguration.class);
+        config = getConfigAs(WlanThermoConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);

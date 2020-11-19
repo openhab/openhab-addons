@@ -10,10 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wlanthermo.internal;
+package org.openhab.binding.wlanthermo.internal.api.esp32;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,27 +31,28 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.wlanthermo.internal.api.nano.WlanThermoNanoCommandHandler;
-import org.openhab.binding.wlanthermo.internal.api.nano.data.Data;
-import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
+import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
+import org.openhab.binding.wlanthermo.internal.WlanThermoExtendedConfiguration;
+import org.openhab.binding.wlanthermo.internal.api.esp32.data.Data;
+import org.openhab.binding.wlanthermo.internal.api.esp32.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
 /**
- * The {@link WlanThermoNanoHandler} is responsible for handling commands, which are
+ * The {@link WlanThermoEsp32Handler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Christian Schlipp - Initial contribution
  */
 @NonNullByDefault
-public class WlanThermoNanoHandler extends BaseThingHandler {
+public class WlanThermoEsp32Handler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(WlanThermoNanoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(WlanThermoEsp32Handler.class);
 
-    private WlanThermoNanoConfiguration config = new WlanThermoNanoConfiguration();
-    private WlanThermoNanoCommandHandler wlanThermoNanoCommandHandler = new WlanThermoNanoCommandHandler();
+    private WlanThermoExtendedConfiguration config = new WlanThermoExtendedConfiguration();
+    private WlanThermoEsp32CommandHandler wlanThermoEsp32CommandHandler = new WlanThermoEsp32CommandHandler();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> pollingScheduler;
     private final ScheduledExecutorService scheduler = ThreadPoolManager
@@ -59,7 +61,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     private Data data = new Data();
     private Settings settings = new Settings();
 
-    public WlanThermoNanoHandler(Thing thing, HttpClient httpClient) {
+    public WlanThermoEsp32Handler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
     }
@@ -67,7 +69,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing WlanThermo Nano!");
-        config = getConfigAs(WlanThermoNanoConfiguration.class);
+        config = getConfigAs(WlanThermoExtendedConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
         try {
@@ -116,11 +118,11 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            State s = wlanThermoNanoCommandHandler.getState(channelUID, data, settings);
+            State s = wlanThermoEsp32CommandHandler.getState(channelUID, data, settings);
             if (s != null)
                 updateState(channelUID, s);
         } else {
-            if (wlanThermoNanoCommandHandler.setState(channelUID, command, data)) {
+            if (wlanThermoEsp32CommandHandler.setState(channelUID, command, data)) {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
@@ -140,14 +142,30 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             settings = gson.fromJson(json, Settings.class);
             logger.debug("Received at /settings: {}", json);
 
-            // Update channels
+            // Update Channels if required
+            Map<String, String> properties = editProperties();
+            Boolean pmEnabled = settings.getFeatures().getBluetooth();
+            int pmChannels = pmEnabled ? data.getPitmaster().getPm().size() : 0;
+            int tempChannels = data.getChannel().size();
+
+            // Update properties
+            properties.put(WlanThermoBindingConstants.PROPERTY_MODEL, settings.getDevice().getDevice());
+            properties.put(WlanThermoBindingConstants.PROPERTY_SERIAL, settings.getDevice().getSerial());
+            properties.put(WlanThermoBindingConstants.PROPERTY_ESP32_BT_ENABLED,
+                    settings.getFeatures().getBluetooth().toString());
+            properties.put(WlanThermoBindingConstants.PROPERTY_ESP32_PM_ENABLED, pmEnabled.toString());
+            properties.put(WlanThermoBindingConstants.PROPERTY_ESP32_TEMP_CHANNELS, String.valueOf(tempChannels));
+            properties.put(WlanThermoBindingConstants.PROPERTY_ESP32_PM_CHANNELS, String.valueOf(pmChannels));
+            updateProperties(properties);
+
+            // Update channel state
             for (Channel channel : thing.getChannels()) {
-                State state = wlanThermoNanoCommandHandler.getState(channel.getUID(), data, settings);
+                State state = wlanThermoEsp32CommandHandler.getState(channel.getUID(), data, settings);
                 if (state != null) {
                     updateState(channel.getUID(), state);
                 } else {
                     // if we could not obtain a state, try trigger instead
-                    String trigger = wlanThermoNanoCommandHandler.getTrigger(channel.getUID(), data);
+                    String trigger = wlanThermoEsp32CommandHandler.getTrigger(channel.getUID(), data);
                     if (trigger != null) {
                         triggerChannel(channel.getUID(), trigger);
                     }
