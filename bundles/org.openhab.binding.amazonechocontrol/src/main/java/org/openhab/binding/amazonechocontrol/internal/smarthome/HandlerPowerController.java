@@ -74,7 +74,7 @@ public class HandlerPowerController extends HandlerBase {
                 // For groups take true if all true
                 if ("ON".equals(value)) {
                     powerStateValue = true;
-                } else if (powerStateValue == null) {
+                } else if (powerStateValue != null) {
                     powerStateValue = false;
                 }
 
