@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="serial"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing Types -->
+	<bridge-type id="serialBridge">
+		<label>Serial Bridge</label>
+		<description>Serial port which can send and receive data</description>
+
+		<channels>
+			<channel id="string" typeId="stringData"/>
+			<channel id="binary" typeId="binaryData"/>
+			<channel id="data" typeId="system.rawbutton"/>
+		</channels>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<context>serial-port</context>
+				<label>Serial Port</label>
+				<description>The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
+			</parameter>
+			<parameter name="baudRate" type="integer">
+				<advanced>true</advanced>
+				<label>Baud Rate</label>
+				<description>Set the baud rate</description>
+				<default>9600</default>
+				<options>
+					<option value="4800">4800</option>
+					<option value="9600">9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="57600">57600</option>
+					<option value="115200">115200</option>
+				</options>
+			</parameter>
+			<parameter name="dataBits" type="integer">
+				<advanced>true</advanced>
+				<label>Data Bits</label>
+				<description>Set the data bits</description>
+				<default>8</default>
+				<options>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+				</options>
+			</parameter>
+			<parameter name="parity" type="text">
+				<advanced>true</advanced>
+				<label>Parity</label>
+				<description>Set the parity</description>
+				<default>N</default>
+				<options>
+					<option value="N">N(one)</option>
+					<option value="O">O(dd)</option>
+					<option value="E">E(even)</option>
+					<option value="M">M(ark)</option>
+					<option value="S">S(pace)</option>
+				</options>
+			</parameter>
+			<parameter name="stopBits" type="text">
+				<advanced>true</advanced>
+				<label>Stop Bits</label>
+				<description>Set the stop bits</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="1.5">1.5</option>
+					<option value="2">2</option>
+				</options>
+			</parameter>
+			<parameter name="charset" type="text">
+				<advanced>true</advanced>
+				<label>Charset</label>
+				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1)</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="serialDevice" extensible="string, number, dimmer, switch, rollershutter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serialBridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Serial Device</label>
+		<description>Represents a device</description>
+
+		<config-description>
+			<parameter name="patternMatch" type="text">
+				<label>Patern Match</label>
+				<context>pattern-match</context>
+				<required>true</required>
+				<description>Regular expression used to identify device from received data (must match the whole line)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="stringData">
+		<item-type>String</item-type>
+		<label>String Data</label>
+		<description>Channel for sending/receiving data as a string to/from the serial port</description>
+	</channel-type>
+
+	<channel-type id="binaryData">
+		<item-type>String</item-type>
+		<label>Binary Data</label>
+		<description>Channel for sending/receiving data encoded as Base64 to/from the serial port</description>
+	</channel-type>
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+		<description>Channel to receive commands as a string</description>
+		<config-description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+			</parameter>
+			<parameter name="commandFormat" type="text">
+				<label>String Format</label>
+				<description>Format string applied to the command, e.g. ID=671;COMMAND=%s</description>
+			</parameter>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>Channel to receive commands as a number</description>
+		<config-description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+			</parameter>
+			<parameter name="commandFormat" type="text">
+				<label>Number Format</label>
+				<description>Format string applied to the command, e.g. ID=671;VAL=%f</description>
+			</parameter>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Channel to receive commands from a Dimmer</description>
+		<config-description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+			</parameter>
+			<parameter name="onValue" type="text">
+				<label>On Value</label>
+				<description>Send this value when receiving an ON command</description>
+			</parameter>
+			<parameter name="offValue" type="text">
+				<label>Off Value</label>
+				<description>Send this value when receiving an OFF command</description>
+			</parameter>
+			<parameter name="increaseValue" type="text">
+				<label>Increase Value</label>
+				<description>Send this value when receiving an INCREASE command</description>
+			</parameter>
+			<parameter name="decreaseValue" type="text">
+				<label>Decrease Value</label>
+				<description>Send this value when receiving a DECREASE command</description>
+			</parameter>
+			<parameter name="commandFormat" type="text">
+				<label>Percent Format</label>
+				<description>Format string applied to the percent command, e.g. ID=671;VAL=%d</description>
+			</parameter>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Channel to receive commands from a Switch</description>
+		<config-description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+			</parameter>
+			<parameter name="onValue" type="text">
+				<label>On Value</label>
+				<description>Send this value when receiving an ON command</description>
+			</parameter>
+			<parameter name="offValue" type="text">
+				<label>Off Value</label>
+				<description>Send this value when receiving an OFF command</description>
+			</parameter>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Channel to receive commands from a Rollershutter</description>
+		<config-description>
+			<parameter name="stateTransformation" type="text">
+				<label>State Transformation</label>
+				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+			</parameter>
+			<parameter name="upValue" type="text">
+				<label>Up Value</label>
+				<description>Send this value when receiving an UP command</description>
+			</parameter>
+			<parameter name="downValue" type="text">
+				<label>Down Value</label>
+				<description>Send this value when receiving a DOWN command</description>
+			</parameter>
+			<parameter name="stopValue" type="text">
+				<label>Stop Value</label>
+				<description>Send this value when receiving a STOP command</description>
+			</parameter>
+			<parameter name="commandFormat" type="text">
+				<label>Percent Format</label>
+				<description>Format string applied to the percent command, e.g. ID=671;VAL=%d</description>
+			</parameter>
+			<parameter name="commandTransformation" type="text">
+				<label>Command Transformation</label>
+				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
