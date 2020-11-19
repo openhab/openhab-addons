@@ -127,12 +127,15 @@ public class Connection {
     private static final Pattern CHARSET_PATTERN = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
     private static final String DEVICE_TYPE = "A2IVLV5VM2W81";
 
-    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THING_THREADPOOL_NAME);
-
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
+
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THING_THREADPOOL_NAME);
 
     private final Random rand = new Random();
     private final CookieManager cookieManager = new CookieManager();
+    private final Gson gson;
+    private final Gson gsonWithNullSerialization;
+
     private String amazonSite = "amazon.com";
     private String alexaServer = "https://alexa.amazon.com";
     private final String userAgent;
@@ -151,15 +154,17 @@ public class Connection {
     private Map<Integer, Announcement> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<Integer, TextToSpeech> textToSpeeches = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<Integer, Volume> volumes = Collections.synchronizedMap(new LinkedHashMap<>());
-    private @Nullable ScheduledFuture<?> announcementTimer;
-    private @Nullable ScheduledFuture<?> textToSpeechTimer;
-    private @Nullable ScheduledFuture<?> volumeTimer;
-
-    private final Gson gson;
-    private final Gson gsonWithNullSerialization;
-
     private Map<String, LinkedBlockingQueue<QueueObject>> devices = Collections.synchronizedMap(new LinkedHashMap<>());
-    private @Nullable ScheduledFuture<?> devicesTimer;
+
+    private final Map<TimerType, ScheduledFuture<?>> timers = new HashMap<>();
+
+    private enum TimerType {
+        ANNOUNCEMENT,
+        TTS,
+        VOLUME,
+        DEVICES
+    }
+
     public Lock devicesRunning = new ReentrantLock();
 
     public Connection(@Nullable Connection oldConnection, Gson gson) {
@@ -196,12 +201,11 @@ public class Connection {
 
         // build user agent
         this.userAgent = "AmazonWebView/Amazon Alexa/2.2.223830.0/iOS/11.4.1/iPhone";
-
-        // setAmazonSite(amazonSite);
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonWithNullSerialization = gsonBuilder.create();
 
-        devicesTimer = scheduler.scheduleWithFixedDelay(this::handleExecuteSequenceNode, 0, 500, TimeUnit.MILLISECONDS);
+        replaceTimer(TimerType.DEVICES,
+                scheduler.scheduleWithFixedDelay(this::handleExecuteSequenceNode, 0, 500, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -926,6 +930,15 @@ public class Connection {
         }
     }
 
+    private void replaceTimer(TimerType type, @Nullable ScheduledFuture<?> newTimer) {
+        timers.compute(type, (timerType, oldTimer) -> {
+            if (oldTimer != null) {
+                oldTimer.cancel(true);
+            }
+            return newTimer;
+        });
+    }
+
     public void logout() {
         cookieManager.getCookieStore().removeAll();
         // reset all members
@@ -934,30 +947,20 @@ public class Connection {
         verifyTime = null;
         deviceName = null;
 
-        ScheduledFuture<?> announcementTimer = this.announcementTimer;
-        if (announcementTimer != null) {
-            announcements.clear();
-            announcementTimer.cancel(true);
-        }
-        ScheduledFuture<?> textToSpeechTimer = this.textToSpeechTimer;
-        if (textToSpeechTimer != null) {
-            textToSpeeches.clear();
-            textToSpeechTimer.cancel(true);
-        }
-        ScheduledFuture<?> volumeTimer = this.volumeTimer;
-        if (volumeTimer != null) {
-            volumes.clear();
-            volumeTimer.cancel(true);
-        }
-        ScheduledFuture<?> devicesTimer = this.devicesTimer;
-        if (devicesTimer != null) {
-            devicesTimer.cancel(true);
-        }
+        replaceTimer(TimerType.ANNOUNCEMENT, null);
+        announcements.clear();
+        replaceTimer(TimerType.TTS, null);
+        textToSpeeches.clear();
+        replaceTimer(TimerType.VOLUME, null);
+        volumes.clear();
+        replaceTimer(TimerType.DEVICES, null);
+
         devices.values().forEach((queueObjects) -> {
             queueObjects.forEach((queueObject) -> {
                 Future<?> future = queueObject.future;
                 if (future != null) {
                     future.cancel(true);
+                    queueObject.future = null;
                 }
             });
         });
@@ -1318,17 +1321,14 @@ public class Connection {
         if (speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim().isEmpty()) {
             return;
         }
-        ScheduledFuture<?> announcementTimer = this.announcementTimer;
-        if (announcementTimer != null) {
-            announcementTimer.cancel(false);
-            this.announcementTimer = null;
-        }
+
         Announcement announcement = Objects.requireNonNull(announcements
                 .computeIfAbsent(Objects.hash(speak, bodyText, title), k -> new Announcement(speak, bodyText, title)));
         announcement.devices.add(device);
         announcement.ttsVolumes.add(ttsVolume);
         announcement.standardVolumes.add(standardVolume);
-        this.announcementTimer = scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS);
+
+        replaceTimer(TimerType.ANNOUNCEMENT, scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS));
     }
 
     private synchronized void sendAnnouncement() {
@@ -1386,17 +1386,13 @@ public class Connection {
         if (text.replaceAll("<.+?>", "").replaceAll("\\s+", " ").trim().isEmpty()) {
             return;
         }
-        ScheduledFuture<?> textToSpeechTimer = this.textToSpeechTimer;
-        if (textToSpeechTimer != null) {
-            textToSpeechTimer.cancel(false);
-            this.textToSpeechTimer = null;
-        }
         TextToSpeech textToSpeech = Objects
                 .requireNonNull(textToSpeeches.computeIfAbsent(Objects.hash(text), k -> new TextToSpeech(text)));
         textToSpeech.devices.add(device);
         textToSpeech.ttsVolumes.add(ttsVolume);
         textToSpeech.standardVolumes.add(standardVolume);
-        this.textToSpeechTimer = scheduler.schedule(this::sendTextToSpeech, 500, TimeUnit.MILLISECONDS);
+
+        replaceTimer(TimerType.TTS, scheduler.schedule(this::sendTextToSpeech, 500, TimeUnit.MILLISECONDS));
     }
 
     private synchronized void sendTextToSpeech() {
@@ -1422,15 +1418,10 @@ public class Connection {
     }
 
     public synchronized void volume(Device device, int vol) {
-        ScheduledFuture<?> volumeTimer = this.volumeTimer;
-        if (volumeTimer != null) {
-            volumeTimer.cancel(false);
-            this.volumeTimer = null;
-        }
         Volume volume = Objects.requireNonNull(volumes.computeIfAbsent(vol, k -> new Volume(vol)));
         volume.devices.add(device);
         volume.volumes.add(vol);
-        this.volumeTimer = scheduler.schedule(this::sendVolume, 500, TimeUnit.MILLISECONDS);
+        replaceTimer(TimerType.VOLUME, scheduler.schedule(this::sendVolume, 500, TimeUnit.MILLISECONDS));
     }
 
     private synchronized void sendVolume() {
@@ -1440,7 +1431,7 @@ public class Connection {
             try {
                 List<Device> devices = volume.devices;
                 if (!devices.isEmpty()) {
-                    executeSequenceCommandWithVolume(devices, null, null, volume.volumes, List.of());
+                    executeSequenceCommandWithVolume(devices, null, Map.of(), volume.volumes, List.of());
                 }
             } catch (Exception e) {
                 logger.warn("send volume fails with unexpected error", e);
@@ -1450,18 +1441,16 @@ public class Connection {
     }
 
     private void executeSequenceCommandWithVolume(List<Device> devices, @Nullable String command,
-            @Nullable Map<String, Object> parameters, List<@Nullable Integer> ttsVolumes,
-            List<@Nullable Integer> standardVolumes) throws IOException, URISyntaxException {
+            Map<String, Object> parameters, List<@Nullable Integer> ttsVolumes,
+            List<@Nullable Integer> standardVolumes) {
         JsonArray serialNodesToExecute = new JsonArray();
         JsonArray ttsVolumeNodesToExecute = new JsonArray();
         for (int i = 0; i < devices.size(); i++) {
             Integer ttsVolume = ttsVolumes.size() > i ? ttsVolumes.get(i) : null;
             Integer standardVolume = standardVolumes.size() > i ? standardVolumes.get(i) : null;
             if (ttsVolume != null && (standardVolume != null || !ttsVolume.equals(standardVolume))) {
-                Map<String, Object> volumeParameters = new HashMap<>();
-                volumeParameters.put("value", ttsVolume);
-                ttsVolumeNodesToExecute
-                        .add(createExecutionNode(devices.get(i), "Alexa.DeviceControls.Volume", volumeParameters));
+                ttsVolumeNodesToExecute.add(
+                        createExecutionNode(devices.get(i), "Alexa.DeviceControls.Volume", Map.of("value", ttsVolume)));
             }
         }
         if (ttsVolumeNodesToExecute.size() > 0) {
@@ -1471,7 +1460,7 @@ public class Connection {
             serialNodesToExecute.add(parallelNodesToExecute);
         }
 
-        if (command != null && parameters != null) {
+        if (command != null && !parameters.isEmpty()) {
             JsonArray commandNodesToExecute = new JsonArray();
             if ("Alexa.Speak".equals(command)) {
                 for (Device device : devices) {
@@ -1493,10 +1482,8 @@ public class Connection {
             Integer ttsVolume = ttsVolumes.size() > i ? ttsVolumes.get(i) : null;
             Integer standardVolume = standardVolumes.size() > i ? standardVolumes.get(i) : null;
             if (ttsVolume != null && standardVolume != null && !ttsVolume.equals(standardVolume)) {
-                Map<String, @Nullable Object> volumeParameters = new HashMap<>();
-                volumeParameters.put("value", standardVolume);
-                standardVolumeNodesToExecute
-                        .add(createExecutionNode(devices.get(i), "Alexa.DeviceControls.Volume", volumeParameters));
+                standardVolumeNodesToExecute.add(createExecutionNode(devices.get(i), "Alexa.DeviceControls.Volume",
+                        Map.of("value", standardVolume)));
             }
         }
         if (standardVolumeNodesToExecute.size() > 0) {
@@ -1514,8 +1501,7 @@ public class Connection {
     // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play,
     // Alexa.GoodMorning.Play,
     // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach)
-    public void executeSequenceCommand(Device device, String command, @Nullable Map<String, Object> parameters)
-            throws IOException, URISyntaxException {
+    public void executeSequenceCommand(Device device, String command, Map<String, Object> parameters) {
         JsonObject nodeToExecute = createExecutionNode(device, command, parameters);
         executeSequenceNode(List.of(device), nodeToExecute);
     }
@@ -1639,8 +1625,7 @@ public class Connection {
         logger.debug("removed {} device {}", queueObject.hashCode(), serial);
     }
 
-    private void executeSequenceNodes(List<Device> devices, JsonArray nodesToExecute, boolean parallel)
-            throws IOException, URISyntaxException {
+    private void executeSequenceNodes(List<Device> devices, JsonArray nodesToExecute, boolean parallel) {
         JsonObject serialNode = new JsonObject();
         if (parallel) {
             serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
@@ -1653,8 +1638,7 @@ public class Connection {
         executeSequenceNode(devices, serialNode);
     }
 
-    private JsonObject createExecutionNode(@Nullable Device device, String command,
-            @Nullable Map<String, Object> parameters) {
+    private JsonObject createExecutionNode(@Nullable Device device, String command, Map<String, Object> parameters) {
         JsonObject operationPayload = new JsonObject();
         if (device != null) {
             operationPayload.addProperty("deviceType", device.deviceType);
@@ -1662,20 +1646,18 @@ public class Connection {
             operationPayload.addProperty("locale", "");
             operationPayload.addProperty("customerId", getCustomerId(device.deviceOwnerCustomerId));
         }
-        if (parameters != null) {
-            for (String key : parameters.keySet()) {
-                Object value = parameters.get(key);
-                if (value instanceof String) {
-                    operationPayload.addProperty(key, (String) value);
-                } else if (value instanceof Number) {
-                    operationPayload.addProperty(key, (Number) value);
-                } else if (value instanceof Boolean) {
-                    operationPayload.addProperty(key, (Boolean) value);
-                } else if (value instanceof Character) {
-                    operationPayload.addProperty(key, (Character) value);
-                } else {
-                    operationPayload.add(key, gson.toJsonTree(value));
-                }
+        for (String key : parameters.keySet()) {
+            Object value = parameters.get(key);
+            if (value instanceof String) {
+                operationPayload.addProperty(key, (String) value);
+            } else if (value instanceof Number) {
+                operationPayload.addProperty(key, (Number) value);
+            } else if (value instanceof Boolean) {
+                operationPayload.addProperty(key, (Boolean) value);
+            } else if (value instanceof Character) {
+                operationPayload.addProperty(key, (Character) value);
+            } else {
+                operationPayload.add(key, gson.toJsonTree(value));
             }
         }
 

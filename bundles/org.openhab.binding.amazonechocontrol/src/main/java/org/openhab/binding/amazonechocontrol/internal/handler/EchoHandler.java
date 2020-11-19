@@ -20,11 +20,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -95,7 +91,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private Gson gson;
     private @Nullable Device device;
@@ -626,7 +621,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                                 commandText = "Alexa." + commandText + ".Play";
                             }
                             waitForUpdate = 1000;
-                            connection.executeSequenceCommand(device, commandText, null);
+                            connection.executeSequenceCommand(device, commandText, Map.of());
                         }
                     }
                 }
