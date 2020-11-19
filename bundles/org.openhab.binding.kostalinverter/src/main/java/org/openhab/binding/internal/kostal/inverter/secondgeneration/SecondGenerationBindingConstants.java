@@ -90,7 +90,6 @@ public class SecondGenerationBindingConstants {
     public static final String CHANNEL_BATTERYUSAGECONSUMPTION = "batteryUsageConsumption";
     public static final String CHANNEL_BATTERYUSAGESTRATEGY = "batteryUsageStrategy";
     public static final String CHANNEL_SMARTBATTERYCONTROL = "smartBatteryControl";
-    public static final String CHANNEL_SMARTBATTERYCONTROL_TEXT = "smartBatteryControlText";
     public static final String CHANNEL_BATTERYCHARGETIMEFROM = "batteryChargeTimeFrom";
     public static final String CHANNEL_BATTERYCHARGETIMETO = "batteryChargeTimeTo";
     public static final String CHANNEL_MAXDEPTHOFDISCHARGE = "maxDepthOfDischarge";

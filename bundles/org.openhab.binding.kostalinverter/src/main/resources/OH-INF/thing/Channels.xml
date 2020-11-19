@@ -856,16 +856,9 @@
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-smart-battery-control">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Smart Battery Control</label>
 		<description>Set smart battery control</description>
-		<category>Switch</category>
-		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="device-local-smart-battery-control-text">
-		<item-type>String</item-type>
-		<label>Smart Battery Control Text</label>
-		<description>Set smart battery control text</description>
 		<category>String</category>
 		<state readOnly="false"/>
 	</channel-type>

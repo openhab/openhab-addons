@@ -125,10 +125,9 @@ The following Channels are writeable
 |-------------------------------|---------------------------|-------------------------------------------------------|-----------------|    
 | chargeTimeEnd             | Number:Time     | Set charge time end, Value = 00:00  |    W    |
 | batteryType               | String          | Set battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV  |   W    |
-| batteryUsageConsumption   | String          | Set battery usage consumption, Value = 100  |    W    |
+| batteryUsageConsumption   | String          | Set battery usage consumption level for power-consumption from battery, default value = 100 (W)  |    W    |
 | batteryUsageStrategy      | String          | Set battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |    W    |             
-| smartBatteryControl       | Switch          | Set smart battery control, Value = False / True  |    W    |
-| smartBatteryControlText   | String          | Set smart battery control text, Value = False / True  |    W    |
+| smartBatteryControl       | String          | Set smart battery control, Value = False / True  |    W    |
 | batterChargeTimeFrom      | Number:Time     | Set battery charge time from, Value = 00:00  |    W    |
 | batteryChargeTimeTo       | Number:Time     | Set battery charge time to, Value = 23:59  |    W    |
 | maxDepthOfDischarge       | String          | Set max depth of discharge (SoC), Value = 10  |    W    |

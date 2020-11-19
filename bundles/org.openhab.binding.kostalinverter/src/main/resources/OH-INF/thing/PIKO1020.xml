@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="piko1020">
+	<thing-type id="kostalinverterpiko1020">
 		<label>KOSTAL PIKO 10-20</label>
-		<description>Thing for the KOSTAL PIKO 10-20</description>
+		<description>Bindings for the KOSTAL PIKO 10-20</description>
 		<category>Inverter</category>
 		<channels>
 			<channel typeId="device-local-grid-output-power" id="gridOutputPower"/>
@@ -62,7 +62,6 @@
 			<channel typeId="device-local-battery-usage-consumption" id="batteryUsageConsumption"/>
 			<channel typeId="device-local-battery-usage-strategy" id="batteryUsageStrategy"/>
 			<channel typeId="device-local-smart-battery-control" id="smartBatteryControl"/>
-			<channel typeId="device-local-smart-battery-control-text" id="smartBatteryControlText"/>
 			<channel typeId="device-local-battery-charge-time-from" id="batteryChargeTimeFrom"/>
 			<channel typeId="device-local-battery-charge-time-to" id="batteryChargeTimeTo"/>
 			<channel typeId="device-local-max-depth-of-discharge" id="maxDepthOfDischarge"/>
@@ -71,7 +70,7 @@
 			<channel typeId="device-local-inverter-name" id="inverterName"/>
 		</channels>
 		<properties>
-			<property name="Vendor">KOSTAL Solar Electric GmbH</property>
+			<property name="vendor">KOSTAL Solar Electric GmbH</property>
 		</properties>
 		<config-description-ref uri="thing-type:kostalpiko1020_config"/>
 	</thing-type>
