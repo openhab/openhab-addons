@@ -1318,6 +1318,7 @@ public class Connection {
             return;
         }
 
+        // we lock announcements until we have finished adding this one
         Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
         lock.lock();
         try {
@@ -1327,6 +1328,7 @@ public class Connection {
             announcement.ttsVolumes.add(ttsVolume);
             announcement.standardVolumes.add(standardVolume);
 
+            // schedule an announcement only if it has not been scheduled before
             timers.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS));
         } finally {
             lock.unlock();
@@ -1334,6 +1336,7 @@ public class Connection {
     }
 
     private void sendAnnouncement() {
+        // we lock new announcements until we have dispatched everything
         Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
         lock.lock();
         try {
@@ -1383,7 +1386,8 @@ public class Connection {
                 iterator.remove();
             }
         } finally {
-            timers.computeIfPresent(TimerType.ANNOUNCEMENT, (k, v) -> null);
+            // the timer is done anyway immediately after we unlock
+            timers.remove(TimerType.ANNOUNCEMENT);
             lock.unlock();
         }
     }
