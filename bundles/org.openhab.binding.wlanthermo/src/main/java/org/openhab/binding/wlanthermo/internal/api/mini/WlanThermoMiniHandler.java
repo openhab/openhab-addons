@@ -10,15 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wlanthermo.internal;
+package org.openhab.binding.wlanthermo.internal.api.mini;
 
 import java.net.URISyntaxException;
-import java.util.Objects;
 import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
+import org.openhab.binding.wlanthermo.internal.WlanThermoConfiguration;
 import org.openhab.binding.wlanthermo.internal.api.mini.builtin.App;
 import org.openhab.binding.wlanthermo.internal.api.mini.builtin.WlanThermoMiniCommandHandler;
 import org.openhab.core.common.ThreadPoolManager;
@@ -45,7 +46,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(WlanThermoMiniHandler.class);
     private final WlanThermoMiniCommandHandler wlanThermoMiniCommandHandler = new WlanThermoMiniCommandHandler();
 
-    private WlanThermoMiniConfiguration config = new WlanThermoMiniConfiguration();
+    private WlanThermoConfiguration config = new WlanThermoConfiguration();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> pollingScheduler;
     private final ScheduledExecutorService scheduler = ThreadPoolManager
@@ -61,7 +62,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Start initializing WlanThermo Mini!");
-        config = getConfigAs(WlanThermoMiniConfiguration.class);
+        config = getConfigAs(WlanThermoConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
@@ -109,7 +110,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
         try {
             // Update objects with data from device
             String json = httpClient.GET(config.getUri("/app.php")).getContentAsString();
-            app = Objects.requireNonNull(gson.fromJson(json, App.class));
+            app = gson.fromJson(json, App.class);
             logger.debug("Received at /app.php: {}", json);
 
             // Update channels

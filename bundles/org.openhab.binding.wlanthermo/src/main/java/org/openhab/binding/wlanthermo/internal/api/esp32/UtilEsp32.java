@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,38 +10,47 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wlanthermo.internal.api.nano;
+package org.openhab.binding.wlanthermo.internal.api.esp32;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The {@link UtilNano} class provides conversion functions for the WlanThermo Nano V1+
+ * The {@link UtilEsp32} class provides conversion functions for the WlanThermo Nano V3
  *
  * @author Christian Schlipp - Initial contribution
  */
-public class UtilNano {
+public class UtilEsp32 {
 
     private static final Map<String, String> COLOR_MAPPINGS = createColorMap();
     private static final String DEFAULT_HEX = "#ffffff";
     private static final String DEFAULT_COLORNAME = "niagara";
 
-    private UtilNano() {
+    private UtilEsp32() {
         // hidden
     }
 
     private static Map<String, String> createColorMap() {
         HashMap<String, String> map = new HashMap<>();
-        map.put("niagara", "#5587A2");
-        map.put("rosa", "#FFAEC9");
-        map.put("lapis blue", "#0C4C88");
-        map.put("orange", "#EF562D");
-        map.put("lila", "#A349A4");
-        map.put("red", "#ED1C24");
-        map.put("green", "#22B14C");
-        map.put("gold", "#FFC100");
-        map.put("kale", "#5C7148");
-        map.put("brown", "#804000");
+        map.put("yellow", "#FFFF00");
+        map.put("dark yellow", "#FFC002");
+        map.put("green", "#00FF00");
+        map.put("white", "#FFFFFF");
+        map.put("pink", "#FF1DC4");
+        map.put("orange", "#E46C0A");
+        map.put("olive", "#C3D69B");
+        map.put("light blue", "#0FE6F1");
+        map.put("blue", "#0000FF");
+        map.put("dark green", "#03A923");
+        map.put("brown", "#C84B32");
+        map.put("light brown", "#FF9B69");
+        map.put("dark blue", "#5082BE");
+        map.put("light pink", "#FFB1D0");
+        map.put("light green", "#A6EF03");
+        map.put("dark pink", "#D42A6B");
+        map.put("beige", "#FFDA8F");
+        map.put("azure", "#00B0F0");
+        map.put("dark olive", "#948A54");
         return map;
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wlanthermo.internal.api.nano;
+package org.openhab.binding.wlanthermo.internal.api.esp32;
 
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
 
@@ -18,11 +18,11 @@ import java.awt.*;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.openhab.binding.wlanthermo.internal.api.nano.data.Channel;
-import org.openhab.binding.wlanthermo.internal.api.nano.data.Data;
-import org.openhab.binding.wlanthermo.internal.api.nano.data.Pm;
-import org.openhab.binding.wlanthermo.internal.api.nano.data.System;
-import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
+import org.openhab.binding.wlanthermo.internal.api.esp32.data.Channel;
+import org.openhab.binding.wlanthermo.internal.api.esp32.data.Data;
+import org.openhab.binding.wlanthermo.internal.api.esp32.data.Pm;
+import org.openhab.binding.wlanthermo.internal.api.esp32.data.System;
+import org.openhab.binding.wlanthermo.internal.api.esp32.settings.Settings;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -30,24 +30,35 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link WlanThermoNanoCommandHandler} is responsible for mapping the Commands to the respective data fields
+ * The {@link WlanThermoEsp32CommandHandler} is responsible for mapping the Commands to the respective data fields
  * of the API.
  *
  * @author Christian Schlipp - Initial contribution
  */
-public class WlanThermoNanoCommandHandler {
+public class WlanThermoEsp32CommandHandler {
 
     public State getState(ChannelUID channelUID, Data data, Settings settings) {
         State state = null;
+        if (data == null || settings == null) {
+            return null;
+        }
         System system = data.getSystem();
         List<Channel> channel = data.getChannel();
         if ("system".equals(channelUID.getGroupId()) && system != null) {
             switch (channelUID.getIdWithoutGroup()) {
                 case SYSTEM_SOC:
-                    state = new DecimalType(system.getSoc());
+                    if (system.getSoc() != null) {
+                        state = new DecimalType(system.getSoc());
+                    } else {
+                        state = UnDefType.UNDEF;
+                    }
                     break;
                 case SYSTEM_CHARGE:
-                    state = OnOffType.from(system.getCharge());
+                    if (system.getCharge() != null) {
+                        state = OnOffType.from(system.getCharge());
+                    } else {
+                        state = UnDefType.UNDEF;
+                    }
                     break;
                 case SYSTEM_RSSI_SIGNALSTRENGTH:
                     int dbm = system.getRssi();
@@ -67,13 +78,13 @@ public class WlanThermoNanoCommandHandler {
             }
         } else if (channelUID.getId().startsWith("channel")) {
             int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
-            if (channel.size() > 0 && channelId <= channel.size()) {
+            if (channel != null && channel.size() > 0 && channelId < channel.size()) {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
                         state = new StringType(channel.get(channelId).getName());
                         break;
                     case CHANNEL_TYP:
-                        state = new StringType(settings.sensors.get(channel.get(channelId).getTyp()));
+                        state = new StringType(settings.getSensors().get(channel.get(channelId).getTyp()).getName());
                         break;
                     case CHANNEL_TEMP:
                         if (channel.get(channelId).getTemp() == 999.0) {
@@ -120,7 +131,7 @@ public class WlanThermoNanoCommandHandler {
                     case CHANNEL_COLOR_NAME:
                         String colorHex = channel.get(channelId).getColor();
                         if (colorHex != null && !colorHex.isEmpty()) {
-                            state = new StringType(UtilNano.toColorName(colorHex));
+                            state = new StringType(UtilEsp32.toColorName(colorHex));
                         }
                         break;
                 }
@@ -157,7 +168,7 @@ public class WlanThermoNanoCommandHandler {
         List<Channel> channel = data.getChannel();
         if (channelUID.getId().startsWith("channel")) {
             int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
-            if (channel.size() > 0 && channelId <= channel.size()) {
+            if (channel.size() > 0 && channelId < channel.size()) {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
                         if (command instanceof StringType) {
@@ -203,7 +214,7 @@ public class WlanThermoNanoCommandHandler {
                         break;
                     case CHANNEL_COLOR_NAME:
                         if (command instanceof StringType) {
-                            channel.get(channelId).setColor(UtilNano.toHex(((StringType) command).toString()));
+                            channel.get(channelId).setColor(UtilEsp32.toHex(((StringType) command).toString()));
                             success = true;
                         }
                         break;
@@ -244,7 +255,7 @@ public class WlanThermoNanoCommandHandler {
         List<Channel> channel = data.getChannel();
         if (channelUID.getId().startsWith("channel")) {
             int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
-            if (channel.size() > 0 && channelId <= channel.size()) {
+            if (channel.size() > 0 && channelId < channel.size()) {
                 if (CHANNEL_ALARM_OPENHAB.equals(channelUID.getIdWithoutGroup())) {
                     if (channel.get(channelId).getTemp() != 999) {
                         if (channel.get(channelId).getTemp() > channel.get(channelId).getMax()) {

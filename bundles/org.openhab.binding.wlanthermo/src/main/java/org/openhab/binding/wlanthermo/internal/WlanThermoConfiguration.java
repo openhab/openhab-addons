@@ -16,31 +16,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link WlanThermoNanoConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link WlanThermoConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Schlipp - Initial contribution
  */
 @NonNullByDefault
-public class WlanThermoNanoConfiguration {
+public class WlanThermoConfiguration {
 
     /**
      * IP Address of WlanThermo.
      */
     private String ipAddress = "";
-
-    /**
-     * Username of WlanThermo user.
-     */
-    private @Nullable String username;
-
-    /**
-     * Password of WlanThermo user.
-     */
-
-    private @Nullable String password;
 
     /**
      * Polling interval
@@ -71,24 +59,6 @@ public class WlanThermoNanoConfiguration {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
-    }
-
-    @Nullable
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Nullable
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public int getPollingInterval() {
