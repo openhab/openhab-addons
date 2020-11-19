@@ -102,7 +102,7 @@ This is an optional parameter and multiple values are allowed.
 | `wanMaxUpstreamRate`       | `Number:DataTransferRate` |     x    | Max. Upstream Rate                                             |
 | `wanPhysicalLinkStatus`    | `String`                  |     x    | Link Status                                                    |
 | `wanTotalBytesReceived`    | `Number:DataAmount`       |     x    | Total Bytes Received                                           |
-| `wanTotalBytesSent`        | `Number:DataAmount`       |     x    | Total Bytes Send                                               |
+| `wanTotalBytesSent`        | `Number:DataAmount`       |     x    | Total Bytes Sent                                               |
 | `wifi24GHzEnable`          | `Switch`                  |          | Enable/Disable the 2.4 GHz WiFi device.                        |
 | `wifi5GHzEnable`           | `Switch`                  |          | Enable/Disable the 5.0 GHz WiFi device.                        |
 | `wifiGuestEnable`          | `Switch`                  |          | Enable/Disable the guest WiFi.                                 |
