@@ -53,7 +53,7 @@ public abstract class BRC1HCommand {
      *
      * @return
      */
-    public abstract byte[] getRequest();
+    public abstract byte[][] getRequest();
 
     /**
      * This is the command number, in the protocol

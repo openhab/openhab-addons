@@ -45,6 +45,11 @@ public class MadokaSettings {
     private @Nullable String communicationControllerVersion;
     private @Nullable String remoteControllerVersion;
 
+    private @Nullable DecimalType eyeBrightness;
+    private @Nullable DecimalType indoorPowerHours;
+    private @Nullable DecimalType indoorOperationHours;
+    private @Nullable DecimalType indoorFanHours;
+
     public @Nullable OnOffType getOnOffState() {
         return onOffState;
     }
@@ -123,5 +128,37 @@ public class MadokaSettings {
 
     public void setRemoteControllerVersion(String remoteControllerVersion) {
         this.remoteControllerVersion = remoteControllerVersion;
+    }
+
+    public @Nullable DecimalType getEyeBrightness() {
+        return eyeBrightness;
+    }
+
+    public void setEyeBrightness(DecimalType eyeBrightness) {
+        this.eyeBrightness = eyeBrightness;
+    }
+
+    public @Nullable DecimalType getIndoorPowerHours() {
+        return indoorPowerHours;
+    }
+
+    public void setIndoorPowerHours(DecimalType indoorPowerHours) {
+        this.indoorPowerHours = indoorPowerHours;
+    }
+
+    public @Nullable DecimalType getIndoorOperationHours() {
+        return indoorOperationHours;
+    }
+
+    public void setIndoorOperationHours(DecimalType indoorOperationHours) {
+        this.indoorOperationHours = indoorOperationHours;
+    }
+
+    public @Nullable DecimalType getIndoorFanHours() {
+        return indoorFanHours;
+    }
+
+    public void setIndoorFanHours(DecimalType indoorFanHours) {
+        this.indoorFanHours = indoorFanHours;
     }
 }

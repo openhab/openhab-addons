@@ -36,7 +36,7 @@ public class GetOperationmodeCommand extends BRC1HCommand {
     private @Nullable OperationMode operationMode;
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         return MadokaMessage.createRequest(this);
     }
 

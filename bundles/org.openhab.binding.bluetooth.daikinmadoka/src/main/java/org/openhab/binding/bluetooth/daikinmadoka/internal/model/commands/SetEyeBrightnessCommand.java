@@ -15,54 +15,59 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This command returns the current AC power state (on or off)
+ * Command used to set the Blue Eye Brightness
  *
  * @author Benjamin Lafois - Initial contribution
  *
  */
 @NonNullByDefault
-public class GetPowerstateCommand extends BRC1HCommand {
+public class SetEyeBrightnessCommand extends BRC1HCommand {
 
-    private final Logger logger = LoggerFactory.getLogger(GetPowerstateCommand.class);
+    private final Logger logger = LoggerFactory.getLogger(SetEyeBrightnessCommand.class);
 
-    private @Nullable Boolean powerState;
+    private DecimalType eyeBrightness;
 
-    @Override
-    public byte[][] getRequest() {
-        return MadokaMessage.createRequest(this);
+    public SetEyeBrightnessCommand(DecimalType eyeBrightness) {
+        this.eyeBrightness = eyeBrightness;
     }
 
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
             throws MadokaParsingException {
-        byte[] powerStateValue = mm.getValues().get(0x20).getRawValue();
-
-        if (powerStateValue == null || powerStateValue.length != 1) {
-            setState(State.FAILED);
-            throw new MadokaParsingException("Incorrect value for PowerState");
+        byte[] msg = mm.getRawMessage();
+        if (logger.isDebugEnabled() && msg != null) {
+            logger.debug("Got response for {} : {}", this.getClass().getSimpleName(), HexUtils.bytesToHex(msg));
         }
-
-        powerState = Integer.valueOf(powerStateValue[0]) == 1;
-
-        logger.debug("PowerState: {}", powerState);
 
         setState(State.SUCCEEDED);
         executor.execute(() -> listener.receivedResponse(this));
     }
 
     @Override
-    public int getCommandId() {
-        return 32;
+    public byte[][] getRequest() {
+        MadokaValue mv = new MadokaValue(0x33, 1, new byte[] { eyeBrightness.byteValue() });
+        return MadokaMessage.createRequest(this, mv);
     }
 
-    public @Nullable Boolean isPowerState() {
-        return powerState;
+    @Override
+    public int getCommandId() {
+        return 17154;
+    }
+
+    public DecimalType getEyeBrightness() {
+        return eyeBrightness;
+    }
+
+    public void setEyeBrightness(DecimalType eyeBrightness) {
+        this.eyeBrightness = eyeBrightness;
     }
 }

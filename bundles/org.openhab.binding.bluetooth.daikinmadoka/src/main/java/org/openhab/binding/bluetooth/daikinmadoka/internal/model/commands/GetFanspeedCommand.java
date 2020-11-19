@@ -37,7 +37,7 @@ public class GetFanspeedCommand extends BRC1HCommand {
     private @Nullable FanSpeed heatingFanSpeed;
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         return MadokaMessage.createRequest(this);
     }
 

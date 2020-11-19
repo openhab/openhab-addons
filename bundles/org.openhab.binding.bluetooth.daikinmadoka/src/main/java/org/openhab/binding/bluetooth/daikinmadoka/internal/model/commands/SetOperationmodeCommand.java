@@ -40,7 +40,7 @@ public class SetOperationmodeCommand extends BRC1HCommand {
     }
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         MadokaValue mv = new MadokaValue(0x20, 1, new byte[] { (byte) this.operationMode.value() });
         return MadokaMessage.createRequest(this, mv);
     }

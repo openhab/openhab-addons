@@ -12,48 +12,30 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
-import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * THis command is in charge of changing the AC setpoint
+ * This command enable privileged commands on remote device
  *
  * @author Benjamin Lafois - Initial contribution
  *
  */
 @NonNullByDefault
-public class SetSetpointCommand extends BRC1HCommand {
+public class EnterPrivilegedModeCommand extends BRC1HCommand {
 
-    private final Logger logger = LoggerFactory.getLogger(SetSetpointCommand.class);
-
-    private DecimalType coolingSetpoint;
-    private DecimalType heatingSetpoint;
-
-    public SetSetpointCommand(DecimalType coolingSetpoint, DecimalType heatingSetpoint) {
-        this.coolingSetpoint = coolingSetpoint;
-        this.heatingSetpoint = heatingSetpoint;
-    }
+    private final Logger logger = LoggerFactory.getLogger(EnterPrivilegedModeCommand.class);
 
     @Override
     public byte[][] getRequest() {
-        byte[] heatingSetpointBytes = ByteBuffer.allocate(2).putShort((short) (128. * heatingSetpoint.shortValue()))
-                .array();
-        byte[] coolingSetpointBytes = ByteBuffer.allocate(2).putShort((short) (128. * coolingSetpoint.shortValue()))
-                .array();
-
-        MadokaValue mvHeatingSetpoint = new MadokaValue(0x21, 2, heatingSetpointBytes);
-
-        MadokaValue mvCoolingSetpoint = new MadokaValue(0x20, 2, coolingSetpointBytes);
-
-        return MadokaMessage.createRequest(this, mvCoolingSetpoint, mvHeatingSetpoint);
+        MadokaValue privilegedMode = new MadokaValue(0xfe, 1, new byte[] { (byte) 0x01 });
+        return MadokaMessage.createRequest(this, privilegedMode);
     }
 
     @Override
@@ -64,19 +46,10 @@ public class SetSetpointCommand extends BRC1HCommand {
         }
 
         setState(State.SUCCEEDED);
-        executor.execute(() -> listener.receivedResponse(this));
     }
 
     @Override
     public int getCommandId() {
-        return 16448;
-    }
-
-    public DecimalType getCoolingSetpoint() {
-        return coolingSetpoint;
-    }
-
-    public DecimalType getHeatingSetpoint() {
-        return heatingSetpoint;
+        return 16658;
     }
 }

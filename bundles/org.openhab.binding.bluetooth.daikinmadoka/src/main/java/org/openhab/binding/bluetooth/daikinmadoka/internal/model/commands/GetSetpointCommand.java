@@ -37,7 +37,7 @@ public class GetSetpointCommand extends BRC1HCommand {
     private @Nullable DecimalType coolingSetpoint;
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         return MadokaMessage.createRequest(this);
     }
 

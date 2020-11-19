@@ -37,7 +37,7 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
     private @Nullable DecimalType outdoorTemperature;
 
     @Override
-    public byte[] getRequest() {
+    public byte[][] getRequest() {
         return MadokaMessage.createRequest(this);
     }
 
