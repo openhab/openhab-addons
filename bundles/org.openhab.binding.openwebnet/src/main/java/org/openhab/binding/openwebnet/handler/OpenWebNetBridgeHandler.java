@@ -120,6 +120,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                                     "Could not connect to gateway before " + GATEWAY_ONLINE_TIMEOUT_SEC + "s");
                         }
                     }, GATEWAY_ONLINE_TIMEOUT_SEC, TimeUnit.SECONDS);
+                    logger.debug("bridge {} initialization completed", thing.getUID());
                 } catch (OWNException e) {
                     logger.debug("gw.connect() returned OWNException: {}", e.getMessage());
                     // status is updated by callback onConnectionError()
@@ -132,11 +133,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * Init a ZigBee gateway based on config
      */
     private @Nullable OpenGateway initZigBeeGateway() {
-        logger.debug("Initializing ZigBee USB gateway");
+        logger.debug("Initializing ZigBee USB Gateway");
         OpenWebNetZigBeeBridgeConfig zbBridgeConfig = getConfigAs(OpenWebNetZigBeeBridgeConfig.class);
         String serialPort = zbBridgeConfig.getSerialPort();
         if (serialPort == null || serialPort.isEmpty()) {
-            logger.warn("Cannot connect to gateway. No serial port has been provided in Bridge configuration.");
+            logger.info("Cannot connect ZigBee USB Gateway. No serial port has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-serial-port");
             return null;
@@ -153,7 +154,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         OpenWebNetBusBridgeConfig busBridgeConfig = getConfigAs(OpenWebNetBusBridgeConfig.class);
         String host = busBridgeConfig.getHost();
         if (host == null || host.isEmpty()) {
-            logger.warn("Cannot connect to gateway. No host/IP has been provided in Bridge configuration.");
+            logger.info("Cannot connect to BUS Gateway. No host/IP has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-ip-address");
             return null;
@@ -178,7 +179,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         logger.debug("handleCommand (command={} - channel={})", command, channelUID);
         OpenGateway gw = gateway;
         if (gw != null && !gw.isConnected()) {
-            logger.warn("Gateway is NOT connected, skipping command");
+            logger.info("Gateway is NOT connected, skipping command");
             return;
         } else {
             logger.warn("Channel not supported: channel={}", channelUID);
@@ -207,7 +208,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         if (gw != null) {
             gw.closeConnection();
             gw.unsubscribe(this);
-            logger.debug("gateway {} connection closed and unsubscribed", gw.toString());
+            logger.debug("Gateway {} connection closed and unsubscribed", gw.toString());
             gateway = null;
         }
         reconnecting = false;
@@ -355,7 +356,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation) {
             String ownId = ownIdFromMessage(baseMsg);
-            logger.debug("ownIdFromMessage({}) --> ownId={}", baseMsg, ownId);
+            logger.debug("ownIdFromMessage({}) --> {}", baseMsg, ownId);
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownId);
             if (deviceHandler == null) {
                 OpenGateway gw = gateway;
@@ -385,7 +386,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return;
         }
         if (gw instanceof USBGateway) {
-            logger.info("------------------- CONNECTED to USB (ZigBee) gateway - USB port: {}",
+            logger.info("------------------- CONNECTED to ZigBee USB gateway - USB port: {}",
                     ((USBGateway) gw).getSerialPortName());
         } else {
             logger.info("------------------- CONNECTED to BUS gateway '{}' ({}:{})", thing.getUID(),
