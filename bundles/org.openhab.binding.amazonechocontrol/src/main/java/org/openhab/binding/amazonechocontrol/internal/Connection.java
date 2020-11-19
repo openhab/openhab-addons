@@ -43,7 +43,6 @@ import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -206,7 +205,7 @@ public class Connection {
 
     /**
      * Generate a new device id
-     *
+     * <p>
      * The device id consists of 16 random bytes in upper-case hex format, a # as separator and a fixed DEVICE_TYPE
      *
      * @return a string containing the new device-id
@@ -1329,7 +1328,8 @@ public class Connection {
             announcement.standardVolumes.add(standardVolume);
 
             // schedule an announcement only if it has not been scheduled before
-            timers.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS));
+            timers.computeIfAbsent(TimerType.ANNOUNCEMENT,
+                    k -> scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS));
         } finally {
             lock.unlock();
         }
@@ -1392,60 +1392,96 @@ public class Connection {
         }
     }
 
-    public synchronized void textToSpeech(Device device, String text, @Nullable Integer ttsVolume,
+    public void textToSpeech(Device device, String text, @Nullable Integer ttsVolume,
             @Nullable Integer standardVolume) {
         if (text.replaceAll("<.+?>", "").replaceAll("\\s+", " ").trim().isEmpty()) {
             return;
         }
-        TextToSpeech textToSpeech = Objects
-                .requireNonNull(textToSpeeches.computeIfAbsent(Objects.hash(text), k -> new TextToSpeech(text)));
-        textToSpeech.devices.add(device);
-        textToSpeech.ttsVolumes.add(ttsVolume);
-        textToSpeech.standardVolumes.add(standardVolume);
 
-        replaceTimer(TimerType.TTS, scheduler.schedule(this::sendTextToSpeech, 500, TimeUnit.MILLISECONDS));
-    }
-
-    private synchronized void sendTextToSpeech() {
-        Iterator<TextToSpeech> iterator = textToSpeeches.values().iterator();
-        while (iterator.hasNext()) {
-            TextToSpeech textToSpeech = iterator.next();
-            try {
-                List<Device> devices = textToSpeech.devices;
-                if (!devices.isEmpty()) {
-                    String text = textToSpeech.text;
-                    Map<String, Object> parameters = new HashMap<>();
-                    parameters.put("textToSpeak", text);
-                    executeSequenceCommandWithVolume(devices, "Alexa.Speak", parameters, textToSpeech.ttsVolumes,
-                            textToSpeech.standardVolumes);
-                }
-            } catch (Exception e) {
-                logger.warn("send textToSpeech fails with unexpected error", e);
-            }
-            iterator.remove();
+        // we lock TTS until we have finished adding this one
+        Lock lock = locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock());
+        lock.lock();
+        try {
+            TextToSpeech textToSpeech = Objects
+                    .requireNonNull(textToSpeeches.computeIfAbsent(Objects.hash(text), k -> new TextToSpeech(text)));
+            textToSpeech.devices.add(device);
+            textToSpeech.ttsVolumes.add(ttsVolume);
+            textToSpeech.standardVolumes.add(standardVolume);
+            // schedule a TTS only if it has not been scheduled before
+            timers.computeIfAbsent(TimerType.TTS,
+                    k -> scheduler.schedule(this::sendTextToSpeech, 500, TimeUnit.MILLISECONDS));
+        } finally {
+            lock.unlock();
         }
     }
 
-    public synchronized void volume(Device device, int vol) {
-        Volume volume = Objects.requireNonNull(volumes.computeIfAbsent(vol, k -> new Volume(vol)));
-        volume.devices.add(device);
-        volume.volumes.add(vol);
-        replaceTimer(TimerType.VOLUME, scheduler.schedule(this::sendVolume, 500, TimeUnit.MILLISECONDS));
+    private void sendTextToSpeech() {
+        // we lock new TTS until we have dispatched everything
+        Lock lock = locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock());
+        lock.lock();
+        try {
+            Iterator<TextToSpeech> iterator = textToSpeeches.values().iterator();
+            while (iterator.hasNext()) {
+                TextToSpeech textToSpeech = iterator.next();
+                try {
+                    List<Device> devices = textToSpeech.devices;
+                    if (!devices.isEmpty()) {
+                        String text = textToSpeech.text;
+                        Map<String, Object> parameters = new HashMap<>();
+                        parameters.put("textToSpeak", text);
+                        executeSequenceCommandWithVolume(devices, "Alexa.Speak", parameters, textToSpeech.ttsVolumes,
+                                textToSpeech.standardVolumes);
+                    }
+                } catch (Exception e) {
+                    logger.warn("send textToSpeech fails with unexpected error", e);
+                }
+                iterator.remove();
+            }
+        } finally {
+            // the timer is done anyway immediately after we unlock
+            timers.remove(TimerType.TTS);
+            lock.unlock();
+        }
     }
 
-    private synchronized void sendVolume() {
-        Iterator<Volume> iterator = volumes.values().iterator();
-        while (iterator.hasNext()) {
-            Volume volume = iterator.next();
-            try {
-                List<Device> devices = volume.devices;
-                if (!devices.isEmpty()) {
-                    executeSequenceCommandWithVolume(devices, null, Map.of(), volume.volumes, List.of());
+    public void volume(Device device, int vol) {
+        // we lock volume until we have finished adding this one
+        Lock lock = locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock());
+        lock.lock();
+        try {
+            Volume volume = Objects.requireNonNull(volumes.computeIfAbsent(vol, k -> new Volume(vol)));
+            volume.devices.add(device);
+            volume.volumes.add(vol);
+            // schedule a TTS only if it has not been scheduled before
+            timers.computeIfAbsent(TimerType.VOLUME,
+                    k -> scheduler.schedule(this::sendVolume, 500, TimeUnit.MILLISECONDS));
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void sendVolume() {
+        // we lock new volume until we have dispatched everything
+        Lock lock = locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock());
+        lock.lock();
+        try {
+            Iterator<Volume> iterator = volumes.values().iterator();
+            while (iterator.hasNext()) {
+                Volume volume = iterator.next();
+                try {
+                    List<Device> devices = volume.devices;
+                    if (!devices.isEmpty()) {
+                        executeSequenceCommandWithVolume(devices, null, Map.of(), volume.volumes, List.of());
+                    }
+                } catch (Exception e) {
+                    logger.warn("send volume fails with unexpected error", e);
                 }
-            } catch (Exception e) {
-                logger.warn("send volume fails with unexpected error", e);
+                iterator.remove();
             }
-            iterator.remove();
+        } finally {
+            // the timer is done anyway immediately after we unlock
+            timers.remove(TimerType.VOLUME);
+            lock.unlock();
         }
     }
 
