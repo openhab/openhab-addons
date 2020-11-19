@@ -188,7 +188,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                     deviceName = "Alexa Guard";
                 } else if (aliases != null && aliases.length > 0 && aliases[0] != null
                         && aliases[0].friendlyName != null) {
-                    deviceName = shd.aliases[0].friendlyName;
+                    deviceName = aliases[0].friendlyName;
                 } else {
                     deviceName = shd.friendlyName;
                 }

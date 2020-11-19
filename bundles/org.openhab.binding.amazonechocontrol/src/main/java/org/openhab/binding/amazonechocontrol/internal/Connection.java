@@ -456,26 +456,16 @@ public class Connection {
             String accountCustomerId = this.accountCustomerId;
             if (accountCustomerId == null || accountCustomerId.isEmpty()) {
                 List<Device> devices = this.getDeviceList();
-                for (Device device : devices) {
-                    final String serial = this.serial;
-                    if (serial != null && serial.equals(device.serialNumber)) {
-                        this.accountCustomerId = device.deviceOwnerCustomerId;
-                        break;
-                    }
-                }
-                accountCustomerId = this.accountCustomerId;
+                accountCustomerId = devices.stream().filter(device -> serial.equals(device.serialNumber)).findAny()
+                        .map(device -> device.deviceOwnerCustomerId).orElse(null);
                 if (accountCustomerId == null || accountCustomerId.isEmpty()) {
-                    for (Device device : devices) {
-                        if ("This Device".equals(device.accountName)) {
-                            this.accountCustomerId = device.deviceOwnerCustomerId;
-                            String serial = device.serialNumber;
-                            if (serial != null) {
-                                this.serial = serial;
-                            }
-                            break;
-                        }
-                    }
+                    accountCustomerId = devices.stream().filter(device -> "This Device".equals(device.accountName))
+                            .findAny().map(device -> {
+                                serial = Objects.requireNonNullElse(device.serialNumber, serial);
+                                return device.deviceOwnerCustomerId;
+                            }).orElse(null);
                 }
+                this.accountCustomerId = accountCustomerId;
             }
         } catch (URISyntaxException | IOException | InterruptedException | ConnectionException e) {
             logger.debug("Getting account customer Id failed", e);
@@ -641,11 +631,11 @@ public class Connection {
                 Map<String, List<String>> headerFields = connection.getHeaderFields();
                 for (Map.Entry<String, List<String>> header : headerFields.entrySet()) {
                     String key = header.getKey();
-                    if (key != null && !key.isEmpty()) {
+                    if (!key.isEmpty()) {
                         if (key.equalsIgnoreCase("Set-Cookie")) {
                             // store cookie
                             for (String cookieHeader : header.getValue()) {
-                                if (cookieHeader != null && !cookieHeader.isEmpty()) {
+                                if (!cookieHeader.isEmpty()) {
                                     List<HttpCookie> cookies = HttpCookie.parse(cookieHeader);
                                     for (HttpCookie cookie : cookies) {
                                         cookieManager.getCookieStore().add(uri, cookie);
@@ -656,7 +646,7 @@ public class Connection {
                         if (key.equalsIgnoreCase("Location")) {
                             // get redirect location
                             location = header.getValue().get(0);
-                            if (location != null && !location.isEmpty()) {
+                            if (!location.isEmpty()) {
                                 location = uri.resolve(location).toString();
                                 // check for https
                                 if (location.toLowerCase().startsWith("http://")) {
@@ -767,8 +757,9 @@ public class Connection {
         if (bearer == null) {
             throw new ConnectionException("Error: No bearer received from register application");
         }
-        this.refreshToken = bearer.refreshToken;
-        if (this.refreshToken == null || this.refreshToken.isEmpty()) {
+        String refreshToken = bearer.refreshToken;
+        this.refreshToken = refreshToken;
+        if (refreshToken == null || refreshToken.isEmpty()) {
             throw new ConnectionException("Error: No refresh token received");
         }
         try {
@@ -821,8 +812,8 @@ public class Connection {
 
         String exchangeTokenJson = makeRequestAndReturnString("POST",
                 "https://www." + getAmazonSite() + "/ap/exchangetoken", exchangePostData, false, exchangeTokenHeader);
-        JsonExchangeTokenResponse exchangeTokenResponse = gson.fromJson(exchangeTokenJson,
-                JsonExchangeTokenResponse.class);
+        JsonExchangeTokenResponse exchangeTokenResponse = Objects
+                .requireNonNull(gson.fromJson(exchangeTokenJson, JsonExchangeTokenResponse.class));
 
         org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse.Response response = exchangeTokenResponse.response;
         if (response != null) {
@@ -832,16 +823,18 @@ public class Connection {
                 if (cookiesMap != null) {
                     for (String domain : cookiesMap.keySet()) {
                         Cookie[] cookies = cookiesMap.get(domain);
-                        for (Cookie cookie : cookies) {
-                            if (cookie != null) {
-                                HttpCookie httpCookie = new HttpCookie(cookie.name, cookie.value);
-                                httpCookie.setPath(cookie.path);
-                                httpCookie.setDomain(domain);
-                                Boolean secure = cookie.secure;
-                                if (secure != null) {
-                                    httpCookie.setSecure(secure);
+                        if (cookies != null) {
+                            for (Cookie cookie : cookies) {
+                                if (cookie != null) {
+                                    HttpCookie httpCookie = new HttpCookie(cookie.name, cookie.value);
+                                    httpCookie.setPath(cookie.path);
+                                    httpCookie.setDomain(domain);
+                                    Boolean secure = cookie.secure;
+                                    if (secure != null) {
+                                        httpCookie.setSecure(secure);
+                                    }
+                                    this.cookieManager.getCookieStore().add(null, httpCookie);
                                 }
-                                this.cookieManager.getCookieStore().add(null, httpCookie);
                             }
                         }
                     }
@@ -941,25 +934,30 @@ public class Connection {
         verifyTime = null;
         deviceName = null;
 
+        ScheduledFuture<?> announcementTimer = this.announcementTimer;
         if (announcementTimer != null) {
             announcements.clear();
             announcementTimer.cancel(true);
         }
+        ScheduledFuture<?> textToSpeechTimer = this.textToSpeechTimer;
         if (textToSpeechTimer != null) {
             textToSpeeches.clear();
             textToSpeechTimer.cancel(true);
         }
+        ScheduledFuture<?> volumeTimer = this.volumeTimer;
         if (volumeTimer != null) {
             volumes.clear();
             volumeTimer.cancel(true);
         }
+        ScheduledFuture<?> devicesTimer = this.devicesTimer;
         if (devicesTimer != null) {
             devicesTimer.cancel(true);
         }
         devices.values().forEach((queueObjects) -> {
             queueObjects.forEach((queueObject) -> {
-                if (queueObject.future != null) {
-                    queueObject.future.cancel(true);
+                Future<?> future = queueObject.future;
+                if (future != null) {
+                    future.cancel(true);
                 }
             });
         });

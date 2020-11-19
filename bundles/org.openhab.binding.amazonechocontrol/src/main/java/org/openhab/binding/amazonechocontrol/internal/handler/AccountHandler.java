@@ -824,8 +824,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     if (sourceDeviceIds != null) {
                         Arrays.stream(sourceDeviceIds).filter(Objects::nonNull)
                                 .map(sourceDeviceId -> findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber))
-                                .filter(Objects::nonNull)
-                                .forEach(echoHandler -> echoHandler.handlePushActivity(currentActivity));
+                                .filter(Objects::nonNull).forEach(echoHandler -> Objects.requireNonNull(echoHandler)
+                                        .handlePushActivity(currentActivity));
                     }
                 });
     }
