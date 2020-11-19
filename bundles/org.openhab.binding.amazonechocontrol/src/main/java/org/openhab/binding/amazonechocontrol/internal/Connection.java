@@ -1312,16 +1312,6 @@ public class Connection {
         }
     }
 
-    private void startTimerIfNotPresentOrDone(TimerType type, Supplier<ScheduledFuture<?>> timerSupplier) {
-        timers.compute(type, (timerType, oldTimer) -> {
-            if (oldTimer == null || oldTimer.isDone()) {
-                return timerSupplier.get();
-            } else {
-                return oldTimer;
-            }
-        });
-    }
-
     public void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
         if (speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim().isEmpty()) {
@@ -1330,7 +1320,6 @@ public class Connection {
 
         Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
         lock.lock();
-
         try {
             Announcement announcement = Objects.requireNonNull(announcements.computeIfAbsent(
                     Objects.hash(speak, bodyText, title), k -> new Announcement(speak, bodyText, title)));
@@ -1338,8 +1327,7 @@ public class Connection {
             announcement.ttsVolumes.add(ttsVolume);
             announcement.standardVolumes.add(standardVolume);
 
-            startTimerIfNotPresentOrDone(TimerType.ANNOUNCEMENT,
-                    () -> scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS));
+            timers.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS));
         } finally {
             lock.unlock();
         }
@@ -1395,6 +1383,7 @@ public class Connection {
                 iterator.remove();
             }
         } finally {
+            timers.computeIfPresent(TimerType.ANNOUNCEMENT, (k, v) -> null);
             lock.unlock();
         }
     }
