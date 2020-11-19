@@ -64,9 +64,18 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     private final Logger logger = LoggerFactory.getLogger(CaddxBridgeHandler.class);
 
     static final byte[] DISCOVERY_PARTITION_STATUS_REQUEST_0 = { 0x26, 0x00 };
-    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_00 = { 0x25, 0x00 };
-    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_10 = { 0x25, 0x10 };
-    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_20 = { 0x25, 0x20 };
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_00 = { 0x25, 0x00 }; // 1 - 16
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_10 = { 0x25, 0x01 }; // 17 - 32
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_20 = { 0x25, 0x02 }; // 33 - 48
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_30 = { 0x25, 0x03 }; // 49 - 64
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_40 = { 0x25, 0x04 }; // 65 - 80
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_50 = { 0x25, 0x05 }; // 81 - 96
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_60 = { 0x25, 0x06 }; // 97 - 112
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_70 = { 0x25, 0x07 }; // 113 - 64
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_80 = { 0x25, 0x08 }; // 129 - 144
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_90 = { 0x25, 0x09 }; // 145 - 160
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_A0 = { 0x25, 0x0A }; // 161 - 176
+    static final byte[] DISCOVERY_ZONES_SNAPSHOT_REQUEST_B0 = { 0x25, 0x0B }; // 177 - 192
     static final byte[] DISCOVERY_PARTITIONS_SNAPSHOT_REQUEST = { 0x27 };
 
     private final SerialPortManager portManager;
@@ -74,6 +83,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     private CaddxProtocol protocol = CaddxProtocol.Binary;
     private String serialPortName = "";
     private int baudRate;
+    private int maxZoneNumber;
     private @Nullable CaddxCommunicator communicator = null;
 
     // Things served by the bridge
@@ -90,11 +100,6 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         this.discoveryService = discoveryService;
     }
 
-    /**
-     * Constructor.
-     *
-     * @param bridge
-     */
     public CaddxBridgeHandler(SerialPortManager portManager, Bridge bridge) {
         super(bridge);
 
@@ -113,6 +118,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         serialPortName = portName;
         protocol = configuration.getProtocol();
         baudRate = configuration.getBaudrate();
+        maxZoneNumber = configuration.getMaxZoneNumber();
         updateStatus(ThingStatus.OFFLINE);
 
         // create & start panel interface
@@ -132,10 +138,21 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         if (comm != null) {
             comm.addListener(this);
 
-            // Send discovery commands for the things
+            // Send discovery commands for the zones
             comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_00, false));
             comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_10, false));
             comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_20, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_30, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_40, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_50, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_60, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_70, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_80, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_90, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_A0, false));
+            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_B0, false));
+
+            // Send discovery commands for the partitions
             comm.transmit(new CaddxMessage(DISCOVERY_PARTITION_STATUS_REQUEST_0, false));
             comm.transmit(new CaddxMessage(DISCOVERY_PARTITIONS_SNAPSHOT_REQUEST, false));
         }
@@ -348,9 +365,9 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                         }
                         break;
                     case ZONES_SNAPSHOT_MESSAGE:
-                        int zoneOffset = Integer.parseInt(caddxMessage.getPropertyById("zone_offset"));
+                        int zoneOffset = Integer.parseInt(caddxMessage.getPropertyById("zone_offset")) * 16;
                         for (int i = 1; i <= 16; i++) {
-                            if (caddxMessage.getPropertyById("zone_" + i + "_trouble").equals("false")) {
+                            if (zoneOffset + i <= maxZoneNumber) {
                                 thing = findThing(CaddxThingType.ZONE, null, zoneOffset + i, null);
                                 if (thing != null) {
                                     continue;
@@ -358,8 +375,6 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
                                 event = new CaddxEvent(caddxMessage, null, zoneOffset + i, null);
                                 discoveryService.addThing(getThing(), CaddxThingType.ZONE, event);
-                            } else {
-                                logger.debug("troubled zone: {}", zoneOffset + i);
                             }
                         }
                         break;
