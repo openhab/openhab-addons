@@ -144,6 +144,14 @@ public class DahuaHandler extends ChannelDuplexHandler {
             } else if (content.contains("table.VideoAnalyseRule[0][1].Enable=false")) {
                 ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.OFF);
             }
+            // Privacy Mode on/off
+            if (content.contains("LeFunctionStatusSync")) {
+                if (content.contains("\"Status\" : true")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
+                } else if (content.contains("\"Status\" : false")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
+                }
+            }
         } finally {
             ReferenceCountUtil.release(msg);
         }
@@ -263,6 +271,15 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.motionThreshold = Double.valueOf(command.toString()) / 10000;
                 }
                 ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
+                return;
+            case CHANNEL_ENABLE_PRIVACY_MODE:
+                if (OnOffType.OFF.equals(command)) {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask[0].Enable=false");
+                } else if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask[0].Enable=true");
+                }
                 return;
         }
     }

@@ -96,7 +96,14 @@ public class AmcrestHandler extends ChannelDuplexHandler {
                 String value = ipCameraHandler.returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
                 ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value));
             }
-
+            // Privacy Mode on/off
+            if (content.contains("LeFunctionStatusSync")) {
+                if (content.contains("\"Status\" : true")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
+                } else if (content.contains("\"Status\" : false")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
+                }
+            }
         } finally {
             ReferenceCountUtil.release(msg);
             ctx.close();
@@ -219,6 +226,15 @@ public class AmcrestHandler extends ChannelDuplexHandler {
                     ipCameraHandler.motionThreshold = ipCameraHandler.motionThreshold / 10000;
                 }
                 ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
+                return;
+            case CHANNEL_ENABLE_PRIVACY_MODE:
+                if (OnOffType.OFF.equals(command)) {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask[0].Enable=false");
+                } else if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask[0].Enable=true");
+                }
                 return;
         }
     }
