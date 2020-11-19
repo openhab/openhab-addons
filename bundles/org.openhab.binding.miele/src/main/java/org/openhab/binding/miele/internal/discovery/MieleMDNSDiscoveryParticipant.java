@@ -83,7 +83,8 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 }
 
                 return DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty(uid.getId()).withLabel("Miele XGW3000 Gateway").build();
+                        .withRepresentationProperty(MieleBindingConstants.HOST).withLabel("Miele XGW3000 Gateway")
+                        .build();
             }
         }
         return null;
