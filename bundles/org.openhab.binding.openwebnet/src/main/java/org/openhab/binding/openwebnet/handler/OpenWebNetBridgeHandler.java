@@ -50,6 +50,7 @@ import org.openwebnet4j.message.GatewayMgmt;
 import org.openwebnet4j.message.Lighting;
 import org.openwebnet4j.message.OpenMessage;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -354,7 +355,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation) {
             String ownId = ownIdFromMessage(baseMsg);
-            logger.debug("ownId={}", ownId);
+            logger.debug("ownIdFromMessage({}) --> ownId={}", baseMsg, ownId);
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownId);
             if (deviceHandler == null) {
                 OpenGateway gw = gateway;
@@ -482,25 +483,24 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Return a ownId string (=WHO.WHERE) from a deviceWhere thing config parameter (already normalized) and its
-     * handler.
+     * Return a ownId string (=WHO.WHERE) from the device Where address and handler
      *
-     * @param deviceWhere the device WHERE config parameter
-     * @param handler the thing handler
-     * @return the ownId
+     * @param where the Where address (to be normalized)
+     * @param handler the device handler
+     * @return the ownId String
      */
-    protected String ownIdFromDeviceWhere(@Nullable String deviceWhere, OpenWebNetThingHandler handler) {
-        return handler.ownIdPrefix() + "." + deviceWhere;
+    protected String ownIdFromDeviceWhere(Where where, OpenWebNetThingHandler handler) {
+        return handler.ownIdPrefix() + "." + normalizeWhere(where);
     }
 
     /**
-     * Returns a ownId string (=WHO.WHERE) from a Where address and Who
+     * Returns a ownId string (=WHO.WHERE) from a Who and Where address
      *
-     * @param where the Where address (to be normalized)
      * @param who the Who
-     * @return the ownId
+     * @param where the Where address (to be normalized)
+     * @return the ownId String
      */
-    public String ownIdFromWhoWhere(Where where, Who who) {
+    public String ownIdFromWhoWhere(Who who, Where where) {
         return who.value() + "." + normalizeWhere(where);
     }
 
@@ -510,45 +510,39 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @param baseMsg the BaseOpenMessage
      * @return the ownId String
      */
-    private String ownIdFromMessage(BaseOpenMessage baseMsg) {
+    public String ownIdFromMessage(BaseOpenMessage baseMsg) {
         return baseMsg.getWho().value() + "." + normalizeWhere(baseMsg.getWhere());
     }
 
     /**
-     * Transform a Where address into a Thing id string based on bridge type (BUS/USB ZigBee).
-     * '#' in WHERE are changed to 'h'
+     * Transform a Where address into a Thing id string
      *
      * @param where the Where address
-     * @return the thing Id
+     * @return the thing Id string
      */
     public String thingIdFromWhere(Where where) {
-        return normalizeWhere(where).replace('#', 'h'); // '#' cannot be used in ThingUID;
+        return normalizeWhere(where); // '#' cannot be used in ThingUID;
     }
 
     /**
-     * Normalize a Where address for Thermo and Zigbee devices
+     * Normalize a Where address
      *
      * @param where the Where address
-     * @return the normalized address
+     * @return the normalized address as String
      */
     public String normalizeWhere(Where where) {
-        String str = "";
-        if (isBusGateway) {
-            if (where.value().indexOf('#') < 0) { // no hash present
-                str = where.value();
-            } else if (where.value().indexOf("#4#") > 0) { // local bus: APL#4#bus
-                str = where.value();
-            } else if (where.value().indexOf('#') == 0) { // thermo zone via central unit: #0 or #Z (Z=[1-99]) --> Z
-                str = where.value().substring(1);
-            } else if (where.value().indexOf('#') > 0) { // thermo zone and actuator N: Z#N (Z=[1-99], N=[1-9]) -- > Z
-                str = where.value().substring(0, where.value().indexOf('#'));
-            } else {
-                logger.warn("normalizeWhere() unexpected WHERE: {}", where);
-                str = where.value();
-            }
-            return str;
+        String str = where.value();
+        if (where instanceof WhereZigBee) {
+            str = ((WhereZigBee) where).valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
-            return where.value();
+            if (str.indexOf("#4#") > 0) { // local bus: APL#4#bus
+                // no change needed
+            } else if (str.indexOf('#') == 0) { // Thermo zone via central unit: #0 or #Z (Z=[1-99]) --> Z
+                str = str.substring(1);
+            } else if (str.indexOf('#') > 0) { // Thermo zone and actuator N: Z#N (Z=[1-99], N=[1-9]) --> Z
+                str = str.substring(0, str.indexOf('#'));
+            }
         }
+        return str.replace('#', 'h');
     }
 }

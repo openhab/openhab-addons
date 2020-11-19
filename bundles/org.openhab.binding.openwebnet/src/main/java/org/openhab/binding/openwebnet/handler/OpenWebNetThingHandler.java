@@ -82,7 +82,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                         w = new WhereZigBee(deviceWhereStr);
                     }
                     deviceWhere = w;
-                    final String oid = brH.ownIdFromDeviceWhere(w.value(), this);
+                    final String oid = brH.ownIdFromDeviceWhere(w, this);
                     ownId = oid;
                     Map<String, String> properties = editProperties();
                     properties.put(PROPERTY_OWNID, oid);

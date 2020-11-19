@@ -119,10 +119,10 @@ Devices can be discovered automatically from Inbox after a gateway has been conf
 Devices can be also added manually from PaperUI. For each device it must be configured:
 
 - the associated gateway (`Bridge Selection` menu)
-- the `WHERE` config parameter (`OpenWebNet Device Address`):
-  - example for BUS/SCS: Point to Point `A=2 PL=4` --> `WHERE="24"`
-  - example for BUS/SCS: Point to Point `A=6 PL=4` on local bus --> `WHERE="64#4#01"`
-  - example for ZigBee devices: use decimal format address without the UNIT part and network: ZigBee `WHERE=414122201#9` --> `WHERE="4141222"`
+- the `where` config parameter (`OpenWebNet Device Address`):
+  - example for BUS/SCS: Point to Point `A=2 PL=4` --> `where="24"`
+  - example for BUS/SCS: Point to Point `A=6 PL=4` on local bus --> `where="64#4#01"`
+  - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
 
 ## Channels
 
@@ -162,10 +162,11 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
 
 
 ```xtend
-// ZigBee USB Gateway configuration for radio devices
+/* ZigBee USB Gateway configuration - for radio devices */
 Bridge openwebnet:zb_gateway:myZBgateway  [serialPort="COM3"] {
-    zb_dimmer          myzigbeedimmer [ where="123456700#9"]
-    zb_on_off_switch   myzigbeeswitch [ where="765432200#9"]
+    zb_dimmer          myZB_dimmer     [ where="765432101#9"]
+    zb_on_off_switch   myZB_switch     [ where="765432201#9"]
+    zb_on_off_switch2u myZB_2U_switch  [ where="765432300#9"]
 }
 ```
 
