@@ -31,6 +31,8 @@ import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HandlerPowerController} is responsible for the Alexa.PowerControllerInterface
@@ -40,6 +42,8 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class HandlerPowerController extends HandlerBase {
+    private final Logger logger = LoggerFactory.getLogger(HandlerPowerController.class);
+
     // Interface
     public static final String INTERFACE = "Alexa.PowerController";
 
@@ -67,6 +71,7 @@ public class HandlerPowerController extends HandlerBase {
 
     @Override
     public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+        logger.trace("{} received {}", this.smartHomeDeviceHandler.getId(), stateList);
         Boolean powerStateValue = null;
         for (JsonObject state : stateList) {
             if (POWER_STATE.propertyName.equals(state.get("name").getAsString())) {
@@ -74,14 +79,15 @@ public class HandlerPowerController extends HandlerBase {
                 // For groups take true if all true
                 if ("ON".equals(value)) {
                     powerStateValue = true;
-                } else if (powerStateValue != null) {
+                } else {
                     powerStateValue = false;
                 }
 
             }
         }
+        logger.trace("{} final state {}", this.smartHomeDeviceHandler.getId(), powerStateValue);
         updateState(POWER_STATE.channelId,
-                powerStateValue == null ? UnDefType.UNDEF : (powerStateValue ? OnOffType.ON : OnOffType.OFF));
+                powerStateValue == null ? UnDefType.UNDEF : OnOffType.from(powerStateValue));
     }
 
     @Override
