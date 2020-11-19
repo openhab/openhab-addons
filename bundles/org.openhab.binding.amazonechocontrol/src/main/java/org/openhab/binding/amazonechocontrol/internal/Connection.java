@@ -40,13 +40,10 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -156,7 +153,8 @@ public class Connection {
     private Map<Integer, Volume> volumes = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<String, LinkedBlockingQueue<QueueObject>> devices = Collections.synchronizedMap(new LinkedHashMap<>());
 
-    private final Map<TimerType, ScheduledFuture<?>> timers = new HashMap<>();
+    private final Map<TimerType, ScheduledFuture<?>> timers = new ConcurrentHashMap<>();
+    private final Map<TimerType, Lock> locks = new ConcurrentHashMap<>();
 
     private enum TimerType {
         ANNOUNCEMENT,
@@ -164,8 +162,6 @@ public class Connection {
         VOLUME,
         DEVICES
     }
-
-    public Lock devicesRunning = new ReentrantLock();
 
     public Connection(@Nullable Connection oldConnection, Gson gson) {
         this.gson = gson;
@@ -1316,68 +1312,90 @@ public class Connection {
         }
     }
 
-    public synchronized void announcement(Device device, String speak, String bodyText, @Nullable String title,
+    private void startTimerIfNotPresentOrDone(TimerType type, Supplier<ScheduledFuture<?>> timerSupplier) {
+        timers.compute(type, (timerType, oldTimer) -> {
+            if (oldTimer == null || oldTimer.isDone()) {
+                return timerSupplier.get();
+            } else {
+                return oldTimer;
+            }
+        });
+    }
+
+    public void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
         if (speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim().isEmpty()) {
             return;
         }
 
-        Announcement announcement = Objects.requireNonNull(announcements
-                .computeIfAbsent(Objects.hash(speak, bodyText, title), k -> new Announcement(speak, bodyText, title)));
-        announcement.devices.add(device);
-        announcement.ttsVolumes.add(ttsVolume);
-        announcement.standardVolumes.add(standardVolume);
+        Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
+        lock.lock();
 
-        replaceTimer(TimerType.ANNOUNCEMENT, scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS));
+        try {
+            Announcement announcement = Objects.requireNonNull(announcements.computeIfAbsent(
+                    Objects.hash(speak, bodyText, title), k -> new Announcement(speak, bodyText, title)));
+            announcement.devices.add(device);
+            announcement.ttsVolumes.add(ttsVolume);
+            announcement.standardVolumes.add(standardVolume);
+
+            startTimerIfNotPresentOrDone(TimerType.ANNOUNCEMENT,
+                    () -> scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS));
+        } finally {
+            lock.unlock();
+        }
     }
 
-    private synchronized void sendAnnouncement() {
-        Iterator<Announcement> iterator = announcements.values().iterator();
-        while (iterator.hasNext()) {
-            Announcement announcement = iterator.next();
-            try {
-                List<Device> devices = announcement.devices;
-                if (!devices.isEmpty()) {
-                    String speak = announcement.speak;
-                    String bodyText = announcement.bodyText;
-                    String title = announcement.title;
-                    List<@Nullable Integer> ttsVolumes = announcement.ttsVolumes;
-                    List<@Nullable Integer> standardVolumes = announcement.standardVolumes;
+    private void sendAnnouncement() {
+        Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
+        lock.lock();
+        try {
+            Iterator<Announcement> iterator = announcements.values().iterator();
+            while (iterator.hasNext()) {
+                Announcement announcement = iterator.next();
+                try {
+                    List<Device> devices = announcement.devices;
+                    if (!devices.isEmpty()) {
+                        String speak = announcement.speak;
+                        String bodyText = announcement.bodyText;
+                        String title = announcement.title;
 
-                    Map<String, Object> parameters = new HashMap<>();
-                    parameters.put("expireAfter", "PT5S");
-                    JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
-                    JsonAnnouncementContent content = new JsonAnnouncementContent();
-                    content.display.title = title == null || title.isEmpty() ? "openHAB" : title;
-                    content.display.body = bodyText;
-                    content.display.body = speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
-                    if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
-                        content.speak.type = "ssml";
+                        Map<String, Object> parameters = new HashMap<>();
+                        parameters.put("expireAfter", "PT5S");
+                        JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
+                        JsonAnnouncementContent content = new JsonAnnouncementContent();
+                        content.display.title = title == null || title.isEmpty() ? "openHAB" : title;
+                        content.display.body = bodyText;
+                        content.display.body = speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
+                        if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
+                            content.speak.type = "ssml";
+                        }
+                        content.speak.value = speak;
+
+                        contentArray[0] = content;
+
+                        parameters.put("content", contentArray);
+
+                        JsonAnnouncementTarget target = new JsonAnnouncementTarget();
+                        target.customerId = devices.get(0).deviceOwnerCustomerId;
+                        TargetDevice[] targetDevices = devices.stream().map(TargetDevice::new)
+                                .collect(Collectors.toList()).toArray(new TargetDevice[0]);
+                        target.devices = targetDevices;
+                        parameters.put("target", target);
+
+                        String customerId = getCustomerId(devices.get(0).deviceOwnerCustomerId);
+                        if (customerId != null) {
+                            parameters.put("customerId", customerId);
+                        }
+                        executeSequenceCommandWithVolume(devices, "AlexaAnnouncement", parameters,
+                                announcement.ttsVolumes, announcement.standardVolumes);
                     }
-                    content.speak.value = speak;
-
-                    contentArray[0] = content;
-
-                    parameters.put("content", contentArray);
-
-                    JsonAnnouncementTarget target = new JsonAnnouncementTarget();
-                    target.customerId = devices.get(0).deviceOwnerCustomerId;
-                    TargetDevice[] targetDevices = devices.stream().map(TargetDevice::new).collect(Collectors.toList())
-                            .toArray(new TargetDevice[0]);
-                    target.devices = targetDevices;
-                    parameters.put("target", target);
-
-                    String customerId = getCustomerId(devices.get(0).deviceOwnerCustomerId);
-                    if (customerId != null) {
-                        parameters.put("customerId", customerId);
-                    }
-                    executeSequenceCommandWithVolume(devices, "AlexaAnnouncement", parameters, ttsVolumes,
-                            standardVolumes);
+                } catch (Exception e) {
+                    logger.warn("send announcement fails with unexpected error", e);
                 }
-            } catch (Exception e) {
-                logger.warn("send announcement fails with unexpected error", e);
+                iterator.remove();
             }
-            iterator.remove();
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -1403,12 +1421,10 @@ public class Connection {
                 List<Device> devices = textToSpeech.devices;
                 if (!devices.isEmpty()) {
                     String text = textToSpeech.text;
-                    List<@Nullable Integer> ttsVolumes = textToSpeech.ttsVolumes;
-                    List<@Nullable Integer> standardVolumes = textToSpeech.standardVolumes;
-
                     Map<String, Object> parameters = new HashMap<>();
                     parameters.put("textToSpeak", text);
-                    executeSequenceCommandWithVolume(devices, "Alexa.Speak", parameters, ttsVolumes, standardVolumes);
+                    executeSequenceCommandWithVolume(devices, "Alexa.Speak", parameters, textToSpeech.ttsVolumes,
+                            textToSpeech.standardVolumes);
                 }
             } catch (Exception e) {
                 logger.warn("send textToSpeech fails with unexpected error", e);
@@ -1523,7 +1539,8 @@ public class Connection {
     }
 
     private void handleExecuteSequenceNode() {
-        if (devicesRunning.tryLock()) {
+        Lock lock = locks.computeIfAbsent(TimerType.DEVICES, k -> new ReentrantLock());
+        if (lock.tryLock()) {
             try {
                 for (String serialNumber : devices.keySet()) {
                     LinkedBlockingQueue<QueueObject> queueObjects = devices.get(serialNumber);
@@ -1559,7 +1576,7 @@ public class Connection {
                     }
                 }
             } finally {
-                devicesRunning.unlock();
+                lock.unlock();
             }
         }
     }
