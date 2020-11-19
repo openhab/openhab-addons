@@ -628,10 +628,10 @@ public class Connection {
                 String location = null;
 
                 // handle response headers
-                Map<String, List<String>> headerFields = connection.getHeaderFields();
-                for (Map.Entry<String, List<String>> header : headerFields.entrySet()) {
+                Map<@Nullable String, List<String>> headerFields = connection.getHeaderFields();
+                for (Map.Entry<@Nullable String, List<String>> header : headerFields.entrySet()) {
                     String key = header.getKey();
-                    if (!key.isEmpty()) {
+                    if (key != null && !key.isEmpty()) {
                         if (key.equalsIgnoreCase("Set-Cookie")) {
                             // store cookie
                             for (String cookieHeader : header.getValue()) {
