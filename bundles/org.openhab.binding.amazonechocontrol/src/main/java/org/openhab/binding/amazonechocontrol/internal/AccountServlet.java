@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
@@ -452,13 +451,13 @@ public class AccountServlet extends HttpServlet {
         StringBuilder html = new StringBuilder();
         html.append("<html><head><title>"
                 + StringEscapeUtils.escapeHtml(BINDING_NAME + " - " + this.account.getThing().getLabel()));
-        if (StringUtils.isNotEmpty(title)) {
+        if (!title.isEmpty()) {
             html.append(" - ");
             html.append(StringEscapeUtils.escapeHtml(title));
         }
         html.append("</title><head><body>");
         html.append("<h1>" + StringEscapeUtils.escapeHtml(BINDING_NAME + " - " + this.account.getThing().getLabel()));
-        if (StringUtils.isNotEmpty(title)) {
+        if (!title.isEmpty()) {
             html.append(" - ");
             html.append(StringEscapeUtils.escapeHtml(title));
         }
@@ -519,9 +518,9 @@ public class AccountServlet extends HttpServlet {
             List<String> properties = musicProvider.supportedProperties;
             String providerId = musicProvider.id;
             String displayName = musicProvider.displayName;
-            if (properties != null && properties.contains("Alexa.Music.PlaySearchPhrase")
-                    && StringUtils.isNotEmpty(providerId) && StringUtils.equals(musicProvider.availability, "AVAILABLE")
-                    && StringUtils.isNotEmpty(displayName)) {
+            if (properties != null && properties.contains("Alexa.Music.PlaySearchPhrase") && providerId != null
+                    && !providerId.isEmpty() && "AVAILABLE".equals(musicProvider.availability) && displayName != null
+                    && !displayName.isEmpty()) {
                 html.append("<tr><td>");
                 html.append(StringEscapeUtils.escapeHtml(displayName));
                 html.append("</td><td>");

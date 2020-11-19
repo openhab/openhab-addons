@@ -1015,7 +1015,7 @@ public class Connection {
     private void searchSmartHomeDevicesRecursive(@Nullable Object jsonNode, List<SmartHomeBaseDevice> devices) {
         if (jsonNode instanceof Map) {
             @SuppressWarnings("rawtypes")
-            Map map = (Map) jsonNode;
+            Map<String, Object> map = (Map) jsonNode;
             if (map.containsKey("entityId") && map.containsKey("friendlyName") && map.containsKey("actions")) {
                 // device node found, create type element and add it to the results
                 JsonElement element = gson.toJsonTree(jsonNode);

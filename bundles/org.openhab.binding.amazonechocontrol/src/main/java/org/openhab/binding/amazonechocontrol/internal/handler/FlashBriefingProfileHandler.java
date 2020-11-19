@@ -19,7 +19,6 @@ import java.net.URISyntaxException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
@@ -189,7 +188,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         } else {
             updateState(CHANNEL_ACTIVE, OnOffType.OFF);
         }
-        return StringUtils.equals(this.currentConfigurationJson, currentConfigurationJson);
+        return this.currentConfigurationJson.equals(currentConfigurationJson);
     }
 
     private String saveCurrentProfile(AccountHandler connection) {

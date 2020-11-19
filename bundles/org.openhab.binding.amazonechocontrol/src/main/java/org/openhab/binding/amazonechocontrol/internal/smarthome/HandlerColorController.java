@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
@@ -142,8 +141,8 @@ public class HandlerColorController extends HandlerBase {
         if (channelId.equals(COLOR_PROPERTIES.channelId)) {
             if (containsCapabilityProperty(capabilties, COLOR.propertyName)) {
                 if (command instanceof StringType) {
-                    String colorName = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(colorName)) {
+                    String colorName = command.toFullString();
+                    if (!colorName.isEmpty()) {
                         lastColorName = colorName;
                         connection.smartHomeCommand(entityId, "setColor", "colorName", colorName);
                         return true;
