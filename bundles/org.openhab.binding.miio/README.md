@@ -94,6 +94,7 @@ or in case of unknown models include the model information of a similar device t
 | Mi Air Quality Monitor S1    | miio:basic       | [cgllc.airmonitor.s1](#cgllc-airmonitor-s1) | Yes       |            |
 | Mi Air Humidifier            | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
 | Mi Air Humidifier            | miio:basic       | [zhimi.humidifier.ca1](#zhimi-humidifier-ca1) | Yes       |            |
+| Mi Air Evaporative Humidifier 2 | miio:basic       | [zhimi.humidifier.ca4](#zhimi-humidifier-ca4) | Yes       |            |
 | Mi Air Humidifier 2          | miio:basic       | [zhimi.humidifier.cb1](#zhimi-humidifier-cb1) | Yes       |            |
 | Mija Smart humidifier        | miio:basic       | [deerma.humidifier.mjjsq](#deerma-humidifier-mjjsq) | Yes       |            |
 | Mi Air Purifier v1           | miio:basic       | [zhimi.airpurifier.v1](#zhimi-airpurifier-v1) | Yes       |            |
@@ -484,6 +485,29 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | motorspeed       | Number  | Motor Speed                         |            |
 | temperature      | Number  | Temperature                         |            |
 | childlock        | Switch  | Child Lock                          |            |
+
+### Mi Air Evaporative Humidifier 2 (<a name="zhimi-humidifier-ca4">zhimi.humidifier.ca4</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| mode             | Number  | Mode                                |            |
+| Fault            | Number  | Humidifier Device Fault             |            |
+| humidity         | Number  | Humidity                            |            |
+| targetHumidity   | Number  | Target Humidity                     |            |
+| waterlevel       | Number  | Water Level                         |            |
+| bright           | Number  | LED Brightness                      |            |
+| buzzer           | Switch  | Buzzer Status                       |            |
+| dry              | Switch  | Dry                                 |            |
+| usedhours        | Number  | Run Time                            |            |
+| powerhours       | Number  | Power Time                          |            |
+| targetmotorspeed | Number  | Target Motor Speed                  |            |
+| actualmotorspeed | Number  | Actual Motor Speed                  |            |
+| temperature      | Number  | Temperature                         |            |
+| childlock        | Switch  | Child Lock                          |            |
+| ButtonPressed    | Number  | Button Pressed                      |            |
+| clean            | Switch  | Clean Mode                          |            |
+| countryCode      | Number  | Country Code                        |            |
 
 ### Mi Air Humidifier 2 (<a name="zhimi-humidifier-cb1">zhimi.humidifier.cb1</a>) Channels
 
@@ -2513,11 +2537,16 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
+| ambientBrightness | Number  | Ambient Brightness                  |            |
 | delayoff         | Number  | Shutdown Timer                      |            |
 | colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
+| ambientPower     | Switch  | Ambient Power                       |            |
+| ambientColor     | Color   | Ambient Color                       |            |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |            |
 | customScene      | String  | Set Scene                           |            |
+| ambientColorMode | Number  | Ambient Color Mode                  |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Lamp v5 (<a name="yeelink-light-ceiling5">yeelink.light.ceiling5</a>) Channels
@@ -2778,11 +2807,16 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | brightness       | Dimmer  | Brightness                          |            |
+| ambientBrightness | Number  | Ambient Brightness                  |            |
 | delayoff         | Number  | Shutdown Timer                      |            |
 | colorTemperature | Number  | Color Temperature                   |            |
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
+| ambientPower     | Switch  | Ambient Power                       |            |
+| ambientColor     | Color   | Ambient Color                       |            |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |            |
 | customScene      | String  | Set Scene                           |            |
+| ambientColorMode | Number  | Ambient Color Mode                  |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling10-ambi">yeelink.light.ceiling10.ambi</a>) Channels
@@ -3272,6 +3306,32 @@ Number usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedh
 Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
 Number temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
 Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+```
+
+### Mi Air Evaporative Humidifier 2 (zhimi.humidifier.ca4) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_humidifier "Mi Air Evaporative Humidifier 2" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number Fault "Humidifier Device Fault" (G_humidifier) {channel="miio:basic:humidifier:Fault"}
+Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number targetHumidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:targetHumidity"}
+Number waterlevel "Water Level" (G_humidifier) {channel="miio:basic:humidifier:waterlevel"}
+Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
+Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
+Number usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
+Number powerhours "Power Time" (G_humidifier) {channel="miio:basic:humidifier:powerhours"}
+Number targetmotorspeed "Target Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:targetmotorspeed"}
+Number actualmotorspeed "Actual Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:actualmotorspeed"}
+Number temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+Number ButtonPressed "Button Pressed" (G_humidifier) {channel="miio:basic:humidifier:ButtonPressed"}
+Switch clean "Clean Mode" (G_humidifier) {channel="miio:basic:humidifier:clean"}
+Number countryCode "Country Code" (G_humidifier) {channel="miio:basic:humidifier:countryCode"}
 ```
 
 ### Mi Air Humidifier 2 (zhimi.humidifier.cb1) item file lines
@@ -5670,11 +5730,16 @@ note: Autogenerated example. Replace the id (ceiling4) in the channel with your 
 Group G_ceiling4 "Yeelight LED Ceiling Lamp v4" <status>
 Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
 Dimmer brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:ambientBrightness"}
 Number delayoff "Shutdown Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
 Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
 Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
 String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
+Switch ambientPower "Ambient Power" (G_ceiling4) {channel="miio:basic:ceiling4:ambientPower"}
+Color ambientColor "Ambient Color" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorTemperature"}
 String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
 ```
 
@@ -5995,11 +6060,16 @@ note: Autogenerated example. Replace the id (ceiling4) in the channel with your 
 Group G_ceiling4 "Yeelight LED Ceiling Ambi Lamp" <status>
 Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
 Dimmer brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:ambientBrightness"}
 Number delayoff "Shutdown Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
 Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
 Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
 String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
+Switch ambientPower "Ambient Power" (G_ceiling4) {channel="miio:basic:ceiling4:ambientPower"}
+Color ambientColor "Ambient Color" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorTemperature"}
 String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:ambientColorMode"}
 Number nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
 ```
 
