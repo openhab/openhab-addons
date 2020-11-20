@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.upnpcontrol.internal.handler;
 
-import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.BINDING_ID;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +31,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
-import org.openhab.binding.upnpcontrol.internal.UpnpChannelTypeProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfiguration;
@@ -50,11 +46,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.thing.type.ChannelType;
-import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.CommandDescriptionBuilder;
@@ -121,8 +114,6 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     protected UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
 
-    protected @Nullable UpnpChannelTypeProvider channelTypeProvider;
-
     public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlBindingConfiguration configuration,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider) {
@@ -142,6 +133,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public void initialize() {
+        config = getConfigAs(UpnpControlConfiguration.class);
+
         upnpIOService.registerParticipant(this);
         // This action should exist on all media devices and return a result, so a good candidate for testing.
         upnpIOService.addStatusListener(this, "ConnectionManager", "GetCurrentConnectionIDs", config.refresh);
@@ -151,14 +144,9 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(UpnpChannelTypeProvider.class);
-    }
-
-    @Override
     public void dispose() {
-        removeSubscriptions();
         cancelPollingJob();
+        removeSubscriptions();
 
         UpnpControlUtil.playlistsUnsubscribe(this);
 
@@ -201,20 +189,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected void initDevice() {
         String udn = getUDN();
         if ((udn != null) && !udn.isEmpty()) {
-            if (!upnpIOService.isRegistered(this)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "UPnP device with UDN " + getUDN() + " not yet registered");
-                return;
-            }
-
             if (config.refresh == 0) {
                 upnpScheduler.submit(this::initJob);
             } else {
                 pollingJob = upnpScheduler.scheduleWithFixedDelay(this::initJob, 0, config.refresh, TimeUnit.SECONDS);
-            }
-
-            if (!upnpSubscribed) {
-                addSubscriptions();
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -229,6 +207,22 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     protected abstract void initJob();
 
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        ThingStatus currentStatus = thing.getStatus();
+
+        super.updateStatus(status);
+
+        // When status changes to ThingStatus.ONLINE, make sure to refresh all linked channels
+        if (!status.equals(currentStatus) && status.equals(ThingStatus.ONLINE)) {
+            thing.getChannels().forEach(channel -> {
+                if (isLinked(channel.getUID())) {
+                    channelLinked(channel.getUID());
+                }
+            });
+        }
+    }
+
     /**
      * Method called when a the remote device represented by the thing for this handler is added to the jupnp
      * {@link RegistryListener} or is updated. Configuration info can be retrieved from the {@link RemoteDevice}.
@@ -238,10 +232,6 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     public void updateDeviceConfig(RemoteDevice device) {
         this.device = device;
     };
-
-    public void setChannelTypeProvider(final UpnpChannelTypeProvider channelTypeProvider) {
-        this.channelTypeProvider = channelTypeProvider;
-    }
 
     protected void updateStateDescription(ChannelUID channelUID, List<StateOption> stateOptionList) {
         StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withReadOnly(false)
@@ -257,30 +247,25 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     protected void createChannel(@Nullable UpnpChannelName upnpChannelName) {
         if ((upnpChannelName != null)) {
-            createChannel(upnpChannelName.getChannelId(), upnpChannelName.getLabel(), upnpChannelName.getItemType(),
-                    upnpChannelName.getDescription(), upnpChannelName.getCategory(), upnpChannelName.isAdvanced());
+            createChannel(upnpChannelName.getChannelId(), upnpChannelName.getLabel(), upnpChannelName.getDescription(),
+                    upnpChannelName.getItemType(), upnpChannelName.getChannelType());
         }
     }
 
-    protected void createChannel(String channelId, String label, String itemType, String description, String category,
-            boolean advanced) {
-        UpnpChannelTypeProvider localChannelTypeProvider = channelTypeProvider;
-        if (localChannelTypeProvider == null) {
-            return;
-        }
-
+    protected void createChannel(String channelId, String label, String description, String itemType,
+            String channelType) {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
 
         if (thing.getChannel(channelUID) != null) {
             // channel already exists
+            logger.trace("UPnP device {}, channel {} already exists", thing.getLabel(), channelId);
             return;
         }
 
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelUID.getId());
-        ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, label, itemType).withDescription(description)
-                .withCategory(category).isAdvanced(advanced).build();
-        localChannelTypeProvider.addChannelType(channelType);
-        Channel channel = ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID).build();
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(channelType);
+        Channel channel = ChannelBuilder.create(channelUID).withLabel(label).withDescription(description)
+                .withAcceptedItemType(itemType).withType(channelTypeUID).build();
+
         logger.debug("UPnP device {}, created channel {}", thing.getLabel(), channelId);
 
         updatedChannels.add(channel);

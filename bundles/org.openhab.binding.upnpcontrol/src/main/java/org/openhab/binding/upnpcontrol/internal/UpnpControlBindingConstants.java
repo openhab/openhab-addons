@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link UpnpControlBindingConstants} class defines common constants, which are
@@ -87,6 +88,15 @@ public class UpnpControlBindingConstants {
     public static final String PLAYLIST_SELECT = "playlistselect";
     public static final String PLAYLIST = "playlist";
     public static final String PLAYLIST_ACTION = "playlistaction";
+
+    // Type constants for dynamic renderer channels
+    public static final String CHANNEL_TYPE_VOLUME = (new ChannelTypeUID("system", "volume")).toString();
+    public static final String CHANNEL_TYPE_MUTE = (new ChannelTypeUID("system", "mute")).toString();
+    public static final String CHANNEL_TYPE_LOUDNESS = (new ChannelTypeUID(BINDING_ID, "loudness")).toString();
+
+    public static final String ITEM_TYPE_VOLUME = "Dimmer";
+    public static final String ITEM_TYPE_MUTE = "Switch";
+    public static final String ITEM_TYPE_LOUDNESS = "Switch";
 
     // Command options for playlist and favorite actions
     public static final String RESTORE = "RESTORE";

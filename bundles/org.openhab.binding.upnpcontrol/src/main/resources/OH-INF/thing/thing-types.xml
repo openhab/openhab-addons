@@ -138,6 +138,12 @@
 	</thing-type>
 
 	<!-- Channel Types -->
+	<channel-type id="loudness">
+		<item-type>Switch</item-type>
+		<label>Loudness</label>
+		<description>Loudness</description>
+		<category>SoundVolume</category>
+	</channel-type>
 	<channel-type id="stop">
 		<item-type>Switch</item-type>
 		<label>Stop</label>

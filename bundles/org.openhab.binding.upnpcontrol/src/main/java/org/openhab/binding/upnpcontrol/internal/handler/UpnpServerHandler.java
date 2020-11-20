@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpControlHandlerFactory;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvider;
@@ -163,6 +162,12 @@ public class UpnpServerHandler extends UpnpHandler {
     @Override
     protected void initJob() {
         synchronized (jobLock) {
+            if (!upnpIOService.isRegistered(this)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "UPnP device with UDN " + getUDN() + " not yet registered");
+                return;
+            }
+
             if (!ThingStatus.ONLINE.equals(thing.getStatus())) {
                 rendererStateOptionList = Collections.synchronizedList(new ArrayList<>());
                 synchronized (rendererStateOptionList) {
@@ -179,12 +184,11 @@ public class UpnpServerHandler extends UpnpHandler {
 
                 playlistsListChanged();
 
-                RemoteDevice device = getDevice();
-                if (device != null) {
-                    updateDeviceConfig(device);
-                }
-
                 updateStatus(ThingStatus.ONLINE);
+            }
+
+            if (!upnpSubscribed) {
+                addSubscriptions();
             }
         }
     }

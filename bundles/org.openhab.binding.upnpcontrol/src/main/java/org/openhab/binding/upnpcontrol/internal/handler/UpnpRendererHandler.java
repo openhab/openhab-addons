@@ -216,6 +216,12 @@ public class UpnpRendererHandler extends UpnpHandler {
     @Override
     protected void initJob() {
         synchronized (jobLock) {
+            if (!upnpIOService.isRegistered(this)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "UPnP device with UDN " + getUDN() + " not yet registered");
+                return;
+            }
+
             if (!ThingStatus.ONLINE.equals(thing.getStatus())) {
                 getProtocolInfo();
 
@@ -232,11 +238,16 @@ public class UpnpRendererHandler extends UpnpHandler {
                 playlistsListChanged();
 
                 RemoteDevice device = getDevice();
-                if (device != null) {
+                if (device != null) { // The handler factory will update the device config later when it has not been
+                                      // set yet
                     updateDeviceConfig(device);
                 }
 
                 updateStatus(ThingStatus.ONLINE);
+            }
+
+            if (!upnpSubscribed) {
+                addSubscriptions();
             }
         }
     }
@@ -261,7 +272,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                createChannel(name, name, "Dimmer", "Vendor specific UPnP volume channel", "SoundVolume", true);
+                createChannel(name, name, "Vendor specific UPnP volume channel", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME);
             }
         }
         if (config.mute && !UPNP_MASTER.equals(audioChannel)) {
@@ -269,7 +280,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                createChannel(name, name, "Switch", "Vendor specific  UPnP mute channel", "SoundVolume", true);
+                createChannel(name, name, "Vendor specific  UPnP mute channel", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE);
             }
         }
         if (config.loudness) {
@@ -277,7 +288,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                createChannel(name, name, "Switch", "Vendor specific  UPnP loudness channel", "SoundVolume", true);
+                createChannel(name, name, "Vendor specific  UPnP loudness channel", ITEM_TYPE_LOUDNESS,
+                        CHANNEL_TYPE_LOUDNESS);
             }
         }
     }
@@ -707,12 +719,6 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void handleCommandControl(ChannelUID channelUID, Command command) {
-        logger.trace("Handle command control: {}", command);
-        logger.trace("Renderer settings: repeat {}, shuffle {}, onlyplayone {}", repeat, shuffle, onlyplayone);
-        logger.trace("Renderer state: {}, nowPlayingUri {}", transportState, nowPlayingUri);
-        logger.trace("Renderer state: playerstopped {}, playing {}, registeredQueue {}, playingQueue {}, oneplayed {}",
-                playerStopped, playing, registeredQueue, playingQueue, oneplayed);
-
         String state;
         if (command instanceof RefreshType) {
             state = transportState;
@@ -970,15 +976,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             notificationUri = "";
 
             if (playing) {
-                logger.info("Resume playing");
-                logger.info("Playing notification {}", playingNotification);
                 int pos = posAtNotificationStart;
                 seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
-                logger.info("Start play");
-                logger.info("Playing notification {}", playingNotification);
                 play();
-                logger.info("Playing {}, stopped {}", playing, playerStopped);
-                logger.info("Playing notification {}", playingNotification);
             }
             posAtNotificationStart = 0;
         }
@@ -1175,12 +1175,6 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void onValueReceivedTransportState(@Nullable String value) {
-        logger.trace("Renderer {} received transport state: {}", thing.getLabel(), value);
-        logger.trace("Renderer settings: repeat {}, shuffle {}, onlyplayone {}", repeat, shuffle, onlyplayone);
-        logger.trace("Renderer state: {}, nowPlayingUri {}", transportState, nowPlayingUri);
-        logger.trace("Renderer state: playerstopped {}, playing {}, registeredQueue {}, playingQueue {}, oneplayed {}",
-                playerStopped, playing, registeredQueue, playingQueue, oneplayed);
-
         transportState = (value == null) ? "" : value;
 
         if ("STOPPED".equals(value)) {
@@ -1423,10 +1417,6 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
 
         logger.debug("Registering queue on renderer {}", thing.getLabel());
-        logger.trace("Renderer settings: repeat {}, shuffle {}, onlyplayone {}", repeat, shuffle, onlyplayone);
-        logger.trace("Renderer state: {}, nowPlayingUri {}", transportState, nowPlayingUri);
-        logger.trace("Renderer state: playerstopped {}, playing {}, registeredQueue {}, playingQueue {}, oneplayed {}",
-                playerStopped, playing, registeredQueue, playingQueue, oneplayed);
 
         registeredQueue = true;
         currentQueue = queue;
@@ -1481,10 +1471,6 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private void resetToStartQueue() {
         logger.trace("Reset to start queue on renderer {}", thing.getLabel());
-        logger.trace("Renderer settings: repeat {}, shuffle {}, onlyplayone {}", repeat, shuffle, onlyplayone);
-        logger.trace("Renderer state: {}, nowPlayingUri {}", transportState, nowPlayingUri);
-        logger.trace("Renderer state: playerstopped {}, playing {}, registeredQueue {}, playingQueue {}, oneplayed {}",
-                playerStopped, playing, registeredQueue, playingQueue, oneplayed);
 
         playingQueue = false;
         registeredQueue = true;
@@ -1519,10 +1505,6 @@ public class UpnpRendererHandler extends UpnpHandler {
      */
     private void serve() {
         logger.trace("Serve media on renderer {}", thing.getLabel());
-        logger.trace("Renderer settings: repeat {}, shuffle {}, onlyplayone {}", repeat, shuffle, onlyplayone);
-        logger.trace("Renderer state: {}, nowPlayingUri {}", transportState, nowPlayingUri);
-        logger.trace("Renderer state: playerstopped {}, playing {}, registeredQueue {}, playingQueue {}, oneplayed {}",
-                playerStopped, playing, registeredQueue, playingQueue, oneplayed);
 
         UpnpEntry entry = currentEntry;
         if (entry != null) {

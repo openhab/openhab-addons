@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.upnpcontrol.internal;
 
+import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
+
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,73 +33,78 @@ import org.eclipse.jdt.annotation.Nullable;
 public enum UpnpChannelName {
 
     // Volume channels
-    LF_VOLUME("LFvolume", "Left Front Volume", "Left front volume, will be left volume with stereo sound", "Dimmer",
-            "SoundVolume", false),
-    RF_VOLUME("RFvolume", "Right Front Volume", "Right front volume, will be left volume with stereo sound", "Dimmer",
-            "SoundVolume", false),
-    CF_VOLUME("CFvolume", "Center Front Volume", "Center front volume", "Dimmer", "SoundVolume", false),
-    LFE_VOLUME("LFEvolume", "Frequency Enhancement Volume", "Low frequency enhancement volume (subwoofer)", "Dimmer",
-            "SoundVolume", false),
-    LS_VOLUME("LSvolume", "Left Surround Volume", "Left surround volume", "Dimmer", "SoundVolume", false),
-    RS_VOLUME("RSvolume", "Right Surround Volume", "Right surround volume", "Dimmer", "SoundVolume", false),
-    LFC_VOLUME("LFCvolume", "Left of Center Volume", "Left of center (in front) volume", "Dimmer", "SoundVolume",
-            false),
-    RFC_VOLUME("RFCvolume", "Right of Center Volume", "Right of center (in front) volume", "Dimmer", "SoundVolume",
-            false),
-    SD_VOLUME("SDvolume", "Surround Volume", "Surround (rear) volume", "Dimmer", "SoundVolume", false),
-    SL_VOLUME("SLvolume", "Side Left Volume", "Side left (left wall) volume", "Dimmer", "SoundVolume", false),
-    SR_VOLUME("SRvolume", "Side Right Volume", "Side right (right wall) volume", "Dimmer", "SoundVolume", false),
-    T_VOLUME("Tvolume", "Top Volume", "Top (overhead) volume", "Dimmer", "SoundVolume", false),
-    B_VOLUME("Bvolume", "Bottom Volume", "Bottom volume", "Dimmer", "SoundVolume", false),
-    BC_VOLUME("BCvolume", "Back Center Volume", "Back center volume", "Dimmer", "SoundVolume", false),
-    BL_VOLUME("BLvolume", "Back Left Volume", "Back Left Volume", "Dimmer", "SoundVolume", false),
-    BR_VOLUME("BRvolume", "Back Right Volume", "Back right volume", "Dimmer", "SoundVolume", false),
+    LF_VOLUME("LFvolume", "Left Front Volume", "Left front volume, will be left volume with stereo sound",
+            ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    RF_VOLUME("RFvolume", "Right Front Volume", "Right front volume, will be left volume with stereo sound",
+            ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    CF_VOLUME("CFvolume", "Center Front Volume", "Center front volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    LFE_VOLUME("LFEvolume", "Frequency Enhancement Volume", "Low frequency enhancement volume (subwoofer)",
+            ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    LS_VOLUME("LSvolume", "Left Surround Volume", "Left surround volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    RS_VOLUME("RSvolume", "Right Surround Volume", "Right surround volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    LFC_VOLUME("LFCvolume", "Left of Center Volume", "Left of center (in front) volume", ITEM_TYPE_VOLUME,
+            CHANNEL_TYPE_VOLUME),
+    RFC_VOLUME("RFCvolume", "Right of Center Volume", "Right of center (in front) volume", ITEM_TYPE_VOLUME,
+            CHANNEL_TYPE_VOLUME),
+    SD_VOLUME("SDvolume", "Surround Volume", "Surround (rear) volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    SL_VOLUME("SLvolume", "Side Left Volume", "Side left (left wall) volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    SR_VOLUME("SRvolume", "Side Right Volume", "Side right (right wall) volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    T_VOLUME("Tvolume", "Top Volume", "Top (overhead) volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    B_VOLUME("Bvolume", "Bottom Volume", "Bottom volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    BC_VOLUME("BCvolume", "Back Center Volume", "Back center volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    BL_VOLUME("BLvolume", "Back Left Volume", "Back Left Volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
+    BR_VOLUME("BRvolume", "Back Right Volume", "Back right volume", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME),
 
     // Mute channels
-    LF_MUTE("LFmute", "Left Front Mute", "Left front mute, will be left mute with stereo sound", "Switch",
-            "SoundVolume", false),
-    RF_MUTE("RFmute", "Right Front Mute", "Right front mute, will be left mute with stereo sound", "Switch",
-            "SoundVolume", false),
-    CF_MUTE("CFmute", "Center Front Mute", "Center front mute", "Switch", "SoundVolume", false),
-    LFE_MUTE("LFEmute", "Frequency Enhancement Mute", "Low frequency enhancement mute (subwoofer)", "Switch",
-            "SoundVolume", false),
-    LS_MUTE("LSmute", "Left Surround Mute", "Left surround mute", "Switch", "SoundVolume", false),
-    RS_MUTE("RSmute", "Right Surround Mute", "Right surround mute", "Switch", "SoundVolume", false),
-    LFC_MUTE("LFCmute", "Left of Center Mute", "Left of center (in front) mute", "Switch", "SoundVolume", false),
-    RFC_MUTE("RFCmute", "Right of Center Mute", "Right of center (in front) mute", "Switch", "SoundVolume", false),
-    SD_MUTE("SDmute", "Surround Mute", "Surround (rear) mute", "Switch", "SoundVolume", false),
-    SL_MUTE("SLmute", "Side Left Mute", "Side left (left wall) mute", "Switch", "SoundVolume", false),
-    SR_MUTE("SRmute", "Side Right Mute", "Side right (right wall) mute", "Switch", "SoundVolume", false),
-    T_MUTE("Tmute", "Top Mute", "Top (overhead) mute", "Switch", "SoundVolume", false),
-    B_MUTE("Bmute", "Bottom Mute", "Bottom mute", "Switch", "SoundVolume", false),
-    BC_MUTE("BCmute", "Back Center Mute", "Back center mute", "Switch", "SoundVolume", false),
-    BL_MUTE("BLmute", "Back Left Mute", "Back Left Mute", "Switch", "SoundVolume", false),
-    BR_MUTE("BRmute", "Back Right Mute", "Back right mute", "Switch", "SoundVolume", false),
+    LF_MUTE("LFmute", "Left Front Mute", "Left front mute, will be left mute with stereo sound", ITEM_TYPE_MUTE,
+            CHANNEL_TYPE_MUTE),
+    RF_MUTE("RFmute", "Right Front Mute", "Right front mute, will be left mute with stereo sound", ITEM_TYPE_MUTE,
+            CHANNEL_TYPE_MUTE),
+    CF_MUTE("CFmute", "Center Front Mute", "Center front mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    LFE_MUTE("LFEmute", "Frequency Enhancement Mute", "Low frequency enhancement mute (subwoofer)", ITEM_TYPE_MUTE,
+            CHANNEL_TYPE_MUTE),
+    LS_MUTE("LSmute", "Left Surround Mute", "Left surround mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    RS_MUTE("RSmute", "Right Surround Mute", "Right surround mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    LFC_MUTE("LFCmute", "Left of Center Mute", "Left of center (in front) mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    RFC_MUTE("RFCmute", "Right of Center Mute", "Right of center (in front) mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    SD_MUTE("SDmute", "Surround Mute", "Surround (rear) mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    SL_MUTE("SLmute", "Side Left Mute", "Side left (left wall) mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    SR_MUTE("SRmute", "Side Right Mute", "Side right (right wall) mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    T_MUTE("Tmute", "Top Mute", "Top (overhead) mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    B_MUTE("Bmute", "Bottom Mute", "Bottom mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    BC_MUTE("BCmute", "Back Center Mute", "Back center mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    BL_MUTE("BLmute", "Back Left Mute", "Back Left Mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
+    BR_MUTE("BRmute", "Back Right Mute", "Back right mute", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE),
 
     // Loudness channels
-    LOUDNESS("loudness", "Loudness", "Master loudness", "Switch", "SoundVolume", false),
-    LF_LOUDNESS("LFloudness", "Left Front Loudness", "Left front loudness, will be left loudness with stereo sound",
-            "Switch", "SoundVolume", false),
-    RF_LOUDNESS("RFloudness", "Right Front Loudness", "Right front loudness, will be left loudness with stereo sound",
-            "Switch", "SoundVolume", false),
-    CF_LOUDNESS("CFloudness", "Center Front Loudness", "Center front loudness", "Switch", "SoundVolume", false),
+    LOUDNESS("loudness", "Loudness", "Master loudness", ITEM_TYPE_LOUDNESS, CHANNEL_TYPE_LOUDNESS),
+    LF_LOUDNESS("LFloudness", "Left Front Loudness", "Left front loudness", ITEM_TYPE_LOUDNESS, CHANNEL_TYPE_LOUDNESS),
+    RF_LOUDNESS("RFloudness", "Right Front Loudness", "Right front loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
+    CF_LOUDNESS("CFloudness", "Center Front Loudness", "Center front loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
     LFE_LOUDNESS("LFEloudness", "Frequency Enhancement Loudness", "Low frequency enhancement loudness (subwoofer)",
-            "Switch", "SoundVolume", false),
-    LS_LOUDNESS("LSloudness", "Left Surround Loudness", "Left surround loudness", "Switch", "SoundVolume", false),
-    RS_LOUDNESS("RSloudness", "Right Surround Loudness", "Right surround loudness", "Switch", "SoundVolume", false),
-    LFC_LOUDNESS("LFCloudness", "Left of Center Loudness", "Left of center (in front) loudness", "Switch",
-            "SoundVolume", false),
-    RFC_LOUDNESS("RFCloudness", "Right of Center Loudness", "Right of center (in front) loudness", "Switch",
-            "SoundVolume", false),
-    SD_LOUDNESS("SDloudness", "Surround Loudness", "Surround (rear) loudness", "Switch", "SoundVolume", false),
-    SL_LOUDNESS("SLloudness", "Side Left Loudness", "Side left (left wall) loudness", "Switch", "SoundVolume", false),
-    SR_LOUDNESS("SRloudness", "Side Right Loudness", "Side right (right wall) loudness", "Switch", "SoundVolume",
-            false),
-    T_LOUDNESS("Tloudness", "Top Loudness", "Top (overhead) loudness", "Switch", "SoundVolume", false),
-    B_LOUDNESS("Bloudness", "Bottom Loudness", "Bottom loudness", "Switch", "SoundVolume", false),
-    BC_LOUDNESS("BCloudness", "Back Center Loudness", "Back center loudness", "Switch", "SoundVolume", false),
-    BL_LOUDNESS("BLloudness", "Back Left Loudness", "Back Left Loudness", "Switch", "SoundVolume", false),
-    BR_LOUDNESS("BRloudness", "Back Right Loudness", "Back right loudness", "Switch", "SoundVolume", false);
+            ITEM_TYPE_LOUDNESS, CHANNEL_TYPE_LOUDNESS),
+    LS_LOUDNESS("LSloudness", "Left Surround Loudness", "Left surround loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
+    RS_LOUDNESS("RSloudness", "Right Surround Loudness", "Right surround loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
+    LFC_LOUDNESS("LFCloudness", "Left of Center Loudness", "Left of center (in front) loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
+    RFC_LOUDNESS("RFCloudness", "Right of Center Loudness", "Right of center (in front) loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
+    SD_LOUDNESS("SDloudness", "Surround Loudness", "Surround (rear) loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
+    SL_LOUDNESS("SLloudness", "Side Left Loudness", "Side left (left wall) loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
+    SR_LOUDNESS("SRloudness", "Side Right Loudness", "Side right (right wall) loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
+    T_LOUDNESS("Tloudness", "Top Loudness", "Top (overhead) loudness", ITEM_TYPE_LOUDNESS, CHANNEL_TYPE_LOUDNESS),
+    B_LOUDNESS("Bloudness", "Bottom Loudness", "Bottom loudness", ITEM_TYPE_LOUDNESS, CHANNEL_TYPE_LOUDNESS),
+    BC_LOUDNESS("BCloudness", "Back Center Loudness", "Back center loudness", ITEM_TYPE_LOUDNESS,
+            CHANNEL_TYPE_LOUDNESS),
+    BL_LOUDNESS("BLloudness", "Back Left Loudness", "Back Left Loudness", ITEM_TYPE_LOUDNESS, CHANNEL_TYPE_LOUDNESS),
+    BR_LOUDNESS("BRloudness", "Back Right Loudness", "Back right loudness", ITEM_TYPE_LOUDNESS, CHANNEL_TYPE_LOUDNESS);
 
     private static final Map<String, UpnpChannelName> UPNP_CHANNEL_NAME_MAP = Stream.of(UpnpChannelName.values())
             .collect(Collectors.toMap(UpnpChannelName::getChannelId, Function.identity()));
@@ -106,17 +113,15 @@ public enum UpnpChannelName {
     private final String label;
     private final String description;
     private final String itemType;
-    private final String category;
-    private final boolean advanced;
+    private final String channelType;
 
     UpnpChannelName(final String channelId, final String label, final String description, final String itemType,
-            final String category, final boolean advanced) {
+            final String channelType) {
         this.channelId = channelId;
         this.label = label;
         this.description = description;
         this.itemType = itemType;
-        this.category = category;
-        this.advanced = advanced;
+        this.channelType = channelType;
     }
 
     /**
@@ -127,14 +132,14 @@ public enum UpnpChannelName {
     }
 
     /**
-     * @return The label for the Channel Type
+     * @return The label for the Channel
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return The description for the Channel Type
+     * @return The description for the Channel
      */
     public String getDescription() {
         return description;
@@ -148,17 +153,10 @@ public enum UpnpChannelName {
     }
 
     /**
-     * @return The category for the Channel Type
+     * @return The channel type for the Channel
      */
-    public String getCategory() {
-        return category;
-    }
-
-    /**
-     * @return If the Channel Type is advanced
-     */
-    public boolean isAdvanced() {
-        return advanced;
+    public String getChannelType() {
+        return channelType;
     }
 
     /**
