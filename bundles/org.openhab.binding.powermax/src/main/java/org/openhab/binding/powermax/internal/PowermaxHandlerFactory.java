@@ -14,17 +14,11 @@ package org.openhab.binding.powermax.internal;
 
 import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.powermax.internal.discovery.PowermaxDiscoveryService;
 import org.openhab.binding.powermax.internal.handler.PowermaxBridgeHandler;
 import org.openhab.binding.powermax.internal.handler.PowermaxThingHandler;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
@@ -34,7 +28,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -48,8 +41,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.powermax")
 public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final SerialPortManager serialPortManager;
     private final TimeZoneProvider timeZoneProvider;
@@ -89,40 +80,11 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_BRIDGE_TYPES_UIDS.contains(thingTypeUID)) {
-            PowermaxBridgeHandler handler = new PowermaxBridgeHandler((Bridge) thing, serialPortManager);
-            registerDiscoveryService(handler);
-            return handler;
+            return new PowermaxBridgeHandler((Bridge) thing, serialPortManager);
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new PowermaxThingHandler(thing, timeZoneProvider);
         }
 
         return null;
-    }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof PowermaxBridgeHandler) {
-            // remove discovery service, if bridge handler is removed
-            unregisterDiscoveryService((PowermaxBridgeHandler) thingHandler);
-        }
-    }
-
-    private synchronized void registerDiscoveryService(PowermaxBridgeHandler bridgeHandler) {
-        PowermaxDiscoveryService discoveryService = new PowermaxDiscoveryService(bridgeHandler);
-        discoveryService.activate();
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-    }
-
-    private synchronized void unregisterDiscoveryService(PowermaxBridgeHandler bridgeHandler) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
-        if (serviceReg != null) {
-            PowermaxDiscoveryService service = (PowermaxDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
-            serviceReg.unregister();
-            if (service != null) {
-                service.deactivate();
-            }
-        }
     }
 }
