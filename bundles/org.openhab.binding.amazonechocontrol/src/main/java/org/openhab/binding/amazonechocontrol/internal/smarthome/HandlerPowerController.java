@@ -29,10 +29,10 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
-
-import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * The {@link HandlerPowerController} is responsible for the Alexa.PowerControllerInterface
@@ -86,8 +86,7 @@ public class HandlerPowerController extends HandlerBase {
             }
         }
         logger.trace("{} final state {}", this.smartHomeDeviceHandler.getId(), powerStateValue);
-        updateState(POWER_STATE.channelId,
-                powerStateValue == null ? UnDefType.UNDEF : OnOffType.from(powerStateValue));
+        updateState(POWER_STATE.channelId, powerStateValue == null ? UnDefType.UNDEF : OnOffType.from(powerStateValue));
     }
 
     @Override
