@@ -337,7 +337,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private void pollingWebsocketJob() {
         switch (yioRemoteDockActualStatus) {
             case AUTHENTICATION_COMPLETE:
-                logger.debug("A");
                 if (resetHeartbeat()) {
                     sendMessage(YioRemoteMessages.HEARTBEAT_MESSAGE, "");
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.CHECK_PONG;
@@ -346,7 +345,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 }
                 break;
             case SEND_PING:
-                logger.debug("PING");
                 if (resetHeartbeat()) {
                     sendMessage(YioRemoteMessages.HEARTBEAT_MESSAGE, "");
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.CHECK_PONG;
@@ -359,7 +357,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 }
                 break;
             case CHECK_PONG:
-                logger.debug("PONG");
                 if (getHeartbeat()) {
                     updateChannelString(GROUP_OUTPUT, STATUS_STRING_CHANNEL, receivedStatus);
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.SEND_PING;
