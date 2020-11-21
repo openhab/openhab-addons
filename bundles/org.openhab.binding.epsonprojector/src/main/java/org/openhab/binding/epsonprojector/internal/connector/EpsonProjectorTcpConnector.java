@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -130,7 +131,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
                 return "";
             }
         } catch (IOException e) {
-            logger.debug("IO error occurred...reconnect and resend once");
+            logger.debug("IO error occurred...reconnect and resend once", e);
             disconnect();
             connect();
 
@@ -139,8 +140,6 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             } catch (IOException e1) {
                 throw new EpsonProjectorException(e);
             }
-        } catch (Exception e) {
-            throw new EpsonProjectorException(e);
         }
     }
 
@@ -163,7 +162,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
                 if (availableBytes > 0) {
                     byte[] tmpData = new byte[availableBytes];
                     int readBytes = in.read(tmpData, 0, availableBytes);
-                    resp = resp.concat(new String(tmpData, 0, readBytes));
+                    resp = resp.concat(new String(tmpData, 0, readBytes, StandardCharsets.US_ASCII));
 
                     if (resp.contains(":")) {
                         return resp;

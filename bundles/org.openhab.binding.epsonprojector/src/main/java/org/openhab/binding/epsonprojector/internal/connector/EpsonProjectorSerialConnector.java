@@ -15,7 +15,7 @@ package org.openhab.binding.epsonprojector.internal.connector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.TooManyListenersException;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -76,16 +76,13 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                     in.reset();
                 }
 
-                // RXTX serial port library causes high CPU load
-                // Start event listener, which will just sleep and slow down event loop
-                serialPort.addEventListener(this);
                 serialPort.notifyOnDataAvailable(true);
 
                 this.serialPort = serialPort;
                 this.in = in;
                 this.out = out;
             }
-        } catch (PortInUseException | UnsupportedCommOperationException | IOException | TooManyListenersException e) {
+        } catch (PortInUseException | UnsupportedCommOperationException | IOException e) {
             throw new EpsonProjectorException(e);
         }
     }
@@ -150,13 +147,12 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                         }
                     }
                 }
-
                 return sendMmsg(data, timeout);
             } else {
                 return "";
             }
         } catch (IOException e) {
-            logger.debug("IO error occurred...reconnect and resend once");
+            logger.debug("IO error occurred...reconnect and resend once", e);
             disconnect();
             connect();
 
@@ -165,8 +161,6 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             } catch (IOException e1) {
                 throw new EpsonProjectorException(e);
             }
-        } catch (Exception e) {
-            throw new EpsonProjectorException(e);
         }
     }
 
@@ -198,7 +192,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                 if (availableBytes > 0) {
                     byte[] tmpData = new byte[availableBytes];
                     int readBytes = in.read(tmpData, 0, availableBytes);
-                    resp = resp.concat(new String(tmpData, 0, readBytes));
+                    resp = resp.concat(new String(tmpData, 0, readBytes, StandardCharsets.US_ASCII));
 
                     if (resp.contains(":")) {
                         return resp;

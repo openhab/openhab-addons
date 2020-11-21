@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.epsonprojector.internal;
 
+import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +30,7 @@ import org.openhab.binding.epsonprojector.internal.enums.Gamma;
 import org.openhab.binding.epsonprojector.internal.enums.Luminance;
 import org.openhab.binding.epsonprojector.internal.enums.PowerStatus;
 import org.openhab.binding.epsonprojector.internal.enums.Switch;
-import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,11 +44,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EpsonProjectorDevice {
-    private static final String THING_HANDLER_THREADPOOL_NAME = "thingHandler";
-
-    protected final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getScheduledPool(THING_HANDLER_THREADPOOL_NAME);
-
     private static final int[] MAP64 = new int[] { 0, 3, 7, 11, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55, 59, 63, 66,
             70, 74, 78, 82, 86, 90, 94, 98, 102, 106, 110, 114, 118, 122, 126, 129, 133, 137, 141, 145, 149, 153, 157,
             161, 165, 169, 173, 177, 181, 185, 189, 192, 196, 200, 204, 208, 212, 216, 220, 224, 228, 232, 236, 240,
@@ -77,25 +73,31 @@ public class EpsonProjectorDevice {
     private static final int DEFAULT_TIMEOUT = 5 * 1000;
     private static final int POWER_ON_TIMEOUT = 100 * 1000;
     private static final int POWER_OFF_TIMEOUT = 130 * 1000;
+    private static final int LAMP_REFRESH_WAIT_MINUTES = 5;
 
     private static final String ON = "ON";
     private static final String ERR = "ERR";
 
     private Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
 
+    @Nullable
+    private ScheduledExecutorService scheduler = null;
     private EpsonProjectorConnector connection;
-    private long lastLampQry = 0;
-    private int cachedLampHours = 0;
+    private ExpiringCache<Integer> cachedLampHours = new ExpiringCache<>(Duration.ofMinutes(LAMP_REFRESH_WAIT_MINUTES),
+            () -> queryLamp());
     private boolean connected = false;
     private boolean ready = false;
 
-    public EpsonProjectorDevice(SerialPortManager serialPortManager, String serialPort) {
+    public EpsonProjectorDevice(SerialPortManager serialPortManager, String serialPort,
+            ScheduledExecutorService scheduler) {
         connection = new EpsonProjectorSerialConnector(serialPortManager, serialPort);
+        this.scheduler = scheduler;
         ready = true;
     }
 
-    public EpsonProjectorDevice(String ip, int port) {
+    public EpsonProjectorDevice(String ip, int port, ScheduledExecutorService scheduler) {
         connection = new EpsonProjectorTcpConnector(ip, port);
+        this.scheduler = scheduler;
         ready = true;
     }
 
@@ -128,9 +130,12 @@ public class EpsonProjectorDevice {
             // When PWR OFF command is sent, next command can be sent 10 seconds after the colon is received
             logger.debug("Refusing further commands for 10 seconds to power OFF completion");
             ready = false;
-            scheduler.scheduleWithFixedDelay(() -> {
-                ready = true;
-            }, 0, 10000, TimeUnit.MILLISECONDS);
+            ScheduledExecutorService scheduler = this.scheduler;
+            if (scheduler != null) {
+                scheduler.scheduleWithFixedDelay(() -> {
+                    ready = true;
+                }, 0, 10000, TimeUnit.MILLISECONDS);
+            }
         }
 
         return response;
@@ -579,17 +584,28 @@ public class EpsonProjectorDevice {
     }
 
     /*
-     * Lamp Time (hours)
+     * Lamp Time (hours) - get from cache
      */
     public int getLampTime() throws EpsonProjectorCommandException, EpsonProjectorException {
-        long current = System.currentTimeMillis();
+        Integer lampHours = cachedLampHours.getValue();
 
-        // only do lamp time query once per ~5 minute interval
-        if ((current - lastLampQry) > 297000) {
-            cachedLampHours = queryInt("LAMP?");
-            lastLampQry = System.currentTimeMillis();
+        if (lampHours != null) {
+            return lampHours.intValue();
+        } else {
+            throw new EpsonProjectorCommandException("cachedLampHours returned null");
         }
-        return cachedLampHours;
+    }
+
+    /*
+     * Get Lamp Time
+     */
+    private @Nullable Integer queryLamp() {
+        try {
+            return Integer.valueOf(queryInt("LAMP?"));
+        } catch (EpsonProjectorCommandException | EpsonProjectorException e) {
+            logger.debug("Error executing command LAMP?", e);
+            return null;
+        }
     }
 
     /*

@@ -97,9 +97,9 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             final Integer pollingInterval = config.pollingInterval;
 
             if (serialPort != null && !serialPort.equals("")) {
-                device = new EpsonProjectorDevice(serialPortManager, serialPort);
+                device = new EpsonProjectorDevice(serialPortManager, serialPort, scheduler);
             } else if (host != null && !host.equals("") && port > 0 && port < 65535) {
-                device = new EpsonProjectorDevice(host, port);
+                device = new EpsonProjectorDevice(host, port, scheduler);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
