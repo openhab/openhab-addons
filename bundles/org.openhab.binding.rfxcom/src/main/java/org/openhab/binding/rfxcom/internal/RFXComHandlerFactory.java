@@ -12,28 +12,21 @@
  */
 package org.openhab.binding.rfxcom.internal;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.rfxcom.internal.discovery.RFXComDeviceDiscoveryService;
 import org.openhab.binding.rfxcom.internal.handler.RFXComBridgeHandler;
 import org.openhab.binding.rfxcom.internal.handler.RFXComHandler;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -53,11 +46,6 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
                     RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
             .collect(Collectors.toSet());
 
-    /**
-     * Service registration map
-     */
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
     private final SerialPortManager serialPortManager;
 
     @Activate
@@ -75,39 +63,11 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            RFXComBridgeHandler handler = new RFXComBridgeHandler((Bridge) thing, serialPortManager);
-            registerDeviceDiscoveryService(handler);
-            return handler;
+            return new RFXComBridgeHandler((Bridge) thing, serialPortManager);
         } else if (supportsThingType(thingTypeUID)) {
             return new RFXComHandler(thing);
         }
 
         return null;
-    }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof RFXComBridgeHandler) {
-            unregisterDeviceDiscoveryService(thingHandler.getThing());
-        }
-    }
-
-    private synchronized void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
-        RFXComDeviceDiscoveryService discoveryService = new RFXComDeviceDiscoveryService(handler);
-        discoveryService.activate();
-        this.discoveryServiceRegs.put(handler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-    }
-
-    private synchronized void unregisterDeviceDiscoveryService(Thing thing) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
-        if (serviceReg != null) {
-            RFXComDeviceDiscoveryService service = (RFXComDeviceDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
-            serviceReg.unregister();
-            if (service != null) {
-                service.deactivate();
-            }
-        }
     }
 }
