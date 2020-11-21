@@ -242,6 +242,7 @@ Switch                      ChargerSwitch        "Charging ON/OFF"              
 Switch                      PreHeater            "Pre-Heater ON/OFF"                   { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:control#preHeater" }
 Number                      Current_Speed        "Current Speed [%.1f %unit%]"         { channel="carnet:vehicle:f1dadf50:WAUZZZXXXXXXXXXXX:status#currentSpeed" }
 ```
+
 .sitemap
 
 .rule
