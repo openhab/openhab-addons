@@ -167,6 +167,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     public void updateChannelStates(List<SmartHomeBaseDevice> allDevices,
             Map<String, JsonArray> applianceIdToCapabilityStates) {
+        logger.trace("Updating {} with {}", allDevices, applianceIdToCapabilityStates);
         AccountHandler accountHandler = getAccountHandler();
         SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
         if (smartHomeBaseDevice == null) {
@@ -178,11 +179,11 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         Map<String, List<JsonObject>> mapInterfaceToStates = new HashMap<>();
         SmartHomeDevice firstDevice = null;
         for (SmartHomeDevice shd : getSupportedSmartHomeDevices(smartHomeBaseDevice, allDevices)) {
-            JsonArray states = applianceIdToCapabilityStates.get(shd.applianceId);
             String applianceId = shd.applianceId;
             if (applianceId == null) {
                 continue;
             }
+            JsonArray states = applianceIdToCapabilityStates.get(applianceId);
             if (states != null) {
                 stateFound = true;
                 if (smartHomeBaseDevice.isGroup()) {
@@ -209,17 +210,20 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 }
             }
         }
+
         for (HandlerBase handlerBase : handlers.values()) {
             UpdateChannelResult result = new UpdateChannelResult();
-
             for (String interfaceName : handlerBase.getSupportedInterface()) {
-                List<JsonObject> stateList = mapInterfaceToStates.getOrDefault(interfaceName, Collections.emptyList());
-                try {
-                    handlerBase.updateChannels(interfaceName, stateList, result);
-                } catch (Exception e) {
-                    // We catch all exceptions, otherwise all other things are not updated!
-                    logger.debug("Updating states failed", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                List<JsonObject> stateList = mapInterfaceToStates.get(interfaceName);
+                if (stateList != null) {
+                    try {
+                        handlerBase.updateChannels(interfaceName, stateList, result);
+                    } catch (Exception e) {
+                        // We catch all exceptions, otherwise all other things are not updated!
+                        logger.debug("Updating states failed", e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                e.getLocalizedMessage());
+                    }
                 }
             }
 
