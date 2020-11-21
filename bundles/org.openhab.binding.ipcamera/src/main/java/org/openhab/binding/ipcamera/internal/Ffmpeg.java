@@ -75,23 +75,20 @@ public class Ffmpeg {
         commandArrayList.add(0, ffmpegLocation);
     }
 
-    public void setKeepAlive(int seconds) {
-        if (seconds == -1) {
-            keepAlive = -1;
-        } else {// We now poll every 8 seconds due to mjpeg stream requirement.
-            keepAlive = 8; // 64 seconds approx.
+    public void setKeepAlive(int numberOfEightSeconds) {
+        // We poll every 8 seconds due to mjpeg stream requirement.
+        if (keepAlive == -1 && numberOfEightSeconds > 1) {
+            return;// When set to -1 this will not auto turn off stream.
         }
+        keepAlive = numberOfEightSeconds;
     }
 
     public void checkKeepAlive() {
         if (keepAlive <= -1) {
             return;
-        } else if (keepAlive == 0) {
+        } else if (--keepAlive == 0) {
             stopConverting();
-        } else {
-            keepAlive--;
         }
-        return;
     }
 
     private class IpCameraFfmpegThread extends Thread {
@@ -119,8 +116,9 @@ public class Ffmpeg {
         public void run() {
             try {
                 process = Runtime.getRuntime().exec(commandArrayList.toArray(new String[commandArrayList.size()]));
-                if (process != null) {
-                    InputStream errorStream = process.getErrorStream();
+                Process localProcess = process;
+                if (localProcess != null) {
+                    InputStream errorStream = localProcess.getErrorStream();
                     InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
                     BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
                     String line = null;
@@ -189,10 +187,11 @@ public class Ffmpeg {
 
     public void stopConverting() {
         if (ipCameraFfmpegThread.isAlive()) {
-            logger.debug("Stopping ffmpeg {} now", format);
-            running = false;
-            if (process != null) {
-                process.destroyForcibly();
+            logger.debug("Stopping ffmpeg {} now when keepalive is:{}", format, keepAlive);
+            Process localProcess = process;
+            if (localProcess != null) {
+                localProcess.destroyForcibly();
+                running = false;
             }
             if (format.equals(FFmpegFormat.HLS)) {
                 if (keepAlive == -1) {
