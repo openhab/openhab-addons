@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="carnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>CarNet Account</label>
+		<description>This bridge represents a myAudi CarNet Account.</description>
+
+		<config-description-ref uri="bridge-type:carnet:account"/>
+	</bridge-type>
+
+</thing:thing-descriptions>
