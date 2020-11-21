@@ -241,6 +241,14 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="snapshotOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Snapshot Options</label>
+				<description>Specify your own FFmpeg options to be used when creating snapshots from RTSP.
+				</description>
+				<default>-an -vsync vfr -q:v 2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
 				<context>url</context>
 				<label>Alarm Input URL</label>
@@ -476,6 +484,14 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Snapshot Options</label>
+				<description>Specify your own FFmpeg options to be used when creating snapshots from RTSP.
+				</description>
+				<default>-an -vsync vfr -q:v 2 -update 1</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -719,6 +735,14 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Snapshot Options</label>
+				<description>Specify your own FFmpeg options to be used when creating snapshots from RTSP.
+				</description>
+				<default>-an -vsync vfr -q:v 2 -update 1</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1006,6 +1030,14 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="snapshotOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Snapshot Options</label>
+				<description>Specify your own FFmpeg options to be used when creating snapshots from RTSP.
+				</description>
+				<default>-an -vsync vfr -q:v 2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
 				<context>url</context>
 				<label>Alarm Input URL</label>
@@ -1272,6 +1304,14 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="snapshotOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Snapshot Options</label>
+				<description>Specify your own FFmpeg options to be used when creating snapshots from RTSP.
+				</description>
+				<default>-an -vsync vfr -q:v 2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
 				<context>url</context>
 				<label>Alarm Input URL</label>
@@ -1532,6 +1572,14 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Snapshot Options</label>
+				<description>Specify your own FFmpeg options to be used when creating snapshots from RTSP.
+				</description>
+				<default>-an -vsync vfr -q:v 2 -update 1</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1823,6 +1871,14 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="snapshotOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Snapshot Options</label>
+				<description>Specify your own FFmpeg options to be used when creating snapshots from RTSP.
+				</description>
+				<default>-an -vsync vfr -q:v 2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
 				<context>url</context>
 				<label>Alarm Input URL</label>
@@ -2095,6 +2151,14 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="snapshotOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>Snapshot Options</label>
+				<description>Specify your own FFmpeg options to be used when creating snapshots from RTSP.
+				</description>
+				<default>-an -vsync vfr -q:v 2 -update 1</default>
 				<advanced>true</advanced>
 			</parameter>
 

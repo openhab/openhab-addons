@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -361,9 +362,9 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     public void dispose() {
         startStreamServer(false);
         groupTracker.listOfGroupHandlers.remove(this);
-        if (pollCameraGroupJob != null) {
-            pollCameraGroupJob.cancel(true);
-            pollCameraGroupJob = null;
+        Future<?> future = pollCameraGroupJob;
+        if (future != null) {
+            future.cancel(true);
         }
         cameraOrder.clear();
     }
