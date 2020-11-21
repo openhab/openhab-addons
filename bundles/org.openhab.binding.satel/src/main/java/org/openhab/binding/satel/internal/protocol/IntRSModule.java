@@ -69,8 +69,19 @@ public class IntRSModule extends SatelModule {
                 throw new ConnectionFailureException(String.format("Port %s does not exist", this.port));
             }
             SerialPort serialPort = portIdentifier.open("org.openhab.binding.satel", 2000);
+            boolean supportsReceiveTimeout = false;
             serialPort.setSerialPortParams(19200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-            serialPort.enableReceiveTimeout(this.getTimeout());
+            try {
+                serialPort.enableReceiveTimeout(this.getTimeout());
+                supportsReceiveTimeout = true;
+            } catch (UnsupportedCommOperationException e) {
+                logger.debug("Receive timeout is unsupported for port {}", this.port);
+            }
+            try {
+                serialPort.enableReceiveThreshold(1);
+            } catch (UnsupportedCommOperationException e) {
+                logger.debug("Receive threshold is unsupported for port {}", this.port);
+            }
             // RXTX serial port library causes high CPU load
             // Start event listener, which will just sleep and slow down event
             // loop
@@ -84,10 +95,10 @@ public class IntRSModule extends SatelModule {
                     }
                 }
             });
-            serialPort.notifyOnDataAvailable(true);
+            serialPort.notifyOnDataAvailable(false);
 
             logger.info("INT-RS module connected successfuly");
-            return new SerialCommunicationChannel(serialPort);
+            return new SerialCommunicationChannel(serialPort, supportsReceiveTimeout);
         } catch (PortInUseException e) {
             throw new ConnectionFailureException(String.format("Port %s in use", this.port), e);
         } catch (UnsupportedCommOperationException e) {
@@ -99,10 +110,13 @@ public class IntRSModule extends SatelModule {
 
     private class SerialCommunicationChannel implements CommunicationChannel {
 
-        private SerialPort serialPort;
+        private final SerialPort serialPort;
 
-        public SerialCommunicationChannel(SerialPort serialPort) {
+        private final boolean supportsReceiveTimeout;
+
+        public SerialCommunicationChannel(SerialPort serialPort, boolean supportsReceiveTimeout) {
             this.serialPort = serialPort;
+            this.supportsReceiveTimeout = supportsReceiveTimeout;
         }
 
         @Override
@@ -132,6 +146,11 @@ public class IntRSModule extends SatelModule {
             } catch (Exception e) {
                 logger.error("An error occurred during closing serial port", e);
             }
+        }
+
+        @Override
+        public boolean supportsReceiveTimeout() {
+            return supportsReceiveTimeout;
         }
     }
 }
