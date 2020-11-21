@@ -17,12 +17,12 @@
 		</parameter>
 		<parameter name="title" type="text">
 			<label>Title</label>
-			<description>The default title of the message.</description>
+			<description>The default title of a message.</description>
 			<default>openHAB</default>
 		</parameter>
 		<parameter name="format" type="text">
 			<label>Format</label>
-			<description>The default format of the message.</description>
+			<description>The default format of a message.</description>
 			<default>none</default>
 			<options>
 				<option value="none">None</option>
@@ -71,7 +71,7 @@
 		<parameter name="expire" type="integer" min="0" max="10800" unit="s">
 			<advanced>true</advanced>
 			<label>Expire</label>
-			<description>The expire parameter specifies how long your notification will continue to be retried for.</description>
+			<description>The expire parameter specifies how long your notification will continue to be retried.</description>
 			<default>3600</default>
 		</parameter>
 	</config-description>

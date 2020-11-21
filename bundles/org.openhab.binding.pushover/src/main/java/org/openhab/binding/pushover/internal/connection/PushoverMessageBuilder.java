@@ -62,7 +62,7 @@ public class PushoverMessageBuilder {
     private static final int MAX_EXPIRE_SECONDS = 10800;
     private static final int MAX_URL_LENGTH = 512;
     private static final int MAX_URL_TITLE_LENGTH = 100;
-    private static final String DEFAULT_CONTENT_TYPE = "image/jpeg";
+    public static final String DEFAULT_CONTENT_TYPE = "image/jpeg";
 
     private final MultiPartContentProvider body = new MultiPartContentProvider();
 

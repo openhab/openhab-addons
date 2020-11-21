@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.pushover.internal.connection;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -151,13 +150,8 @@ public class PushoverAPIConnection {
                 .collect(Collectors.joining("&", url + "?", ""));
     }
 
-    private String encodeParam(String value) {
-        try {
-            return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            logger.debug("UnsupportedEncodingException occurred during execution: {}", e.getLocalizedMessage(), e);
-            return "";
-        }
+    private String encodeParam(@Nullable String value) {
+        return value == null ? "" : URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     private @Nullable String getFromCache(String url) {

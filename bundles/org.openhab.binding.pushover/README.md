@@ -1,59 +1,60 @@
 # Pushover Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+The Pushover binding allows you to notify mobile devices of a message using the [Pushover REST API](https://pushover.net/api).
+To get started you first need to register (a free process) to get an API token.
+Initially you have to create an application, set its name and optionally upload an icon, and get the API token in return.
+Once you have the token, you need a user key (or group key) and optionally a device name for each user to which you want to push notifications.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-## Discovery
-
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+There is only one Thing available - the `pushover-account`.
+You are able to create multiple instances of this Thing to broadcast to different users, groups or devices.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+| Configuration Parameter | Type    | Description                                                                                                                                          |
+|-------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `apikey`                | text    | Your API token / key (APP_TOKEN) to access the Pushover Message API. **mandatory**                                                                   |
+| `user`                  | text    | Your user key or group key (USER_KEY) to which you want to push notifications. **mandatory**                                                         |
+| `title`                 | text    | The default title of a message (default: `openHAB`).                                                                                                 |
+| `format`                | text    | The default format (`none`, `HTML` or `monospace`) of a message (default: `none`).                                                                   |
+| `sound`                 | text    | The default notification sound on target device (default: `default`) (see [supported notification sounds](https://pushover.net/api#sounds)).         |
+| `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushover servers will send the same notification to the user (default: `300`). **advanced** |
+| `expire`                | integer | The expire parameter specifies how long (in seconds) your notification will continue to be retried (default: `3600`). **advanced**                   |
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+The `retry` and `expire` parameters are only used for emergency-priority notifications.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Currently the binding does not support any Channels.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+## Thing Actions
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+All actions return a `Boolean` value to indicate if the message - parameter `message` **mandatory** - was sent successfully or not.
+The `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
+
+`sendMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
+`sendHtmlMessage(String message, @Nullable String title)` - This method is used to send a HTML message.
+`sendMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
+`sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a (local) path  (`attachment` **mandatory**) to the attachment and an optional parameter `contentType` to define the content-type of the attachment (default: `image/jpeg`).
+`sendURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
+`sendMessageToDevice(String device, String message, @Nullable String title)` - This method is used to send a message to a specific device. Parameter `device` **mandatory** is the name of a specific device (multiple devices may be separated by a comma).
+
+The `sendPriorityMessage` action returns a `String` value (the `receipt`) if the message was sent successfully, otherwise `null`.
+
+`sendPriorityMessage(String message, @Nullable String title, @Nullable Integer priority)` - This method is used to send a priority message. Parameter `priority` is the priority (`-2`, `-1`, `0`, `1`, `2`) to be used (default: `2`).
+
+`cancelPriorityMessage` returns a `Boolean` value to indicate if the message was cancelled successfully or not.
+
+`cancelPriorityMessage(String receipt)` - This method is used to cancel a priority message.
 
 ## Full Example
 
+demo.things:
 
-
-### Actions
-
-TODO
+```java
+Thing pushover:pushover-account:account [ apikey="APP_TOKEN", user="USER_KEY" ]
+```
 
 demo.rules:
 
@@ -61,4 +62,17 @@ demo.rules:
 val actions = getActions("pushover", "pushover:pushover-account:account")
 // send HTML message
 actions.sendHtmlMessage("Hello <font color='green'>World</font>!", "openHAB")
+```
+
+```java
+val actions = getActions("pushover", "pushover:pushover-account:account")
+// send priority message
+var receipt = actions.sendPriorityMessage("Hello <font color='green'>World</font>!", "openHAB", 3)
+
+// wait for your cancel condition
+
+if( receipt !== null ) {
+    actions.cancelPriorityMessage(receipt)
+    receipt = null
+}
 ```

@@ -13,6 +13,7 @@
 package org.openhab.binding.pushover.internal.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link PushoverCommunicationException} is a configuration exception for the connections to Pushover Messages API.
@@ -36,7 +37,7 @@ public class PushoverCommunicationException extends RuntimeException {
      *
      * @param message Detail message
      */
-    public PushoverCommunicationException(String message) {
+    public PushoverCommunicationException(@Nullable String message) {
         super(message);
     }
 
@@ -45,7 +46,7 @@ public class PushoverCommunicationException extends RuntimeException {
      *
      * @param cause The cause
      */
-    public PushoverCommunicationException(Throwable cause) {
+    public PushoverCommunicationException(@Nullable Throwable cause) {
         super(cause);
     }
 
@@ -55,7 +56,7 @@ public class PushoverCommunicationException extends RuntimeException {
      * @param message Detail message
      * @param cause The cause
      */
-    public PushoverCommunicationException(String message, Throwable cause) {
+    public PushoverCommunicationException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 }
