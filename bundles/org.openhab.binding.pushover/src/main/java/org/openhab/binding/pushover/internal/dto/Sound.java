@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.pushover.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.config.core.ParameterOption;
+
 /**
  * The {@link Sound} is the Java class used to map the JSON response to an Pushover API request..
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class Sound {
     public String sound;
     public String label;
@@ -24,5 +28,9 @@ public class Sound {
     public Sound(String sound, String label) {
         this.sound = sound;
         this.label = label;
+    }
+
+    public ParameterOption getAsParameterOption() {
+        return new ParameterOption(sound, label);
     }
 }

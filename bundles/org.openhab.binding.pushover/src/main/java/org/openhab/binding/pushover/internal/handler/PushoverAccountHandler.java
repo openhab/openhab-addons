@@ -12,25 +12,23 @@
  */
 package org.openhab.binding.pushover.internal.handler;
 
-import static org.openhab.binding.pushover.internal.PushoverBindingConstants.*;
+import static org.openhab.binding.pushover.internal.PushoverBindingConstants.DEFAULT_SOUND;
 
-import java.net.URI;
 import java.util.Collection;
-import java.util.Locale;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.pushover.internal.actions.PushoverActions;
 import org.openhab.binding.pushover.internal.config.PushoverAccountConfiguration;
+import org.openhab.binding.pushover.internal.config.PushoverConfigOptionProvider;
 import org.openhab.binding.pushover.internal.connection.PushoverAPIConnection;
 import org.openhab.binding.pushover.internal.connection.PushoverCommunicationException;
 import org.openhab.binding.pushover.internal.connection.PushoverConfigurationException;
 import org.openhab.binding.pushover.internal.connection.PushoverMessageBuilder;
-import org.openhab.core.config.core.ConfigOptionProvider;
-import org.openhab.core.config.core.ParameterOption;
+import org.openhab.binding.pushover.internal.dto.Sound;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -45,11 +43,10 @@ import org.openhab.core.types.Command;
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class PushoverAccountHandler extends BaseThingHandler implements ConfigOptionProvider {
+public class PushoverAccountHandler extends BaseThingHandler {
 
     private static final Collection<Class<? extends ThingHandlerService>> SUPPORTED_THING_ACTIONS = Set
-            .of(PushoverActions.class);
-    private static final String URI_STR = "thing-type:pushover:pushover-account";
+            .of(PushoverActions.class, PushoverConfigOptionProvider.class);
 
     private final HttpClient httpClient;
 
@@ -100,6 +97,15 @@ public class PushoverAccountHandler extends BaseThingHandler implements ConfigOp
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return SUPPORTED_THING_ACTIONS;
+    }
+
+    /**
+     * Retrieves the list of current sounds and their descriptions from the Pushover API.
+     *
+     * @return a list of {@link Sound}s
+     */
+    public List<Sound> getSounds() {
+        return connection != null ? connection.getSounds() : List.of();
     }
 
     /**
@@ -168,15 +174,5 @@ public class PushoverAccountHandler extends BaseThingHandler implements ConfigOp
         } else {
             throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
-    }
-
-    @Override
-    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
-            @Nullable Locale locale) {
-        if (URI_STR.equals(uri.toString()) && CONFIG_SOUND.equals(param) && connection != null) {
-            return connection.getSounds().stream().map(s -> new ParameterOption(s.sound, s.label))
-                    .collect(Collectors.toUnmodifiableSet());
-        }
-        return null;
     }
 }
