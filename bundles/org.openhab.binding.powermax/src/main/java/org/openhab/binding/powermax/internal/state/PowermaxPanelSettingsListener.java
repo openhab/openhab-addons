@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.powermax.internal.state;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link PowermaxPanelSettingsListener} is a listener for updated
  * alarm panel settings
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public interface PowermaxPanelSettingsListener {
 
     /**
@@ -26,7 +30,7 @@ public interface PowermaxPanelSettingsListener {
      *
      * @param settings the updated alarm panel settings or null if the panel settings are unknown
      */
-    public void onPanelSettingsUpdated(PowermaxPanelSettings settings);
+    public void onPanelSettingsUpdated(@Nullable PowermaxPanelSettings settings);
 
     /**
      * This method is called when the bridge thing handler identifies
@@ -35,5 +39,5 @@ public interface PowermaxPanelSettingsListener {
      * @param zoneNumber the zone number
      * @param settings the updated alarm panel settings or null if the panel settings are unknown
      */
-    public void onZoneSettingsUpdated(int zoneNumber, PowermaxPanelSettings settings);
+    public void onZoneSettingsUpdated(int zoneNumber, @Nullable PowermaxPanelSettings settings);
 }
