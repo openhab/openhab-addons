@@ -49,6 +49,7 @@ import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.GatewayMgmt;
 import org.openwebnet4j.message.Lighting;
 import org.openwebnet4j.message.OpenMessage;
+import org.openwebnet4j.message.What;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
@@ -71,7 +72,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     // ConcurrentHashMap of devices registered to this BridgeHandler
     // association is: ownId (String) -> OpenWebNetThingHandler, with ownId = WHO.WHERE
-    private Map<String, OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
+    private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
+    private Map<String, Long> discoveringDevices = new ConcurrentHashMap<>();
 
     protected @Nullable OpenGateway gateway;
     private boolean isBusGateway = false;
@@ -278,23 +280,54 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     private void discoverByActivation(BaseOpenMessage baseMsg) {
-        logger.debug("BridgeHandler.discoverByActivation() msg={}", baseMsg);
+        logger.debug("discoverByActivation: msg={}", baseMsg);
         OpenWebNetDeviceDiscoveryService discService = deviceDiscoveryService;
         if (discService == null) {
             logger.warn("discoverByActivation: null OpenWebNetDeviceDiscoveryService, ignoring msg={}", baseMsg);
             return;
         }
-        if (baseMsg instanceof Lighting) {
+        if (baseMsg instanceof Lighting || baseMsg instanceof Automation) { // we support these types only
+            BaseOpenMessage bmsg = baseMsg;
+            if (baseMsg instanceof Lighting) {
+                What what = baseMsg.getWhat();
+                if (Lighting.WHAT.OFF.equals(what)) { // skipping OFF msg: cannot distinguish dimmer/switch
+                    logger.debug("discoverByActivation: skipping OFF msg: cannot distinguish dimmer/switch");
+                    return;
+                }
+                if (Lighting.WHAT.ON.equals(what)) { // if not already done just now, request light status to
+                                                     // distinguish dimmer from switch
+                    if (discoveringDevices.containsKey(ownIdFromMessage(baseMsg))) {
+                        logger.debug(
+                                "discoverByActivation: we just requested status for this device and it's ON -> it's a switch");
+                    } else {
+                        OpenGateway gw = gateway;
+                        if (gw != null) {
+                            try {
+                                discoveringDevices.put(ownIdFromMessage(baseMsg),
+                                        Long.valueOf(System.currentTimeMillis()));
+                                gw.send(Lighting.requestStatus(baseMsg.getWhere().value()));
+                                return;
+
+                            } catch (OWNException e) {
+                                logger.warn("discoverByActivation: Exception while requesting light state: {}",
+                                        e.getMessage());
+                                return;
+                            }
+                        }
+                    }
+                }
+                discoveringDevices.remove(ownIdFromMessage(baseMsg));
+            }
             OpenDeviceType type = null;
             try {
-                type = baseMsg.detectDeviceType();
+                type = bmsg.detectDeviceType();
             } catch (FrameException e) {
                 logger.warn("Exception while detecting device type: {}", e.getMessage());
             }
             if (type != null) {
-                discService.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
+                discService.newDiscoveryResult(bmsg.getWhere(), type, bmsg);
             } else {
-                logger.debug("discoverByActivation: no device type detected from msg: {}", baseMsg);
+                logger.debug("discoverByActivation: no device type detected from msg: {}", bmsg);
             }
         }
     }

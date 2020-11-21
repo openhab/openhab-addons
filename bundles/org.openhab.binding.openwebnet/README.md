@@ -64,7 +64,7 @@ For other gateways you can add them manually, see [Thing Configuration](#thing-c
 
 #### Discovery by Activation
 
-Devices can also be discovered if activated while an Inbox Scan is active: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer) to have it discovered by the binding.
+BUS devices can also be discovered if activated while an Inbox Scan is active: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer) to have it discovered by the binding.
 
 If a device cannot be discovered automatically it's always possible to add it manually, see [Configuring Devices](#configuring-devices).
 
