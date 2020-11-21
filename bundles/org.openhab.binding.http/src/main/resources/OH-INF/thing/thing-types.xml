@@ -78,6 +78,7 @@
 			<parameter name="headers" type="text" multiple="true">
 				<label>Headers</label>
 				<description>Additional headers send along with the request</description>
+				<limitToOptions>false</limitToOptions>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="ignoreSSLErrors" type="boolean">
