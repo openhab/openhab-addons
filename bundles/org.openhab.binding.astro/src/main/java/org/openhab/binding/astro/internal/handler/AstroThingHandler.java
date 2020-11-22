@@ -82,7 +82,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
 
-    private int linkedPositionalChannels = 0;
+    private boolean linkedPositionalChannels;
 
     protected AstroThingConfig thingConfig = new AstroThingConfig();
 
@@ -204,7 +204,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
                 // Repeat positional job every configured seconds
                 // Use scheduleAtFixedRate to avoid time drift associated with scheduleWithFixedDelay
-                if (isPositionalChannelLinked()) {
+                linkedPositionalChannels = isPositionalChannelLinked();
+                if (linkedPositionalChannels) {
                     Job positionalJob = new PositionalJob(thingUID);
                     ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(positionalJob, 0, thingConfig.interval,
                             TimeUnit.SECONDS);
@@ -244,23 +245,23 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        linkedChannelChange(channelUID, 1);
+        linkedChannelChange(channelUID);
         publishChannelIfLinked(channelUID);
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
-        linkedChannelChange(channelUID, -1);
+        linkedChannelChange(channelUID);
     }
 
     /**
      * Counts positional channels and restarts Astro jobs.
      */
-    private void linkedChannelChange(ChannelUID channelUID, int step) {
+    private void linkedChannelChange(ChannelUID channelUID) {
         if (Arrays.asList(getPositionalChannelIds()).contains(channelUID.getId())) {
-            int oldValue = linkedPositionalChannels;
-            linkedPositionalChannels += step;
-            if (oldValue == 0 && linkedPositionalChannels > 0 || oldValue > 0 && linkedPositionalChannels == 0) {
+            boolean oldValue = linkedPositionalChannels;
+            linkedPositionalChannels = isPositionalChannelLinked();
+            if (oldValue != linkedPositionalChannels) {
                 restartJobs();
             }
         }
