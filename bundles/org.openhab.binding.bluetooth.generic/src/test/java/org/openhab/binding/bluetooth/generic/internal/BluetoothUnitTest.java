@@ -15,7 +15,7 @@ package org.openhab.binding.bluetooth.generic.internal;
 import org.junit.jupiter.api.Test;
 
 /**
- * @author cpetty
+ * @author Connor Petty - Initial contribution
  *
  */
 class BluetoothUnitTest {

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -68,7 +68,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
     private final BluetoothGattParser gattParser = BluetoothGattParserFactory.getDefault();
     private final CharacteristicChannelTypeProvider channelTypeProvider;
 
-    private @Nullable Future<?> readCharacteristicJob = null;
+    private @Nullable ScheduledFuture<?> readCharacteristicJob = null;
 
     public GenericBluetoothHandler(Thing thing, CharacteristicChannelTypeProvider channelTypeProvider) {
         super(thing);
@@ -108,7 +108,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
 
     @Override
     public void dispose() {
-        Future<?> future = readCharacteristicJob;
+        ScheduledFuture<?> future = readCharacteristicJob;
         if (future != null) {
             future.cancel(true);
         }
@@ -354,7 +354,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         }
 
         private boolean isAdvanced() {
-            return false;// TODO need to decide whether to implement this or not
+            return !gattParser.isKnownCharacteristic(getCharacteristicUUID());
         }
 
         private boolean isFieldSupported(Field field) {

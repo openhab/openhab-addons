@@ -96,7 +96,7 @@ public class BluetoothChannelUtils {
         State state;
         if (holder.isValueSet()) {
             if (holder.getField().getFormat().isBoolean()) {
-                state = holder.getBoolean() ? OnOffType.ON : OnOffType.OFF;
+                state = OnOffType.from(Boolean.TRUE.equals(holder.getBoolean()));
             } else {
                 // check if we can use enumerations
                 if (holder.getField().hasEnumerations()) {

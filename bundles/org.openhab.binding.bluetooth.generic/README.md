@@ -1,10 +1,10 @@
 # Generic Bluetooth Device
 
-This extension adds support for devices that expose [Bluetooth Generic Attributes (GATT)](https://www.bluetooth.com/specifications/gatt/)
+This binding adds support for devices that expose [Bluetooth Generic Attributes (GATT)](https://www.bluetooth.com/specifications/gatt/)
 
 ## Supported Things
 
-Only a single thing type is added by this extension:
+Only a single thing type is added by this binding:
 
 | Thing Type ID | Description                                     |
 |---------------|-------------------------------------------------|
@@ -12,8 +12,8 @@ Only a single thing type is added by this extension:
 
 ## Discovery
 
-As any other Bluetooth device, Generic bluetooth devices are discovered automatically by the corresponding bridge.
-Generic bluetooth devices will be discovered for any connectable bluetooth device that doesn't match another extension.
+As any other Bluetooth device, generic bluetooth devices are discovered automatically by the corresponding bridge.
+Generic bluetooth devices will be discovered for any connectable bluetooth device that doesn't match another bluetooth binding.
 
 ## Thing Configuration
 
