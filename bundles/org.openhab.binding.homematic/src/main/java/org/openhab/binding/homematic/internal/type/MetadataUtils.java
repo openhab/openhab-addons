@@ -391,7 +391,7 @@ public class MetadataUtils {
         } else if (itemType.equals(ITEM_TYPE_CONTACT)) {
             return CATEGORY_CONTACT;
         } else if (itemType.equals(ITEM_TYPE_DIMMER)) {
-            return CATEGORY_DIMMABLE_LIGHT;
+            return "";
         } else if (itemType.equals(ITEM_TYPE_SWITCH)) {
             return CATEGORY_SWITCH;
         } else {
