@@ -277,10 +277,16 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             if (dp.isNumberType()) {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-
                 BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
-                if (step == null) {
-                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : new Long(1L));
+                if (ITEM_TYPE_DIMMER.equals(itemType) && dp.getMaxValue().doubleValue() == 1.01d) {
+                    // For dimmers with a max value of 1.01 the values must be corrected
+                    min = MetadataUtils.createBigDecimal(0);
+                    max = MetadataUtils.createBigDecimal(100);
+                    step = MetadataUtils.createBigDecimal(1);
+                } else {
+                    if (step == null) {
+                        step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : new Long(1L));
+                    }
                 }
                 stateFragment.withMinimum(min).withMaximum(max).withStep(step)
                         .withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());

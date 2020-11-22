@@ -166,6 +166,9 @@ public class MetadataUtils {
      */
     public static String getStatePattern(HmDatapoint dp) {
         String unit = getUnit(dp);
+        if ("%%".equals(unit)) {
+            return "%d %%";
+        }
         if (unit != null && unit != "") {
             String pattern = getPattern(dp);
             if (pattern != null) {
