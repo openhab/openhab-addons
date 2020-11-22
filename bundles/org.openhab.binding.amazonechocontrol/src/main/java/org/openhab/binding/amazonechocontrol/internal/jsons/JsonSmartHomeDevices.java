@@ -26,7 +26,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeTags.Js
 @NonNullByDefault
 public class JsonSmartHomeDevices {
     public static class SmartHomeDevice implements SmartHomeBaseDevice {
-
         public @Nullable Integer updateIntervalInSeconds;
 
         @Override
@@ -72,6 +71,11 @@ public class JsonSmartHomeDevices {
     public static class DriverIdentity {
         public @Nullable String namespace;
         public @Nullable String identifier;
+
+        @Override
+        public String toString() {
+            return "DriverIdentity{" + "namespace='" + namespace + '\'' + ", identifier='" + identifier + '\'' + '}';
+        }
     }
 
     public @Nullable SmartHomeDevice @Nullable [] smarthomeDevices;
