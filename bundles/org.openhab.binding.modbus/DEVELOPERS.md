@@ -86,7 +86,10 @@ The best way is to use the `ModbusBindingConstants.BINDING_ID` constant.
 You will have to create one or more handler classes for the devices you want to support.
 For the modbus connection setup and handling you can use the Modbus TCP Slave or Modbus Serial Slave handlers.
 Your handler should use these handlers as bridges and you can set up your regular or one shot modbus requests to read from the slave.
-This is done by extending your `ThingHandler` by `BaseModbusThingHandler`. You can use the methods `submitOneTimePoll()` and `registerRegularPoll()` to poll values and `submitOneTimeWrite()` to send values to a slave. The `BaseModbusThingHandler` takes care that every regular poll task is cancelled, when the Thing is disposed. Despite that, you can cancel the task manually by storing the return value of `registerRegularPoll()` and use it as an argument to `unregisterRegularPoll()`.
+This is done by extending your `ThingHandler` by `BaseModbusThingHandler`.
+You can use the inherited methods `submitOneTimePoll()` and `registerRegularPoll()` to poll values and `submitOneTimeWrite()` to send values to a slave.
+The `BaseModbusThingHandler` takes care that every regular poll task is cancelled, when the Thing is disposed.
+Despite that, you can cancel the task manually by storing the return value of `registerRegularPoll()` and use it as an argument to `unregisterRegularPoll()`.
 
 Please keep in mind that these reads are asynchronous and they will call your callback once the read is done.
 
