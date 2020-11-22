@@ -14,6 +14,12 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -35,9 +41,11 @@ import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.auth.AuthResponse;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.simulation.Injector;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.BimmerConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
@@ -58,7 +66,9 @@ public class ConnectedDriveProxy {
     private final Logger logger = LoggerFactory.getLogger(ConnectedDriveProxy.class);
     private final Token token = new Token();
     private HttpClient httpClient;
+    private HttpClient authHttpClient;
     private String authUri;
+    private String legacyAuthUri;
     private ConnectedDriveConfiguration configuration;
 
     /**
@@ -81,6 +91,7 @@ public class ConnectedDriveProxy {
      * }
      */
     String baseUrl;
+    String legacyUrl;
     String vehicleStatusAPI = "/status";
     String lastTripAPI = "/statistics/lastTrip";
     String allTripsAPI = "/statistics/allTrips";
@@ -93,6 +104,13 @@ public class ConnectedDriveProxy {
 
     public ConnectedDriveProxy(HttpClientFactory httpClientFactory, ConnectedDriveConfiguration config) {
         httpClient = httpClientFactory.getCommonHttpClient();
+        authHttpClient = httpClientFactory.createHttpClient(AUTH_HTTP_CLIENT_NAME);
+        authHttpClient.setFollowRedirects(false);
+        try {
+            authHttpClient.start();
+        } catch (Exception e) {
+            logger.warn("Auth Http Client cannot be started");
+        }
         configuration = config;
         // generate URI for Authorization
         // see https://customer.bmwgroup.com/one/app/oauth.js
@@ -104,7 +122,14 @@ public class ConnectedDriveProxy {
             uri.append("/gcdm/oauth/authenticate");
         }
         authUri = uri.toString();
+
+        StringBuffer legacyAuth = new StringBuffer();
+        legacyAuth.append("https://");
+        legacyAuth.append(BimmerConstants.AUTH_SERVER_MAP.get(configuration.region));
+        legacyAuth.append(BimmerConstants.OAUTH_ENDPOINT);
+        legacyAuthUri = legacyAuth.toString();
         baseUrl = "https://" + getRegionServer() + "/webapi/v1/user/vehicles/";
+        legacyUrl = "https://" + getRegionServer() + "/api/vehicle/dynamic/v1/";
     }
 
     private synchronized void call(String url, boolean post, Optional<MultiMap<String>> params,
@@ -121,7 +146,6 @@ public class ConnectedDriveProxy {
             }
             return;
         }
-
         Request req;
         final StringBuffer completeUrl = new StringBuffer(url);
         if (post) {
@@ -184,8 +208,9 @@ public class ConnectedDriveProxy {
                 callback);
     }
 
-    public void requestLegacyVehcileStatus(VehicleConfiguration vehicleConfiguration, StringResponseCallback callback) {
-        get("https://b2vapi.bmwgroup.com/api/vehicle/dynamic/v1/" + vehicleConfiguration.vin, Optional.empty(),
+    public void requestLegacyVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
+        // see https://github.com/jupe76/bmwcdapi/search?q=dynamic%2Fv1
+        get(new StringBuffer(legacyUrl).append(config.vin).append("?offset=-60").toString(), Optional.empty(),
                 callback);
     }
 
@@ -242,7 +267,7 @@ public class ConnectedDriveProxy {
      */
     public Token getToken() {
         if (token.isExpired() || !token.isValid()) {
-            updateToken();
+            legacyUpdateToken();
         }
         return token;
     }
@@ -252,9 +277,9 @@ public class ConnectedDriveProxy {
      *
      * @return
      */
-    private synchronized void updateToken() {
-        httpClient.setFollowRedirects(false);
-        Request req = httpClient.POST(authUri);
+    private synchronized void jettyUpdateToken() {
+        logger.info("updateToken - start");
+        Request req = authHttpClient.POST(authUri);
 
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
         req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
@@ -285,8 +310,93 @@ public class ConnectedDriveProxy {
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Authorization exception: {}", e.getMessage());
+            StackTraceElement[] trace = e.getStackTrace();
+            for (int i = 0; i < trace.length; i++) {
+                logger.info("{}", trace[i]);
+            }
         }
-        httpClient.setFollowRedirects(true);
+        logger.info("updateToken - finish");
+    }
+
+    private synchronized void updateToken() {
+        try {
+            URL url = new URL("https://customer.bmwgroup.com/gcdm/oauth/authenticate");
+            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+
+            con.setRequestProperty(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_URL_ENCODED);
+            con.setRequestProperty(HttpHeader.CONNECTION.toString(), KEEP_ALIVE);
+            con.setRequestProperty(HttpHeader.HOST.toString(),
+                    BimmerConstants.SERVER_MAP.get(BimmerConstants.SERVER_ROW));
+            con.setRequestProperty(HttpHeader.AUTHORIZATION.toString(), BimmerConstants.AUTHORIZATION_VALUE);
+            con.setRequestProperty(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
+            con.setDoOutput(true);
+
+            MultiMap<String> dataMap = new MultiMap<String>();
+            dataMap.add(CLIENT_ID, BimmerConstants.CLIENT_ID_VALUE);
+            dataMap.add(RESPONSE_TYPE, TOKEN);
+            dataMap.add(REDIRECT_URI, BimmerConstants.REDIRECT_URI_VALUE);
+            dataMap.add(SCOPE, BimmerConstants.SCOPE_VALUES);
+            dataMap.add(USERNAME, configuration.userName);
+            dataMap.add(PASSWORD, configuration.password);
+            String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
+            OutputStream os = con.getOutputStream();
+            byte[] input = urlEncodedData.getBytes("utf-8");
+            os.write(input, 0, input.length);
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            logger.info("Response Code {} Message {} ", con.getResponseCode(), con.getResponseMessage());
+            tokenFromUrl(con.getHeaderField(HttpHeader.LOCATION.toString()));
+        } catch (IOException e) {
+            logger.warn("{}", e.getMessage());
+        }
+    }
+
+    private synchronized void legacyUpdateToken() {
+        try {
+            logger.info("Auth {}", legacyAuthUri);
+            URL url = new URL(legacyAuthUri);
+            HttpURLConnection.setFollowRedirects(false);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+
+            con.setRequestProperty(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_URL_ENCODED);
+            con.setRequestProperty(HttpHeader.CONNECTION.toString(), KEEP_ALIVE);
+            con.setRequestProperty(HttpHeader.HOST.toString(),
+                    BimmerConstants.SERVER_MAP.get(BimmerConstants.SERVER_ROW));
+            con.setRequestProperty(HttpHeader.AUTHORIZATION.toString(), BimmerConstants.LEGACY_AUTHORIZATION_VALUE);
+            con.setRequestProperty(CREDENTIALS, BimmerConstants.LEGACY_CREDENTIAL_VALUES);
+            con.setDoOutput(true);
+
+            MultiMap<String> dataMap = new MultiMap<String>();
+            dataMap.add("grant_type", "password");
+            dataMap.add(SCOPE, BimmerConstants.SCOPE_VALUES);
+            dataMap.add(USERNAME, configuration.userName);
+            dataMap.add(PASSWORD, configuration.password);
+            String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
+            OutputStream os = con.getOutputStream();
+            byte[] input = urlEncodedData.getBytes("utf-8");
+            os.write(input, 0, input.length);
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
+            StringBuilder response = new StringBuilder();
+            String responseLine = null;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            logger.info("Response Code {} Message {} ", con.getResponseCode(), con.getResponseMessage());
+            // logger.info("Response {}", response.toString());
+            AuthResponse authResponse = Converter.getGson().fromJson(response.toString(), AuthResponse.class);
+            token.setToken(authResponse.access_token);
+            token.setType(authResponse.token_type);
+            token.setExpiration(authResponse.expires_in);
+        } catch (IOException e) {
+            logger.warn("{}", e.getMessage());
+        }
     }
 
     void tokenFromUrl(String encodedUrl) {
