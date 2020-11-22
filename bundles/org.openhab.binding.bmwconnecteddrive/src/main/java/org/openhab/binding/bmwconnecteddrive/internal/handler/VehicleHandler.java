@@ -223,11 +223,13 @@ public class VehicleHandler extends VehicleChannelHandler {
                         VehicleStatusContainer container = Converter.getGson().fromJson(vehicleStatusCache.get(),
                                 VehicleStatusContainer.class);
                         VehicleStatus status = container.vehicleStatus;
-                        status.vin = Constants.ANONYMOUS;
-                        if (status.position != null) {
-                            status.position.lat = -1;
-                            status.position.lon = -1;
-                            status.position.heading = -1;
+                        if (status != null) {
+                            status.vin = Constants.ANONYMOUS;
+                            if (status.position != null) {
+                                status.position.lat = -1;
+                                status.position.lon = -1;
+                                status.position.heading = -1;
+                            }
                         }
                         logger.warn("{}", Converter.getGson().toJson(container));
                     } else {

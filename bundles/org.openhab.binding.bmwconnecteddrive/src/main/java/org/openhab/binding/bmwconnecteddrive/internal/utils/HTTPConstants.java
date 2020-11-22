@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class HTTPConstants {
     public static final int HTTP_TIMEOUT_SEC = 10;
 
+    public static final String AUTH_HTTP_CLIENT_NAME = "AuthHttpClient";
     public static final String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
     public static final String CONTENT_TYPE_JSON = "application/json";
     public static final String KEEP_ALIVE = "Keep-Alive";
