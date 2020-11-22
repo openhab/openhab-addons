@@ -5,6 +5,5 @@
 
 	<name>YamahaReceiver Binding</name>
 	<description>For all network enabled Yamaha receivers.</description>
-	<author>David Graeff, Tomasz Maruszak</author>
 
 </binding:binding>

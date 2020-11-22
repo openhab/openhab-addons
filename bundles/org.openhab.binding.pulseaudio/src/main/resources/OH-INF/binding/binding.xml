@@ -5,6 +5,5 @@
 
 	<name>Pulseaudio Binding</name>
 	<description>This is the binding for Pulseaudio.</description>
-	<author>Tobias Bräutigam</author>
 
 </binding:binding>

@@ -5,6 +5,5 @@
 
 	<name>MeteoStick Binding</name>
 	<description>This is the binding for MeteoStick USB weather station receiver.</description>
-	<author>Chris Jackson</author>
 
 </binding:binding>

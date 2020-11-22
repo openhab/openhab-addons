@@ -5,6 +5,5 @@
 
 	<name>NeoHub Binding</name>
 	<description>This is the binding for Heatmiser NeoHub devices</description>
-	<author>Andrew Fiddian-Green</author>
 
 </binding:binding>

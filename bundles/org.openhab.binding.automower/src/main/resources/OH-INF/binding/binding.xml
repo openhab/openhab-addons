@@ -5,6 +5,5 @@
 
 	<name>Automower Binding</name>
 	<description>Binding to interact with Husquvarna Automower robots.</description>
-	<author>Markus Pfleger</author>
 
 </binding:binding>

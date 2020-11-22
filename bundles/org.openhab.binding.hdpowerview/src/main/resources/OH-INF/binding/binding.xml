@@ -5,6 +5,5 @@
 
 	<name>Hunter Douglas PowerView Binding</name>
 	<description>The Hunter Douglas PowerView binding provides access to the Hunter Douglas line of PowerView shades.</description>
-	<author>Andy Lintner</author>
 
 </binding:binding>

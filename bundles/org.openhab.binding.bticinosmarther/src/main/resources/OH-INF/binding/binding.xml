@@ -5,6 +5,5 @@
 
 	<name>BTicino Smarther Binding</name>
 	<description>This is the binding for BTicino Smarther chronothermostat units</description>
-	<author>Fabio Possieri</author>
 
 </binding:binding>

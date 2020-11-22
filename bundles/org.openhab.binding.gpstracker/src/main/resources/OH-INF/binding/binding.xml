@@ -5,6 +5,5 @@
 
 	<name>GPSTracker Binding</name>
 	<description>GPS tracking with OwnTracks and GPSLogger support over HTTP</description>
-	<author>Gabor Bicskei</author>
 
 </binding:binding>
