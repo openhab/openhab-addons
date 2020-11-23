@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.velux.internal.action;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
+import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
@@ -53,35 +51,69 @@ public class VeluxActions implements ThingActions, IVeluxActions {
 
     @Override
     @RuleAction(label = "Reboot Bridge", description = "issues a reboot command to the KLF200 bridge")
-    public @ActionOutput(name = "executing", type = "java.lang.Boolean") Boolean rebootBridge() {
-        logger.trace("rebootBridge(): reboot action called");
-        VeluxBridgeHandler bridgeHandler = this.bridgeHandler;
-        if (bridgeHandler != null) {
-            return bridgeHandler.runReboot();
+    public @ActionOutput(name = "executing", type = "java.lang.Boolean") Boolean rebootBridge()
+            throws IllegalStateException {
+        logger.trace("rebootBridge(): action called");
+        VeluxBridgeHandler bridge = bridgeHandler;
+        if (bridge == null) {
+            throw new IllegalStateException("Bridge instance is null");
         }
-        return false;
+        return bridge.runReboot();
     }
 
-    public static boolean rebootBridge(@Nullable ThingActions actions) {
-        return invokeMethodOf(actions).rebootBridge();
+    @Override
+    @RuleAction(label = "Move Relative", description = "issues a relative move command to an actuator")
+    public @ActionOutput(name = "executing", type = "java.lang.Boolean") Boolean moveRelative(
+            @ActionInput(name = "nodeId") String nodeId, @ActionInput(name = "relativePercent") String relativePercent)
+            throws NumberFormatException, IllegalStateException {
+        logger.trace("moveRelative(): action called");
+        VeluxBridgeHandler bridge = bridgeHandler;
+        if (bridge == null) {
+            throw new IllegalStateException("Bridge instance is null");
+        }
+        int node = Integer.parseInt(nodeId);
+        if (node < 0 || node > 200) {
+            throw new NumberFormatException("Node Id out of range");
+        }
+        int relPct = Integer.parseInt(relativePercent);
+        if (Math.abs(relPct) > 100) {
+            throw new NumberFormatException("Relative Percent out of range");
+        }
+        return bridge.moveRelative(node, relPct);
     }
 
-    private static IVeluxActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
+    /**
+     * Static method to send a reboot command to a Velux Bridge
+     *
+     * @param actions ThingActions from the caller
+     * @return true if the command was sent
+     * @throws IllegalArgumentException if actions is invalid
+     * @throws IllegalStateException if anything else is wrong
+     */
+    public static Boolean rebootBridge(@Nullable ThingActions actions)
+            throws IllegalArgumentException, IllegalStateException {
+        if (!(actions instanceof IVeluxActions)) {
+            throw new IllegalArgumentException("Unsupported action");
         }
-        if (actions.getClass().getName().equals(VeluxActions.class.getName())) {
-            if (actions instanceof IVeluxActions) {
-                return (IVeluxActions) actions;
-            } else {
-                return (IVeluxActions) Proxy.newProxyInstance(IVeluxActions.class.getClassLoader(),
-                        new Class[] { IVeluxActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
+        return ((IVeluxActions) actions).rebootBridge();
+    }
+
+    /**
+     * Static method to send a relative move command to a Velux actuator
+     *
+     * @param actions ThingActions from the caller
+     * @param nodeId the node Id in the bridge
+     * @param relativePercent the target position relative to its current position (-100% <= relativePercent <= +100%)
+     * @return true if the command was sent
+     * @throws IllegalArgumentException if actions is invalid
+     * @throws NumberFormatException if either of nodeId or relativePercent is not an integer, or out of range
+     * @throws IllegalStateException if anything else is wrong
+     */
+    public static Boolean moveRelative(@Nullable ThingActions actions, String nodeId, String relativePercent)
+            throws IllegalArgumentException, NumberFormatException, IllegalStateException {
+        if (!(actions instanceof IVeluxActions)) {
+            throw new IllegalArgumentException("Unsupported action");
         }
-        throw new IllegalArgumentException("Actions is not an instance of VeluxActions");
+        return ((IVeluxActions) actions).moveRelative(nodeId, relativePercent);
     }
 }

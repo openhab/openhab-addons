@@ -21,5 +21,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface IVeluxActions {
-    Boolean rebootBridge();
+
+    /**
+     * Action to send a reboot command to a Velux Bridge
+     *
+     * @return true if the command was sent
+     * @throws IllegalStateException if something is wrong
+     */
+    Boolean rebootBridge() throws IllegalStateException;
+
+    /**
+     * Action to send a relative move command to a Velux actuator
+     *
+     * @param nodeId the node Id in the bridge
+     * @param relativePercent the target position relative to its current position (-100% <= relativePercent <= +100%)
+     * @return true if the command was sent
+     * @throws NumberFormatException if either of the arguments is not an integer, or out of range
+     * @throws IllegalStateException if anything else is wrong
+     */
+    Boolean moveRelative(String nodeId, String relativePercent) throws NumberFormatException, IllegalStateException;
 }

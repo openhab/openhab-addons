@@ -258,14 +258,14 @@ then
 	logInfo("rules.V_WINDOW",	"V_WINDOW_changes() called.")
 	// Get the sensor value
 	val Number windowState = V_WINDOW.state as DecimalType
-	logWarn("rules.V_WINDOW", "Window state is "+windowState+".")
+	logWarn("rules.V_WINDOW", "Window state is " + windowState + ".")
 	if (windowState < 80) {
 		if (windowState == 0) {
 			logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
 			var int interval = 1
 			createTimer(now.plusMinutes(interval)) [ |
 					logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
-					sendCommand(V_WINDOW,100)
+					sendCommand(V_WINDOW, 100)
 					V_WINDOW.postUpdate(100)
     				logWarn("rules.V_WINDOW:event", "event-V_WINDOW done.")
         		]
@@ -295,9 +295,13 @@ rule "Reboot KLF 200"
 when
 	...
 then
-	val veluxActions = getActions("velux","velux:klf200:myhubname")
-	val isRebooting = veluxActions.rebootBridge()
-	logWarn("Rules", "Velux KLF 200 rebooting: " + isRebooting)
+	val veluxActions = getActions("velux", "velux:klf200:myhubname")
+	if (veluxActions !== null) {
+		val isRebooting = veluxActions.rebootBridge()
+		logWarn("Rules", "Velux KLF 200 rebooting: " + isRebooting)
+	} else {
+		logWarn("Rules", "Velux KLF 200 actions not found, check thing ID")
+	}
 end
 ```
 
