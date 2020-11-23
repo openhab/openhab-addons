@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -182,9 +183,8 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         }
     }
 
-    @NonNullByDefault({}) // the null checker thinks that `computeIfAbsent` can return null here, it is wrong
     private CharacteristicHandler getCharacteristicHandler(BluetoothCharacteristic characteristic) {
-        return charHandlers.computeIfAbsent(characteristic, CharacteristicHandler::new);
+        return Objects.requireNonNull(charHandlers.computeIfAbsent(characteristic, CharacteristicHandler::new));
     }
 
     private boolean readCharacteristic(BluetoothCharacteristic characteristic) {
