@@ -329,6 +329,8 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+        logger.debug("[{}] onCharacteristicUpdate({})", super.thing.getUID().getId(),
+                HexUtils.bytesToHex(characteristic.getByteValue()));
         super.onCharacteristicUpdate(characteristic);
 
         // Check that arguments are valid.
@@ -415,7 +417,8 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             if (command.getState() == BRC1HCommand.State.SENT && this.config != null) {
                 if (!command.awaitStateChange(this.config.commandTimeout, TimeUnit.MILLISECONDS,
                         BRC1HCommand.State.SUCCEEDED, BRC1HCommand.State.FAILED)) {
-                    logger.debug("Command {} to device {} timed out", command, device.getAddress());
+                    logger.debug("[{}] Command {} to device {} timed out", super.thing.getUID().getId(), command,
+                            device.getAddress());
                     command.setState(BRC1HCommand.State.FAILED);
                 }
             }

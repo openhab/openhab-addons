@@ -15,9 +15,13 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal;
 import java.io.ByteArrayOutputStream;
 import java.util.Comparator;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.ResponseListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * As the protocol emutes an UART communication over BLE (characteristics write/notify), this class takes care of BLE
@@ -27,6 +31,8 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.Respon
  */
 @NonNullByDefault
 public class BRC1HUartProcessor {
+
+    private final Logger logger = LoggerFactory.getLogger(BRC1HUartProcessor.class);
 
     /**
      * Maximum number of bytes per message chunk, including headers
@@ -41,6 +47,8 @@ public class BRC1HUartProcessor {
     private ConcurrentSkipListSet<byte[]> uartMessages = new ConcurrentSkipListSet<>(chunkSorter);
 
     private ResponseListener responseListener;
+
+    private final Lock stateLock = new ReentrantLock();
 
     public BRC1HUartProcessor(ResponseListener responseListener) {
         this.responseListener = responseListener;
@@ -78,8 +86,10 @@ public class BRC1HUartProcessor {
     }
 
     public void chunkReceived(byte[] byteValue) {
+        stateLock.lock();
         this.uartMessages.add(byteValue);
         if (isMessageComplete()) {
+            logger.debug("Complete message received!");
 
             // Beyond this point, full message received
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -94,6 +104,7 @@ public class BRC1HUartProcessor {
 
             this.responseListener.receivedResponse(bos.toByteArray());
         }
+        stateLock.unlock();
     }
 
     public void abandon() {
