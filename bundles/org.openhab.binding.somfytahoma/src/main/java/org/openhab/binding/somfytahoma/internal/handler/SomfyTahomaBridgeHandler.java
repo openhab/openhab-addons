@@ -321,7 +321,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     public List<SomfyTahomaDevice> getDevices() {
         SomfyTahomaDevice[] response = invokeCallToURL(SETUP_URL + "devices", "", HttpMethod.GET,
                 SomfyTahomaDevice[].class);
-        return response != null ? Arrays.asList(response) : Collections.emptyList();
+        return response != null ? List.of(response) : List.of();
     }
 
     private void getTahomaUpdates() {
