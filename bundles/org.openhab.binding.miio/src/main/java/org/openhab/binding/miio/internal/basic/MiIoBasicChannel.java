@@ -56,6 +56,9 @@ public class MiIoBasicChannel {
     @SerializedName("unit")
     @Expose
     private @Nullable String unit;
+    @SerializedName("stateDescription")
+    @Expose
+    private @Nullable StateDescriptionDTO stateDescription;
     @SerializedName("refresh")
     @Expose
     private @Nullable Boolean refresh;
@@ -165,6 +168,14 @@ public class MiIoBasicChannel {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public @Nullable StateDescriptionDTO getStateDescription() {
+        return stateDescription;
+    }
+
+    public void setStateDescription(@Nullable StateDescriptionDTO stateDescription) {
+        this.stateDescription = stateDescription;
     }
 
     public Boolean getRefresh() {
