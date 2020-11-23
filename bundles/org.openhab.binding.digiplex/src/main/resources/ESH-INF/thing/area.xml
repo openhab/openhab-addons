@@ -27,7 +27,7 @@
 				<description>Controls how often area status will be refreshed from the PRT3 module</description>
 				<default>60</default>
 			</parameter>
-            <parameter name="areaNo" type="integer">
+			<parameter name="areaNo" type="integer">
 				<label>Area Number</label>
 				<description>The area number</description>
 				<default>0</default>

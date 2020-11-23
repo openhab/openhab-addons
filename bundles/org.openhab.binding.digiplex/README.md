@@ -39,6 +39,16 @@ Baud rate to use for serial port communication
 
 Controls how often area status is refreshed from the alarm system.
 
+#### Area number [areaNo]
+
+The area number used for communication with alarm systems when is configured using text files. This is not needed if area thing is automatically discovered.
+
+### Area configuration
+
+#### Zone number [zoneNo]
+
+The zone number used for communication with alarm systems when is configured using text files. This is not needed if zone thing is automatically discovered.
+
 ## Channels
 
 ### PTR3 Module Channels
