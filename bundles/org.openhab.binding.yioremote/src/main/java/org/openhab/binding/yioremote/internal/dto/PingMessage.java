@@ -47,9 +47,6 @@ public class PingMessage {
     }
 
     public String getPingMessageString() {
-        JsonObject pingMessage = new JsonObject();
-        pingMessage.addProperty("type", type);
-        pingMessage.addProperty("command", command);
-        return pingMessage.toString();
+        return getPingMessageJsonObject.toString();
     }
 }

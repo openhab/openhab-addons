@@ -337,24 +337,14 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private void pollingWebsocketJob() {
         switch (yioRemoteDockActualStatus) {
             case AUTHENTICATION_COMPLETE:
-                if (resetHeartbeat()) {
-                    sendMessage(YioRemoteMessages.HEARTBEAT_MESSAGE, "");
-                    yioRemoteDockActualStatus = YioRemoteDockHandleStatus.CHECK_PONG;
-                } else {
-                    yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
-                }
+                resetHeartbeat();
+                sendMessage(YioRemoteMessages.HEARTBEAT_MESSAGE, "");
+                yioRemoteDockActualStatus = YioRemoteDockHandleStatus.CHECK_PONG;
                 break;
             case SEND_PING:
-                if (resetHeartbeat()) {
-                    sendMessage(YioRemoteMessages.HEARTBEAT_MESSAGE, "");
-                    yioRemoteDockActualStatus = YioRemoteDockHandleStatus.CHECK_PONG;
-                } else {
-                    yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Connection lost no ping from YIO DOCK");
-                    disposeWebsocketPollingJob();
-                    reconnectWebsocket();
-                }
+				resetHeartbeat();
+                sendMessage(YioRemoteMessages.HEARTBEAT_MESSAGE, "");
+                yioRemoteDockActualStatus = YioRemoteDockHandleStatus.CHECK_PONG;
                 break;
             case CHECK_PONG:
                 if (getHeartbeat()) {
