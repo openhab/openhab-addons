@@ -32,7 +32,7 @@ public class FileReader {
 
     public static String readFileInString(String filename) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));) {
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             String sCurrentLine;
 
             while ((sCurrentLine = br.readLine()) != null) {

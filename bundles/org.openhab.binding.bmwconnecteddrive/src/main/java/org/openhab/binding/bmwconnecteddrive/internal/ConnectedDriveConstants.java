@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,28 +58,13 @@ public class ConnectedDriveConstants {
         }
     }
 
-    public static final Set<String> FUEL_VEHICLES = new HashSet<String>() {
-        {
-            add(VehicleType.CONVENTIONAL.toString());
-            add(VehicleType.PLUGIN_HYBRID.toString());
-            add(VehicleType.ELECTRIC_REX.toString());
-        }
-    };
-    public static final Set<String> ELECTRIC_VEHICLES = new HashSet<String>() {
-        {
-            add(VehicleType.ELECTRIC.toString());
-            add(VehicleType.PLUGIN_HYBRID.toString());
-            add(VehicleType.ELECTRIC_REX.toString());
-        }
-    };
+    public static final Set<String> FUEL_VEHICLES = Set.of(VehicleType.CONVENTIONAL.toString(),
+            VehicleType.PLUGIN_HYBRID.toString(), VehicleType.ELECTRIC_REX.toString());
+    public static final Set<String> ELECTRIC_VEHICLES = Set.of(VehicleType.ELECTRIC.toString(),
+            VehicleType.PLUGIN_HYBRID.toString(), VehicleType.ELECTRIC_REX.toString());
 
     // Countries with Mileage display
-    public static final Set<String> IMPERIAL_COUNTRIES = new HashSet<String>() {
-        {
-            add("US");
-            add("GB");
-        }
-    };
+    public static final Set<String> IMPERIAL_COUNTRIES = Set.of("US", "GB");
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CONNECTED_DRIVE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
@@ -91,15 +75,8 @@ public class ConnectedDriveConstants {
     public static final ThingTypeUID THING_TYPE_BEV_REX = new ThingTypeUID(BINDING_ID,
             VehicleType.ELECTRIC_REX.toString());
     public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, VehicleType.ELECTRIC.toString());
-    public static final Set<ThingTypeUID> SUPPORTED_THING_SET = new HashSet<ThingTypeUID>() {
-        {
-            add(THING_TYPE_CONNECTED_DRIVE_ACCOUNT);
-            add(THING_TYPE_CONV);
-            add(THING_TYPE_PHEV);
-            add(THING_TYPE_BEV_REX);
-            add(THING_TYPE_BEV);
-        }
-    };
+    public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(THING_TYPE_CONNECTED_DRIVE_ACCOUNT,
+            THING_TYPE_CONV, THING_TYPE_PHEV, THING_TYPE_BEV_REX, THING_TYPE_BEV);
 
     // Thing Group definitions
     public static final String CHANNEL_GROUP_STATUS = "status";

@@ -114,7 +114,7 @@ public class ConnectedDriveProxy {
         configuration = config;
         // generate URI for Authorization
         // see https://customer.bmwgroup.com/one/app/oauth.js
-        StringBuffer uri = new StringBuffer();
+        StringBuilder uri = new StringBuilder();
         uri.append("https://customer.bmwgroup.com");
         if (BimmerConstants.SERVER_NORTH_AMERICA.equals(configuration.region)) {
             uri.append("/gcdm/usa/oauth/authenticate");
@@ -123,7 +123,7 @@ public class ConnectedDriveProxy {
         }
         authUri = uri.toString();
 
-        StringBuffer legacyAuth = new StringBuffer();
+        StringBuilder legacyAuth = new StringBuilder();
         legacyAuth.append("https://");
         legacyAuth.append(BimmerConstants.AUTH_SERVER_MAP.get(configuration.region));
         legacyAuth.append(BimmerConstants.OAUTH_ENDPOINT);
@@ -147,7 +147,7 @@ public class ConnectedDriveProxy {
             return;
         }
         Request req;
-        final StringBuffer completeUrl = new StringBuffer(url);
+        final StringBuilder completeUrl = new StringBuilder(url);
         if (post) {
             req = httpClient.POST(completeUrl.toString());
             if (params.isPresent()) {
@@ -204,39 +204,40 @@ public class ConnectedDriveProxy {
     }
 
     public void requestVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuffer(baseUrl).append(config.vin).append(vehicleStatusAPI).toString(), Optional.empty(),
+        get(new StringBuilder(baseUrl).append(config.vin).append(vehicleStatusAPI).toString(), Optional.empty(),
                 callback);
     }
 
     public void requestLegacyVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
         // see https://github.com/jupe76/bmwcdapi/search?q=dynamic%2Fv1
-        get(new StringBuffer(legacyUrl).append(config.vin).append("?offset=-60").toString(), Optional.empty(),
+        get(new StringBuilder(legacyUrl).append(config.vin).append("?offset=-60").toString(), Optional.empty(),
                 callback);
     }
 
     public void requestLastTrip(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuffer(baseUrl).append(config.vin).append(lastTripAPI).toString(), Optional.empty(), callback);
+        get(new StringBuilder(baseUrl).append(config.vin).append(lastTripAPI).toString(), Optional.empty(), callback);
     }
 
     public void requestAllTrips(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuffer(baseUrl).append(config.vin).append(allTripsAPI).toString(), Optional.empty(), callback);
+        get(new StringBuilder(baseUrl).append(config.vin).append(allTripsAPI).toString(), Optional.empty(), callback);
     }
 
     public void requestChargingProfile(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuffer(baseUrl).append(config.vin).append(chargeAPI).toString(), Optional.empty(), callback);
+        get(new StringBuilder(baseUrl).append(config.vin).append(chargeAPI).toString(), Optional.empty(), callback);
     }
 
     public void requestDestinations(VehicleConfiguration config, StringResponseCallback callback) {
-        get(new StringBuffer(baseUrl).append(config.vin).append(destinationAPI).toString(), Optional.empty(), callback);
+        get(new StringBuilder(baseUrl).append(config.vin).append(destinationAPI).toString(), Optional.empty(),
+                callback);
     }
 
     public void requestRangeMap(VehicleConfiguration config, Optional<MultiMap<String>> params,
             StringResponseCallback callback) {
-        get(new StringBuffer(baseUrl).append(config.vin).append(rangeMapAPI).toString(), params, callback);
+        get(new StringBuilder(baseUrl).append(config.vin).append(rangeMapAPI).toString(), params, callback);
     }
 
     public void requestImage(VehicleConfiguration config, ImageProperties props, ByteResponseCallback callback) {
-        String localImageUrl = new StringBuffer(baseUrl).append(config.vin).append(imageAPI).toString();
+        String localImageUrl = new StringBuilder(baseUrl).append(config.vin).append(imageAPI).toString();
         MultiMap<String> dataMap = new MultiMap<String>();
         dataMap.add("width", Integer.toString(props.size));
         dataMap.add("height", Integer.toString(props.size));

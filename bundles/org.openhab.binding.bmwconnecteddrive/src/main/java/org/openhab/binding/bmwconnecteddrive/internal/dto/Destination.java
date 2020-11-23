@@ -32,7 +32,7 @@ public class Destination {
     public String createdAt;
 
     public String getAddress() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (street != null) {
             buf.append(street);
             if (streetNumber != null) {

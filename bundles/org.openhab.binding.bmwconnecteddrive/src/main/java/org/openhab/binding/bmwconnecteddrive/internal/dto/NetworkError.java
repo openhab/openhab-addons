@@ -28,7 +28,7 @@ public class NetworkError {
 
     @Override
     public String toString() {
-        return new StringBuffer(url).append(Constants.HYPHEN).append(status).append(Constants.HYPHEN).append(reason)
+        return new StringBuilder(url).append(Constants.HYPHEN).append(status).append(Constants.HYPHEN).append(reason)
                 .append(params).toString();
     }
 

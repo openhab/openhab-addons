@@ -39,7 +39,7 @@ public class Timer {
         if (weekdays == null) {
             return Converter.toTitleCase(Constants.UNKNOWN);
         }
-        StringBuffer days = new StringBuffer();
+        StringBuilder days = new StringBuilder();
         weekdays.forEach(entry -> {
             if (days.length() == 0) {
                 days.append(Constants.DAYS.get(entry));

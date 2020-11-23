@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,25 +38,15 @@ public class BimmerConstants {
     public static final String AUTH_SERVER_NORTH_AMERICA = "customer.bmwgroup.com/gcdm/usa";
     public static final String AUTH_SERVER_CHINA = "customer.bmwgroup.cn/gcdm";
     public static final String AUTH_SERVER_ROW = "customer.bmwgroup.com/gcdm";
-    public static final Map<String, String> AUTH_SERVER_MAP = new HashMap<String, String>() {
-        {
-            put(REGION_NORTH_AMERICA, AUTH_SERVER_NORTH_AMERICA);
-            put(REGION_CHINA, AUTH_SERVER_CHINA);
-            put(REGION_ROW, AUTH_SERVER_ROW);
-        }
-    };
+    public static final Map<String, String> AUTH_SERVER_MAP = Map.of(REGION_NORTH_AMERICA, AUTH_SERVER_NORTH_AMERICA,
+            REGION_CHINA, AUTH_SERVER_CHINA, REGION_ROW, AUTH_SERVER_ROW);
     public static final String OAUTH_ENDPOINT = "/oauth/token";
 
     public static final String SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us";
     public static final String SERVER_CHINA = "b2vapi.bmwgroup.cn:8592";
     public static final String SERVER_ROW = "b2vapi.bmwgroup.com";
-    public static final Map<String, String> SERVER_MAP = new HashMap<String, String>() {
-        {
-            put(REGION_NORTH_AMERICA, SERVER_NORTH_AMERICA);
-            put(REGION_CHINA, SERVER_CHINA);
-            put(REGION_ROW, SERVER_ROW);
-        }
-    };
+    public static final Map<String, String> SERVER_MAP = Map.of(REGION_NORTH_AMERICA, SERVER_NORTH_AMERICA,
+            REGION_CHINA, SERVER_CHINA, REGION_ROW, SERVER_ROW);
 
     public static final String AUTHORIZATION_VALUE = "Basic blF2NkNxdHhKdVhXUDc0eGYzQ0p3VUVQOjF6REh4NnVuNGNEanliTEVOTjNreWZ1bVgya0VZaWdXUGNRcGR2RFJwSUJrN3JPSg==";
     public static final String CREDENTIAL_VALUES = "nQv6CqtxJuXWP74xf3CJwUEP:1zDHx6un4cDjybLENN3kyfumX2kEYigWPcQpdvDRpIBk7rOJ";
