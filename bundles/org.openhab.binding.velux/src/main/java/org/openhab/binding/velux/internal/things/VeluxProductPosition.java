@@ -63,8 +63,9 @@ public class VeluxProductPosition {
     public static final int VPP_VELUX_MAX = 0xc800;
     public static final int VPP_VELUX_UNKNOWN = 0xF7FF;
 
-    private static final int VPP_VELUX_PERCENTAGE_MIN = 0xc900;
-    private static final int VPP_VELUX_PERCENTAGE_MAX = 0xd0d0;
+    // relative mode commands
+    private static final int VPP_VELUX_RELATIVE_ORIGIN = 0xCCE8;
+    private static final int VPP_VELUX_RELATIVE_RANGE = 1000; // same for positive and negative offsets
 
     // Class internal
 
@@ -160,15 +161,10 @@ public class VeluxProductPosition {
 
     // Helper methods
 
-    public static int getRelativePositionAsVeluxType(boolean upwards, PercentType position) {
-        float result = (VPP_VELUX_PERCENTAGE_MAX + VPP_VELUX_PERCENTAGE_MIN) / 2;
-        if (upwards) {
-            result = result + (ONE * position.intValue() - VPP_OPENHAB_MIN) / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN)
-                    * ((VPP_VELUX_PERCENTAGE_MAX - VPP_VELUX_PERCENTAGE_MIN) / 2);
-        } else {
-            result = result - (ONE * position.intValue() - VPP_OPENHAB_MIN) / (VPP_OPENHAB_MAX - VPP_OPENHAB_MIN)
-                    * ((VPP_VELUX_PERCENTAGE_MAX - VPP_VELUX_PERCENTAGE_MIN) / 2);
+    public int getAsRelativePosition(boolean positive) {
+        if (positive) {
+            return VPP_VELUX_RELATIVE_ORIGIN + (position.intValue() * VPP_VELUX_RELATIVE_RANGE);
         }
-        return (int) result;
+        return VPP_VELUX_RELATIVE_ORIGIN - (position.intValue() * VPP_VELUX_RELATIVE_RANGE);
     }
 }

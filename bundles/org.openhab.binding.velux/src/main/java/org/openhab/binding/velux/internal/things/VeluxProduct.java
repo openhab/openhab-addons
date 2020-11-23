@@ -58,7 +58,7 @@ public class VeluxProduct {
     }
 
     // State (of movement) of an actuator
-    private static enum State {
+    public static enum State {
         NON_EXECUTING(0),
         ERROR(1),
         NOT_USED(2),

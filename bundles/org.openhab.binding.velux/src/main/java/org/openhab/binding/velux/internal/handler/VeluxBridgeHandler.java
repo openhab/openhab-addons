@@ -40,6 +40,7 @@ import org.openhab.binding.velux.internal.bridge.VeluxBridgeSetHouseStatusMonito
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeWLANConfig;
 import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
+import org.openhab.binding.velux.internal.bridge.common.RunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.RunReboot;
 import org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge;
 import org.openhab.binding.velux.internal.bridge.slip.SlipVeluxBridge;
@@ -467,16 +468,18 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     logger.trace("syncChannelsWithProducts(): channel {} not found.", channelUID);
                     continue;
                 }
-                if (!channel2VeluxActuator.get(channelUID).isKnown()) {
+                @SuppressWarnings("null")
+                Thing2VeluxActuator actuator = channel2VeluxActuator.get(channelUID);
+                if (!actuator.isKnown()) {
                     logger.trace("syncChannelsWithProducts(): channel {} not registered on bridge.", channelUID);
                     continue;
                 }
-                ProductBridgeIndex channelPbi = channel2VeluxActuator.get(channelUID).getProductBridgeIndex();
+                ProductBridgeIndex channelPbi = actuator.getProductBridgeIndex();
                 if (!channelPbi.equals(productPbi)) {
                     continue;
                 }
                 // Handle value inversion
-                boolean isInverted = channel2VeluxActuator.get(channelUID).isInverted();
+                boolean isInverted = actuator.isInverted();
                 logger.trace("syncChannelsWithProducts(): isInverted is {}.", isInverted);
                 VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
                 if (position.isValid()) {
@@ -486,8 +489,12 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     updateState(channelUID, positionAsPercent);
                     break;
                 }
-                logger.trace("syncChannelsWithProducts(): update of channel {} to position 'UNDEFINED'.", channelUID);
+                logger.trace("syncChannelsWithProducts(): update channel {} to 'UNDEFINED'.", channelUID);
                 updateState(channelUID, UnDefType.UNDEF);
+                if (product.getState() == VeluxProduct.State.DONE.value) {
+                    logger.debug("syncChannelsWithProducts(): calling moveRelative({}, +0%)", productPbi.toInt());
+                    moveRelative(productPbi.toInt(), 0);
+                }
                 break;
             }
         }
@@ -746,14 +753,21 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     }
 
     /**
-     * Method called by an OpenHAB Rules Action to issue a reboot command to the hub.
+     * Register the exported actions
+     */
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(VeluxActions.class);
+    }
+
+    /**
+     * Exported method (called by an OpenHAB Rules Action) to issue a reboot command to the hub.
      *
      * @return true if the command could be issued
      */
-    public Boolean runReboot() {
-        logger.info("runReboot() called on {}", getThing().getUID());
+    public boolean runReboot() {
+        logger.trace("runReboot() called on {}", getThing().getUID());
         RunReboot bcp = thisBridge.bridgeAPI().runReboot();
-        ExecutorService handleScheduler = this.handleScheduler;
         if (bcp != null && handleScheduler != null) {
             // background execution of reboot process
             handleScheduler.execute(() -> {
@@ -768,10 +782,28 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     }
 
     /**
-     * Register the reboot action
+     * Exported method (called by an OpenHAB Rules Action) to move an actuator relative to its current position
+     *
+     * @param nodeId the node to be moved
+     * @param relativePercent relative position change to the current position (-100% <= relativePercent <= +100%)
+     * @return true if the command could be issued
      */
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(VeluxActions.class);
+    public boolean moveRelative(int nodeId, int relativePercent) {
+        logger.trace("moveRelative() called on {}", getThing().getUID());
+        RunProductCommand bcp = thisBridge.bridgeAPI().runProductCommand();
+        if (bcp != null) {
+            bcp.setNodeAndMainParameter(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
+                    .getAsRelativePosition((relativePercent >= 0)));
+            if (handleScheduler != null) {
+                handleScheduler.execute(() -> {
+                    if (thisBridge.bridgeCommunicate(bcp)) {
+                        logger.trace("moveRelative() command {}sucessfully sent to {}",
+                                bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                    }
+                });
+                return true;
+            }
+        }
+        return false;
     }
 }
