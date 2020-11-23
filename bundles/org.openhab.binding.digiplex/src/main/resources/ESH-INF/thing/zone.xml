@@ -19,6 +19,13 @@
 			<channel typeId="low_battery" id="low_battery"/>
 			<channel typeId="last_triggered" id="last_triggered"/>
 		</channels>
+        <config-description>
+            <parameter name="zoneNo" type="integer">
+				<label>Zone Number</label>
+				<description>The zone number</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="status">

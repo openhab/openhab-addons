@@ -163,7 +163,11 @@ public class DigiplexAreaHandler extends BaseThingHandler {
         bridgeHandler = (DigiplexBridgeHandler) bridge.getHandler();
 
         String areaParm = getThing().getProperties().get(DigiplexBindingConstants.PROPERTY_AREA_NO);
-        areaNo = Integer.parseInt(areaParm);
+        if (areaParm != null) {
+            areaNo = Integer.parseInt(areaParm);
+        } else {
+            areaNo = config.areaNo;
+        }
         bridgeHandler.registerMessageHandler(visitor);
 
         updateStatus(ThingStatus.ONLINE);

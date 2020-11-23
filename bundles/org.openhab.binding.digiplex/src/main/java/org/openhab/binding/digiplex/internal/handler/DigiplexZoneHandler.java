@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.digiplex.internal.DigiplexZoneConfiguration;
 import org.openhab.binding.digiplex.internal.DigiplexBindingConstants;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
 import org.openhab.binding.digiplex.internal.communication.DigiplexRequest;
@@ -51,6 +52,7 @@ import org.openhab.binding.digiplex.internal.communication.events.ZoneStatusEven
 @NonNullByDefault
 public class DigiplexZoneHandler extends BaseThingHandler {
 
+    private @Nullable DigiplexZoneConfiguration config;
     private @Nullable DigiplexBridgeHandler bridgeHandler;
     private DigiplexZoneMessageHandler messageHandler = new DigiplexZoneMessageHandler();
     private int zoneNo;
@@ -113,6 +115,7 @@ public class DigiplexZoneHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     @Override
     public void initialize() {
+        config = getConfigAs(DigiplexZoneConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -121,7 +124,11 @@ public class DigiplexZoneHandler extends BaseThingHandler {
         this.bridgeHandler = (DigiplexBridgeHandler) bridge.getHandler();
 
         String nodeParm = getThing().getProperties().get(DigiplexBindingConstants.PROPERTY_ZONE_NO);
-        zoneNo = Integer.parseInt(nodeParm);
+        if (nodeParm != null) {
+            zoneNo = Integer.parseInt(nodeParm);
+        } else {
+            zoneNo = config.zoneNo;
+        }
         String areaParm = getThing().getProperties().get(DigiplexBindingConstants.PROPERTY_AREA_NO);
         if (areaParm != null) {
             areaNo = Integer.parseInt(areaParm);

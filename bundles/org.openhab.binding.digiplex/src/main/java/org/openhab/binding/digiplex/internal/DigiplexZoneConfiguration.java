@@ -13,13 +13,11 @@
 package org.openhab.binding.digiplex.internal;
 
 /**
- * The {@link DigiplexAreaConfiguration} class contains fields mapping area configuration parameters.
+ * The {@link DigiplexZoneConfiguration} class contains fields mapping zone configuration parameters.
  *
- * @author Robert Michalak - Initial contribution
+ * @author Olivian Daniel Tofan - Add zone configuration to things configured from file
  */
-public class DigiplexAreaConfiguration {
-
-    public int refreshPeriod;
+public class DigiplexZoneConfiguration {
     
-    public int areaNo;
+    public int zoneNo;
 }
