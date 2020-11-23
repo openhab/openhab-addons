@@ -118,6 +118,35 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
      */
     @Override
     public void dispose() {
+        logger.debug("###.00 BlueZBluetoothDevice.dispose()");
+        BluetoothDevice dev = device;
+        if (dev != null) {
+            logger.debug("###.01 dev is not null");
+            if (Boolean.TRUE.equals(dev.isPaired())) {
+                logger.debug("###.02 dev is paired");
+                return;
+            }
+
+            logger.debug("###.03 dev is NOT paired");
+
+            try {
+                dev.getAdapter().removeDevice(dev.getRawDevice());
+                logger.debug("###.04 dev has been removed");
+            } catch (DBusException ex) {
+                if (ex.getMessage().contains("Does Not Exist")) {
+                    // this happens when the underlying device has already been removed
+                    // but we don't have a way to check if that is the case beforehand so
+                    // we will just eat the error here.
+                } else {
+                    logger.debug("Exception occurred when trying to remove inactive device '{}': {}", address,
+                            ex.getMessage());
+                }
+            } catch (RuntimeException ex) {
+                // try to catch any other exceptions
+                logger.debug("Exception occurred when trying to remove inactive device '{}': {}", address,
+                        ex.getMessage());
+            }
+        }
     }
 
     private void setConnectionState(ConnectionState state) {

@@ -67,9 +67,14 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
         super.initialize();
 
         connectionJob = scheduler.scheduleWithFixedDelay(() -> {
-            if (device.getConnectionState() != ConnectionState.CONNECTED) {
-                device.connect();
-                // we do not set the Thing status here, because we will anyhow receive a call to onConnectionStateChange
+            if (device == null) {
+                logger.debug("initialize(): device is null ({})", super.thing);
+            } else {
+                if (device.getConnectionState() != ConnectionState.CONNECTED) {
+                    device.connect();
+                    // we do not set the Thing status here, because we will anyhow receive a call to
+                    // onConnectionStateChange
+                }
             }
             updateRSSI();
         }, 0, 30, TimeUnit.SECONDS);
