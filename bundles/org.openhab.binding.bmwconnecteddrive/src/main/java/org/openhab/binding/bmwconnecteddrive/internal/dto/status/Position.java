@@ -25,6 +25,6 @@ public class Position {
 
     @Override
     public String toString() {
-        return new StringBuffer(Float.toString(lat)).append(",").append(Float.toString(lon)).toString();
+        return new StringBuilder(Float.toString(lat)).append(",").append(Float.toString(lon)).toString();
     }
 }

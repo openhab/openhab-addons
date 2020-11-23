@@ -47,10 +47,10 @@ public class Converter {
     public static final DateTimeFormatter DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     private static final Gson GSON = new Gson();
+    private static final double SCALE = 10;
 
     public static double round(double value) {
-        double scale = Math.pow(10, 1);
-        return Math.round(value * scale) / scale;
+        return Math.round(value * SCALE) / SCALE;
     }
 
     public static String getLocalDateTimeWithoutOffest(@Nullable String input) {
@@ -92,7 +92,7 @@ public class Converter {
         } else {
             String lower = input.replaceAll(Constants.UNDERLINE, Constants.SPACE).toLowerCase();
             String[] arr = lower.split(Constants.SPACE);
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < arr.length; i++) {
                 sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1)).append(" ");
             }

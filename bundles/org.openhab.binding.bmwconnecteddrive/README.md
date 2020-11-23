@@ -105,7 +105,7 @@ Same Configuration is needed for all Things
 |-----------------|---------|---------------------------------------|
 | vin             | text    | Vehicle Identification Number (VIN)   |
 | refreshInterval | integer | Refresh Interval in Minutes           |
-| units           | text    | Unit Selection                        |
+| units           | text    | Unit Selection. See below.            |
 | imageSize       | integer | Image Size                            |
 | imageViewport   | text    | Image Viewport                        |
 
@@ -375,8 +375,8 @@ In order to provide all data the lists are organized the following way based on 
 
 <img align="right" src="./doc/range-radius.png" width="400" height="350"/>
 
- will observe differences in the Vehicle Range and Range Radius values. 
-While Range is indicating the possible distance to be driven on roads the range radius indicates the reachable range on the Map.
+You will observe differences in the Vehicle Range and Range Radius values. 
+While range is indicating the possible distance to be driven on roads the range radius indicates the reachable range on the Map.
 
 The right picture shows the distance between Kassel and Frankfurt in Germany. 
 While the Air-line Distance is ~145 Kilometer the Route Distance is ~192 Kilometer.

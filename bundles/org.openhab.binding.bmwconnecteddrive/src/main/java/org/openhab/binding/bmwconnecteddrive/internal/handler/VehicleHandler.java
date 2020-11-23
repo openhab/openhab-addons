@@ -418,7 +418,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     public void updateRemoteExecutionStatus(String service, String status) {
         updateState(remoteStateChannel, StringType
-                .valueOf(Converter.toTitleCase(new StringBuffer(service).append(" ").append(status).toString())));
+                .valueOf(Converter.toTitleCase(new StringBuilder(service).append(" ").append(status).toString())));
         if (ExecutionState.EXECUTED.toString().equals(status)) {
             switchRemoteServicesOff();
         }

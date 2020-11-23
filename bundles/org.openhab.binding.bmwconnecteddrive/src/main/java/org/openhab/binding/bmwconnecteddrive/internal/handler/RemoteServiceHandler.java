@@ -156,7 +156,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
 
     @Override
     public void onError(NetworkError error) {
-        handler.updateRemoteExecutionStatus(serviceExecuting.get(), new StringBuffer(ExecutionState.ERROR.toString())
+        handler.updateRemoteExecutionStatus(serviceExecuting.get(), new StringBuilder(ExecutionState.ERROR.toString())
                 .append(Constants.SPACE).append(Integer.toString(error.status)).toString());
         reset();
     }

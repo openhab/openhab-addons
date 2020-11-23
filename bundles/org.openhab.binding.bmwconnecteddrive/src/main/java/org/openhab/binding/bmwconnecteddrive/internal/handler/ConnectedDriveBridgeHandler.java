@@ -56,7 +56,7 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     private ServiceRegistration<?> discoveryServiceRegstration;
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<ConnectedDriveConfiguration> configuration = Optional.empty();
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
     private Optional<String> troubleshootFingerprint = Optional.empty();
 
     private static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";
@@ -93,7 +93,7 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         if (configuration.isPresent()) {
             proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, configuration.get()));
             // give the system some time to create all predefined Vehicles
-            scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS);
+            initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
@@ -102,8 +102,8 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
 
     @Override
     public void dispose() {
-        if (refreshJob.isPresent()) {
-            refreshJob.get().cancel(true);
+        if (initializerJob.isPresent()) {
+            initializerJob.get().cancel(true);
         }
     }
 

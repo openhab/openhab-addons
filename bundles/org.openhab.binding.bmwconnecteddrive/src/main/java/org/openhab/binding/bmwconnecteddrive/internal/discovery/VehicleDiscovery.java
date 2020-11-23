@@ -73,13 +73,13 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
                     // Dealer
                     if (vehicle.dealer != null) {
                         properties.put("Dealer", vehicle.dealer.name);
-                        properties.put("Dealer Address", vehicle.dealer.street + " " + vehicle.dealer.country + " "
+                        properties.put("DealerAddress", vehicle.dealer.street + " " + vehicle.dealer.country + " "
                                 + vehicle.dealer.postalCode + " " + vehicle.dealer.city);
-                        properties.put("Dealer Phone", vehicle.dealer.phone);
+                        properties.put("DealerPhone", vehicle.dealer.phone);
                     }
 
                     // Services & Support
-                    properties.put("Services Activated", getObject(vehicle, Constants.ACTIVATED));
+                    properties.put("ServicesActivated", getObject(vehicle, Constants.ACTIVATED));
                     String servicesSupported = getObject(vehicle, Constants.SUPPORTED);
                     String servicesNotSupported = getObject(vehicle, Constants.NOT_SUPPORTED);
                     if (vehicle.statisticsAvailable) {
@@ -88,30 +88,30 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
                         servicesNotSupported += Constants.STATISTICS;
                     }
                     properties.put(Constants.SERVICES_SUPPORTED, servicesSupported);
-                    properties.put("Services Not Supported", servicesNotSupported);
-                    properties.put("Support Breakdown Number", vehicle.breakdownNumber);
+                    properties.put("ServicesNotSupported", servicesNotSupported);
+                    properties.put("SupportBreakdownNumber", vehicle.breakdownNumber);
 
                     // Vehicle Properties
                     if (vehicle.supportedChargingModes != null) {
-                        StringBuffer chargingModes = new StringBuffer();
+                        StringBuilder chargingModes = new StringBuilder();
                         vehicle.supportedChargingModes.forEach(e -> {
                             chargingModes.append(e).append(Constants.SPACE);
                         });
-                        properties.put("Vehicle Charge Modes", chargingModes.toString());
+                        properties.put("VehicleChargeModes", chargingModes.toString());
                     }
                     if (vehicle.hasAlarmSystem) {
-                        properties.put("Vehicle Alarm System", "Available");
+                        properties.put("VehicleAlarmSystem", "Available");
                     } else {
-                        properties.put("Vehicle Alarm System", "Not Available");
+                        properties.put("VehicleAlarmSystem", "Not Available");
                     }
-                    properties.put("Vehicle Brand", vehicle.brand);
-                    properties.put("Vehicle Bodytype", vehicle.bodytype);
-                    properties.put("Vehicle Color", vehicle.color);
-                    properties.put("Vehicle Construction Year", Short.toString(vehicle.yearOfConstruction));
-                    properties.put("Vehicle Drive Train", vehicle.driveTrain);
-                    properties.put("Vehicle Model", vehicle.model);
+                    properties.put("VehicleBrand", vehicle.brand);
+                    properties.put("VehicleBodytype", vehicle.bodytype);
+                    properties.put("VehicleColor", vehicle.color);
+                    properties.put("VehicleConstructionYear", Short.toString(vehicle.yearOfConstruction));
+                    properties.put("VehicleDriveTrain", vehicle.driveTrain);
+                    properties.put("VehicleModel", vehicle.model);
                     if (vehicle.chargingControl != null) {
-                        properties.put("Vehicle Charge Control", Converter.toTitleCase(vehicle.model));
+                        properties.put("VehicleChargeControl", Converter.toTitleCase(vehicle.model));
                     }
 
                     // Check now if a thing with the same VIN exists
@@ -159,7 +159,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
      * @return String with all field names matching this value separated with Spaces
      */
     public String getObject(Object dto, String compare) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (Field field : dto.getClass().getDeclaredFields()) {
             try {
                 if (field.get(dto) != null) {

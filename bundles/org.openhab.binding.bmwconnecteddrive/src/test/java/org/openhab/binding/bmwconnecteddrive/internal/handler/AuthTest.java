@@ -15,6 +15,8 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
@@ -36,12 +38,22 @@ public class AuthTest {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     @Test
+    public void testAtuthServerMap() {
+        Map<String, String> authServers = BimmerConstants.AUTH_SERVER_MAP;
+        assertEquals(3, authServers.size(), "Number of Servers");
+        Map<String, String> api = BimmerConstants.SERVER_MAP;
+        assertEquals(3, api.size(), "Number of Servers");
+    }
+
+    @Test
     public void testTokenDecoding() {
         String headerValue = "https://www.bmw-connecteddrive.com/app/static/external-dispatch.html#access_token=SfXKgkEXeeFJkVqdD4XMmfUU224MRuyh&token_type=Bearer&expires_in=7199";
         HttpClientFactory hcf = mock(HttpClientFactory.class);
         when(hcf.getCommonHttpClient()).thenReturn(mock(HttpClient.class));
         when(hcf.createHttpClient(HTTPConstants.AUTH_HTTP_CLIENT_NAME)).thenReturn(mock(HttpClient.class));
-        ConnectedDriveProxy dcp = new ConnectedDriveProxy(hcf, mock(ConnectedDriveConfiguration.class));
+        ConnectedDriveConfiguration config = new ConnectedDriveConfiguration();
+        config.region = BimmerConstants.REGION_ROW;
+        ConnectedDriveProxy dcp = new ConnectedDriveProxy(hcf, config);
         dcp.tokenFromUrl(headerValue);
         Token t = dcp.getToken();
         assertEquals("Bearer SfXKgkEXeeFJkVqdD4XMmfUU224MRuyh", t.getBearerToken(), "Token");

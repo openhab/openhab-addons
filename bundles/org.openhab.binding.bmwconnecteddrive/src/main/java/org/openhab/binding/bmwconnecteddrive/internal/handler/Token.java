@@ -27,7 +27,7 @@ public class Token {
     private long expiration = 0;
 
     public String getBearerToken() {
-        return new StringBuffer(tokenType).append(Constants.SPACE).append(token).toString();
+        return new StringBuilder(tokenType).append(Constants.SPACE).append(token).toString();
     }
 
     public void setToken(String token) {
