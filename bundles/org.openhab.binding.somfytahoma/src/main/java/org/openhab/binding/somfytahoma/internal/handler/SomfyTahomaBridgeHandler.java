@@ -251,7 +251,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private List<SomfyTahomaEvent> getEvents() {
         SomfyTahomaEvent[] response = invokeCallToURL(TAHOMA_API_URL + "events/" + eventsId + "/fetch", "",
                 HttpMethod.POST, SomfyTahomaEvent[].class);
-        return response != null ? new ArrayList<>(List.of(response)) : List.of();
+        return response != null ? List.of(response) : List.of();
     }
 
     @Override
