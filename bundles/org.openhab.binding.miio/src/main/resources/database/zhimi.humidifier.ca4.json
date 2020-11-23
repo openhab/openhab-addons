@@ -150,10 +150,11 @@
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
 				"channelType": "usedhours",
-				"type": "Number",
+				"type": "Number:Time",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
+                "unit": "hours",
 				"actions": []
 			},
 			{
@@ -163,10 +164,11 @@
 				"friendlyName": "Power Time",
 				"channel": "powerhours",
 				"channelType": "powerhours",
-				"type": "Number",
+				"type": "Number:Time",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
+                "unit": "hours",
 				"actions": []
 			},
 			{
@@ -199,8 +201,8 @@
 				"piid": 7,
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureCelsius",
-				"type": "Number",
+				"channelType": "temperatureC",
+				"type": "Number:Temperature",
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []

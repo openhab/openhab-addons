@@ -221,11 +221,6 @@
 		<label>Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="temperatureCelsius">
-		<item-type>Number</item-type>
-		<label>Temperature</label>
-		<state pattern="%.1f °C" readOnly="true"/>
-	</channel-type>
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
@@ -275,14 +270,14 @@
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="usedhours">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Run Time</label>
-		<state pattern="%.0f h" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="powerhours">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Powered On Time</label>
-		<state pattern="%.0f h" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="motorspeed">
 		<item-type>Number</item-type>
