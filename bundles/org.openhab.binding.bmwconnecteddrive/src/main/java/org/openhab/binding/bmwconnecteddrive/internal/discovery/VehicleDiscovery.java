@@ -65,7 +65,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
         vehicles.forEach(vehicle -> {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             // the DriveTrain field in the delivered json is defining the Vehicle Type
-            String vehicleType = vehicle.driveTrain;
+            String vehicleType = vehicle.driveTrain.toLowerCase();
             SUPPORTED_THING_SET.forEach(entry -> {
                 if (entry.getId().equals(vehicleType)) {
                     ThingUID uid = new ThingUID(entry, vehicle.vin, bridgeUID.getId());
