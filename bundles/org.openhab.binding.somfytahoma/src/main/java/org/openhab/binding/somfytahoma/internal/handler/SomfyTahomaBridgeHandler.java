@@ -251,7 +251,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private List<SomfyTahomaEvent> getEvents() {
         SomfyTahomaEvent[] response = invokeCallToURL(TAHOMA_API_URL + "events/" + eventsId + "/fetch", "",
                 HttpMethod.POST, SomfyTahomaEvent[].class);
-        return response != null ? new ArrayList<>(Arrays.asList(response)) : new ArrayList<>();
+        return response != null ? new ArrayList<>(List.of(response)) : List.of();
     }
 
     @Override
@@ -678,8 +678,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     public synchronized void refresh(String url, String stateName) {
         SomfyTahomaState state = invokeCallToURL(DEVICES_URL + urlEncode(url) + "/states/" + stateName, "",
                 HttpMethod.GET, SomfyTahomaState.class);
-        if (state != null && StringUtils.isNotEmpty(state.getName())) {
-            updateDevice(url, Arrays.asList(state));
+        if (state != null && !state.getName().isEmpty()) {
+            updateDevice(url, List.of(state));
         }
     }
 
