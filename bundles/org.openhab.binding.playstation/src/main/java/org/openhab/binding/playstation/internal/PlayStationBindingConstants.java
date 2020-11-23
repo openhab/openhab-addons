@@ -121,6 +121,11 @@ public class PlayStationBindingConstants {
     public static final String PS4HW_CUH7000 = "CUH-7000";
     public static final String PS4HW_CUH7100 = "CUH-7100";
 
+    // PlayStation 5 HW versions
+    public static final String PS5HW_CFIXXXX = "CFI-XXXX";
+    public static final String PS5HW_CFI1000A = "CFI-1000A";
+    public static final String PS5HW_CFI1000B = "CFI-1000B";
+
     static final int PS4_KEY_UP = 1 << 0;
     static final int PS4_KEY_DOWN = 1 << 1;
     static final int PS4_KEY_RIGHT = 1 << 2;
@@ -134,18 +139,20 @@ public class PlayStationBindingConstants {
     static final int PS4_KEY_OPEN_RC = 1 << 10;
     static final int PS4_KEY_CLOSE_RC = 1 << 11;
 
-    /**
-     * Default port numbers PS4 uses.
-     */
-    public static final int DEFAULT_BROADCAST_PORT = 987;
-    public static final int DEFAULT_COMMUNICATION_PORT = 997;
-
     /** Default port for PS3. */
     public static final int DEFAULT_PS3_WAKE_ON_LAN_PORT = 5223;
     public static final int DEFAULT_PS3_REMOTE_PLAY_PORT = 9293;
     public static final int DEFAULT_PS3_MEDIA_MANAGER_PORT = 9309;
     public static final int DEFAULT_PS3_DLNA_PORT1 = 56235;
     public static final int DEFAULT_PS3_DLNA_PORT2 = 56259;
+
+    // Default port numbers PS4 uses.
+    public static final int DEFAULT_BROADCAST_PORT = 987;
+    public static final int DEFAULT_COMMUNICATION_PORT = 997;
+    public static final int DEFAULT_REMOTE_PLAY_PORT = 9295;
+
+    // Open ports on the PS5.
+    public static final int DEFAULT_PS5_HTTP_PORT = 41800;
 
     private PlayStationBindingConstants() {
         // Don't instantiate this class.

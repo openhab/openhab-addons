@@ -24,6 +24,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -65,7 +68,7 @@ public class PS4Handler extends BaseThingHandler {
     /** Time after connect that we can start to send key events, milli seconds */
     private static final int POST_CONNECT_SENDKEY_DELAY_MS = 500;
     /** Minimum delay between sendKey sends, milli seconds */
-    private static final int MIN_SENDKEY_DELAY_MS = 250;
+    private static final int MIN_SENDKEY_DELAY_MS = 210;
     /** Minimum delay after Key set, milli seconds */
     private static final int MIN_HOLDKEY_DELAY_MS = 300;
 
@@ -73,6 +76,7 @@ public class PS4Handler extends BaseThingHandler {
 
     private final @Nullable LocaleProvider localeProvider;
     private final @Nullable NetworkAddressService networkAS;
+    private List<ScheduledFuture<?>> scheduledFutures = Collections.synchronizedList(new ArrayList<>());
     private @Nullable ScheduledFuture<?> refreshTimer;
     private @Nullable ScheduledFuture<?> timeoutTimer;
     private @Nullable SocketChannelHandler socketChannelHandler;
@@ -203,6 +207,7 @@ public class PS4Handler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        stopConnection();
         ScheduledFuture<?> timer = refreshTimer;
         if (timer != null) {
             timer.cancel(false);
@@ -213,7 +218,8 @@ public class PS4Handler extends BaseThingHandler {
             timer.cancel(false);
             timeoutTimer = null;
         }
-        stopConnection();
+        scheduledFutures.forEach(f -> f.cancel(false));
+        scheduledFutures.clear();
     }
 
     /**
@@ -632,8 +638,10 @@ public class PS4Handler extends BaseThingHandler {
         try {
             SocketChannel channel = getConnection(requiresLogin);
             if (requiresLogin && !loggedIn) {
-                scheduler.schedule(() -> sendPacketToPS4(packet, channel, true, requiresLogin), 250,
-                        TimeUnit.MILLISECONDS);
+                ScheduledFuture<?> future = scheduler.schedule(
+                        () -> sendPacketToPS4(packet, channel, true, requiresLogin), 250, TimeUnit.MILLISECONDS);
+                scheduledFutures.add(future);
+                scheduledFutures.removeIf(ScheduledFuture::isDone);
             } else {
                 sendPacketToPS4(packet, channel, true, requiresLogin);
             }
@@ -676,7 +684,9 @@ public class PS4Handler extends BaseThingHandler {
 
     private void turnOnPS4() {
         wakeUpPS4();
-        scheduler.schedule(this::waitAndConnectToPS4, 13, TimeUnit.SECONDS);
+        ScheduledFuture<?> future = scheduler.schedule(this::waitAndConnectToPS4, 17, TimeUnit.SECONDS);
+        scheduledFutures.add(future);
+        scheduledFutures.removeIf(ScheduledFuture::isDone);
     }
 
     private void waitAndConnectToPS4() {
@@ -727,33 +737,35 @@ public class PS4Handler extends BaseThingHandler {
             int preWait = (scHandler == null || !loggedIn) ? POST_CONNECT_SENDKEY_DELAY_MS : 0;
             SocketChannel channel = getConnection();
 
-            scheduler.schedule(() -> {
+            ScheduledFuture<?> future = scheduler.schedule(() -> {
                 ByteBuffer outPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OPEN_RC);
                 sendPacketEncrypted(outPacket, channel);
-
-                scheduler.schedule(() -> {
-                    // Send remote key
-                    ByteBuffer keyPacket = PS4PacketHandler.makeRemoteControlPacket(pushedKey);
-                    sendPacketEncrypted(keyPacket, channel);
-
-                    scheduler.schedule(() -> {
-                        ByteBuffer offPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
-                        sendPacketEncrypted(offPacket, channel);
-
-                        scheduler.schedule(() -> {
-                            ByteBuffer closePacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
-                            sendPacketEncrypted(closePacket, channel);
-                        }, MIN_SENDKEY_DELAY_MS, TimeUnit.MILLISECONDS);
-
-                    }, MIN_HOLDKEY_DELAY_MS, TimeUnit.MILLISECONDS);
-
-                }, MIN_SENDKEY_DELAY_MS, TimeUnit.MILLISECONDS);
-
             }, preWait, TimeUnit.MILLISECONDS);
+            scheduledFutures.add(future);
+
+            future = scheduler.schedule(() -> {
+                // Send remote key
+                ByteBuffer keyPacket = PS4PacketHandler.makeRemoteControlPacket(pushedKey);
+                sendPacketEncrypted(keyPacket, channel);
+            }, preWait + MIN_SENDKEY_DELAY_MS, TimeUnit.MILLISECONDS);
+            scheduledFutures.add(future);
+
+            future = scheduler.schedule(() -> {
+                ByteBuffer offPacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_OFF);
+                sendPacketEncrypted(offPacket, channel);
+            }, preWait + MIN_SENDKEY_DELAY_MS + MIN_HOLDKEY_DELAY_MS, TimeUnit.MILLISECONDS);
+            scheduledFutures.add(future);
+
+            future = scheduler.schedule(() -> {
+                ByteBuffer closePacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
+                sendPacketEncrypted(closePacket, channel);
+            }, preWait + MIN_SENDKEY_DELAY_MS * 2 + MIN_HOLDKEY_DELAY_MS, TimeUnit.MILLISECONDS);
+            scheduledFutures.add(future);
 
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+        scheduledFutures.removeIf(ScheduledFuture::isDone);
     }
 
     private void parseSearchResponse(DatagramPacket packet) {
@@ -780,7 +792,9 @@ public class PS4Handler extends BaseThingHandler {
                             SocketChannelHandler scHandler = socketChannelHandler;
                             if (scHandler == null || !loggedIn) {
                                 logger.debug("Trying to login after power on.");
-                                scheduler.schedule(() -> login(), 20, TimeUnit.SECONDS);
+                                ScheduledFuture<?> future = scheduler.schedule(() -> login(), 20, TimeUnit.SECONDS);
+                                scheduledFutures.add(future);
+                                scheduledFutures.removeIf(ScheduledFuture::isDone);
                             }
                         }
                     }

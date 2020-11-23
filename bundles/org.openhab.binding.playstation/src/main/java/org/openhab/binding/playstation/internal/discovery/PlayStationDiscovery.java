@@ -63,7 +63,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Updating discovered things (new scan)");
-        discover();
+        discoverPS4();
         discoverPS3();
     }
 
@@ -104,7 +104,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         return null;
     }
 
-    private synchronized void discover() {
+    private synchronized void discoverPS4() {
         logger.debug("Trying to discover all PS4 devices");
 
         try (DatagramSocket socket = new DatagramSocket(0, getIPv4Adress())) {
@@ -403,9 +403,6 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                 case "00d9d1":
                     hwVersion = PS3HW_CECH4000;
                     break;
-                case "2ccc44": // Ethernet
-                    hwVersion = PS4HW_CUH7100;
-                    break;
                 case "709e29": // Ethernet
                 case "b00594": // WiFi
                     hwVersion = PS4HW_CUH1000;
@@ -433,10 +430,14 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                         hwVersion = PS4HW_CUH7000;
                     }
                     break;
+                case "2ccc44": // Ethernet
                 case "dca266": // WiFi
                     hwVersion = PS4HW_CUH7100;
                     break;
-
+                case "78c881": // Ethernet
+                case "1c98c1": // WiFi
+                    hwVersion = PS5HW_CFI1000B;
+                    break;
                 default:
                     break;
             }
@@ -451,21 +452,24 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
             case "PS3":
                 modelName = "PlayStation 3";
                 if (hwVersion.startsWith("CECH-2") || hwVersion.startsWith("CECH-3")) {
-                    modelName = modelName + " Slim";
+                    modelName += " Slim";
                 } else if (hwVersion.startsWith("CECH-4")) {
-                    modelName = modelName + " Super Slim";
+                    modelName += " Super Slim";
                 }
                 break;
             case "PS4":
                 modelName = "PlayStation 4";
                 if (hwVersion.startsWith("CUH-2")) {
-                    modelName = modelName + " Slim";
+                    modelName += " Slim";
                 } else if (hwVersion.startsWith("CUH-7")) {
-                    modelName = modelName + " Pro";
+                    modelName += " Pro";
                 }
                 break;
             case "PS5":
                 modelName = "PlayStation 5";
+                if (hwVersion.endsWith("B")) {
+                    modelName += " Digital Edition";
+                }
                 break;
             default:
                 break;
