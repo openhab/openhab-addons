@@ -159,7 +159,7 @@ public class MiIoAsyncCommunication {
                         fullCommand.toString(), ip, Utils.getHex(deviceId), tokenText, concurrentLinkedQueue.size(),
                         cloudServer.isBlank() ? "" : " Send via cloudserver: ", cloudServer);
             }
-            if (needPing) {
+            if (needPing && cloudServer.isBlank()) {
                 sendPing(ip);
             }
             return cmdId;

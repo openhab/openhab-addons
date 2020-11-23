@@ -355,19 +355,25 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         String deviceId = configuration.deviceId;
         try {
             if (deviceId != null && deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
-                logger.debug("Ping Mi device {} at {}", deviceId, configuration.host);
                 final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
                         Utils.hexStringToByteArray(deviceId), lastId, configuration.timeout, cloudConnector);
-                Message miIoResponse = miioCom.sendPing(configuration.host);
-                if (miIoResponse != null) {
-                    logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
-                            Utils.getHex(miIoResponse.getDeviceId()), configuration.host, miIoResponse.getTimestamp(),
-                            LocalDateTime.now(), miioCom.getTimeDelta());
+                if (getCloudServer().isBlank()) {
+                    logger.debug("Ping Mi device {} at {}", deviceId, configuration.host);
+                    Message miIoResponse = miioCom.sendPing(configuration.host);
+                    if (miIoResponse != null) {
+                        logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
+                                Utils.getHex(miIoResponse.getDeviceId()), configuration.host,
+                                miIoResponse.getTimestamp(), LocalDateTime.now(), miioCom.getTimeDelta());
+                        miioCom.registerListener(this);
+                        this.miioCom = miioCom;
+                        return miioCom;
+                    } else {
+                        miioCom.close();
+                    }
+                } else {
                     miioCom.registerListener(this);
                     this.miioCom = miioCom;
                     return miioCom;
-                } else {
-                    miioCom.close();
                 }
             } else {
                 logger.debug("No device ID defined. Retrieving Mi device ID");
