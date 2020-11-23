@@ -44,8 +44,7 @@ public class PreparePayloadTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void testPreparePayload(String payload, ModbusRegisterArray expectedRegisters)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public void testPreparePayload(String payload, ModbusRegisterArray expectedRegisters) {
         ModbusRegisterArray actual = preparePayload(payload);
 
         assertEquals(actual.size(), expectedRegisters.size(), String.format("payload=%s", payload));
