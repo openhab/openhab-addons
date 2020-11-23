@@ -56,7 +56,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             in = socket.getInputStream();
             out = socket.getOutputStream();
         } catch (IOException e) {
-            throw new EpsonProjectorException(e);
+            throw new EpsonProjectorException(e.getMessage(), e);
         }
     }
 
@@ -69,7 +69,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             try {
                 out.close();
             } catch (IOException e) {
-                logger.debug("Error occurred when closing tcp out stream", e);
+                logger.debug("Error occurred when closing tcp out stream: {}", e.getMessage());
             }
         }
 
@@ -79,7 +79,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             try {
                 in.close();
             } catch (IOException e) {
-                logger.debug("Error occurred when closing tcp in stream", e);
+                logger.debug("Error occurred when closing tcp in stream: {}", e.getMessage());
             }
         }
 
@@ -89,7 +89,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.debug("Error occurred when closing tcp socket", e);
+                logger.debug("Error occurred when closing tcp socket: {}", e.getMessage());
             }
         }
 
@@ -131,14 +131,14 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
                 return "";
             }
         } catch (IOException e) {
-            logger.debug("IO error occurred...reconnect and resend once", e);
+            logger.debug("IO error occurred...reconnect and resend once: {}", e.getMessage());
             disconnect();
             connect();
 
             try {
                 return sendMmsg(data, timeout);
             } catch (IOException e1) {
-                throw new EpsonProjectorException(e);
+                throw new EpsonProjectorException(e.getMessage(), e);
             }
         }
     }
@@ -171,7 +171,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        throw new EpsonProjectorException(e);
+                        throw new EpsonProjectorException(e.getMessage(), e);
                     }
                 }
 

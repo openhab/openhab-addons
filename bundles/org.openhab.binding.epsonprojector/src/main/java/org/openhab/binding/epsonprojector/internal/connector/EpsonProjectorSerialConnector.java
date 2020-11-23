@@ -83,7 +83,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                 this.out = out;
             }
         } catch (PortInUseException | UnsupportedCommOperationException | IOException e) {
-            throw new EpsonProjectorException(e);
+            throw new EpsonProjectorException(e.getMessage(), e);
         }
     }
 
@@ -98,7 +98,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             try {
                 out.close();
             } catch (IOException e) {
-                logger.debug("Error occurred when closing serial out stream", e);
+                logger.debug("Error occurred when closing serial out stream: {}", e.getMessage());
             }
             this.out = null;
         }
@@ -107,7 +107,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             try {
                 in.close();
             } catch (IOException e) {
-                logger.debug("Error occurred when closing serial in stream", e);
+                logger.debug("Error occurred when closing serial in stream: {}", e.getMessage());
             }
             this.in = null;
         }
@@ -152,25 +152,20 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                 return "";
             }
         } catch (IOException e) {
-            logger.debug("IO error occurred...reconnect and resend once", e);
+            logger.debug("IO error occurred...reconnect and resend once: {}", e.getMessage());
             disconnect();
             connect();
 
             try {
                 return sendMmsg(data, timeout);
             } catch (IOException e1) {
-                throw new EpsonProjectorException(e);
+                throw new EpsonProjectorException(e.getMessage(), e);
             }
         }
     }
 
     @Override
     public void serialEvent(SerialPortEvent arg0) {
-        try {
-            logger.trace("RXTX library CPU load workaround, sleep forever");
-            Thread.sleep(Long.MAX_VALUE);
-        } catch (InterruptedException e) {
-        }
     }
 
     private String sendMmsg(String data, int timeout) throws IOException, EpsonProjectorException {
@@ -201,7 +196,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        throw new EpsonProjectorException(e);
+                        throw new EpsonProjectorException(e.getMessage(), e);
                     }
                 }
 

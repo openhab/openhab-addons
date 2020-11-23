@@ -84,7 +84,7 @@ public class EpsonProjectorDevice {
     private ScheduledExecutorService scheduler = null;
     private EpsonProjectorConnector connection;
     private ExpiringCache<Integer> cachedLampHours = new ExpiringCache<>(Duration.ofMinutes(LAMP_REFRESH_WAIT_MINUTES),
-            () -> queryLamp());
+            this::queryLamp);
     private boolean connected = false;
     private boolean ready = false;
 

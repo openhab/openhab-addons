@@ -13,6 +13,7 @@
 package org.openhab.binding.epsonprojector.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Exception for Epson projector errors.
@@ -28,7 +29,7 @@ public class EpsonProjectorException extends Exception {
         super(message);
     }
 
-    public EpsonProjectorException(String message, Throwable cause) {
+    public EpsonProjectorException(@Nullable String message, Throwable cause) {
         super(message, cause);
     }
 
