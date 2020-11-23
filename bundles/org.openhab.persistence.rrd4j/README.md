@@ -12,7 +12,7 @@ This service cannot be directly queried, because of its data compression, which 
 
 NOTE: rrd4j is for storing numerical data only.
 It cannot store complex data types.
-The supported item types are therefore only `Switch` (internally mapped to 0/1), `Dimmer`, `Number`, `Contact` (internally mapped to 0/1) and `Rollershutter`.
+The supported item types are therefore only `Switch` (internally mapped to 0/1), `Dimmer`, `Number`, `Contact` (internally mapped to 0/1), `Rollershutter` and `Color` (only brightness component stored).
 
 ## Configuration
 
