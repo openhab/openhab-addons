@@ -41,10 +41,10 @@ public class ConnectedDriveConstants {
     // See constants from bimmer-connected
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/vehicle.py
     public enum VehicleType {
-        CONVENTIONAL("CONV"),
-        PLUGIN_HYBRID("PHEV"),
-        ELECTRIC_REX("BEV_REX"),
-        ELECTRIC("BEV");
+        CONVENTIONAL("conv"),
+        PLUGIN_HYBRID("phev"),
+        ELECTRIC_REX("bev_rex"),
+        ELECTRIC("bev");
 
         private final String type;
 

@@ -63,7 +63,7 @@ public class DiscoveryTest {
         List<DiscoveryResult> results = discoveries.getAllValues();
         assertEquals(1, results.size(), "Found Vehicles");
         DiscoveryResult result = results.get(0);
-        assertEquals("bmwconnecteddrive:BEV_REX:abc:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
+        assertEquals("bmwconnecteddrive:bev_rex:abc:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
     }
 
     @Test
