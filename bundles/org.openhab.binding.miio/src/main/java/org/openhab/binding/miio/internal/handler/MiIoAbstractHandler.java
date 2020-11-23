@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +41,7 @@ import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.openhab.core.cache.ExpiringCache;
-import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -71,8 +72,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final int MAX_QUEUE = 5;
     protected static final Gson GSON = new GsonBuilder().create();
 
-    protected ScheduledExecutorService miIoScheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
-
+    protected ScheduledExecutorService miIoScheduler = scheduler;
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected CopyOnWriteArraySet<ScheduledFuture<?>> scheduledJobs = new CopyOnWriteArraySet<>();
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
@@ -129,7 +129,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         logger.debug("Initializing Mi IO device handler '{}' with thingType {}", getThing().getUID(),
                 getThing().getThingTypeUID());
 
-        miIoScheduler = ThreadPoolManager.getScheduledPool(getThing().getUID().getAsString());
+        ScheduledThreadPoolExecutor miIoScheduler = new ScheduledThreadPoolExecutor(3,
+                new NamedThreadFactory(getThing().getUID().getAsString(), true));
+        miIoScheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+        miIoScheduler.setRemoveOnCancelPolicy(true);
+        this.miIoScheduler = miIoScheduler;
 
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
@@ -197,7 +201,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     @Override
     public void dispose() {
         logger.debug("Disposing Xiaomi Mi IO handler '{}'", getThing().getUID());
-        miIoScheduler.shutdownNow();
+        miIoScheduler.shutdown();
         final ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
@@ -216,7 +220,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             }
         }
         scheduledJobs.clear();
-        miIoScheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
+        miIoScheduler.shutdownNow();
+        miIoScheduler = scheduler;
     }
 
     protected int sendCommand(MiIoCommand command) {
