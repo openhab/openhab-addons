@@ -311,7 +311,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     public List<SomfyTahomaActionGroup> listActionGroups() {
         SomfyTahomaActionGroup[] list = invokeCallToURL(TAHOMA_API_URL + "actionGroups", "", HttpMethod.GET,
                 SomfyTahomaActionGroup[].class);
-        return list != null ? Arrays.asList(list) : new ArrayList<>();
+        return list != null ? List.of(list) : List.of();
     }
 
     public @Nullable SomfyTahomaSetup getSetup() {
