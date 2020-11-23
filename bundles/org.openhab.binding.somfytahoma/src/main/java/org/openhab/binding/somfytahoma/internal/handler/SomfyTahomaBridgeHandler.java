@@ -575,7 +575,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         SomfyTahomaApplyResponse response = invokeCallToURL(EXEC_URL + "apply", urlParameters, HttpMethod.POST,
                 SomfyTahomaApplyResponse.class);
         if (response != null) {
-            if (!StringUtils.isEmpty(response.getExecId())) {
+            if (!response.getExecId().isEmpty()) {
                 logger.debug("Exec id: {}", response.getExecId());
                 registerExecution(io, response.getExecId());
             } else {
