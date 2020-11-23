@@ -118,26 +118,29 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
 
         impactedModules.clear();
 
-        try {
-            ThingUID bridgeUID = thing.getBridgeUID();
-            if (bridgeUID == null) {
-                throw new IllegalArgumentException("Bridge does not exist!");
+        Object impactedModulesObject = getConfig().get(CONFIG_IMPACTED_MODULES);
+        if (impactedModulesObject != null) {
+            try {
+                ThingUID bridgeUID = thing.getBridgeUID();
+                if (bridgeUID == null) {
+                    throw new IllegalArgumentException("Bridge does not exist!");
+                }
+
+                String[] impactedModulesString = impactedModulesObject.toString().split(",");
+                for (String impactedModuleString : impactedModulesString) {
+                    ImpactedModuleUID impactedModuleUID = new ImpactedModuleUID(impactedModuleString.trim());
+                    ThingTypeUID thingTypeUID = new ThingTypeUID(bridgeUID.getBindingId(),
+                            impactedModuleUID.getThingTypeId());
+                    ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, impactedModuleUID.getThingId());
+                    impactedModules.add(new ImpactedModule(thingUID, impactedModuleUID.getGroup()));
+                }
+            } catch (RuntimeException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                return;
             }
 
-            String[] impactedModulesString = getConfig().get(CONFIG_IMPACTED_MODULES).toString().split(",");
-            for (String impactedModuleString : impactedModulesString) {
-                ImpactedModuleUID impactedModuleUID = new ImpactedModuleUID(impactedModuleString.trim());
-                ThingTypeUID thingTypeUID = new ThingTypeUID(bridgeUID.getBindingId(),
-                        impactedModuleUID.getThingTypeId());
-                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, impactedModuleUID.getThingId());
-                impactedModules.add(new ImpactedModule(thingUID, impactedModuleUID.getGroup()));
-            }
-        } catch (RuntimeException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
+            logger.debug("Impacted modules for {} = {}", thing.getUID(), impactedModules);
         }
-
-        logger.debug("Impacted modules for {} = {}", thing.getUID(), impactedModules);
 
         NikobusPcLinkHandler pcLink = getPcLink();
         if (pcLink != null) {
@@ -183,8 +186,10 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
 
         updateState(CHANNEL_BUTTON, OnOffType.ON);
 
-        Utils.cancel(requestUpdateFuture);
-        requestUpdateFuture = scheduler.schedule(this::update, 400, TimeUnit.MILLISECONDS);
+        if (!impactedModules.isEmpty()) {
+            Utils.cancel(requestUpdateFuture);
+            requestUpdateFuture = scheduler.schedule(this::update, 400, TimeUnit.MILLISECONDS);
+        }
     }
 
     private void update() {
