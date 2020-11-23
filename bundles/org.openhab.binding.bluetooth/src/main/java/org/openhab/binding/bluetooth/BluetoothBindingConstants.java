@@ -30,7 +30,6 @@ public class BluetoothBindingConstants {
     public static final String BINDING_ID = "bluetooth";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_CONNECTED = new ThingTypeUID(BINDING_ID, "connected");
     public static final ThingTypeUID THING_TYPE_BEACON = new ThingTypeUID(BINDING_ID, "beacon");
 
     // List of all Channel Type IDs
@@ -40,6 +39,7 @@ public class BluetoothBindingConstants {
 
     public static final String PROPERTY_TXPOWER = "txpower";
     public static final String PROPERTY_MAXCONNECTIONS = "maxconnections";
+    public static final String PROPERTY_SOFTWARE_VERSION = "softwareVersion";
 
     public static final String CONFIGURATION_ADDRESS = "address";
     public static final String CONFIGURATION_DISCOVERY = "backgroundDiscovery";
