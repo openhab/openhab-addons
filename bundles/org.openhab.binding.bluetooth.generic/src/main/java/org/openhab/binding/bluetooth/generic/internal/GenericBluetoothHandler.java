@@ -182,6 +182,7 @@ public class GenericBluetoothHandler extends ConnectedBluetoothHandler {
         }
     }
 
+    @NonNullByDefault({}) // the null checker thinks that `computeIfAbsent` can return null here, it is wrong
     private CharacteristicHandler getCharacteristicHandler(BluetoothCharacteristic characteristic) {
         return charHandlers.computeIfAbsent(characteristic, CharacteristicHandler::new);
     }
