@@ -10,34 +10,39 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.internal;
+package org.openhab.binding.bluetooth.generic.internal;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
-import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link BluetoothHandlerFactory} is responsible for creating things and thing handlers.
+ * The {@link GenericBluetoothHandlerFactory} is responsible for creating things and thing
+ * handlers.
  *
- * @author Kai Kreuzer - Initial contribution and API
+ * @author Connor Petty - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluetooth")
-public class BluetoothHandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.bluetooth.generic", service = ThingHandlerFactory.class)
+public class GenericBluetoothHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(BluetoothBindingConstants.THING_TYPE_BEACON);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(GenericBindingConstants.THING_TYPE_GENERIC);
+
+    private final CharacteristicChannelTypeProvider channelTypeProvider;
+
+    @Activate
+    public GenericBluetoothHandlerFactory(@Reference CharacteristicChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = channelTypeProvider;
     }
 
     @Override
@@ -49,9 +54,10 @@ public class BluetoothHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(BluetoothBindingConstants.THING_TYPE_BEACON)) {
-            return new BeaconBluetoothHandler(thing);
+        if (GenericBindingConstants.THING_TYPE_GENERIC.equals(thingTypeUID)) {
+            return new GenericBluetoothHandler(thing, channelTypeProvider);
         }
+
         return null;
     }
 }
