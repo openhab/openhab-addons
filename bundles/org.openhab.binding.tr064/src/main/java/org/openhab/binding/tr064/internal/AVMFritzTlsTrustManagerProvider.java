@@ -26,7 +26,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component
 @NonNullByDefault
-public class AvmFritzTlsTrustManagerProvider implements TlsTrustManagerProvider {
+public class AVMFritzTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
     @Override
     public String getHostName() {
