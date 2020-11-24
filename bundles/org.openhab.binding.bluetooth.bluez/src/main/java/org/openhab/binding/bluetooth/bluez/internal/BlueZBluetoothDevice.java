@@ -369,8 +369,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         }
         BluetoothCharacteristic c = getCharacteristic(UUID.fromString(characteristic.getUuid()));
         if (c != null) {
-            c.setValue(event.getData());
-            notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, c, BluetoothCompletionStatus.SUCCESS);
+            synchronized (c) {
+                c.setValue(event.getData());
+                notifyListeners(BluetoothEventType.CHARACTERISTIC_UPDATED, c, BluetoothCompletionStatus.SUCCESS);
+            }
         }
     }
 
