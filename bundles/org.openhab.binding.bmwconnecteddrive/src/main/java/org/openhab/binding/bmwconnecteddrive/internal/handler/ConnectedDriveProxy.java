@@ -246,8 +246,9 @@ public class ConnectedDriveProxy {
     }
 
     private String getRegionServer() {
-        if (BimmerConstants.SERVER_MAP.containsKey(configuration.region)) {
-            return BimmerConstants.SERVER_MAP.get(configuration.region);
+        String retVal = BimmerConstants.SERVER_MAP.get(configuration.region);
+        if (retVal != null) {
+            return retVal;
         } else {
             return Constants.INVALID;
         }
