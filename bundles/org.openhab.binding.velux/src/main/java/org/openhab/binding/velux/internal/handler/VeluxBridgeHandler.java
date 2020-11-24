@@ -491,10 +491,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                 }
                 logger.trace("syncChannelsWithProducts(): update channel {} to 'UNDEFINED'.", channelUID);
                 updateState(channelUID, UnDefType.UNDEF);
-                if (product.getState() == VeluxProduct.State.DONE.value) {
-                    logger.debug("syncChannelsWithProducts(): calling moveRelative({}, +0%)", productPbi.toInt());
-                    moveRelative(productPbi.toInt(), 0);
-                }
                 break;
             }
         }

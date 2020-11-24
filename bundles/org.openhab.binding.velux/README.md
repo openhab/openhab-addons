@@ -140,10 +140,14 @@ The supported Channels and their associated channel types are shown below.
 | limitMinimum | Rollershutter | Minimum limit position of the window or device. |
 | limitMaximum | Rollershutter | Maximum limit position of the window or device. |
 
-The `position` Channel will as a general rule indicate the actual position of the window (resp. roller shutter) in percent (0% .. 100%).
-When a window is in motion towards a new target position, the Channel will display the target position.
-And when the motion has completed, it will display the final actual position.
-In case the Bridge cannot determine the position (e.g. a window is commanded to a target position when it has been opened manually) the it will display as `UNDEF`.
+The `position` Channel indicates the open/close state of the window (resp. roller shutter) in percent (0% .. 100%) as follows..
+
+- As a general rule the display is the actual physical position.
+- If it is moving towards a new target position, the display is the target position.
+- After the movement has completed, the display is the final physical position.
+- If a window is opened manually, the display is `UNDEF`.
+- In case of errors (e.g. window jammed) the display is `UNDEF`.
+- If a Somfy actuator is commanded to its 'favorite' position via a Somfy remote control, under some circumstances the display is `UNDEF`. See also Rules below.
 
 ### Channels for "actuator" Things
 
@@ -325,6 +329,21 @@ then
 		// try to close it
 		Velux_Window.sendCommand(0)
 	}
+end
+```
+
+### Rule for Somfy actuators
+
+If a Somfy actuator is commanded to its 'favorite' position via a Somfy remote control, under some circumstances the display is `UNDEF`.
+You can resolve this behaviour in a rule that detects the `UNDEF` position and (re-)commands it to its favorite position.
+
+```java
+rule "Somfy Actuator: resolve undefined position"
+when
+    Item Somfy_Actuator changed to UNDEF
+then
+    val favoritePosition = 91
+    Somfy_Actuator.sendCommand(favoritePosition)
 end
 ```
 
