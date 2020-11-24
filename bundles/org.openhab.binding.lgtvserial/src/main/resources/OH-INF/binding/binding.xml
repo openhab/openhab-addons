@@ -5,7 +5,6 @@
 
 	<name>LG TV Serial Binding</name>
 	<description>Controlling LG TVs using serial (RS232C) protocol</description>
-	<author>Marius Bjoernstad</author>
 
 
 </binding:binding>

@@ -5,6 +5,5 @@
 
 	<name>Radio Thermostat Binding</name>
 	<description>Controls the RadioThermostat model CT30, CT50 or CT80 via the built-in WIFI module</description>
-	<author>Michael Lobstein</author>
 
 </binding:binding>

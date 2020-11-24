@@ -5,6 +5,5 @@
 
 	<name>CoolMasterNet Binding</name>
 	<description>Binding for Cool Automation CoolMasterNet HVAC controllers.</description>
-	<author>Two Feathers Pty Ltd</author>
 
 </binding:binding>
