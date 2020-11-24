@@ -96,16 +96,44 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                                                          // before reading from device
 
     private class BypassDate {
+        private final int[] MONTH_MAX_DAYS = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
         // initialization to avoid issues when updating before all variables were read
         private int month = 1;
         private int day = 1;
 
+        public BypassDate() {
+        }
+
+        public BypassDate(int day, int month) {
+            this.setDay(day);
+            this.setMonth(month);
+        }
+
         public void setMonth(int month) {
-            this.month = month;
+            if (month < 1) {
+                this.month = 1;
+            } else if (month > 12) {
+                this.month = 12;
+            } else {
+                this.month = month;
+            }
+        }
+
+        public int getMonth() {
+            return this.month;
         }
 
         public void setDay(int day) {
-            this.day = day;
+            if (day < 1) {
+                this.day = 1;
+            } else {
+                this.day = Math.min(day, MONTH_MAX_DAYS[month - 1]);
+            }
+        }
+
+        public int getDay() {
+            return this.day;
         }
 
         public DateTimeType toDateTimeType() {
@@ -551,11 +579,14 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     }
 
     protected void setBypass(boolean from, int day, int month) {
+        BypassDate bypassDate = new BypassDate(day, month);
         try {
             this.writeValue(from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY
-                    : HeliosEasyControlsBindingConstants.BYPASS_TO_DAY, Integer.toString(day));
-            this.writeValue(from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH
-                    : HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH, Integer.toString(month));
+                    : HeliosEasyControlsBindingConstants.BYPASS_TO_DAY, Integer.toString(bypassDate.getDay()));
+            this.writeValue(
+                    from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH
+                            : HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH,
+                    Integer.toString(bypassDate.getMonth()));
         } catch (HeliosException e) {
             logger.warn("{} encountered Exception when trying to set bypass period: {}",
                     HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
