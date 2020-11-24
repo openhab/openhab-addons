@@ -5,6 +5,5 @@
 
 	<name>SleepIQ Binding</name>
 	<description>This is the binding for the Sleep Number SleepIQ system.</description>
-	<author>Gregory Moyer</author>
 
 </binding:binding>

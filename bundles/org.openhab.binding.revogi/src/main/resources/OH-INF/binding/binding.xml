@@ -6,6 +6,5 @@
 	<name>Revogi Binding</name>
 	<description>This is the binding for Revogi devices. Revogi is a vendor of several smart home devices like light bulbs,
 		power strips and sensors.</description>
-	<author>Andi Bräu</author>
 
 </binding:binding>

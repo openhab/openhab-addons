@@ -5,6 +5,5 @@
 
 	<name>Remote openHAB Binding</name>
 	<description>The Remote openHAB binding allows to communicate with remote openHAB servers.</description>
-	<author>Laurent Garnier</author>
 
 </binding:binding>

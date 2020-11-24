@@ -6,6 +6,5 @@
 	<name>Samsung TV Binding</name>
 	<description>This is the binding for Samsung TV. Binding should support all Samsung TV C (2010), D (2011) and E (2012)
 		models</description>
-	<author>Pauli Anttila</author>
 
 </binding:binding>

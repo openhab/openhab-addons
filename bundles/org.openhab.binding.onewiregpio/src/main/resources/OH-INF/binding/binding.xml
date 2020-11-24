@@ -4,5 +4,4 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 	<name>OneWireGPIO Binding</name>
 	<description>Use GPIO in various devices like RaspberryPi to communicate the OneWire protocol</description>
-	<author>Anatol Ogorek</author>
 </binding:binding>
