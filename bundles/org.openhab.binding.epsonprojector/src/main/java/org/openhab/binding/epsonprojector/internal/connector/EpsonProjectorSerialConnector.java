@@ -83,7 +83,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                 this.out = out;
             }
         } catch (PortInUseException | UnsupportedCommOperationException | IOException e) {
-            throw new EpsonProjectorException(e.getMessage(), e);
+            throw new EpsonProjectorException(e);
         }
     }
 
@@ -159,7 +159,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
             try {
                 return sendMmsg(data, timeout);
             } catch (IOException e1) {
-                throw new EpsonProjectorException(e.getMessage(), e);
+                throw new EpsonProjectorException(e);
             }
         }
     }
@@ -196,7 +196,7 @@ public class EpsonProjectorSerialConnector implements EpsonProjectorConnector, S
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        throw new EpsonProjectorException(e.getMessage(), e);
+                        throw new EpsonProjectorException(e);
                     }
                 }
 

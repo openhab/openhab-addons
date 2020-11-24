@@ -56,7 +56,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             in = socket.getInputStream();
             out = socket.getOutputStream();
         } catch (IOException e) {
-            throw new EpsonProjectorException(e.getMessage(), e);
+            throw new EpsonProjectorException(e);
         }
     }
 
@@ -138,7 +138,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             try {
                 return sendMmsg(data, timeout);
             } catch (IOException e1) {
-                throw new EpsonProjectorException(e.getMessage(), e);
+                throw new EpsonProjectorException(e);
             }
         }
     }
@@ -171,7 +171,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        throw new EpsonProjectorException(e.getMessage(), e);
+                        throw new EpsonProjectorException(e);
                     }
                 }
 
