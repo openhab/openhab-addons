@@ -12,7 +12,7 @@
 		<label>Destination GPS Coordinates</label>
 	</channel-type>
 	<channel-type id="destination-size-channel">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Number of Available Destinations</label>
 	</channel-type>
 	<channel-type id="destination-index-channel">

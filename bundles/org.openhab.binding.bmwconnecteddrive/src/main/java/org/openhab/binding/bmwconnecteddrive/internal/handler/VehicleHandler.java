@@ -445,7 +445,9 @@ public class VehicleHandler extends VehicleChannelHandler {
             chargeProfileCache = content;
             if (content.isPresent()) {
                 ChargeProfile cp = Converter.getGson().fromJson(content.get(), ChargeProfile.class);
-                updateChargeProfile(cp);
+                if (cp != null) {
+                    updateChargeProfile(cp);
+                }
             }
         }
 
