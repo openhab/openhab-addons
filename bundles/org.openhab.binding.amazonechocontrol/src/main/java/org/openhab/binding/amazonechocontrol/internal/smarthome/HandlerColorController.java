@@ -113,11 +113,10 @@ public class HandlerColorController extends HandlerBase {
                     }
                 }
             }
-            if (lastColorName == null) {
-                lastColorName = colorNameValue;
-            } else if (colorNameValue == null && lastColorName != null) {
+            if (colorNameValue == null && lastColorName != null) {
                 colorNameValue = lastColorName;
             }
+            lastColorName = colorNameValue;
             updateState(COLOR_PROPERTIES.channelId,
                     lastColorName == null ? UnDefType.UNDEF : new StringType(lastColorName));
         }
@@ -134,7 +133,7 @@ public class HandlerColorController extends HandlerBase {
                     colorObject.addProperty("hue", color.getHue());
                     colorObject.addProperty("saturation", color.getSaturation().floatValue() / 100);
                     colorObject.addProperty("brightness", color.getBrightness().floatValue() / 100);
-                    connection.smartHomeCommand(entityId, "setColor", "color", colorObject);
+                    connection.smartHomeCommand(entityId, "setColor", "value", colorObject);
                 }
             }
         }

@@ -932,7 +932,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     private synchronized void updateSmartHomeState(@Nullable String deviceFilterId) {
         try {
-            logger.debug("updateSmartHomeState started");
+            logger.debug("updateSmartHomeState started with deviceFilterId={}", deviceFilterId);
             Connection connection = this.connection;
             if (connection == null || !connection.getIsLoggedIn()) {
                 return;
@@ -976,8 +976,10 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     logger.debug("Device update {} suspended", id);
                     continue;
                 }
-                if (id.equals(deviceFilterId)) {
+                if (deviceFilterId == null || id.equals(deviceFilterId)) {
                     smartHomeDeviceHandler.updateChannelStates(allDevices, applianceIdToCapabilityStates);
+                } else {
+                    logger.trace("Id {} not matching filter {}", id, deviceFilterId);
                 }
             }
 
