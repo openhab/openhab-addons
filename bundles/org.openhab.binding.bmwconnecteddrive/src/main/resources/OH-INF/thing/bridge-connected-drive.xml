@@ -19,6 +19,7 @@
 				<description>BMW Connected Drive Username</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
+				<context>password</context>
 				<label>Password</label>
 				<description>BMW Connected Drive Password</description>
 			</parameter>

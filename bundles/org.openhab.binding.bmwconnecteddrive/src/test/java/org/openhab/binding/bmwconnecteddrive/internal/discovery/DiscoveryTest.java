@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.discovery;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -57,13 +57,16 @@ public class DiscoveryTest {
         VehiclesContainer container = GSON.fromJson(content, VehiclesContainer.class);
         ArgumentCaptor<DiscoveryResult> discoveries = ArgumentCaptor.forClass(DiscoveryResult.class);
         ArgumentCaptor<DiscoveryService> services = ArgumentCaptor.forClass(DiscoveryService.class);
-
-        discovery.onResponse(container);
-        verify(listener, times(1)).thingDiscovered(services.capture(), discoveries.capture());
-        List<DiscoveryResult> results = discoveries.getAllValues();
-        assertEquals(1, results.size(), "Found Vehicles");
-        DiscoveryResult result = results.get(0);
-        assertEquals("bmwconnecteddrive:bev_rex:abc:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
+        if (container != null) {
+            discovery.onResponse(container);
+            verify(listener, times(1)).thingDiscovered(services.capture(), discoveries.capture());
+            List<DiscoveryResult> results = discoveries.getAllValues();
+            assertEquals(1, results.size(), "Found Vehicles");
+            DiscoveryResult result = results.get(0);
+            assertEquals("bmwconnecteddrive:bev_rex:abc:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
+        } else {
+            assertTrue(false);
+        }
     }
 
     @Test
