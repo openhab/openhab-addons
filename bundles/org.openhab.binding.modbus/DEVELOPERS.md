@@ -75,20 +75,69 @@ You can also use `modpoll` to write data:
 ./modpoll -m tcp -a 1 -r 1 -t4:float -p 502 127.0.0.1 3.14
 ```
 
-## Extending Modbus binding
+## Extending Modbus Binding
 
 This Modbus binding can be extended by other OSGi bundles to add more specific support for Modbus enabled devices.
 To do so to you have to create a new OSGi bundle which has the same binding id as this binding.
 The best way is to use the `ModbusBindingConstants.BINDING_ID` constant.
 
+### Thing Handler
+
 You will have to create one or more handler classes for the devices you want to support.
 For the modbus connection setup and handling you can use the Modbus TCP Slave or Modbus Serial Slave handlers.
 Your handler should use these handlers as bridges and you can set up your regular or one shot modbus requests to read from the slave.
-This is done by by creating a `BasicPollTaskImpl` and submitting it using the `ModbusManager` `submitOneTimePoll` and `registerRegularPoll` methods.
+This is done by extending your `ThingHandler` by `BaseModbusThingHandler`.
+You can use the inherited methods `submitOneTimePoll()` and `registerRegularPoll()` to poll values and `submitOneTimeWrite()` to send values to a slave.
+The `BaseModbusThingHandler` takes care that every regular poll task is cancelled, when the Thing is disposed.
+Despite that, you can cancel the task manually by storing the return value of `registerRegularPoll()` and use it as an argument to `unregisterRegularPoll()`.
 
 Please keep in mind that these reads are asynchronous and they will call your callback once the read is done.
 
 Once you have your data read from the modbus device you can parse and transform them then update your channels to publish these data to the openHAB system.
+
+See the following example:
+
+```java
+@NonNullByDefault
+public class MyHandler extends BaseModbusThingHandler {
+    public MyHandler(Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            ModbusReadRequestBlueprint blueprint = new ModbusReadRequestBlueprint(42,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 1, 2);
+
+            submitOneTimePoll(blueprint, this::readSuccessful, this::readError);
+        }
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        // do other Thing initialization
+
+        ModbusReadRequestBlueprint blueprint = new ModbusReadRequestBlueprint(42,
+                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 1, 2);
+
+        registerRegularPoll(blueprint, 1000, 0, this::readSuccessful, this::readError);
+    }
+
+    private void readSuccessful(AsyncModbusReadResult result) {
+        result.getRegisters().ifPresent(registers -> {
+            Optional<DecimalType> value = ModbusBitUtilities.extractStateFromRegisters(registers, 0, ValueType.INT16);
+            // process value
+        });
+    }
+
+    private void readError(AsyncModbusFailure<ModbusReadRequestBlueprint> error) {
+        // set the Thing offline
+    }
+}
+```
 
 ### Discovery
 
