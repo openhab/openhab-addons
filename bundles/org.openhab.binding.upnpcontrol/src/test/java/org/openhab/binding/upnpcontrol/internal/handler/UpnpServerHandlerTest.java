@@ -189,8 +189,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testBase");
 
         handler.config.filter = false;
-        handler.config.browsedown = false;
-        handler.config.searchfromroot = false;
+        handler.config.browseDown = false;
+        handler.config.searchFromRoot = false;
 
         // Check currentEntry
         assertThat(handler.currentEntry.getId(), is(UpnpServerHandler.DIRECTORY_ROOT));
@@ -231,8 +231,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testSetBrowse");
 
         handler.config.filter = false;
-        handler.config.browsedown = false;
-        handler.config.searchfromroot = false;
+        handler.config.browseDown = false;
+        handler.config.searchFromRoot = false;
 
         Map<String, String> result = new HashMap<>();
         result.put("Result", DOUBLE_MEDIA);
@@ -281,8 +281,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testSetBrowseRendererFilter");
 
         handler.config.filter = true;
-        handler.config.browsedown = false;
-        handler.config.searchfromroot = false;
+        handler.config.browseDown = false;
+        handler.config.searchFromRoot = false;
 
         handler.handleCommand(rendererChannelUID, StringType.valueOf(rendererThing.getUID().toString()));
 
@@ -334,8 +334,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testBrowseContainers");
 
         handler.config.filter = false;
-        handler.config.browsedown = false;
-        handler.config.searchfromroot = false;
+        handler.config.browseDown = false;
+        handler.config.searchFromRoot = false;
 
         Map<String, String> result = new HashMap<>();
         result.put("Result", DOUBLE_CONTAINER);
@@ -384,8 +384,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testBrowseOneContainerNoBrowseDown");
 
         handler.config.filter = false;
-        handler.config.browsedown = false;
-        handler.config.searchfromroot = false;
+        handler.config.browseDown = false;
+        handler.config.searchFromRoot = false;
 
         Map<String, String> resultContainer = new HashMap<>();
         resultContainer.put("Result", SINGLE_CONTAINER);
@@ -433,8 +433,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testBrowseOneContainerBrowseDown");
 
         handler.config.filter = false;
-        handler.config.browsedown = true;
-        handler.config.searchfromroot = false;
+        handler.config.browseDown = true;
+        handler.config.searchFromRoot = false;
 
         Map<String, String> resultContainer = new HashMap<>();
         resultContainer.put("Result", SINGLE_CONTAINER);
@@ -486,8 +486,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testSearchOneContainerNotFromRootNoBrowseDown");
 
         handler.config.filter = false;
-        handler.config.browsedown = false;
-        handler.config.searchfromroot = false;
+        handler.config.browseDown = false;
+        handler.config.searchFromRoot = false;
 
         // First navigate away from root
         Map<String, String> result = new HashMap<>();
@@ -543,8 +543,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testSearchOneContainerNotFromRootBrowseDown");
 
         handler.config.filter = false;
-        handler.config.browsedown = true;
-        handler.config.searchfromroot = false;
+        handler.config.browseDown = true;
+        handler.config.searchFromRoot = false;
 
         // First navigate away from root
         Map<String, String> result = new HashMap<>();
@@ -604,8 +604,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testSearchOneContainerFromRootNoBrowseDown");
 
         handler.config.filter = false;
-        handler.config.browsedown = false;
-        handler.config.searchfromroot = true;
+        handler.config.browseDown = false;
+        handler.config.searchFromRoot = true;
 
         // First navigate away from root
         Map<String, String> result = new HashMap<>();
@@ -661,8 +661,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testSearchOneContainerFromRootBrowseDown");
 
         handler.config.filter = false;
-        handler.config.browsedown = true;
-        handler.config.searchfromroot = true;
+        handler.config.browseDown = true;
+        handler.config.searchFromRoot = true;
 
         // First navigate away from root
         Map<String, String> result = new HashMap<>();
@@ -722,8 +722,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testSearchMediaFromRootBrowseDownFilter");
 
         handler.config.filter = true;
-        handler.config.browsedown = true;
-        handler.config.searchfromroot = true;
+        handler.config.browseDown = true;
+        handler.config.searchFromRoot = true;
 
         // First navigate away from root
         Map<String, String> result = new HashMap<>();
@@ -779,8 +779,8 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         logger.info("testPlaylist");
 
         handler.config.filter = false;
-        handler.config.browsedown = false;
-        handler.config.searchfromroot = true;
+        handler.config.browseDown = false;
+        handler.config.searchFromRoot = true;
 
         // Check already called in initialize
         verify(handler).playlistsListChanged();

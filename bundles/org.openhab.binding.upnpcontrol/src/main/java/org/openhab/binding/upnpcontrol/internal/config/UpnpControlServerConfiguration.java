@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class UpnpControlServerConfiguration extends UpnpControlConfiguration {
     public boolean filter = false;
-    public String sortcriteria = "+dc:title";
-    public boolean browsedown = true;
-    public boolean searchfromroot = false;
+    public String sortCriteria = "+dc:title";
+    public boolean browseDown = true;
+    public boolean searchFromRoot = false;
 }

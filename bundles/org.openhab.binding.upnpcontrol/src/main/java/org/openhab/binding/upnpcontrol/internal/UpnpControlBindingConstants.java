@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -90,8 +91,8 @@ public class UpnpControlBindingConstants {
     public static final String PLAYLIST_ACTION = "playlistaction";
 
     // Type constants for dynamic renderer channels
-    public static final String CHANNEL_TYPE_VOLUME = (new ChannelTypeUID("system", "volume")).toString();
-    public static final String CHANNEL_TYPE_MUTE = (new ChannelTypeUID("system", "mute")).toString();
+    public static final String CHANNEL_TYPE_VOLUME = DefaultSystemChannelTypeProvider.SYSTEM_VOLUME.toString();
+    public static final String CHANNEL_TYPE_MUTE = DefaultSystemChannelTypeProvider.SYSTEM_MUTE.toString();
     public static final String CHANNEL_TYPE_LOUDNESS = (new ChannelTypeUID(BINDING_ID, "loudness")).toString();
 
     public static final String ITEM_TYPE_VOLUME = "Dimmer";
@@ -105,8 +106,7 @@ public class UpnpControlBindingConstants {
     public static final String DELETE = "DELETE";
 
     // Channels that are duplicated on server to control current renderer
-    public static final Set<String> SERVER_CONTROL_CHANNELS = Stream.of(VOLUME, MUTE, CONTROL, STOP)
-            .collect(Collectors.toSet());
+    public static final Set<String> SERVER_CONTROL_CHANNELS = Set.of(VOLUME, MUTE, CONTROL, STOP);
 
     // Master volume and mute identifier
     public static final String UPNP_MASTER = "Master";

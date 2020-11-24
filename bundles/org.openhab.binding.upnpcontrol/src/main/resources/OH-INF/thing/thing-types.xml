@@ -49,23 +49,23 @@
 				<description>Specifies the refresh interval in seconds</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="notificationvolumeadjustment" type="integer" min="-100" max="100" step="1" unit="%">
+			<parameter name="notificationVolumeAdjustment" type="integer" min="-100" max="100" step="1" unit="%">
 				<label>Notification Sound Volume Adjustment</label>
 				<description>Specifies the percentage adjustment to the current sound volume when playing notifications</description>
 				<default>10</default>
 			</parameter>
-			<parameter name="maxnotificationduration" type="integer" unit="s">
+			<parameter name="maxNotificationDuration" type="integer" unit="s">
 				<label>Maximum Notification Duration</label>
 				<description>Specifies the maximum duration for notifications, longer notification sounds will be interrupted. O
 					represents no maximum duration</description>
 				<default>15</default>
 			</parameter>
-			<parameter name="seekstep" type="integer" min="1">
+			<parameter name="seekStep" type="integer" min="1">
 				<label>Fast Forward/Rewind Step</label>
 				<description>Step in seconds for fast forward rewind</description>
 				<default>5</default>
 			</parameter>
-			<parameter name="responsetimeout" type="integer" unit="ms">
+			<parameter name="responseTimeout" type="integer" unit="ms">
 				<label>UPnP Response Timeout</label>
 				<description>Specifies the timeout in milliseconds when waiting for responses on UPnP actions</description>
 				<default>2500</default>
@@ -109,26 +109,26 @@
 				<description>Only list content which is playable on the selected renderer</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="sortcriteria" type="text">
+			<parameter name="sortCriteria" type="text">
 				<label>Sort Criteria</label>
 				<description>Sort criteria for the titles in the selection list and when sending for playing to a renderer. The
 					criteria are defined in UPnP sort criteria format. Examples: +dc:title, -dc:creator, +upnp:album. Supported sort
 					criteria will depend on the media server</description>
 				<default>+dc:title</default>
 			</parameter>
-			<parameter name="browsedown" type="boolean">
+			<parameter name="browseDown" type="boolean">
 				<label>Auto Browse Down</label>
 				<description>When browse or search results in exactly one container entry, iteratively browse down until the
 					result
 					contains multiple container entries or at least one media entry</description>
 				<default>true</default>
 			</parameter>
-			<parameter name="searchfromroot" type="boolean">
+			<parameter name="searchFromRoot" type="boolean">
 				<label>Search From Root</label>
 				<description>Always search from the root directory</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="responsetimeout" type="integer" unit="ms">
+			<parameter name="responseTimeout" type="integer" unit="ms">
 				<label>UPnP Response Timeout</label>
 				<description>Specifies the timeout in milliseconds when waiting for responses on UPnP actions</description>
 				<default>2500</default>

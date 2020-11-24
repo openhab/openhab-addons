@@ -25,6 +25,11 @@ import org.openhab.core.library.types.PercentType;
 
 /**
  *
+ * This class works as a standard audio sink for openHAB, but with specific behavior for the audio players. It is only
+ * meant to be used for playing notifications. When sending audio through this sink, the previously playing media will
+ * be interrupted and will automatically resume after playing the notification. If no volume is specified, the
+ * notification volume will be controlled by the media player notification volume configuration.
+ *
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault

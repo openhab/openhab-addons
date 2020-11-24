@@ -174,8 +174,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     public void initialize() {
         super.initialize();
         config = getConfigAs(UpnpControlRendererConfiguration.class);
-        if (config.seekstep < 1) {
-            config.seekstep = 1;
+        if (config.seekStep < 1) {
+            config.seekStep = 1;
         }
         logger.debug("Initializing handler for media renderer device {}", thing.getLabel());
 
@@ -323,7 +323,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         try {
             if (settingURI != null) {
                 // wait for maximum 2.5s until the media URI is set before playing
-                uriSet = settingURI.get(config.responsetimeout, TimeUnit.MILLISECONDS);
+                uriSet = settingURI.get(config.responseTimeout, TimeUnit.MILLISECONDS);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Timeout exception, media URI not yet set in renderer {}, trying to play anyway",
@@ -379,7 +379,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         try {
             if (settingURI != null) {
                 // wait for maximum 2.5s until the media URI is set before seeking
-                uriSet = settingURI.get(config.responsetimeout, TimeUnit.MILLISECONDS);
+                uriSet = settingURI.get(config.responseTimeout, TimeUnit.MILLISECONDS);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Timeout exception, media URI not yet set in renderer {}, skipping seek", thing.getLabel());
@@ -754,9 +754,9 @@ public class UpnpRendererHandler extends UpnpHandler {
         } else if (command instanceof RewindFastforwardType) {
             int pos = 0;
             if (RewindFastforwardType.FASTFORWARD.equals(command)) {
-                pos = Integer.min(trackDuration, trackPosition + config.seekstep);
+                pos = Integer.min(trackDuration, trackPosition + config.seekStep);
             } else if (command == RewindFastforwardType.REWIND) {
-                pos = Integer.max(0, trackPosition - config.seekstep);
+                pos = Integer.max(0, trackPosition - config.seekStep);
             }
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
         }
@@ -927,8 +927,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
             cancelPlayingNotificationFuture();
 
-            if (config.maxnotificationduration > 0) {
-                playingNotificationFuture = upnpScheduler.schedule(this::stop, config.maxnotificationduration,
+            if (config.maxNotificationDuration > 0) {
+                playingNotificationFuture = upnpScheduler.schedule(this::stop, config.maxNotificationDuration,
                         TimeUnit.SECONDS);
             }
             playingNotification = true;
@@ -938,14 +938,14 @@ public class UpnpRendererHandler extends UpnpHandler {
             PercentType volume = notificationVolume;
             setVolume(volume == null
                     ? new PercentType(Math.min(100,
-                            Math.max(0, (100 + config.notificationvolumeadjustment) * soundVolume.intValue() / 100)))
+                            Math.max(0, (100 + config.notificationVolumeAdjustment) * soundVolume.intValue() / 100)))
                     : volume);
 
             CompletableFuture<Boolean> stopping = isStopping;
             try {
                 if (stopping != null) {
                     // wait for maximum 2.5s until the renderer stopped before playing
-                    stopping.get(config.responsetimeout, TimeUnit.MILLISECONDS);
+                    stopping.get(config.responseTimeout, TimeUnit.MILLISECONDS);
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 logger.debug("Timeout exception, renderer {} didn't stop yet, trying to play anyway", thing.getLabel());
@@ -999,19 +999,15 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     void updateFavoritesList() {
-        synchronized (favoriteCommandOptionList) {
-            favoriteCommandOptionList = UpnpControlUtil.favorites(bindingConfig.path).stream()
-                    .map(p -> (new CommandOption(p, p))).collect(Collectors.toList());
-        }
+        favoriteCommandOptionList = UpnpControlUtil.favorites(bindingConfig.path).stream()
+                .map(p -> (new CommandOption(p, p))).collect(Collectors.toList());
         updateCommandDescription(favoriteSelectChannelUID, favoriteCommandOptionList);
     }
 
     @Override
     public void playlistsListChanged() {
-        synchronized (playlistCommandOptionList) {
-            playlistCommandOptionList = UpnpControlUtil.playlists().stream().map(p -> (new CommandOption(p, p)))
-                    .collect(Collectors.toList());
-        }
+        playlistCommandOptionList = UpnpControlUtil.playlists().stream().map(p -> (new CommandOption(p, p)))
+                .collect(Collectors.toList());
         updateCommandDescription(playlistSelectChannelUID, playlistCommandOptionList);
     }
 
@@ -1545,7 +1541,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * timeout, we will revert to playing state. This takes care of renderers that cannot pause playback.
      */
     private void checkPaused() {
-        paused = upnpScheduler.schedule(this::resetPaused, config.responsetimeout, TimeUnit.MILLISECONDS);
+        paused = upnpScheduler.schedule(this::resetPaused, config.responseTimeout, TimeUnit.MILLISECONDS);
     }
 
     private void resetPaused() {
@@ -1562,7 +1558,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private void setExpectedTrackend() {
         expectedTrackend = Instant.now().toEpochMilli() + (trackDuration - trackPosition) * 1000
-                - config.responsetimeout;
+                - config.responseTimeout;
     }
 
     /**

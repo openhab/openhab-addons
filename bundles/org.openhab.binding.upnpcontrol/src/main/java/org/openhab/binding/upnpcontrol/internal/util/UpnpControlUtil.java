@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,19 +42,19 @@ public final class UpnpControlUtil implements UpnpControlBindingConfigurationLis
     private static final Logger LOGGER = LoggerFactory.getLogger(UpnpControlUtil.class);
 
     private static volatile List<String> playlistList = new ArrayList<>();
-    private static List<UpnpPlaylistsListener> playlistSubscriptions = new ArrayList<>();
+    private static final Set<UpnpPlaylistsListener> PLAYLIST_SUBSCRIPTIONS = new CopyOnWriteArraySet<>();
 
     public static void updatePlaylistsList(@Nullable String path) {
         playlistList = list(path, PLAYLIST_FILE_EXTENSION);
-        playlistSubscriptions.forEach(l -> l.playlistsListChanged());
+        PLAYLIST_SUBSCRIPTIONS.forEach(UpnpPlaylistsListener::playlistsListChanged);
     }
 
     public static void playlistsSubscribe(UpnpPlaylistsListener listener) {
-        playlistSubscriptions.add(listener);
+        PLAYLIST_SUBSCRIPTIONS.add(listener);
     }
 
     public static void playlistsUnsubscribe(UpnpPlaylistsListener listener) {
-        playlistSubscriptions.remove(listener);
+        PLAYLIST_SUBSCRIPTIONS.remove(listener);
     }
 
     @Override

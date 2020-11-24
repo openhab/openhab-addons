@@ -170,12 +170,6 @@ public class UpnpXMLParser {
         }
     }
 
-    /**
-     * @param xml
-     * @return a list of Entries from the given xml string.
-     * @throws IOException
-     * @throws SAXException
-     */
     public static List<UpnpEntry> getEntriesFromXML(String xml) {
         if (xml.isEmpty()) {
             LOGGER.debug("Could not parse Entries from empty xml");

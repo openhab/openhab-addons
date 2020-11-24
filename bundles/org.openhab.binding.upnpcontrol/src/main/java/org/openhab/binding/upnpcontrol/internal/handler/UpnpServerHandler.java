@@ -177,13 +177,9 @@ public class UpnpServerHandler extends UpnpHandler {
                     });
                 }
                 updateStateDescription(rendererChannelUID, rendererStateOptionList);
-
                 getProtocolInfo();
-
-                browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
-
+                browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
                 playlistsListChanged();
-
                 updateStatus(ThingStatus.ONLINE);
             }
 
@@ -211,7 +207,7 @@ public class UpnpServerHandler extends UpnpHandler {
         try {
             if (browsing != null) {
                 // wait for maximum 2.5s until browsing is finished
-                browsed = browsing.get(config.responsetimeout, TimeUnit.MILLISECONDS);
+                browsed = browsing.get(config.responseTimeout, TimeUnit.MILLISECONDS);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Exception, previous server query on {} interrupted or timed out, trying new browse anyway",
@@ -257,7 +253,7 @@ public class UpnpServerHandler extends UpnpHandler {
         try {
             if (browsing != null) {
                 // wait for maximum 2.5s until browsing is finished
-                browsed = browsing.get(config.responsetimeout, TimeUnit.MILLISECONDS);
+                browsed = browsing.get(config.responseTimeout, TimeUnit.MILLISECONDS);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Exception, previous server query on {} interrupted or timed out, trying new search anyway",
@@ -329,7 +325,7 @@ public class UpnpServerHandler extends UpnpHandler {
             currentRendererHandler = renderer;
             if (config.filter) {
                 // only refresh title list if filtering by renderer capabilities
-                browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
+                browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
             } else {
                 serveMedia();
             }
@@ -402,7 +398,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
                 updateState(channelUID, StringType.valueOf(browseTarget));
                 updateState(CURRENTTITLE, StringType.valueOf(currentEntry.getTitle()));
-                browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
+                browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
             }
         } else if (command instanceof RefreshType) {
             browseTarget = currentEntry.getId();
@@ -420,7 +416,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 } else {
                     searchContainer = currentEntry.getParentId();
                 }
-                if (config.searchfromroot || searchContainer.isEmpty()) {
+                if (config.searchFromRoot || searchContainer.isEmpty()) {
                     // Config option search from root or no parent found, so make it the root directory
                     searchContainer = DIRECTORY_ROOT;
                 }
@@ -435,7 +431,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 logger.debug("Navigating to node {} on server {}", searchContainer, thing.getLabel());
                 updateState(BROWSE, StringType.valueOf(currentEntry.getId()));
                 logger.debug("Search container {} for {}", searchContainer, criteria);
-                search(searchContainer, criteria, "*", "0", "0", config.sortcriteria);
+                search(searchContainer, criteria, "*", "0", "0", config.sortCriteria);
             }
         }
     }
@@ -480,7 +476,7 @@ public class UpnpServerHandler extends UpnpHandler {
             try {
                 if (browsing != null) {
                     // wait for maximum 2.5s until browsing is finished
-                    browsing.get(config.responsetimeout, TimeUnit.MILLISECONDS);
+                    browsing.get(config.responseTimeout, TimeUnit.MILLISECONDS);
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 logger.debug(
@@ -672,7 +668,7 @@ public class UpnpServerHandler extends UpnpHandler {
         CompletableFuture<Boolean> browsing = isBrowsing;
         if (!((value == null) || (value.isEmpty()))) {
             List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
-            if (config.browsedown && (list.size() == 1) && list.get(0).isContainer() && !browseUp) {
+            if (config.browseDown && (list.size() == 1) && list.get(0).isContainer() && !browseUp) {
                 // We only received one container entry, so we immediately browse to the next level if config.browsedown
                 // = true
                 if (browsing != null) {
@@ -683,7 +679,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 parentMap.put(browseTarget, currentEntry);
                 logger.debug("Server {}, browsing down one level to the unique container result {}", thing.getLabel(),
                         browseTarget);
-                browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
+                browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortCriteria);
             } else {
                 updateTitleSelection(removeDuplicates(list));
             }
@@ -724,7 +720,7 @@ public class UpnpServerHandler extends UpnpHandler {
     private void serveMedia() {
         UpnpRendererHandler handler = currentRendererHandler;
         if (handler != null) {
-            List<UpnpEntry> mediaQueue = Collections.synchronizedList(new ArrayList<>());
+            List<UpnpEntry> mediaQueue = new ArrayList<>();
             mediaQueue.addAll(filterEntries(entries, false));
             if (mediaQueue.isEmpty() && !currentEntry.isContainer()) {
                 mediaQueue.add(currentEntry);

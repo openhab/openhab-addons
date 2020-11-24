@@ -47,7 +47,7 @@ Both also have `refresh` configuration parameter. This parameter defines a polli
 The default polling interval is 60s.
 0 turns off polling.
 
-An advanced configuration parameter `responsetimeout` permits tweaking how long the `upnprenderer` and `upnpserver` will wait for GENA events from the UPnP device.
+An advanced configuration parameter `responseTimeout` permits tweaking how long the `upnprenderer` and `upnpserver` will wait for GENA events from the UPnP device.
 This timeout is checked when there is a dependency between an action invocation and an event with expected result.
 The default is 2500ms.
 It should not be changed in normal circumstances.
@@ -56,29 +56,29 @@ Additionally, a `upnpserver` device has the following optional configuration par
 
 * `filter`: when true, only list content that is playable on the renderer, default is `false`.
 
-* `sortcriteria`: sort criteria for the titles in the selection list and when sending for playing to a renderer.
+* `sortCriteria`: sort criteria for the titles in the selection list and when sending for playing to a renderer.
 
   The criteria are defined in UPnP sort criteria format, examples: `+dc:title`, `-dc:creator`, `+upnp:album`.
   Support for sort criteria will depend on the media server.
   The default is to sort ascending on title, `+dc:title`.
 
-* `browsedown`: when browse or search results in exactly one container entry, iteratively browse down until the result contains multiple container entries or at least one media entry, default is `true`.
+* `browseDown`: when browse or search results in exactly one container entry, iteratively browse down until the result contains multiple container entries or at least one media entry, default is `true`.
 
-* `searchfromroot`: always start search from root instead of the current id, default is `false`.
+* `searchFromRoot`: always start search from root instead of the current id, default is `false`.
 
 A `upnprenderer` has the following optional configuration parameters:
 
-* `seekstep`: step in seconds when sending fast forward or rewind command on the player control, default 5s.
+* `seekStep`: step in seconds when sending fast forward or rewind command on the player control, default 5s.
 
-* `notificationvolumeadjustment`: volume adjustment from current volume in percent (range -100 to +100) for notifications when no volume is set in `playSound` command, default 10.
+* `notificationVolumeAdjustment`: volume adjustment from current volume in percent (range -100 to +100) for notifications when no volume is set in `playSound` command, default 10.
 
-* `maxnotificationduration`: maximum duration for notifications (default 15s), no maximum duration when set to 0s.
+* `maxNotificationDuration`: maximum duration for notifications (default 15s), no maximum duration when set to 0s.
 
 The full syntax for manual configuration is:
 
 ```
-Thing upnpcontrol:upnpserver:<serverId> [udn="<udn of media server>", refresh=<polling interval>, seekstep=<step>]
-Thing upnpcontrol:upnprenderer:<rendererId> [udn="<udn of media renderer>", refresh=<polling interval>, filter=<true/false>, sortcriteria="<sort criteria string>", browsedown=<true/false>, searchfromroot=<true/false>]
+Thing upnpcontrol:upnpserver:<serverId> [udn="<udn of media server>", refresh=<polling interval>, seekStep=<step>]
+Thing upnpcontrol:upnprenderer:<rendererId> [udn="<udn of media renderer>", refresh=<polling interval>, filter=<true/false>, sortCriteria="<sort criteria string>", browseDown=<true/false>, searchfromroot=<true/false>]
 ```
 
 
@@ -105,7 +105,7 @@ The `upnpserver` has the following channels (item type and access mode indicated
   
   All media in the selection list, playable on the currently selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
   
-  The `browsedown` configuration parameter influences the result in such a way that, for `browsedown = true`, if the result only contains exactly one container entry, the result will be the content of the container and not the container itself.
+  The `browseDown` configuration parameter influences the result in such a way that, for `browseDown = true`, if the result only contains exactly one container entry, the result will be the content of the container and not the container itself.
 
 * `search` (String, W): Search for media content on the server.
 
@@ -118,7 +118,7 @@ The `upnpserver` has the following channels (item type and access mode indicated
   
   All media in the search result list, playable on the current selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
   
-  The `browsedown` configuration parameter influences the result in such a way that, for `browsedown = true`, if the result only contains exactly one container entry, the result   will be the content of the container and not the container itself.
+  The `browseDown` configuration parameter influences the result in such a way that, for `browseDown = true`, if the result only contains exactly one container entry, the result   will be the content of the container and not the container itself.
 
 * `playlistselect` (String, W): Select a playlist from the available playlists currently saved on disk.
 
@@ -203,7 +203,7 @@ It is used for normal playback of a sound or stream.
 The second audio sink has `-notify` appended to the renderer id for its name, and has a special behavior.
 This audio sink is used to play notifications.
 When setting the volume parameter in the `playSound` command, the volume of the renderer will only change for the duration of playing the notification.
-The `maxnotificationduration` configuration parameter of the renderer will limit the notification duration the value of the parameter in seconds.
+The `maxNotificationDuration` configuration parameter of the renderer will limit the notification duration the value of the parameter in seconds.
 Normal playing will resume after the notification has played or when the maximum notification duration has been reached, whichever happens first.
 Longer sounds or streams will be cut off.
 
@@ -294,10 +294,10 @@ For example:
 
 * `dc:title = "Donnie Darko" and upnp:class = "object.container.playlistContainer"` would search for a playlist with a specific name.
 
-With the last example, if the `browsedown` configuration parameter is `true`, the result will not be the playlist, but the content of the playlist.
+With the last example, if the `browseDown` configuration parameter is `true`, the result will not be the playlist, but the content of the playlist.
 This allows immediately starting a play command without having to browse down to the first result of the list (the unique container).
 This is especially useful when doing searches and starting to play in scripts, as the play command can immediately follow the search for a unique container, without a need to browse down to a media ID that is hidden in the browse option list.
-For interactive use through a UI, you may opt to switch the `browsedown` configuration parameter to `false` to see all levels in the browsing hierarchy.
+For interactive use through a UI, you may opt to switch the `browseDown` configuration parameter to `false` to see all levels in the browsing hierarchy.
 
 The `searchfromroot` configuration parameter always forces searching to start from the directory root.
 This will also always reset the `browse` channel to the root.
@@ -323,8 +323,8 @@ None of these are limitations when using the main UI.
 .things:
 
 ```
-Thing upnpcontrol:upnpserver:mymediaserver [udn="0ec457ae-6c50-4e6e-9012-dee7bb25be2d", refresh=120, filter=true, sortcriteria="+dc:title"]
-Thing upnpcontrol:upnprenderer:mymediarenderer [udn="538cf6e8-d188-4aed-8545-73a1b905466e", refresh=600, seekstep=1]
+Thing upnpcontrol:upnpserver:mymediaserver [udn="0ec457ae-6c50-4e6e-9012-dee7bb25be2d", refresh=120, filter=true, sortCriteria="+dc:title"]
+Thing upnpcontrol:upnprenderer:mymediarenderer [udn="538cf6e8-d188-4aed-8545-73a1b905466e", refresh=600, seekStep=1]
 ```
 
 .items:

@@ -563,7 +563,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     private boolean checkForConnectionId(@Nullable CompletableFuture<Boolean> future) {
         try {
             if (future != null) {
-                return future.get(config.responsetimeout, TimeUnit.MILLISECONDS);
+                return future.get(config.responseTimeout, TimeUnit.MILLISECONDS);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             return false;

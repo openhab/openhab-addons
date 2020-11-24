@@ -92,10 +92,10 @@ public class UpnpEntryQueue {
     public UpnpEntryQueue(List<UpnpEntry> queue, @Nullable String udn) {
         String serverUdn = (udn != null) ? udn : "";
         Map<String, List<UpnpEntry>> masterList = Collections.synchronizedMap(new HashMap<>());
-        masterList.clear();
-        masterList.put(serverUdn, queue);
+        List<UpnpEntry> localQueue = new ArrayList<>(queue);
+        masterList.put(serverUdn, localQueue);
         playlist = new Playlist("", masterList);
-        currentQueue = queue.stream().filter(e -> !e.isContainer()).collect(Collectors.toList());
+        currentQueue = localQueue.stream().filter(e -> !e.isContainer()).collect(Collectors.toList());
     }
 
     /**
