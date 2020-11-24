@@ -32,6 +32,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -125,12 +126,16 @@ public class PS3Handler extends BaseThingHandler {
     }
 
     private void turnOnPS3() {
+        String macAdr = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        if (macAdr == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No MAC address configured.");
+            return;
+        }
         try {
-            InetAddress bcAddress = InetAddress.getByName("255.255.255.255");
-
             // send WOL magic packet
-            byte[] magicPacket = makeWOLMagicPacket(thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS));
+            byte[] magicPacket = makeWOLMagicPacket(macAdr);
             logger.debug("PS3 wol packet: {}", magicPacket);
+            InetAddress bcAddress = InetAddress.getByName("255.255.255.255");
             DatagramPacket wakePacket = new DatagramPacket(magicPacket, magicPacket.length, bcAddress,
                     DEFAULT_PS3_WAKE_ON_LAN_PORT);
             // send discover
