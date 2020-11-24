@@ -89,7 +89,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-                "transformation": "tankLevel",
+				"transformation": "tankLevel",
 				"actions": []
 			},
 			{
@@ -154,7 +154,7 @@
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-                "unit": "hours",
+				"unit": "hours",
 				"actions": []
 			},
 			{
@@ -168,7 +168,7 @@
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-                "unit": "hours",
+				"unit": "hours",
 				"actions": []
 			},
 			{
