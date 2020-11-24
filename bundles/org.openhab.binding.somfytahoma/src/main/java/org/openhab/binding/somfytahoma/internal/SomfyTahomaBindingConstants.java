@@ -239,6 +239,7 @@ public class SomfyTahomaBindingConstants {
     // Gate
     public static final String GATE_STATE = "gate_state";
     public static final String GATE_COMMAND = "gate_command";
+    public static final String GATE_POSITION = "gate_position";
 
     // ElectricitySensor
     public static final String ENERGY_CONSUMPTION = "energy_consumption";
