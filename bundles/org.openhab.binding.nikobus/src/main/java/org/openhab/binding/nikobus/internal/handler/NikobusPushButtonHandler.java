@@ -121,9 +121,14 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         Object impactedModulesObject = getConfig().get(CONFIG_IMPACTED_MODULES);
         if (impactedModulesObject != null) {
             try {
+                Bridge bridge = getBridge();
+                if (bridge == null) {
+                    throw new IllegalArgumentException("Bridge does not exist!");
+                }
+
                 ThingUID bridgeUID = thing.getBridgeUID();
                 if (bridgeUID == null) {
-                    throw new IllegalArgumentException("Bridge does not exist!");
+                    throw new IllegalArgumentException("Unable to read BridgeUID!");
                 }
 
                 String[] impactedModulesString = impactedModulesObject.toString().split(",");
@@ -132,6 +137,12 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
                     ThingTypeUID thingTypeUID = new ThingTypeUID(bridgeUID.getBindingId(),
                             impactedModuleUID.getThingTypeId());
                     ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, impactedModuleUID.getThingId());
+
+                    if (!bridge.getThings().stream().anyMatch(thing -> thing.getUID().equals(thingUID))) {
+                        throw new IllegalArgumentException(
+                                "Impacted module " + thingUID + " not found for '" + impactedModuleString + "'");
+                    }
+
                     impactedModules.add(new ImpactedModule(thingUID, impactedModuleUID.getGroup()));
                 }
             } catch (RuntimeException e) {
