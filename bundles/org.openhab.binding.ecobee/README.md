@@ -84,7 +84,7 @@ While the binding will continue to work using the old authorization method, it's
 
 - Wait up to one hour for the binding to do a token refresh with the Ecobee servers.
 
-- At this point the Ecobee Account thing should be OFFLINE with a CONFIGURATION_PENING status.
+- At this point the Ecobee Account thing should be OFFLINE with a CONFIGURATION_PENDING status.
 
 - In the MyApps section of your Ecobee Portal, re-add the binding using the **Add Application** function.
 Use the PIN code that is displayed in the Ecobee Account thing status, or in the log file.
