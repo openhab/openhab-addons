@@ -58,8 +58,8 @@
     "sunroof" : "CLOSED",
     "position" : {
       "heading" : 11,
-      "lon" : -123.123,
-      "lat" : 123.123,
+      "lon" : -23.123,
+      "lat" : 23.123,
       "status" : "OK"
     }
   }

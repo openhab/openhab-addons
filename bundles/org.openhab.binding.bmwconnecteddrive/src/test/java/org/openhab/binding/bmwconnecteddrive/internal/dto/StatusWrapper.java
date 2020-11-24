@@ -33,6 +33,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -111,6 +112,7 @@ public class StatusWrapper {
         StringType wanted;
         DateTimeType dtt;
         DecimalType dt;
+        PointType pt;
         switch (cUid) {
             case MILEAGE:
                 assertTrue(state instanceof QuantityType);
@@ -250,18 +252,11 @@ public class StatusWrapper {
                 DateTimeType expected = DateTimeType.valueOf(Converter.getLocalDateTime(vStatus.getUpdateTime()));
                 assertEquals(expected.toString(), dtt.toString(), "Last Update");
                 break;
-            case LATITUDE:
-                assertTrue(state instanceof DecimalType);
-                dt = (DecimalType) state;
+            case GPS:
+                assertTrue(state instanceof PointType);
+                pt = (PointType) state;
                 assertNotNull(vStatus.position);
-                assertEquals(Converter.round(vStatus.position.lat), Converter.round(dt.floatValue()), 0.01, "Latitude");
-                break;
-            case LONGITUDE:
-                assertTrue(state instanceof DecimalType);
-                dt = (DecimalType) state;
-                assertNotNull(vStatus.position);
-                assertEquals(Converter.round(vStatus.position.lon), Converter.round(dt.floatValue()), 0.01,
-                        "Longitude");
+                assertEquals(vStatus.position.getCoordinates(), pt.toString(), "Coordinates");
                 break;
             case HEADING:
                 assertTrue(state instanceof QuantityType);

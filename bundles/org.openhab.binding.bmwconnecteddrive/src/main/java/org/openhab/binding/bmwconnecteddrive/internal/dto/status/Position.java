@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+
 /**
  * The {@link Position} Data Transfer Object
  *
@@ -23,8 +25,12 @@ public class Position {
     public int heading;// ": 219,
     public String status;// ": "OK"
 
+    public String getCoordinates() {
+        return new StringBuilder(Float.toString(lat)).append(Constants.COMMA).append(Float.toString(lon)).toString();
+    }
+
     @Override
     public String toString() {
-        return new StringBuilder(Float.toString(lat)).append(",").append(Float.toString(lon)).toString();
+        return new StringBuilder(Float.toString(lat)).append(Constants.COMMA).append(Float.toString(lon)).toString();
     }
 }

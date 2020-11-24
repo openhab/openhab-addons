@@ -14,6 +14,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.*;
 
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 /**
@@ -51,5 +52,9 @@ public class Destination {
         } else {
             return Converter.toTitleCase(buf.toString());
         }
+    }
+
+    public String getCoordinates() {
+        return new StringBuilder().append(lat).append(Constants.COMMA).append(lon).toString();
     }
 }

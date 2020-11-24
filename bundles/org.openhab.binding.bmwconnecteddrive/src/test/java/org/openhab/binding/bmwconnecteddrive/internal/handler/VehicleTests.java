@@ -61,7 +61,7 @@ public class VehicleTests {
     private static final int CHECK_AVAILABLE = 4;
     private static final int SERVICE_AVAILABLE = 5;
     private static final int SERVICE_EMPTY = 5;
-    private static final int POSITION = 3;
+    private static final int POSITION = 2;
 
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;

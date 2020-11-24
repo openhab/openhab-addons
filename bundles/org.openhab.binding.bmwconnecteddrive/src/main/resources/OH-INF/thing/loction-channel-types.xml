@@ -3,13 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="latitude-channel">
-		<item-type>Number</item-type>
-		<label>Latitude</label>
-	</channel-type>
-	<channel-type id="longitude-channel">
-		<item-type>Number</item-type>
-		<label>Longitude</label>
+	<channel-type id="gps-channel">
+		<item-type>Location</item-type>
+		<label>GPS Coordinates</label>
 	</channel-type>
 	<channel-type id="heading-channel">
 		<item-type>Number:Angle</item-type>

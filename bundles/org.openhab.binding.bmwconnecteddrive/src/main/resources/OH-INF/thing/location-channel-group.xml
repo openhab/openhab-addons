@@ -7,8 +7,7 @@
 		<label>Vehicle Location</label>
 		<description>Coordinates and Heading of the Vehcile</description>
 		<channels>
-			<channel id="longitude" typeId="longitude-channel"/>
-			<channel id="latitude" typeId="latitude-channel"/>
+			<channel id="gps" typeId="gps-channel"/>
 			<channel id="heading" typeId="heading-channel"/>
 		</channels>
 	</channel-group-type>
