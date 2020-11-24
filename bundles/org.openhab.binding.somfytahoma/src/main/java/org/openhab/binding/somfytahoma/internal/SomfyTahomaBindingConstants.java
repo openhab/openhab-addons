@@ -106,7 +106,9 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_POD = new ThingTypeUID(BINDING_ID, "pod");
 
     // Heating system
-    public static final ThingTypeUID THING_TYPE_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID, "heatingsystem");
+    public static final ThingTypeUID THING_TYPE_VALVE_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID,
+            "valveheatingsystem");
+    public static final ThingTypeUID THING_TYPE_ZWAVE_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID, "heatingsystem");
     public static final ThingTypeUID THING_TYPE_ONOFF_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID,
             "onoffheatingsystem");
     public static final ThingTypeUID THING_TYPE_EXTERIOR_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID,
@@ -220,8 +222,16 @@ public class SomfyTahomaBindingConstants {
 
     // Thermostat
     public static final String HEATING_MODE = "heating_mode";
-    public static final String DEROGATION_HEATING_MODE = "derogation_heating_mode";
     public static final String DEROGATION_ACTIVATION = "derogation_activation";
+
+    // Thermostat & Valve Heating system
+    public static final String DEROGATED_TARGET_TEMPERATURE = "derogated_target_temperature";
+    public static final String DEROGATION_HEATING_MODE = "derogation_heating_mode";
+
+    // Valve heating system
+    public static final String CURRENT_HEATING_MODE = "current_heating_mode";
+    public static final String OPEN_CLOSED_VALVE = "open_closed_valve";
+    public static final String OPERATING_MODE = "operating_mode";
 
     // Window handle
     public static final String HANDLE_STATE = "handle_state";
@@ -285,6 +295,7 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_SET_HEATINGLEVEL = "setHeatingLevel";
     public static final String COMMAND_SET_PEDESTRIANPOSITION = "setPedestrianPosition";
     public static final String COMMAND_SET_ROCKERPOSITION = "setRockerPosition";
+    public static final String COMMAND_SET_DEROGATION = "setDerogation";
     public static final String COMMAND_UP = "up";
     public static final String COMMAND_DOWN = "down";
     public static final String COMMAND_OPEN = "open";
@@ -309,10 +320,12 @@ public class SomfyTahomaBindingConstants {
     public static final String BATTERY_LEVEL_STATE = "core:BatteryLevelState";
     public static final String SIREN_STATUS_STATE = "internal:SirenStatusState";
     public static final String TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState";
+    public static final String TARGET_ROOM_TEMPERATURE_STATE = "core:TargetRoomTemperatureState";
     public static final String SMOKE_STATE = "core:SmokeState";
     public static final String SENSOR_DEFECT_STATE = "core:SensorDefectState";
     public static final String RADIO_PART_BATTERY_STATE = "io:MaintenanceRadioPartBatteryState";
     public static final String SENSOR_PART_BATTERY_STATE = "io:MaintenanceSensorPartBatteryState";
+    public static final String ZWAVE_SET_POINT_TYPE_STATE = "zwave:SetPointTypeState";
 
     // supported uiClasses
     public static final String CLASS_ROLLER_SHUTTER = "RollerShutter";
@@ -361,12 +374,12 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_EXTERIORSCREEN, THING_TYPE_EXTERIORVENETIANBLIND, THING_TYPE_GARAGEDOOR, THING_TYPE_AWNING,
             THING_TYPE_ACTIONGROUP, THING_TYPE_ONOFF, THING_TYPE_LIGHT, THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR,
             THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_WINDOW, THING_TYPE_INTERNAL_ALARM,
-            THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD, THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM,
+            THING_TYPE_EXTERNAL_ALARM, THING_TYPE_POD, THING_TYPE_ZWAVE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM,
             THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR,
             THING_TYPE_GATE, THING_TYPE_CURTAIN, THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN,
             THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER, THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO,
             THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT,
-            THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM));
+            THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM, THING_TYPE_VALVE_HEATING_SYSTEM));
 
     // somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {

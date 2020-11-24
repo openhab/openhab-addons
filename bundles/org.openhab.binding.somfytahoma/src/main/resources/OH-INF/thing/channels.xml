@@ -301,8 +301,17 @@
 	<channel-type id="derogation_heating_mode">
 		<item-type>String</item-type>
 		<label>Derogation Heating Mode</label>
-		<description>Derogation heating mode of the Somfy thermostat</description>
-		<state readOnly="true"/>
+		<description>Derogation heating mode of the Somfy thermostat/valve</description>
+		<command>
+			<options>
+				<option value="auto">Program</option>
+				<option value="away">Away</option>
+				<option value="comfort">Home</option>
+				<option value="frost protection">Frost protection</option>
+				<option value="manual">Manual</option>
+				<option value="eco">Night</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="derogation_activation">
@@ -351,5 +360,26 @@
 		<label>Heating Level</label>
 		<description>The level of the heating</description>
 		<state max="100" min="0" step="1" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="current_heating_mode">
+		<item-type>String</item-type>
+		<label>Current Heating Mode</label>
+		<description>Current heating mode of the Somfy thermostatic valve</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="open_closed_valve">
+		<item-type>String</item-type>
+		<label>Valve Open/Closed state</label>
+		<description>Current open/closed state of the Somfy thermostatic valve</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="operating_mode">
+		<item-type>String</item-type>
+		<label>Operating mode</label>
+		<description>Operating mode of the Somfy thermostatic valve</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
