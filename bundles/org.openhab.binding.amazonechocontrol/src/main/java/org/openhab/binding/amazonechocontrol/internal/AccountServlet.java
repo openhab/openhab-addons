@@ -204,7 +204,7 @@ public class AccountServlet extends HttpServlet {
                 value = "ape:AA==";
             } else {
                 String[] strings = map.get(name);
-                if (strings != null && && string.length > 0 && strings[0] != null) {
+                if (strings != null && && strings.length > 0 && strings[0] != null) {
                     value = strings[0];
                 }
             }
