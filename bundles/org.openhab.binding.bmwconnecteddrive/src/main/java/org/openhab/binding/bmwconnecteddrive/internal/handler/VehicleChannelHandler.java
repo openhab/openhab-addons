@@ -38,6 +38,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -134,8 +135,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID tripAvgRecuperation;
 
     // Location Channels
-    protected ChannelUID longitude;
-    protected ChannelUID latitude;
+    protected ChannelUID gpsLocation;
     protected ChannelUID heading;
 
     // Remote Services
@@ -149,8 +149,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     // Remote Services
     protected ChannelUID destinationName;
-    protected ChannelUID destinationLat;
-    protected ChannelUID destinationLon;
+    protected ChannelUID destinationLocation;
     protected ChannelUID destinationSize;
     protected ChannelUID destinationIndex;
     protected ChannelUID destinationNext;
@@ -265,8 +264,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         lifeTimeSingleLongestDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, SINGLE_LONGEST_DISTANCE);
 
         // Location Channels
-        longitude = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LONGITUDE);
-        latitude = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LATITUDE);
+        gpsLocation = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, GPS);
         heading = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, HEADING);
 
         // Charge Channels
@@ -293,8 +291,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         remoteStateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_STATE);
 
         destinationName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, NAME);
-        destinationLat = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, LATITUDE);
-        destinationLon = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, LONGITUDE);
+        destinationLocation = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, GPS);
         destinationSize = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, SIZE);
         destinationIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, INDEX);
         destinationNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, NEXT);
@@ -422,15 +419,13 @@ public class VehicleChannelHandler extends BaseThingHandler {
             }
             Destination entry = destinationList.get(destinationListIndex);
             updateState(destinationName, StringType.valueOf(entry.getAddress()));
-            updateState(destinationLat, new DecimalType(entry.lat));
-            updateState(destinationLon, new DecimalType(entry.lon));
+            updateState(destinationLocation, PointType.valueOf(entry.getCoordinates()));
             updateState(destinationSize, new DecimalType(destinationList.size()));
             updateState(destinationIndex, new DecimalType(destinationListIndex));
         } else {
             // list is empty - set all fields to INVALID. If this isn't done the old values remain
             updateState(destinationName, StringType.valueOf(Constants.INVALID));
-            updateState(destinationLat, new DecimalType(-1));
-            updateState(destinationLon, new DecimalType(-1));
+            updateState(destinationLocation, PointType.valueOf("-1,-1"));
             updateState(destinationSize, new DecimalType(destinationList.size()));
             updateState(destinationIndex, new DecimalType(-1));
         }
@@ -513,8 +508,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updatePosition(Position pos) {
-        updateState(latitude, new DecimalType(pos.lat));
-        updateState(longitude, new DecimalType(pos.lon));
+        updateState(gpsLocation, PointType.valueOf(pos.getCoordinates()));
         updateState(heading, QuantityType.valueOf(pos.heading, SmartHomeUnits.DEGREE_ANGLE));
     }
 

@@ -102,8 +102,7 @@ public class ConnectedDriveConstants {
     public static final String NAME = "name";
     public static final String DATE = "date";
     public static final String MILEAGE = "mileage";
-    public static final String LONGITUDE = "longitude";
-    public static final String LATITUDE = "latitude";
+    public static final String GPS = "gps";
     public static final String HEADING = "heading";
 
     // Status

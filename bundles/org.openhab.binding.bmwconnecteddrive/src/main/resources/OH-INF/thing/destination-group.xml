@@ -8,8 +8,7 @@
 		<description>Shows Your Destinations in a List</description>
 		<channels>
 			<channel id="name" typeId="destination-name-channel"/>
-			<channel id="latitude" typeId="destination-latitude-channel"/>
-			<channel id="longitude" typeId="destination-longitude-channel"/>
+			<channel id="gps" typeId="destination-gps-channel"/>
 			<channel id="size" typeId="destination-size-channel"/>
 			<channel id="index" typeId="destination-index-channel"/>
 			<channel id="next" typeId="destination-next-channel"/>
