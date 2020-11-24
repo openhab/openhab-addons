@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.pushover.internal.connection.PushoverMessageBuilder;
 import org.openhab.binding.pushover.internal.handler.PushoverAccountHandler;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingHandler;
 
@@ -48,8 +46,6 @@ public class PushoverActionsTest {
     private static final String URL = "https://www.test.com";
     private static final String URL_TITLE = "Some Link";
     private static final String RECEIPT = "12345";
-    private static final String SUCCESSFULL_RESPONSE = "{\"status\":1,\"request\":\"647d2300-702c-4b38-8b2f-d56326ae460b\"}";
-    private static final String FAILED_RESPONSE = "{\"user\":\"invalid\",\"errors\":[\"user identifier is invalid\"],\"status\":0,\"request\":\"5042853c-402d-4a18-abcb-168734a801de\"}";
 
     @NonNullByDefault
     private final ThingActions thingActionsStub = new ThingActions() {
@@ -63,8 +59,6 @@ public class PushoverActionsTest {
         }
     };
 
-    private @Mock Thing mockThing;
-    private @Mock HttpClient mockHttpClient;
     private @Mock PushoverAccountHandler mockPushoverAccountHandler;
 
     private PushoverActions pushoverThingActions;

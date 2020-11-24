@@ -137,11 +137,6 @@ public class PushoverAccountHandler extends BaseThingHandler {
         return builder;
     }
 
-    /**
-     *
-     * @param messageBuilder
-     * @return
-     */
     public boolean sendMessage(PushoverMessageBuilder messageBuilder) {
         if (connection != null) {
             return connection.sendMessage(messageBuilder);
@@ -150,11 +145,6 @@ public class PushoverAccountHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     *
-     * @param messageBuilder
-     * @return
-     */
     public String sendPriorityMessage(PushoverMessageBuilder messageBuilder) {
         if (connection != null) {
             return connection.sendPriorityMessage(messageBuilder);
@@ -163,11 +153,6 @@ public class PushoverAccountHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     *
-     * @param receipt
-     * @return
-     */
     public boolean cancelPriorityMessage(String receipt) {
         if (connection != null) {
             return connection.cancelPriorityMessage(receipt);

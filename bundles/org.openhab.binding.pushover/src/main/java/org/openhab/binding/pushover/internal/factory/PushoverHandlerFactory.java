@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.pushover.internal.factory;
 
-import static org.openhab.binding.pushover.internal.PushoverBindingConstants.*;
+import static org.openhab.binding.pushover.internal.PushoverBindingConstants.PUSHOVER_ACCOUNT;
 
 import java.util.Set;
 
@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class PushoverHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(PUSHOVER_ACCOUNT, PUSHOVER_USER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(PUSHOVER_ACCOUNT);
 
     private final HttpClient httpClient;
 
@@ -60,8 +60,6 @@ public class PushoverHandlerFactory extends BaseThingHandlerFactory {
 
         if (PUSHOVER_ACCOUNT.equals(thingTypeUID)) {
             return new PushoverAccountHandler(thing, httpClient);
-        } else if (PUSHOVER_USER.equals(thingTypeUID)) {
-            return null;
         }
 
         return null;

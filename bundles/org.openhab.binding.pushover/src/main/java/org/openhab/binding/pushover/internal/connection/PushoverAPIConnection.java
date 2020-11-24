@@ -68,61 +68,28 @@ public class PushoverAPIConnection {
         this.config = config;
     }
 
-    /**
-     *
-     * @return
-     * @throws PushoverCommunicationException
-     * @throws PushoverConfigurationException
-     */
     public boolean validateUser() throws PushoverCommunicationException, PushoverConfigurationException {
         return getMessageStatus(
                 post(VALIDATE_URL, PushoverMessageBuilder.getInstance(config.apikey, config.user).build()));
     }
 
-    /**
-     *
-     * @param message
-     * @return
-     * @throws PushoverCommunicationException
-     * @throws PushoverConfigurationException
-     */
     public boolean sendMessage(PushoverMessageBuilder message)
             throws PushoverCommunicationException, PushoverConfigurationException {
         return getMessageStatus(post(MESSAGE_URL, message.build()));
     }
 
-    /**
-     *
-     * @param message
-     * @return
-     * @throws PushoverCommunicationException
-     * @throws PushoverConfigurationException
-     */
     public String sendPriorityMessage(PushoverMessageBuilder message)
             throws PushoverCommunicationException, PushoverConfigurationException {
         final JsonObject json = parser.parse(post(MESSAGE_URL, message.build())).getAsJsonObject();
         return getMessageStatus(json) && json.has("receipt") ? json.get("receipt").getAsString() : "";
     }
 
-    /**
-     *
-     * @param receipt
-     * @return
-     * @throws PushoverCommunicationException
-     * @throws PushoverConfigurationException
-     */
     public boolean cancelPriorityMessage(String receipt)
             throws PushoverCommunicationException, PushoverConfigurationException {
         return getMessageStatus(post(CANCEL_MESSAGE_URL.replace("{receipt}", receipt),
                 PushoverMessageBuilder.getInstance(config.apikey, config.user).build()));
     }
 
-    /**
-     *
-     * @return
-     * @throws PushoverCommunicationException
-     * @throws PushoverConfigurationException
-     */
     public List<Sound> getSounds() throws PushoverCommunicationException, PushoverConfigurationException {
         final String localApikey = config.apikey;
         if (localApikey == null || localApikey.isEmpty()) {
@@ -195,9 +162,12 @@ public class PushoverAPIConnection {
                     logger.debug("Pushover server responded with status code {}: {}", httpStatus, content);
                     throw new PushoverCommunicationException(content);
             }
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
             throw new PushoverCommunicationException(e.getLocalizedMessage(), e.getCause());
+        } catch (InterruptedException | TimeoutException e) {
+            logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new PushoverCommunicationException(e.getLocalizedMessage());
         }
     }
 

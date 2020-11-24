@@ -26,8 +26,6 @@ public class PushoverBindingConstants {
     private static final String BINDING_ID = "pushover";
 
     public static final ThingTypeUID PUSHOVER_ACCOUNT = new ThingTypeUID(BINDING_ID, "pushover-account");
-    public static final ThingTypeUID PUSHOVER_GROUP = new ThingTypeUID(BINDING_ID, "pushover-group");
-    public static final ThingTypeUID PUSHOVER_USER = new ThingTypeUID(BINDING_ID, "pushover-user");
 
     public static final String CONFIG_SOUND = "sound";
 

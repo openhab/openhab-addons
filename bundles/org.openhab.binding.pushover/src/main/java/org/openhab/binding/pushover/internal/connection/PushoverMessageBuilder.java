@@ -184,9 +184,6 @@ public class PushoverMessageBuilder {
             if (device.length() > MAX_DEVICE_LENGTH) {
                 logger.warn("Skip 'device' as it is longer than {} characters. Got: {}.", MAX_DEVICE_LENGTH, device);
             } else {
-                // TODO [A-Za-z0-9_-]
-                // TODO Messages may be addressed to multiple specific devices by joining them with a comma (such as
-                // device=iphone,nexus5)
                 body.addFieldPart(MESSAGE_KEY_DEVICE, new StringContentProvider(device), null);
             }
         }
@@ -238,7 +235,6 @@ public class PushoverMessageBuilder {
         }
 
         if (sound != null) {
-            // TODO validate sound
             body.addFieldPart(MESSAGE_KEY_SOUND, new StringContentProvider(sound), null);
         }
 
