@@ -5,6 +5,5 @@
 
 	<name>OneBusAway Binding</name>
 	<description>This is the binding for OneBusAway, an open system to provide transit data.</description>
-	<author>Shawn Wilsher</author>
 
 </binding:binding>

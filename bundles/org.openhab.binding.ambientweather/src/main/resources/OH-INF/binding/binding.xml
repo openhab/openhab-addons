@@ -5,5 +5,4 @@
 
 	<name>AmbientWeather Binding</name>
 	<description>This binding supports weather stations from Ambient Weather</description>
-	<author>Mark Hilbush</author>
 </binding:binding>

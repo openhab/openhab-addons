@@ -5,5 +5,4 @@
 
 	<name>Samsung Smartthings Binding</name>
 	<description>This is the binding for the Samsung Smartthings hub.</description>
-	<author>Bob Raker</author>
 </binding:binding>

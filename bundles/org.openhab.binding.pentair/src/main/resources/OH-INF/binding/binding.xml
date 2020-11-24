@@ -5,6 +5,5 @@
 
 	<name>Pentair Binding</name>
 	<description>This is the binding for Pentair pool systems.</description>
-	<author>Jeff James</author>
 
 </binding:binding>

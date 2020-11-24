@@ -5,6 +5,5 @@
 
 	<name>WeatherCompany Binding</name>
 	<description>This is the binding for the WeatherCompany weather forecast API.</description>
-	<author>Mark Hilbush</author>
 
 </binding:binding>
