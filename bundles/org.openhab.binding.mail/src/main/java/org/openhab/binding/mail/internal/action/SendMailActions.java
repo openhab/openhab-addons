@@ -45,7 +45,7 @@ public class SendMailActions implements ThingActions {
 
     private @Nullable SMTPHandler handler;
 
-    @RuleAction(label = "send a text mail", description = "Sends a text mail.")
+    @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
@@ -53,7 +53,7 @@ public class SendMailActions implements ThingActions {
         return sendMail(recipient, subject, text, new ArrayList<>());
     }
 
-    @RuleAction(label = "send a text mail", description = "Sends a text mail with URL attachment.")
+    @RuleAction(label = "@text/sendAttachmentMessageActionLabel", description = "@text/sendAttachmentMessageActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "text") @Nullable String text,
@@ -65,7 +65,7 @@ public class SendMailActions implements ThingActions {
         return sendMail(recipient, subject, text, urlList);
     }
 
-    @RuleAction(label = "send a text mail", description = "Sends a text mail with several URL attachments.")
+    @RuleAction(label = "@text/sendAttachmentsMessageActionLabel", description = "@text/sendAttachmentsMessageActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "text") @Nullable String text,
@@ -122,7 +122,7 @@ public class SendMailActions implements ThingActions {
         return ((SendMailActions) actions).sendMail(recipient, subject, text, urlStringList);
     }
 
-    @RuleAction(label = "send a HTML mail", description = "Sends a HTML mail.")
+    @RuleAction(label = "@text/sendHTMLMessageActionLabel", description = "@text/sendHTMLMessageActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
@@ -130,7 +130,7 @@ public class SendMailActions implements ThingActions {
         return sendHtmlMail(recipient, subject, html, new ArrayList<>());
     }
 
-    @RuleAction(label = "send a HTML mail", description = "Sends a HTML mail with URL attachment.")
+    @RuleAction(label = "@text/sendHTMLAttachmentMessageActionLabel", description = "@text/sendHTMLAttachmentMessageActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "html") @Nullable String html,
@@ -142,7 +142,7 @@ public class SendMailActions implements ThingActions {
         return sendHtmlMail(recipient, subject, html, urlList);
     }
 
-    @RuleAction(label = "send a HTML mail", description = "Sends a HTML mail with several URL attachments.")
+    @RuleAction(label = "@text/sendHTMLAttachmentsMessageActionLabel", description = "@text/sendHTMLAttachmentsMessageActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "html") @Nullable String html,
