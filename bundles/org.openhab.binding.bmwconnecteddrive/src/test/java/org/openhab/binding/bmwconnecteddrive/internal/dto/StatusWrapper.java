@@ -31,6 +31,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusCo
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -215,7 +216,7 @@ public class StatusWrapper {
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
                 Doors doorState = GSON.fromJson(GSON.toJson(vStatus), Doors.class);
-                assertEquals(VehicleStatus.checkClosed(doorState), st.toString(), "Doors Closed");
+                assertEquals(VehicleStatusUtils.checkClosed(doorState), st.toString(), "Doors Closed");
                 break;
             case WINDOWS:
                 assertTrue(state instanceof StringType);
@@ -224,7 +225,7 @@ public class StatusWrapper {
                 if (specialHandlingMap.containsKey(WINDOWS)) {
                     assertEquals(specialHandlingMap.get(WINDOWS).toString(), st.toString(), "Windows");
                 } else {
-                    assertEquals(VehicleStatus.checkClosed(windowState), st.toString(), "Windows");
+                    assertEquals(VehicleStatusUtils.checkClosed(windowState), st.toString(), "Windows");
                 }
                 break;
             case CHECK_CONTROL:
@@ -233,7 +234,8 @@ public class StatusWrapper {
                 if (specialHandlingMap.containsKey(CHECK_CONTROL)) {
                     assertEquals(specialHandlingMap.get(CHECK_CONTROL).toString(), st.toString(), "Check Control");
                 } else {
-                    assertEquals(Converter.toTitleCase(vStatus.checkControlActive()), st.toString(), "Check Control");
+                    assertEquals(Converter.toTitleCase(VehicleStatusUtils.checkControlActive(vStatus)), st.toString(),
+                            "Check Control");
                 }
                 break;
             case CHARGE_STATUS:
@@ -249,7 +251,8 @@ public class StatusWrapper {
             case LAST_UPDATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = (DateTimeType) state;
-                DateTimeType expected = DateTimeType.valueOf(Converter.getLocalDateTime(vStatus.getUpdateTime()));
+                DateTimeType expected = DateTimeType
+                        .valueOf(Converter.getLocalDateTime(VehicleStatusUtils.getUpdateTime(vStatus)));
                 assertEquals(expected.toString(), dtt.toString(), "Last Update");
                 break;
             case GPS:
@@ -422,7 +425,7 @@ public class StatusWrapper {
                     if (specialHandlingMap.containsKey(SERVICE_DATE)) {
                         assertEquals(specialHandlingMap.get(SERVICE_DATE).toString(), dtt.toString(), "Next Service");
                     } else {
-                        String dueDateString = vStatus.getNextServiceDate();
+                        String dueDateString = VehicleStatusUtils.getNextServiceDate(vStatus);
                         DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
                         assertEquals(expectedDTT.toString(), dtt.toString(), "Next Service");
                     }
@@ -438,10 +441,10 @@ public class StatusWrapper {
                 if (gUid.contentEquals(CHANNEL_GROUP_STATUS)) {
                     if (imperial) {
                         assertEquals(ImperialUnits.MILE, qt.getUnit(), "Next Service Miles");
-                        assertEquals(vStatus.getNextServiceMileage(), qt.intValue(), "Mileage");
+                        assertEquals(VehicleStatusUtils.getNextServiceMileage(vStatus), qt.intValue(), "Mileage");
                     } else {
                         assertEquals(KILOMETRE, qt.getUnit(), "Next Service KM");
-                        assertEquals(vStatus.getNextServiceMileage(), qt.intValue(), "Mileage");
+                        assertEquals(VehicleStatusUtils.getNextServiceMileage(vStatus), qt.intValue(), "Mileage");
                     }
                 } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
                     if (imperial) {

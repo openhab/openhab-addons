@@ -35,6 +35,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -517,9 +518,9 @@ public class VehicleChannelHandler extends BaseThingHandler {
         updateState(lock, StringType.valueOf(Converter.toTitleCase(vStatus.doorLockState)));
 
         // Service Updates
-        String nextServiceDate = vStatus.getNextServiceDate();
+        String nextServiceDate = VehicleStatusUtils.getNextServiceDate(vStatus);
         updateState(serviceNextDate, DateTimeType.valueOf(Converter.getLocalDateTime(nextServiceDate)));
-        double nextServiceMileage = vStatus.getNextServiceMileage();
+        double nextServiceMileage = VehicleStatusUtils.getNextServiceMileage(vStatus);
         if (imperial) {
             updateState(serviceNextMileage,
                     QuantityType.valueOf(Converter.round(nextServiceMileage), ImperialUnits.MILE));
@@ -528,14 +529,16 @@ public class VehicleChannelHandler extends BaseThingHandler {
                     QuantityType.valueOf(Converter.round(nextServiceMileage), MetricPrefix.KILO(SIUnits.METRE)));
         }
         // CheckControl Active?
-        updateState(checkControl, StringType.valueOf(Converter.toTitleCase(vStatus.checkControlActive())));
+        updateState(checkControl,
+                StringType.valueOf(Converter.toTitleCase(VehicleStatusUtils.checkControlActive(vStatus))));
         // last update Time
-        updateState(lastUpdate, DateTimeType.valueOf(Converter.getLocalDateTime(vStatus.getUpdateTime())));
+        updateState(lastUpdate,
+                DateTimeType.valueOf(Converter.getLocalDateTime(VehicleStatusUtils.getUpdateTime(vStatus))));
 
         Doors doorState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Doors.class);
         Windows windowState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Windows.class);
-        updateState(doors, StringType.valueOf(VehicleStatus.checkClosed(doorState)));
-        updateState(windows, StringType.valueOf(VehicleStatus.checkClosed(windowState)));
+        updateState(doors, StringType.valueOf(VehicleStatusUtils.checkClosed(doorState)));
+        updateState(windows, StringType.valueOf(VehicleStatusUtils.checkClosed(windowState)));
         updateDoors(doorState);
         updateWindows(windowState);
 
