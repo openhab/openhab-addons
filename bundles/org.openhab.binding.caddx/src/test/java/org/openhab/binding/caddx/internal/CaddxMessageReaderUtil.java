@@ -41,8 +41,10 @@ public final class CaddxMessageReaderUtil {
      * @return The raw bytes of a telegram
      */
     public static byte[] readRawMessage(String messageName) {
-        try (InputStream is = CaddxMessageReaderUtil.class.getResourceAsStream(messageName + MESSAGE_EXT)) {
-            String hexString = new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+        try (InputStream is = CaddxMessageReaderUtil.class.getResourceAsStream(messageName + MESSAGE_EXT);
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr)) {
+            String hexString = br.lines().collect(Collectors.joining("\n"));
 
             return HexUtils.hexToBytes(hexString, " ");
         } catch (IOException e) {
