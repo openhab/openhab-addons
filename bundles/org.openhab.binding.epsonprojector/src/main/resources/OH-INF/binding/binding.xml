@@ -5,6 +5,5 @@
 
 	<name>Epson Projector Binding</name>
 	<description>This binding is compatible with Epson projectors which support the ESC/VP21 protocol</description>
-	<author>Pauli Anttila, Yannick Schaus, Michael Lobstein</author>
 
 </binding:binding>
