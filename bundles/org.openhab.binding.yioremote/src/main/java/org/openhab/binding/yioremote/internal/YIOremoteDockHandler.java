@@ -342,7 +342,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.CHECK_PONG;
                 break;
             case SEND_PING:
-				resetHeartbeat();
+                resetHeartbeat();
                 sendMessage(YioRemoteMessages.HEARTBEAT_MESSAGE, "");
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.CHECK_PONG;
                 break;
