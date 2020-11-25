@@ -162,10 +162,8 @@ public class VeluxBridgeFinder implements Closeable {
                     short qdCount = dataStream.readShort();
                     short anCount = dataStream.readShort();
 
-                    @SuppressWarnings("unused")
-                    short nsCount = dataStream.readShort();
-                    @SuppressWarnings("unused")
-                    short arCount = dataStream.readShort();
+                    dataStream.readShort(); // nsCount
+                    dataStream.readShort(); // arCount
 
                     // check it is an answer (and not a query)
                     if ((anCount == 0) || (qdCount != 0)) {
@@ -194,10 +192,8 @@ public class VeluxBridgeFinder implements Closeable {
                         }
 
                         // if we got here, the name and response type are valid
-                        @SuppressWarnings("unused")
-                        int ttl = dataStream.readInt();
-                        @SuppressWarnings("unused")
-                        short dataLen = dataStream.readShort();
+                        dataStream.readInt(); // TTL
+                        dataStream.readShort(); // dataLen
 
                         // parse the host name
                         i = 0;
