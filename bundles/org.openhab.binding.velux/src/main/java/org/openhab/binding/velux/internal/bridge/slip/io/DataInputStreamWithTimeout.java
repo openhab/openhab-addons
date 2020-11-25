@@ -39,6 +39,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class DataInputStreamWithTimeout implements Closeable {
 
+    private static final String OH_BINDING_VELUX_BRIDGE = "OH-binding-velux-bridge";
+
     private static final int QUEUE_SIZE = 512;
     private static final int BUFFER_SIZE = 512;
     private static final int SLEEP_INTERVAL_MSECS = 50;
@@ -188,6 +190,8 @@ class DataInputStreamWithTimeout implements Closeable {
         if (pollThreadX != null) {
             logger.trace("startPolling()");
             pollThreadX = pollThread = new Thread(pollRunner);
+            pollThreadX.setDaemon(true);
+            pollThreadX.setName(OH_BINDING_VELUX_BRIDGE);
             pollThreadX.start();
         }
     }

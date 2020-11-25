@@ -50,8 +50,8 @@ public class VeluxActions implements ThingActions, IVeluxActions {
     }
 
     @Override
-    @RuleAction(label = "Reboot Bridge", description = "issues a reboot command to the KLF200 bridge")
-    public @ActionOutput(name = "executing", type = "java.lang.Boolean") Boolean rebootBridge()
+    @RuleAction(label = "reboot Bridge", description = "issues a reboot command to the KLF200 bridge")
+    public @ActionOutput(name = "executing", type = "java.lang.Boolean", label = "executing", description = "indicates the command was issued") Boolean rebootBridge()
             throws IllegalStateException {
         logger.trace("rebootBridge(): action called");
         VeluxBridgeHandler bridge = bridgeHandler;
@@ -62,9 +62,10 @@ public class VeluxActions implements ThingActions, IVeluxActions {
     }
 
     @Override
-    @RuleAction(label = "Move Relative", description = "issues a relative move command to an actuator")
-    public @ActionOutput(name = "executing", type = "java.lang.Boolean") Boolean moveRelative(
-            @ActionInput(name = "nodeId") String nodeId, @ActionInput(name = "relativePercent") String relativePercent)
+    @RuleAction(label = "move relative", description = "issues a relative move command to an actuator")
+    public @ActionOutput(name = "executing", type = "java.lang.Boolean", label = "executing", description = "indicates the command was issued") Boolean moveRelative(
+            @ActionInput(name = "nodeId", required = true, label = "nodeId", description = "actuator id in the bridge", type = "java.lang.String") String nodeId,
+            @ActionInput(name = "relativePercent", required = true, label = "relativePercent", description = "position delta from current", type = "java.lang.String") String relativePercent)
             throws NumberFormatException, IllegalStateException {
         logger.trace("moveRelative(): action called");
         VeluxBridgeHandler bridge = bridgeHandler;

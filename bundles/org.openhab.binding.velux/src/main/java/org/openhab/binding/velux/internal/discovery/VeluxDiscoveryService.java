@@ -53,7 +53,7 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
 
     // Class internal
 
-    private static final int DISCOVER_TIMEOUT_SECONDS = 60; // 300;
+    private static final int DISCOVER_TIMEOUT_SECONDS = 60;
 
     private @NonNullByDefault({}) LocaleProvider localeProvider;
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
@@ -160,7 +160,6 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     public synchronized void stopScan() {
         logger.trace("stopScan() called.");
         super.stopScan();
-        // removeOlderResults(getTimestampOfLastScan());
         logger.trace("stopScan() done.");
     }
 
@@ -291,7 +290,7 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
      */
     private void discoverBridges() {
         // discover the list of IP addresses of bridges on the network
-        Set<String> foundBridgeIpAddresses = VeluxBridgeFinder.discoverIpAddresses();
+        Set<String> foundBridgeIpAddresses = VeluxBridgeFinder.discoverIpAddresses(scheduler);
 
         // remove already instantiated bridges from the list
         for (VeluxBridgeHandler existingBridge : bridgeHandlers) {

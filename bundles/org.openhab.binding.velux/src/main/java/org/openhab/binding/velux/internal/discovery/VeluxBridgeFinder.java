@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -74,7 +76,8 @@ public class VeluxBridgeFinder implements Closeable {
 
     private Set<String> ipAddresses = new HashSet<>();
 
-    private @Nullable Thread listenerThread = null;
+    private @Nullable Future<?> listenerTask = null;
+    private ScheduledExecutorService scheduler;
 
     /**
      * A runnable this listens for incoming UDP responses
@@ -105,7 +108,7 @@ public class VeluxBridgeFinder implements Closeable {
         } catch (IOException e) {
             logger.debug("listenerRunnable(): udp socket create exception '{}'", e.getMessage());
         }
-        listenerThread = null;
+        listenerTask = null;
     };
 
     /**
@@ -222,24 +225,21 @@ public class VeluxBridgeFinder implements Closeable {
     }
 
     /**
-     * Start the listener thread
+     * Start the listener task
      */
     private void startListener() {
-        Thread listenerThreadX = this.listenerThread;
-        if (listenerThreadX == null) {
-            listenerThreadX = listenerThread = new Thread(listenerRunnable);
-            listenerThreadX.start();
-        }
+        listenerTask = scheduler.submit(listenerRunnable);
     }
 
     /**
-     * Stop the listener thread
+     * Stop the listener task
      */
     private void stopListener() {
-        Thread listenerThreadX = this.listenerThread;
-        if (listenerThreadX != null) {
-            listenerThreadX.interrupt();
+        Future<?> listenerTask = this.listenerTask;
+        if (listenerTask != null) {
+            listenerTask.cancel(false);
         }
+        this.listenerTask = null;
     }
 
     /**
@@ -285,6 +285,15 @@ public class VeluxBridgeFinder implements Closeable {
         return ipAddresses;
     }
 
+    /**
+     * Constructor
+     *
+     * @param scheduler the caller's task scheduler
+     */
+    public VeluxBridgeFinder(ScheduledExecutorService scheduler) {
+        this.scheduler = scheduler;
+    }
+
     @Override
     public void close() throws IOException {
         stopListener();
@@ -293,10 +302,11 @@ public class VeluxBridgeFinder implements Closeable {
     /**
      * Static method to search for Velux Bridges and return their IP addresses
      *
+     * @param scheduler the caller's task scheduler
      * @return list of dotted IP addresses
      */
-    public static Set<String> discoverIpAddresses() {
-        try (VeluxBridgeFinder finder = new VeluxBridgeFinder()) {
+    public static Set<String> discoverIpAddresses(ScheduledExecutorService scheduler) {
+        try (VeluxBridgeFinder finder = new VeluxBridgeFinder(scheduler)) {
             return finder.discoverBridgeIpAddresses();
         } catch (IOException e) {
         }

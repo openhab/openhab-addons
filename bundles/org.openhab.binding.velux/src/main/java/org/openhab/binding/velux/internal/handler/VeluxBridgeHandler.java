@@ -468,7 +468,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
                     logger.trace("syncChannelsWithProducts(): channel {} not found.", channelUID);
                     continue;
                 }
-                @SuppressWarnings("null")
                 Thing2VeluxActuator actuator = channel2VeluxActuator.get(channelUID);
                 if (!actuator.isKnown()) {
                     logger.trace("syncChannelsWithProducts(): channel {} not registered on bridge.", channelUID);
@@ -764,15 +763,18 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     public boolean runReboot() {
         logger.trace("runReboot() called on {}", getThing().getUID());
         RunReboot bcp = thisBridge.bridgeAPI().runReboot();
-        if (bcp != null && handleScheduler != null) {
-            // background execution of reboot process
-            handleScheduler.execute(() -> {
-                if (thisBridge.bridgeCommunicate(bcp)) {
-                    logger.info("Reboot command {}sucessfully sent to {}", bcp.isCommunicationSuccessful() ? "" : "un",
-                            getThing().getUID());
-                }
-            });
-            return true;
+        if (bcp != null) {
+            ExecutorService handleScheduler = this.handleScheduler;
+            if (handleScheduler != null) {
+                // background execution of reboot process
+                handleScheduler.execute(() -> {
+                    if (thisBridge.bridgeCommunicate(bcp)) {
+                        logger.info("Reboot command {}sucessfully sent to {}",
+                                bcp.isCommunicationSuccessful() ? "" : "un", getThing().getUID());
+                    }
+                });
+                return true;
+            }
         }
         return false;
     }
@@ -790,7 +792,9 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         if (bcp != null) {
             bcp.setNodeAndMainParameter(nodeId, new VeluxProductPosition(new PercentType(Math.abs(relativePercent)))
                     .getAsRelativePosition((relativePercent >= 0)));
+            ExecutorService handleScheduler = this.handleScheduler;
             if (handleScheduler != null) {
+                // background execution of moveRelative
                 handleScheduler.execute(() -> {
                     if (thisBridge.bridgeCommunicate(bcp)) {
                         logger.trace("moveRelative() command {}sucessfully sent to {}",

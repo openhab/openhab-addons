@@ -337,7 +337,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     switch (code) {
                         case 7: // busy
                             logger.trace(loggerFmt, rxName, getErrorText(code), "=> retrying");
-                            sending = true; // TODO: I am not sure if we should retry sending
+                            sending = true;
                             break;
                         case 12: // authentication failed
                             logger.debug(loggerFmt, rxName, getErrorText(code), "=> aborting");

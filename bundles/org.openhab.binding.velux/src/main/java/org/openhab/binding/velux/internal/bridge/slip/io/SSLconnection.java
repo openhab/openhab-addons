@@ -264,7 +264,7 @@ class SSLconnection implements Closeable {
         }
         SSLSocket socketX = socket;
         if (socketX != null) {
-            logger.info("Shutting down Velux bridge connection.");
+            logger.debug("Shutting down Velux bridge connection.");
             try {
                 socketX.close();
             } catch (IOException e) {
