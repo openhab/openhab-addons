@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
@@ -220,10 +219,9 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 List<String> properties = musicProvider.supportedProperties;
                 String providerId = musicProvider.id;
                 String displayName = musicProvider.displayName;
-                if (properties != null && properties.contains("Alexa.Music.PlaySearchPhrase")
-                        && StringUtils.isNotEmpty(providerId)
-                        && StringUtils.equals(musicProvider.availability, "AVAILABLE")
-                        && StringUtils.isNotEmpty(displayName) && providerId != null) {
+                if (properties != null && properties.contains("Alexa.Music.PlaySearchPhrase") && providerId != null
+                        && !providerId.isEmpty() && "AVAILABLE".equals(musicProvider.availability)
+                        && displayName != null && !displayName.isEmpty()) {
                     options.add(new StateOption(providerId, displayName));
                 }
             }
