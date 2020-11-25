@@ -41,6 +41,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -62,15 +63,20 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorHandler.class);
 
-    private EpsonProjectorDevice device = new EpsonProjectorDevice();
     private @Nullable ScheduledFuture<?> pollingJob;
-    private final SerialPortManager serialPortManager;
+    private final EpsonProjectorDevice device;
 
     private boolean isPowerOn = false;
 
     public EpsonProjectorHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
-        this.serialPortManager = serialPortManager;
+
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (THING_TYPE_PROJECTOR_SERIAL.equals(thingTypeUID)) {
+            device = new EpsonProjectorDevice(serialPortManager, getConfigAs(EpsonProjectorConfiguration.class));
+        } else {
+            device = new EpsonProjectorDevice(getConfigAs(EpsonProjectorConfiguration.class));
+        }
     }
 
     @Override
@@ -91,19 +97,8 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     public void initialize() {
         scheduler.execute(() -> {
             EpsonProjectorConfiguration config = getConfigAs(EpsonProjectorConfiguration.class);
-            final String serialPort = config.serialPort;
-            final String host = config.host;
-            final Integer port = config.port;
             final Integer pollingInterval = config.pollingInterval;
-
-            if (serialPort != null && !serialPort.equals("")) {
-                device = new EpsonProjectorDevice(serialPortManager, serialPort, scheduler);
-            } else if (host != null && !host.equals("") && port > 0 && port < 65535) {
-                device = new EpsonProjectorDevice(host, port, scheduler);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-                return;
-            }
+            device.setScheduler(scheduler);
 
             try {
                 updateStatus(ThingStatus.OFFLINE);

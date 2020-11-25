@@ -1,11 +1,11 @@
 # Epson Projector Binding
 
-This binding is compatible with Epson projectors which support the ESC/VP21 protocol over a serial port or USB to serial adapter.
+This binding is compatible with Epson projectors that support the ESC/VP21 protocol over a serial port or USB to serial adapter.
 Alternatively, you can connect to your projector via a TCP connection using a serial over IP device or by using`ser2net`.
 
 ## Supported Things
 
-This binding supports only one thing: `projector`.
+This binding supports two thing types based on the connection used: `projector-serial` and `projector-tcp`.
 
 ## Discovery
 
@@ -18,11 +18,15 @@ All settings are through thing configuration parameters.
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The `projector-serial` thing has the following configuration parameters:
 
 - _serialPort_: Serial port device name that is connected to the Epson projector to control, e.g. COM1 on Windows, /dev/ttyS0 on Linux or /dev/tty.PL2303-0000103D on Mac
-- _host_: IP address (for serial communication over TCP, leave the serial port parameter blank)
-- _port_: Port (for serial communication over TCP, leave the serial port parameter blank)
+- _pollingInterval_: Polling interval in seconds to update channel states | 5-60 seconds; default 10 seconds
+
+The `projector-tcp` thing has the following configuration parameters:
+
+- _host_: IP address for the serial over IP device
+- _port_: Port for the serial over IP device
 - _pollingInterval_: Polling interval in seconds to update channel states | 5-60 seconds; default 10 seconds
 
 Some notes:
@@ -83,10 +87,10 @@ things/epson.things:
 
 ```java
 //serial port connection
-epsonprojector:projector:hometheater "Projector" [ serialPort="COM5", pollingInterval=10 ]
+epsonprojector:projector-serial:hometheater "Projector" [ serialPort="COM5", pollingInterval=10 ]
 
 // serial over IP connection
-epsonprojector:projector:hometheater "Projector"  [ host="192.168.0.10", port=4444, pollingInterval=10 ]
+epsonprojector:projector-tcp:hometheater "Projector"  [ host="192.168.0.10", port=4444, pollingInterval=10 ]
 
 ```
 

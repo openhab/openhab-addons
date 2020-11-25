@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.epsonprojector.internal;
 
-import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.THING_TYPE_PROJECTOR;
+import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,7 +43,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.epsonprojector", service = ThingHandlerFactory.class)
 public class EpsonProjectorHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PROJECTOR);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_PROJECTOR_SERIAL, THING_TYPE_PROJECTOR_TCP).collect(Collectors.toSet()));
     private final SerialPortManager serialPortManager;
 
     @Override
@@ -58,7 +61,7 @@ public class EpsonProjectorHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_PROJECTOR.equals(thingTypeUID)) {
+        if (THING_TYPE_PROJECTOR_SERIAL.equals(thingTypeUID) || THING_TYPE_PROJECTOR_TCP.equals(thingTypeUID)) {
             return new EpsonProjectorHandler(thing, serialPortManager);
         }
 

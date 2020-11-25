@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="projector">
-		<label>Epson Projector</label>
-		<description>An Epson projector which supports the ESC/VP21 protocol</description>
+	<thing-type id="projector-serial">
+		<label>Epson Projector - Serial</label>
+		<description>An Epson projector which supports the ESC/VP21 protocol via a serial port connection</description>
 
 		<channels>
 			<channel id="power" typeId="power"/>
@@ -40,19 +40,64 @@
 		</channels>
 
 		<config-description>
-			<parameter name="serialPort" type="text" required="false">
+			<parameter name="serialPort" type="text" required="true">
 				<label>Serial Port</label>
 				<context>serial-port</context>
 				<description>Serial Port to Use for Connecting to the Epson Projector</description>
 			</parameter>
-			<parameter name="host" type="text" required="false">
+			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
+				<label>Polling interval</label>
+				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="projector-tcp">
+		<label>Epson Projector - TCP/IP</label>
+		<description>An Epson projector which supports the ESC/VP21 protocol via a serial over IP connection</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="powerstate" typeId="powerstate"/>
+			<channel id="source" typeId="source"/>
+			<channel id="aspectratio" typeId="aspectratio"/>
+			<channel id="colormode" typeId="colormode"/>
+			<channel id="freeze" typeId="freeze"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="luminance" typeId="luminance"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="contrast" typeId="contrast"/>
+			<channel id="density" typeId="density"/>
+			<channel id="tint" typeId="tint"/>
+			<channel id="colortemperature" typeId="colortemperature"/>
+			<channel id="fleshtemperature" typeId="fleshtemperature"/>
+			<channel id="gamma" typeId="gamma"/>
+			<channel id="autokeystone" typeId="autokeystone"/>
+			<channel id="verticalkeystone" typeId="verticalkeystone"/>
+			<channel id="horizontalkeystone" typeId="horizontalkeystone"/>
+			<channel id="verticalposition" typeId="verticalposition"/>
+			<channel id="horizontalposition" typeId="horizontalposition"/>
+			<channel id="verticalreverse" typeId="verticalreverse"/>
+			<channel id="horizontalreverse" typeId="horizontalreverse"/>
+			<channel id="background" typeId="background"/>
+			<channel id="keycode" typeId="keycode"/>
+			<channel id="lamptime" typeId="lamptime"/>
+			<channel id="errcode" typeId="errcode"/>
+			<channel id="errmessage" typeId="errmessage"/>
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
 				<label>Host</label>
 				<context>network-address</context>
-				<description>IP address (For Serial Communication over TCP, Leave the Serial Port Parameter Blank)</description>
+				<description>IP address for the serial over IP device</description>
 			</parameter>
-			<parameter name="port" type="integer" min="1" max="65535" required="false">
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
 				<label>Port</label>
-				<description>Port (For Serial Communication over TCP, Leave the Serial Port Parameter Blank)</description>
+				<description>Port for the serial over IP device</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
 				<label>Polling interval</label>

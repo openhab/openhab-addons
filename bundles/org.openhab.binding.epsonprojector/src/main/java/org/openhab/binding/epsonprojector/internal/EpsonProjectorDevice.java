@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.epsonprojector.internal.configuration.EpsonProjectorConfiguration;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorConnector;
-import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorDefaultConnector;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorSerialConnector;
 import org.openhab.binding.epsonprojector.internal.connector.EpsonProjectorTcpConnector;
 import org.openhab.binding.epsonprojector.internal.enums.AspectRatio;
@@ -88,26 +88,22 @@ public class EpsonProjectorDevice {
     private boolean connected = false;
     private boolean ready = false;
 
-    public EpsonProjectorDevice(SerialPortManager serialPortManager, String serialPort,
-            ScheduledExecutorService scheduler) {
-        connection = new EpsonProjectorSerialConnector(serialPortManager, serialPort);
-        this.scheduler = scheduler;
+    public EpsonProjectorDevice(SerialPortManager serialPortManager, EpsonProjectorConfiguration config) {
+        connection = new EpsonProjectorSerialConnector(serialPortManager, config.serialPort);
         ready = true;
     }
 
-    public EpsonProjectorDevice(String ip, int port, ScheduledExecutorService scheduler) {
-        connection = new EpsonProjectorTcpConnector(ip, port);
-        this.scheduler = scheduler;
+    public EpsonProjectorDevice(EpsonProjectorConfiguration config) {
+        connection = new EpsonProjectorTcpConnector(config.host, config.port);
         ready = true;
-    }
-
-    public EpsonProjectorDevice() {
-        connection = new EpsonProjectorDefaultConnector();
-        ready = false;
     }
 
     public boolean isReady() {
         return ready;
+    }
+
+    public void setScheduler(ScheduledExecutorService scheduler) {
+        this.scheduler = scheduler;
     }
 
     private synchronized @Nullable String sendQuery(String query, int timeout)

@@ -27,7 +27,8 @@ public class EpsonProjectorBindingConstants {
     private static final String BINDING_ID = "epsonprojector";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_PROJECTOR = new ThingTypeUID(BINDING_ID, "projector");
+    public static final ThingTypeUID THING_TYPE_PROJECTOR_SERIAL = new ThingTypeUID(BINDING_ID, "projector-serial");
+    public static final ThingTypeUID THING_TYPE_PROJECTOR_TCP = new ThingTypeUID(BINDING_ID, "projector-tcp");
 
     // Some Channel types
     public static final String CHANNEL_TYPE_POWER = "power";
