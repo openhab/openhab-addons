@@ -81,7 +81,7 @@ public class SecondGenerationBindingConstants {
     public static final String CHANNEL_OWNCONSRATE_TOTAL = "ownConsRateTotal";
     public static final String CHANNEL_AUTONOMYDEGREE_TOTAL = "autonomyDegreeTotal";
 
-    public static final String CHANNEL_BATTERYVOLTAGE_SECONDGEN = "batteryVoltageSecondGen";
+    public static final String CHANNEL_BATTERYVOLTAGE = "batteryVoltage";
     public static final String CHANNEL_BATSTATEOFCHARGE = "batStateOfCharge";
     public static final String CHANNEL_SELFCONSUMPTION = "selfConsumption";
 

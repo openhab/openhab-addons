@@ -491,14 +491,14 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-	<channel-type id="statistic-yield-day-second-gen">
+	<channel-type id="statistic-yield-day">
 		<item-type>Number:Power</item-type>
 		<label>Yield Day</label>
 		<description>Total produced power today</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-	<channel-type id="statistic-yield-total-second-gen">
+	<channel-type id="statistic-yield-total">
 		<item-type>Number:Energy</item-type>
 		<label>Yield Total</label>
 		<description>Total produced power</description>
@@ -758,11 +758,11 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-current-dir">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Current Dir</label>
-		<description>Current dir</description>
+		<description>Current direction</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-charge-cycles">
 		<item-type>String</item-type>
@@ -786,7 +786,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-s0-inpulse-cnt">
-		<item-type>String</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>S0 Input Pulses Counter</label>
 		<description>S0-pulse counter</description>
 		<category>Energy</category>
@@ -806,7 +806,7 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="device-local-battery-voltage-second-gen">
+	<channel-type id="device-local-battery-voltage">
 		<item-type>Number:ElectricalPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>Current battery voltage</description>
@@ -838,14 +838,14 @@
 		<item-type>String</item-type>
 		<label>Battery Type</label>
 		<description>Set battery type</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-usage-consumption">
-		<item-type>String</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Battery usage Consumption</label>
 		<description>Set battery usage consumption</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-usage-strategy">
@@ -856,24 +856,24 @@
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-smart-battery-control">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Smart Battery Control</label>
 		<description>Set smart battery control</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-charge-time-from">
 		<item-type>String</item-type>
 		<label>Battery Charge Time From</label>
 		<description>Set battery charge time from</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-battery-charge-time-to">
 		<item-type>String</item-type>
 		<label>Battery Charge Time To</label>
 		<description>Set battery charge time to</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-max-depth-of-discharge">
@@ -887,21 +887,21 @@
 		<item-type>String</item-type>
 		<label>Shadow Management</label>
 		<description>Set shadow management</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-external-module-control">
 		<item-type>String</item-type>
 		<label>External Module Control</label>
 		<description>Set external module control</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-inverter-name">
 		<item-type>String</item-type>
 		<label>Inverter Name</label>
 		<description>Set inverter name</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

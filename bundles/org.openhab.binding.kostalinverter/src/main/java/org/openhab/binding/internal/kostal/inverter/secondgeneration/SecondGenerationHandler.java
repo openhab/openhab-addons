@@ -27,6 +27,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -111,7 +112,13 @@ public class SecondGenerationHandler extends BaseThingHandler {
                         valueConfiguration);
                 break;
             case SecondGenerationBindingConstants.CHANNEL_SMARTBATTERYCONTROL:
-                valueConfiguration = command.toString();
+                valueConfiguration = "";
+                if (command == OnOffType.ON) {
+                    valueConfiguration = "True";
+                }
+                if (command == OnOffType.OFF) {
+                    valueConfiguration = "False";
+                }
                 dxsEntriesConf = "33556484";
                 preSetExecuteConfigurationChanges(httpClient, url, username, password, dxsEntriesConf,
                         valueConfiguration);

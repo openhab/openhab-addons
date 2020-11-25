@@ -9,8 +9,8 @@
 		<category>Inverter</category>
 		<channels>
 			<channel typeId="device-local-grid-output-power" id="gridOutputPower"/>
-			<channel typeId="statistic-yield-day-second-gen" id="yieldDay"/>
-			<channel typeId="statistic-yield-total-second-gen" id="yieldTotal"/>
+			<channel typeId="statistic-yield-day" id="yieldDay"/>
+			<channel typeId="statistic-yield-total" id="yieldTotal"/>
 			<channel typeId="device-local-operating-status" id="operatingStatus"/>
 			<channel typeId="device-local-grid-voltage-l1" id="gridVoltageL1"/>
 			<channel typeId="device-local-grid-current-l1" id="gridCurrentL1"/>
@@ -54,7 +54,7 @@
 			<channel typeId="device-local-s0-inpulse-cnt" id="s0InPulseCnt"/>
 			<channel typeId="statistic-own-cons-rate-total" id="ownConsRateTotal"/>
 			<channel typeId="statistic-autonomy-degree-total" id="autonomyDegreeTotal"/>
-			<channel typeId="device-local-battery-voltage-second-gen" id="batteryVoltageSecondGen"/>
+			<channel typeId="device-local-battery-voltage" id="batteryVoltage"/>
 			<channel typeId="device-local-bat-state-of-charge" id="batStateOfCharge"/>
 			<channel typeId="device-local-self-consumption" id="selfConsumption"/>
 			<channel typeId="device-local-charge-time-end" id="chargetimeend"/>
