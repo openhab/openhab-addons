@@ -291,13 +291,7 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     private void discoverBridges() {
         // discover the list of IP addresses of bridges on the network
         Set<String> foundBridgeIpAddresses = VeluxBridgeFinder.discoverIpAddresses(scheduler);
-
-        // remove already instantiated bridges from the list
-        for (VeluxBridgeHandler existingBridge : bridgeHandlers) {
-            foundBridgeIpAddresses.remove(existingBridge.veluxBridgeConfiguration().ipAddress);
-        }
-
-        // publish discovery results for any non instantiated bridges
+        // publish discovery results
         for (String ipAddr : foundBridgeIpAddresses) {
             ThingUID thingUID = new ThingUID(THING_TYPE_BRIDGE, ipAddr.replace(".", "_"));
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_BRIDGE)
