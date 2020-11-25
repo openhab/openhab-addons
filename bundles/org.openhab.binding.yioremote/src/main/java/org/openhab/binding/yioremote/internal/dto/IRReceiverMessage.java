@@ -43,6 +43,6 @@ public class IRReceiverMessage {
     }
 
     public String getIRreceiverMessageString() {
-        return getIRreceiverMessageJsonObject.toString();
+        return getIRreceiverMessageJsonObject().toString();
     }
 }

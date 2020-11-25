@@ -51,6 +51,6 @@ public class IRCodeSendMessage {
     }
 
     public String getIRcodeSendMessageString() {
-        return getIRcodeSendMessageJsonObject.toString();
+        return getIRcodeSendMessageJsonObject().toString();
     }
 }

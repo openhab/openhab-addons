@@ -47,6 +47,6 @@ public class AuthenticationMessage {
     }
 
     public String getAuthenticationMessageString() {
-        return getAuthenticationMessageJsonObject.toString();
+        return getAuthenticationMessageJsonObject().toString();
     }
 }

@@ -47,6 +47,6 @@ public class PingMessage {
     }
 
     public String getPingMessageString() {
-        return getPingMessageJsonObject.toString();
+        return getPingMessageJsonObject().toString();
     }
 }
