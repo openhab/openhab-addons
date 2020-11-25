@@ -13,10 +13,10 @@
 package org.openhab.binding.amazonechocontrol.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 
 /**
- * The {@link AccountHandlerConfig} holds the configuration for the {@link AccountHandler}
+ * The {@link AccountHandlerConfig} holds the configuration for the
+ * {@link org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler}
  *
  * @author Jan N. Klug - Initial contribution
  */

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
@@ -113,11 +112,10 @@ public class HandlerColorController extends HandlerBase {
                     }
                 }
             }
-            if (lastColorName == null) {
-                lastColorName = colorNameValue;
-            } else if (colorNameValue == null && lastColorName != null) {
+            if (colorNameValue == null && lastColorName != null) {
                 colorNameValue = lastColorName;
             }
+            lastColorName = colorNameValue;
             updateState(COLOR_PROPERTIES.channelId,
                     lastColorName == null ? UnDefType.UNDEF : new StringType(lastColorName));
         }
@@ -125,7 +123,8 @@ public class HandlerColorController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            SmartHomeCapability[] capabilties, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(COLOR.channelId)) {
             if (containsCapabilityProperty(capabilties, COLOR.propertyName)) {
                 if (command instanceof HSBType) {
@@ -134,15 +133,15 @@ public class HandlerColorController extends HandlerBase {
                     colorObject.addProperty("hue", color.getHue());
                     colorObject.addProperty("saturation", color.getSaturation().floatValue() / 100);
                     colorObject.addProperty("brightness", color.getBrightness().floatValue() / 100);
-                    connection.smartHomeCommand(entityId, "setColor", "color", colorObject);
+                    connection.smartHomeCommand(entityId, "setColor", "value", colorObject);
                 }
             }
         }
         if (channelId.equals(COLOR_PROPERTIES.channelId)) {
             if (containsCapabilityProperty(capabilties, COLOR.propertyName)) {
                 if (command instanceof StringType) {
-                    String colorName = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(colorName)) {
+                    String colorName = command.toFullString();
+                    if (!colorName.isEmpty()) {
                         lastColorName = colorName;
                         connection.smartHomeCommand(entityId, "setColor", "colorName", colorName);
                         return true;

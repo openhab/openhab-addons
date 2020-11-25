@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
@@ -75,8 +74,9 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
             }
         }
         if (updateIntervalInSeconds == null) {
-            if ("openHAB".equalsIgnoreCase(shd.manufacturerName)
-                    || StringUtils.startsWithIgnoreCase(shd.manufacturerName, "ioBroker")) {
+            String manufacturerName = shd.manufacturerName;
+            if (manufacturerName != null && ("openHAB".equalsIgnoreCase(manufacturerName)
+                    || manufacturerName.toLowerCase().startsWith("iobroker"))) {
                 // OpenHAB or ioBroker skill
                 if (logger.isTraceEnabled()) {
                     updateIntervalInSeconds = UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS_TRACE;
