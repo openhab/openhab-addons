@@ -44,7 +44,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
 
     @Override
     public boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
-            throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException, InterruptedException {
         if (channelId.equals(CHANNEL_NAME)) {
             if (command instanceof StringType) {
                 String commandValue = ((StringType) command).toFullString();
