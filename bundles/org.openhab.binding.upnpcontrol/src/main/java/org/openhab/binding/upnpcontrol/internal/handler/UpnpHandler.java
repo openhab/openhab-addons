@@ -71,7 +71,11 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     private final Logger logger = LoggerFactory.getLogger(UpnpHandler.class);
 
     // UPnP constants
-    protected static final Pattern PROTOCOL_PATTERN = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
+    static final String CONNECTION_MANAGER = "ConnectionManager";
+    static final String CONNECTION_ID = "ConnectionID";
+    static final String AV_TRANSPORT_ID = "AVTransportID";
+    static final String RCS_ID = "RcsID";
+    static final Pattern PROTOCOL_PATTERN = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
 
     protected UpnpIOService upnpIOService;
 
@@ -136,8 +140,6 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         config = getConfigAs(UpnpControlConfiguration.class);
 
         upnpIOService.registerParticipant(this);
-        // This action should exist on all media devices and return a result, so a good candidate for testing.
-        upnpIOService.addStatusListener(this, "ConnectionManager", "GetCurrentConnectionIDs", config.refresh);
 
         UpnpControlUtil.updatePlaylistsList(bindingConfig.path);
         UpnpControlUtil.playlistsSubscribe(this);
@@ -322,16 +324,16 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         inputs.put("PeerConnectionID", Integer.toString(peerConnectionId));
         inputs.put("Direction", direction);
 
-        invokeAction("ConnectionManager", "PrepareForConnection", inputs);
+        invokeAction(CONNECTION_MANAGER, "PrepareForConnection", inputs);
     }
 
     /**
      * Invoke ConnectionComplete on UPnP Connection Manager.
      */
     protected void connectionComplete() {
-        Map<String, String> inputs = Collections.singletonMap("ConnectionId", Integer.toString(connectionId));
+        Map<String, String> inputs = Collections.singletonMap(CONNECTION_ID, Integer.toString(connectionId));
 
-        invokeAction("ConnectionManager", "ConnectionComplete", inputs);
+        invokeAction(CONNECTION_MANAGER, "ConnectionComplete", inputs);
     }
 
     /**
@@ -341,7 +343,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected void getCurrentConnectionIDs() {
         Map<String, String> inputs = Collections.emptyMap();
 
-        invokeAction("ConnectionManager", "GetCurrentConnectionIDs", inputs);
+        invokeAction(CONNECTION_MANAGER, "GetCurrentConnectionIDs", inputs);
     }
 
     /**
@@ -363,9 +365,9 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         isRcsIdSet = new CompletableFuture<Boolean>();
 
         // ConnectionID will default to 0 if not set through prepareForConnection method
-        Map<String, String> inputs = Collections.singletonMap("ConnectionId", Integer.toString(connectionId));
+        Map<String, String> inputs = Collections.singletonMap(CONNECTION_ID, Integer.toString(connectionId));
 
-        invokeAction("ConnectionManager", "GetCurrentConnectionInfo", inputs);
+        invokeAction(CONNECTION_MANAGER, "GetCurrentConnectionInfo", inputs);
     }
 
     /**
@@ -375,7 +377,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected void getFeatureList() {
         Map<String, String> inputs = Collections.emptyMap();
 
-        invokeAction("ConnectionManager", "GetFeatureList", inputs);
+        invokeAction(CONNECTION_MANAGER, "GetFeatureList", inputs);
     }
 
     /**
@@ -385,16 +387,15 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected void getProtocolInfo() {
         Map<String, String> inputs = Collections.emptyMap();
 
-        invokeAction("ConnectionManager", "GetProtocolInfo", inputs);
+        invokeAction(CONNECTION_MANAGER, "GetProtocolInfo", inputs);
     }
 
     @Override
     public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
         logger.debug("UPnP device {} received subscription reply {} from service {}", thing.getLabel(), succeeded,
                 service);
-        if (succeeded) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
+        if (!succeeded) {
+            upnpSubscribed = false;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not subscribe to service " + service + "for" + thing.getLabel());
         }
@@ -494,13 +495,13 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
             return;
         }
         switch (variable) {
-            case "ConnectionID":
+            case CONNECTION_ID:
                 onValueReceivedConnectionId(value);
                 break;
-            case "AVTransportID":
+            case AV_TRANSPORT_ID:
                 onValueReceivedAVTransportId(value);
                 break;
-            case "RcsID":
+            case RCS_ID:
                 onValueReceivedRcsId(value);
                 break;
             case "Source":
@@ -603,13 +604,17 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     protected void addSubscriptions() {
+        upnpSubscribed = true;
+
         for (String subscription : serviceSubscriptions) {
             addSubscription(subscription, SUBSCRIPTION_DURATION_SECONDS);
         }
         subscriptionRefreshJob = upnpScheduler.scheduleWithFixedDelay(subscriptionRefresh,
                 SUBSCRIPTION_DURATION_SECONDS / 2, SUBSCRIPTION_DURATION_SECONDS / 2, TimeUnit.SECONDS);
 
-        upnpSubscribed = true;
+        // This action should exist on all media devices and return a result, so a good candidate for testing the
+        // connection.
+        upnpIOService.addStatusListener(this, CONNECTION_MANAGER, "GetCurrentConnectionIDs", config.refresh);
     }
 
     protected void removeSubscriptions() {
@@ -618,6 +623,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         for (String subscription : serviceSubscriptions) {
             removeSubscription(subscription);
         }
+
+        upnpIOService.removeStatusListener(this);
 
         upnpSubscribed = false;
     }

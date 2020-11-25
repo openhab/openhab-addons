@@ -68,16 +68,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UpnpServerHandler extends UpnpHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(UpnpServerHandler.class);
+
+    // UPnP constants
+    static final String CONTENT_DIRECTORY = "ContentDirectory";
     static final String DIRECTORY_ROOT = "0";
     static final String UP = "..";
-
-    private final Logger logger = LoggerFactory.getLogger(UpnpServerHandler.class);
 
     ConcurrentMap<String, UpnpRendererHandler> upnpRenderers;
     private volatile @Nullable UpnpRendererHandler currentRendererHandler;
     private volatile List<StateOption> rendererStateOptionList = Collections.synchronizedList(new ArrayList<>());
 
-    private volatile List<CommandOption> playlistCommandOptionList = Collections.synchronizedList(new ArrayList<>());
+    private volatile List<CommandOption> playlistCommandOptionList = List.of();
 
     private @NonNullByDefault({}) ChannelUID rendererChannelUID;
     private @NonNullByDefault({}) ChannelUID currentSelectionChannelUID;
@@ -225,7 +227,7 @@ public class UpnpServerHandler extends UpnpHandler {
             inputs.put("RequestedCount", requestedCount);
             inputs.put("SortCriteria", sortCriteria);
 
-            invokeAction("ContentDirectory", "Browse", inputs);
+            invokeAction(CONTENT_DIRECTORY, "Browse", inputs);
         } else {
             logger.debug("Cannot browse, cancelled querying server {}", thing.getLabel());
         }
@@ -271,7 +273,7 @@ public class UpnpServerHandler extends UpnpHandler {
             inputs.put("RequestedCount", requestedCount);
             inputs.put("SortCriteria", sortCriteria);
 
-            invokeAction("ContentDirectory", "Search", inputs);
+            invokeAction(CONTENT_DIRECTORY, "Search", inputs);
         } else {
             logger.debug("Cannot search, cancelled querying server {}", thing.getLabel());
         }

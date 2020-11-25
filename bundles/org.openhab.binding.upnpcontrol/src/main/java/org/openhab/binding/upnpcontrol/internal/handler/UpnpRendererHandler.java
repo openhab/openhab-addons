@@ -90,6 +90,11 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UpnpRendererHandler.class);
 
+    // UPnP constants
+    static final String RENDERING_CONTROL = "RenderingControl";
+    static final String AV_TRANSPORT = "AVTransport";
+    static final String INSTANCE_ID = "InstanceID";
+
     private volatile boolean audioSupport;
     protected volatile Set<AudioFormat> supportedAudioFormats = new HashSet<>();
     private volatile boolean audioSinkRegistered;
@@ -101,8 +106,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     protected @NonNullByDefault({}) UpnpControlRendererConfiguration config;
     private UpnpRenderingControlConfiguration renderingControlConfiguration = new UpnpRenderingControlConfiguration();
 
-    private volatile List<CommandOption> favoriteCommandOptionList = Collections.synchronizedList(new ArrayList<>());
-    private volatile List<CommandOption> playlistCommandOptionList = Collections.synchronizedList(new ArrayList<>());
+    private volatile List<CommandOption> favoriteCommandOptionList = List.of();
+    private volatile List<CommandOption> playlistCommandOptionList = List.of();
 
     private @NonNullByDefault({}) ChannelUID favoriteSelectChannelUID;
     private @NonNullByDefault({}) ChannelUID playlistSelectChannelUID;
@@ -164,8 +169,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             UpnpControlBindingConfiguration configuration) {
         super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
 
-        serviceSubscriptions.add("AVTransport");
-        serviceSubscriptions.add("RenderingControl");
+        serviceSubscriptions.add(AV_TRANSPORT);
+        serviceSubscriptions.add(RENDERING_CONTROL);
 
         this.audioSinkReg = audioSinkReg;
     }
@@ -309,9 +314,9 @@ public class UpnpRendererHandler extends UpnpHandler {
                                                            // received
         }
 
-        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
 
-        invokeAction("AVTransport", "Stop", inputs);
+        invokeAction(AV_TRANSPORT, "Stop", inputs);
     }
 
     /**
@@ -332,10 +337,10 @@ public class UpnpRendererHandler extends UpnpHandler {
 
         if (uriSet) {
             Map<String, String> inputs = new HashMap<>();
-            inputs.put("InstanceID", Integer.toString(avTransportId));
+            inputs.put(INSTANCE_ID, Integer.toString(avTransportId));
             inputs.put("Speed", "1");
 
-            invokeAction("AVTransport", "Play", inputs);
+            invokeAction(AV_TRANSPORT, "Play", inputs);
         } else {
             logger.debug("Cannot play, cancelled setting URI in the renderer {}", thing.getLabel());
         }
@@ -345,27 +350,27 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Pause on UPnP AV Transport.
      */
     protected void pause() {
-        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
 
-        invokeAction("AVTransport", "Pause", inputs);
+        invokeAction(AV_TRANSPORT, "Pause", inputs);
     }
 
     /**
      * Invoke Next on UPnP AV Transport.
      */
     protected void next() {
-        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
 
-        invokeAction("AVTransport", "Next", inputs);
+        invokeAction(AV_TRANSPORT, "Next", inputs);
     }
 
     /**
      * Invoke Previous on UPnP AV Transport.
      */
     protected void previous() {
-        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
 
-        invokeAction("AVTransport", "Previous", inputs);
+        invokeAction(AV_TRANSPORT, "Previous", inputs);
     }
 
     /**
@@ -388,11 +393,11 @@ public class UpnpRendererHandler extends UpnpHandler {
 
         if (uriSet) {
             Map<String, String> inputs = new HashMap<>();
-            inputs.put("InstanceID", Integer.toString(avTransportId));
+            inputs.put(INSTANCE_ID, Integer.toString(avTransportId));
             inputs.put("Unit", "REL_TIME");
             inputs.put("Target", seekTarget);
 
-            invokeAction("AVTransport", "Seek", inputs);
+            invokeAction(AV_TRANSPORT, "Seek", inputs);
         } else {
             logger.debug("Cannot seek, cancelled setting URI in the renderer {}", thing.getLabel());
         }
@@ -425,11 +430,11 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
 
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(avTransportId));
+        inputs.put(INSTANCE_ID, Integer.toString(avTransportId));
         inputs.put("CurrentURI", uri);
         inputs.put("CurrentURIMetaData", URIMetaData);
 
-        invokeAction("AVTransport", "SetAVTransportURI", inputs);
+        invokeAction(AV_TRANSPORT, "SetAVTransportURI", inputs);
     }
 
     /**
@@ -440,11 +445,11 @@ public class UpnpRendererHandler extends UpnpHandler {
      */
     protected void setNextURI(String nextURI, String nextURIMetaData) {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(avTransportId));
+        inputs.put(INSTANCE_ID, Integer.toString(avTransportId));
         inputs.put("NextURI", nextURI);
         inputs.put("NextURIMetaData", nextURIMetaData);
 
-        invokeAction("AVTransport", "SetNextAVTransportURI", inputs);
+        invokeAction(AV_TRANSPORT, "SetNextAVTransportURI", inputs);
     }
 
     /**
@@ -452,9 +457,9 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link onValueReceived}.
      */
     protected void getTransportState() {
-        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
 
-        invokeAction("AVTransport", "GetTransportInfo", inputs);
+        invokeAction(AV_TRANSPORT, "GetTransportInfo", inputs);
     }
 
     /**
@@ -462,9 +467,9 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link onValueReceived}.
      */
     protected void getPositionInfo() {
-        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
 
-        invokeAction("AVTransport", "GetPositionInfo", inputs);
+        invokeAction(AV_TRANSPORT, "GetPositionInfo", inputs);
     }
 
     /**
@@ -472,9 +477,9 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link onValueReceived}.
      */
     protected void getMediaInfo() {
-        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
 
-        invokeAction("AVTransport", "smarthome:audio stream http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3", inputs);
+        invokeAction(AV_TRANSPORT, "smarthome:audio stream http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3", inputs);
     }
 
     /**
@@ -495,10 +500,10 @@ public class UpnpRendererHandler extends UpnpHandler {
      */
     protected void getVolume(String channel) {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(rcsId));
+        inputs.put(INSTANCE_ID, Integer.toString(rcsId));
         inputs.put("Channel", channel);
 
-        invokeAction("RenderingControl", "GetVolume", inputs);
+        invokeAction(RENDERING_CONTROL, "GetVolume", inputs);
     }
 
     /**
@@ -512,11 +517,11 @@ public class UpnpRendererHandler extends UpnpHandler {
 
         long newVolume = volume.intValue() * config.maxvolume / 100;
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(rcsId));
+        inputs.put(INSTANCE_ID, Integer.toString(rcsId));
         inputs.put("Channel", channel);
         inputs.put("DesiredVolume", String.valueOf(newVolume));
 
-        invokeAction("RenderingControl", "SetVolume", inputs);
+        invokeAction(RENDERING_CONTROL, "SetVolume", inputs);
     }
 
     /**
@@ -536,10 +541,10 @@ public class UpnpRendererHandler extends UpnpHandler {
      */
     protected void getMute(String channel) {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(rcsId));
+        inputs.put(INSTANCE_ID, Integer.toString(rcsId));
         inputs.put("Channel", channel);
 
-        invokeAction("RenderingControl", "GetMute", inputs);
+        invokeAction(RENDERING_CONTROL, "GetMute", inputs);
     }
 
     /**
@@ -550,11 +555,11 @@ public class UpnpRendererHandler extends UpnpHandler {
      */
     protected void setMute(String channel, OnOffType mute) {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(rcsId));
+        inputs.put(INSTANCE_ID, Integer.toString(rcsId));
         inputs.put("Channel", channel);
         inputs.put("DesiredMute", mute == OnOffType.ON ? "1" : "0");
 
-        invokeAction("RenderingControl", "SetMute", inputs);
+        invokeAction(RENDERING_CONTROL, "SetMute", inputs);
     }
 
     /**
@@ -565,10 +570,10 @@ public class UpnpRendererHandler extends UpnpHandler {
      */
     protected void getLoudness(String channel) {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(rcsId));
+        inputs.put(INSTANCE_ID, Integer.toString(rcsId));
         inputs.put("Channel", channel);
 
-        invokeAction("RenderingControl", "GetLoudness", inputs);
+        invokeAction(RENDERING_CONTROL, "GetLoudness", inputs);
     }
 
     /**
@@ -579,11 +584,11 @@ public class UpnpRendererHandler extends UpnpHandler {
      */
     protected void setLoudness(String channel, OnOffType mute) {
         Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(rcsId));
+        inputs.put(INSTANCE_ID, Integer.toString(rcsId));
         inputs.put("Channel", channel);
         inputs.put("DesiredLoudness", mute == OnOffType.ON ? "1" : "0");
 
-        invokeAction("RenderingControl", "SetLoudness", inputs);
+        invokeAction(RENDERING_CONTROL, "SetLoudness", inputs);
     }
 
     /**
@@ -1101,7 +1106,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void onValueReceivedVolume(String variable, @Nullable String value) {
-        if (!((value == null) || (value.isEmpty()))) {
+        if (value != null && !value.isEmpty()) {
             UpnpRenderingControlConfiguration config = renderingControlConfiguration;
 
             long volume = Long.valueOf(value);
@@ -1117,7 +1122,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void onValueReceivedMute(String variable, @Nullable String value) {
-        if (!((value == null) || (value.isEmpty()))) {
+        if (value != null && !value.isEmpty()) {
             String upnpChannel = variable.replace("Mute", "mute").replace("Master", "");
             updateState(upnpChannel,
                     ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
@@ -1125,8 +1130,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void onValueReceivedLoudness(String variable, @Nullable String value) {
-        if (!((value == null) || (value.isEmpty()))) {
-            String upnpChannel = variable.replace("Mute", "mute").replace("Master", "");
+        if (value != null && !value.isEmpty()) {
+            String upnpChannel = variable.replace("Loudness", "loudness").replace("Master", "");
             updateState(upnpChannel,
                     ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
         }
@@ -1138,8 +1143,8 @@ public class UpnpRendererHandler extends UpnpHandler {
         // result, we run it in a separate thread.
         upnpScheduler.submit(() -> {
             // pre-process some variables, eg XML processing
-            if (!((value == null) || value.isEmpty())) {
-                if ("AVTransport".equals(service)) {
+            if (value != null && !value.isEmpty()) {
+                if (AV_TRANSPORT.equals(service)) {
                     Map<String, String> parsedValues = UpnpXMLParser.getAVTransportFromXML(value);
                     for (Map.Entry<String, String> entrySet : parsedValues.entrySet()) {
                         switch (entrySet.getKey()) {
@@ -1160,10 +1165,10 @@ public class UpnpRendererHandler extends UpnpHandler {
                     if (parsedValues.containsKey("TransportState")) {
                         onValueReceived("TransportState", parsedValues.get("TransportState"), service);
                     }
-                } else if ("RenderingControl".equals(service)) {
+                } else if (RENDERING_CONTROL.equals(service)) {
                     Map<String, @Nullable String> parsedValues = UpnpXMLParser.getRenderingControlFromXML(value);
                     for (String parsedValue : parsedValues.keySet()) {
-                        onValueReceived(parsedValue, parsedValues.get(parsedValue), "RenderingControl");
+                        onValueReceived(parsedValue, parsedValues.get(parsedValue), RENDERING_CONTROL);
                     }
                 }
             }
@@ -1300,7 +1305,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             return;
         }
 
-        if (!((value == null) || (value.isEmpty()))) {
+        if (value != null && !value.isEmpty()) {
             List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
             if (!list.isEmpty()) {
                 updateMetaDataState(list.get(0));
@@ -1311,7 +1316,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void onValueReceivedNextMetaData(@Nullable String value) {
-        if (!((value == null) || (value.isEmpty() || "NOT_IMPLEMENTED".equals(value)))) {
+        if (value != null && !value.isEmpty() && !"NOT_IMPLEMENTED".equals(value)) {
             List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
             if (!list.isEmpty()) {
                 nextEntry = list.get(0);
@@ -1322,29 +1327,39 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void onValueReceivedDuration(@Nullable String value) {
         // track duration and track position have format H+:MM:SS[.F+] or H+:MM:SS[.F0/F1]. We are not
         // interested in the fractional seconds, so drop everything after . and calculate in seconds.
-        if ((value == null) || ("NOT_IMPLEMENTED".equals(value))) {
+        if (value == null || "NOT_IMPLEMENTED".equals(value)) {
             trackDuration = 0;
             updateState(TRACK_DURATION, UnDefType.UNDEF);
             updateState(REL_TRACK_POSITION, UnDefType.UNDEF);
         } else {
-            trackDuration = Arrays.stream(value.split("\\.")[0].split(":")).mapToInt(n -> Integer.parseInt(n)).reduce(0,
-                    (n, m) -> n * 60 + m);
-            updateState(TRACK_DURATION, new QuantityType<>(trackDuration, SmartHomeUnits.SECOND));
+            try {
+                trackDuration = Arrays.stream(value.split("\\.")[0].split(":")).mapToInt(n -> Integer.parseInt(n))
+                        .reduce(0, (n, m) -> n * 60 + m);
+                updateState(TRACK_DURATION, new QuantityType<>(trackDuration, SmartHomeUnits.SECOND));
+            } catch (NumberFormatException e) {
+                logger.debug("Illegal format for track duration {}", value);
+                return;
+            }
         }
         setExpectedTrackend();
     }
 
     private void onValueReceivedRelTime(@Nullable String value) {
-        if ((value == null) || ("NOT_IMPLEMENTED".equals(value))) {
+        if (value == null || "NOT_IMPLEMENTED".equals(value)) {
             trackPosition = 0;
             updateState(TRACK_POSITION, UnDefType.UNDEF);
             updateState(REL_TRACK_POSITION, UnDefType.UNDEF);
         } else {
-            trackPosition = Arrays.stream(value.split("\\.")[0].split(":")).mapToInt(n -> Integer.parseInt(n)).reduce(0,
-                    (n, m) -> n * 60 + m);
-            updateState(TRACK_POSITION, new QuantityType<>(trackPosition, SmartHomeUnits.SECOND));
-            int relPosition = (trackDuration != 0) ? trackPosition * 100 / trackDuration : 0;
-            updateState(REL_TRACK_POSITION, new PercentType(relPosition));
+            try {
+                trackPosition = Arrays.stream(value.split("\\.")[0].split(":")).mapToInt(n -> Integer.parseInt(n))
+                        .reduce(0, (n, m) -> n * 60 + m);
+                updateState(TRACK_POSITION, new QuantityType<>(trackPosition, SmartHomeUnits.SECOND));
+                int relPosition = (trackDuration != 0) ? trackPosition * 100 / trackDuration : 0;
+                updateState(REL_TRACK_POSITION, new PercentType(relPosition));
+            } catch (NumberFormatException e) {
+                logger.trace("Illegal format for track position {}", value);
+                return;
+            }
         }
 
         if (playingNotification) {
