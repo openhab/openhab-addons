@@ -106,6 +106,14 @@
 			<parameter name="CallDays" thingParameter="outboundCallDays" pattern="[0-9]+" internalOnly="true"/>
 		</getAction>
 	</channel>
+	<channel name="callList" label="Call List" description="Call list in JSON format for the given number of days.">
+		<item type="String"/>
+		<service deviceType="urn:dslforum-org:device:InternetGatewayDevice:1"
+			serviceId="urn:X_AVM-DE_OnTel-com:serviceId:X_AVM-DE_OnTel1"/>
+		<getAction name="GetCallList" argument="NewCallListURL" postProcessor="processCallListJSON">
+			<parameter name="CallDays" thingParameter="callListDays" pattern="[0-9]+" internalOnly="true"/>
+		</getAction>
+	</channel>
 
 	<!-- LAN Device -->
 	<channel name="wifi24GHzEnable" label="WiFi 2.4 GHz" description="Enable/Disable the 2.4 GHz WiFi device.">

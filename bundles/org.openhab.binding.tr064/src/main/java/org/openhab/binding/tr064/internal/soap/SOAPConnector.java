@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tr064.internal;
+package org.openhab.binding.tr064.internal.soap;
 
 import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 
@@ -34,6 +34,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.tr064.internal.Tr064CommunicationException;
 import org.openhab.binding.tr064.internal.config.Tr064ChannelConfig;
 import org.openhab.binding.tr064.internal.dto.config.ActionType;
 import org.openhab.binding.tr064.internal.dto.config.ChannelTypeDescription;
