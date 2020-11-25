@@ -37,8 +37,7 @@ public class CRCUtil {
      *            String representing hex numbers.
      * @return input string + CRC.
      */
-    @Nullable
-    public static String appendCRC(@Nullable String input) {
+    public static @Nullable String appendCRC(@Nullable String input) {
         if (input == null) {
             return null;
         }
