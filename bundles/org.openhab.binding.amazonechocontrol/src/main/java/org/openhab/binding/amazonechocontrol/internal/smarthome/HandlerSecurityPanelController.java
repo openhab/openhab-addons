@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
@@ -147,12 +146,13 @@ public class HandlerSecurityPanelController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            SmartHomeCapability[] capabilities, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(ARM_STATE.channelId)) {
-            if (containsCapabilityProperty(capabilties, ARM_STATE.propertyName)) {
+            if (containsCapabilityProperty(capabilities, ARM_STATE.propertyName)) {
                 if (command instanceof StringType) {
-                    String armStateValue = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(armStateValue)) {
+                    String armStateValue = command.toFullString();
+                    if (!armStateValue.isEmpty()) {
                         connection.smartHomeCommand(entityId, "controlSecurityPanel", ARM_STATE.propertyName,
                                 armStateValue);
                         return true;

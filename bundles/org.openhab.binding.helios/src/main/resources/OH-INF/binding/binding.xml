@@ -5,6 +5,5 @@
 
 	<name>Helios Binding</name>
 	<description>This is the binding for Helios IP (Vario/...) class of intercom/(video)doorstations.</description>
-	<author>Karel Goderis</author>
 
 </binding:binding>

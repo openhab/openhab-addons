@@ -5,6 +5,5 @@
 
 	<name>PLCLogo Binding</name>
 	<description>This binding provides native support for Siemens LOGO! PLC.</description>
-	<author>Alexander Falkenstern</author>
 
 </binding:binding>

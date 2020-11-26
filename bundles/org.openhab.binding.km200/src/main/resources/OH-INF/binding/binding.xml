@@ -8,6 +8,5 @@
 		These devices
 		are gateways for heating systems and allows to control them. It is possible to receive and send parameters.
 	</description>
-	<author>Markus Eckhardt</author>
 
 </binding:binding>

@@ -5,6 +5,5 @@
 
 	<name>Serial Button Binding</name>
 	<description>This binding supports physical push buttons connected to a serial port.</description>
-	<author>Kai Kreuzer</author>
 
 </binding:binding>

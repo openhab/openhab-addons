@@ -37,6 +37,7 @@ import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameterGroup;
+import org.openhab.core.config.core.ConfigDescriptionParameterGroupBuilder;
 import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
@@ -277,10 +278,17 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             if (dp.isNumberType()) {
                 BigDecimal min = MetadataUtils.createBigDecimal(dp.getMinValue());
                 BigDecimal max = MetadataUtils.createBigDecimal(dp.getMaxValue());
-
                 BigDecimal step = MetadataUtils.createBigDecimal(dp.getStep());
-                if (step == null) {
-                    step = MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : new Long(1L));
+                if (ITEM_TYPE_DIMMER.equals(itemType) && dp.getMaxValue().doubleValue() == 1.01d) {
+                    // For dimmers with a max value of 1.01 the values must be corrected
+                    min = MetadataUtils.createBigDecimal(0);
+                    max = MetadataUtils.createBigDecimal(100);
+                    step = MetadataUtils.createBigDecimal(1);
+                } else {
+                    if (step == null) {
+                        step = MetadataUtils
+                                .createBigDecimal(dp.isFloatType() ? Float.valueOf(0.1f) : Long.valueOf(1L));
+                    }
                 }
                 stateFragment.withMinimum(min).withMaximum(max).withStep(step)
                         .withPattern(MetadataUtils.getStatePattern(dp)).withReadOnly(dp.isReadOnly());
@@ -305,7 +313,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         .withEventDescription(eventDescription);
             } else {
                 channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
-                        .withStateDescription(stateFragment.build().toStateDescription());
+                        .withStateDescriptionFragment(stateFragment.build());
             }
             channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp)).withDescription(description)
                     .withCategory(category).withConfigDescriptionURI(configDescriptionUriChannel).build();
@@ -320,7 +328,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         for (HmChannel channel : device.getChannels()) {
             String groupName = "HMG_" + channel.getNumber();
             String groupLabel = MetadataUtils.getDescription("CHANNEL_NAME") + " " + channel.getNumber();
-            groups.add(new ConfigDescriptionParameterGroup(groupName, null, false, groupLabel, null));
+            groups.add(ConfigDescriptionParameterGroupBuilder.create(groupName).withLabel(groupLabel).build());
 
             for (HmDatapoint dp : channel.getDatapoints()) {
                 if (dp.getParamsetType() == HmParamsetType.MASTER) {
@@ -346,8 +354,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     if (dp.isNumberType()) {
                         builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
                         builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
-                        builder.withStepSize(
-                                MetadataUtils.createBigDecimal(dp.isFloatType() ? new Float(0.1) : new Long(1L)));
+                        builder.withStepSize(MetadataUtils
+                                .createBigDecimal(dp.isFloatType() ? Float.valueOf(0.1f) : Long.valueOf(1L)));
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));
                     }
 

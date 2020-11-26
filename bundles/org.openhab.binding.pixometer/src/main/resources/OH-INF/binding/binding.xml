@@ -5,6 +5,5 @@
 
 	<name>Pixometer Binding</name>
 	<description>This binding integrates meter data through pixometer.</description>
-	<author>Jerome Luckenbach</author>
 
 </binding:binding>
