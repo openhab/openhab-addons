@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +39,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class DataInputStreamWithTimeout implements Closeable {
-
-    private static final String OH_BINDING_VELUX_BRIDGE = "OH-binding-velux-bridge";
 
     private static final int QUEUE_SIZE = 512;
     private static final int BUFFER_SIZE = 512;
@@ -191,7 +190,7 @@ class DataInputStreamWithTimeout implements Closeable {
             logger.trace("startPolling()");
             pollThreadX = pollThread = new Thread(pollRunner);
             pollThreadX.setDaemon(true);
-            pollThreadX.setName(OH_BINDING_VELUX_BRIDGE);
+            pollThreadX.setName(VeluxBindingConstants.THREAD_NAME_PREFIX + VeluxBindingConstants.THING_TYPE_BRIDGE);
             pollThreadX.start();
         }
     }

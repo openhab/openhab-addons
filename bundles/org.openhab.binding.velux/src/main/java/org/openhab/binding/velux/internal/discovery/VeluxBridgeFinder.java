@@ -177,10 +177,7 @@ public class VeluxBridgeFinder implements Closeable {
                         int i = 0;
                         int segLength;
                         while ((segLength = dataStream.readByte()) > 0) {
-                            for (int index = 0; index < segLength; index++) {
-                                str[i] = dataStream.readByte();
-                                i++;
-                            }
+                            i += dataStream.readNBytes(str, i, segLength);
                             str[i] = '.';
                             i++;
                         }
@@ -198,10 +195,7 @@ public class VeluxBridgeFinder implements Closeable {
                         // parse the host name
                         i = 0;
                         while ((segLength = dataStream.readByte()) > 0) {
-                            for (int index = 0; index < segLength; index++) {
-                                str[i] = dataStream.readByte();
-                                i++;
-                            }
+                            i += dataStream.readNBytes(str, i, segLength);
                             str[i] = '.';
                             i++;
                         }

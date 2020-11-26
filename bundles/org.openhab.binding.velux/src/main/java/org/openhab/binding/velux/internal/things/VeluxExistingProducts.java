@@ -123,15 +123,10 @@ public class VeluxExistingProducts {
             return false;
         }
         VeluxProduct thisProduct = this.get(bridgeProductIndex);
-        /*
-         * If the following if statement used the || operator, the compiler would do logical short circuit optimisation
-         * so that if the leftmost function evaluated to true, the further right functions would not get called; so we
-         * use the | operator instead which prevents short circuiting so all three property setters are always called.
-         */
-        if (thisProduct.setState(productState) | thisProduct.setCurrentPosition(productPosition)
-                | thisProduct.setTarget(productTarget)) {
-            dirty = true;
-
+        dirty |= thisProduct.setState(productState);
+        dirty |= thisProduct.setCurrentPosition(productPosition);
+        dirty |= thisProduct.setTarget(productTarget);
+        if (dirty) {
             String uniqueIndex = thisProduct.isV2() ? thisProduct.getSerialNumber()
                     : thisProduct.getProductUniqueIndex();
             logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);

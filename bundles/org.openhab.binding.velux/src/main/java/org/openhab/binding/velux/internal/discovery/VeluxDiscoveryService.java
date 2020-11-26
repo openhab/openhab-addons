@@ -144,7 +144,9 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
         logger.debug("startScan(): registering new thing {}.", discoveryResult);
         thingDiscovered(discoveryResult);
 
-        discoverBridges();
+        scheduler.execute(() -> {
+            discoverBridges();
+        });
 
         if (bridgeHandlers.isEmpty()) {
             logger.debug("startScan(): VeluxDiscoveryService cannot proceed due to missing Velux bridge(s).");

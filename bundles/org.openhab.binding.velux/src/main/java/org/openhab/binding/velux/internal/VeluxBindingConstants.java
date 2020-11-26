@@ -153,4 +153,6 @@ public class VeluxBindingConstants {
 
     public static final String UNKNOWN_THING_TYPE_ID = "FAILED";
     public static final String UNKNOWN_IP_ADDRESS = "xxx.xxx.xxx.xxx";
+
+    public static final String THREAD_NAME_PREFIX = "OH-binding-";
 }

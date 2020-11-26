@@ -210,8 +210,6 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
         final String loggerFmt = String.format("bridgeDirectCommunicate() [%s] %s => {} {} {}",
                 this.bridgeInstance.veluxBridgeConfiguration().ipAddress, txName);
 
-        assert this.bridgeInstance.veluxBridgeConfiguration().protocol.contentEquals("slip");
-
         if (isProtocolTraceEnabled) {
             Threads.findDeadlocked();
         }
@@ -262,7 +260,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
             // timeout
             if (System.currentTimeMillis() > expiryTime) {
                 logger.warn(loggerFmt, "process loop time out", "=> aborting", "=> PLEASE REPORT !!");
-                looping = false;
+                // abort the processing loop
                 break;
             }
 
@@ -287,12 +285,12 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     if (!rcvonly) {
                         logger.debug(loggerFmt, "no response", "=> aborting", "");
                     }
-                    looping = false;
+                    // abort the processing loop
                     break;
                 }
             } catch (IOException e) {
                 logger.debug(loggerFmt, "i/o error =>", e.getMessage(), "=> aborting");
-                looping = false;
+                // abort the processing loop
                 break;
             }
 
@@ -302,7 +300,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                 rfc1055 = new SlipRFC1055().decode(rxPacket);
             } catch (ParseException e) {
                 logger.debug(loggerFmt, "parsing error =>", e.getMessage(), "=> aborting");
-                looping = false;
+                // abort the processing loop
                 break;
             }
 
@@ -310,7 +308,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
             SlipEncoding slipEnc = new SlipEncoding(rfc1055);
             if (!slipEnc.isValid()) {
                 logger.debug(loggerFmt, "slip decode error", "=> aborting", "");
-                looping = false;
+                // abort the processing loop
                 break;
             }
 
