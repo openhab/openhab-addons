@@ -246,6 +246,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `pan` | Dimmer | Works with ONVIF cameras that can be moved. |
 | `parkingAlarm` | Switch (read only) | When an API camera detects a car, this will turn ON. |
 | `pirAlarm` | Switch (read only) | When a camera with PIR ability detects motion, this turns ON. |
+| `privacyMode` | Switch | Enable or disable the Privacy Mode of newer Amcrest/Dahua cameras. The camera will move the lens way down and stop the stream. |
 | `recordingGif` | Number (read only) | How many seconds recording to GIF for. 0 when file ready. |
 | `recordingMp4` | Number (read only) | How many seconds recording to MP4 for. 0 when file ready. |
 | `rtspUrl` | String | The URL for the cameras auto detected RTSP stream. |

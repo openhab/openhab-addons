@@ -129,4 +129,5 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_LAST_MOTION_TYPE = "lastMotionType";
     public static final String CHANNEL_GOTO_PRESET = "gotoPreset";
     public static final String CHANNEL_START_STREAM = "startStream";
+    public static final String CHANNEL_ENABLE_PRIVACY_MODE = "enablePrivacyMode";
 }
