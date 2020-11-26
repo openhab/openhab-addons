@@ -15,6 +15,7 @@ package org.openhab.binding.openwebnet.handler;
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,9 +25,11 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.communication.Response;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Lighting;
@@ -50,13 +53,20 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.LIGHTING_SUPPORTED_THING_TYPES;
 
-    private static final int BRIGHTNESS_CHANGE_DELAY_MSEC = 1500; // delay to wait before sending another brightness
-    // status request
+    private static final int BRIGHTNESS_CHANGE_DELAY_MSEC = 1500; // delay before sending another brightness status
+                                                                  // request
+    private static final int BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC = 900; // we must wait some time to be sure dimmer has
+                                                                         // reached final level before requesting its
+                                                                         // status
+    private static final int UNKNOWN_STATE = 1000;
 
     private long lastBrightnessChangeSentTS = 0; // timestamp when last brightness change was sent to the device
-    private boolean brightnessLevelRequested = false; // was the brightness level requested ?
-    private int latestBrightnessWhat = -1; // latest brightness WHAT value (-1 = unknown)
-    private int latestBrightnessWhatBeforeOff = -1; // latest brightness WHAT value before device was set to off
+
+    private int brightness = UNKNOWN_STATE; // current brightness percent value for this device
+
+    private int brightnessBeforeOff = UNKNOWN_STATE; // latest brightness before device was set to off
+
+    private int sw[] = { UNKNOWN_STATE, UNKNOWN_STATE }; // current switch(es) state
 
     public OpenWebNetLightingHandler(Thing thing) {
         super(thing);
@@ -65,10 +75,25 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
-        try {
-            send(Lighting.requestStatus(toWhere(channel)));
-        } catch (OWNException e) {
-            logger.warn("Exception while requesting channel {} state: {}", channel, e.getMessage());
+        requestStatus(channel.getId());
+    }
+
+    /** helper method to request light status based on channel */
+    private void requestStatus(String channelId) {
+        Where w = deviceWhere;
+        if (w != null) {
+            try {
+                Response res = send(Lighting.requestStatus(toWhere(channelId)));
+                if (res != null && res.isSuccess()) {
+                    // set thing online if not already
+                    ThingStatus ts = getThing().getStatus();
+                    if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
+                }
+            } catch (OWNException e) {
+                logger.warn("requestStatus() Exception while requesting light state: {}", e.getMessage());
+            }
         }
     }
 
@@ -84,7 +109,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 handleSwitchCommand(channel, command);
                 break;
             default: {
-                logger.warn("Unsupported channel UID {}", channel);
+                logger.warn("Unsupported ChannelUID {}", channel);
             }
         }
     }
@@ -100,9 +125,9 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         if (command instanceof OnOffType) {
             try {
                 if (OnOffType.ON.equals(command)) {
-                    send(Lighting.requestTurnOn(toWhere(channel)));
+                    send(Lighting.requestTurnOn(toWhere(channel.getId())));
                 } else if (OnOffType.OFF.equals(command)) {
-                    send(Lighting.requestTurnOff(toWhere(channel)));
+                    send(Lighting.requestTurnOff(toWhere(channel.getId())));
                 }
             } catch (OWNException e) {
                 logger.warn("Exception while processing command {}: {}", command, e.getMessage());
@@ -113,24 +138,23 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Handles Lighting brightness command (ON, OFF, xx%, INCREASE, DECREASE)
+     * Handles Lighting brightness command (xx%, INCREASE, DECREASE, ON, OFF)
      *
      * @param command the command
      */
     private void handleBrightnessCommand(Command command) {
         logger.debug("handleBrightnessCommand() command={}", command);
         if (command instanceof PercentType) {
-            int percent = ((PercentType) command).intValue();
-            dimLightTo(Lighting.percentToWhat(percent).value(), command);
+            dimLightTo(((PercentType) command).intValue(), command);
         } else if (command instanceof IncreaseDecreaseType) {
             if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                dimLightTo(latestBrightnessWhat + 1, command);
+                dimLightTo(brightness + 10, command);
             } else { // DECREASE
-                dimLightTo(latestBrightnessWhat - 1, command);
+                dimLightTo(brightness - 10, command);
             }
         } else if (command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
-                dimLightTo(latestBrightnessWhat, command);
+                dimLightTo(brightnessBeforeOff, command);
             } else { // OFF
                 dimLightTo(0, command);
             }
@@ -140,50 +164,47 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Helper method to dim light to a valid OWN value
+     * Helper method to dim light to given percent
      */
-    private void dimLightTo(int whatInt, Command command) {
-        int newWhatInt = whatInt;
-        logger.debug("-DIM- dimLightTo() latestBriWhat={} latestBriBeforeOff={} briLevelRequested={}",
-                latestBrightnessWhat, latestBrightnessWhatBeforeOff, brightnessLevelRequested);
-        What newWhat;
-        if (OnOffType.ON.equals(command) && latestBrightnessWhat <= 0) {
-            // ON after OFF/Unknown -> we reset channel to last value before OFF (if exists)
-            if (latestBrightnessWhatBeforeOff > 0) { // we know last brightness -> set dimmer to it
-                newWhatInt = latestBrightnessWhatBeforeOff;
-            } else { // we do not know last brightness -> set dimmer to 100%
-                newWhatInt = 10;
-            }
+    private void dimLightTo(int percent, Command command) {
+        logger.debug("   DIM dimLightTo({}) bri={} briBeforeOff={}", percent, brightness, brightnessBeforeOff);
+        int newBrightness = percent;
+        if (newBrightness == UNKNOWN_STATE) {
+            // we do not know last brightness -> set dimmer to 100%
+            newBrightness = 100;
+        } else if (newBrightness <= 0) {
+            newBrightness = 0;
+            brightnessBeforeOff = brightness;
+            logger.debug("   DIM saved bri before sending bri=0 command to device");
+        } else if (newBrightness > 100) {
+            newBrightness = 100;
         }
-        logger.debug("-DIM- requested level={}", newWhatInt);
-        if (newWhatInt != latestBrightnessWhat) {
-            if (newWhatInt >= 0 && newWhatInt <= 10) {
-                newWhat = Lighting.WHAT.fromValue(newWhatInt);
-                if (newWhat.equals(Lighting.WHAT.ON)) {
-                    // change it to WHAT.DIMMER_20 (dimming to 10% is not allowed in OWN)
-                    newWhat = Lighting.WHAT.DIMMER_20;
+        What newBrightnessWhat = Lighting.percentToWhat(newBrightness);
+        logger.debug("   DIM newBrightness={} newBrightnessWhat={}", newBrightness, newBrightnessWhat);
+        @Nullable
+        What brightnessWhat = null;
+        if (brightness != UNKNOWN_STATE) {
+            brightnessWhat = Lighting.percentToWhat(brightness);
+        }
+        if (brightnessWhat == null || !newBrightnessWhat.value().equals(brightnessWhat.value())) {
+            logger.debug("   DIM brightnessWhat {} --> {}  WHAT level change needed", brightnessWhat,
+                    newBrightnessWhat);
+            Where w = deviceWhere;
+            if (w != null) {
+                try {
+                    lastBrightnessChangeSentTS = System.currentTimeMillis();
+                    send(Lighting.requestDimTo(w.value(), newBrightnessWhat));
+                } catch (OWNException e) {
+                    logger.warn("Exception while sending dimTo request for command {}: {}", command, e.getMessage());
                 }
-                // save current brightness level before sending bri=0 command to device
-                if (newWhatInt == 0) {
-                    latestBrightnessWhatBeforeOff = latestBrightnessWhat;
-                }
-                Where w = deviceWhere;
-                if (w != null) {
-                    try {
-                        lastBrightnessChangeSentTS = System.currentTimeMillis();
-                        send(Lighting.requestDimTo(w.value(), newWhat));
-                    } catch (OWNException e) {
-                        logger.warn("Exception while sending dimLightTo for command {}: {}", command, e.getMessage());
-                    }
-                }
-            } else {
-                logger.debug("-DIM- do nothing");
             }
         } else {
-            logger.debug("-DIM- do nothing");
+            logger.debug("   DIM brightnessWhat {} --> {}  NO WHAT level change needed", brightnessWhat,
+                    newBrightnessWhat);
         }
-        logger.debug("-DIM- latestBriWhat={} latestBriBeforeOff={} briLevelRequested={}", latestBrightnessWhat,
-                latestBrightnessWhatBeforeOff, brightnessLevelRequested);
+        brightness = newBrightness;
+        updateState(CHANNEL_BRIGHTNESS, new PercentType(brightness));
+        logger.debug("   DIM---END bri={} briBeforeOff={}", brightness, brightnessBeforeOff);
     }
 
     @Override
@@ -194,163 +215,149 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
-        updateLightState((Lighting) msg);
-    }
-
-    /**
-     * Updates light state based on a OWN Lighting event message received
-     *
-     * @param msg the Lighting message received
-     */
-    private void updateLightState(Lighting msg) {
-        logger.debug("updateLightState() for thing: {}", thing.getUID());
+        logger.debug("handleMessage() for thing: {}", thing.getUID());
         ThingTypeUID thingType = thing.getThingTypeUID();
         if (THING_TYPE_ZB_DIMMER.equals(thingType) || THING_TYPE_BUS_DIMMER.equals(thingType)) {
-            updateLightBrightnessState(msg);
+            updateBrightness((Lighting) msg);
         } else {
-            updateLightOnOffState(msg);
+            updateOnOffState((Lighting) msg);
         }
     }
 
     /**
-     * Updates on/off state based on a OWN Lighting event message received
+     * Updates brightness based on OWN Lighting message received
      *
      * @param msg the Lighting message received
      */
-    private void updateLightOnOffState(Lighting msg) {
-        String channelID;
-        OpenWebNetBridgeHandler brH = bridgeHandler;
-        if (brH != null) {
-            if (brH.isBusGateway()) {
-                channelID = CHANNEL_SWITCH;
-            } else {
-                WhereZigBee w = (WhereZigBee) (msg.getWhere());
-                if (WhereZigBee.UNIT_02.equals(w.getUnit())) {
-                    channelID = CHANNEL_SWITCH_02;
-                } else {
-                    channelID = CHANNEL_SWITCH_01;
-                }
-            }
-            if (msg.isOn()) {
-                updateState(channelID, OnOffType.ON);
-            } else if (msg.isOff()) {
-                updateState(channelID, OnOffType.OFF);
-            } else {
-                logger.debug("updateLightOnOffState() Ignoring unsupported WHAT for thing {}. Frame={}",
-                        getThing().getUID(), msg.getFrameValue());
-            }
-        }
-    }
-
-    /**
-     * Updates brightness level based on a OWN Lighting event message received
-     *
-     * @param msg the Lighting message received
-     */
-    private synchronized void updateLightBrightnessState(Lighting msg) {
-        final String channel = CHANNEL_BRIGHTNESS;
-        logger.debug("  $BRI updateLightBrightnessState() msg={}", msg);
-        logger.debug("  $BRI updateLightBr() latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}",
-                latestBrightnessWhat, latestBrightnessWhatBeforeOff, brightnessLevelRequested);
+    private synchronized void updateBrightness(Lighting msg) {
         long now = System.currentTimeMillis();
+        logger.debug("  $BRI updateBrightness({})       || bri={} briBeforeOff={}", msg, brightness,
+                brightnessBeforeOff);
         long delta = now - lastBrightnessChangeSentTS;
-        logger.debug("  $BRI now={} -> delta={}", now, delta);
-        if (msg.isOn() && !brightnessLevelRequested) {
-            if (delta >= BRIGHTNESS_CHANGE_DELAY_MSEC) {
-                // we send a light brightness status request ONLY if last brightness change
-                // was not just sent (>=BRIGHTNESS_CHANGE_DELAY_MSEC ago)
-                logger.debug("  $BRI change sent >={}ms ago, sending requestStatus...", BRIGHTNESS_CHANGE_DELAY_MSEC);
-                Where w = deviceWhere;
-                if (w != null) {
-                    try {
-                        send(Lighting.requestStatus(w.value()));
-                        brightnessLevelRequested = true;
-                    } catch (OWNException e) {
-                        logger.warn("  $BRI exception while requesting light state: {}", e.getMessage());
-                    }
-                }
-            } else {
-                logger.debug("  $BRI change sent {}<{}ms, NO requestStatus needed", delta,
-                        BRIGHTNESS_CHANGE_DELAY_MSEC);
-            }
+        boolean belowThresh = delta < BRIGHTNESS_CHANGE_DELAY_MSEC;
+        logger.debug("  $BRI delta={}ms {}", delta, (belowThresh ? "< DELAY" : ""));
+        if (belowThresh) {
+            // we just sent a command from OH, so we can ignore this message from network
+            logger.debug("  $BRI a request was sent {} < {} ms --> no action needed", delta,
+                    BRIGHTNESS_CHANGE_DELAY_MSEC);
         } else {
-            logger.debug("  $BRI update from network -> level should be present in WHAT part of the message");
-            if (msg.getWhat() != null) {
-                int newLevel = msg.getWhat().value();
-                logger.debug("  $BRI current level={} ----> new level={}", latestBrightnessWhat, newLevel);
-                if (latestBrightnessWhat != newLevel) {
-                    updateState(channel, new PercentType(Lighting.levelToPercent(newLevel)));
-                    if (msg.isOff()) {
-                        latestBrightnessWhatBeforeOff = latestBrightnessWhat;
-                    }
-                    latestBrightnessWhat = newLevel;
-                } else {
-                    logger.debug("  $BRI no change");
-                }
-                brightnessLevelRequested = false;
-            } else { // dimension notification
-                if (msg.getDim() == Lighting.DIM.DIMMER_LEVEL_100) {
-                    int newPercent;
-                    try {
-                        newPercent = msg.parseDimmerLevel100();
-                    } catch (FrameException fe) {
-                        logger.warn("updateLightBrightnessState() Wrong value for dimmerLevel100 in message: {}", msg);
+            if (msg.isOn()) {
+                logger.debug("  $BRI \"ON\" notification from network, scheduling requestStatus...");
+                // we must wait BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC to be sure dimmer has reached final level
+                scheduler.schedule(() -> {
+                    requestStatus(CHANNEL_BRIGHTNESS);
+                }, BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC, TimeUnit.MILLISECONDS);
+            } else {
+                logger.debug("  $BRI update from network");
+                if (msg.getWhat() != null) {
+                    updateBrightnessState(msg);
+                } else { // dimension notification
+                    if (msg.getDim() == Lighting.DIM.DIMMER_LEVEL_100) {
+                        int newBrightness;
+                        try {
+                            newBrightness = msg.parseDimmerLevel100();
+                        } catch (FrameException fe) {
+                            logger.warn("updateBrightness() Wrong value for dimmerLevel100 in message: {}", msg);
+                            return;
+                        }
+                        logger.debug("  $BRI DIMMER_LEVEL_100 newBrightness={}", newBrightness);
+                        updateState(CHANNEL_BRIGHTNESS, new PercentType(newBrightness));
+                        if (newBrightness == 0) {
+                            brightnessBeforeOff = brightness;
+                        }
+                        brightness = newBrightness;
+                    } else {
+                        logger.warn("updateBrightness() Cannot handle message {} for thing {}", msg,
+                                getThing().getUID());
                         return;
                     }
-                    int newLevel = Lighting.percentToWhat(newPercent).value();
-                    logger.debug("  $BRI latest level={} ----> new percent={} ----> new level={}", latestBrightnessWhat,
-                            newPercent, newLevel);
-                    updateState(channel, new PercentType(newPercent));
-                    if (newPercent == 0) {
-                        latestBrightnessWhatBeforeOff = latestBrightnessWhat;
-                    }
-                    latestBrightnessWhat = newLevel;
-                    brightnessLevelRequested = false;
-                } else {
-                    logger.warn("updateLightBrightnessState() Cannot handle message {} for thing {}", msg,
-                            getThing().getUID());
-                    return;
                 }
             }
         }
-        logger.debug("  $BRI latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}", latestBrightnessWhat,
-                latestBrightnessWhatBeforeOff, brightnessLevelRequested);
+        logger.debug("  $BRI---END updateBrightness({}) || bri={} briBeforeOff={}", msg, brightness,
+                brightnessBeforeOff);
     }
 
     /**
-     * Returns a WHERE address string based on bridge type and unit (optional)
+     * Updates light brightness state based on a OWN Lighting message
      *
-     * @param unit the device unit
-     **/
-    @Nullable
-    protected String toWhere(String unit) {
-        Where w = deviceWhere;
-        if (w != null) {
-            OpenWebNetBridgeHandler brH = bridgeHandler;
-            if (brH != null && brH.isBusGateway()) {
-                return w.value();
-            } else {
-                return w + unit;
+     * @param msg the Lighting message received
+     */
+    private void updateBrightnessState(Lighting msg) {
+        if (msg.getWhat() != null) {
+            int newBrightnessWhat = msg.getWhat().value();
+            int brightnessWhat = UNKNOWN_STATE;
+            if (brightness != UNKNOWN_STATE) {
+                brightnessWhat = Lighting.percentToWhat(brightness).value();
             }
-        } else {
-            return null;
+            logger.debug("  $BRI brightnessWhat {} --> {}", brightnessWhat, newBrightnessWhat);
+            if (brightnessWhat != newBrightnessWhat) {
+                int newBrightness = Lighting.levelToPercent(newBrightnessWhat);
+                updateState(CHANNEL_BRIGHTNESS, new PercentType(newBrightness));
+                if (msg.isOff()) {
+                    brightnessBeforeOff = brightness;
+                }
+                brightness = newBrightness;
+                logger.debug("  $BRI brightness CHANGED to {}", brightness);
+            } else {
+                logger.debug("  $BRI no change");
+            }
         }
     }
 
     /**
-     * Returns a WHERE address string based on channel
+     * Updates light on/off state based on a OWN Lighting event message received
      *
-     * @param channel the channel
+     * @param msg the Lighting message received
+     */
+    private void updateOnOffState(Lighting msg) {
+        OpenWebNetBridgeHandler brH = bridgeHandler;
+        if (brH != null) {
+            if (msg.isOn() || msg.isOff()) {
+                String channelId;
+                int switchId = 0;
+                if (brH.isBusGateway()) {
+                    channelId = CHANNEL_SWITCH;
+                } else {
+                    WhereZigBee w = (WhereZigBee) (msg.getWhere());
+                    if (WhereZigBee.UNIT_02.equals(w.getUnit())) {
+                        channelId = CHANNEL_SWITCH_02;
+                        switchId = 1;
+                    } else {
+                        channelId = CHANNEL_SWITCH_01;
+                    }
+                }
+                int currentSt = sw[switchId];
+                int newSt = (msg.isOn() ? 1 : 0);
+                if (newSt != currentSt) {
+                    updateState(channelId, (newSt == 1 ? OnOffType.ON : OnOffType.OFF));
+                    sw[switchId] = newSt;
+                    logger.debug("  {} ONOFF CHANGED to {}", ownId, newSt);
+                } else {
+                    logger.debug("  {} ONOFF no change", ownId);
+                }
+            } else {
+                logger.debug("updateOnOffState() Ignoring unsupported WHAT for thing {}. Frame={}", getThing().getUID(),
+                        msg.getFrameValue());
+                return;
+            }
+        }
+    }
+
+    /**
+     * Returns a WHERE address string based on channelId string
+     *
+     * @param channelId the channelId string
      **/
     @Nullable
-    protected String toWhere(ChannelUID channel) {
+    protected String toWhere(String channelId) {
         Where w = deviceWhere;
         if (w != null) {
             OpenWebNetBridgeHandler brH = bridgeHandler;
             if (brH != null) {
                 if (brH.isBusGateway()) {
                     return w.value();
-                } else if (channel.getId().equals(CHANNEL_SWITCH_02)) {
+                } else if (channelId.equals(CHANNEL_SWITCH_02)) {
                     return ((WhereZigBee) w).valueWithUnit(WhereZigBee.UNIT_02);
                 } else { // CHANNEL_SWITCH_01 or other channels
                     return ((WhereZigBee) w).valueWithUnit(WhereZigBee.UNIT_01);
