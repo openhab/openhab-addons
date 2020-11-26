@@ -14,9 +14,11 @@ package org.openhab.io.transport.modbus.test;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 import org.hamcrest.Description;
+import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 
@@ -42,7 +44,9 @@ class RegisterMatcher extends AbstractRequestComparer<ModbusWriteRegisterRequest
 
     @Override
     protected boolean doMatchData(ModbusWriteRegisterRequestBlueprint item) {
-        Object[] actual = StreamSupport.stream(item.getRegisters().spliterator(), false).map(r -> r.getValue())
+        ModbusRegisterArray registers = item.getRegisters();
+        Object[] actual = StreamSupport
+                .stream(IntStream.range(0, registers.size()).mapToObj(registers::getRegister).spliterator(), false)
                 .toArray();
         return Objects.deepEquals(actual, expectedRegisterValues);
     }
