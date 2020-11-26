@@ -14,13 +14,17 @@ package org.openhab.binding.nikobus.internal.utils;
 
 import java.util.concurrent.Future;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link Utils} class defines commonly used utility functions.
  *
  * @author Boris Krivonog - Initial contribution
  */
+@NonNullByDefault
 public class Utils {
-    public static void cancel(Future<?> future) {
+    public static void cancel(@Nullable Future<?> future) {
         if (future != null) {
             future.cancel(true);
         }
