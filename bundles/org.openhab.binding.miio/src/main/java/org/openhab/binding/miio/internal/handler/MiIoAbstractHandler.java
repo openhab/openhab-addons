@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -74,7 +73,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     protected ScheduledExecutorService miIoScheduler = scheduler;
     protected @Nullable ScheduledFuture<?> pollingJob;
-    protected CopyOnWriteArraySet<ScheduledFuture<?>> scheduledJobs = new CopyOnWriteArraySet<>();
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
 
@@ -148,7 +146,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         cloudServer = (configuration.cloudServer != null) ? configuration.cloudServer : "";
         isIdentified = false;
-        scheduledJobs.add(miIoScheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS));
+        miIoScheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
         if (pollingPeriod > 0) {
             pollingJob = miIoScheduler.scheduleWithFixedDelay(() -> {
@@ -161,7 +159,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
         } else {
             logger.debug("Polling job disabled. for '{}'", getThing().getUID());
-            scheduledJobs.add(miIoScheduler.schedule(this::updateData, 10, TimeUnit.SECONDS));
+            miIoScheduler.schedule(this::updateData, 10, TimeUnit.SECONDS);
         }
         updateStatus(ThingStatus.OFFLINE);
     }
@@ -194,10 +192,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
     }
 
-    protected void removedCompletedJobs() {
-        scheduledJobs.removeIf(ScheduledFuture::isDone);
-    }
-
     @Override
     public void dispose() {
         logger.debug("Disposing Xiaomi Mi IO handler '{}'", getThing().getUID());
@@ -214,14 +208,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             miioCom.close();
             this.miioCom = null;
         }
-        for (ScheduledFuture<?> s : scheduledJobs) {
-            if (!s.isDone()) {
-                s.cancel(true);
-            }
-        }
-        scheduledJobs.clear();
         miIoScheduler.shutdownNow();
-        miIoScheduler = scheduler;
     }
 
     protected int sendCommand(MiIoCommand command) {
@@ -277,7 +264,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         // use direct communications and in case of failures fall back to cloud communication. For now we keep it
         // simple and only have the option for cloud or direct.
         final MiIoBindingConfiguration configuration = this.configuration;
-        if (configuration != null) {
+        if (configuration != null && configuration.communication != null) {
             return configuration.communication.equals("cloud") ? cloudServer : "";
         }
         return "";
@@ -502,7 +489,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             pollingJob.cancel(true);
             this.pollingJob = null;
         }
-        scheduledJobs.add(miIoScheduler.schedule(() -> {
+        miIoScheduler.schedule(() -> {
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withLabel(miDevice.getDescription());
             updateThing(thingBuilder.build());
@@ -515,7 +502,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 thingTypeUID = THING_TYPE_BASIC;
             }
             changeThingType(thingTypeUID, getConfig());
-        }, 10, TimeUnit.SECONDS));
+        }, 10, TimeUnit.SECONDS);
     }
 
     @Override

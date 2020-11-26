@@ -181,6 +181,7 @@ public class MiIoAsyncCommunication {
                         miIoSendCommand.getCloudServer(), miIoSendCommand);
                 logger.debug("Command {} send via cloudserver {}", miIoSendCommand.getCommandString(),
                         miIoSendCommand.getCloudServer());
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
             // hack due to avoid invalid json errors from some misbehaving device firmwares
             decryptedResponse = decryptedResponse.replace(",,", ",");
@@ -208,6 +209,7 @@ public class MiIoAsyncCommunication {
                     miIoSendCommand.getCommandString(), miIoSendCommand.getCloudServer(), Utils.getHex(deviceId),
                     e.getMessage());
             errorMsg = e.getMessage();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
         JsonObject erroResp = new JsonObject();
         erroResp.addProperty("error", errorMsg);

@@ -85,7 +85,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private boolean hasChannelStructure;
 
     private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
-        scheduledJobs.add(miIoScheduler.schedule(this::updateData, 0, TimeUnit.SECONDS));
+        miIoScheduler.schedule(this::updateData, 0, TimeUnit.SECONDS);
         return true;
     });
 
@@ -249,9 +249,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 }
             }
             updateDataCache.invalidateValue();
-            scheduledJobs.add(miIoScheduler.schedule(() -> {
+            miIoScheduler.schedule(() -> {
                 updateData();
-            }, 3000, TimeUnit.MILLISECONDS));
+            }, 3000, TimeUnit.MILLISECONDS);
         } else {
             logger.debug("Actions not loaded yet");
         }
@@ -281,7 +281,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     protected synchronized void updateData() {
         logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
-        removedCompletedJobs();
         final MiIoAsyncCommunication miioCom = getConnection();
         try {
             if (!hasConnection() || skipUpdate() || miioCom == null) {
