@@ -377,7 +377,7 @@
 	</channel-type>
 
 	<channel-type id="open_closed_valve">
-		<item-type>String</item-type>
+		<item-type>Contact</item-type>
 		<label>Valve Open/Closed state</label>
 		<description>Current open/closed state of the Somfy thermostatic valve</description>
 		<state readOnly="true"/>
