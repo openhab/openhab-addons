@@ -341,7 +341,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                         msg.getFrameValue());
                 return;
             }
-
         }
     }
 
