@@ -1341,7 +1341,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| vacuumaction     | String  | Vacuum Action                       | This channel accepts `start`, `stop`, `findme` and `dock`. The `dock` commands is not confirmed working yet. Please feedback |
+| vacuumaction     | String  | Vacuum Action                       | This channel accepts `start`, `stop`, `findme` and `dock`. |
 | status           | Number  | Robot Cleaner - Status              | Value mapping [1="Idle",2="Sweeping",3="Paused",4="Error",5="Charging",6="Go Charging"] |
 | fault            | Number  | Robot Cleaner - Device Fault        | Value mapping [0="No Faults",1="Left-wheel-error",2="Right-whelel-error",3="Cliff-error",4="Low-battery-error",5="Bump-error",6="Main-brush-error",7="Side-brush-error",8="Fan-motor-error",9="Dustbin-error",10="Charging-error",11="No-wate-error",12="Pick-up-error"] |
 | mode             | Number  | Robot Cleaner - Mode                | Value mapping [1="Auto-clean",2="Spot-clean",3="Wallflow-clean"] |

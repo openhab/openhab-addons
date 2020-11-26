@@ -71,7 +71,7 @@
 						}
 					}
 				],
-				"readmeComment": "This channel accepts `start`, `stop`, `findme` and `dock`. The `dock` commands is not confirmed working yet. Please feedback"
+				"readmeComment": "This channel accepts `start`, `stop`, `findme` and `dock`."
 			},
 			{
 				"property": "status",
