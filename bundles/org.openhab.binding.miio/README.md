@@ -513,11 +513,11 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | bright           | Number  | LED Brightness                      |            |
 | buzzer           | Switch  | Buzzer Status                       |            |
 | dry              | Switch  | Dry                                 |            |
-| usedhours        | Number  | Run Time                            |            |
-| powerhours       | Number  | Power Time                          |            |
+| usedhours        | Number:Time | Run Time                            |            |
+| powerhours       | Number:Time | Power Time                          |            |
 | targetmotorspeed | Number  | Target Motor Speed                  |            |
 | actualmotorspeed | Number  | Actual Motor Speed                  |            |
-| temperature      | Number  | Temperature                         |            |
+| temperature      | Number:Temperature | Temperature                         |            |
 | childlock        | Switch  | Child Lock                          |            |
 | ButtonPressed    | Number  | Button Pressed                      |            |
 | clean            | Switch  | Clean Mode                          |            |
@@ -3454,11 +3454,11 @@ Number waterlevel "Water Level" (G_humidifier) {channel="miio:basic:humidifier:w
 Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
 Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
 Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
-Number usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
-Number powerhours "Power Time" (G_humidifier) {channel="miio:basic:humidifier:powerhours"}
+Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
+Number:Time powerhours "Power Time" (G_humidifier) {channel="miio:basic:humidifier:powerhours"}
 Number targetmotorspeed "Target Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:targetmotorspeed"}
 Number actualmotorspeed "Actual Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:actualmotorspeed"}
-Number temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
 Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
 Number ButtonPressed "Button Pressed" (G_humidifier) {channel="miio:basic:humidifier:ButtonPressed"}
 Switch clean "Clean Mode" (G_humidifier) {channel="miio:basic:humidifier:clean"}
