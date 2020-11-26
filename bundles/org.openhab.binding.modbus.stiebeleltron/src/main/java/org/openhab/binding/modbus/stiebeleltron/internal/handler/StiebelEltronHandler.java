@@ -14,8 +14,7 @@ package org.openhab.binding.modbus.stiebeleltron.internal.handler;
 
 import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.SmartHomeUnits.KILOWATT_HOUR;
-import static org.openhab.core.library.unit.SmartHomeUnits.PERCENT;
+import static org.openhab.core.library.unit.SmartHomeUnits.*;
 
 import java.util.Optional;
 
@@ -52,7 +51,6 @@ import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
@@ -198,11 +196,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
             throw new IllegalStateException("registerPollTask called without proper configuration");
         }
         // big endian byte ordering
-        byte b1 = (byte) (shortValue >> 8);
-        byte b2 = (byte) shortValue;
-
-        ModbusRegister register = new ModbusRegister(b1, b2);
-        ModbusRegisterArray data = new ModbusRegisterArray(new ModbusRegister[] { register });
+        byte hi = (byte) (shortValue >> 8);
+        byte lo = (byte) shortValue;
+        ModbusRegisterArray data = new ModbusRegisterArray(hi, lo);
 
         ModbusWriteRegisterRequestBlueprint request = new ModbusWriteRegisterRequestBlueprint(slaveId, address, data,
                 false, myconfig.getMaxTries());
