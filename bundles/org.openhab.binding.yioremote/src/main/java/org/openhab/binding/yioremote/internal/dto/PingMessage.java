@@ -17,36 +17,36 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link AuthenticationMessage} the AuthenticationMessage DTO
+ * The {@link PingMessage} the AuthenticationMessage DTO
  *
  *
  * @author Michael Loercher - Initial contribution
  */
 @NonNullByDefault
-public class AuthenticationMessage {
-    private String type = "auth";
-    private String token = "0";
+public class PingMessage {
+    private String type = "dock";
+    private String command = "ping";
 
     public String getType() {
         return type;
     }
 
-    public String getToken() {
-        return token;
+    public String getcommand() {
+        return command;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setToken(String command) {
+        this.command = command;
     }
 
-    public JsonObject getAuthenticationMessageJsonObject() {
-        JsonObject authenticationMessage = new JsonObject();
-        authenticationMessage.addProperty("type", type);
-        authenticationMessage.addProperty("token", token);
-        return authenticationMessage;
+    public JsonObject getPingMessageJsonObject() {
+        JsonObject pingMessage = new JsonObject();
+        pingMessage.addProperty("type", type);
+        pingMessage.addProperty("command", command);
+        return pingMessage;
     }
 
-    public String getAuthenticationMessageString() {
-        return getAuthenticationMessageJsonObject().toString();
+    public String getPingMessageString() {
+        return getPingMessageJsonObject().toString();
     }
 }
