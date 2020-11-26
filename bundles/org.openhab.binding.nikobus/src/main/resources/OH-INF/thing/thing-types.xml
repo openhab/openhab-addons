@@ -42,7 +42,7 @@
 			</parameter>
 			<parameter name="impactedModules" type="text">
 				<label>Impacted Modules</label>
-				<description>Comma separated list of impacted modules, i.e. 4C6C-1,4C6C-2</description>
+				<description>Comma separated list of impacted modules, i.e. switch-module:s1:1</description>
 			</parameter>
 		</config-description>
 	</thing-type>
