@@ -194,7 +194,7 @@ public class MiCloudConnector {
         } catch (NumberFormatException e) {
             String err = "Could not parse device ID ('" + device.toString() + "')";
             logger.debug("{}", err);
-            throw new MiCloudException(err);
+            throw new MiCloudException(err, e);
         }
         final String response = request("/home/rpc/" + id, country, command);
         logger.debug("response: {}", response);
