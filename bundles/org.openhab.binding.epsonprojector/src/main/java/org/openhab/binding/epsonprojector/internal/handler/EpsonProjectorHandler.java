@@ -67,6 +67,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     private final EpsonProjectorDevice device;
 
     private boolean isPowerOn = false;
+    private int pollingInterval = DEFAULT_POLLING_INTERVAL_SEC;
 
     public EpsonProjectorHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
@@ -95,39 +96,51 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        scheduler.execute(() -> {
-            EpsonProjectorConfiguration config = getConfigAs(EpsonProjectorConfiguration.class);
-            final Integer pollingInterval = config.pollingInterval;
-            device.setScheduler(scheduler);
+        EpsonProjectorConfiguration config = getConfigAs(EpsonProjectorConfiguration.class);
+        pollingInterval = config.pollingInterval;
+        device.setScheduler(scheduler);
 
-            try {
-                updateStatus(ThingStatus.OFFLINE);
-                device.connect();
-
-                List<Channel> channels = this.thing.getChannels();
-
-                pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                    for (Channel channel : channels) {
-                        // only query power & lamp time when projector is off
-                        if (isPowerOn || (channel.getUID().getId().equals(CHANNEL_TYPE_POWER)
-                                || channel.getUID().getId().equals(CHANNEL_TYPE_LAMPTIME))) {
-                            updateChannelState(channel);
-                        }
-                    }
-                }, 0, (pollingInterval > 0) ? pollingInterval : DEFAULT_POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
-            } catch (EpsonProjectorException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        });
+        try {
+            updateStatus(ThingStatus.UNKNOWN);
+            device.connect();
+        } catch (EpsonProjectorException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        schedulePollingJob();
     }
 
-    @Override
-    public void dispose() {
+    /**
+     * Schedule the polling job
+     */
+    private void schedulePollingJob() {
+        cancelPollingJob();
+
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            List<Channel> channels = this.thing.getChannels();
+            for (Channel channel : channels) {
+                // only query power & lamp time when projector is off
+                if (isPowerOn || (channel.getUID().getId().equals(CHANNEL_TYPE_POWER)
+                        || channel.getUID().getId().equals(CHANNEL_TYPE_LAMPTIME))) {
+                    updateChannelState(channel);
+                }
+            }
+        }, 0, (pollingInterval > 0) ? pollingInterval : DEFAULT_POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Cancel the polling job
+     */
+    private void cancelPollingJob() {
         ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
             this.pollingJob = null;
         }
+    }
+
+    @Override
+    public void dispose() {
+        cancelPollingJob();
         closeConnection();
         super.dispose();
     }

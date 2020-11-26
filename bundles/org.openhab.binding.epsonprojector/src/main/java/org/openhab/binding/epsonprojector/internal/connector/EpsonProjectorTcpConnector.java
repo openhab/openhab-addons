@@ -150,8 +150,8 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
         OutputStream out = this.out;
 
         if (in != null && out != null) {
-            out.write(data.getBytes());
-            out.write("\r\n".getBytes());
+            out.write(data.getBytes(StandardCharsets.US_ASCII));
+            out.write("\r\n".getBytes(StandardCharsets.US_ASCII));
             out.flush();
 
             long startTime = System.currentTimeMillis();
