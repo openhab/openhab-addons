@@ -85,12 +85,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
 
             connection = new PushoverAPIConnection(httpClient, config);
-            try {
-                connection.validateUser();
-                updateStatus(ThingStatus.ONLINE);
-            } catch (PushoverCommunicationException | PushoverConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            }
+            scheduler.submit(this::asyncValidateUser);
         }
     }
 
@@ -158,6 +153,15 @@ public class PushoverAccountHandler extends BaseThingHandler {
             return connection.cancelPriorityMessage(receipt);
         } else {
             throw new IllegalArgumentException("PushoverAPIConnection is null!");
+        }
+    }
+
+    private void asyncValidateUser() {
+        try {
+            connection.validateUser();
+            updateStatus(ThingStatus.ONLINE);
+        } catch (PushoverCommunicationException | PushoverConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 }

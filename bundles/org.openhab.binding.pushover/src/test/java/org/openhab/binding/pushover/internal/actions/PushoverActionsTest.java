@@ -85,13 +85,6 @@ public class PushoverActionsTest {
         assertThrows(RuntimeException.class, () -> PushoverActions.sendMessage(pushoverThingActions, MESSAGE, TITLE));
     }
 
-    // @Test
-    // public void testSendMessageWithoutMessage() {
-    // Optional<String> message = Optional.of(null);
-    // assertThrows(IllegalArgumentException.class,
-    // () -> PushoverActions.sendMessage(pushoverThingActions, message.get(), TITLE));
-    // }
-
     @Test
     public void testSendMessageWithoutTitle() {
         pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
@@ -118,22 +111,6 @@ public class PushoverActionsTest {
         assertThrows(RuntimeException.class,
                 () -> PushoverActions.sendURLMessage(pushoverThingActions, MESSAGE, TITLE, URL, URL_TITLE));
     }
-
-    // @Test
-    // public void testSendURLMessageWithoutMessage() {
-    // pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
-    // Optional<String> message = Optional.of(null);
-    // assertThrows(IllegalArgumentException.class,
-    // () -> PushoverActions.sendURLMessage(pushoverThingActions, message.get(), TITLE, URL, URL_TITLE));
-    // }
-
-    // @Test
-    // public void testSendURLMessageWithoutURL() {
-    // pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
-    // Optional<String> url = Optional.of(null);
-    // assertThrows(IllegalArgumentException.class,
-    // () -> PushoverActions.sendURLMessage(pushoverThingActions, MESSAGE, TITLE, url.get(), URL_TITLE));
-    // }
 
     @Test
     public void testSendURLMessageWithoutTitle() {
@@ -169,14 +146,6 @@ public class PushoverActionsTest {
                 TITLE, PushoverMessageBuilder.EMERGENCY_PRIORITY));
     }
 
-    // @Test
-    // public void testSendPriorityMessageWithoutMessage() {
-    // pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
-    // Optional<String> message = Optional.of(null);
-    // assertThrows(IllegalArgumentException.class, () -> PushoverActions.sendPriorityMessage(pushoverThingActions,
-    // message.get(), TITLE, PushoverMessageBuilder.EMERGENCY_PRIORITY));
-    // }
-
     @Test
     public void testSendPriorityMessageWithoutTitle() {
         pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
@@ -204,14 +173,6 @@ public class PushoverActionsTest {
         assertThrows(RuntimeException.class,
                 () -> PushoverActions.cancelPriorityMessage(pushoverThingActions, RECEIPT));
     }
-
-    // @Test
-    // public void testCancelPriorityMessageWithoutReceipt() {
-    // pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
-    // Optional<String> receipt = Optional.of(null);
-    // assertThrows(IllegalArgumentException.class,
-    // () -> PushoverActions.cancelPriorityMessage(pushoverThingActions, receipt.get()));
-    // }
 
     @Test
     public void testCancelPriorityMessageWithValidReceipt() {
