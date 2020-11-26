@@ -14,8 +14,6 @@ package org.openhab.binding.dwdunwetter.internal.data;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * The XML Tags to extract the relevant parts from the API response.
  * The names map directly to the XML Tags of the API Response.
@@ -52,7 +50,7 @@ public enum DwdXmlTag {
     }
 
     public static DwdXmlTag getDwdXmlTag(String tag) {
-        return Arrays.asList(DwdXmlTag.values()).stream().filter(t -> StringUtils.equals(t.getTag(), tag)).findFirst()
+        return Arrays.asList(DwdXmlTag.values()).stream().filter(t -> tag.equals(t.getTag())).findFirst()
                 .orElse(UNKNOWN);
     }
 }

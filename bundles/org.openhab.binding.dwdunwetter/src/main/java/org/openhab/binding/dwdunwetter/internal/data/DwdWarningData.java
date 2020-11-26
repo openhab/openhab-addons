@@ -15,8 +15,6 @@ package org.openhab.binding.dwdunwetter.internal.data;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Data for one warning.
  *
@@ -93,7 +91,7 @@ public class DwdWarningData {
     }
 
     public boolean isTest() {
-        return StringUtils.equalsIgnoreCase(status, "Test");
+        return "Test".equalsIgnoreCase(status);
     }
 
     public void setMsgType(String msgType) {
@@ -101,7 +99,7 @@ public class DwdWarningData {
     }
 
     public boolean isCancel() {
-        return StringUtils.equalsIgnoreCase(msgType, "Cancel");
+        return "Cancel".equalsIgnoreCase(msgType);
     }
 
     public void setHeadline(String headline) {
