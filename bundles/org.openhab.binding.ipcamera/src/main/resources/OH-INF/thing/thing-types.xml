@@ -642,6 +642,7 @@
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
+			<channel id="enablePrivacyMode" typeId="enablePrivacyMode"/>
 		</channels>
 		<config-description>
 
@@ -934,6 +935,7 @@
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
+			<channel id="enablePrivacyMode" typeId="enablePrivacyMode"/>
 		</channels>
 		<config-description>
 
@@ -2661,6 +2663,12 @@
 		<label>LED Controls</label>
 		<description>Turn the LED ON and OFF and if supported also 0-100% dimming.</description>
 		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="enablePrivacyMode">
+		<item-type>Switch</item-type>
+		<label>Enable Privacy Mode</label>
+		<description>Turn the Privacy Mode on and off.</description>
 	</channel-type>
 
 	<channel-type id="autoLED" advanced="true">
