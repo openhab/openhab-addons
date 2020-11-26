@@ -73,17 +73,6 @@ public class EnedisHttpApi {
     }
 
     public void initialize() throws LinkyException {
-        httpClient.getSslContextFactory().setExcludeCipherSuites(new String[0]);
-        httpClient.setFollowRedirects(false);
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            throw new LinkyException("Unable to start Jetty HttpClient", e);
-        }
-        connect();
-    }
-
-    private void connect() throws LinkyException {
         addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
 
         logger.debug("Starting login process for user : {}", config.username);
@@ -185,12 +174,7 @@ public class EnedisHttpApi {
     }
 
     public void dispose() throws LinkyException {
-        try {
-            disconnect();
-            httpClient.stop();
-        } catch (Exception e) {
-            throw new LinkyException("Error stopping Jetty client", e);
-        }
+        disconnect();
     }
 
     private void addCookie(String key, String value) {
@@ -229,7 +213,7 @@ public class EnedisHttpApi {
     public UserInfo getUserInfo() throws LinkyException {
         final String user_info_url = URL_APPS_LINCS + "/userinfos";
         String data = getData(user_info_url);
-        return gson.fromJson(data, UserInfo.class);
+        return Objects.requireNonNull(gson.fromJson(data, UserInfo.class));
     }
 
     private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)

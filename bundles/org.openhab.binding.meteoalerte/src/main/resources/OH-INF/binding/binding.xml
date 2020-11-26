@@ -5,6 +5,5 @@
 
 	<name>Meteo Alerte Binding</name>
 	<description>Retrieves Meteo Alert levels in France</description>
-	<author>Gaël L'hopital</author>
 
 </binding:binding>

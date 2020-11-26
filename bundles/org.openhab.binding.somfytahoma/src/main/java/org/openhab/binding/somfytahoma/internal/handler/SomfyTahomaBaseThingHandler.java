@@ -130,8 +130,9 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     protected void refresh(String channel) {
         SomfyTahomaBridgeHandler handler = getBridgeHandler();
-        if (handler != null && stateNames.containsKey(channel)) {
-            handler.refresh(url, stateNames.get(channel));
+        String stateName = stateNames.get(channel);
+        if (handler != null && stateName != null) {
+            handler.refresh(url, stateName);
         }
     }
 

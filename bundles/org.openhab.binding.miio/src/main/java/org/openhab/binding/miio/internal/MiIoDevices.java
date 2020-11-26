@@ -34,6 +34,7 @@ public enum MiIoDevices {
     AIRMONITOR_S1("cgllc.airmonitor.s1", "Mi Air Quality Monitor S1", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_V1("zhimi.humidifier.v1", "Mi Air Humidifier", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_CA1("zhimi.humidifier.ca1", "Mi Air Humidifier", THING_TYPE_BASIC),
+    AIR_HUMIDIFIER_CA4("zhimi.humidifier.ca4", "Mi Air Evaporative Humidifier 2", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_CB1("zhimi.humidifier.cb1", "Mi Air Humidifier 2", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_MJJSQ("deerma.humidifier.mjjsq", "Mija Smart humidifier", THING_TYPE_BASIC),
     AIR_PURIFIER1("zhimi.airpurifier.v1", "Mi Air Purifier v1", THING_TYPE_BASIC),
@@ -74,6 +75,7 @@ public enum MiIoDevices {
     FAN3("zhimi.fan.v3", "Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_SA1("zhimi.fan.sa1", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_ZA1("zhimi.fan.za1", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
+    FAN_ZA3("zhimi.fan.za3", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_ZA4("zhimi.fan.za4", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_1C("dmaker.fan.1c", "Xiaomi Mijia Smart Tower Fan", THING_TYPE_BASIC),
     FAN_P5("dmaker.fan.p5", "Xiaomi Mijia Smart Tower Fan", THING_TYPE_BASIC),
@@ -88,9 +90,13 @@ public enum MiIoDevices {
     HUMIDIFIER("zhimi.humidifier.v1", "Mi Humdifier", THING_TYPE_BASIC),
     LUMI_C11("lumi.ctrl_neutral1.v1", "Light Control (Wall Switch)", THING_TYPE_UNSUPPORTED),
     LUMI_C12("lumi.ctrl_neutral2.v1", "Light Control (Wall Switch)", THING_TYPE_UNSUPPORTED),
+    LUMI_CURTAIN_HAGL05("lumi.curtain.hagl05", "Xiaomi youpin Curtain Controller (Wi-Fi)", THING_TYPE_BASIC),
     MRBOND_AIRER_M1PRO("mrbond.airer.m1pro", "Mr Bond M1 Pro Smart Clothes Dryer", THING_TYPE_BASIC),
     MRBOND_AIRER_M1S("mrbond.airer.m1s", "Mr Bond M1 Smart Clothes Dryer", THING_TYPE_BASIC),
     MRBOND_AIRER_M1SUPER("mrbond.airer.m1super", "Mr Bond M1 Super Smart Clothes Dryer", THING_TYPE_BASIC),
+    MIJIA_VACUUM_V2("mijia.vacuum.v2", "Xiaomi Mi Robot Vacuum MOP Essential", THING_TYPE_BASIC),
+    SCISHARE_COFFEE_S1102("scishare.coffee.s1102", "Xiaomi Scishare smart capsule coffee machine", THING_TYPE_BASIC),
+    SCISHARE_COFFEE_S1301("scishare.coffee.s1301", "Xiaomi Scishare smart capsule coffee machine", THING_TYPE_BASIC),
     PHILIPS_SR1("philips.light.sread1", "Xiaomi Philips Eyecare Smart Lamp 2", THING_TYPE_BASIC),
     PHILIPS_SR2("philips.light.sread2", "Xiaomi Philips Eyecare Smart Lamp 2", THING_TYPE_BASIC),
     PHILIPS_C("philips.light.ceiling", "Xiaomi Philips LED Ceiling Lamp", THING_TYPE_BASIC),
@@ -257,6 +263,8 @@ public enum MiIoDevices {
     YL_CEILING2("yilai.light.ceiling2", "Yeelight yilai ceiling", THING_TYPE_BASIC),
     YL_CEILING3("yilai.light.ceiling3", "Yeelight yilai ceiling", THING_TYPE_BASIC),
     ZHIMI_HEATER_ZA1("zhimi.heater.za1", "Zhimi Heater", THING_TYPE_BASIC),
+    ZHIMI_HEATER_ZA2("zhimi.heater.za2", "Zhimi Heater", THING_TYPE_BASIC),
+    ZHIMI_HEATER_ZB1("zhimi.heater.zb1", "Zhimi Heater", THING_TYPE_BASIC),
     UNKNOWN("unknown", "Unknown Mi IO Device", THING_TYPE_UNSUPPORTED);
 
     public static MiIoDevices getType(String modelString) {

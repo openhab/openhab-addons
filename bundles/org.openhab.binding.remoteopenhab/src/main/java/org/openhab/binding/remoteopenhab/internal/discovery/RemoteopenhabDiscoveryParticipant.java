@@ -13,7 +13,7 @@
 package org.openhab.binding.remoteopenhab.internal.discovery;
 
 import static org.openhab.binding.remoteopenhab.internal.RemoteopenhabBindingConstants.*;
-import static org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabInstanceConfiguration.*;
+import static org.openhab.binding.remoteopenhab.internal.config.RemoteopenhabServerConfiguration.*;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return SUPPORTED_THING_TYPES_UIDS;
+        return SUPPORTED_BRIDGE_TYPES_UIDS;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipa
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null && ip != null && restPath != null) {
             String label = "openHAB server";
-            logger.debug("Created a DiscoveryResult for remote openHAB server {} with IP {}", thingUID, ip);
+            logger.debug("Create a DiscoveryResult for remote openHAB server {} with IP {}", thingUID, ip);
             Map<String, Object> properties = Map.of(HOST, ip, REST_PATH, restPath);
             result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withRepresentationProperty(HOST)
                     .withLabel(label).build();

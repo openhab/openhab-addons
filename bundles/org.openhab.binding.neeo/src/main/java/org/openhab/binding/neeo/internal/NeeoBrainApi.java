@@ -13,9 +13,14 @@
 package org.openhab.binding.neeo.internal;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
@@ -29,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * The class provides the API for communicating with a NEEO brain
@@ -44,7 +50,10 @@ public class NeeoBrainApi implements AutoCloseable {
     private final Gson gson = NeeoUtil.getGson();
 
     /** The {@link HttpRequest} used for making requests */
-    private final AtomicReference<HttpRequest> request = new AtomicReference<>(new HttpRequest());
+    private final AtomicReference<HttpRequest> request;
+
+    /** The {@link ClientBuilder} to use */
+    private final ClientBuilder clientBuilder;
 
     /** The IP address of the neeo brain */
     private final NeeoUrlBuilder urlBuilder;
@@ -54,11 +63,14 @@ public class NeeoBrainApi implements AutoCloseable {
      *
      * @param ipAddress the non-empty ip address
      */
-    public NeeoBrainApi(String ipAddress) {
+    public NeeoBrainApi(String ipAddress, ClientBuilder clientBuilder) {
         NeeoUtil.requireNotEmpty(ipAddress, "ipAddress cannot be empty");
 
         this.urlBuilder = new NeeoUrlBuilder(
                 NeeoConstants.PROTOCOL + ipAddress + ":" + NeeoConstants.DEFAULT_BRAIN_PORT);
+        this.clientBuilder = clientBuilder;
+
+        request = new AtomicReference<>(new HttpRequest(clientBuilder));
     }
 
     /**
@@ -76,7 +88,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), NeeoBrain.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), NeeoBrain.class));
     }
 
     /**
@@ -97,7 +109,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), NeeoRoom.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), NeeoRoom.class));
     }
 
     /**
@@ -121,7 +133,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), ExecuteResult.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), ExecuteResult.class));
     }
 
     /**
@@ -145,7 +157,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), ExecuteResult.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), ExecuteResult.class));
     }
 
     /**
@@ -154,7 +166,7 @@ public class NeeoBrainApi implements AutoCloseable {
      * @return the non-null, possibly empty list of active scenarios keys
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public String[] getActiveScenarios() throws IOException {
+    public List<String> getActiveScenarios() throws IOException {
         final String url = urlBuilder.append(NeeoConstants.GET_ACTIVESCENARIOS).toString();
 
         final HttpRequest rqst = request.get();
@@ -163,7 +175,9 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), String[].class);
+        Type arrayListType = new TypeToken<ArrayList<String>>() {
+        }.getType();
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), arrayListType));
     }
 
     /**
@@ -189,7 +203,7 @@ public class NeeoBrainApi implements AutoCloseable {
             throw resp.createException();
         }
 
-        return gson.fromJson(resp.getContent(), ExecuteResult.class);
+        return Objects.requireNonNull(gson.fromJson(resp.getContent(), ExecuteResult.class));
     }
 
     /**
@@ -232,7 +246,7 @@ public class NeeoBrainApi implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        NeeoUtil.close(request.getAndSet(new HttpRequest()));
+        NeeoUtil.close(request.getAndSet(new HttpRequest(clientBuilder)));
     }
 
     /**

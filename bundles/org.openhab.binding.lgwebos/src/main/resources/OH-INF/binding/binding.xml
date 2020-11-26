@@ -5,7 +5,6 @@
 
 	<name>LG webOS Binding</name>
 	<description>Binding to connect LG's WebOS based smart TVs</description>
-	<author>Sebastian Prehn</author>
 
 
 </binding:binding>

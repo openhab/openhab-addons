@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Power;
@@ -46,9 +47,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OmnikInverterHandler extends BaseThingHandler {
-    private @Nullable OmnikInverter inverter;
-
     private final Logger logger = LoggerFactory.getLogger(OmnikInverterHandler.class);
+
+    private @Nullable OmnikInverter inverter;
+    private @Nullable ScheduledFuture<?> pollJob;
 
     public OmnikInverterHandler(Thing thing) {
         super(thing);
@@ -67,14 +69,19 @@ public class OmnikInverterHandler extends BaseThingHandler {
     public void initialize() {
         OmnikInverterConfiguration config = getConfigAs(OmnikInverterConfiguration.class);
 
-        try {
-            inverter = new OmnikInverter(config.hostname, config.port, config.serial);
-            scheduler.scheduleWithFixedDelay(this::updateData, 0, 10, TimeUnit.SECONDS);
-        } catch (IOException e) {
-            logger.debug("Could not instantiate OmnikInverter object: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Failed to initialize: " + e.getMessage());
+        inverter = new OmnikInverter(config.hostname, config.port, config.serial);
+        updateStatus(ThingStatus.UNKNOWN);
+        pollJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 10, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> pollJob = this.pollJob;
+        if (pollJob != null) {
+            pollJob.cancel(true);
+            this.pollJob = null;
         }
+        super.dispose();
     }
 
     private void updateData() {

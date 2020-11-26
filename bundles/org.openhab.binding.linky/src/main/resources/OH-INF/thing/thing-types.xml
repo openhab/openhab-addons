@@ -43,8 +43,13 @@
 			<channel id="yesterday" typeId="consumption">
 				<label>Yesterday Consumption</label>
 			</channel>
-			<channel id="power" typeId="power"/>
-			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="power" typeId="power">
+				<label>Maximum power usage yesterday</label>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Peak Timestamp</label>
+				<description>Maximum power usage timestamp</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -55,7 +60,7 @@
 				<label>This Week Consumption</label>
 			</channel>
 			<channel id="lastWeek" typeId="consumption">
-				<label>Maximum power usage yesterday</label>
+				<label>Last Week Consumption</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -88,21 +93,21 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval</description>
-		<state readOnly="true" pattern="%.3f %unit%"></state>
+		<category>energy</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Peak Power</label>
 		<description>Maximum power usage yesterday</description>
-		<state readOnly="true" pattern="%.3f %unit%"></state>
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
-		<label>Peak Timestamp</label>
-		<description>Maximum power usage timestamp</description>
-		<state readOnly="true">
-		</state>
+		<label>Timestamp</label>
+		<category>time</category>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.telegram.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -25,6 +27,8 @@ import org.openhab.core.thing.ThingTypeUID;
 public class TelegramBindingConstants {
 
     private static final String BINDING_ID = "telegram";
+    public static final Set<String> PHOTO_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png", ".gif", ".jpe", ".jif", ".jfif",
+            ".jfi", ".webp");
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID TELEGRAM_THING = new ThingTypeUID(BINDING_ID, "telegramBot");

@@ -27,6 +27,7 @@ import org.openhab.binding.modbus.studer.internal.StuderParser.ModeXtender;
 import org.openhab.binding.modbus.studer.internal.StuderParser.VSMode;
 import org.openhab.binding.modbus.studer.internal.StuderParser.VTMode;
 import org.openhab.binding.modbus.studer.internal.StuderParser.VTType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -43,7 +44,9 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
@@ -303,22 +306,21 @@ public class StuderHandler extends BaseThingHandler {
      * @param registers byte array read from the modbus slave
      */
     protected void handlePolledData(int registerNumber, ModbusRegisterArray registers) {
-        String hexString = registers.toHexString().toString();
-        Float quantity = parser.hexToFloat(hexString);
-        if (quantity != null) {
+        Optional<DecimalType> quantity = ModbusBitUtilities.extractStateFromRegisters(registers, 0, ValueType.FLOAT32);
+        quantity.ifPresent(value -> {
             if (type.equals(THING_TYPE_BSP)) {
                 Unit<?> unit = UNIT_CHANNELS_BSP.get(registerNumber);
                 if (unit != null) {
-                    internalUpdateState(CHANNELS_BSP.get(registerNumber), new QuantityType<>(quantity, unit));
+                    internalUpdateState(CHANNELS_BSP.get(registerNumber), new QuantityType<>(value, unit));
                 }
             } else if (type.equals(THING_TYPE_XTENDER)) {
-                handlePolledDataXtender(registerNumber, quantity);
+                handlePolledDataXtender(registerNumber, value);
             } else if (type.equals(THING_TYPE_VARIOTRACK)) {
-                handlePolledDataVarioTrack(registerNumber, quantity);
+                handlePolledDataVarioTrack(registerNumber, value);
             } else if (type.equals(THING_TYPE_VARIOSTRING)) {
-                handlePolledDataVarioString(registerNumber, quantity);
+                handlePolledDataVarioString(registerNumber, value);
             }
-        }
+        });
         resetCommunicationError();
     }
 
@@ -327,7 +329,7 @@ public class StuderHandler extends BaseThingHandler {
      * The register array is first parsed, then each of the channels are updated
      * to the new values
      */
-    protected void handlePolledDataVarioString(int registerNumber, Float quantity) {
+    protected void handlePolledDataVarioString(int registerNumber, DecimalType quantity) {
         switch (CHANNELS_VARIOSTRING.get(registerNumber)) {
             case CHANNEL_PV_OPERATING_MODE:
             case CHANNEL_PV1_OPERATING_MODE:
@@ -356,7 +358,7 @@ public class StuderHandler extends BaseThingHandler {
      * The register array is first parsed, then each of the channels are updated
      * to the new values
      */
-    protected void handlePolledDataVarioTrack(int registerNumber, Float quantity) {
+    protected void handlePolledDataVarioTrack(int registerNumber, DecimalType quantity) {
         switch (CHANNELS_VARIOTRACK.get(registerNumber)) {
             case CHANNEL_MODEL_VARIOTRACK:
                 VTType type = StuderParser.getVTTypeByCode(quantity.intValue());
@@ -393,7 +395,7 @@ public class StuderHandler extends BaseThingHandler {
      * The register array is first parsed, then each of the channels are updated
      * to the new values
      */
-    protected void handlePolledDataXtender(int registerNumber, Float quantity) {
+    protected void handlePolledDataXtender(int registerNumber, DecimalType quantity) {
         switch (CHANNELS_XTENDER.get(registerNumber)) {
             case CHANNEL_OPERATING_STATE:
                 ModeXtender mode = StuderParser.getModeXtenderByCode(quantity.intValue());

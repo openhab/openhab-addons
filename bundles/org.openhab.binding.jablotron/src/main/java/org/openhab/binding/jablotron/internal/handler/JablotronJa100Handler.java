@@ -160,7 +160,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         if (channel != null) {
             logger.debug("Updating channel: {} to value: {}", channel.getUID(), segment.getSegmentState());
             State newState;
-            if (segmentId.startsWith("PGM_")) {
+            if (segmentId.startsWith("pgm_")) {
                 newState = "unset".equals(segment.getSegmentState()) ? OnOffType.OFF : OnOffType.ON;
             } else {
                 newState = new StringType(segment.getSegmentState());
@@ -177,6 +177,8 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         if (channel == null) {
             logger.debug("Creating a new temperature channel: {}", segmentId);
             createTempChannel(segmentId, segment.getSegmentName());
+            processThermometer(segment);
+            return;
         }
         updateTemperatureChannel(channel, segment);
     }
@@ -187,6 +189,8 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         if (channel == null) {
             logger.debug("Creating a new thermostat channel: {}", segmentId);
             createThermostatChannel(segmentId, segment.getSegmentName());
+            processThermostat(segment);
+            return;
         }
         updateTemperatureChannel(channel, segment);
     }

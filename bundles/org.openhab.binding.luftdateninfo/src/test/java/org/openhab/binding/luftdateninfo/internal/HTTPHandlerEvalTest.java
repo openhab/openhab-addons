@@ -15,6 +15,7 @@ package org.openhab.binding.luftdateninfo.internal;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,14 +42,17 @@ public class HTTPHandlerEvalTest {
     public void setUp() {
         String conditionsStr = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         assertNotNull(conditionsStr);
+        Objects.requireNonNull(conditionsStr);
         conditions = http.getLatestValues(conditionsStr);
 
         String particulateStr = FileReader.readFileInString("src/test/resources/pm-result.json");
         assertNotNull(particulateStr);
+        Objects.requireNonNull(particulateStr);
         particulate = http.getLatestValues(particulateStr);
 
         String noiseStr = FileReader.readFileInString("src/test/resources/noise-result.json");
         assertNotNull(noiseStr);
+        Objects.requireNonNull(noiseStr);
         noise = http.getLatestValues(noiseStr);
     }
 

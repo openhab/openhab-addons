@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.nuki.internal;
 
-import java.util.ArrayList;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -118,9 +116,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Cannot find port of the http service.");
             return null;
         }
-        ArrayList<String> parameters = new ArrayList<>();
-        parameters.add(ipAddress + ":" + port);
-        String callbackUrl = String.format(NukiBindingConstants.CALLBACK_URL, parameters.toArray());
+        String callbackUrl = String.format(NukiBindingConstants.CALLBACK_URL, ipAddress + ":" + port);
         logger.trace("callbackUrl[{}]", callbackUrl);
         return callbackUrl;
     }

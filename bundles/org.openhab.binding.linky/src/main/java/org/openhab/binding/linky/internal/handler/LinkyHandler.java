@@ -70,12 +70,12 @@ public class LinkyHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
     private final Gson gson;
+    private final WeekFields weekFields;
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable EnedisHttpApi enedisApi;
-    private final WeekFields weekFields;
 
-    private final ExpiringDayCache<Consumption> cachedDaylyData;
+    private final ExpiringDayCache<Consumption> cachedDailyData;
     private final ExpiringDayCache<Consumption> cachedPowerData;
     private final ExpiringDayCache<Consumption> cachedMonthlyData;
     private final ExpiringDayCache<Consumption> cachedYearlyData;
@@ -87,12 +87,11 @@ public class LinkyHandler extends BaseThingHandler {
         super(thing);
         this.gson = gson;
         this.httpClient = httpClient;
-
         this.weekFields = WeekFields.of(localeProvider.getLocale());
 
-        this.cachedDaylyData = new ExpiringDayCache<>("daily cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
+        this.cachedDailyData = new ExpiringDayCache<>("daily cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
-            return getConsumptionData(today.minusDays(13), today);
+            return getConsumptionData(today.minusDays(15), today);
         });
 
         this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
@@ -120,31 +119,37 @@ public class LinkyHandler extends BaseThingHandler {
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
         enedisApi = new EnedisHttpApi(config, gson, httpClient);
 
-        try {
-            enedisApi.initialize();
-            updateStatus(ThingStatus.ONLINE);
+        scheduler.submit(() -> {
+            try {
+                EnedisHttpApi api = this.enedisApi;
+                if (api != null) {
+                    api.initialize();
+                    updateStatus(ThingStatus.ONLINE);
 
-            if (thing.getProperties().isEmpty()) {
-                Map<String, String> properties = discoverAttributes();
-                updateProperties(properties);
+                    if (thing.getProperties().isEmpty()) {
+                        Map<String, String> properties = discoverAttributes();
+                        updateProperties(properties);
+                    }
+
+                    prmId = thing.getProperties().get(PRM_ID);
+                    userId = thing.getProperties().get(USER_ID);
+
+                    final LocalDateTime now = LocalDateTime.now();
+                    final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
+                            .truncatedTo(ChronoUnit.HOURS);
+
+                    updateData();
+
+                    refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                            ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                            REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+                } else {
+                    throw new LinkyException("Enedis Api is not initialized");
+                }
+            } catch (LinkyException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-
-            prmId = thing.getProperties().get(PRM_ID);
-            userId = thing.getProperties().get(USER_ID);
-
-            final LocalDateTime now = LocalDateTime.now();
-            final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                    .truncatedTo(ChronoUnit.HOURS);
-
-            updateData();
-
-            refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                    ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                    REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
-
-        } catch (LinkyException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        });
     }
 
     private Map<String, String> discoverAttributes() throws LinkyException {
@@ -167,17 +172,17 @@ public class LinkyHandler extends BaseThingHandler {
     private void updateData() {
         updatePowerData();
         updateDailyData();
+        updateWeeklyData();
         updateMonthlyData();
         updateYearlyData();
     }
 
     private synchronized void updatePowerData() {
         if (isLinked(PEAK_POWER) || isLinked(PEAK_TIMESTAMP)) {
-            Consumption result = cachedPowerData.getValue();
-            if (result != null) {
-                updateVAChannel(PEAK_POWER, result.aggregats.days.datas.get(0));
-                updateState(PEAK_TIMESTAMP, new DateTimeType(result.aggregats.days.periodes.get(0).dateDebut));
-            }
+            cachedPowerData.getValue().ifPresent(values -> {
+                updateVAChannel(PEAK_POWER, values.aggregats.days.datas.get(0));
+                updateState(PEAK_TIMESTAMP, new DateTimeType(values.aggregats.days.periodes.get(0).dateDebut));
+            });
         }
     }
 
@@ -185,23 +190,19 @@ public class LinkyHandler extends BaseThingHandler {
      * Request new dayly/weekly data and updates channels
      */
     private synchronized void updateDailyData() {
-        if (isLinked(YESTERDAY) || isLinked(LAST_WEEK) || isLinked(THIS_WEEK)) {
-            Consumption result = cachedDaylyData.getValue();
-            if (result != null) {
-                Aggregate days = result.aggregats.days;
-
+        if (isLinked(YESTERDAY) || isLinked(THIS_WEEK)) {
+            cachedDailyData.getValue().ifPresent(values -> {
+                Aggregate days = values.aggregats.days;
                 int maxValue = days.periodes.size() - 1;
                 int thisWeekNumber = days.periodes.get(maxValue).dateDebut.get(weekFields.weekOfWeekBasedYear());
                 double yesterday = days.datas.get(maxValue);
-                double lastWeek = 0.0;
-                double thisWeek = 0.0;
+                double thisWeek = 0.00;
 
                 for (int i = maxValue; i >= 0; i--) {
                     int weekNumber = days.periodes.get(i).dateDebut.get(weekFields.weekOfWeekBasedYear());
                     if (weekNumber == thisWeekNumber) {
-                        thisWeek += days.datas.get(i);
-                    } else if (weekNumber == thisWeekNumber - 1) {
-                        lastWeek += days.datas.get(i);
+                        Double value = days.datas.get(i);
+                        thisWeek += !value.isNaN() ? value : 0;
                     } else {
                         break;
                     }
@@ -209,8 +210,21 @@ public class LinkyHandler extends BaseThingHandler {
 
                 updateKwhChannel(YESTERDAY, yesterday);
                 updateKwhChannel(THIS_WEEK, thisWeek);
-                updateKwhChannel(LAST_WEEK, lastWeek);
-            }
+            });
+        }
+    }
+
+    /**
+     * Request new weekly data and updates channels
+     */
+    private synchronized void updateWeeklyData() {
+        if (isLinked(LAST_WEEK)) {
+            cachedDailyData.getValue().ifPresent(values -> {
+                Aggregate weeks = values.aggregats.weeks;
+                if (weeks.datas.size() > 1) {
+                    updateKwhChannel(LAST_WEEK, weeks.datas.get(1));
+                }
+            });
         }
     }
 
@@ -219,16 +233,15 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateMonthlyData() {
         if (isLinked(LAST_MONTH) || isLinked(THIS_MONTH)) {
-            Consumption result = cachedMonthlyData.getValue();
-            if (result != null) {
-                Aggregate months = result.aggregats.months;
-                if (months.datas.size() < 2) {
-                    logger.debug("Received data array too small (required size is 2): {}", months);
-                    return;
-                }
+            cachedMonthlyData.getValue().ifPresent(values -> {
+                Aggregate months = values.aggregats.months;
                 updateKwhChannel(LAST_MONTH, months.datas.get(0));
-                updateKwhChannel(THIS_MONTH, months.datas.get(1));
-            }
+                if (months.datas.size() > 1) {
+                    updateKwhChannel(THIS_MONTH, months.datas.get(1));
+                } else {
+                    updateKwhChannel(THIS_MONTH, Double.NaN);
+                }
+            });
         }
     }
 
@@ -237,26 +250,28 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateYearlyData() {
         if (isLinked(LAST_YEAR) || isLinked(THIS_YEAR)) {
-            Consumption result = cachedYearlyData.getValue();
-            if (result != null) {
-                Aggregate years = result.aggregats.years;
+            cachedYearlyData.getValue().ifPresent(values -> {
+                Aggregate years = values.aggregats.years;
                 updateKwhChannel(LAST_YEAR, years.datas.get(0));
-                updateKwhChannel(THIS_YEAR, years.datas.get(1));
-            }
+                if (years.datas.size() > 1) {
+                    updateKwhChannel(THIS_YEAR, years.datas.get(1));
+                } else {
+                    updateKwhChannel(THIS_YEAR, Double.NaN);
+                }
+            });
         }
     }
 
     private void updateKwhChannel(String channelId, double consumption) {
         logger.debug("Update channel {} with {}", channelId, consumption);
-        updateState(channelId,
-                !Double.isNaN(consumption) ? new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR)
-                        : UnDefType.UNDEF);
+        updateState(channelId, Double.isNaN(consumption) ? UnDefType.UNDEF
+                : new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR));
     }
 
     private void updateVAChannel(String channelId, double power) {
         logger.debug("Update channel {} with {}", channelId, power);
         updateState(channelId,
-                !Double.isNaN(power) ? new QuantityType<>(power, SmartHomeUnits.VOLT_AMPERE) : UnDefType.UNDEF);
+                Double.isNaN(power) ? UnDefType.UNDEF : new QuantityType<>(power, SmartHomeUnits.VOLT_AMPERE));
     }
 
     /**

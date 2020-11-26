@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.fan.za4"
+			"zhimi.fan.za4",
+			"zhimi.fan.za3"
 		],
 		"channels": [
 			{

@@ -21,12 +21,7 @@ import java.nio.channels.Channel;
 import java.nio.channels.CompletionHandler;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -150,7 +145,7 @@ public class Connection {
      * @return the data
      */
     public ModInfo updateModuleData(LcnAddrMod addr) {
-        return modData.computeIfAbsent(addr, ModInfo::new);
+        return Objects.requireNonNull(modData.computeIfAbsent(addr, ModInfo::new));
     }
 
     /**

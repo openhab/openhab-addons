@@ -14,6 +14,7 @@ package org.openhab.binding.volvooncall.internal.api;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -108,7 +109,7 @@ public class VocHttpApi {
                 throw new IOException();
             } else {
                 logger.debug("Request to `{}` answered : {}", url, jsonResponse);
-                T responseDTO = gson.fromJson(jsonResponse, objectClass);
+                T responseDTO = Objects.requireNonNull(gson.fromJson(jsonResponse, objectClass));
                 String error = responseDTO.getErrorLabel();
                 if (error != null) {
                     throw new VolvoOnCallException(error, responseDTO.getErrorDescription());

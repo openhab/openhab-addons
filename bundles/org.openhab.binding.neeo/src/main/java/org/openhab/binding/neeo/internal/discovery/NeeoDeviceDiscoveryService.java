@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
 import org.openhab.binding.neeo.internal.NeeoConstants;
@@ -73,7 +72,7 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
         final ThingUID roomUid = roomBridge.getUID();
 
         final String brainId = roomHandler.getNeeoBrainId();
-        if (brainId == null || StringUtils.isEmpty(brainId)) {
+        if (brainId == null || brainId.isEmpty()) {
             logger.debug("Unknown brain ID for roomHandler: {}", roomHandler);
             return;
         }
@@ -86,7 +85,7 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
 
         final NeeoRoomConfig config = roomBridge.getConfiguration().as(NeeoRoomConfig.class);
         final String roomKey = config.getRoomKey();
-        if (roomKey == null || StringUtils.isEmpty(roomKey)) {
+        if (roomKey == null || roomKey.isEmpty()) {
             logger.debug("RoomKey wasn't configured for {} - skipping", brainId);
             return;
         }
@@ -103,7 +102,7 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
             logger.debug("Room {} found, scanning {} devices in it", room.getName(), devices.length);
             for (NeeoDevice device : devices) {
                 final String deviceKey = device.getKey();
-                if (deviceKey == null || StringUtils.isEmpty(deviceKey)) {
+                if (deviceKey == null || deviceKey.isEmpty()) {
                     logger.debug("Device key wasn't found for device: {}", device);
                     continue;
                 }

@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -207,7 +208,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
         }
         try {
             logger.trace("Handler: Parsing forecast response: {}", response);
-            ForecastDTO forecast = gson.fromJson(response, ForecastDTO.class);
+            ForecastDTO forecast = Objects.requireNonNull(gson.fromJson(response, ForecastDTO.class));
             logger.debug("Handler: Successfully parsed daily forecast response object");
             updateStatus(ThingStatus.ONLINE);
             updateDailyForecast(forecast);

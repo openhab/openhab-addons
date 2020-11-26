@@ -636,6 +636,7 @@ public class LifxLightHandler extends BaseThingHandler {
                     .setTemperature(percentTypeToKelvin(localPowerOnTemperature, product.getTemperatureRange()));
         }
 
+        PercentType powerOnBrightness = this.powerOnBrightness;
         if (powerOnBrightness != null) {
             PercentType newBrightness = onOff == OnOffType.ON ? powerOnBrightness : new PercentType(0);
             getLightStateForCommand().setBrightness(newBrightness);

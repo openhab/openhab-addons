@@ -30,15 +30,15 @@ The Météo Alerte information that are retrieved is available as these channels
 | observation-time      | DateTime  | Date and time of report validity start        |
 | end-time              | DateTime  | Date and time of report validity end          |
 | comment               | String    | General comments on alerts for the department |
-| vent                  | String    | Wind alert level (*)                          |
-| pluie-inondation      | String    | Rain alert level (*)                          |
-| orage                 | String    | Storm alert level (*)                         |
-| inondation            | String    | Flood alert level (*)                         |
-| neige                 | String    | Snow alert level (*)                          |
-| canicule              | String    | Heat alert level (*)                          |
-| grand-froid           | String    | Cold alert level (*)                          |
-| avalanches            | String    | Avalanche alert level (*)                     |
-| vague-submersion      | String    | Wave submersion alert level (*)               |
+| vent                  | Number    | Wind alert level (*)                          |
+| pluie-inondation      | Number    | Rain alert level (*)                          |
+| orage                 | Number    | Storm alert level (*)                         |
+| inondation            | Number    | Flood alert level (*)                         |
+| neige                 | Number    | Snow alert level (*)                          |
+| canicule              | Number    | Heat alert level (*)                          |
+| grand-froid           | Number    | Cold alert level (*)                          |
+| avalanches            | Number    | Avalanche alert level (*)                     |
+| vague-submersion      | Number    | Wave submersion alert level (*)               |
 | pluie-inondation-icon | Image     | Pictogram of the Rain alert level             |
 | vent-icon             | Image     | Pictogram of the Wind alert level             |
 | orage-icon            | Image     | Pictogram of Storm alert level                |
@@ -72,14 +72,14 @@ meteoalert.items:
 ```
 Group gMeteoAlert "Alertes Météo" <weather> 
     String  MA_Dept78                    "Département 78 [%s]"   <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:comment"}
-    String  MA_etat_canicule             "Canicule [%s]"         <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule"}
-    String  MA_etat_grand_froid          "Grand Froid [%s]"      <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:grand-froid"}
-    String  MA_etat_pluie_inondation     "Pluie-Inondation [%s]" <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:pluie-inondation"}
-    String  MA_etat_neige                "Neige [%s]"            <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:neige"}
-    String  MA_etat_vent                 "Vent [%s]"             <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:vent"}
-    String  MA_etat_inondation           "Inondation [%s]"       <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:inondation"}
-    String  MA_etat_orage                "Orage [%s]"            <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:orage"}
-    String  MA_etat_avalanche            "Avalanches [%s]"       <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:avalanches"}
+    Number  MA_etat_canicule             "Canicule [%s]"         <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule"}
+    Number  MA_etat_grand_froid          "Grand Froid [%s]"      <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:grand-froid"}
+    Number  MA_etat_pluie_inondation     "Pluie-Inondation [%s]" <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:pluie-inondation"}
+    Number  MA_etat_neige                "Neige [%s]"            <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:neige"}
+    Number  MA_etat_vent                 "Vent [%s]"             <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:vent"}
+    Number  MA_etat_inondation           "Inondation [%s]"       <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:inondation"}
+    Number  MA_etat_orage                "Orage [%s]"            <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:orage"}
+    Number  MA_etat_avalanche            "Avalanches [%s]"       <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:avalanches"}
     
     Image       MA_icon_canicule         "Canicule"              <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:canicule-icon"}
     Image       MA_icon_grand_froid      "Grand Froid"           <aqi>       (gMeteoAlert)   {channel="meteoalerte:department:yvelines:grand-froid-icon"}

@@ -64,8 +64,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
     private @Nullable SmartthingsBridgeHandler bridgeHandler = null;
     private @Nullable ThingUID bridgeUID;
     private Gson gson;
-    private List<SmartthingsThingHandler> thingHandlers = Collections
-            .synchronizedList(new ArrayList<SmartthingsThingHandler>());
+    private List<SmartthingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
 
     private @NonNullByDefault({}) HttpClient httpClient;
 
@@ -153,6 +152,9 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
             String data = (String) event.getProperty("data");
             SmartthingsStateData stateData = new SmartthingsStateData();
             stateData = gson.fromJson(data, stateData.getClass());
+            if (stateData == null) {
+                return;
+            }
             SmartthingsThingHandler handler = findHandler(stateData);
             if (handler != null) {
                 handler.handleStateMessage(stateData);

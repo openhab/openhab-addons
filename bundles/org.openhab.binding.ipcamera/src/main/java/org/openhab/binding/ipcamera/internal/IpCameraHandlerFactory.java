@@ -40,10 +40,13 @@ import org.osgi.service.component.annotations.Reference;
 public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
     private final @Nullable String openhabIpAddress;
     private final GroupTracker groupTracker = new GroupTracker();
+    private final IpCameraDynamicStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public IpCameraHandlerFactory(final @Reference NetworkAddressService networkAddressService) {
+    public IpCameraHandlerFactory(final @Reference NetworkAddressService networkAddressService,
+            final @Reference IpCameraDynamicStateDescriptionProvider stateDescriptionProvider) {
         openhabIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new IpCameraHandler(thing, openhabIpAddress, groupTracker);
+            return new IpCameraHandler(thing, openhabIpAddress, groupTracker, stateDescriptionProvider);
         } else if (GROUP_SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new IpCameraGroupHandler(thing, openhabIpAddress, groupTracker);
         }

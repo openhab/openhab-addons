@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miio.internal.handler;
 
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -129,9 +129,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
         logger.debug("Locating action for {} channel '{}': '{}'", getThing().getUID(), channelUID.getId(), command);
         if (!actions.isEmpty()) {
-            if (actions.containsKey(channelUID)) {
+            MiIoBasicChannel miIoBasicChannel = actions.get(channelUID);
+            if (miIoBasicChannel != null) {
                 int valuePos = 0;
-                MiIoBasicChannel miIoBasicChannel = actions.get(channelUID);
                 for (MiIoDeviceAction action : miIoBasicChannel.getActions()) {
                     @Nullable
                     JsonElement value = null;
@@ -227,7 +227,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             parameters.add(value);
                         }
                     }
-                    cmd = cmd + parameters.toString();
+                    if (action.isMiOtAction() && parameters.size() > 0 && parameters.get(0).isJsonObject()) {
+                        // hack as unlike any other commands miot actions parameters appear to be send as a json object
+                        // instead of a json array
+                        cmd = cmd + parameters.get(0).getAsJsonObject().toString();
+                    } else {
+                        cmd = cmd + parameters.toString();
+                    }
                     if (value != null) {
                         logger.debug("Sending command {}", cmd);
                         sendCommand(cmd);
@@ -445,6 +451,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             thingBuilder.withoutChannel(new ChannelUID(getThing().getUID(), channel));
         }
         ChannelBuilder newChannel = ChannelBuilder.create(channelUID, datatype).withLabel(friendlyName);
+        boolean useGenericChannelType = false;
         if (!channelType.isBlank()) {
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(channelType);
             if (channelTypeRegistry.getChannelType(channelTypeUID) != null) {
@@ -452,7 +459,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             } else {
                 logger.debug("ChannelType '{}' is not available. Check the Json file for {}", channelTypeUID,
                         getThing().getUID());
+                useGenericChannelType = true;
             }
+        } else {
+            useGenericChannelType = true;
+        }
+        if (useGenericChannelType) {
+            newChannel = newChannel.withType(new ChannelTypeUID(BINDING_ID, datatype.toLowerCase()));
         }
         thingBuilder.withChannel(newChannel.build());
         return channelUID;

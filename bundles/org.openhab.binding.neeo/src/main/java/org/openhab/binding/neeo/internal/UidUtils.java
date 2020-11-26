@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.neeo.internal;
 
-import java.util.Objects;
-
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.internal.models.NeeoDevice;
@@ -66,8 +63,6 @@ public class UidUtils {
      * @return the non-null, non empty (only 1 or 2 element) list of parts
      */
     public static String[] parseChannelId(ChannelUID uid) {
-        Objects.requireNonNull(uid, "uid cannot be null");
-
         final String channelId = uid.getIdWithoutGroup();
         final int idx = channelId.indexOf(DELIMITER);
         if (idx < 0 || idx == channelId.length() - 1) {
@@ -101,8 +96,8 @@ public class UidUtils {
     public static String createChannelId(@Nullable String groupId, String channelId, @Nullable String channelKey) {
         NeeoUtil.requireNotEmpty(channelId, "channelId cannot be empty");
 
-        return (StringUtils.isEmpty(groupId) ? "" : (groupId + "#"))
-                + (StringUtils.isEmpty(channelKey) ? channelId : (channelId + DELIMITER + channelKey));
+        return ((groupId == null || groupId.isEmpty()) ? "" : (groupId + "#"))
+                + ((channelKey == null || channelKey.isEmpty()) ? channelId : (channelId + DELIMITER + channelKey));
     }
 
     /**
@@ -129,6 +124,6 @@ public class UidUtils {
     public static ChannelUID createChannelUID(ThingUID thingUid, String groupId, String channelId,
             @Nullable String channelKey) {
         return new ChannelUID(thingUid, groupId,
-                channelId + (StringUtils.isEmpty(channelKey) ? "" : (DELIMITER + channelKey)));
+                channelId + ((channelKey == null || channelKey.isEmpty()) ? "" : (DELIMITER + channelKey)));
     }
 }

@@ -46,6 +46,12 @@ public class JsonSmartHomeGroups {
         public @Nullable Boolean isSpace;
         public @Nullable Boolean space;
         public @Nullable SmartHomeGroupIdentifier applianceGroupIdentifier;
+
+        @Override
+        public String toString() {
+            return "SmartHomeGroup{" + "applianceGroupName='" + applianceGroupName + '\'' + ", isSpace=" + isSpace
+                    + ", space=" + space + ", applianceGroupIdentifier=" + applianceGroupIdentifier + '}';
+        }
     }
 
     public @Nullable SmartHomeGroup @Nullable [] groups;

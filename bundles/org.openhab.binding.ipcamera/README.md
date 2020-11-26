@@ -196,6 +196,7 @@ If you do not specify any of these, the binding will use the default which shoul
 | `hlsOutOptions`| This gives you direct access to specify your own FFmpeg options to be used. Default: `-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4` |
 | `gifOutOptions`| This gives you direct access to specify your own FFmpeg options to be used for animated GIF files. Default: `-r 2 -filter_complex scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse` |
 | `mjpegOptions` | Allows you to change the settings for creating a MJPEG stream from RTSP using FFmpeg. Possible reasons to change this would be to rotate or re-scale the picture from the camera, change the JPG compression for better quality or the FPS rate. |
+| `snapshotOptions` | Specify your own FFmpeg options to be used when creating snapshots from RTSP. Default: `-an -vsync vfr -q:v 2 -update 1` |
 | `motionOptions` | This gives access to the FFmpeg parameters for detecting motion alarms from a RTSP stream. One possible use for this is to use the CROP feature to ignore any trees that move in the wind or a timecode stamp. Crop will not remove the trees from your picture, it only ignores the movement of the tree. |
 | `gifPreroll`| Store this many snapshots from BEFORE you trigger a GIF creation. Default: `0` will not use snapshots and will instead use a realtime stream from the ffmpegInput URL |
 | `ipWhitelist`| Enter any IPs inside brackets that you wish to allow to access the video stream. `DISABLE` the default value will turn this feature off.  Example: `ipWhitelist="(127.0.0.1)(192.168.0.99)"` |
@@ -245,6 +246,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `pan` | Dimmer | Works with ONVIF cameras that can be moved. |
 | `parkingAlarm` | Switch (read only) | When an API camera detects a car, this will turn ON. |
 | `pirAlarm` | Switch (read only) | When a camera with PIR ability detects motion, this turns ON. |
+| `privacyMode` | Switch | Enable or disable the Privacy Mode of newer Amcrest/Dahua cameras. The camera will move the lens way down and stop the stream. |
 | `recordingGif` | Number (read only) | How many seconds recording to GIF for. 0 when file ready. |
 | `recordingMp4` | Number (read only) | How many seconds recording to MP4 for. 0 when file ready. |
 | `rtspUrl` | String | The URL for the cameras auto detected RTSP stream. |

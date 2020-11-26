@@ -30,6 +30,7 @@ import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDeviceAlias;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
@@ -145,6 +146,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
 
             if (smartHomeDevice instanceof SmartHomeDevice) {
                 SmartHomeDevice shd = (SmartHomeDevice) smartHomeDevice;
+                logger.trace("Found SmartHome device: {}", shd);
 
                 String entityId = shd.entityId;
                 if (entityId == null) {
@@ -178,23 +180,24 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
 
                 thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, entityId.replace(".", "-"));
 
+                JsonSmartHomeDeviceAlias[] aliases = shd.aliases;
                 if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "SonarCloudService".equals(driverIdentity.identifier)) {
                     deviceName = "Alexa Guard on " + shd.friendlyName;
                 } else if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "OnGuardSmartHomeBridgeService".equals(driverIdentity.identifier)) {
                     deviceName = "Alexa Guard";
-                } else if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0] != null
-                        && shd.aliases[0].friendlyName != null) {
-                    deviceName = shd.aliases[0].friendlyName;
+                } else if (aliases != null && aliases.length > 0 && aliases[0] != null
+                        && aliases[0].friendlyName != null) {
+                    deviceName = aliases[0].friendlyName;
                 } else {
                     deviceName = shd.friendlyName;
                 }
                 props.put(DEVICE_PROPERTY_ID, id);
-            }
-
-            if (smartHomeDevice instanceof SmartHomeGroup) {
+            } else if (smartHomeDevice instanceof SmartHomeGroup) {
                 SmartHomeGroup shg = (SmartHomeGroup) smartHomeDevice;
+                logger.trace("Found SmartHome device: {}", shg);
+
                 String id = shg.findId();
                 if (id == null) {
                     // No id

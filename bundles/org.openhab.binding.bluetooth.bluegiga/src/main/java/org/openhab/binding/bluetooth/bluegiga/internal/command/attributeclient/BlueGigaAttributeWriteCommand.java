@@ -79,7 +79,7 @@ public class BlueGigaAttributeWriteCommand extends BlueGigaDeviceCommand {
             if (c > 0) {
                 builder.append(' ');
             }
-            builder.append(String.format("%02X", data[c]));
+            builder.append(String.format("%02X", data[c] & 0xFF));
         }
         builder.append(']');
         return builder.toString();

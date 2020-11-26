@@ -5,6 +5,5 @@
 
 	<name>Somfy URTSI II Binding</name>
 	<description>@text/bindingDescription</description>
-	<author>Oliver Libutzki</author>
 
 </binding:binding>

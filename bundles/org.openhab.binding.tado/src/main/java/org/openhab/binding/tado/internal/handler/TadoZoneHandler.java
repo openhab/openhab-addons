@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
@@ -81,9 +82,9 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         return this.configuration.fallbackTimerDuration;
     }
 
-    public ZoneType getZoneType() {
+    public @Nullable ZoneType getZoneType() {
         String zoneTypeStr = this.thing.getProperties().get(TadoBindingConstants.PROPERTY_ZONE_TYPE);
-        return ZoneType.valueOf(zoneTypeStr);
+        return zoneTypeStr != null ? ZoneType.valueOf(zoneTypeStr) : null;
     }
 
     public OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {

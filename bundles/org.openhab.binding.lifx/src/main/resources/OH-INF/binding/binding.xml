@@ -5,6 +5,5 @@
 
 	<name>LIFX Binding</name>
 	<description>This is the binding for LIFX lights.</description>
-	<author>Karel Goderis</author>
 
 </binding:binding>

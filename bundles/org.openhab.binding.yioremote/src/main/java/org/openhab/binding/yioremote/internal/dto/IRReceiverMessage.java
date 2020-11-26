@@ -43,9 +43,6 @@ public class IRReceiverMessage {
     }
 
     public String getIRreceiverMessageString() {
-        JsonObject irReceiverMessage = new JsonObject();
-        irReceiverMessage.addProperty("type", type);
-        irReceiverMessage.addProperty("command", command);
-        return irReceiverMessage.toString();
+        return getIRreceiverMessageJsonObject().toString();
     }
 }

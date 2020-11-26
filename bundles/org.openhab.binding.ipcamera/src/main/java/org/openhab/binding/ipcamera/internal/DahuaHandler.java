@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -144,6 +143,13 @@ public class DahuaHandler extends ChannelDuplexHandler {
             } else if (content.contains("table.VideoAnalyseRule[0][1].Enable=false")) {
                 ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.OFF);
             }
+            // Privacy Mode on/off
+            if (content.contains("Code=LensMaskOpen;") || content.contains("table.LeLensMask[0].Enable=true")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
+            } else if (content.contains("Code=LensMaskClose;")
+                    || content.contains("table.LeLensMask[0].Enable=false")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
+            }
         } finally {
             ReferenceCountUtil.release(msg);
         }
@@ -164,6 +170,9 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     return;
                 case CHANNEL_ENABLE_MOTION_ALARM:
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect[0]");
+                    return;
+                case CHANNEL_ENABLE_PRIVACY_MODE:
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=LeLensMask[0]");
                     return;
             }
             return; // Return as we have handled the refresh command above and don't need to
@@ -252,17 +261,14 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[1].Mode=0");
                 }
                 return;
-            case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
-                    ipCameraHandler.motionAlarmEnabled = false;
-                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-                } else {
-                    ipCameraHandler.motionAlarmEnabled = true;
-                    ipCameraHandler.motionThreshold = Double.valueOf(command.toString()) / 10000;
+            case CHANNEL_ENABLE_PRIVACY_MODE:
+                if (OnOffType.OFF.equals(command)) {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask[0].Enable=false");
+                } else if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask[0].Enable=true");
                 }
-                ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                 return;
         }
     }

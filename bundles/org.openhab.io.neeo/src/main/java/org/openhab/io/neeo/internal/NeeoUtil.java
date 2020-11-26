@@ -155,9 +155,12 @@ public class NeeoUtil {
      * @param s The UTF-8 encoded String to be decoded
      * @return the decoded String
      */
-    public static String decodeURIComponent(String s) {
-        String result = null;
+    public static String decodeURIComponent(@Nullable String s) {
+        if (s == null) {
+            return "";
+        }
 
+        String result = null;
         try {
             result = URLDecoder.decode(s, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
