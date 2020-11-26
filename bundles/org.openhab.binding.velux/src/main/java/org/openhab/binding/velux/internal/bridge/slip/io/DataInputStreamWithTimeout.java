@@ -189,8 +189,7 @@ class DataInputStreamWithTimeout implements Closeable {
         if (pollThreadX != null) {
             logger.trace("startPolling()");
             pollThreadX = pollThread = new Thread(pollRunner);
-            pollThreadX.setDaemon(true);
-            pollThreadX.setName(VeluxBindingConstants.THREAD_NAME_PREFIX + VeluxBindingConstants.THING_TYPE_BRIDGE);
+            pollThreadX.setName("OH-" + VeluxBindingConstants.THING_TYPE_BRIDGE);
             pollThreadX.start();
         }
     }

@@ -803,8 +803,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      */
     private ExecutorService getTaskExecutor() {
         if (threadFactory == null) {
-            threadFactory = new NamedThreadFactory(
-                    VeluxBindingConstants.THREAD_NAME_PREFIX + getThing().getUID().getAsString(), true);
+            threadFactory = new NamedThreadFactory(getThing().getUID().getAsString());
         }
         ExecutorService taskExecutor = this.taskExecutor;
         if (taskExecutor == null || taskExecutor.isShutdown()) {
