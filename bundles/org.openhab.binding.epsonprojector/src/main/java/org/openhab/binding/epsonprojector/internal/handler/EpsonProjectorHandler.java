@@ -101,7 +101,6 @@ public class EpsonProjectorHandler extends BaseThingHandler {
         device.setScheduler(scheduler);
 
         try {
-            updateStatus(ThingStatus.UNKNOWN);
             device.connect();
         } catch (EpsonProjectorException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
