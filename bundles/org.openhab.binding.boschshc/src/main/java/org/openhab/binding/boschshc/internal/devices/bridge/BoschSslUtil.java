@@ -116,7 +116,7 @@ public class BoschSslUtil {
     }
 
     private X509Certificate generateClientCertificate(KeyPair keyPair)
-            throws GeneralSecurityException, IOException, OperatorCreationException {
+            throws GeneralSecurityException, OperatorCreationException {
         final String dirName = "CN=" + getBoschSHCId() + ", O=openHAB, L=None, ST=None, C=None";
         logger.debug("Creating a new self signed certificate: {}", dirName);
         final Instant now = Instant.now();
@@ -150,7 +150,7 @@ public class BoschSslUtil {
         Security.addProvider(new BouncyCastleProvider());
         Signature signer = Signature.getInstance("SHA256withRSA", "BC");
         signer.initSign(keyPair.getPrivate());
-        signer.update("Hello OpenHAB".getBytes(StandardCharsets.UTF_8));
+        signer.update("Hello openHAB".getBytes(StandardCharsets.UTF_8));
         signer.sign();
 
         X509Certificate cert = generateClientCertificate(keyPair);
