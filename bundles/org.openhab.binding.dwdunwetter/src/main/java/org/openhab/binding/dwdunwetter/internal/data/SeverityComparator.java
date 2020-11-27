@@ -28,7 +28,9 @@ public class SeverityComparator implements Comparator<DwdWarningData> {
 
         int result = Integer.compare(o1.getSeverity().getOrder(), o2.getSeverity().getOrder());
         if (result == 0) {
-            if (o1.getOnset() == null) {
+            if (o1.getOnset() == o2.getOnset()) {
+                return 0;
+            } else if (o1.getOnset() == null) {
                 return -1;
             } else if (o2.getOnset() == null) {
                 return 1;
