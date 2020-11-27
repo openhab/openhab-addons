@@ -15,11 +15,11 @@ package org.openhab.binding.upnpcontrol.internal.config;
 import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.DEFAULT_PATH;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.upnpcontrol.internal.util.UpnpControlUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class containing the binding configuration parameters. Some helper methods take care of updating the relevant classes
@@ -29,39 +29,32 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class UpnpControlBindingConfiguration {
+    private final Logger logger = LoggerFactory.getLogger(UpnpControlBindingConfiguration.class);
 
-    private List<UpnpControlBindingConfigurationListener> listeners = new ArrayList<>();
-
-    public @Nullable String path = DEFAULT_PATH;
+    public String path = DEFAULT_PATH;
 
     public void update(UpnpControlBindingConfiguration newConfig) {
-        String newPath = path;
-        if (newPath == null) {
-            path = DEFAULT_PATH;
-            return;
-        }
+        String newPath = newConfig.path;
 
-        File file = new File(newPath);
-        if (!file.isDirectory()) {
-            file = file.getParentFile();
-        }
-        if (file.exists()) {
-            if (!(newPath.endsWith(File.separator) || newPath.endsWith("/"))) {
-                newPath = newPath + File.separator;
-            }
-            path = newPath;
+        if (newPath.isEmpty()) {
+            path = DEFAULT_PATH;
         } else {
-            path = DEFAULT_PATH;
+            File file = new File(newPath);
+            if (!file.isDirectory()) {
+                file = file.getParentFile();
+            }
+            if (file.exists()) {
+                if (!(newPath.endsWith(File.separator) || newPath.endsWith("/"))) {
+                    newPath = newPath + File.separator;
+                }
+                path = newPath;
+            } else {
+                path = DEFAULT_PATH;
+            }
         }
 
-        notifyListeners();
-    }
+        logger.debug("Storage path updated to {}", path);
 
-    public void addUpnpControlBindingConfigurationListener(UpnpControlBindingConfigurationListener listener) {
-        listeners.add(listener);
-    }
-
-    private void notifyListeners() {
-        listeners.forEach(l -> l.bindingConfigurationChanged(this.path));
+        UpnpControlUtil.bindingConfigurationChanged(path);
     }
 }

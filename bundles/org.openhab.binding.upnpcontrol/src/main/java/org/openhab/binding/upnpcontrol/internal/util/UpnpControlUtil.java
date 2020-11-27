@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.upnpcontrol.internal.config.UpnpControlBindingConfigurationListener;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpPlaylistsListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public final class UpnpControlUtil implements UpnpControlBindingConfigurationListener {
+public final class UpnpControlUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpnpControlUtil.class);
 
@@ -57,8 +56,7 @@ public final class UpnpControlUtil implements UpnpControlBindingConfigurationLis
         PLAYLIST_SUBSCRIPTIONS.remove(listener);
     }
 
-    @Override
-    public void bindingConfigurationChanged(@Nullable String path) {
+    public static void bindingConfigurationChanged(@Nullable String path) {
         updatePlaylistsList(path);
     }
 

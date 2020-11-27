@@ -276,7 +276,7 @@ public class UpnpEntryQueue {
      *
      * @param path of playlist directory
      */
-    public void persistQueue(@Nullable String path) {
+    public void persistQueue(String path) {
         persistQueue("current", false, path);
     }
 
@@ -287,11 +287,7 @@ public class UpnpEntryQueue {
      * @param append to the playlist if it already exists
      * @param path of playlist directory
      */
-    public synchronized void persistQueue(String name, boolean append, @Nullable String path) {
-        if (path == null) {
-            return;
-        }
-
+    public synchronized void persistQueue(String name, boolean append, String path) {
         String fileName = path + name + PLAYLIST_FILE_EXTENSION;
         File file = new File(fileName);
 
@@ -306,19 +302,22 @@ public class UpnpEntryQueue {
                     logger.debug("Reading contents of {} for appending", file.getAbsolutePath());
                     final byte[] contents = Files.readAllBytes(file.toPath());
                     json = new String(contents, StandardCharsets.UTF_8);
-                    Map<String, List<UpnpEntry>> persistList = gson.fromJson(json, Playlist.class).masterList;
+                    Playlist appendList = gson.fromJson(json, Playlist.class);
+                    if (appendList == null) {
+                        // empty playlist file, so just overwrite
+                        playlist.name = name;
+                        json = gson.toJson(playlist);
+                    } else {
+                        // Merging masterList with persistList, overwriting persistList UpnpEntry objects with same id
+                        playlist.masterList.forEach((u, list) -> appendList.masterList.merge(u, list,
+                                (oldlist,
+                                        newlist) -> new ArrayList<>(Stream.of(oldlist, newlist).flatMap(List::stream)
+                                                .collect(Collectors.toMap(UpnpEntry::getId, entry -> entry,
+                                                        (UpnpEntry oldentry, UpnpEntry newentry) -> newentry))
+                                                .values())));
 
-                    // Merging masterList with persistList, overwriting persistList UpnpEntry objects with same id
-                    playlist.masterList
-                            .forEach(
-                                    (u, list) -> persistList.merge(u, list,
-                                            (oldlist, newlist) -> new ArrayList<>(Stream.of(oldlist, newlist)
-                                                    .flatMap(List::stream)
-                                                    .collect(Collectors.toMap(UpnpEntry::getId, entry -> entry,
-                                                            (UpnpEntry oldentry, UpnpEntry newentry) -> newentry))
-                                                    .values())));
-
-                    json = gson.toJson(new Playlist(name, persistList));
+                        json = gson.toJson(new Playlist(name, appendList.masterList));
+                    }
                 } catch (JsonParseException | UnsupportedOperationException e) {
                     logger.debug("Could not append, JsonParseException reading {}: {}", file.toPath(), e.getMessage(),
                             e);
@@ -371,7 +370,13 @@ public class UpnpEntryQueue {
                 final byte[] contents = Files.readAllBytes(file.toPath());
                 final String json = new String(contents, StandardCharsets.UTF_8);
 
-                playlist = gson.fromJson(json, Playlist.class);
+                Playlist list = gson.fromJson(json, Playlist.class);
+                if (list == null) {
+                    logger.debug("Empty playlist file {}", file.getAbsolutePath());
+                    return;
+                }
+
+                playlist = list;
 
                 Stream<Entry<String, List<UpnpEntry>>> stream = playlist.masterList.entrySet().stream();
                 if (udn != null) {

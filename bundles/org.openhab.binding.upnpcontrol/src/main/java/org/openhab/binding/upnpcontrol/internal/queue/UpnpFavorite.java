@@ -81,14 +81,15 @@ public class UpnpFavorite {
         String fileName = path + name + FAVORITE_FILE_EXTENSION;
         File file = new File(fileName);
 
+        Favorite fav = null;
+
         if ((path != null) && file.exists()) {
             try {
                 logger.debug("Reading contents of {}", file.getAbsolutePath());
                 final byte[] contents = Files.readAllBytes(file.toPath());
                 final String json = new String(contents, StandardCharsets.UTF_8);
 
-                favorite = gson.fromJson(json, Favorite.class);
-                return;
+                fav = gson.fromJson(json, Favorite.class);
             } catch (JsonParseException | UnsupportedOperationException e) {
                 logger.debug("JsonParseException reading {}: {}", file.toPath(), e.getMessage(), e);
             } catch (IOException e) {
@@ -96,7 +97,7 @@ public class UpnpFavorite {
             }
         }
 
-        favorite = new Favorite(name, "", null);
+        favorite = (fav != null) ? fav : new Favorite(name, "", null);
     }
 
     /**
