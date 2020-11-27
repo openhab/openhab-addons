@@ -18,6 +18,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.dto.AirQualityLevelState;
 import org.openhab.core.library.types.QuantityType;
@@ -33,7 +34,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link BoschSHCHandler} is responsible for handling commands for the TwinGuard handler.
@@ -80,14 +80,14 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
     public void processUpdate(String id, JsonElement state) {
         logger.debug("Twinguard: received update: {} {}", id, state);
 
-        try {
-            AirQualityLevelState parsed = gson.fromJson(state, AirQualityLevelState.class);
-
-            logger.debug("Parsed switch state of {}: {}", this.getBoschID(), parsed);
-            updateAirQualityState(parsed);
-
-        } catch (JsonSyntaxException e) {
-            logger.warn("Received unknown update in in-wall switch: {}, {}", state, e.getMessage());
+        @Nullable
+        AirQualityLevelState parsed = gson.fromJson(state, AirQualityLevelState.class);
+        if (parsed == null) {
+            logger.warn("Received unknown update in in-wall switch: {}", state);
+            return;
         }
+
+        logger.debug("Parsed switch state of {}: {}", this.getBoschID(), parsed);
+        updateAirQualityState(parsed);
     }
 }

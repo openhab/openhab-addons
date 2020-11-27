@@ -15,6 +15,7 @@ package org.openhab.binding.boschshc.internal.devices.windowcontact;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_CONTACT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.dto.ShutterContactState;
 import org.openhab.core.library.types.OpenClosedType;
@@ -25,7 +26,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link BoschSHCHandler} is responsible for handling Bosch window/door contacts.
@@ -60,10 +60,12 @@ public class WindowContactHandler extends BoschSHCHandler {
     @Override
     public void processUpdate(String id, JsonElement state) {
         logger.debug("WindowContact: received update: {} {}", id, state);
-        try {
-            updateShutterContactState(gson.fromJson(state, ShutterContactState.class));
-        } catch (JsonSyntaxException e) {
-            logger.warn("Received unknown update in window contact handler: {}, {}", state, e.getMessage());
+        @Nullable
+        ShutterContactState shutterContactState = gson.fromJson(state, ShutterContactState.class);
+        if (shutterContactState == null) {
+            logger.warn("Received unknown update in window contact handler: {}", state);
+            return;
         }
+        updateShutterContactState(shutterContactState);
     }
 }

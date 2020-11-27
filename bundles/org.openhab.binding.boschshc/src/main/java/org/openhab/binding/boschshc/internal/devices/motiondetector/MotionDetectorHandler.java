@@ -15,6 +15,7 @@ package org.openhab.binding.boschshc.internal.devices.motiondetector;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_LATEST_MOTION;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.motiondetector.dto.LatestMotionState;
 import org.openhab.core.library.types.DateTimeType;
@@ -24,7 +25,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * MotionDetectorHandler
@@ -61,10 +61,12 @@ public class MotionDetectorHandler extends BoschSHCHandler {
     public void processUpdate(String id, JsonElement state) {
         logger.debug("Motion detector: received update: {} {}", id, state);
 
-        try {
-            updateLatestMotionState(gson.fromJson(state, LatestMotionState.class));
-        } catch (JsonSyntaxException e) {
+        @Nullable
+        LatestMotionState latestMotionState = gson.fromJson(state, LatestMotionState.class);
+        if (latestMotionState == null) {
             logger.warn("Received unknown update in in-wall switch: {}", state);
+            return;
         }
+        updateLatestMotionState(latestMotionState);
     }
 }

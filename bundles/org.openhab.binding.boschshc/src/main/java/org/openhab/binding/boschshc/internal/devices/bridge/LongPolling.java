@@ -151,7 +151,7 @@ public class LongPolling {
             logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
             LongPollResult longPollResult = gson.fromJson(content, LongPollResult.class);
-            if (longPollResult.result != null) {
+            if (longPollResult != null) {
                 this.handleResult.accept(longPollResult);
             } else {
                 logger.warn("Could not parse in onComplete: {}", content);
@@ -159,7 +159,7 @@ public class LongPolling {
                 // Check if we got a proper result from the SHC
                 LongPollError longPollError = gson.fromJson(content, LongPollError.class);
 
-                if (longPollError.error != null) {
+                if (longPollError != null) {
                     logger.warn("Got error from SHC: {}", longPollError.error.hashCode());
 
                     if (longPollError.error.code == LongPollError.SUBSCRIPTION_INVALID) {

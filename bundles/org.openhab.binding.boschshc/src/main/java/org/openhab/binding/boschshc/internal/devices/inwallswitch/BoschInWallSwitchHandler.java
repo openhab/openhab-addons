@@ -36,7 +36,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Represents Bosch in-wall switches.
@@ -123,12 +122,13 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
         logger.debug("in-wall switch: received update: ID {} state {}", id, state);
 
-        try {
-            if (id.equals("PowerMeter")) {
-                updatePowerMeterState(gson.fromJson(state, PowerMeterState.class));
+        if (id.equals("PowerMeter")) {
+            PowerMeterState powerMeterState = gson.fromJson(state, PowerMeterState.class);
+            if (powerMeterState == null) {
+                logger.warn("Received unknown update in in-wall switch: {}", state);
+            } else {
+                updatePowerMeterState(powerMeterState);
             }
-        } catch (JsonSyntaxException e) {
-            logger.warn("Received unknown update in in-wall switch: {}", state);
         }
     }
 }

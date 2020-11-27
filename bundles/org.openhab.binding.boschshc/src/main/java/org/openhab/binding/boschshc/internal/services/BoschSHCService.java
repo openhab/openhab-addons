@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -33,6 +35,9 @@ import com.google.gson.JsonElement;
  */
 @NonNullByDefault
 public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
+
+    private final Logger logger = LoggerFactory.getLogger(BoschSHCService.class);
+
     /**
      * Unique service name
      */
@@ -167,7 +172,12 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * @param stateData Current state of service. Serialized as JSON.
      */
     public void onStateUpdate(JsonElement stateData) {
+        @Nullable
         TState state = gson.fromJson(stateData, this.stateClass);
+        if (state == null) {
+            this.logger.warn("Received invalid, expected type {}", this.stateClass.getName());
+            return;
+        }
         this.onStateUpdate(state);
     }
 

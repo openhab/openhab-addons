@@ -175,7 +175,12 @@ public class BoschHttpClient extends HttpClient {
         logger.debug("BoschHttpClient: response complete: {} - return code: {}", contentResponse.getContentAsString(),
                 contentResponse.getStatus());
 
+        @Nullable
         TContent content = gson.fromJson(contentResponse.getContentAsString(), responseContentClass);
+        if (content == null) {
+            throw new ExecutionException(String.format("Received invalid content in response, expected type %s",
+                    responseContentClass.getName()), null);
+        }
 
         return content;
     }
