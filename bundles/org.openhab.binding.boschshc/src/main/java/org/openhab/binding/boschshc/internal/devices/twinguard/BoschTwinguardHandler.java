@@ -23,6 +23,7 @@ import org.openhab.binding.boschshc.internal.devices.twinguard.dto.AirQualityLev
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -33,8 +34,6 @@ import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
-
-import tec.uom.se.AbstractUnit;
 
 /**
  * The {@link BoschSHCHandler} is responsible for handling commands for the TwinGuard handler.
@@ -69,9 +68,9 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
     void updateAirQualityState(AirQualityLevelState state) {
         updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(state.temperature, SIUnits.CELSIUS));
         updateState(CHANNEL_TEMPERATURE_RATING, new StringType(state.temperatureRating));
-        updateState(CHANNEL_HUMIDITY, new QuantityType<Dimensionless>(state.humidity, AbstractUnit.ONE));
+        updateState(CHANNEL_HUMIDITY, new QuantityType<Dimensionless>(state.humidity, SmartHomeUnits.ONE));
         updateState(CHANNEL_HUMIDITY_RATING, new StringType(state.humidityRating));
-        updateState(CHANNEL_PURITY, new QuantityType<Dimensionless>(state.purity, AbstractUnit.ONE));
+        updateState(CHANNEL_PURITY, new QuantityType<Dimensionless>(state.purity, SmartHomeUnits.ONE));
         updateState(CHANNEL_AIR_DESCRIPTION, new StringType(state.description));
         updateState(CHANNEL_PURITY_RATING, new StringType(state.purityRating));
         updateState(CHANNEL_COMBINED_RATING, new StringType(state.combinedRating));
