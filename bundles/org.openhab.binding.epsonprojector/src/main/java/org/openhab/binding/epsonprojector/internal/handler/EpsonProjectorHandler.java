@@ -15,6 +15,7 @@ package org.openhab.binding.epsonprojector.internal.handler;
 import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -62,22 +63,17 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     private static final int DEFAULT_POLLING_INTERVAL_SEC = 10;
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorHandler.class);
+    private final SerialPortManager serialPortManager;
 
     private @Nullable ScheduledFuture<?> pollingJob;
-    private final EpsonProjectorDevice device;
+    private Optional<EpsonProjectorDevice> device = Optional.empty();
 
     private boolean isPowerOn = false;
     private int pollingInterval = DEFAULT_POLLING_INTERVAL_SEC;
 
     public EpsonProjectorHandler(Thing thing, SerialPortManager serialPortManager) {
         super(thing);
-
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (THING_TYPE_PROJECTOR_SERIAL.equals(thingTypeUID)) {
-            device = new EpsonProjectorDevice(serialPortManager, getConfigAs(EpsonProjectorConfiguration.class));
-        } else {
-            device = new EpsonProjectorDevice(getConfigAs(EpsonProjectorConfiguration.class));
-        }
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -97,14 +93,26 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         EpsonProjectorConfiguration config = getConfigAs(EpsonProjectorConfiguration.class);
-        pollingInterval = config.pollingInterval;
-        device.setScheduler(scheduler);
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        try {
-            device.connect();
-        } catch (EpsonProjectorException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        if (THING_TYPE_PROJECTOR_SERIAL.equals(thingTypeUID)) {
+            device = Optional.of(new EpsonProjectorDevice(serialPortManager, config));
+        } else if (THING_TYPE_PROJECTOR_TCP.equals(thingTypeUID)) {
+            device = Optional.of(new EpsonProjectorDevice(config));
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
+
+        pollingInterval = config.pollingInterval;
+        device.ifPresent(dev -> dev.setScheduler(scheduler));
+        device.ifPresent(dev -> {
+            try {
+                dev.connect();
+            } catch (EpsonProjectorException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        });
+
         schedulePollingJob();
     }
 
@@ -168,7 +176,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
     @Nullable
     private State queryDataFromDevice(EpsonProjectorCommandType commandType) {
-        EpsonProjectorDevice remoteController = device;
+        EpsonProjectorDevice remoteController = device.get();
 
         try {
             if (!remoteController.isConnected()) {
@@ -289,7 +297,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     }
 
     private void sendDataToDevice(EpsonProjectorCommandType commandType, Command command) {
-        EpsonProjectorDevice remoteController = device;
+        EpsonProjectorDevice remoteController = device.get();
 
         try {
             if (!remoteController.isConnected()) {
@@ -405,7 +413,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     }
 
     private void closeConnection() {
-        EpsonProjectorDevice remoteController = device;
+        EpsonProjectorDevice remoteController = device.get();
         try {
             logger.debug("Closing connection to device '{}'", this.thing.getUID());
             remoteController.disconnect();
