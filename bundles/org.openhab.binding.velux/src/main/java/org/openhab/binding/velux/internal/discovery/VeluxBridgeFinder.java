@@ -215,10 +215,13 @@ public class VeluxBridgeFinder implements Closeable {
     }
 
     /**
-     * Start the listener task
+     * Start the listener thread
      */
     private void startListener() {
-        listenerTask = scheduler.submit(listenerRunnable);
+        Future<?> listenerTask = this.listenerTask;
+        if (listenerTask == null || listenerTask.isCancelled()) {
+            listenerTask = this.listenerTask = scheduler.submit(listenerRunnable);
+        }
     }
 
     /**
