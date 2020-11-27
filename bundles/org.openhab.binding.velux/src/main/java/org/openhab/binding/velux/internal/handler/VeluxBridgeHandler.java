@@ -305,7 +305,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         ExecutorService taskExecutor = this.taskExecutor;
         if (taskExecutor != null) {
             taskExecutor.shutdownNow();
-            this.taskExecutor = null;
         }
         // Background execution of dispose
         scheduler.execute(() -> {
