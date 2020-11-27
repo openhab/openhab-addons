@@ -56,7 +56,7 @@ public class CRCUtil {
         }
 
         check = check & CRC_INIT;
-        String checksum = leftPadWithZeros(Integer.toHexString(check), 4);
+        String checksum = Utils.leftPadWithZeros(Integer.toHexString(check), 4);
         return (input + checksum).toUpperCase();
     }
 
@@ -87,14 +87,6 @@ public class CRCUtil {
             }
         }
 
-        return input + leftPadWithZeros(Integer.toHexString(check), 2).toUpperCase();
-    }
-
-    private static String leftPadWithZeros(String text, int size) {
-        StringBuilder builder = new StringBuilder(text);
-        while (builder.length() < size) {
-            builder.insert(0, '0');
-        }
-        return builder.toString();
+        return input + Utils.leftPadWithZeros(Integer.toHexString(check), 2).toUpperCase();
     }
 }
