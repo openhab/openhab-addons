@@ -41,9 +41,10 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.km200")
 public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private final Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryParticipant.class);
+    private static final Set<ThingTypeUID> SUPPORTED_ALL_THING_TYPES_UIDS = KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS;
+    private static final String IP4_ADDRESS = "ip4Address";
 
-    public static final Set<ThingTypeUID> SUPPORTED_ALL_THING_TYPES_UIDS = KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS;
+    private final Logger logger = LoggerFactory.getLogger(KM200GatewayDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -52,17 +53,14 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo info) {
-        DiscoveryResult discoveryResult = null;
         ThingUID uid = getThingUID(info);
         logger.debug("MDNS info: {}, uid: {}", info, uid);
         if (uid != null) {
             InetAddress[] addrs = info.getInetAddresses();
             logger.debug("ip: {} id:{}", addrs[0].getHostAddress(), uid.getId());
-            discoveryResult = DiscoveryResultBuilder.create(uid).withProperty("ip4Address", addrs[0].getHostAddress())
-                    .withProperty("deviceId", uid.getId()).withRepresentationProperty(addrs[0].getHostAddress())
+            return DiscoveryResultBuilder.create(uid).withProperty(IP4_ADDRESS, addrs[0].getHostAddress())
+                    .withProperty("deviceId", uid.getId()).withRepresentationProperty(IP4_ADDRESS)
                     .withLabel("KM50/100/200 Gateway (" + addrs[0].getHostAddress() + ")").build();
-
-            return discoveryResult;
         }
         return null;
     }
@@ -83,8 +81,7 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
                             Random rnd = new Random();
                             devId = String.valueOf(rnd.nextLong());
                         }
-                        ThingUID thinguid = new ThingUID(typeUID, devId);
-                        return thinguid;
+                        return new ThingUID(typeUID, devId);
                     } else {
                         logger.debug("No uuid property found");
                     }
@@ -102,8 +99,7 @@ public class KM200GatewayDiscoveryParticipant implements MDNSDiscoveryParticipan
     private @Nullable ThingTypeUID getThingTypeUID(ServiceInfo info) {
         InetAddress[] addrs = info.getInetAddresses();
         if (addrs.length > 0) {
-            String hardwareID;
-            hardwareID = info.getPropertyString("hwversion");
+            String hardwareID = info.getPropertyString("hwversion");
             logger.debug("hardwareID: {}", hardwareID);
             if (hardwareID != null && hardwareID.contains("iCom_Low")) {
                 return THING_TYPE_KMDEVICE;

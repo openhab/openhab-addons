@@ -79,14 +79,14 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     @Activate
-    public void activate(@Nullable Map<String, @Nullable Object> config) {
+    public void activate(@Nullable Map<String, Object> config) {
         super.activate(config);
         modified(config);
     }
 
     @Override
     @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> config) {
+    protected void modified(@Nullable Map<String, Object> config) {
         super.modified(config);
         // We update instead of replace the configuration object, so that if the user updates the
         // configuration, the values are automatically available in all handlers. Because they all

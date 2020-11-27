@@ -329,8 +329,9 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 updateMovingState(MOVING_STATE_STOPPED);
                 logger.debug("& {} & CALIBRATION - reached UP, now sending DOWN command...", deviceWhere);
                 calibrating = CALIBRATION_ACTIVATED;
-                if (deviceWhere != null) {
-                    String w = deviceWhere.value();
+                Where dw = deviceWhere;
+                if (dw != null) {
+                    String w = dw.value();
                     try {
                         send(Automation.requestMoveDown(w));
                     } catch (OWNException e) {

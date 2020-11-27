@@ -35,7 +35,7 @@ import org.openhab.binding.nest.internal.listener.NestThingDataListener;
 public class NestCompositeUpdateHandler {
 
     private final Supplier<Set<String>> presentNestIdsSupplier;
-    private final Map<Class<?>, @Nullable NestUpdateHandler<?>> updateHandlersMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, NestUpdateHandler<?>> updateHandlersMap = new ConcurrentHashMap<>();
 
     public NestCompositeUpdateHandler(Supplier<Set<String>> presentNestIdsSupplier) {
         this.presentNestIdsSupplier = presentNestIdsSupplier;
@@ -104,9 +104,7 @@ public class NestCompositeUpdateHandler {
         Set<String> missingNestIds = findMissingNestIds(updates);
         if (!missingNestIds.isEmpty()) {
             updateHandlersMap.values().forEach(handler -> {
-                if (handler != null) {
-                    handler.handleMissingNestIds(missingNestIds);
-                }
+                handler.handleMissingNestIds(missingNestIds);
             });
         }
     }
@@ -121,9 +119,7 @@ public class NestCompositeUpdateHandler {
 
     public void resendLastUpdates() {
         updateHandlersMap.values().forEach(handler -> {
-            if (handler != null) {
-                handler.resendLastUpdates();
-            }
+            handler.resendLastUpdates();
         });
     }
 }

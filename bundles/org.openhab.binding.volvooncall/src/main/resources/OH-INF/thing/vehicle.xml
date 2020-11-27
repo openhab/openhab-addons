@@ -48,8 +48,14 @@
 			<channel id="engineRunning" typeId="engineRunning"/>
 			<channel id="remoteHeater" typeId="remoteHeater"/>
 			<channel id="preclimatization" typeId="preclimatization"/>
-			<channel id="brakeFluidLevel" typeId="brakeFluidLevel"/>
-			<channel id="washerFluidLevel" typeId="washerFluidLevel"/>
+			<channel id="brakeFluidLevel" typeId="fluidLevel">
+				<label>Brake Fluid Level</label>
+				<description>Level of available brake fluid quantity.</description>
+			</channel>
+			<channel id="washerFluidLevel" typeId="fluidLevel">
+				<label>Washer Fluid Level</label>
+				<description>Level of available washer fluid quantity.</description>
+			</channel>
 			<channel id="serviceWarningStatus" typeId="serviceWarningStatus"/>
 			<channel id="bulbFailure" typeId="bulbFailure"/>
 			<channel id="carEvent" typeId="carEvent"/>
@@ -253,6 +259,7 @@
 	<channel-type id="fuelQuantity">
 		<item-type>Number:Volume</item-type>
 		<label>Fuel Quantity</label>
+		<category>oil</category>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -260,6 +267,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fuel Level</label>
 		<description>Indicates the level of fuel in the tank</description>
+		<category>oil</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -267,6 +275,7 @@
 		<item-type>Number</item-type>
 		<label>Average Consumption</label>
 		<description>Indicates the average fuel consumption in l/100km</description>
+		<category>chart</category>
 		<state pattern="%.1f l/100km" readOnly="true"></state>
 	</channel-type>
 
@@ -294,6 +303,7 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Data timestamp</description>
+		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -307,6 +317,7 @@
 		<item-type>Switch</item-type>
 		<label>Locked</label>
 		<description>Car locking status</description>
+		<category>lock</category>
 	</channel-type>
 
 	<channel-type id="engineRunning">
@@ -319,46 +330,55 @@
 		<item-type>Switch</item-type>
 		<label>Preclimatization</label>
 		<description>Starts pre-climatization</description>
+		<category>heating</category>
 	</channel-type>
 
 	<channel-type id="remoteHeater">
 		<item-type>Switch</item-type>
 		<label>Remote Heater</label>
 		<description>(De)Activates remote heater</description>
+		<category>heating</category>
 	</channel-type>
 
 	<channel-type id="bulbFailure">
 		<item-type>Switch</item-type>
 		<label>Bulb Failure</label>
 		<description>At least on bulb is reported as dead</description>
+		<category>alarm</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="brakeFluidLevel">
-		<item-type>String</item-type>
-		<label>Brake Fluid</label>
-		<description>“VeryLow”,"Low", "Normal"</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="washerFluidLevel">
-		<item-type>String</item-type>
-		<label>Washer Fluid</label>
-		<description>“VeryLow”,"Low", "Normal"</description>
-		<state readOnly="true"></state>
+	<channel-type id="fluidLevel">
+		<item-type>Number</item-type>
+		<label>Fluid Level</label>
+		<description>Level of available fluid quantity.</description>
+		<category>alarm</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Low</option>
+				<option value="2">Very Low</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="tyrePressure">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Tyre pressure</label>
-		<description>“LowSoft”, "Normal"</description>
-		<state readOnly="true"></state>
+		<category>alarm</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Low Soft</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="serviceWarningStatus">
 		<item-type>String</item-type>
 		<label>Service Warning</label>
 		<description>Is car service needed ?</description>
+		<category>alarm</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -366,6 +386,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<description>Indicates the level of power in the battery (in case of PHEV / Twin Engine)</description>
+		<category>batterylevel</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -386,7 +407,8 @@
 	<channel-type id="fuelAlert">
 		<item-type>Switch</item-type>
 		<label>Fuel Alarm</label>
-		<description>set to 'ON' when the tank level is low</description>
+		<description>Set to 'ON' when the tank level is low</description>
+		<category>alarm</category>
 		<state readOnly="true"/>
 	</channel-type>
 

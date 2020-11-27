@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -493,9 +494,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                         if (line.startsWith("data:")) {
                             String json = line.substring(5).trim(); // supposed to be JSON
                             try {
-                                @Nullable
                                 TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
-                                handleTouchEvents(touchEvents);
+                                handleTouchEvents(Objects.requireNonNull(touchEvents));
                             } catch (JsonSyntaxException jse) {
                                 logger.error("couldn't parse touch event json {}", json);
                             }
@@ -645,9 +645,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private ControllerInfo receiveControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
         ContentResponse controllerlInfoJSON = OpenAPIUtils.sendOpenAPIRequest(OpenAPIUtils.requestBuilder(httpClient,
                 getControllerConfig(), API_GET_CONTROLLER_INFO, HttpMethod.GET));
-        @Nullable
         ControllerInfo controllerInfo = gson.fromJson(controllerlInfoJSON.getContentAsString(), ControllerInfo.class);
-        return controllerInfo;
+        return Objects.requireNonNull(controllerInfo);
     }
 
     private void sendStateCommand(String channel, Command command) throws NanoleafException {

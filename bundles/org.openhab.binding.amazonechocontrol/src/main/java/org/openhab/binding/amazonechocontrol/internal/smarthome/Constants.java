@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -27,7 +26,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class Constants {
-    public static final Map<String, @Nullable Supplier<HandlerBase>> HANDLER_FACTORY = new HashMap<>();
+    public static final Map<String, Supplier<HandlerBase>> HANDLER_FACTORY = new HashMap<>();
 
     static {
         HANDLER_FACTORY.put(HandlerPowerController.INTERFACE, HandlerPowerController::new);

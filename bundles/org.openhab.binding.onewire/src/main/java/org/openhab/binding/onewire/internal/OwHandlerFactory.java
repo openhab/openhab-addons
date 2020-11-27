@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewire")
 public class OwHandlerFactory extends BaseThingHandlerFactory {
     Logger logger = LoggerFactory.getLogger(OwHandlerFactory.class);
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @NonNullByDefault({})
     private OwDynamicStateDescriptionProvider dynamicStateDescriptionProvider;

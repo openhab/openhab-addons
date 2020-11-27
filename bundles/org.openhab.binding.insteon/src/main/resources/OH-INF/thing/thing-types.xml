@@ -138,56 +138,67 @@
 	<channel-type id="bottomOutlet">
 		<item-type>Switch</item-type>
 		<label>Bottom Outlet</label>
+		<config-description-ref uri="channel-type:insteon:switch"/>
 	</channel-type>
 
 	<channel-type id="buttonA">
 		<item-type>Switch</item-type>
 		<label>Button A</label>
+		<config-description-ref uri="channel-type:insteon:button"/>
 	</channel-type>
 
 	<channel-type id="buttonB">
 		<item-type>Switch</item-type>
 		<label>Button B</label>
+		<config-description-ref uri="channel-type:insteon:button"/>
 	</channel-type>
 
 	<channel-type id="buttonC">
 		<item-type>Switch</item-type>
 		<label>Button C</label>
+		<config-description-ref uri="channel-type:insteon:button"/>
 	</channel-type>
 
 	<channel-type id="buttonD">
 		<item-type>Switch</item-type>
 		<label>Button D</label>
+		<config-description-ref uri="channel-type:insteon:button"/>
 	</channel-type>
 
 	<channel-type id="buttonE">
 		<item-type>Switch</item-type>
 		<label>Button E</label>
+		<config-description-ref uri="channel-type:insteon:button"/>
 	</channel-type>
 
 	<channel-type id="buttonF">
 		<item-type>Switch</item-type>
 		<label>Button F</label>
+		<config-description-ref uri="channel-type:insteon:button"/>
 	</channel-type>
 
 	<channel-type id="buttonG">
 		<item-type>Switch</item-type>
 		<label>Button G</label>
+		<config-description-ref uri="channel-type:insteon:button"/>
 	</channel-type>
 
 	<channel-type id="buttonH">
 		<item-type>Switch</item-type>
 		<label>Button H</label>
+		<config-description-ref uri="channel-type:insteon:button"/>
 	</channel-type>
 
 	<channel-type id="broadcastOnOff">
 		<item-type>Switch</item-type>
 		<label>Broadcast On/Off</label>
+		<config-description-ref uri="channel-type:insteon:switch"/>
 	</channel-type>
 
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
+		<config-description-ref uri="channel-type:insteon:contact"/>
 	</channel-type>
 
 	<channel-type id="coolSetPoint">
@@ -198,6 +209,7 @@
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
+		<config-description-ref uri="channel-type:insteon:dimmer"/>
 	</channel-type>
 
 	<channel-type id="fan">
@@ -218,41 +230,49 @@
 	<channel-type id="fastOnOffButtonA">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button A</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="fastOnOffButtonB">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button B</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="fastOnOffButtonC">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button C</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="fastOnOffButtonD">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button D</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="fastOnOffButtonE">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button E</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="fastOnOffButtonF">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button F</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="fastOnOffButtonG">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button G</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="fastOnOffButtonH">
 		<item-type>Switch</item-type>
 		<label>Fast On/Off Button H</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-fastonoff"/>
 	</channel-type>
 
 	<channel-type id="heatSetPoint">
@@ -288,41 +308,49 @@
 	<channel-type id="keypadButtonA">
 		<item-type>Switch</item-type>
 		<label>Keypad Button A</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button"/>
 	</channel-type>
 
 	<channel-type id="keypadButtonB">
 		<item-type>Switch</item-type>
 		<label>Keypad Button B</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button"/>
 	</channel-type>
 
 	<channel-type id="keypadButtonC">
 		<item-type>Switch</item-type>
 		<label>Keypad Button C</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button"/>
 	</channel-type>
 
 	<channel-type id="keypadButtonD">
 		<item-type>Switch</item-type>
 		<label>Keypad Button D</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button"/>
 	</channel-type>
 
 	<channel-type id="keypadButtonE">
 		<item-type>Switch</item-type>
 		<label>Keypad Button E</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button"/>
 	</channel-type>
 
 	<channel-type id="keypadButtonF">
 		<item-type>Switch</item-type>
 		<label>Keypad Button F</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button"/>
 	</channel-type>
 
 	<channel-type id="keypadButtonG">
 		<item-type>Switch</item-type>
 		<label>Keypad Button G</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button"/>
 	</channel-type>
 
 	<channel-type id="keypadButtonH">
 		<item-type>Switch</item-type>
 		<label>Keypad Button H</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button"/>
 	</channel-type>
 
 	<channel-type id="kWh">
@@ -348,6 +376,7 @@
 	<channel-type id="lightDimmer">
 		<item-type>Dimmer</item-type>
 		<label>Light Dimmer</label>
+		<config-description-ref uri="channel-type:insteon:dimmer"/>
 	</channel-type>
 
 	<channel-type id="lightLevel">
@@ -363,16 +392,19 @@
 	<channel-type id="loadDimmer">
 		<item-type>Dimmer</item-type>
 		<label>Load Dimmer</label>
+		<config-description-ref uri="channel-type:insteon:dimmer"/>
 	</channel-type>
 
 	<channel-type id="loadSwitch">
 		<item-type>Switch</item-type>
 		<label>Load Switch</label>
+		<config-description-ref uri="channel-type:insteon:switch"/>
 	</channel-type>
 
 	<channel-type id="loadSwitchFastOnOff">
 		<item-type>Switch</item-type>
 		<label>Load Switch Fast On/Off</label>
+		<config-description-ref uri="channel-type:insteon:switch"/>
 	</channel-type>
 
 	<channel-type id="loadSwitchManualChange">
@@ -393,41 +425,49 @@
 	<channel-type id="manualChangeButtonA">
 		<item-type>Number</item-type>
 		<label>Manual Change Button A</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-manualchange"/>
 	</channel-type>
 
 	<channel-type id="manualChangeButtonB">
 		<item-type>Number</item-type>
 		<label>Manual Change Button B</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-manualchange"/>
 	</channel-type>
 
 	<channel-type id="manualChangeButtonC">
 		<item-type>Number</item-type>
 		<label>Manual Change Button C</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-manualchange"/>
 	</channel-type>
 
 	<channel-type id="manualChangeButtonD">
 		<item-type>Number</item-type>
 		<label>Manual Change Button D</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-manualchange"/>
 	</channel-type>
 
 	<channel-type id="manualChangeButtonE">
 		<item-type>Number</item-type>
 		<label>Manual Change Button E</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-manualchange"/>
 	</channel-type>
 
 	<channel-type id="manualChangeButtonF">
 		<item-type>Number</item-type>
 		<label>Manual Change Button F</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-manualchange"/>
 	</channel-type>
 
 	<channel-type id="manualChangeButtonG">
 		<item-type>Number</item-type>
 		<label>Manual Change Button G</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-manualchange"/>
 	</channel-type>
 
 	<channel-type id="manualChangeButtonH">
 		<item-type>Number</item-type>
 		<label>Manual Change Button H</label>
+		<config-description-ref uri="channel-type:insteon:keypad-button-manualchange"/>
 	</channel-type>
 
 	<channel-type id="notification">
@@ -463,6 +503,7 @@
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
+		<config-description-ref uri="channel-type:insteon:switch"/>
 	</channel-type>
 
 	<channel-type id="systemMode">
@@ -488,6 +529,7 @@
 	<channel-type id="topOutlet">
 		<item-type>Switch</item-type>
 		<label>Top Outlet</label>
+		<config-description-ref uri="channel-type:insteon:switch"/>
 	</channel-type>
 
 	<channel-type id="update">

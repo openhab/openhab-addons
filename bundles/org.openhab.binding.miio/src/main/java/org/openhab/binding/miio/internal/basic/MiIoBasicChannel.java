@@ -53,6 +53,9 @@ public class MiIoBasicChannel {
     @SerializedName("type")
     @Expose
     private @Nullable String type;
+    @SerializedName("unit")
+    @Expose
+    private @Nullable String unit;
     @SerializedName("refresh")
     @Expose
     private @Nullable Boolean refresh;
@@ -153,6 +156,15 @@ public class MiIoBasicChannel {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getUnit() {
+        final @Nullable String unit = this.unit;
+        return unit != null ? unit : "";
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public Boolean getRefresh() {

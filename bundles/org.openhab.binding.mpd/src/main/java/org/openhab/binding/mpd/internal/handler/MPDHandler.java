@@ -60,7 +60,7 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(MPDHandler.class);
 
-    private Map<String, @Nullable State> stateMap = Collections.synchronizedMap(new HashMap<String, @Nullable State>());
+    private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private final MPDConnection connection;
     private int volume = 0;

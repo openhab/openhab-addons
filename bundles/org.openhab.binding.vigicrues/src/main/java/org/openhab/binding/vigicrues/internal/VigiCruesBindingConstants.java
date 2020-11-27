@@ -28,17 +28,27 @@ import org.openhab.core.thing.ThingTypeUID;
 public class VigiCruesBindingConstants {
 
     public static final String BINDING_ID = "vigicrues";
-    public static final String OPENDATASOFT_URL = "https://public.opendatasoft.com/api/records/1.0/search/";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_VIGI_CRUES = new ThingTypeUID(BINDING_ID, "station");
+    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "station");
 
     // List of all Channel id's
     public static final String OBSERVATION_TIME = "observation-time";
     public static final String HEIGHT = "height";
     public static final String FLOW = "flow";
-
+    public static final String ALERT = "alert";
     public static final String COMMENT = "comment";
+    public static final String RELATIVE_PREFIX = "relative";
+    public static final String RELATIVE_HEIGHT = RELATIVE_PREFIX + "-" + HEIGHT;
+    public static final String RELATIVE_FLOW = RELATIVE_PREFIX + "-" + FLOW;
+    public static final String SHORT_COMMENT = "short-" + COMMENT;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_VIGI_CRUES);
+    // List of properties Labels
+    public static final String TRONCON = "Tronçon";
+    public static final String DISTANCE = "Distance";
+    public static final String RIVER = "Cours";
+    public static final String LOCATION = "Location";
+    public static final String FLOOD = "Crue";
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_STATION);
 }

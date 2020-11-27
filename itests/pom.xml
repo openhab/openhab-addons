@@ -91,7 +91,7 @@
                 <artifactItem>
                   <groupId>org.lastnpe.eea</groupId>
                   <artifactId>eea-all</artifactId>
-                  <version>2.1.0</version>
+                  <version>${eea.version}</version>
                   <overWrite>true</overWrite>
                 </artifactItem>
               </artifactItems>

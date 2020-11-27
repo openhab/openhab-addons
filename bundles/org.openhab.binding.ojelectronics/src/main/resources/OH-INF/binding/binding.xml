@@ -4,5 +4,4 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 	<name>OJElectronics Binding</name>
 	<description>This is the binding for OJElectronics.</description>
-	<author>Christian Kittel</author>
 </binding:binding>

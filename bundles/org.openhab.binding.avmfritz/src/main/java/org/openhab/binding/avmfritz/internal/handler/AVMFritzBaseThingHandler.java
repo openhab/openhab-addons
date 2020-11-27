@@ -82,7 +82,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
      * keeps track of the current state for handling of increase/decrease
      */
     private @Nullable AVMFritzBaseModel state;
-    private @NonNullByDefault({}) AVMFritzDeviceConfiguration config;
+    private @Nullable String identifier;
 
     /**
      * Constructor
@@ -95,13 +95,13 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
 
     @Override
     public void initialize() {
-        config = getConfigAs(AVMFritzDeviceConfiguration.class);
-
-        String newIdentifier = config.ain;
-        if (newIdentifier == null || newIdentifier.trim().isEmpty()) {
+        final AVMFritzDeviceConfiguration config = getConfigAs(AVMFritzDeviceConfiguration.class);
+        final String newIdentifier = config.ain;
+        if (newIdentifier == null || newIdentifier.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'ain' parameter must be configured.");
         } else {
+            this.identifier = newIdentifier;
             updateStatus(ThingStatus.UNKNOWN);
         }
     }
@@ -472,6 +472,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
      * @return the AIN
      */
     public @Nullable String getIdentifier() {
-        return config.ain;
+        return identifier;
     }
 }

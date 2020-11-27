@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_ECHO_THING_TYPES_UIDS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_SMART_HOME_THING_TYPES_UIDS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_ACCOUNT;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_FLASH_BRIEFING_PROFILE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +63,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoControlHandlerFactory.class);
-    private final Map<ThingUID, @Nullable List<ServiceRegistration<?>>> discoveryServiceRegistrations = new HashMap<>();
+    private final Map<ThingUID, List<ServiceRegistration<?>>> discoveryServiceRegistrations = new HashMap<>();
 
     private final Set<AccountHandler> accountHandlers = new HashSet<>();
     private final HttpService httpService;

@@ -256,15 +256,15 @@ The disadvantage is of course, that all events for this channel are delayed.
 ```java
   Thing HM-LC-Dim1T-Pl-2    JEQ0999999 "Name"  @  "Location" {
       Channels:
-          Type HM-LC-Dim1T-Pl-2_1_level : 1#LEVEL [
+          Type HM-LC-Dim1T-Pl-2_1_LEVEL : 1#LEVEL [
               delay = 0,
               receiveDelay = 4
           ]
   }
 ```
 
-The `Type` is the device type, channel number and lowercase channel name separated with an underscore.
-Note that, for Homegear devices, in contrast to the specification of the Rhing above no `HG-` prefix is needed for the specification of the Type of the Channel.
+The `Type` is the device type, channel number and UPPERCASE channel name separated with an underscore.
+Note that, for Homegear devices, in contrast to the specification of the Thing above no `HG-` prefix is needed for the specification of the Type of the Channel.
 
 The channel configs are optional.
 

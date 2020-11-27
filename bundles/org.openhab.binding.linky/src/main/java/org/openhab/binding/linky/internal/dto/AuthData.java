@@ -15,6 +15,7 @@ package org.openhab.binding.linky.internal.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -22,12 +23,12 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-
+@NonNullByDefault
 public class AuthData {
     public class AuthDataCallBack {
         public class NameValuePair {
-            public String name;
-            public Object value;
+            public @Nullable String name;
+            public @Nullable Object value;
 
             public @Nullable String valueAsString() {
                 if (value instanceof String) {
@@ -37,15 +38,15 @@ public class AuthData {
             }
         }
 
-        public String type;
+        public @Nullable String type;
 
         public List<NameValuePair> output = new ArrayList<>();
         public List<NameValuePair> input = new ArrayList<>();
     }
 
-    public String authId;
-    public String template;
-    public String stage;
-    public String header;
+    public @Nullable String authId;
+    public @Nullable String template;
+    public @Nullable String stage;
+    public @Nullable String header;
     public List<AuthDataCallBack> callbacks = new ArrayList<>();
 }

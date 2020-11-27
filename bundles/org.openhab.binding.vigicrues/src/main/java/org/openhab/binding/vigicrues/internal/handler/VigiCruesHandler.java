@@ -13,38 +13,54 @@
 package org.openhab.binding.vigicrues.internal.handler;
 
 import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.CUBICMETRE_PER_SECOND;
-import static tec.uom.se.unit.Units.METRE;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.InputStream;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.vigicrues.internal.VigiCruesConfiguration;
-import org.openhab.binding.vigicrues.internal.json.OpenDatasoftResponse;
-import org.openhab.binding.vigicrues.internal.json.Record;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.binding.vigicrues.internal.StationConfiguration;
+import org.openhab.binding.vigicrues.internal.api.ApiHandler;
+import org.openhab.binding.vigicrues.internal.api.VigiCruesException;
+import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
+import org.openhab.binding.vigicrues.internal.dto.opendatasoft.OpenDatasoftResponse;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.CdStationHydro;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.InfoVigiCru;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.TerEntVigiCru;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.TronEntVigiCru;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.VicANMoinsUn;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link VigiCruesHandler} is responsible for querying the API and
@@ -54,33 +70,124 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class VigiCruesHandler extends BaseThingHandler {
-    private static final String URL = OPENDATASOFT_URL + "?dataset=vigicrues&sort=timestamp&q=";
-    private static final int TIMEOUT_MS = 30000;
     private final Logger logger = LoggerFactory.getLogger(VigiCruesHandler.class);
+    private final LocationProvider locationProvider;
 
-    // Time zone provider representing time zone configured in openHAB configuration
-    private final TimeZoneProvider timeZoneProvider;
-    private final Gson gson;
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable String queryUrl;
+    private final ApiHandler apiHandler;
 
-    public VigiCruesHandler(Thing thing, TimeZoneProvider timeZoneProvider, Gson gson) {
+    private List<QuantityType<?>> referenceHeights = new ArrayList<>();
+    private List<QuantityType<?>> referenceFlows = new ArrayList<>();
+    private @Nullable String portion;
+
+    public VigiCruesHandler(Thing thing, LocationProvider locationProvider, ApiHandler apiHandler) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
-        this.gson = gson;
+        this.apiHandler = apiHandler;
+        this.locationProvider = locationProvider;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing VigiCrues handler.");
 
-        VigiCruesConfiguration config = getConfigAs(VigiCruesConfiguration.class);
-        logger.debug("config station = {}", config.id);
+        StationConfiguration config = getConfigAs(StationConfiguration.class);
         logger.debug("config refresh = {} min", config.refresh);
 
         updateStatus(ThingStatus.UNKNOWN);
-        queryUrl = URL + config.id;
+
+        if (thing.getProperties().isEmpty()) {
+            Map<String, String> properties = discoverAttributes(config);
+            updateProperties(properties);
+        }
+        getReferences();
         refreshJob = scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES);
+    }
+
+    private void getReferences() {
+        List<QuantityType<?>> heights = new ArrayList<>();
+        List<QuantityType<?>> flows = new ArrayList<>();
+        thing.getProperties().keySet().stream().filter(key -> key.startsWith(FLOOD)).forEach(key -> {
+            String value = thing.getProperties().get(key);
+            if (value != null) {
+                if (key.contains(FLOW)) {
+                    flows.add(new QuantityType<>(value));
+                } else {
+                    heights.add(new QuantityType<>(value));
+                }
+            }
+        });
+        referenceHeights = heights.stream().distinct().sorted().collect(Collectors.toList());
+        referenceFlows = flows.stream().distinct().sorted().collect(Collectors.toList());
+        portion = thing.getProperties().get(TRONCON);
+    }
+
+    private Map<String, String> discoverAttributes(StationConfiguration config) {
+        Map<String, String> properties = new HashMap<>();
+
+        ThingBuilder thingBuilder = editThing();
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+
+        try {
+            HubEauResponse stationDetails = apiHandler.discoverStations(config.id);
+            stationDetails.stations.stream().findFirst().ifPresent(station -> {
+                PointType stationLocation = new PointType(
+                        String.format(Locale.US, "%f,%f", station.latitudeStation, station.longitudeStation));
+                properties.put(LOCATION, stationLocation.toString());
+                PointType serverLocation = locationProvider.getLocation();
+                if (serverLocation != null) {
+                    DecimalType distance = serverLocation.distanceFrom(stationLocation);
+                    properties.put(DISTANCE, new QuantityType<>(distance, SIUnits.METRE).toString());
+                }
+                properties.put(RIVER, station.libelleCoursEau);
+            });
+        } catch (VigiCruesException e) {
+            logger.info("Unable to retrieve station location details {} : {}", config.id, e.getMessage());
+        }
+
+        try {
+            CdStationHydro refineStation = apiHandler.getStationDetails(config.id);
+            if (refineStation.vigilanceCrues.cruesHistoriques == null) {
+                throw new VigiCruesException("No historical data available");
+            }
+            refineStation.vigilanceCrues.cruesHistoriques.stream()
+                    .forEach(crue -> properties.putAll(crue.getDescription()));
+            String codeTerritoire = refineStation.vigilanceCrues.pereBoitEntVigiCru.cdEntVigiCru;
+            TerEntVigiCru territoire = apiHandler.getTerritoire(codeTerritoire);
+            for (VicANMoinsUn troncon : territoire.vicTerEntVigiCru.vicANMoinsUn) {
+                TronEntVigiCru detail = apiHandler.getTroncon(troncon.vicCdEntVigiCru);
+                if (detail.getStations().anyMatch(s -> config.id.equalsIgnoreCase(s.vicCdEntVigiCru))) {
+                    properties.put(TRONCON, troncon.vicCdEntVigiCru);
+                    break;
+                }
+            }
+        } catch (VigiCruesException e) {
+            logger.info("Historical flooding data are not available {} : {}", config.id, e.getMessage());
+            channels.removeIf(channel -> (channel.getUID().getId().contains(RELATIVE_PREFIX)));
+        }
+
+        if (!properties.containsKey(TRONCON)) {
+            channels.removeIf(channel -> (channel.getUID().getId().contains(ALERT)));
+            channels.removeIf(channel -> (channel.getUID().getId().contains(COMMENT)));
+        }
+
+        try {
+            OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
+            measures.getFirstRecord().ifPresent(field -> {
+                if (field.getHeight().isEmpty()) {
+                    channels.removeIf(channel -> (channel.getUID().getId().contains(HEIGHT)));
+                }
+                if (field.getFlow().isEmpty()) {
+                    channels.removeIf(channel -> (channel.getUID().getId().contains(FLOW)));
+                }
+            });
+        } catch (VigiCruesException e) {
+            logger.warn("Unable to read measurements data {} : {}", config.id, e.getMessage());
+        }
+
+        thingBuilder.withChannels(channels);
+        updateThing(thingBuilder.build());
+
+        return properties;
     }
 
     @Override
@@ -102,26 +209,43 @@ public class VigiCruesHandler extends BaseThingHandler {
     }
 
     private void updateAndPublish() {
+        StationConfiguration config = getConfigAs(StationConfiguration.class);
         try {
-            if (queryUrl != null) {
-                String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
-                updateStatus(ThingStatus.ONLINE);
-                OpenDatasoftResponse apiResponse = gson.fromJson(response, OpenDatasoftResponse.class);
-                Arrays.stream(apiResponse.getRecords()).findFirst().flatMap(Record::getFields).ifPresent(field -> {
-                    field.getHeight().ifPresent(height -> updateQuantity(HEIGHT, height, METRE));
-                    field.getFlow().ifPresent(flow -> updateQuantity(FLOW, flow, CUBICMETRE_PER_SECOND));
-                    field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
+            OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
+            measures.getFirstRecord().ifPresent(field -> {
+                field.getHeight().ifPresent(height -> {
+                    updateQuantity(HEIGHT, height, SIUnits.METRE);
+                    updateRelativeMeasure(RELATIVE_HEIGHT, referenceHeights, height);
                 });
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED,
-                        "queryUrl should never be null, but it is !");
+                field.getFlow().ifPresent(flow -> {
+                    updateQuantity(FLOW, flow, SmartHomeUnits.CUBICMETRE_PER_SECOND);
+                    updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
+                });
+                field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
+            });
+            String currentPortion = this.portion;
+            if (currentPortion != null) {
+                InfoVigiCru status = apiHandler.getTronconStatus(currentPortion);
+                updateAlert(ALERT, status.vicInfoVigiCru.vicNivInfoVigiCru - 1);
+                updateString(SHORT_COMMENT, status.vicInfoVigiCru.vicSituActuInfoVigiCru);
+                updateString(COMMENT, status.vicInfoVigiCru.vicQualifInfoVigiCru);
             }
-        } catch (MalformedURLException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("Querying '%s' raised : %s", queryUrl, e.getMessage()));
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error opening connection to VigiCrues webservice : {}", e.getMessage()));
+            updateStatus(ThingStatus.ONLINE);
+        } catch (VigiCruesException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void updateString(String channelId, String value) {
+        if (isLinked(channelId)) {
+            updateState(channelId, new StringType(value));
+        }
+    }
+
+    private void updateRelativeMeasure(String channelId, List<QuantityType<?>> reference, double value) {
+        if (reference.size() > 0) {
+            double percent = value / reference.get(0).doubleValue() * 100;
+            updateQuantity(channelId, percent, SmartHomeUnits.PERCENT);
         }
     }
 
@@ -133,8 +257,27 @@ public class VigiCruesHandler extends BaseThingHandler {
 
     public void updateDate(String channelId, ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
-            ZonedDateTime localDateTime = zonedDateTime.withZoneSameInstant(timeZoneProvider.getTimeZone());
-            updateState(channelId, new DateTimeType(localDateTime));
+            updateState(channelId, new DateTimeType(zonedDateTime));
         }
+    }
+
+    public void updateAlert(String channelId, int value) {
+        String channelIcon = channelId + "-icon";
+        if (isLinked(channelId)) {
+            updateState(channelId, new DecimalType(value));
+        }
+        if (isLinked(channelIcon)) {
+            byte[] resource = getResource(String.format("picto/crue-%d.svg", value));
+            updateState(channelIcon, resource != null ? new RawType(resource, "image/svg+xml") : UnDefType.UNDEF);
+        }
+    }
+
+    public byte @Nullable [] getResource(String iconPath) {
+        try (InputStream stream = VigiCruesHandler.class.getClassLoader().getResourceAsStream(iconPath)) {
+            return stream.readAllBytes();
+        } catch (IOException e) {
+            logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
+        }
+        return null;
     }
 }

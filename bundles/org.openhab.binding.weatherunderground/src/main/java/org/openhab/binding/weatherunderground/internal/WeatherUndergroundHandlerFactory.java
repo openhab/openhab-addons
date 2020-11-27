@@ -59,7 +59,7 @@ public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
             .of(BRIDGE_THING_TYPES_UIDS, WeatherUndergroundBindingConstants.SUPPORTED_THING_TYPES_UIDS)
             .flatMap(x -> x.stream()).collect(Collectors.toSet());
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final LocaleProvider localeProvider;
     private final LocationProvider locationProvider;

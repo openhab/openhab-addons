@@ -54,6 +54,12 @@
 				</options>
 			</parameter>
 
+			<parameter name="maxZoneNumber" type="integer" required="true" min="1" max="192">
+				<label>Maximum Zone Number</label>
+				<description>The maximum zone number that should be auto-discovered</description>
+				<default>16</default>
+			</parameter>
+
 		</config-description>
 	</bridge-type>
 

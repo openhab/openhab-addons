@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link AirQualityJsonData} is responsible for storing
@@ -36,7 +35,7 @@ public class AirQualityJsonData {
     private @NonNullByDefault({}) AirQualityJsonTime time;
     private @NonNullByDefault({}) AirQualityJsonCity city;
     private List<Attribute> attributions = new ArrayList<>();
-    private Map<String, @Nullable AirQualityValue> iaqi = new HashMap<>();
+    private Map<String, AirQualityValue> iaqi = new HashMap<>();
     private String dominentpol = "";
 
     /**

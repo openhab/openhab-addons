@@ -5,6 +5,5 @@
 
 	<name>DWD Pollenflug Binding</name>
 	<description>This is the binding for DWD Pollenflug.</description>
-	<author>Johannes Ott</author>
 
 </binding:binding>

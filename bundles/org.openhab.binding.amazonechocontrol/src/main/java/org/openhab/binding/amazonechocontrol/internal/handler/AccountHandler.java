@@ -673,7 +673,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     public void setEnabledFlashBriefingsJson(String flashBriefingJson) {
         Connection currentConnection = connection;
         JsonFeed[] feeds = gson.fromJson(flashBriefingJson, JsonFeed[].class);
-        if (currentConnection != null) {
+        if (currentConnection != null && feeds != null) {
             try {
                 currentConnection.setEnabledFlashBriefings(feeds);
             } catch (IOException | URISyntaxException e) {

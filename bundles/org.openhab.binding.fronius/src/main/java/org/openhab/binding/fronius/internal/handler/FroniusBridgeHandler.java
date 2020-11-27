@@ -13,7 +13,6 @@
 package org.openhab.binding.fronius.internal.handler;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -21,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -94,14 +94,11 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
             Runnable runnable = () -> {
                 boolean online = false;
                 try {
-                    InetAddress inet;
-                    inet = InetAddress.getByName(config.hostname);
-                    if (inet.isReachable(5000)) {
+                    if (HttpUtil.executeUrl("GET", "http://" + config.hostname, 5000) != null) {
                         online = true;
                     }
                 } catch (IOException e) {
                     logger.debug("Connection Error: {}", e.getMessage());
-                    return;
                 }
 
                 if (!online) {

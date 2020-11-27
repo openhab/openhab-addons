@@ -11,25 +11,38 @@
 		<representation-property>host</representation-property>
 
 		<config-description>
-			<parameter name="host" type="text">
+			<parameter name="host" type="text" required="true">
 				<context>network-address</context>
 				<label>Server Address</label>
 				<description>The host name or IP address of the remote openHAB server.</description>
-				<required>true</required>
 			</parameter>
 
-			<parameter name="port" type="integer">
+			<parameter name="useHttps" type="boolean">
+				<label>Use HTTPS</label>
+				<description>Set it to true in case you want to use HTTPS to communicate with the remote openHAB server. Default is
+					false.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="port" type="integer" required="true">
 				<label>Server HTTP Port</label>
-				<description>The HTTP port to be used to communicate with the remote openHAB server.</description>
-				<required>true</required>
+				<description>The HTTP port to use to communicate with the remote openHAB server.</description>
 				<default>8080</default>
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="restPath" type="text">
+			<parameter name="trustedCertificate" type="boolean">
+				<label>Trust SSL Certificate</label>
+				<description>Set it to true in case you want to use HTTPS even without a valid SSL certificate provided by your
+					remote server.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="restPath" type="text" required="true">
 				<label>REST API Path</label>
 				<description>The subpath of the REST API on the remote openHAB server.</description>
-				<required>true</required>
 				<default>/rest</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -38,10 +51,46 @@
 				<context>password</context>
 				<label>Token</label>
 				<description>The token to use when the remote openHAB server is setup to require authorization to run its REST API.</description>
-				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
+
+	<thing-type id="thing">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+
+		<label>Remote Thing</label>
+		<description>A thing from the remote openHAB server.</description>
+
+		<representation-property>thingUID</representation-property>
+
+		<config-description>
+			<parameter name="thingUID" type="text" required="true">
+				<label>Remote Thing UID</label>
+				<description>The thing UID in the remote openHAB server.</description>
+			</parameter>
+
+			<parameter name="buildTriggerChannels" type="boolean">
+				<label>Automatic Trigger Channels Building</label>
+				<description>If set to true, a trigger channel will be automatically created and linked to each trigger channel from
+					the remote thing.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="trigger">
+		<kind>trigger</kind>
+		<label>Trigger Channel</label>
+		<config-description>
+			<parameter name="channelUID" type="text" required="true">
+				<label>Remote Channel UID</label>
+				<description>The channel UID in the remote openHAB server.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
 
 </thing:thing-descriptions>

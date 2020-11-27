@@ -46,7 +46,7 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         leapController = new Controller();
         listener = new Listener() {
             @Override

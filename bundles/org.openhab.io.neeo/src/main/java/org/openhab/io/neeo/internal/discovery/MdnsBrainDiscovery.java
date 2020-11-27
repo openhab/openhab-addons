@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -106,14 +107,17 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
     /** The file we store definitions in */
     private final File file = new File(NeeoConstants.FILENAME_DISCOVEREDBRAINS);
 
+    private final ClientBuilder clientBuilder;
+
     /**
      * Creates the MDNS brain discovery from the given {@link ServiceContext}
      *
      * @param context the non-null service context
      */
-    public MdnsBrainDiscovery(ServiceContext context) {
+    public MdnsBrainDiscovery(ServiceContext context, ClientBuilder clientBuilder) {
         Objects.requireNonNull(context, "context cannot be null");
         this.context = context;
+        this.clientBuilder = clientBuilder;
     }
 
     /**
@@ -250,7 +254,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
 
         NeeoSystemInfo sysInfo;
         try {
-            sysInfo = NeeoApi.getSystemInfo(brainInfo.getValue().toString());
+            sysInfo = NeeoApi.getSystemInfo(brainInfo.getValue().toString(), clientBuilder);
         } catch (IOException e) {
             // We can get an MDNS notification BEFORE the brain is ready to process.
             // if that happens, we'll get an IOException (usually bad gateway message), schedule another attempt to get
@@ -299,7 +303,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
 
         try {
             final InetAddress addr = InetAddress.getByName(ipAddress);
-            final NeeoSystemInfo sysInfo = NeeoApi.getSystemInfo(ipAddress);
+            final NeeoSystemInfo sysInfo = NeeoApi.getSystemInfo(ipAddress, clientBuilder);
             logger.debug("Manually adding brain ({}) with system information: {}", ipAddress, sysInfo);
 
             systemsLock.lock();

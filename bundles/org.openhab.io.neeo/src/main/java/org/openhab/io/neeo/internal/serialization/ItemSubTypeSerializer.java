@@ -13,7 +13,6 @@
 package org.openhab.io.neeo.internal.serialization;
 
 import java.lang.reflect.Type;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,12 +35,8 @@ import com.google.gson.JsonSerializer;
 @NonNullByDefault
 public class ItemSubTypeSerializer implements JsonSerializer<ItemSubType>, JsonDeserializer<ItemSubType> {
     @Override
-    public ItemSubType deserialize(@Nullable JsonElement elm, @Nullable Type type,
-            @Nullable JsonDeserializationContext jsonContext) throws JsonParseException {
-        Objects.requireNonNull(elm, "elm cannot be null");
-        Objects.requireNonNull(type, "type cannot be null");
-        Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
-
+    public @Nullable ItemSubType deserialize(JsonElement elm, Type type, JsonDeserializationContext jsonContext)
+            throws JsonParseException {
         if (elm.isJsonNull()) {
             throw new JsonParseException("ItemSubType could not be parsed from null");
         }
@@ -50,11 +45,7 @@ public class ItemSubTypeSerializer implements JsonSerializer<ItemSubType>, JsonD
     }
 
     @Override
-    public JsonElement serialize(ItemSubType ist, @Nullable Type type, @Nullable JsonSerializationContext jsonContext) {
-        Objects.requireNonNull(ist, "ist cannot be null");
-        Objects.requireNonNull(type, "type cannot be null");
-        Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
-
+    public JsonElement serialize(ItemSubType ist, Type type, JsonSerializationContext jsonContext) {
         return new JsonPrimitive(ist.toString());
     }
 }

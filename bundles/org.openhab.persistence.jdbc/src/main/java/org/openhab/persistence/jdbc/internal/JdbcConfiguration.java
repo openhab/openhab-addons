@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.persistence.jdbc.db.JdbcBaseDAO;
 import org.openhab.persistence.jdbc.utils.MovingAverage;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
@@ -74,7 +73,7 @@ public class JdbcConfiguration {
         valid = updateConfig(configuration);
     }
 
-    private boolean updateConfig(Map<Object, @Nullable Object> config) {
+    private boolean updateConfig(Map<Object, Object> config) {
         configuration = config;
 
         logger.debug("JDBC::updateConfig: configuration size = {}", configuration.size());

@@ -62,6 +62,7 @@ public class BindingConstants {
             "extendedcolorlight");
     public static final ThingTypeUID THING_TYPE_WINDOW_COVERING = new ThingTypeUID(BINDING_ID, "windowcovering");
     public static final ThingTypeUID THING_TYPE_WARNING_DEVICE = new ThingTypeUID(BINDING_ID, "warningdevice");
+    public static final ThingTypeUID THING_TYPE_DOORLOCK = new ThingTypeUID(BINDING_ID, "doorlock");
 
     // groups
     public static final ThingTypeUID THING_TYPE_LIGHTGROUP = new ThingTypeUID(BINDING_ID, "lightgroup");
@@ -110,6 +111,7 @@ public class BindingConstants {
     public static final String CHANNEL_ALERT = "alert";
     public static final String CHANNEL_ALL_ON = "all_on";
     public static final String CHANNEL_ANY_ON = "any_on";
+    public static final String CHANNEL_LOCK = "lock";
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";
@@ -131,5 +133,5 @@ public class BindingConstants {
     public static final double HUE_FACTOR = 65535 / 360.0;
     public static final int BRIGHTNESS_MIN = 0;
     public static final int BRIGHTNESS_MAX = 254;
-    public static final double BRIGHTNESS_FACTOR = BRIGHTNESS_MAX / PercentType.HUNDRED.intValue();
+    public static final double BRIGHTNESS_FACTOR = BRIGHTNESS_MAX / PercentType.HUNDRED.doubleValue();
 }

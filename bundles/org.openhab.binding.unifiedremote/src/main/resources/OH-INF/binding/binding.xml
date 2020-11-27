@@ -5,6 +5,5 @@
 
 	<name>Unified Remote Binding</name>
 	<description>This is the binding for Unified Remote Server (https://www.unifiedremote.com/).</description>
-	<author>Miguel Álvarez</author>
 
 </binding:binding>

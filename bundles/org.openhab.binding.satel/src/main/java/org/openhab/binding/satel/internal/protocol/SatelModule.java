@@ -73,6 +73,10 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
         OutputStream getOutputStream() throws IOException;
 
         void disconnect();
+
+        default boolean supportsReceiveTimeout() {
+            return false;
+        }
     }
 
     /*
@@ -530,9 +534,10 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
             logger.trace("Checking communication thread: {}, {}", thread != null,
                     Boolean.toString(thread != null && thread.isAlive()));
             if (thread != null && thread.isAlive()) {
-                long timePassed = (this.lastActivity == 0) ? 0 : System.currentTimeMillis() - this.lastActivity;
+                final long timePassed = (this.lastActivity == 0) ? 0 : System.currentTimeMillis() - this.lastActivity;
+                final CommunicationChannel channel = SatelModule.this.channel;
 
-                if (timePassed > SatelModule.this.timeout) {
+                if (channel != null && !channel.supportsReceiveTimeout() && timePassed > SatelModule.this.timeout) {
                     logger.error("Send/receive timeout, disconnecting module.");
                     stop();
                     thread.interrupt();

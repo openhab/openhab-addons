@@ -42,10 +42,12 @@ import org.openhab.binding.volvooncall.internal.dto.HvBattery;
 import org.openhab.binding.volvooncall.internal.dto.Position;
 import org.openhab.binding.volvooncall.internal.dto.PostResponse;
 import org.openhab.binding.volvooncall.internal.dto.Status;
+import org.openhab.binding.volvooncall.internal.dto.Status.FluidLevel;
 import org.openhab.binding.volvooncall.internal.dto.Trip;
 import org.openhab.binding.volvooncall.internal.dto.TripDetail;
 import org.openhab.binding.volvooncall.internal.dto.Trips;
 import org.openhab.binding.volvooncall.internal.dto.TyrePressure;
+import org.openhab.binding.volvooncall.internal.dto.TyrePressure.PressureLevel;
 import org.openhab.binding.volvooncall.internal.dto.Vehicles;
 import org.openhab.binding.volvooncall.internal.dto.WindowsStatus;
 import org.openhab.binding.volvooncall.internal.wrapper.VehiclePositionWrapper;
@@ -341,16 +343,20 @@ public class VehicleHandler extends BaseThingHandler {
         return UnDefType.NULL;
     }
 
+    private State pressureLevelToState(PressureLevel level) {
+        return level != PressureLevel.UNKNOWN ? new DecimalType(level.ordinal()) : UnDefType.UNDEF;
+    }
+
     private State getTyresValue(String channelId, TyrePressure tyrePressure) {
         switch (channelId) {
             case REAR_RIGHT_TYRE:
-                return tyrePressure.rearRightTyrePressure;
+                return pressureLevelToState(tyrePressure.rearRightTyrePressure);
             case REAR_LEFT_TYRE:
-                return tyrePressure.rearLeftTyrePressure;
+                return pressureLevelToState(tyrePressure.rearLeftTyrePressure);
             case FRONT_RIGHT_TYRE:
-                return tyrePressure.frontRightTyrePressure;
+                return pressureLevelToState(tyrePressure.frontRightTyrePressure);
             case FRONT_LEFT_TYRE:
-                return tyrePressure.frontLeftTyrePressure;
+                return pressureLevelToState(tyrePressure.frontLeftTyrePressure);
         }
         return UnDefType.NULL;
     }
@@ -397,9 +403,9 @@ public class VehicleHandler extends BaseThingHandler {
             case ENGINE_RUNNING:
                 return status.getEngineRunning().map(State.class::cast).orElse(UnDefType.UNDEF);
             case BRAKE_FLUID_LEVEL:
-                return new StringType(status.brakeFluid);
+                return fluidLevelToState(status.brakeFluidLevel);
             case WASHER_FLUID_LEVEL:
-                return new StringType(status.washerFluidLevel);
+                return fluidLevelToState(status.washerFluidLevel);
             case AVERAGE_SPEED:
                 return status.averageSpeed != UNDEFINED ? new QuantityType<>(status.averageSpeed, KILOMETRE_PER_HOUR)
                         : UnDefType.UNDEF;
@@ -429,6 +435,10 @@ public class VehicleHandler extends BaseThingHandler {
                         .orElse(UnDefType.NULL);
         }
         return UnDefType.NULL;
+    }
+
+    private State fluidLevelToState(FluidLevel level) {
+        return level != FluidLevel.UNKNOWN ? new DecimalType(level.ordinal()) : UnDefType.UNDEF;
     }
 
     private State getTankValue(String channelId, Status status) {

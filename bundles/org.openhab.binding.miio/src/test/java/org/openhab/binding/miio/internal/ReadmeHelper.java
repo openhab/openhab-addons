@@ -79,8 +79,14 @@ public class ReadmeHelper {
     }
 
     private StringWriter deviceList() {
+        long items = Arrays.asList(MiIoDevices.values()).stream()
+                .filter(device -> !device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED)).count();
+        String devicesCount = String.format("Currently the miio binding supports more than %d different models.",
+                (items / 10) * 10);
+        LOGGER.info(devicesCount);
         StringWriter sw = new StringWriter();
-
+        sw.write(devicesCount);
+        sw.write("\r\n\r\n");
         sw.write(
                 "| Device                       | ThingType        | Device Model           | Supported | Remark     |\r\n");
         sw.write(
@@ -97,7 +103,7 @@ public class ReadmeHelper {
                         remark = dev.getDevice().getReadmeComment();
                         final Boolean experimental = dev.getDevice().getExperimental();
                         if (experimental != null && experimental.booleanValue()) {
-                            remark += (remark.isBlank() ? "" : " ")
+                            remark += (remark.isBlank() ? "" : "<br />")
                                     + "Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses";
                         }
                     }
@@ -177,7 +183,9 @@ public class ReadmeHelper {
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
                 if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
-                    LOGGER.info("id :" + id + " not found");
+                    LOGGER.info("id : {} " + id
+                            + " not found. Suggested line to add to MiIoDevices.java: {}(\"{}\", \"{}\", THING_TYPE_BASIC),",
+                            id, id.toUpperCase().replace(".", "_"), id, id);
                 }
             }
         }

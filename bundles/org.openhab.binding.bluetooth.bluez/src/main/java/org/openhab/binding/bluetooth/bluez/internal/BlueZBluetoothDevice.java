@@ -398,7 +398,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
                     for (BluetoothGattDescriptor dBusBlueZDescriptor : dBusBlueZCharacteristic.getGattDescriptors()) {
                         BluetoothDescriptor descriptor = new BluetoothDescriptor(characteristic,
-                                UUID.fromString(dBusBlueZDescriptor.getUuid()));
+                                UUID.fromString(dBusBlueZDescriptor.getUuid()), 0);
                         characteristic.addDescriptor(descriptor);
                     }
                     service.addCharacteristic(characteristic);

@@ -185,7 +185,7 @@ public class SonosXMLParser {
         return handler.getTextFields();
     }
 
-    public static Map<String, @Nullable String> getRenderingControlFromXML(String xml) {
+    public static Map<String, String> getRenderingControlFromXML(String xml) {
         RenderingControlEventHandler handler = new RenderingControlEventHandler();
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -200,7 +200,7 @@ public class SonosXMLParser {
         return handler.getChanges();
     }
 
-    public static Map<String, @Nullable String> getAVTransportFromXML(String xml) {
+    public static Map<String, String> getAVTransportFromXML(String xml) {
         AVTransportEventHandler handler = new AVTransportEventHandler();
         try {
             XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -712,7 +712,7 @@ public class SonosXMLParser {
          * </Event>
          */
 
-        private final Map<String, @Nullable String> changes = new HashMap<>();
+        private final Map<String, String> changes = new HashMap<>();
 
         @Override
         public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
@@ -732,7 +732,7 @@ public class SonosXMLParser {
             }
         }
 
-        public Map<String, @Nullable String> getChanges() {
+        public Map<String, String> getChanges() {
             return changes;
         }
     }
@@ -842,7 +842,7 @@ public class SonosXMLParser {
 
     private static class RenderingControlEventHandler extends DefaultHandler {
 
-        private final Map<String, @Nullable String> changes = new HashMap<>();
+        private final Map<String, String> changes = new HashMap<>();
 
         private boolean getPresetName = false;
         private @Nullable String presetName;
@@ -900,7 +900,7 @@ public class SonosXMLParser {
             }
         }
 
-        public Map<String, @Nullable String> getChanges() {
+        public Map<String, String> getChanges() {
             return changes;
         }
     }

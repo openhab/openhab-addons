@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The {@link GatewayCommand} is used to validate and match commands send through the binding
  * to the OpenTherm gateway device.
- * 
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
