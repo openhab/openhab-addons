@@ -13,6 +13,10 @@
 	</bridge-type>
 
 	<thing-type id="in-wall-switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+		
 		<label>In-wall Switch</label>
 		<description>Bosch In-wall switch for light control</description>
 
@@ -27,6 +31,10 @@
 	</thing-type>
 
 	<thing-type id="twinguard">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
 		<label>TwinGuard</label>
 		<description>Bosch TwinGuard environmental sensor</description>
 
@@ -46,6 +54,10 @@
 	</thing-type>
 
 	<thing-type id="window-contact">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
 		<label>Window/Door Contact</label>
 		<description>Bosch Contact for windows and doors</description>
 
@@ -58,6 +70,10 @@
 	</thing-type>
 
 	<thing-type id="motion-detector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
 		<label>Motion Detector</label>
 		<description>Bosch Motion Detector</description>
 
