@@ -34,7 +34,7 @@ add the following lines into ``userdata/etc/log4j2.xml`` Loggers XML section.
 
 ## Pairing and  Certificates
 
-We need secured and paired connection from the openHAB binding instacne to the Bosch SHC.  
+We need secured and paired connection from the openHAB binding instance to the Bosch SHC.  
 
 Read more about the pairing process in [register a new client to the bosch smart home controller](https://github.com/BoschSmartHome/bosch-shc-api-docs/tree/master/postman#register-a-new-client-to-the-bosch-smart-home-controller)
 
