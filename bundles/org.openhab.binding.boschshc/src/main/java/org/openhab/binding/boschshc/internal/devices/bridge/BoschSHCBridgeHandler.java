@@ -307,7 +307,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 return true;
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("HTTP request failed", e);
+                logger.warn("HTTP request failed: {}", e.getMessage());
                 return false;
             }
         } else {
@@ -381,7 +381,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             Response response = request.send();
             return response;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("HTTP request failed", e);
+            logger.warn("HTTP request failed: {}", e.getMessage());
             return null;
         }
     }
