@@ -4,18 +4,19 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="thermostat">
+	<thing-type id="valveheatingsystem">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Somfy Thermostat</label>
+		<label>Somfy Thermostatic Valve</label>
 		<channels>
 			<channel id="target_temperature" typeId="temperature"></channel>
 			<channel id="battery_level" typeId="system.battery-level"></channel>
-			<channel id="heating_mode" typeId="heating_mode"></channel>
 			<channel id="derogation_heating_mode" typeId="derogation_heating_mode"></channel>
-			<channel id="derogation_activation" typeId="derogation_activation"></channel>
 			<channel id="derogated_target_temperature" typeId="target_temperature"></channel>
+			<channel id="current_heating_mode" typeId="current_heating_mode"></channel>
+			<channel id="open_closed_valve" typeId="open_closed_valve"></channel>
+			<channel id="operating_mode" typeId="operating_mode"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>

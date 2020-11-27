@@ -55,9 +55,23 @@
 								}
 							]
 						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 6,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "findme"
+								}
+							]
+						}
 					}
 				],
-				"readmeComment": "This channel accepts `start`, `stop` and `dock`. The commands have not been confirmed working yet. Please feedback"
+				"readmeComment": "This channel accepts `start`, `stop`, `findme` and `dock`."
 			},
 			{
 				"property": "status",
@@ -544,6 +558,6 @@
 				"readmeComment": "Value mapping [0\u003d\"MopUninstall\",1\u003d\"MopInstall\"]"
 			}
 		],
-		"readmeComment": "Action commands are unknown at this time. According to spec identified actions for execution are:<br />`action{\"did\":\"vacuum-start-sweep\",\"siid\":2,\"aiid\":1,\"in\":[]}`<br />`action{\"did\":\"vacuum-stop-sweeping\",\"siid\":2,\"aiid\":2,\"in\":[]}`<br />`action{\"did\":\"vacuum-start-charge\",\"siid\":2,\"aiid\":3,\"in\":[]}`<br />`action{\"did\":\"filter-reset-filter-life\",\"siid\":11,\"aiid\":1,\"in\":[]}`<br />`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":14,\"aiid\":1,\"in\":[]}`<br />`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":15,\"aiid\":1,\"in\":[]}`<br />Please test and feedback if they are working to they can be linked to a channel."
+		"readmeComment": "This device may be overwhelmed if refresh is too frequent, slowing down the responses. Suggest to increase refresh time to 120 seconds"
 	}
 }

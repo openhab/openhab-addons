@@ -176,14 +176,16 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
 
         logger.debug("setting channel '{}' to {}", channelId, value);
 
+        Integer previousValue;
         synchronized (cachedStates) {
-            cachedStates.put(channelId, value);
+            previousValue = cachedStates.put(channelId, value);
         }
 
-        updateState(channelId, stateFromValue(value));
+        if (previousValue == null || previousValue.intValue() != value) {
+            updateState(channelId, stateFromValue(value));
+        }
     }
 
-    @SuppressWarnings({ "unused", "null" })
     private void processWrite(ChannelUID channelUID, Command command) {
         StringBuilder commandPayload = new StringBuilder();
         SwitchModuleGroup group = SwitchModuleGroup.mapFromChannel(channelUID);

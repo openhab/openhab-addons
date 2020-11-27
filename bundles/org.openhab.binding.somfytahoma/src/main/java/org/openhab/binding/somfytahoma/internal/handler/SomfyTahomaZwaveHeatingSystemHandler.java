@@ -21,20 +21,20 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
 /**
- * The {@link SomfyTahomaHeatingSystemHandler} is responsible for handling commands,
- * which are sent to one of the channels of the heating system thing.
+ * The {@link SomfyTahomaZwaveHeatingSystemHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the z-wave heating system thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaZwaveHeatingSystemHandler extends SomfyTahomaBaseThingHandler {
 
-    public SomfyTahomaHeatingSystemHandler(Thing thing) {
+    public SomfyTahomaZwaveHeatingSystemHandler(Thing thing) {
         super(thing);
         stateNames.put(TARGET_TEMPERATURE, TARGET_TEMPERATURE_STATE);
         stateNames.put(CURRENT_TEMPERATURE, "zwave:SetPointHeatingValueState");
         stateNames.put(BATTERY_LEVEL, BATTERY_LEVEL_STATE);
-        stateNames.put(CURRENT_STATE, "zwave:SetPointTypeState");
+        stateNames.put(CURRENT_STATE, ZWAVE_SET_POINT_TYPE_STATE);
     }
 
     @Override
