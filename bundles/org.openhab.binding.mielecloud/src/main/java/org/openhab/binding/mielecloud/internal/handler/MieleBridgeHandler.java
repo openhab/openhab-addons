@@ -1,0 +1,359 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.mielecloud.internal.handler;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.types.Command;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.I18NKeys;
+import org.openhab.binding.mielecloud.internal.auth.OAuthException;
+import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefreshListener;
+import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
+import org.openhab.binding.mielecloud.internal.discovery.ThingDiscoveryService;
+import org.openhab.binding.mielecloud.internal.util.LocaleValidator;
+import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
+import org.openhab.binding.mielecloud.internal.webservice.ConnectionError;
+import org.openhab.binding.mielecloud.internal.webservice.ConnectionStatusListener;
+import org.openhab.binding.mielecloud.internal.webservice.DeviceStateListener;
+import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
+import org.openhab.binding.mielecloud.internal.webservice.UnavailableMieleWebservice;
+import org.openhab.binding.mielecloud.internal.webservice.api.ActionsState;
+import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
+import org.openhab.binding.mielecloud.internal.webservice.exception.MieleWebserviceInitializationException;
+import org.openhab.binding.mielecloud.internal.webservice.language.CombiningLanguageProvider;
+import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * BridgeHandler implementation for the Miele cloud account.
+ *
+ * @author Roland Edelhoff - Initial contribution
+ * @author Björn Lange - Introduced CombiningLanguageProvider field and interactions, added LanguageProvider super
+ *         interface, switched from polling to SSE, added support for multiple bridges
+ */
+@NonNullByDefault
+public class MieleBridgeHandler extends BaseBridgeHandler
+        implements OAuthTokenRefreshListener, LanguageProvider, ConnectionStatusListener, DeviceStateListener {
+    private static final int NUMBER_OF_SSE_RECONNECTION_ATTEMPTS_BEFORE_STATUS_IS_UPDATED = 6;
+
+    private final Supplier<MieleWebservice> webserviceFactory;
+
+    private final OAuthTokenRefresher tokenRefresher;
+    private final CombiningLanguageProvider languageProvider;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Nullable
+    private CompletableFuture<@Nullable Void> logoutFuture;
+    @Nullable
+    private MieleWebservice webService;
+    @Nullable
+    private ThingDiscoveryService discoveryService;
+
+    /**
+     * Creates a new {@link MieleBridgeHandler}.
+     *
+     * @param bridge The bridge to handle.
+     * @param webserviceFactory Factory for creating {@link MieleWebservice} instances.
+     * @param tokenRefresher Token refresher.
+     * @param languageProvider Language provider.
+     */
+    public MieleBridgeHandler(Bridge bridge, Function<ScheduledExecutorService, MieleWebservice> webserviceFactory,
+            OAuthTokenRefresher tokenRefresher, CombiningLanguageProvider languageProvider) {
+        super(bridge);
+        this.webserviceFactory = () -> webserviceFactory.apply(scheduler);
+        this.tokenRefresher = tokenRefresher;
+        this.languageProvider = languageProvider;
+    }
+
+    public void setDiscoveryService(@Nullable ThingDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
+
+    /**
+     * Gets the current webservice instance for communication with the Miele service.
+     *
+     * This function may return an {@link UnavailableMieleWebservice} in case no webservice is available at the moment.
+     */
+    public MieleWebservice getWebservice() {
+        MieleWebservice webservice = webService;
+        if (webservice != null) {
+            return webservice;
+        } else {
+            return UnavailableMieleWebservice.INSTANCE;
+        }
+    }
+
+    private String getOAuthServiceHandle() {
+        return getThing().getUID().getAsString();
+    }
+
+    @Override
+    public void initialize() {
+        // It is required to set a status in this method as stated in the Javadoc of ThingHandler.initialize
+        updateStatus(ThingStatus.UNKNOWN);
+
+        try {
+            webService = webserviceFactory.get();
+        } catch (MieleWebserviceInitializationException e) {
+            logger.warn("Failed to initialize webservice: {}", e.getMessage());
+            logger.debug("Exception details:", e);
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
+
+        try {
+            tokenRefresher.setRefreshListener(this, getOAuthServiceHandle());
+        } catch (OAuthException e) {
+            logger.warn("Could not initialize Miele Cloud bridge: {}", e.getMessage());
+            logger.debug("Exception details:", e);
+            logger.warn("The account has not been authorized. Please consult the documentation on how to do that.");
+            logger.warn("If using things-files reload your thing configuration afterwards.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED);
+            // When the authorization takes place handleConfigurationUpdate() will be called which triggers a new
+            // initialization. Therefore we can leave the bridge in this state.
+            return;
+        }
+        languageProvider.setPrioritizedLanguageProvider(this);
+        tryInitializeWebservice();
+
+        MieleWebservice webservice = getWebservice();
+        webservice.addConnectionStatusListener(this);
+        webservice.addDeviceStateListener(this);
+        if (webservice.hasAccessToken()) {
+            webservice.connectSse();
+        }
+    }
+
+    @Override
+    public void handleRemoval() {
+        performLogout();
+        tokenRefresher.removeTokensFromStorage(getOAuthServiceHandle());
+        super.handleRemoval();
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing {}", this.getClass().getName());
+        getWebservice().removeConnectionStatusListener(this);
+        getWebservice().removeDeviceStateListener(this);
+        getWebservice().disconnectSse();
+        languageProvider.unsetPrioritizedLanguageProvider();
+        tokenRefresher.unsetRefreshListener(getOAuthServiceHandle());
+
+        stopWebservice();
+    }
+
+    private void stopWebservice() {
+        final MieleWebservice webService = this.webService;
+        this.webService = null;
+        if (webService == null) {
+            return;
+        }
+
+        scheduler.submit(() -> {
+            CompletableFuture<@Nullable Void> logoutFuture = this.logoutFuture;
+            if (logoutFuture != null) {
+                try {
+                    logoutFuture.get();
+                } catch (InterruptedException e) {
+                    logger.warn("Interrupted while waiting for logout!");
+                } catch (ExecutionException e) {
+                    logger.warn("Failed to wait for logout: {}", e.getMessage());
+                    logger.debug("Exception details:", e);
+                }
+            }
+
+            try {
+                webService.close();
+            } catch (Exception e) {
+                logger.warn("Failed to close webservice: {}", e.getMessage());
+                logger.debug("Exception details:", e);
+            }
+        });
+    }
+
+    @Override
+    public void onNewAccessToken(String accessToken) {
+        logger.info("Setting new access token for webservice access.");
+        updateProperty(MieleCloudBindingConstants.PROPERTY_ACCESS_TOKEN, accessToken);
+
+        // Without this the retry would fail causing the thing to go OFFLINE
+        getWebservice().setAccessToken(accessToken);
+
+        // If there was no access token during initialization then the SSE connection was not established.
+        getWebservice().connectSse();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    private void performLogout() {
+        logoutFuture = new CompletableFuture<>();
+        scheduler.schedule(() -> {
+            try {
+                getWebservice().logout();
+            } catch (Exception exception) {
+                logger.warn("Failed to logout from Miele cloud.");
+                logger.debug("Exception details:", exception);
+            }
+            OptionalUtils.ofNullable(logoutFuture).map(future -> future.complete(null));
+        }, 1, TimeUnit.NANOSECONDS);
+    }
+
+    private void tryInitializeWebservice() {
+        Optional<String> accessToken = tokenRefresher.getAccessTokenFromStorage(getOAuthServiceHandle());
+        if (!accessToken.isPresent()) {
+            logger.info("No OAuth2 access token available. Retrying later.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_NOT_CONFIGURED);
+            return;
+        }
+        getWebservice().setAccessToken(accessToken.get());
+        updateProperty(MieleCloudBindingConstants.PROPERTY_ACCESS_TOKEN, accessToken.get());
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        synchronized (this) {
+            if (getThing().getStatus() == ThingStatus.REMOVING && status != ThingStatus.REMOVED) {
+                return;
+            }
+
+            super.updateStatus(status, statusDetail, description);
+        }
+    }
+
+    @Override
+    public void onConnectionAlive() {
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void onConnectionError(ConnectionError connectionError, int failedReconnectionAttempts) {
+        if (connectionError == ConnectionError.AUTHORIZATION_FAILED) {
+            tryToRefreshAccessToken();
+            return;
+        }
+
+        if (failedReconnectionAttempts <= NUMBER_OF_SSE_RECONNECTION_ATTEMPTS_BEFORE_STATUS_IS_UPDATED
+                && getThing().getStatus() != ThingStatus.UNKNOWN) {
+            return;
+        }
+
+        if (getThing().getStatus() == ThingStatus.UNKNOWN && connectionError == ConnectionError.REQUEST_INTERRUPTED
+                && failedReconnectionAttempts <= NUMBER_OF_SSE_RECONNECTION_ATTEMPTS_BEFORE_STATUS_IS_UPDATED) {
+            return;
+        }
+
+        switch (connectionError) {
+            case AUTHORIZATION_FAILED:
+                // Handled above.
+                break;
+
+            case REQUEST_EXECUTION_FAILED:
+            case SERVICE_UNAVAILABLE:
+            case RESPONSE_MALFORMED:
+            case TIMEOUT:
+            case TOO_MANY_RERQUESTS:
+            case SSE_STREAM_ENDED:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                break;
+
+            case SERVER_ERROR:
+            case REQUEST_INTERRUPTED:
+            case OTHER_HTTP_ERROR:
+            default:
+                updateStatus(ThingStatus.OFFLINE);
+                break;
+        }
+    }
+
+    private void tryToRefreshAccessToken() {
+        try {
+            tokenRefresher.refreshToken(getOAuthServiceHandle());
+            getWebservice().connectSse();
+        } catch (OAuthException e) {
+            logger.error("Failed to refresh OAuth token!");
+            logger.debug("Exception details:", e);
+            getWebservice().disconnectSse();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_REFRESH_FAILED);
+        }
+    }
+
+    @Override
+    public Optional<String> getLanguage() {
+        Object languageObject = thing.getConfiguration().get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE);
+        if (languageObject instanceof String) {
+            String language = (String) languageObject;
+            if (language.isEmpty() || !LocaleValidator.isValidLanguage(language)) {
+                return Optional.empty();
+            } else {
+                return Optional.of(language);
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public void onDeviceStateUpdated(DeviceState deviceState) {
+        ThingDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.onDeviceStateUpdated(deviceState);
+        }
+
+        invokeOnThingHandlers(deviceState.getDeviceIdentifier(), handler -> handler.onDeviceStateUpdated(deviceState));
+    }
+
+    @Override
+    public void onProcessActionUpdated(ActionsState actionState) {
+        invokeOnThingHandlers(actionState.getDeviceIdentifier(),
+                handler -> handler.onProcessActionUpdated(actionState));
+    }
+
+    @Override
+    public void onDeviceRemoved(String deviceIdentifier) {
+        ThingDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.onDeviceRemoved(deviceIdentifier);
+        }
+
+        invokeOnThingHandlers(deviceIdentifier, handler -> handler.onDeviceRemoved());
+    }
+
+    private void invokeOnThingHandlers(String deviceIdentifier, Consumer<AbstractMieleThingHandler> action) {
+        getThing().getThings().stream().filter(thing -> deviceIdentifier.equals(thing.getUID().getId()))
+                .map(Thing::getHandler).filter(handler -> handler instanceof AbstractMieleThingHandler)
+                .map(handler -> (AbstractMieleThingHandler) handler).forEach(action);
+    }
+}
