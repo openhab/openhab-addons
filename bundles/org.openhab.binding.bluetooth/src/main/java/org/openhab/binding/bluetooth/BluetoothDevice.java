@@ -256,7 +256,7 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to receive notifications for.
      * @return true if the characteristic notification is started successfully
      */
-    public abstract boolean enableNotifications(BluetoothCharacteristic characteristic);
+    public abstract CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic);
 
     /**
      * Disables notifications for a characteristic. Only a single read or write operation can be requested at once.
@@ -266,7 +266,7 @@ public abstract class BluetoothDevice {
      * @param characteristic the {@link BluetoothCharacteristic} to disable notifications for.
      * @return true if the characteristic notification is stopped successfully
      */
-    public abstract boolean disableNotifications(BluetoothCharacteristic characteristic);
+    public abstract CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic);
 
     /**
      * Enables notifications for a descriptor. Only a single read or write operation can be requested at once.

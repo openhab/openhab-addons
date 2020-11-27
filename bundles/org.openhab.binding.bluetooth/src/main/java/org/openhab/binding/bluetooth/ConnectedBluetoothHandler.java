@@ -293,15 +293,6 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     }
 
     @Override
-    public void onServicesDiscovered() {
-        super.onServicesDiscovered();
-        if (!resolved) {
-            resolved = true;
-            logger.debug("Service discovery completed for '{}'", address);
-        }
-    }
-
-    @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
         super.onCharacteristicUpdate(characteristic, value);
         if (logger.isDebugEnabled()) {

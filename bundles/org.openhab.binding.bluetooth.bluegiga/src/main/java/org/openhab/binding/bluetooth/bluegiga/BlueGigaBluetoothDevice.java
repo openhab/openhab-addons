@@ -200,7 +200,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     }
 
     @Override
-    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
+    public CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic) {
         if (connection == -1) {
             logger.debug("Cannot enable notifications, device not connected {}", this);
             return false;
@@ -248,7 +248,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     }
 
     @Override
-    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
+    public CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic) {
         if (connection == -1) {
             logger.debug("Cannot enable notifications, device not connected {}", this);
             return false;
@@ -346,7 +346,8 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         }
 
         procedureTimer = startTimer(procedureTimeoutTask, TIMEOUT_SEC);
-        WriteCharacteristicProcedure writeProcedure = new WriteCharacteristicProcedure(characteristic);
+        WriteCharacteristicProcedure writeProcedure = new WriteCharacteristicProcedure(
+                (BlueGigaBluetoothCharacteristic) characteristic, BlueGigaProcedure.Type.CHARACTERISTIC_WRITE);
         currentProcedure = writeProcedure;
 
         return writeProcedure.writeFuture;
@@ -747,24 +748,13 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
             // it must be one of the descriptors we need to update
             UUID attUUID = handleToUUID.get(handle);
             BluetoothDescriptor descriptor = characteristic.getDescriptor(attUUID);
-            descriptor.setValue(toBytes(event.getValue()));
-            notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor);
+            notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor,
+                    BluetoothUtils.toByteArray(event.getValue()));
         }
-    }
-
-    private static byte @Nullable [] toBytes(int @Nullable [] value) {
-        if (value == null) {
-            return null;
-        }
-        byte[] ret = new byte[value.length];
-        for (int i = 0; i < value.length; i++) {
-            ret[i] = (byte) value[i];
-        }
-        return ret;
     }
 
     private boolean parseDeclaration(BlueGigaBluetoothCharacteristic ch, int[] value) {
-        ByteBuffer buffer = ByteBuffer.wrap(toBytes(value));
+        ByteBuffer buffer = ByteBuffer.wrap(BluetoothUtils.toByteArray(value));
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
         ch.setProperties(Byte.toUnsignedInt(buffer.get()));

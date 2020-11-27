@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.bluez.exceptions.BluezFailedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.freedesktop.dbus.errors.NoReply;
@@ -42,6 +41,8 @@ import org.openhab.binding.bluetooth.bluez.internal.events.ServicesResolvedEvent
 import org.openhab.binding.bluetooth.bluez.internal.events.TXPowerEvent;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
+import org.openhab.binding.bluetooth.util.RetryException;
+import org.openhab.binding.bluetooth.util.RetryFuture;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -252,29 +253,36 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     }
 
     @Override
-    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
-        ensureConnected();
+    public CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic) {
+        BluetoothDevice dev = device;
+        if (dev == null || !dev.isConnected()) {
+            return CompletableFuture
+                    .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
+        }
 
         BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c != null) {
+        if (c == null) {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return CompletableFuture.failedFuture(
+                    new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
+        }
 
+        return RetryFuture.callWithRetry(() -> {
             try {
                 c.startNotify();
             } catch (DBusException e) {
                 if (e.getMessage().contains("Already notifying")) {
-                    return false;
+                    return null;
                 } else if (e.getMessage().contains("In Progress")) {
-                    // let's retry in 10 seconds
-                    scheduler.schedule(() -> enableNotifications(characteristic), 10, TimeUnit.SECONDS);
+                    // let's retry in half a second
+                    throw new RetryException(500, TimeUnit.MILLISECONDS);
                 } else {
                     logger.warn("Exception occurred while activating notifications on '{}'", address, e);
+                    throw e;
                 }
             }
-            return true;
-        } else {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return false;
-        }
+            return null;
+        }, scheduler);
     }
 
     @Override
@@ -440,24 +448,36 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     }
 
     @Override
-    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
+    public CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic) {
+        BluetoothDevice dev = device;
+        if (dev == null || !dev.isConnected()) {
+            return CompletableFuture
+                    .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
+        }
+
         BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString());
-        if (c != null) {
+        if (c == null) {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
+            return CompletableFuture.failedFuture(
+                    new IllegalStateException("Characteristic " + characteristic.getUuid() + " is missing on device"));
+        }
+
+        return RetryFuture.callWithRetry(() -> {
             try {
                 c.stopNotify();
-            } catch (BluezFailedException e) {
-                if (e.getMessage().contains("In Progress")) {
-                    // let's retry in 10 seconds
-                    scheduler.schedule(() -> disableNotifications(characteristic), 10, TimeUnit.SECONDS);
+            } catch (DBusException e) {
+                if (e.getMessage().contains("Already notifying")) {
+                    return null;
+                } else if (e.getMessage().contains("In Progress")) {
+                    // let's retry in half a second
+                    throw new RetryException(500, TimeUnit.MILLISECONDS);
                 } else {
-                    logger.warn("Exception occurred while activating notifications on '{}'", address, e);
+                    logger.warn("Exception occurred while deactivating notifications on '{}'", address, e);
+                    throw e;
                 }
             }
-            return true;
-        } else {
-            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-            return false;
-        }
+            return null;
+        }, scheduler);
     }
 
     @Override
