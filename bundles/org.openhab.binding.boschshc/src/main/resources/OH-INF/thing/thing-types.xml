@@ -16,7 +16,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
-		
+
 		<label>In-wall Switch</label>
 		<description>Bosch In-wall switch for light control</description>
 
