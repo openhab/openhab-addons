@@ -56,7 +56,6 @@ public class CarNetUtils {
         return fromJson(gson, json, classOfT, true);
     }
 
-    @SuppressWarnings("null") // suspress warning in OH2 dev environment
     public static @Nullable <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT, boolean exceptionOnNull)
             throws CarNetException {
         String className = CarNetUtils.substringAfter(classOfT.getName(), "$");
@@ -71,7 +70,7 @@ public class CarNetUtils {
 
         if (classOfT.isInstance(json)) {
             return Primitives.wrap(classOfT).cast(json);
-        } else if ((json == null) || json.isEmpty()) { // update GSON might return null
+        } else if (json.isEmpty()) { // update GSON might return null
             throw new CarNetException(PRE + className + "from empty JSON");
         } else {
             try {
@@ -210,7 +209,7 @@ public class CarNetUtils {
         return value == null ? UnDefType.NULL : toQuantityType(value.toBigDecimal(), unit);
     }
 
-    public static Long now() {
+    public static long now() {
         return System.currentTimeMillis() / 1000L;
     }
 

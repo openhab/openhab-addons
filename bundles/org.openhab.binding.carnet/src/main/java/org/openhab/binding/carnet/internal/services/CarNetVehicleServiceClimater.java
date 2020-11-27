@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.carnet.internal.services;
+package org.openhab.binding.carnet.internal.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.*;
@@ -65,7 +65,7 @@ public class CarNetVehicleServiceClimater extends CarNetVehicleBaseService {
                 return true;
             }
         } catch (CarNetException e) {
-
+            // Service not available
         }
         return false;
     }
@@ -82,7 +82,6 @@ public class CarNetVehicleServiceClimater extends CarNetVehicleBaseService {
                     Double temp = getDouble(cs.settings.targetTemperature.content).doubleValue();
                     BigDecimal bd = new BigDecimal(
                             DKELVIN.getConverterToAny(SIUnits.CELSIUS).convert(temp).doubleValue());
-                    bd = bd.setScale(1, BigDecimal.ROUND_HALF_UP);
                     updated |= updateChannel(group, CHANNEL_CLIMATER_TARGET_TEMP,
                             toQuantityType(bd.doubleValue(), 1, SIUnits.CELSIUS));
                     if (cs.settings.heaterSource != null) {

@@ -10,21 +10,13 @@
 			<description>Authentication settings.</description>
 		</parameter-group>
 
-		<parameter name="brand" type="text" required="true">
-			<label>Brand</label>
-			<description>CarNet Brand.</description>
-			<options>
-				<option value="Audi">Audi</option>
-			</options>
-			<default>Audi</default>
-		</parameter>
 		<parameter name="country" type="text" required="true">
 			<label>Market (Country)</label>
 			<description>Market in which is associated (must not match the country where the vehicle was bought).</description>
 			<options>
 				<option value="DE">Europe</option>
-				<option value="United States">US</option>
-				<option value="China">CN</option>
+				<option value="US">United States</option>
+				<option value="CN">China</option>
 			</options>
 			<default>DE</default>
 		</parameter>
@@ -38,7 +30,7 @@
 			<description>Password to access the CarNet Account.</description>
 		</parameter>
 
-		<parameter name="pollingInterval" type="integer" required="false" min="5">
+		<parameter name="pollingInterval" type="integer" required="false" min="5" unit="min">
 			<label>Polling Interval</label>
 			<description>Status update interval in minutes.</description>
 			<default>15</default>

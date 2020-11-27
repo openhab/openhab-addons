@@ -45,14 +45,14 @@ import org.openhab.binding.carnet.internal.config.CarNetCombinedConfig;
 import org.openhab.binding.carnet.internal.config.CarNetVehicleConfiguration;
 import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper;
 import org.openhab.binding.carnet.internal.provider.CarNetIChanneldMapper.ChannelIdMapEntry;
-import org.openhab.carnet.internal.services.CarNetVehicleBaseService;
-import org.openhab.carnet.internal.services.CarNetVehicleServiceCarFinder;
-import org.openhab.carnet.internal.services.CarNetVehicleServiceCharger;
-import org.openhab.carnet.internal.services.CarNetVehicleServiceClimater;
-import org.openhab.carnet.internal.services.CarNetVehicleServiceDestinations;
-import org.openhab.carnet.internal.services.CarNetVehicleServiceRLU;
-import org.openhab.carnet.internal.services.CarNetVehicleServiceStatus;
-import org.openhab.carnet.internal.services.CarNetVehicleServiceTripData;
+import org.openhab.binding.carnet.internal.services.CarNetVehicleBaseService;
+import org.openhab.binding.carnet.internal.services.CarNetVehicleServiceCarFinder;
+import org.openhab.binding.carnet.internal.services.CarNetVehicleServiceCharger;
+import org.openhab.binding.carnet.internal.services.CarNetVehicleServiceClimater;
+import org.openhab.binding.carnet.internal.services.CarNetVehicleServiceDestinations;
+import org.openhab.binding.carnet.internal.services.CarNetVehicleServiceRLU;
+import org.openhab.binding.carnet.internal.services.CarNetVehicleServiceStatus;
+import org.openhab.binding.carnet.internal.services.CarNetVehicleServiceTripData;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -180,9 +180,13 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
             config.user.status = ol.status;
             config.user.securityLevel = ol.securityLevel;
 
-            CarNetVehicleData vmi = api.getVehicleManagementInfo();
-            if (!vmi.isConnect) {
-                logger.warn("{}: Car Connect might not be enabled!", thingId);
+            try {
+                CarNetVehicleData vmi = api.getVehicleManagementInfo();
+                if (!vmi.isConnect) {
+                    logger.warn("{}: Car Connect might not be enabled!", thingId);
+                }
+            } catch (CarNetException e) {
+                // ignore, this is not a must have, I saw log where the call fails
             }
 
             serviceAvailability = api.getServiceAvailability(ol);
@@ -346,6 +350,9 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
                     action = switchOn ? "startClimater" : "stopClimater";
                     actionStatus = api.controlClimater(switchOn);
                     break;
+                case CHANNEL_CLIMATER_TARGET_TEMP:
+                    actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue());
+                    break;
                 case CHANNEL_CONTROL_CHARGER:
                     sendOffOnError = true;
                     action = switchOn ? "startCharging" : "stopCharging";
@@ -430,7 +437,11 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
     }
 
     public void checkPendingRequests() {
-        for (Map.Entry<String, CarNetPendingRequest> e : api.getPendingRequests().entrySet()) {
+        Map<String, CarNetPendingRequest> requests = api.getPendingRequests();
+        if (requests.size() > 0) {
+            logger.debug("{}: Checking status for {} pending requets", thingId, requests.size());
+        }
+        for (Map.Entry<String, CarNetPendingRequest> e : requests.entrySet()) {
             CarNetPendingRequest request = e.getValue();
             String status = "";
             try {
@@ -459,7 +470,7 @@ public class CarNetVehicleHandler extends BaseThingHandler implements CarNetDevi
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             ++updateCounter;
 
-            if (updateCounter % API_REQUEST_CHECK_INT == 0) {
+            if ((updateCounter % API_REQUEST_CHECK_INT) == 0) {
                 // Check results for pending requests, remove expires ones from the list
                 checkPendingRequests();
             }

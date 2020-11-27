@@ -85,7 +85,6 @@ public class CarNetChannelTypeProvider implements ChannelTypeProvider, ChannelGr
 
     @Override
     public @Nullable ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID,
-
             @Nullable Locale locale) {
         for (ChannelGroupType channelGroupType : channelGroupTypes) {
             if (channelGroupType.getUID().equals(channelGroupTypeUID)) {

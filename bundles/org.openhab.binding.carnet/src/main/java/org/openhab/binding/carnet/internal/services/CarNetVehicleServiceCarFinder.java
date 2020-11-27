@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.carnet.internal.services;
+package org.openhab.binding.carnet.internal.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.getString;
@@ -84,7 +84,6 @@ public class CarNetVehicleServiceCarFinder extends CarNetVehicleBaseService {
                 return true;
             }
         } catch (CarNetException e) {
-            // updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_STORED_POS, UnDefType.UNDEF);
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, UnDefType.UNDEF);
             updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, UnDefType.UNDEF);
             if (e.getApiResult().httpCode != HttpStatus.NO_CONTENT_204) { // Ignore No Content = Info not available

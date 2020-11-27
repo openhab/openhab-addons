@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.carnet.internal.services;
+package org.openhab.binding.carnet.internal.services;
 
 import static org.openhab.binding.carnet.internal.CarNetUtils.mkChannelId;
 
@@ -53,9 +53,6 @@ public class CarNetVehicleBaseService {
         this.thingId = thingHandler.thingId;
         this.idMapper = thingHandler.getIdMapper();
         this.api = api;
-    }
-
-    public void initialize() {
     }
 
     public String getServiceId() {

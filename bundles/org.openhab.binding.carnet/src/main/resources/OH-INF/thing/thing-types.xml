@@ -5,6 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="myaudi"/>
+		</supported-bridge-type-refs>
+
 		<label>@text/thing-type.carnet.vehicle.label</label>
 		<description>@text/thing-type.carnet.vehicle.description</description>
 

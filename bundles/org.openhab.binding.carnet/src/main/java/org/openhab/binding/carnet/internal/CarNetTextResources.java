@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -37,8 +37,9 @@ public class CarNetTextResources {
     private final LocaleProvider localeProvider;
 
     @Activate
-    public CarNetTextResources(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider) {
-        this.bundle = FrameworkUtil.getBundle(this.getClass());
+    public CarNetTextResources(@Reference TranslationProvider i18nProvider, @Reference LocaleProvider localeProvider,
+            @Reference BundleContext bundleContext) {
+        this.bundle = bundleContext.getBundle();
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
     }

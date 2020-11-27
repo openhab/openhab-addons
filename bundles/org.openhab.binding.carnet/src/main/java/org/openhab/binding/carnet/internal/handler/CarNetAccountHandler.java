@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.carnet.internal.handler;
 
-import static org.openhab.binding.carnet.internal.CarNetBindingConstants.API_TOKEN_REFRESH_INTERVAL_SEC;
+import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
+import static org.openhab.binding.carnet.internal.api.CarNetApiConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -132,6 +133,17 @@ public class CarNetAccountHandler extends BaseBridgeHandler {
         Map<String, String> properties = new TreeMap<String, String>();
 
         config.account = getConfigAs(CarNetAccountConfiguration.class);
+        String type = getThing().getUID().getId();
+        switch (type) {
+            case THING_MYAUDI:
+            default:
+                config.account.brand = CNAPI_BRAND_AUDI;
+                break;
+            case THING_MYVOLKSWAGEN:
+                config.account.brand = CNAPI_BRAND_VW;
+                break;
+        }
+
         api.setConfig(config);
         api.initialize();
         refreshProperties(properties);

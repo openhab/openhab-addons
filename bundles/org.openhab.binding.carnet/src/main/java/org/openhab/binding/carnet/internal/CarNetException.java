@@ -63,19 +63,19 @@ public class CarNetException extends Exception {
         return super.getMessage();
     }
 
-    @SuppressWarnings("null")
     @Override
     public String toString() {
         String message = nonNullString(super.getMessage());
         if (e != null) {
-            if (e.getClass() == UnknownHostException.class) {
+            Class<?> clazz = e.getClass();
+            if (clazz == UnknownHostException.class) {
                 String[] string = message.split(": "); // java.net.UnknownHostException: api.rach.io
                 message = MessageFormat.format("Unable to connect to {0} (unknown host / internet connection down)",
                         string[1]);
-            } else if (e.getClass() == MalformedURLException.class) {
+            } else if (clazz == MalformedURLException.class) {
                 message = MessageFormat.format("Invalid URL: '{0}'", message);
             } else {
-                message = MessageFormat.format("'{0}' ({1}", e.toString(), e.getMessage());
+                message = nonNullString(e.toString()) + "(" + nonNullString(e.getMessage()) + ")";
             }
         } else {
             if (super.getClass() != CarNetException.class) {

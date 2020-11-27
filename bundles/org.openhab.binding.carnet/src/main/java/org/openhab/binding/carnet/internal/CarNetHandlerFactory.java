@@ -69,7 +69,7 @@ public class CarNetHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
+        if (THING_TYPE_MYAUDI.equals(thingTypeUID) || THING_TYPE_MYVOLKSWAGEN.equals(thingTypeUID)) {
             CarNetAccountHandler handler = new CarNetAccountHandler((Bridge) thing, resources, tokenManager);
             registerDeviceDiscoveryService(handler);
             return handler;

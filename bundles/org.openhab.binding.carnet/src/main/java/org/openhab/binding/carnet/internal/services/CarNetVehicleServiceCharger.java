@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.carnet.internal.services;
+package org.openhab.binding.carnet.internal.services;
 
 import static org.openhab.binding.carnet.internal.CarNetBindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarNetUtils.*;
@@ -42,9 +42,9 @@ public class CarNetVehicleServiceCharger extends CarNetVehicleBaseService {
     }
 
     @Override
-    public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws CarNetException {
+    public boolean createChannels(Map<String, ChannelIdMapEntry> ch) {
         try {
-            CarNetChargerStatus cs = api.getChargerStatus();
+            api.getChargerStatus();
             addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_STATUS, ITEMT_STRING, null, false, true);
             addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_PWR_STATE, ITEMT_STRING, null, false, true);
             addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, null, false, true);
