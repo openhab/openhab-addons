@@ -5,6 +5,5 @@
 
 	<name>Vektiva Binding</name>
 	<description>This is the binding for Vektiva products controlled by local API.</description>
-	<author>Ondrej Pecta</author>
 
 </binding:binding>

@@ -5,6 +5,5 @@
 
 	<name>AirVisual Node Binding</name>
 	<description>Binding for AirVisual Node air quality monitor</description>
-	<author>Victor Antonovich</author>
 
 </binding:binding>

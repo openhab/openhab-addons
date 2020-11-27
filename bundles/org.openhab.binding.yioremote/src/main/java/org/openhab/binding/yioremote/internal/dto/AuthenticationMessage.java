@@ -47,9 +47,6 @@ public class AuthenticationMessage {
     }
 
     public String getAuthenticationMessageString() {
-        JsonObject authenticationMessage = new JsonObject();
-        authenticationMessage.addProperty("type", type);
-        authenticationMessage.addProperty("token", token);
-        return authenticationMessage.toString();
+        return getAuthenticationMessageJsonObject().toString();
     }
 }

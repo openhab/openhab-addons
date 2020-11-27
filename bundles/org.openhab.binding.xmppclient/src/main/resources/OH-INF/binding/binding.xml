@@ -5,6 +5,5 @@
 
 	<name>XMPPClient Binding</name>
 	<description>This is the binding for XMPP (Jabber) notifications.</description>
-	<author>Pavel Gololobov</author>
 
 </binding:binding>

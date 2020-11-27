@@ -5,6 +5,5 @@
 
 	<name>Telegram Binding</name>
 	<description>This is the binding for Telegram. It allows to send and receive messages.</description>
-	<author>Alexander Krasnogolowy</author>
 
 </binding:binding>

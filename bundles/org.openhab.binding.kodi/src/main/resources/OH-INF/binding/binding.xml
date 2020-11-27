@@ -5,7 +5,6 @@
 
 	<name>Kodi Binding</name>
 	<description>This is the binding for Kodi.</description>
-	<author>Paul Frank</author>
 
 	<config-description>
 		<parameter name="callbackUrl" type="text">

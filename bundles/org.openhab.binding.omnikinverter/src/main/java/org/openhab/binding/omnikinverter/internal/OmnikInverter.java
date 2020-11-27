@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.omnikinverter.internal;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -29,19 +27,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OmnikInverter {
 
-    private int serialNumber;
-    private String host;
-    private int port;
-    private byte[] magicPacket;
+    private final int serialNumber;
+    private final String host;
+    private final int port;
+    private final byte[] magicPacket;
 
-    public OmnikInverter(String host, int port, int serialNumber) throws IOException {
+    public OmnikInverter(String host, int port, int serialNumber) {
         this.host = host;
         this.port = port;
         this.serialNumber = serialNumber;
         this.magicPacket = generateMagicPacket();
     }
 
-    public OmnikInverterMessage pullCurrentStats() throws UnknownHostException, IOException {
+    public OmnikInverterMessage pullCurrentStats() throws IOException {
         byte[] magicPacket = this.magicPacket;
         byte[] returnMessage = new byte[1024];
 
@@ -54,12 +52,9 @@ public class OmnikInverter {
         }
     }
 
-    private byte[] generateMagicPacket() throws IOException {
-        byte[] magic = { 0x68, 0x02, 0x40, 0x30 };
-
+    private byte[] generateMagicPacket() {
         ByteBuffer serialByteBuffer = ByteBuffer.allocate(8).putInt(serialNumber).putInt(serialNumber);
         byte[] serialBytes = serialByteBuffer.array();
-        // Reverse serialBytes in a very mutable way.
         ArrayUtils.reverse(serialBytes);
 
         byte checksumCount = 115;
@@ -67,17 +62,11 @@ public class OmnikInverter {
             checksumCount += (char) b;
         }
 
-        byte[] checksum = ByteBuffer.allocate(1).put(checksumCount).array();
+        byte[] result = new byte[16];
+        System.arraycopy(new byte[] { 0x68, 0x02, 0x40, 0x30 }, 0, result, 0, 4);
+        System.arraycopy(serialBytes, 0, result, 4, 8);
+        System.arraycopy(new byte[] { 0x01, 0x00, checksumCount, 0x16 }, 0, result, 12, 4);
 
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            outputStream.write(magic);
-            outputStream.write(serialBytes);
-            outputStream.write(0x01);
-            outputStream.write(0x00);
-            outputStream.write(checksum);
-            outputStream.write(0x16);
-
-            return outputStream.toByteArray();
-        }
+        return result;
     }
 }

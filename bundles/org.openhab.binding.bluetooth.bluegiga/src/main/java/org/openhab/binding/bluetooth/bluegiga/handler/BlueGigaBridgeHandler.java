@@ -20,6 +20,9 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,6 +53,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.B
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaReadByGroupTypeResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaReadByHandleCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaReadByHandleResponse;
+import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaReadByTypeCommand;
+import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaReadByTypeResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.connection.BlueGigaConnectionStatusEvent;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.connection.BlueGigaDisconnectCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.connection.BlueGigaDisconnectResponse;
@@ -76,6 +81,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BluetoothAddr
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.GapConnectableMode;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.GapDiscoverMode;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.GapDiscoverableMode;
+import org.openhab.binding.bluetooth.util.RetryException;
+import org.openhab.binding.bluetooth.util.RetryFuture;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -118,9 +125,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("BlueGiga");
 
-    // The serial port.
-    private Optional<SerialPort> serialPort = Optional.empty();
-
     private BlueGigaConfiguration configuration = new BlueGigaConfiguration();
 
     // The serial port input stream.
@@ -130,10 +134,13 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     private Optional<OutputStream> outputStream = Optional.empty();
 
     // The BlueGiga API handler
-    private Optional<BlueGigaSerialHandler> serialHandler = Optional.empty();
+    private CompletableFuture<BlueGigaSerialHandler> serialHandler = CompletableFuture
+            .failedFuture(new IllegalStateException("Uninitialized"));
 
     // The BlueGiga transaction manager
-    private Optional<BlueGigaTransactionManager> transactionManager = Optional.empty();
+    @NonNullByDefault({})
+    private CompletableFuture<BlueGigaTransactionManager> transactionManager = CompletableFuture
+            .failedFuture(new IllegalStateException("Uninitialized"));
 
     // The maximum number of connections this interface supports
     private int maxConnections = 0;
@@ -146,7 +153,9 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     private volatile boolean initComplete = false;
 
-    private @Nullable ScheduledFuture<?> initTask;
+    private CompletableFuture<SerialPort> serialPortFuture = CompletableFuture
+            .failedFuture(new IllegalStateException("Uninitialized"));
+
     private @Nullable ScheduledFuture<?> removeInactiveDevicesTask;
     private @Nullable ScheduledFuture<?> discoveryTask;
 
@@ -159,11 +168,118 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     @Override
     public void initialize() {
+        logger.info("Initializing BlueGiga");
         super.initialize();
         Optional<BlueGigaConfiguration> cfg = Optional.of(getConfigAs(BlueGigaConfiguration.class));
+        updateStatus(ThingStatus.UNKNOWN);
         if (cfg.isPresent()) {
             configuration = cfg.get();
-            initTask = executor.scheduleWithFixedDelay(this::start, 0, INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
+            serialPortFuture = RetryFuture.callWithRetry(() -> {
+                var localFuture = serialPortFuture;
+                logger.debug("Initialize BlueGiga");
+                logger.debug("Using configuration: {}", configuration);
+
+                String serialPortName = configuration.port;
+                int baudRate = 115200;
+
+                logger.debug("Connecting to serial port '{}'", serialPortName);
+                try {
+                    SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
+                    if (portIdentifier == null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port does not exist");
+                        throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
+                    }
+                    SerialPort sp = portIdentifier.open("org.openhab.binding.bluetooth.bluegiga", 2000);
+                    sp.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                            SerialPort.PARITY_NONE);
+
+                    sp.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_OUT);
+                    sp.enableReceiveThreshold(1);
+                    sp.enableReceiveTimeout(2000);
+
+                    // RXTX serial port library causes high CPU load
+                    // Start event listener, which will just sleep and slow down event loop
+                    sp.notifyOnDataAvailable(true);
+
+                    logger.info("Connected to serial port '{}'.", serialPortName);
+
+                    try {
+                        inputStream = Optional.of(new BufferedInputStream(sp.getInputStream()));
+                        outputStream = Optional.of(new BufferedOutputStream(sp.getOutputStream()));
+                    } catch (IOException e) {
+                        logger.error("Error getting serial streams", e);
+                        throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
+                    }
+                    // if this future has been cancelled while this was running, then we
+                    // need to make sure that we close this port
+                    localFuture.whenComplete((port, th) -> {
+                        if (th != null) {
+                            // we need to shut down the port now.
+                            closeSerialPort(sp);
+                        }
+                    });
+                    return sp;
+                } catch (PortInUseException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                            "Serial Error: Port in use");
+                    throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
+                } catch (UnsupportedCommOperationException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "Serial Error: Unsupported operation");
+                    throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
+                } catch (RuntimeException ex) {
+                    logger.debug("Start failed", ex);
+                    throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
+                }
+            }, executor);
+
+            serialHandler = serialPortFuture
+                    .thenApply(sp -> new BlueGigaSerialHandler(inputStream.get(), outputStream.get()));
+            transactionManager = serialHandler.thenApply(sh -> {
+                BlueGigaTransactionManager th = new BlueGigaTransactionManager(sh, executor);
+                sh.addHandlerListener(this);
+                th.addEventListener(this);
+                return th;
+            });
+            transactionManager.thenRun(() -> {
+                try {
+                    // Stop any procedures that are running
+                    bgEndProcedure();
+
+                    // Set mode to non-discoverable etc.
+                    bgSetMode();
+
+                    // Get maximum parallel connections
+                    maxConnections = readMaxConnections().getMaxconn();
+
+                    // Close all connections so we start from a known position
+                    for (int connection = 0; connection < maxConnections; connection++) {
+                        sendCommandWithoutChecks(
+                                new BlueGigaDisconnectCommand.CommandBuilder().withConnection(connection).build(),
+                                BlueGigaDisconnectResponse.class);
+                    }
+
+                    // Get our Bluetooth address
+                    address = new BluetoothAddress(readAddress().getAddress());
+
+                    updateThingProperties();
+
+                    initComplete = true;
+                    updateStatus(ThingStatus.ONLINE);
+                    startScheduledTasks();
+                } catch (BlueGigaException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "Initialization of BlueGiga controller failed");
+                }
+            }).exceptionally(th -> {
+                if (th instanceof CompletionException && th.getCause() instanceof CancellationException) {
+                    // cancellation is a normal reason for failure, so no need to print it.
+                    return null;
+                }
+                logger.warn("Error initializing bluegiga", th);
+                return null;
+            });
+
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
         }
@@ -171,80 +287,27 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     @Override
     public void dispose() {
+        logger.info("Disposing BlueGiga");
         stop();
         stopScheduledTasks();
-        if (initTask != null) {
-            initTask.cancel(true);
-        }
         super.dispose();
     }
 
-    private void start() {
-        try {
-            if (!initComplete) {
-                logger.debug("Initialize BlueGiga");
-                logger.debug("Using configuration: {}", configuration);
-                stop();
-                if (openSerialPort(configuration.port, 115200)) {
-                    serialHandler = Optional.of(new BlueGigaSerialHandler(inputStream.get(), outputStream.get()));
-                    transactionManager = Optional.of(new BlueGigaTransactionManager(serialHandler.get(), executor));
-                    serialHandler.get().addHandlerListener(this);
-                    transactionManager.get().addEventListener(this);
-                    updateStatus(ThingStatus.UNKNOWN);
-
-                    try {
-                        // Stop any procedures that are running
-                        bgEndProcedure();
-
-                        // Set mode to non-discoverable etc.
-                        bgSetMode();
-
-                        // Get maximum parallel connections
-                        maxConnections = readMaxConnections().getMaxconn();
-
-                        // Close all connections so we start from a known position
-                        for (int connection = 0; connection < maxConnections; connection++) {
-                            sendCommandWithoutChecks(
-                                    new BlueGigaDisconnectCommand.CommandBuilder().withConnection(connection).build(),
-                                    BlueGigaDisconnectResponse.class);
-                        }
-
-                        // Get our Bluetooth address
-                        address = new BluetoothAddress(readAddress().getAddress());
-
-                        updateThingProperties();
-
-                        initComplete = true;
-                        updateStatus(ThingStatus.ONLINE);
-                        startScheduledTasks();
-                    } catch (BlueGigaException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "Initialization of BlueGiga controller failed");
-                    }
-                }
-            }
-        } catch (RuntimeException e) {
-            // Avoid scheduled task to shutdown
-            // e.g. when BlueGiga module is detached
-            logger.debug("Start failed", e);
-        }
-    }
-
     private void stop() {
-        if (transactionManager.isPresent()) {
-            transactionManager.get().removeEventListener(this);
-            transactionManager.get().close();
-            transactionManager = Optional.empty();
-        }
-        if (serialHandler.isPresent()) {
-            serialHandler.get().removeHandlerListener(this);
-            serialHandler.get().close();
-            serialHandler = Optional.empty();
-        }
+        transactionManager.thenAccept(tman -> {
+            tman.removeEventListener(this);
+            tman.close();
+        });
+        serialHandler.thenAccept(sh -> {
+            sh.removeHandlerListener(this);
+            sh.close();
+        });
         address = null;
         initComplete = false;
         connections.clear();
-        closeSerialPort();
+
+        serialPortFuture.thenAccept(this::closeSerialPort);
+        serialPortFuture.cancel(false);
     }
 
     private void schedulePassiveScan() {
@@ -268,7 +331,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
 
     private void startScheduledTasks() {
         schedulePassiveScan();
-        logger.debug("Start scheduled task to remove inactive devices");
         discoveryTask = scheduler.scheduleWithFixedDelay(this::refreshDiscoveredDevices, 0, 10, TimeUnit.SECONDS);
     }
 
@@ -309,68 +371,24 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
         updateProperties(properties);
     }
 
-    private boolean openSerialPort(final String serialPortName, int baudRate) {
-        logger.debug("Connecting to serial port '{}'", serialPortName);
+    private void closeSerialPort(SerialPort sp) {
+        sp.removeEventListener();
         try {
-            SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
-            if (portIdentifier == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port does not exist");
-                return false;
-            }
-            SerialPort sp = portIdentifier.open("org.openhab.binding.bluetooth.bluegiga", 2000);
-            sp.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-
-            sp.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_OUT);
-            sp.enableReceiveThreshold(1);
-            sp.enableReceiveTimeout(2000);
-
-            // RXTX serial port library causes high CPU load
-            // Start event listener, which will just sleep and slow down event loop
-            sp.notifyOnDataAvailable(true);
-
-            logger.info("Connected to serial port '{}'.", serialPortName);
-
-            try {
-                inputStream = Optional.of(new BufferedInputStream(sp.getInputStream()));
-                outputStream = Optional.of(new BufferedOutputStream(sp.getOutputStream()));
-            } catch (IOException e) {
-                logger.error("Error getting serial streams", e);
-                return false;
-            }
-            serialPort = Optional.of(sp);
-            return true;
-        } catch (PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Serial Error: Port in use");
-            return false;
-        } catch (UnsupportedCommOperationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Serial Error: Unsupported operation");
-            return false;
+            sp.disableReceiveTimeout();
+        } catch (Exception e) {
+            // Ignore all as RXTX seems to send arbitrary exceptions when BlueGiga module is detached
+        } finally {
+            outputStream.ifPresent(output -> {
+                IOUtils.closeQuietly(output);
+            });
+            inputStream.ifPresent(input -> {
+                IOUtils.closeQuietly(input);
+            });
+            sp.close();
+            logger.debug("Closed serial port.");
+            inputStream = Optional.empty();
+            outputStream = Optional.empty();
         }
-    }
-
-    private void closeSerialPort() {
-        serialPort.ifPresent(sp -> {
-            sp.removeEventListener();
-            try {
-                sp.disableReceiveTimeout();
-            } catch (Exception e) {
-                // Ignore all as RXTX seems to send arbitrary exceptions when BlueGiga module is detached
-            } finally {
-                outputStream.ifPresent(output -> {
-                    IOUtils.closeQuietly(output);
-                });
-                inputStream.ifPresent(input -> {
-                    IOUtils.closeQuietly(input);
-                });
-                sp.close();
-                logger.debug("Closed serial port.");
-                serialPort = Optional.empty();
-                inputStream = Optional.empty();
-                outputStream = Optional.empty();
-            }
-        });
     }
 
     @Override
@@ -528,6 +546,25 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
         }
     }
 
+    public boolean bgReadCharacteristicDeclarations(int connectionHandle) {
+        logger.debug("BlueGiga Find: connection {}", connectionHandle);
+        // @formatter:off
+        BlueGigaReadByTypeCommand command = new BlueGigaReadByTypeCommand.CommandBuilder()
+                .withConnection(connectionHandle)
+                .withStart(1)
+                .withEnd(65535)
+                .withUUID(BluetoothBindingConstants.ATTR_CHARACTERISTIC_DECLARATION)
+                .build();
+        // @formatter:on
+        try {
+            return sendCommand(command, BlueGigaReadByTypeResponse.class, true).getResult() == BgApiResponse.SUCCESS;
+        } catch (BlueGigaException e) {
+            logger.debug("Error occured when sending read characteristics command to device {}, reason: {}.", address,
+                    e.getMessage());
+            return false;
+        }
+    }
+
     /**
      * Read a characteristic using {@link BlueGigaReadByHandleCommand}
      *
@@ -665,8 +702,9 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
      */
     private <T extends BlueGigaResponse> T sendCommandWithoutChecks(BlueGigaCommand command, Class<T> expectedResponse)
             throws BlueGigaException {
-        if (transactionManager.isPresent()) {
-            return transactionManager.get().sendTransaction(command, expectedResponse, COMMAND_TIMEOUT_MS);
+        BlueGigaTransactionManager manager = transactionManager.getNow(null);
+        if (manager != null) {
+            return manager.sendTransaction(command, expectedResponse, COMMAND_TIMEOUT_MS);
         } else {
             throw new BlueGigaException("Transaction manager missing");
         }
@@ -678,7 +716,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
      * @param listener the {@link BlueGigaEventListener} to add
      */
     public void addEventListener(BlueGigaEventListener listener) {
-        transactionManager.ifPresent(manager -> {
+        transactionManager.thenAccept(manager -> {
             manager.addEventListener(listener);
         });
     }
@@ -689,7 +727,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
      * @param listener the {@link BlueGigaEventListener} to remove
      */
     public void removeEventListener(BlueGigaEventListener listener) {
-        transactionManager.ifPresent(manager -> {
+        transactionManager.thenAccept(manager -> {
             manager.removeEventListener(listener);
         });
     }

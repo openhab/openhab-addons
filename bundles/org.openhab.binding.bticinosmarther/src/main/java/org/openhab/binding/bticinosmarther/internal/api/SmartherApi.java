@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 
@@ -177,7 +178,9 @@ public class SmartherApi {
     public ModuleStatus getModuleStatus(String plantId, String moduleId) throws SmartherGatewayException {
         try {
             final ContentResponse response = requestModule(GET, plantId, moduleId, null);
-            return ModelUtil.gsonInstance().fromJson(response.getContentAsString(), ModuleStatus.class);
+            ModuleStatus moduleStatus = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
+                    ModuleStatus.class);
+            return Objects.requireNonNull(moduleStatus);
         } catch (JsonSyntaxException e) {
             throw new SmartherGatewayException(e.getMessage());
         }
@@ -280,9 +283,13 @@ public class SmartherApi {
             if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
                 return new ArrayList<>();
             } else {
-                return ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
+                List<Subscription> subscriptions = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
                         new TypeToken<List<Subscription>>() {
                         }.getType());
+                if (subscriptions == null) {
+                    throw new SmartherGatewayException("fromJson returned null");
+                }
+                return subscriptions;
             }
         } catch (JsonSyntaxException e) {
             throw new SmartherGatewayException(e.getMessage());

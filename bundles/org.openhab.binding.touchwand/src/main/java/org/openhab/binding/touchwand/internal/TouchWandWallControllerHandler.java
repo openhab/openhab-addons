@@ -17,6 +17,7 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.C
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.touchwand.internal.dto.Csc;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitDataWallController;
 import org.openhab.core.thing.Thing;
@@ -33,12 +34,12 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
 
-    private long timeSinceLastEventMs;
-    private static final int ADJUSTENT_EVENT_FILTER_TIME_MILLISEC = 2000; // 2 seconds
+    private long timeLastEventMs;
+    private static final int ADJACENT_EVENT_FILTER_TIME_MILLISEC = 2000; // 2 seconds
 
     public TouchWandWallControllerHandler(Thing thing) {
         super(thing);
-        timeSinceLastEventMs = Instant.now().toEpochMilli();
+        timeLastEventMs = Instant.now().toEpochMilli();
     }
 
     @Override
@@ -47,12 +48,16 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        int status = ((TouchWandUnitDataWallController) unitData).getCurrStatus();
-        long timeDiff = Instant.now().toEpochMilli() - timeSinceLastEventMs;
-        if ((timeDiff) > ADJUSTENT_EVENT_FILTER_TIME_MILLISEC) {
-            String action = status <= 100 ? "SHORT" : "LONG";
-            triggerChannel(CHANNEL_WALLCONTROLLER_ACTION, action);
+        if (unitData instanceof TouchWandUnitDataWallController) {
+            Csc status = ((TouchWandUnitDataWallController) unitData).getCurrStatus();
+            long ts = status.getTs();
+            long timeDiff = ts - timeLastEventMs;
+            if ((timeDiff) > ADJACENT_EVENT_FILTER_TIME_MILLISEC) {
+                int value = status.getKeyAttr();
+                String action = (value <= 100) ? "SHORT" : "LONG";
+                triggerChannel(CHANNEL_WALLCONTROLLER_ACTION, action);
+            }
+            timeLastEventMs = status.getTs();
         }
-        timeSinceLastEventMs = Instant.now().toEpochMilli();
     }
 }

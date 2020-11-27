@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.AbstractMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -115,9 +116,13 @@ public class MeteoAlerteHandler extends BaseThingHandler {
                 throw new MalformedURLException("queryUrl not initialized");
             }
             String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
+            if (response == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "empty response");
+                return;
+            }
             updateStatus(ThingStatus.ONLINE);
             ApiResponse apiResponse = gson.fromJson(response, ApiResponse.class);
-            updateChannels(apiResponse);
+            updateChannels(Objects.requireNonNull(apiResponse));
         } catch (MalformedURLException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("Querying '%s' raised : %s", queryUrl, e.getMessage()));

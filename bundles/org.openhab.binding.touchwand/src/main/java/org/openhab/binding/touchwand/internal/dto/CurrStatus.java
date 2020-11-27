@@ -13,15 +13,17 @@
 
 package org.openhab.binding.touchwand.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link CurrStatus} implements CurrStatus data class.
  *
  * @author Roie Geron - Initial contribution
  */
-
+@NonNullByDefault
 public class CurrStatus {
 
-    private Csc csc;
+    private Csc csc = new Csc();
 
     public Csc getCsc() {
         return csc;

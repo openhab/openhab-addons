@@ -468,7 +468,7 @@ public class InsteonDevice {
                 // mark feature as pending
                 qe.getFeature().setQueryStatus(DeviceFeature.QueryStatus.QUERY_PENDING);
                 // also mark this queue as pending so there is no doubt
-                featureQueried = qe.getFeature();
+                this.featureQueried = qe.getFeature();
             } else {
                 logger.debug("qe taken off bcast: {} {}", qe.getFeature(), qe.getMsg());
             }

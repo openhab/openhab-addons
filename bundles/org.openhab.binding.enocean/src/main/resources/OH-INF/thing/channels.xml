@@ -100,7 +100,7 @@
 		<label>Humidity</label>
 		<description>Relative humidity level in percentages</description>
 		<category>Humidity</category>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"/>
+		<state min="0" max="100" pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="setPoint">
@@ -169,7 +169,7 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Usage</label>
 		<description>Used energy in Kilowatt hours</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 		<config-description>
 			<parameter name="validateValue" type="boolean">
 				<label>Validate Value</label>

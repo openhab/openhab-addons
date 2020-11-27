@@ -5,6 +5,5 @@
 
 	<name>Daikin Binding</name>
 	<description>This is the binding for Daikin A/C units.</description>
-	<author>Tim Waterhouse</author>
 
 </binding:binding>

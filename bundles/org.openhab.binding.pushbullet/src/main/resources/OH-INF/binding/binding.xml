@@ -5,6 +5,5 @@
 
 	<name>@text/binding.pushbullet.name</name>
 	<description>@text/binding.pushbullet.description</description>
-	<author>Hakan Tandoğan</author>
 
 </binding:binding>

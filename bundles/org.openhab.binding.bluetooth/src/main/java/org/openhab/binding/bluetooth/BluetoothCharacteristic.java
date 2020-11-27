@@ -221,6 +221,48 @@ public class BluetoothCharacteristic {
         return gattDescriptors.get(uuid);
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + instance;
+        result = prime * result + ((service == null) ? 0 : service.hashCode());
+        result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        BluetoothCharacteristic other = (BluetoothCharacteristic) obj;
+        if (instance != other.instance) {
+            return false;
+        }
+        if (service == null) {
+            if (other.service != null) {
+                return false;
+            }
+        } else if (!service.equals(other.service)) {
+            return false;
+        }
+        if (uuid == null) {
+            if (other.uuid != null) {
+                return false;
+            }
+        } else if (!uuid.equals(other.uuid)) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Get the stored value for this characteristic.
      *
@@ -630,7 +672,7 @@ public class BluetoothCharacteristic {
         private UUID uuid;
 
         private GattCharacteristic(long key) {
-            this.uuid = new UUID((key << 32) | 0x1000, BluetoothBindingConstants.BLUETOOTH_BASE_UUID);
+            this.uuid = BluetoothBindingConstants.createBluetoothUUID(key);
         }
 
         private static void initMapping() {

@@ -13,6 +13,7 @@
 package org.openhab.binding.revogi.internal.api;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -76,7 +77,7 @@ public class SwitchService {
     private SwitchResponseDTO deserializeString(String response) {
         String extractedJsonResponse = response.substring(response.lastIndexOf(VERSION_STRING) + 2);
         try {
-            return gson.fromJson(extractedJsonResponse, SwitchResponseDTO.class);
+            return Objects.requireNonNull(gson.fromJson(extractedJsonResponse, SwitchResponseDTO.class));
         } catch (JsonSyntaxException e) {
             logger.warn("Could not parse string \"{}\" to SwitchResponse", response);
             return new SwitchResponseDTO(0, 503);

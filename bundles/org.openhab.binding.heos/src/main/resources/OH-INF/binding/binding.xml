@@ -5,6 +5,5 @@
 
 	<name>HEOS Binding</name>
 	<description>Binding for the Denon HEOS system.</description>
-	<author>Johannes Einig</author>
 
 </binding:binding>

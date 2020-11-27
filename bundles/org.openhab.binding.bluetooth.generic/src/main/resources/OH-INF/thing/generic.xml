@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="generic">
+		<label>Generic Bluetooth Device</label>
+		<description>A generic bluetooth device that supports GATT characteristics</description>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" unit="s">
+				<advanced>true</advanced>
+				<label>Polling Interval</label>
+				<description>The frequency at which readable characteristics refreshed</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="char-unknown">
+		<item-type>String</item-type>
+		<label>Unknown Bluetooth Characteristic</label>
+		<description>The raw value of unknown characteristics are represented with hexadecimal</description>
+	</channel-type>
+
+</thing:thing-descriptions>

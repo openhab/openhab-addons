@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,7 +76,7 @@ public class StateTypeAdapterTest {
     @MethodSource
     public void readWriteRoundtripShouldRecreateTheWrittenState(State state) {
         String json = mapper.toJson(state);
-        State actual = mapper.fromJson(json, State.class);
+        State actual = Objects.requireNonNull(mapper.fromJson(json, State.class));
         assertThat(actual, is(equalTo(state)));
     }
 

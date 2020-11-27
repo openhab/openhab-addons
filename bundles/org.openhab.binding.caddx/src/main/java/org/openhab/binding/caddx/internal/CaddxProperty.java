@@ -83,7 +83,7 @@ public class CaddxProperty {
 
                 return Integer.toString(val);
             case STRING:
-                byte[] str = Arrays.copyOfRange(message, byteFrom - 1, byteFrom + byteLength);
+                byte[] str = Arrays.copyOfRange(message, byteFrom - 1, byteFrom + byteLength - 1);
                 return mapCaddxString(new String(str, StandardCharsets.US_ASCII));
             case BIT:
                 return (((message[byteFrom - 1] & (1 << bitFrom)) > 0) ? "true" : "false");

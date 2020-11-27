@@ -108,10 +108,12 @@ public class VigiCruesHandler extends BaseThingHandler {
         List<QuantityType<?>> flows = new ArrayList<>();
         thing.getProperties().keySet().stream().filter(key -> key.startsWith(FLOOD)).forEach(key -> {
             String value = thing.getProperties().get(key);
-            if (key.contains(FLOW)) {
-                flows.add(new QuantityType<>(value));
-            } else {
-                heights.add(new QuantityType<>(value));
+            if (value != null) {
+                if (key.contains(FLOW)) {
+                    flows.add(new QuantityType<>(value));
+                } else {
+                    heights.add(new QuantityType<>(value));
+                }
             }
         });
         referenceHeights = heights.stream().distinct().sorted().collect(Collectors.toList());

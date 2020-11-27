@@ -32,7 +32,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -111,7 +110,7 @@ public class DwdWarningsData {
      */
     public boolean refresh() {
         String rawData = dataAccessCached.getValue();
-        if (StringUtils.isEmpty(rawData)) {
+        if (rawData == null || rawData.isEmpty()) {
             logger.debug("No Data from Endpoint");
             return false;
         }

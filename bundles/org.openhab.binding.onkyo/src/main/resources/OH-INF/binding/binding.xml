@@ -5,7 +5,6 @@
 
 	<name>Onkyo Binding</name>
 	<description>This is the binding for Onkyo receivers.</description>
-	<author>Paul Frank, Pauli Anttila</author>
 
 	<config-description>
 		<parameter name="callbackUrl" type="text">

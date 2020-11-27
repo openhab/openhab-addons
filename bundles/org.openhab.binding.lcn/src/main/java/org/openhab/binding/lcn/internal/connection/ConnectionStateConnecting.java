@@ -17,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,15 +79,13 @@ public class ConnectionStateConnecting extends AbstractConnectionState {
     }
 
     private void handleConnectionFailure(@Nullable Throwable e) {
-        String message;
+        String message = null;
         if (e != null) {
             logger.warn("Could not connect to {}:{}: {}", connection.getSettings().getAddress(),
                     connection.getSettings().getPort(), e.getMessage());
             message = e.getMessage();
-        } else {
-            message = "";
         }
-        connection.getCallback().onOffline(message);
+        connection.getCallback().onOffline(Objects.requireNonNullElse(message, ""));
         context.handleConnectionFailed(e);
     }
 

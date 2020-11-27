@@ -30,9 +30,8 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class LightTypeDeserializer implements JsonDeserializer<LightType> {
     @Override
-    public LightType deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
-            @Nullable JsonDeserializationContext context) throws JsonParseException {
-        String s = json != null ? json.getAsString() : null;
-        return s == null ? LightType.UNKNOWN : LightType.fromString(s);
+    public @Nullable LightType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        return LightType.fromString(json.getAsString());
     }
 }

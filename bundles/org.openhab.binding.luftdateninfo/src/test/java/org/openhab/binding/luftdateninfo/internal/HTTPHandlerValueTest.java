@@ -15,6 +15,7 @@ package org.openhab.binding.luftdateninfo.internal;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -39,8 +40,10 @@ public class HTTPHandlerValueTest {
     public void testValueDecoding() {
         String resource1 = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         assertNotNull(resource1);
+        Objects.requireNonNull(resource1);
         List<SensorDataValue> l = http.getLatestValues(resource1);
         assertNotNull(l);
+        Objects.requireNonNull(l);
         l.forEach(sd -> {
             testSensorValue(sd);
         });
@@ -48,8 +51,10 @@ public class HTTPHandlerValueTest {
         String resource2 = FileReader
                 .readFileInString("src/test/resources/condition-result-no-pressure-flipped-values.json");
         assertNotNull(resource2);
+        Objects.requireNonNull(resource2);
         l = http.getLatestValues(resource2);
         assertNotNull(l);
+        Objects.requireNonNull(l);
         l.forEach(sd -> {
             testSensorValue(sd);
         });

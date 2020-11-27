@@ -12,10 +12,10 @@
  */
 package org.openhab.io.transport.modbus;
 
-import java.util.Iterator;
-import java.util.stream.IntStream;
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.util.HexUtils;
 
 /**
  * Immutable {@link ModbusRegisterArray} implementation
@@ -23,54 +23,60 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class ModbusRegisterArray implements Iterable<ModbusRegister> {
+public class ModbusRegisterArray {
 
-    private final ModbusRegister[] registers;
+    private final byte[] bytes;
 
-    /**
-     * Construct plain <code>ModbusRegister[]</code> array from register values
-     *
-     * @param registerValues register values, each <code>int</code> corresponding to one register
-     * @return
-     */
-    public static ModbusRegister[] registersFromValues(int... registerValues) {
-        ModbusRegister[] registers = new ModbusRegister[registerValues.length];
-        for (int i = 0; i < registerValues.length; i++) {
-            registers[i] = new ModbusRegister(registerValues[i]);
+    public ModbusRegisterArray(byte... bytes) {
+        if (bytes.length % 2 != 0) {
+            throw new IllegalArgumentException();
         }
-        return registers;
+        this.bytes = Arrays.copyOf(bytes, bytes.length);
     }
 
     /**
-     * Construct ModbusRegisterArrayImpl from array of {@link ModbusRegister}
-     *
-     * @param registers
-     */
-    public ModbusRegisterArray(ModbusRegister[] registers) {
-        this.registers = registers;
-    }
-
-    /**
-     * Construct plain <code>ModbusRegisterArrayImpl</code> array from register values
+     * Construct plain <code>ModbusRegisterArray</code> array from register values
      *
      * @param registerValues register values, each <code>int</code> corresponding to one register
      * @return
      */
     public ModbusRegisterArray(int... registerValues) {
-        this(registersFromValues(registerValues));
+        bytes = new byte[registerValues.length * 2];
+        for (int registerIndex = 0; registerIndex < registerValues.length; registerIndex++) {
+            int register = registerValues[registerIndex] & 0xffff;
+            // hi-byte
+            bytes[registerIndex * 2] = (byte) (register >> 8);
+            // lo byte
+            bytes[registerIndex * 2 + 1] = (byte) register;
+        }
     }
 
     /**
-     * Return register at the given index
+     * Get register index i as unsigned integer
      *
-     * Index 0 matches first register (lowest register index).
-     * <p>
-     *
-     * @param index the index of the register to be returned.
-     * @throws IndexOutOfBoundsException if the index is out of bounds.
+     * @param i register index
+     * @return register value interpreted as unsigned integer (big-endian byte ordering)
      */
-    public ModbusRegister getRegister(int index) {
-        return registers[index];
+    public int getRegister(int i) {
+        int hi = bytes[i * 2] & 0xff;
+        int lo = bytes[i * 2 + 1] & 0xff;
+        return ((hi << 8) | lo) & 0xffff;
+    }
+
+    /**
+     * Return bytes representing the registers
+     *
+     *
+     * Index 0: hi-byte of 1st register
+     * Index 1: low-byte of 1st register
+     * Index 3: hi-byte of 2nd register
+     * Index 4: low-byte of 2nd register
+     * ...
+     *
+     * @return set of bytes
+     */
+    public byte[] getBytes() {
+        return bytes;
     }
 
     /**
@@ -79,24 +85,16 @@ public class ModbusRegisterArray implements Iterable<ModbusRegister> {
      * @return
      */
     public int size() {
-        return registers.length;
+        return bytes.length / 2;
     }
 
     @Override
     public String toString() {
-        if (registers.length == 0) {
-            return "ModbusRegisterArrayImpl(<empty>)";
+        if (bytes.length == 0) {
+            return "ModbusRegisterArray(<empty>)";
         }
-        StringBuffer buffer = new StringBuffer(registers.length * 2).append("ModbusRegisterArrayImpl(");
-        return appendHexString(buffer).append(')').toString();
-    }
-
-    /**
-     * Iterator over all the registers
-     */
-    @Override
-    public Iterator<ModbusRegister> iterator() {
-        return IntStream.range(0, size()).mapToObj(i -> getRegister(i)).iterator();
+        return new StringBuilder(bytes.length).append("ModbusRegisterArray(").append(toHexString()).append(')')
+                .toString();
     }
 
     /**
@@ -110,22 +108,6 @@ public class ModbusRegisterArray implements Iterable<ModbusRegister> {
         if (size() == 0) {
             return "";
         }
-        // Initialize capacity to (n*2 + n-1), two chars per byte + spaces in between
-        StringBuffer buffer = new StringBuffer(size() * 2 + (size() - 1));
-        return appendHexString(buffer).toString();
-    }
-
-    /**
-     * Appends the register data as hex string to the given StringBuffer
-     *
-     */
-    public StringBuffer appendHexString(StringBuffer buffer) {
-        IntStream.range(0, size()).forEachOrdered(index -> {
-            getRegister(index).appendHexString(buffer);
-            if (index < size() - 1) {
-                buffer.append(' ');
-            }
-        });
-        return buffer;
+        return HexUtils.bytesToHex(getBytes());
     }
 }

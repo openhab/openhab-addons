@@ -54,7 +54,6 @@ import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
@@ -96,16 +95,44 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                                                          // before reading from device
 
     private class BypassDate {
+        private final int[] MONTH_MAX_DAYS = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
         // initialization to avoid issues when updating before all variables were read
         private int month = 1;
         private int day = 1;
 
+        public BypassDate() {
+        }
+
+        public BypassDate(int day, int month) {
+            this.setDay(day);
+            this.setMonth(month);
+        }
+
         public void setMonth(int month) {
-            this.month = month;
+            if (month < 1) {
+                this.month = 1;
+            } else if (month > 12) {
+                this.month = 12;
+            } else {
+                this.month = month;
+            }
+        }
+
+        public int getMonth() {
+            return this.month;
         }
 
         public void setDay(int day) {
-            this.day = day;
+            if (day < 1) {
+                this.day = 1;
+            } else {
+                this.day = Math.min(day, MONTH_MAX_DAYS[month - 1]);
+            }
+        }
+
+        public int getDay() {
+            return this.day;
         }
 
         public DateTimeType toDateTimeType() {
@@ -401,9 +428,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                             lock.acquire();
                             comms.submitOneTimeWrite(
                                     new ModbusWriteRegisterRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
-                                            HeliosEasyControlsBindingConstants.START_ADDRESS,
-                                            new ModbusRegisterArray(preparePayload(payload)), true,
-                                            HeliosEasyControlsBindingConstants.MAX_TRIES),
+                                            HeliosEasyControlsBindingConstants.START_ADDRESS, preparePayload(payload),
+                                            true, HeliosEasyControlsBindingConstants.MAX_TRIES),
                                     result -> {
                                         lock.release();
                                         updateStatus(ThingStatus.ONLINE);
@@ -449,8 +475,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 String payload = v.getVariableString();
                 comms.submitOneTimeWrite(new ModbusWriteRegisterRequestBlueprint(
                         HeliosEasyControlsBindingConstants.UNIT_ID, HeliosEasyControlsBindingConstants.START_ADDRESS,
-                        new ModbusRegisterArray(preparePayload(payload)), true,
-                        HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
+                        preparePayload(payload), true, HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
                             comms.submitOneTimePoll(
                                     new ModbusReadRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
                                             ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
@@ -551,11 +576,14 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     }
 
     protected void setBypass(boolean from, int day, int month) {
+        BypassDate bypassDate = new BypassDate(day, month);
         try {
             this.writeValue(from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY
-                    : HeliosEasyControlsBindingConstants.BYPASS_TO_DAY, Integer.toString(day));
-            this.writeValue(from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH
-                    : HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH, Integer.toString(month));
+                    : HeliosEasyControlsBindingConstants.BYPASS_TO_DAY, Integer.toString(bypassDate.getDay()));
+            this.writeValue(
+                    from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH
+                            : HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH,
+                    Integer.toString(bypassDate.getMonth()));
         } catch (HeliosException e) {
             logger.warn("{} encountered Exception when trying to set bypass period: {}",
                     HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
@@ -659,25 +687,21 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @param payload The String representation of the payload
      * @return The Register representation of the payload
      */
-    private ModbusRegister[] preparePayload(String payload) {
-
+    private static ModbusRegisterArray preparePayload(String payload) {
         // determine number of registers
-        int l = (payload.length() + 1) / 2; // +1 because we need to include at least one termination symbol 0x00
-        if ((payload.length() + 1) % 2 != 0) {
-            l++;
-        }
+        byte[] asciiBytes = payload.getBytes(StandardCharsets.US_ASCII);
+        int bufferLength = asciiBytes.length // ascii characters
+                + 1 // NUL byte
+                + ((asciiBytes.length % 2 == 0) ? 1 : 0); // to have even number of bytes
+        assert bufferLength % 2 == 0; // Invariant, ensured above
 
-        ModbusRegister reg[] = new ModbusRegister[l];
-        byte[] b = payload.getBytes();
-        int ch = 0;
-        for (int i = 0; i < reg.length; i++) {
-            byte b1 = ch < b.length ? b[ch] : (byte) 0x00; // terminate with 0x00 if at the end of the payload
-            ch++;
-            byte b2 = ch < b.length ? b[ch] : (byte) 0x00;
-            ch++;
-            reg[i] = new ModbusRegister(b1, b2);
+        byte[] buffer = new byte[bufferLength];
+        System.arraycopy(asciiBytes, 0, buffer, 0, asciiBytes.length);
+        // Fill in rest of bytes with NUL bytes
+        for (int i = asciiBytes.length; i < buffer.length; i++) {
+            buffer[i] = '\0';
         }
-        return reg;
+        return new ModbusRegisterArray(buffer);
     }
 
     /**
@@ -687,8 +711,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @return The value or <tt>null</tt> if an error occurred
      */
     private void processResponse(HeliosVariable v, ModbusRegisterArray registers) {
-        String r = ModbusBitUtilities
-                .extractStringFromRegisters(registers, 0, registers.size() * 2, StandardCharsets.US_ASCII).toString();
+        String r = ModbusBitUtilities.extractStringFromRegisters(registers, 0, registers.size() * 2,
+                StandardCharsets.US_ASCII);
         String[] parts = r.split("=", 2); // remove the part "vXXXX=" from the string
         // making sure we have a proper response and the response matches the requested variable
         if ((parts.length == 2) && (v.getVariableString().equals(parts[0]))) {

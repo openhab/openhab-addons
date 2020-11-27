@@ -60,11 +60,13 @@ public class NestUpdateHandler<T> {
 
     private Set<NestThingDataListener<T>> getListeners(String nestId) {
         Set<NestThingDataListener<T>> listeners = new HashSet<>();
-        if (listenersMap.get(nestId) != null) {
-            listeners.addAll(listenersMap.get(nestId));
+        Set<NestThingDataListener<T>> idListeners = listenersMap.get(nestId);
+        if (idListeners != null) {
+            listeners.addAll(idListeners);
         }
-        if (listenersMap.get(ANY_ID) != null) {
-            listeners.addAll(listenersMap.get(ANY_ID));
+        Set<NestThingDataListener<T>> anyListeners = listenersMap.get(ANY_ID);
+        if (anyListeners != null) {
+            listeners.addAll(anyListeners);
         }
         return listeners;
     }

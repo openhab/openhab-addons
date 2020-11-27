@@ -93,7 +93,12 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 }
                 return day;
             case FroniusBindingConstants.InverterDataChannelPac:
-                return inverterRealtimeResponse.getBody().getData().getPac();
+                ValueUnit pac = inverterRealtimeResponse.getBody().getData().getPac();
+                if (pac == null) {
+                    pac = new ValueUnit();
+                    pac.setValue(0);
+                }
+                return pac;
             case FroniusBindingConstants.InverterDataChannelTotal:
                 ValueUnit total = inverterRealtimeResponse.getBody().getData().getTotalEnergy();
                 if (total != null) {

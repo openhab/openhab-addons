@@ -80,6 +80,7 @@ public class EcobeeAuth {
         this.bridgeHandler = bridgeHandler;
         pinExpirationTime = 0;
         state = EcobeeAuthState.NEED_PIN;
+        authResponse = null;
     }
 
     public void setState(EcobeeAuthState newState) {

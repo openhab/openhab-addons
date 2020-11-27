@@ -231,6 +231,10 @@ public class KM200ThingHandler extends BaseThingHandler {
             return;
         }
         String service = KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
+        if (service == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "root property missing");
+            return;
+        }
         synchronized (gateway.getDevice()) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
             if (!gateway.getDevice().getInited()) {
@@ -284,10 +288,14 @@ public class KM200ThingHandler extends BaseThingHandler {
                 state = StateDescriptionFragmentBuilder.create().withMinimum(BigDecimal.ZERO).withStep(BigDecimal.ONE)
                         .withPattern("%d minutes").build();
                 String posName = thing.getProperties().get(SWITCH_PROGRAM_POSITIVE);
-                newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + posName),
-                        new ChannelUID(thing.getUID(), posName), service + "/" + posName, CoreItemFactory.NUMBER,
-                        currentPathName, "Positive switch of the cycle, like 'Day' 'On'", posName, true, true, state,
-                        "minutes");
+                if (posName == null) {
+                    newChannel = null;
+                } else {
+                    newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + posName),
+                            new ChannelUID(thing.getUID(), posName), service + "/" + posName, CoreItemFactory.NUMBER,
+                            currentPathName, "Positive switch of the cycle, like 'Day' 'On'", posName, true, true,
+                            state, "minutes");
+                }
                 if (null == newChannel) {
                     logger.warn("Creation of the channel {} was not possible", thing.getUID());
                 } else {
@@ -295,10 +303,14 @@ public class KM200ThingHandler extends BaseThingHandler {
                 }
 
                 String negName = thing.getProperties().get(SWITCH_PROGRAM_NEGATIVE);
-                newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + negName),
-                        new ChannelUID(thing.getUID(), negName), service + "/" + negName, CoreItemFactory.NUMBER,
-                        currentPathName, "Negative switch of the cycle, like 'Night' 'Off'", negName, true, true, state,
-                        "minutes");
+                if (negName == null) {
+                    newChannel = null;
+                } else {
+                    newChannel = createChannel(new ChannelTypeUID(thing.getUID().getAsString() + ":" + negName),
+                            new ChannelUID(thing.getUID(), negName), service + "/" + negName, CoreItemFactory.NUMBER,
+                            currentPathName, "Negative switch of the cycle, like 'Night' 'Off'", negName, true, true,
+                            state, "minutes");
+                }
                 if (null == newChannel) {
                     logger.warn("Creation of the channel {} was not possible", thing.getUID());
                 } else {

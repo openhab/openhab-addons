@@ -109,7 +109,10 @@ public class NeeoBrainSearchService extends DefaultServletService {
         final String path = StringUtils.lowerCase(paths[1]);
 
         if (StringUtils.equalsIgnoreCase(path, "search")) {
-            doSearch(req.getQueryString(), resp);
+            String queryString = req.getQueryString();
+            if (queryString != null) {
+                doSearch(queryString, resp);
+            }
         } else if (StringUtils.equalsIgnoreCase(path, "adapterdefinition") && paths.length >= 3) {
             doAdapterDefinition(paths[2], resp);
         } else {
