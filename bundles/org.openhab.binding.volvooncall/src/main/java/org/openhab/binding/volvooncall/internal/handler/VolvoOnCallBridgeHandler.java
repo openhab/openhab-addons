@@ -62,10 +62,11 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         ApiBridgeConfiguration configuration = getConfigAs(ApiBridgeConfiguration.class);
 
         try {
-            api = new VocHttpApi(configuration, gson, httpClient);
-            CustomerAccounts account = api.getURL("customeraccounts/", CustomerAccounts.class);
+            VocHttpApi vocApi = new VocHttpApi(configuration, gson, httpClient);
+            CustomerAccounts account = vocApi.getURL("customeraccounts/", CustomerAccounts.class);
             if (account.username != null) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, account.username);
+                this.api = vocApi;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect login credentials");
             }
@@ -76,9 +77,10 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (api != null) {
+        VocHttpApi vocApi = this.api;
+        if (vocApi != null) {
             try {
-                api.dispose();
+                vocApi.dispose();
                 api = null;
             } catch (Exception e) {
                 logger.warn("Unable to stop VocHttpApi : {}", e.getMessage());

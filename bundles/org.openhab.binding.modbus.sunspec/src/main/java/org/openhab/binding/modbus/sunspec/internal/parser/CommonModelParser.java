@@ -52,12 +52,10 @@ public class CommonModelParser extends AbstractBaseParser implements SunspecPars
         }
 
         // parse manufacturer, model and version
-        block.manufacturer = ModbusBitUtilities.extractStringFromRegisters(raw, 2, 32, Charset.forName("UTF-8"))
-                .toString();
-        block.model = ModbusBitUtilities.extractStringFromRegisters(raw, 18, 32, Charset.forName("UTF-8")).toString();
-        block.version = ModbusBitUtilities.extractStringFromRegisters(raw, 42, 16, Charset.forName("UTF-8")).toString();
-        block.serialNumber = ModbusBitUtilities.extractStringFromRegisters(raw, 50, 32, Charset.forName("UTF-8"))
-                .toString();
+        block.manufacturer = ModbusBitUtilities.extractStringFromRegisters(raw, 2, 32, Charset.forName("UTF-8"));
+        block.model = ModbusBitUtilities.extractStringFromRegisters(raw, 18, 32, Charset.forName("UTF-8"));
+        block.version = ModbusBitUtilities.extractStringFromRegisters(raw, 42, 16, Charset.forName("UTF-8"));
+        block.serialNumber = ModbusBitUtilities.extractStringFromRegisters(raw, 50, 32, Charset.forName("UTF-8"));
 
         block.deviceAddress = extractUInt16(raw, 66, 1);
 

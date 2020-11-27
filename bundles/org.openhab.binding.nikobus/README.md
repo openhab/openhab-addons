@@ -33,10 +33,6 @@ The bridge enables communication with other Nikobus components:
 * `rollershutter-module` - Nikobus roller shutter module,
 * `push-button` - Nikobus physical push button.
 
-## Discovery
-
-The binding does not support any automatic discovery of Things.
-
 ## Bridge Configuration
 
 The binding can connect to the PC-Link via serial interface.
@@ -173,6 +169,84 @@ Thing push-button pb1 [ address = "28092A", impactedModules = "switch-module:s1:
 ```
 
 In addition to the status requests triggered by button presses, there is also a scheduled status update interval defined by the `refreshInterval` parameter and explained above.
+
+## Discovery
+
+Pressing a physical Nikobus push-button will generate a new inbox entry with an exception of buttons already discovered or setup.
+
+Nikobus push buttons have the following format in inbox:
+
+```
+Nikobus Push Button 14E7F4:3
+4BF9CA
+nikobus:push-button
+```
+
+where first line contains name of the discovered button and second one contains button's bus address.
+
+Each discovered button has a Nikobus address appended to its name, same as can be seen in Nikobus's PC application, `14E7F4:3` in above example.
+
+ * `14E7F4` - address of the Nikobus switch, as can be seen in Nikobus PC software and
+ * `3` - represents a button on Nikobus switch.
+
+### Button mappings
+
+##### 2 buttons switch
+
+![Nikobus Switch with 2 buttons](doc/s2.png)
+
+```
+ 1 = A
+ 2 = B
+ ```
+
+##### 4 buttons switch
+
+![Nikobus Switch with 4 buttons](doc/s4.png)
+
+maps as 
+
+```
+ 3  1  
+ 4  2
+```
+
+so
+
+```
+1 = C
+2 = D
+3 = A
+4 = B
+```
+
+##### 8 buttons switch
+
+![Nikobus Switch with 8 buttons](doc/s8.png)
+
+maps as
+
+```
+ 7  5  3  1  
+ 8  6  4  2
+```
+
+so
+
+```
+1 = 2C
+2 = 2D
+3 = 2A
+4 = 2B
+5 = 1C
+6 = 1D
+7 = 1A
+8 = 1B
+```
+
+Above example `14E7F4:3` would give:
+* for 4 buttons switch - push button A,
+* for 8 buttons switch - push button 2A.
 
 ## Full Example
 

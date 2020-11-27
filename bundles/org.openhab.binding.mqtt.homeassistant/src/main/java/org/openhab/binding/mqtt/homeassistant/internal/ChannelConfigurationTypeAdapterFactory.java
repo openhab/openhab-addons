@@ -69,10 +69,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
 
         return new TypeAdapter<T>() {
             @Override
-            public T read(@Nullable JsonReader in) throws IOException {
-                if (in == null) {
-                    return null;
-                }
+            public @Nullable T read(JsonReader in) throws IOException {
                 /* read the object using the default adapter, but translate the names in the reader */
                 T result = delegate.read(MappingJsonReader.getConfigMapper(in));
                 /* do the '~' expansion afterwards */
@@ -81,7 +78,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
             }
 
             @Override
-            public void write(@Nullable JsonWriter out, T value) throws IOException {
+            public void write(JsonWriter out, @Nullable T value) throws IOException {
                 delegate.write(out, value);
             }
         };
@@ -93,17 +90,14 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
 
         return new TypeAdapter<T>() {
             @Override
-            public T read(@Nullable JsonReader in) throws IOException {
-                if (in == null) {
-                    return null;
-                }
+            public @Nullable T read(JsonReader in) throws IOException {
                 /* read the object using the default adapter, but translate the names in the reader */
                 T result = delegate.read(MappingJsonReader.getDeviceMapper(in));
                 return result;
             }
 
             @Override
-            public void write(@Nullable JsonWriter out, T value) throws IOException {
+            public void write(JsonWriter out, @Nullable T value) throws IOException {
                 delegate.write(out, value);
             }
         };

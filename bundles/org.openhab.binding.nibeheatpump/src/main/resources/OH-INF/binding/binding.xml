@@ -5,6 +5,5 @@
 
 	<name>NibeHeatPump Binding</name>
 	<description>This is the binding for Nibe heat pumps.</description>
-	<author>Pauli Anttila</author>
 
 </binding:binding>

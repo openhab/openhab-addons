@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.webhook;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -91,7 +92,7 @@ public class WelcomeWebHookServlet extends HttpServlet {
         if (!data.isEmpty() && handler != null) {
             NAWebhookCameraEvent event = gson.fromJson(data, NAWebhookCameraEvent.class);
             logger.debug("Event transmitted from restService");
-            handler.webHookEvent(event);
+            handler.webHookEvent(Objects.requireNonNull(event));
         }
 
         setHeaders(resp);

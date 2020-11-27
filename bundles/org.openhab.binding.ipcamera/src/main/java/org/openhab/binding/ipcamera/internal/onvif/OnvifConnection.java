@@ -21,9 +21,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +35,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,8 +149,9 @@ public class OnvifConnection {
     private String ptzNodeToken = "000";
     private String ptzConfigToken = "000";
     private int presetTokenIndex = 0;
-    private LinkedList<String> presetTokens = new LinkedList<>();
-    private LinkedList<String> mediaProfileTokens = new LinkedList<>();
+    private List<String> presetTokens = new LinkedList<>();
+    private List<String> presetNames = new LinkedList<>();
+    private List<String> mediaProfileTokens = new LinkedList<>();
     private boolean ptzDevice = true;
 
     public OnvifConnection(IpCameraHandler ipCameraHandler, String ipAddress, String user, String password) {
@@ -277,8 +282,7 @@ public class OnvifConnection {
             case GotoPreset:
                 return "<GotoPreset xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken><PresetToken>"
-                        + presetTokens.get(presetTokenIndex)
-                        + "</PresetToken><Speed><PanTilt x=\"0.0\" y=\"0.0\" space=\"\"></PanTilt><Zoom x=\"0.0\" space=\"\"></Zoom></Speed></GotoPreset>";
+                        + presetTokens.get(presetTokenIndex) + "</PresetToken></GotoPreset>";
             case GetPresets:
                 return "<GetPresets xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken></GetPresets>";
@@ -326,7 +330,7 @@ public class OnvifConnection {
         } else if (message.contains("GetStatusResponse")) {
             processPTZLocation(message);
         } else if (message.contains("GetPresetsResponse")) {
-            presetTokens = listOfResults(message, "<tptz:Preset", "token=\"");
+            parsePresets(message);
         } else if (message.contains("GetConfigurationsResponse")) {
             sendPTZRequest(RequestType.GetPresets);
             ptzConfigToken = Helper.fetchXML(message, "PTZConfiguration", "token=\"");
@@ -357,14 +361,16 @@ public class OnvifConnection {
     HttpRequest requestBuilder(RequestType requestType, String xAddr) {
         logger.trace("Sending ONVIF request:{}", requestType);
         String security = "";
-        String extraEnvelope = " xmlns:a=\"http://www.w3.org/2005/08/addressing\"";
+        String extraEnvelope = "";
         String headerTo = "";
         String getXmlCache = getXml(requestType);
         if (requestType.equals(RequestType.CreatePullPointSubscription) || requestType.equals(RequestType.PullMessages)
                 || requestType.equals(RequestType.Renew) || requestType.equals(RequestType.Unsubscribe)) {
             headerTo = "<a:To s:mustUnderstand=\"1\">http://" + ipAddress + xAddr + "</a:To>";
+            extraEnvelope = " xmlns:a=\"http://www.w3.org/2005/08/addressing\"";
         }
-        if (!password.isEmpty()) {
+        String headers;
+        if (!password.isEmpty() && !requestType.equals(RequestType.GetSystemDateAndTime)) {
             String nonce = createNonce();
             String dateTime = getUTCdateTime();
             String digest = createDigest(nonce, dateTime);
@@ -376,17 +382,15 @@ public class OnvifConnection {
                     + encodeBase64(nonce)
                     + "</Nonce><Created xmlns=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">"
                     + dateTime + "</Created></UsernameToken></Security>";
-        }
-        String headers = "<s:Header>" + security + headerTo + "</s:Header>";
-
-        if (requestType.equals(RequestType.GetSystemDateAndTime)) {
-            extraEnvelope = "";
+            headers = "<s:Header>" + security + headerTo + "</s:Header>";
+        } else {// GetSystemDateAndTime must not be password protected as per spec.
             headers = "";
         }
-
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"), xAddr);
-        request.headers().add("Content-Type", "application/soap+xml");
-        request.headers().add("charset", "utf-8");
+        String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
+        request.headers().add("Content-Type",
+                "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
+        request.headers().add("Charset", "utf-8");
         if (onvifPort != 80) {
             request.headers().set("Host", ipAddress + ":" + onvifPort);
         } else {
@@ -398,7 +402,6 @@ public class OnvifConnection {
                 + headers
                 + "<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
                 + getXmlCache + "</s:Body></s:Envelope>";
-        String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
         request.headers().add("SOAPAction", "\"" + actionString + "/" + requestType + "\"");
         ByteBuf bbuf = Unpooled.copiedBuffer(fullXml, StandardCharsets.UTF_8);
         request.headers().set("Content-Length", bbuf.readableBytes());
@@ -408,15 +411,14 @@ public class OnvifConnection {
 
     /**
      * The {@link removeIPfromUrl} Will throw away all text before the cameras IP, also removes the IP and the PORT
-     * leaving just the
-     * URL.
+     * leaving just the URL.
      *
      * @author Matthew Skinner - Initial contribution
      */
     String removeIPfromUrl(String url) {
-        int index = url.indexOf(ipAddress);
+        int index = url.indexOf("//");
         if (index != -1) {// now remove the :port
-            index = url.indexOf("/", index + ipAddress.length());
+            index = url.indexOf("/", index + 2);
         }
         if (index == -1) {
             logger.debug("We hit an issue parsing url:{}", url);
@@ -456,11 +458,10 @@ public class OnvifConnection {
         String minute = Helper.fetchXML(message, "UTCDateTime", "Minute>");
         String hour = Helper.fetchXML(message, "UTCDateTime", "Hour>");
         String second = Helper.fetchXML(message, "UTCDateTime", "Second>");
-        logger.debug("Cameras  UTC time is : {}:{}:{}", hour, minute, second);
         String day = Helper.fetchXML(message, "UTCDateTime", "Day>");
         String month = Helper.fetchXML(message, "UTCDateTime", "Month>");
         String year = Helper.fetchXML(message, "UTCDateTime", "Year>");
-        logger.debug("Cameras  UTC date is : {}-{}-{}", year, month, day);
+        logger.debug("Cameras  UTC dateTime is:{}-{}-{}T{}:{}:{}", year, month, day, hour, minute, second);
     }
 
     private String getUTCdateTime() {
@@ -718,8 +719,8 @@ public class OnvifConnection {
         this.mediaProfileIndex = mediaProfileIndex;
     }
 
-    LinkedList<String> listOfResults(String message, String heading, String key) {
-        LinkedList<String> results = new LinkedList<String>();
+    List<String> listOfResults(String message, String heading, String key) {
+        List<String> results = new LinkedList<>();
         String temp = "";
         for (int startLookingFromIndex = 0; startLookingFromIndex != -1;) {
             startLookingFromIndex = message.indexOf(heading, startLookingFromIndex);
@@ -728,11 +729,29 @@ public class OnvifConnection {
                 if (!temp.isEmpty()) {
                     logger.trace("String was found:{}", temp);
                     results.add(temp);
-                    ++startLookingFromIndex;
+                } else {
+                    return results;// key string must not exist so stop looking.
                 }
+                startLookingFromIndex += temp.length();
             }
         }
         return results;
+    }
+
+    void parsePresets(String message) {
+        List<StateOption> presets = new ArrayList<>();
+        int counter = 1;// Presets start at 1 not 0. HOME may be added to index 0.
+        presetTokens = listOfResults(message, "<tptz:Preset", "token=\"");
+        presetNames = listOfResults(message, "<tptz:Preset", "<tt:Name>");
+        if (presetTokens.size() != presetNames.size()) {
+            logger.warn("Camera did not report the same number of Tokens and Names for PTZ presets");
+            return;
+        }
+        for (String value : presetNames) {
+            presets.add(new StateOption(Integer.toString(counter++), value));
+        }
+        ipCameraHandler.stateDescriptionProvider
+                .setStateOptions(new ChannelUID(ipCameraHandler.getThing().getUID(), CHANNEL_GOTO_PRESET), presets);
     }
 
     void parseProfiles(String message) {

@@ -14,7 +14,6 @@ package org.openhab.binding.bsblan.internal;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,14 +38,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bsblan")
 public class BsbLanHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>() {
-
-        private static final long serialVersionUID = 1L;
-        {
-            add(THING_TYPE_PARAMETER);
-            add(THING_TYPE_BRIDGE);
-        }
-    };
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PARAMETER, THING_TYPE_BRIDGE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

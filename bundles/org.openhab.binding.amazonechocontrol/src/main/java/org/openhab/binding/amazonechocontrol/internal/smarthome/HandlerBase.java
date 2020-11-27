@@ -47,7 +47,8 @@ public abstract class HandlerBase {
     public abstract void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result);
 
     public abstract boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException;
+            SmartHomeCapability[] capabilties, String channelId, Command command)
+            throws IOException, InterruptedException;
 
     public abstract @Nullable StateDescription findStateDescription(String channelId,
             StateDescription originalStateDescription, @Nullable Locale locale);

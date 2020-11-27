@@ -33,8 +33,7 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
-import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
+import org.openhab.binding.nikohomecontrol.internal.protocol.*;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcProperty;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcMessage2.NhcMessageParam;
@@ -309,7 +308,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         } else if ("devices.added".equals(method)) {
             deviceList.forEach(this::addDevice);
-        } else if ("devices.changed".contentEquals(method)) {
+        } else if ("devices.changed".equals(method)) {
             deviceList.forEach(this::removeDevice);
             deviceList.forEach(this::addDevice);
         }
@@ -444,12 +443,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         }
 
-        if (actions.containsKey(device.uuid)) {
-            updateActionState((NhcAction2) actions.get(device.uuid), deviceProperties);
-        } else if (thermostats.containsKey(device.uuid)) {
-            updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), deviceProperties);
-        } else if (energyMeters.containsKey(device.uuid)) {
-            updateEnergyMeterState((NhcEnergyMeter2) energyMeters.get(device.uuid), deviceProperties);
+        NhcAction action = actions.get(device.uuid);
+        NhcThermostat thermostat = thermostats.get(device.uuid);
+        NhcEnergyMeter energyMeter = energyMeters.get(device.uuid);
+
+        if (action != null) {
+            updateActionState((NhcAction2) action, deviceProperties);
+        } else if (thermostat != null) {
+            updateThermostatState((NhcThermostat2) thermostat, deviceProperties);
+        } else if (energyMeter != null) {
+            updateEnergyMeterState((NhcEnergyMeter2) energyMeter, deviceProperties);
         }
     }
 

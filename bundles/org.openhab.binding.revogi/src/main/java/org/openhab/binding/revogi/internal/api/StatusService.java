@@ -13,6 +13,7 @@
 package org.openhab.binding.revogi.internal.api;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,7 +70,7 @@ public class StatusService {
     private StatusRawDTO deserializeString(String response) {
         String extractedJsonResponse = response.substring(response.lastIndexOf(VERSION_STRING) + 2);
         try {
-            return gson.fromJson(extractedJsonResponse, StatusRawDTO.class);
+            return Objects.requireNonNull(gson.fromJson(extractedJsonResponse, StatusRawDTO.class));
         } catch (JsonSyntaxException e) {
             logger.warn("Could not parse string \"{}\" to StatusRaw", response, e);
             return new StatusRawDTO(503, 0, new StatusDTO(false, 503, null, null, null));

@@ -344,7 +344,8 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                                 channelType = "Number:Temperature";
                                 state = new QuantityType<>(bd, SIUnits.CELSIUS);
                             } else if ("%".equals(valParts[1])) {
-                                channelType = "Number:Percent";
+                                // channelType = "Number:Percent"; Number:Percent is currently not handled...
+                                channelType = "Number:Dimensionless";
                                 state = new QuantityType<>(bd, SmartHomeUnits.PERCENT);
                             } else if ("Imp".equals(valParts[1])) {
                                 // impulses - no idea how to map this to something useful here?

@@ -196,7 +196,9 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             @Nullable
             Group[] onlineGroups = getApiConnection().getGroups().payload;
 
-            updatePlayerStatus(onlinePlayers, onlineGroups);
+            if (onlinePlayers != null && onlineGroups != null) {
+                updatePlayerStatus(onlinePlayers, onlineGroups);
+            }
         } catch (ReadException | IOException e) {
             logger.debug("Failed updating online state of groups/players", e);
         }

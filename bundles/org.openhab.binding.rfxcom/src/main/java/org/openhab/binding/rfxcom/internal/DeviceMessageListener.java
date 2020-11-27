@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComDeviceMessage;
 import org.openhab.core.thing.ThingUID;
@@ -22,6 +23,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public interface DeviceMessageListener {
 
     /**

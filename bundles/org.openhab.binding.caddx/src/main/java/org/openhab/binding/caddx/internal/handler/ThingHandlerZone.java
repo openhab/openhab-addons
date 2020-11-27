@@ -38,12 +38,8 @@ import org.slf4j.LoggerFactory;
 public class ThingHandlerZone extends CaddxBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ThingHandlerZone.class);
+    private long lastRefreshTime = 0;
 
-    /**
-     * Constructor.
-     *
-     * @param thing
-     */
     public ThingHandlerZone(Thing thing) {
         super(thing, CaddxThingType.ZONE);
     }
@@ -77,15 +73,17 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
         String data = null;
 
         if (command instanceof RefreshType) {
-            if (channelUID.getId().equals(CaddxBindingConstants.ZONE_FAULTED)) {
+            // Refresh only if 2 seconds have passed from the last refresh
+            if (System.currentTimeMillis() - lastRefreshTime > 2000) {
                 cmd1 = CaddxBindingConstants.ZONE_STATUS_REQUEST;
                 cmd2 = CaddxBindingConstants.ZONE_NAME_REQUEST;
                 data = String.format("%d", getZoneNumber() - 1);
             } else {
                 return;
             }
+            lastRefreshTime = System.currentTimeMillis();
         } else if (channelUID.getId().equals(CaddxBindingConstants.ZONE_BYPASSED)) {
-            cmd1 = channelUID.getId();
+            cmd1 = CaddxBindingConstants.ZONE_BYPASSED;
             cmd2 = CaddxBindingConstants.ZONE_STATUS_REQUEST;
             data = String.format("%d", getZoneNumber() - 1);
         } else {

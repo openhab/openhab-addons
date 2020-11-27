@@ -322,9 +322,9 @@ public class BitUtilitiesCommandToRegistersTest {
                 is(equalTo(expectedRegisters.length)));
         for (int i = 0; i < expectedRegisters.length; i++) {
             int expectedRegisterDataUnsigned = expectedRegisters[i] & 0xffff;
-            int actual = registers.getRegister(i).getValue();
+            int actualUnsigned = registers.getRegister(i);
 
-            assertThat(String.format("register index i=%d, command=%s, type=%s", i, command, type), actual,
+            assertThat(String.format("register index i=%d, command=%s, type=%s", i, command, type), actualUnsigned,
                     is(equalTo(expectedRegisterDataUnsigned)));
         }
     }

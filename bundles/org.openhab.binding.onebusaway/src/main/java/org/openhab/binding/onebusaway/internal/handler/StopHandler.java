@@ -119,17 +119,16 @@ public class StopHandler extends BaseBridgeHandler {
         if (listener == null) {
             throw new IllegalArgumentException("It makes no sense to register a null listener!");
         }
-        boolean added = routeDataListeners.add(listener);
-        if (added) {
-            String routeId = listener.getRouteId();
-            List<ObaStopArrivalResponse.ArrivalAndDeparture> copiedRouteData;
-            synchronized (routeData) {
-                copiedRouteData = new ArrayList<>(routeData.get(routeId));
-            }
-            Collections.sort(copiedRouteData);
-            listener.onNewRouteData(routeDataLastUpdateMs, copiedRouteData);
+        routeDataListeners.add(listener);
+        String routeId = listener.getRouteId();
+        List<ObaStopArrivalResponse.ArrivalAndDeparture> copiedRouteData;
+        synchronized (routeData) {
+            copiedRouteData = new ArrayList<>(routeData.getOrDefault(routeId, List.of()));
         }
-        return added;
+        Collections.sort(copiedRouteData);
+        listener.onNewRouteData(routeDataLastUpdateMs, copiedRouteData);
+
+        return true;
     }
 
     /**
@@ -212,7 +211,8 @@ public class StopHandler extends BaseBridgeHandler {
                     routeData.put(d.routeId, Arrays.asList(d));
                 }
                 for (String key : routeData.keySet()) {
-                    List<ObaStopArrivalResponse.ArrivalAndDeparture> copy = new ArrayList<>(routeData.get(key));
+                    List<ObaStopArrivalResponse.ArrivalAndDeparture> copy = new ArrayList<>(
+                            routeData.getOrDefault(key, List.of()));
                     Collections.sort(copy);
                     copiedRouteData.put(key, copy);
                 }

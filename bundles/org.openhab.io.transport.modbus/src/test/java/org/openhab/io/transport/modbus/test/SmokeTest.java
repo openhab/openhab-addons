@@ -19,11 +19,14 @@ import static org.junit.jupiter.api.Assumptions.*;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketImpl;
 import java.net.SocketImplFactory;
+import java.net.SocketOption;
+import java.net.StandardSocketOptions;
 import java.net.UnknownHostException;
 import java.util.BitSet;
 import java.util.Optional;
@@ -120,16 +123,16 @@ public class SmokeTest extends IntegrationTestSupport {
     private void testHoldingValues(ModbusRegisterArray registers, int offsetInRegisters) {
         for (int i = 0; i < registers.size(); i++) {
             int expected = (i + offsetInRegisters) * HOLDING_REGISTER_MULTIPLIER;
-            assertThat(String.format("i=%d, expecting %d, got %d", i, registers.getRegister(i).toUnsignedShort(),
-                    expected), registers.getRegister(i).toUnsignedShort(), is(equalTo(expected)));
+            assertThat(String.format("i=%d, expecting %d, got %d", i, registers.getRegister(i), expected),
+                    registers.getRegister(i), is(equalTo(expected)));
         }
     }
 
     private void testInputValues(ModbusRegisterArray registers, int offsetInRegisters) {
         for (int i = 0; i < registers.size(); i++) {
             int expected = (i + offsetInRegisters) * INPUT_REGISTER_MULTIPLIER;
-            assertThat(String.format("i=%d, expecting %d, got %d", i, registers.getRegister(i).toUnsignedShort(),
-                    expected), registers.getRegister(i).toUnsignedShort(), is(equalTo(expected)));
+            assertThat(String.format("i=%d, expecting %d, got %d", i, registers.getRegister(i), expected),
+                    registers.getRegister(i), is(equalTo(expected)));
         }
     }
 
@@ -945,11 +948,7 @@ public class SmokeTest extends IntegrationTestSupport {
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
-        return socketSpy.sockets.stream().filter(socketImpl -> {
-            Socket socket = getSocketOfSocketImpl(socketImpl);
-            return socket.getPort() == tcpModbusPort && socket.isConnected()
-                    && socket.getLocalAddress().equals(testServerAddress);
-        }).count();
+        return socketSpy.sockets.stream().filter(this::isConnectedToTestServer).count();
     }
 
     /**
@@ -972,25 +971,87 @@ public class SmokeTest extends IntegrationTestSupport {
 
     private static SocketImpl newSocksSocketImpl() {
         try {
-            Class<?> defaultSocketImpl = Class.forName("java.net.SocksSocketImpl");
-            Constructor<?> constructor = defaultSocketImpl.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            return (SocketImpl) constructor.newInstance();
+            Class<?> socksSocketImplClass = Class.forName("java.net.SocksSocketImpl");
+            Class<?> socketImplClass = SocketImpl.class;
+
+            // // For Debugging
+            // for (Method method : socketImplClass.getDeclaredMethods()) {
+            // LoggerFactory.getLogger("foobar")
+            // .error("SocketImpl." + method.getName() + Arrays.toString(method.getParameters()));
+            // }
+            // for (Constructor constructor : socketImplClass.getDeclaredConstructors()) {
+            // LoggerFactory.getLogger("foobar")
+            // .error("SocketImpl." + constructor.getName() + Arrays.toString(constructor.getParameters()));
+            // }
+            // for (Method method : socksSocketImplClass.getDeclaredMethods()) {
+            // LoggerFactory.getLogger("foobar")
+            // .error("SocksSocketImpl." + method.getName() + Arrays.toString(method.getParameters()));
+            // }
+            // for (Constructor constructor : socksSocketImplClass.getDeclaredConstructors()) {
+            // LoggerFactory.getLogger("foobar").error(
+            // "SocksSocketImpl." + constructor.getName() + Arrays.toString(constructor.getParameters()));
+            // }
+
+            try {
+                Constructor<?> constructor = socksSocketImplClass.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                return (SocketImpl) constructor.newInstance();
+            } catch (NoSuchMethodException e) {
+                // Newer Javas (Java 14->) do not have default constructor 'SocksSocketImpl()'
+                // Instead we use "static SocketImpl.createPlatformSocketImpl" and "SocksSocketImpl(SocketImpl)
+                Method socketImplCreateMethod = socketImplClass.getDeclaredMethod("createPlatformSocketImpl",
+                        boolean.class);
+                socketImplCreateMethod.setAccessible(true);
+                Object socketImpl = socketImplCreateMethod.invoke(/* null since we deal with static method */ null,
+                        /* server */false);
+
+                Constructor<?> socksSocketImplConstructor = socksSocketImplClass
+                        .getDeclaredConstructor(socketImplClass);
+                socksSocketImplConstructor.setAccessible(true);
+                return (SocketImpl) socksSocketImplConstructor.newInstance(socketImpl);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Get Socket corresponding to SocketImpl using reflection
-     */
-    private static Socket getSocketOfSocketImpl(SocketImpl impl) {
+    private boolean isConnectedToTestServer(SocketImpl impl) {
+        final InetAddress testServerAddress;
         try {
-            Method getSocket = SocketImpl.class.getDeclaredMethod("getSocket");
-            getSocket.setAccessible(true);
-            return (Socket) getSocket.invoke(impl);
-        } catch (Exception e) {
+            testServerAddress = localAddress();
+        } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
+
+        final int port;
+        boolean connected = true;
+        final InetAddress address;
+        try {
+            Method getPort = SocketImpl.class.getDeclaredMethod("getPort");
+            getPort.setAccessible(true);
+            port = (int) getPort.invoke(impl);
+
+            Method getInetAddressMethod = SocketImpl.class.getDeclaredMethod("getInetAddress");
+            getInetAddressMethod.setAccessible(true);
+            address = (InetAddress) getInetAddressMethod.invoke(impl);
+
+            // hacky (but java8-14 compatible) way to know if socket is open
+            // SocketImpl.getOption throws IOException when socket is closed
+            Method getOption = SocketImpl.class.getDeclaredMethod("getOption", SocketOption.class);
+            getOption.setAccessible(true);
+            try {
+                getOption.invoke(impl, StandardSocketOptions.SO_KEEPALIVE);
+            } catch (InvocationTargetException e) {
+                if (e.getTargetException() instanceof IOException) {
+                    connected = false;
+                } else {
+                    throw e;
+                }
+            }
+        } catch (InvocationTargetException | SecurityException | IllegalArgumentException | IllegalAccessException
+                | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        return port == tcpModbusPort && connected && address.equals(testServerAddress);
     }
 }

@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Somfy Heating System</label>
+		<label>Z-Wave Heating System</label>
 		<channels>
 			<channel id="current_temperature" typeId="current_temperature"></channel>
 			<channel id="current_state" typeId="current_state"></channel>

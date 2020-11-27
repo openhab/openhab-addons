@@ -16,15 +16,9 @@ import static org.openhab.io.homekit.internal.HomekitAccessoryType.*;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -368,8 +362,8 @@ public class HomekitAccessoryFactory {
         characteristics.forEach((type, item) -> {
             try {
                 // check whether a proxyItem already exists, if not create one.
-                final HomekitOHItemProxy proxyItem = proxyItems.computeIfAbsent(item.getUID(),
-                        k -> new HomekitOHItemProxy(item));
+                final HomekitOHItemProxy proxyItem = Objects
+                        .requireNonNull(proxyItems.computeIfAbsent(item.getUID(), k -> new HomekitOHItemProxy(item)));
                 final HomekitTaggedItem optionalItem = new HomekitTaggedItem(proxyItem,
                         accessory.getRootAccessory().getAccessoryType(), type,
                         accessory.getRootAccessory().getRootDeviceGroupItem(),

@@ -67,6 +67,7 @@ The following table shows the available configuration parameters for each thing.
 | bridge    | `serialPort` - Serial port for the bridge - Required                                           |
 |           | `protocol` - Protocol used for the communication (Binary, Ascii) - Required - Default = Binary |
 |           | `baud` - Baud rate of the bridge - Required - Default = 9600                                   |
+|           | `maxZoneNumber` - Maximum zone number to be added during discovery - Required - Default = 16   |
 | partition | `partitionNumber` - Partition number (1-8) - Required                                          |
 | zone      | `zoneNumber` - Zone number (1-192) - Required                                                  |
 | keypad    | `keypadAddress` - Keypad address (192-255) - Required                                          |
@@ -219,7 +220,7 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 The following is an example of a things file (caddx.things):
 
 ```
-Bridge caddx:bridge:thebridge  "Bridge"                   [ protocol="Binary", serialPort="/dev/ttyUSB0", baudrate=38400 ] {
+Bridge caddx:bridge:thebridge  "Bridge"                   [ protocol="Binary", serialPort="/dev/ttyUSB0", baud=38400, maxZoneNumber=18 ] {
     Thing partition partition1 "Groundfloor alarm"        [ partitionNumber=1 ]
     Thing zone      zone1      "Livingroom motion sensor" [ zoneNumber=1 ]
     Thing zone      zone2      "Bedroom motion sensor"    [ zoneNumber=2 ]

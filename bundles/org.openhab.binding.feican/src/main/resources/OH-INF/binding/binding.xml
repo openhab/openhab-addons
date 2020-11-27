@@ -5,6 +5,5 @@
 
 	<name>Feican Binding</name>
 	<description>This is the binding for Feican light bulbs.</description>
-	<author>Hilbrand Bouwkamp</author>
 
 </binding:binding>

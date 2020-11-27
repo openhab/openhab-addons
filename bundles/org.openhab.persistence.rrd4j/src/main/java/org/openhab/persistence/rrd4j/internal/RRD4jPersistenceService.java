@@ -38,11 +38,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemUtil;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
@@ -96,7 +98,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     private static final String DEFAULT_QUANTIFIABLE = "default_quantifiable";
 
     private static final Set<String> SUPPORTED_TYPES = Set.of(CoreItemFactory.SWITCH, CoreItemFactory.CONTACT,
-            CoreItemFactory.DIMMER, CoreItemFactory.NUMBER, CoreItemFactory.ROLLERSHUTTER);
+            CoreItemFactory.DIMMER, CoreItemFactory.NUMBER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.COLOR);
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3,
             new NamedThreadFactory("RRD4j"));
@@ -400,11 +402,15 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private State mapToState(double value, @Nullable Item item, @Nullable Unit unit) {
+        if (item instanceof GroupItem) {
+            item = ((GroupItem) item).getBaseItem();
+        }
+
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
             return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
         } else if (item instanceof ContactItem) {
             return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-        } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
+        } else if (item instanceof DimmerItem || item instanceof RollershutterItem || item instanceof ColorItem) {
             // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
             return new PercentType((int) Math.round(value * 100));
         } else if (item instanceof NumberItem) {
@@ -418,6 +424,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private boolean isSupportedItemType(Item item) {
+        if (item instanceof GroupItem) {
+            final Item baseItem = ((GroupItem) item).getBaseItem();
+            if (baseItem != null) {
+                item = baseItem;
+            }
+        }
+
         return SUPPORTED_TYPES.contains(ItemUtil.getMainItemType(item.getType()));
     }
 

@@ -48,14 +48,15 @@
 			jdbc:sqlite:./testSqlite.db]]></description>
 		</parameter>
 
-		<parameter name="user" type="text" required="false">
+		<parameter name="user" type="text" required="true">
 			<label>Database User</label>
-			<description><![CDATA[Defines optional database user.]]></description>
+			<description>Defines the database user.</description>
 		</parameter>
 
-		<parameter name="password" type="text" required="false">
+		<parameter name="password" type="text" required="true">
+			<context>password</context>
 			<label>Database Password</label>
-			<description><![CDATA[Defines optional database password.]]></description>
+			<description>Defines the database password.</description>
 		</parameter>
 
 		<!--
@@ -79,46 +80,46 @@
 			# For Itemtype "Number" default decimal digit count (optional, default: 3)
 			#numberDecimalcount=
 		-->
-		<parameter name="sqltype.CALL" type="text" required="false">
+		<parameter name="sqltype.CALL" type="text">
 			<label>SqlType CALL</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for CALL <br>(optional, default: "VARCHAR(200)"). <br>
 			General about JdbcTypes/SqlTypes see: https://mybatis.github.io/mybatis-3/apidocs/reference/org/apache/ibatis/type/JdbcType.html <br>
 			see: http://www.h2database.com/html/datatypes.html <br>
 			see: http://www.postgresql.org/docs/9.5/static/datatype.html]]></description>
 		</parameter>
-		<parameter name="sqltype.COLOR" type="text" required="false">
+		<parameter name="sqltype.COLOR" type="text">
 			<label>SqlType COLOR</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for COLOR <br>(optional, default: "VARCHAR(70)").]]></description>
 		</parameter>
-		<parameter name="sqltype.CONTACT" type="text" required="false">
+		<parameter name="sqltype.CONTACT" type="text">
 			<label>SqlType CONTACT</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for CONTACT <br>(optional, default: "VARCHAR(6)").]]></description>
 		</parameter>
-		<parameter name="sqltype.DATETIME" type="text" required="false">
+		<parameter name="sqltype.DATETIME" type="text">
 			<label>SqlType DATETIME</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for DATETIME <br>(optional, default: "DATETIME").]]></description>
 		</parameter>
-		<parameter name="sqltype.DIMMER" type="text" required="false">
+		<parameter name="sqltype.DIMMER" type="text">
 			<label>SqlType DIMMER</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for DIMMER <br>(optional, default: "TINYINT").]]></description>
 		</parameter>
-		<parameter name="sqltype.LOCATION" type="text" required="false">
+		<parameter name="sqltype.LOCATION" type="text">
 			<label>SqlType LOCATION</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for LOCATION <br>(optional, default: "VARCHAR(30)").]]></description>
 		</parameter>
-		<parameter name="sqltype.NUMBER" type="text" required="false">
+		<parameter name="sqltype.NUMBER" type="text">
 			<label>SqlType NUMBER</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for NUMBER <br>(optional, default: "DOUBLE").]]></description>
 		</parameter>
-		<parameter name="sqltype.ROLLERSHUTTER" type="text" required="false">
+		<parameter name="sqltype.ROLLERSHUTTER" type="text">
 			<label>SqlType ROLLERSHUTTER</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for ROLLERSHUTTER <br>(optional, default: "TINYINT").]]></description>
 		</parameter>
-		<parameter name="sqltype.STRING" type="text" required="false">
+		<parameter name="sqltype.STRING" type="text">
 			<label>SqlType STRING</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for STRING <br>(optional, default: "VARCHAR(65500)").]]></description>
 		</parameter>
-		<parameter name="sqltype.SWITCH" type="text" required="false">
+		<parameter name="sqltype.SWITCH" type="text">
 			<label>SqlType SWITCH</label>
 			<description><![CDATA[Overrides used JDBC/SQL datatype for SWITCH <br>(optional, default: "VARCHAR(6)").]]></description>
 		</parameter>
@@ -142,12 +143,12 @@
 			# USE WITH CARE! Deactivate after Renaming is done!
 			#rebuildTableNames=true
 		-->
-		<parameter name="tableNamePrefix" type="text" required="false">
+		<parameter name="tableNamePrefix" type="text">
 			<label>Tablename Prefix String</label>
 			<description><![CDATA[Tablename prefix string <br>(optional, default: "item"). <br>
 			For migration from MYSQL-Bundle set to 'Item'.]]></description>
 		</parameter>
-		<parameter name="tableUseRealItemNames" type="text" required="false">
+		<parameter name="tableUseRealItemNames" type="text">
 			<label>Tablename Realname Generation</label>
 			<description><![CDATA[Enables Tablename prefix generation per Items realname <br>(optional, default: disabled -> "Tablename Prefix String" is used). <br>
 			If true, 'Tablename Prefix String' is ignored.]]></description>
@@ -156,12 +157,12 @@
 				<option value="false">Disable</option>
 			</options>
 		</parameter>
-		<parameter name="tableIdDigitCount" type="text" required="false">
+		<parameter name="tableIdDigitCount" type="text">
 			<label>Tablename Suffix ID Count</label>
 			<description><![CDATA[Tablename Suffix ID Count <br>(optional, default: 4 -> 0001-9999). <br>
 			For migration from MYSQL-Bundle set to 0.]]></description>
 		</parameter>
-		<parameter name="rebuildTableNames" type="text" required="false">
+		<parameter name="rebuildTableNames" type="text">
 			<label>Tablename Rebuild</label>
 			<description><![CDATA[Rename existing tables using 'Tablename Realname Generation' and 'Tablename Suffix ID Count', (optional, default: disabled). <br>
 			USE WITH CARE! Deactivate after renaming is done!]]></description>
@@ -179,12 +180,12 @@
 			# maximumPoolSize = 1
 			# minimumIdle = 1
 		-->
-		<parameter name="maximumPoolSize" type="text" required="false">
+		<parameter name="maximumPoolSize" type="text">
 			<label>Connections Max Pool Size</label>
 			<description><![CDATA[Overrides max pool size in database connection. <br>(optional, default: differs each Database)<br>
 			https://github.com/brettwooldridge/HikariCP/issues/256]]></description>
 		</parameter>
-		<parameter name="minimumIdle" type="text" required="false">
+		<parameter name="minimumIdle" type="text">
 			<label>Connections Min Idle</label>
 			<description><![CDATA[Overrides min idle database connections. <br>(optional, default: differs each Database)<br>
 			https://github.com/brettwooldridge/HikariCP/issues/256]]></description>
@@ -195,7 +196,7 @@
 			# (optional, default: false)
 			#enableLogTime=true
 		-->
-		<parameter name="enableLogTime" type="text" required="false">
+		<parameter name="enableLogTime" type="text">
 			<label>Timekeeping Enable</label>
 			<description><![CDATA[Enables a time, performance measurement. <br>(optional, default: disabled)]]></description>
 			<options>

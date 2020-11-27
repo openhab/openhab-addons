@@ -5,6 +5,5 @@
 
 	<name>PioneerAvr Binding</name>
 	<description>A binding for Pioneer AVRs.</description>
-	<author>Antoine Besnard</author>
 
 </binding:binding>

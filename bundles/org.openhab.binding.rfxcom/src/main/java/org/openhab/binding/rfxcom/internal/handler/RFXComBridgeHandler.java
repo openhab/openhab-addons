@@ -13,6 +13,8 @@
 package org.openhab.binding.rfxcom.internal.handler;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -28,6 +30,7 @@ import org.openhab.binding.rfxcom.internal.connector.RFXComEventListener;
 import org.openhab.binding.rfxcom.internal.connector.RFXComJD2XXConnector;
 import org.openhab.binding.rfxcom.internal.connector.RFXComSerialConnector;
 import org.openhab.binding.rfxcom.internal.connector.RFXComTcpConnector;
+import org.openhab.binding.rfxcom.internal.discovery.RFXComDeviceDiscoveryService;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
@@ -46,6 +49,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -112,6 +116,11 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     public RFXComBridgeHandler(@NonNull Bridge br, SerialPortManager serialPortManager) {
         super(br);
         this.serialPortManager = serialPortManager;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(RFXComDeviceDiscoveryService.class);
     }
 
     @Override

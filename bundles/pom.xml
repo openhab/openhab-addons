@@ -59,6 +59,7 @@
     <module>org.openhab.binding.bluetooth.bluez</module>
     <module>org.openhab.binding.bluetooth.blukii</module>
     <module>org.openhab.binding.bluetooth.daikinmadoka</module>
+    <module>org.openhab.binding.bluetooth.generic</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.boschindego</module>
@@ -226,6 +227,7 @@
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pixometer</module>
     <module>org.openhab.binding.pjlinkdevice</module>
+    <module>org.openhab.binding.playstation</module>
     <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.powermax</module>
@@ -247,6 +249,7 @@
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.sensibo</module>
+    <module>org.openhab.binding.serial</module>
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.shelly</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
@@ -335,7 +338,7 @@
     <dependency>
       <groupId>org.lastnpe.eea</groupId>
       <artifactId>eea-all</artifactId>
-      <version>2.1.0</version>
+      <version>${eea.version}</version>
     </dependency>
     <!-- openHAB core -->
     <dependency>
@@ -504,7 +507,7 @@
                 <artifactItem>
                   <groupId>org.lastnpe.eea</groupId>
                   <artifactId>eea-all</artifactId>
-                  <version>2.1.0</version>
+                  <version>${eea.version}</version>
                   <overWrite>true</overWrite>
                 </artifactItem>
               </artifactItems>

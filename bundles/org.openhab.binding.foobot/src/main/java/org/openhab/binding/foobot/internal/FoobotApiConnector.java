@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -95,7 +96,8 @@ public class FoobotApiConnector {
                     URLEncoder.encode(username, StandardCharsets.UTF_8.toString()));
             logger.debug("URL = {}", url);
 
-            return GSON.fromJson(request(url, apiKey), FOOTBOT_DEVICE_LIST_TYPE);
+            List<FoobotDevice> foobotDevices = GSON.fromJson(request(url, apiKey), FOOTBOT_DEVICE_LIST_TYPE);
+            return Objects.requireNonNull(foobotDevices);
         } catch (JsonParseException | UnsupportedEncodingException e) {
             throw new FoobotApiException(0, e.getMessage());
         }

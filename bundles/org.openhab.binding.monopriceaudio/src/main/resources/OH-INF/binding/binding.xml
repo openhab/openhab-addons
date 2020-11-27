@@ -5,6 +5,5 @@
 
 	<name>Monoprice Whole House Audio Binding</name>
 	<description>Controls the Monoprice MPR-SG6Z or Dayton Audio DAX66 Whole House Amplifier.</description>
-	<author>Michael Lobstein</author>
 
 </binding:binding>

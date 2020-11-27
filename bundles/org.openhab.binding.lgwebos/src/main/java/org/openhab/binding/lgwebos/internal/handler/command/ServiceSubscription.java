@@ -35,6 +35,7 @@ package org.openhab.binding.lgwebos.internal.handler.command;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 
 import com.google.gson.JsonObject;
@@ -48,7 +49,7 @@ import com.google.gson.JsonObject;
  */
 public class ServiceSubscription<T> extends ServiceCommand<T> {
 
-    public ServiceSubscription(String uri, JsonObject payload, Function<JsonObject, T> converter,
+    public ServiceSubscription(String uri, JsonObject payload, Function<JsonObject, @Nullable T> converter,
             ResponseListener<T> listener) {
         super(uri, payload, converter, listener);
         type = Type.subscribe;

@@ -5,6 +5,5 @@
 
 	<name>HTTP Binding</name>
 	<description>This is the binding for retrieving and processing HTTP resources.</description>
-	<author>Jan N. Klug</author>
 
 </binding:binding>

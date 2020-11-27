@@ -5,5 +5,4 @@
 
 	<name>Gardena Smart Home Binding</name>
 	<description>This is the binding for Gardena Smart Home.</description>
-	<author>Gerhard Riegler</author>
 </binding:binding>

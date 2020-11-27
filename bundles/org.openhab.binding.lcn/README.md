@@ -96,7 +96,7 @@ Basic data like the names of all LCN modules in the bus, can be read out by open
 If not all LCN modules get listed on the first run, click on the refresh button to start another scan.
 
 When adding a module by discovery, the new *Thing*'s UID will be a combination of segment and module id using the following format:
-*S<segmentId>M<moduleId>* where *segmentId* and *moduleId* are formatted as three-digit numbers with leading zeros.
+`S<segmentId>M<moduleId>` where `segmentId` and `moduleId` are formatted as three-digit numbers with leading zeros.
 
 ### Discover PCK Gateways
 
@@ -423,7 +423,21 @@ LEDs do not support the *OnOffCommand* and respectively the *Switch* Item type, 
 
 ## Full Example
 
-Config .items
+Config `.things`
+
+```
+Bridge lcn:pckGateway:myPCHK [ hostname="192.168.123.123", port=4114, username="myUser", password="myPassword", mode="native200" ] {
+	Thing module M99 "M99 MyModule" [ moduleId=99, segmentId=0 ] {
+	Channels: 
+        Rollershutter : rollershutterrelay#1 "My twisted rollershutter relay" [ invertUpDown = true ]
+		Contact : binarysensor#6 [ invertState=true ]
+		Number  : rvarsetpoint#1 [ unit="temperature" ]
+		Number  : variable#3     [ unit="temperature" ]
+	}
+}
+```
+
+Config `.items`
 
 ```
 // Dimmer Outputs
@@ -496,7 +510,7 @@ Switch M10_KeyLockA1 {channel="lcn:module:b827ebfea4bb:S000M010:keylocktablea#1"
 Switch M10_KeyLockD5 {channel="lcn:module:b827ebfea4bb:S000M010:keylocktabled#5"}
 ```
 
-Config .sitemap
+Config `.sitemap`
 
 ```
 sitemap lcn label="My home automation" {

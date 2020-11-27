@@ -14,13 +14,7 @@ package org.openhab.binding.amazonechocontrol.internal;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -117,8 +111,8 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerDiscoveryService(AccountHandler bridgeHandler) {
-        List<ServiceRegistration<?>> discoveryServiceRegistration = discoveryServiceRegistrations
-                .computeIfAbsent(bridgeHandler.getThing().getUID(), k -> new ArrayList<>());
+        List<ServiceRegistration<?>> discoveryServiceRegistration = Objects.requireNonNull(discoveryServiceRegistrations
+                .computeIfAbsent(bridgeHandler.getThing().getUID(), k -> new ArrayList<>()));
         SmartHomeDevicesDiscovery smartHomeDevicesDiscovery = new SmartHomeDevicesDiscovery(bridgeHandler);
         smartHomeDevicesDiscovery.activate();
         discoveryServiceRegistration.add(bundleContext.registerService(DiscoveryService.class.getName(),
