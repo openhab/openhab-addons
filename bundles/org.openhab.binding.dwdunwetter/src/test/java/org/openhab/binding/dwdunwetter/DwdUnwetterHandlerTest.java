@@ -19,11 +19,11 @@ import static org.mockito.Mockito.*;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.lang.StringUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -122,7 +122,7 @@ public class DwdUnwetterHandlerTest extends JavaTest {
             if (nodeId == null) {
                 continue;
             }
-            if (StringUtils.equals(nodeId.getTextContent(), uuid.getId())) {
+            if (Objects.equals(nodeId.getTextContent(), uuid.getId())) {
                 return getLabel(node.getChildNodes());
             }
         }
