@@ -1355,8 +1355,7 @@ public class Connection {
                         JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
                         JsonAnnouncementContent content = new JsonAnnouncementContent();
                         content.display.title = title == null || title.isEmpty() ? "openHAB" : title;
-                        content.display.body = bodyText;
-                        content.display.body = speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
+                        content.display.body = bodyText.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
                         if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
                             content.speak.type = "ssml";
                         }
