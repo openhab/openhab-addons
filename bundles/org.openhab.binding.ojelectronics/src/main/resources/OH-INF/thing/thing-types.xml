@@ -72,6 +72,7 @@
 		<properties>
 			<property name="vendor">OJ Electronics</property>
 		</properties>
+		<representation-property>serialNumber</representation-property>
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
@@ -119,7 +120,7 @@
 	<channel-type id="regulationMode">
 		<item-type>String</item-type>
 		<label>Regulation Mode</label>
-		<state readOnly="true">
+		<state>
 			<options>
 				<option value="auto">Auto</option>
 				<option value="comfort">Comfort</option>
@@ -135,23 +136,21 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Comfort Set Point Temperature</label>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="comfortEndTime">
 		<item-type>DateTime</item-type>
 		<label>End Time of Comfort Mode</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="boostEndTime">
 		<item-type>DateTime</item-type>
 		<label>End Time of Boost Mode</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="manualSetpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Manual Set Point Temperature</label>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="vacationEnabled">
 		<item-type>Switch</item-type>
