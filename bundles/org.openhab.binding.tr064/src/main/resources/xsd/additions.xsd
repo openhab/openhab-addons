@@ -51,4 +51,47 @@
             <xs:element type="phonebookType" name="phonebook"/>
         </xs:sequence>
     </xs:complexType>
+    <xs:element name="root">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="timestamp"/>
+                <xs:element maxOccurs="unbounded" ref="Call"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="timestamp" type="xs:integer"/>
+    <xs:element name="Call">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Id"/>
+                <xs:element ref="Type"/>
+                <xs:element ref="Called"/>
+                <xs:element ref="Caller"/>
+                <xs:element ref="CalledNumber"/>
+                <xs:element ref="CallerNumber"/>
+                <xs:element ref="Name"/>
+                <xs:element ref="Numbertype"/>
+                <xs:element ref="Device"/>
+                <xs:element ref="Port"/>
+                <xs:element ref="Date"/>
+                <xs:element ref="Duration"/>
+                <xs:element ref="Count"/>
+                <xs:element ref="Path"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="Id" type="xs:integer"/>
+    <xs:element name="Type" type="xs:string"/>
+    <xs:element name="Called" type="xs:string"/>
+    <xs:element name="Caller" type="xs:string"/>
+    <xs:element name="CalledNumber" type="xs:string"/>
+    <xs:element name="CallerNumber" type="xs:string"/>
+    <xs:element name="Name" type="xs:string" />
+    <xs:element name="Numbertype" type="xs:string"/>
+    <xs:element name="Device" type="xs:string"/>
+    <xs:element name="Port" type="xs:string"/>
+    <xs:element name="Date" type="xs:string"/>
+    <xs:element name="Duration" type="xs:string"/>
+    <xs:element name="Count" type="xs:string"/>
+    <xs:element name="Path" type = "xs:string"/>
 </xs:schema>
