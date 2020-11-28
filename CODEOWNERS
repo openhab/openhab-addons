@@ -195,6 +195,7 @@
 /bundles/org.openhab.binding.phc/ @gnlpfjh
 /bundles/org.openhab.binding.pioneeravr/ @Stratehm
 /bundles/org.openhab.binding.pixometer/ @Confectrician
+/bundles/org.openhab.binding.playstation/ @FluBBaOfWard
 /bundles/org.openhab.binding.pjlinkdevice/ @nils
 /bundles/org.openhab.binding.plclogo/ @falkena
 /bundles/org.openhab.binding.plugwise/ @wborn
@@ -217,6 +218,7 @@
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.sensibo/ @seime
+/bundles/org.openhab.binding.serial/ @MikeJMajor
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.shelly/ @markus7017
 /bundles/org.openhab.binding.siemensrds/ @andrewfg
