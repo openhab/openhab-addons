@@ -13,7 +13,6 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -238,6 +237,6 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(time) + ": " + name + " -> " + state.toString();
+        return DATEFORMATTER.format(time) + ": " + name + " -> " + state.toString();
     }
 }
