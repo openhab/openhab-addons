@@ -31,6 +31,8 @@ import javax.net.ssl.X509TrustManager;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,8 +69,9 @@ class SSLconnection implements Closeable {
     private @Nullable SSLSocket socket;
     private @Nullable DataOutputStream dOut;
     private @Nullable DataInputStreamWithTimeout dIn;
-    private int ioTimeoutMSecs = 1000;
-    private int sslTimeoutMSecs = 5000; // allow more time than regular I/O for establishing SSL connection
+
+    private int readTimeoutMSecs = 2000;
+    private int connTimeoutMSecs = 6000;
 
     /**
      * Fake trust manager to suppress any certificate errors,
@@ -107,15 +110,13 @@ class SSLconnection implements Closeable {
     /**
      * Constructor to setup and establish a connection.
      *
-     * @param host as String describing the Service Access Point location i.e. hostname.
-     * @param port as int describing the Service Access Point location i.e. TCP port.
-     * @param timeoutMSecs as int describing the I/O timeout in milli- seconds.
+     * @param bridgeInstance the actual Bridge Thing instance
      * @throws java.net.ConnectException in case of unrecoverable communication failures.
      * @throws java.io.IOException in case of continuous communication I/O failures.
      * @throws java.net.UnknownHostException in case of continuous communication I/O failures.
      */
-    SSLconnection(String host, int port, int timeoutMSecs) throws ConnectException, IOException, UnknownHostException {
-        logger.debug("SSLconnection({},{},{}) called.", host, port, timeoutMSecs);
+    SSLconnection(VeluxBridgeHandler bridgeInstance) throws ConnectException, IOException, UnknownHostException {
+        logger.debug("SSLconnection() called");
         logger.info("Starting {} bridge connection.", VeluxBindingConstants.BINDING_ID);
         SSLContext ctx = null;
         try {
@@ -125,25 +126,27 @@ class SSLconnection implements Closeable {
             throw new IOException(String.format("create of an empty trust store failed: %s.", e.getMessage()));
         }
         logger.trace("SSLconnection(): creating socket...");
-        ioTimeoutMSecs = timeoutMSecs;
-        sslTimeoutMSecs = Math.max(sslTimeoutMSecs, timeoutMSecs);
-        // Just for avoidance of Potential null pointer access
-        SSLSocket socketX = (SSLSocket) ctx.getSocketFactory().createSocket();
-        if (socketX != null) {
-            socketX.setSoTimeout(sslTimeoutMSecs);
-            socketX.setKeepAlive(true);
-            socketX.connect(new InetSocketAddress(host, port), sslTimeoutMSecs);
+        SSLSocket socket = this.socket = (SSLSocket) ctx.getSocketFactory().createSocket();
+        if (socket != null) {
+            VeluxBridgeConfiguration cfg = bridgeInstance.veluxBridgeConfiguration();
+            readTimeoutMSecs = cfg.timeoutMsecs;
+            connTimeoutMSecs = Math.max(connTimeoutMSecs, readTimeoutMSecs);
+            // use longer timeout when establishing the connection
+            socket.setSoTimeout(connTimeoutMSecs);
+            socket.setKeepAlive(true);
+            socket.connect(new InetSocketAddress(cfg.ipAddress, cfg.tcpPort), connTimeoutMSecs);
             logger.trace("SSLconnection(): starting SSL handshake...");
-            socketX.startHandshake();
-            socketX.setSoTimeout(ioTimeoutMSecs);
-            dOut = new DataOutputStream(socketX.getOutputStream());
-            dIn = new DataInputStreamWithTimeout(socketX.getInputStream());
+            socket.startHandshake();
+            // use shorter timeout for normal communications
+            socket.setSoTimeout(readTimeoutMSecs);
+            dOut = new DataOutputStream(socket.getOutputStream());
+            dIn = new DataInputStreamWithTimeout(socket.getInputStream(), bridgeInstance);
             if (logger.isTraceEnabled()) {
                 logger.trace(
                         "SSLconnection(): connected... (ip={}, port={}, sslTimeout={}, soTimeout={}, soKeepAlive={})",
-                        host, port, sslTimeoutMSecs, socketX.getSoTimeout(), socketX.getKeepAlive() ? "true" : "false");
+                        cfg.ipAddress, cfg.tcpPort, connTimeoutMSecs, socket.getSoTimeout(),
+                        socket.getKeepAlive() ? "true" : "false");
             }
-            socket = socketX;
         }
         logger.trace("SSLconnection() finished.");
     }
@@ -222,7 +225,7 @@ class SSLconnection implements Closeable {
             throw new IOException("DataInputStreamWithTimeout not initialised");
         }
         try {
-            byte[] packet = dInX.readSlipMessage(ioTimeoutMSecs);
+            byte[] packet = dInX.readSlipMessage(readTimeoutMSecs);
             if (logger.isTraceEnabled()) {
                 StringBuilder sb = new StringBuilder();
                 for (byte b : packet) {

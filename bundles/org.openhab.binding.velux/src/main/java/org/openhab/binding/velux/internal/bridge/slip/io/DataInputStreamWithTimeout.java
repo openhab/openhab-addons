@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,13 +52,15 @@ class DataInputStreamWithTimeout implements Closeable {
     private final Queue<byte[]> slipMessageQueue = new ConcurrentLinkedQueue<>();
 
     private InputStream inputStream;
+    private VeluxBridgeHandler bridgeInstance;
 
     private String pollException = "";
     private @Nullable Thread pollThread = null;
 
     /**
-     * A runnable that loops to read bytes from {@link InputStream} and builds SLIP packets from them. The respective
-     * SLIP packets are placed in a {@link ConcurrentLinkedQueue}.
+     * Task that loops to read bytes from {@link InputStream} and build SLIP packets from them.
+     * The SLIP packets are placed in a {@link ConcurrentLinkedQueue}.
+     * It loops continuously until Thread.interrupted() and then it terminates after the next socket read timeout.
      */
     private Runnable pollRunner = () -> {
         byte byt;
@@ -113,12 +115,14 @@ class DataInputStreamWithTimeout implements Closeable {
     }
 
     /**
-     * Creates a {@link DataInputStreamWithTimeout} as a wrapper around the specified underlying DataInputStream.
+     * Creates a {@link DataInputStreamWithTimeout} as a wrapper around the specified underlying {@link InputStream}
      *
      * @param stream the specified input stream
+     * @param bridge the actual Bridge Thing instance
      */
-    public DataInputStreamWithTimeout(InputStream stream) {
+    public DataInputStreamWithTimeout(InputStream stream, VeluxBridgeHandler bridge) {
         inputStream = stream;
+        bridgeInstance = bridge;
     }
 
     /**
@@ -182,15 +186,14 @@ class DataInputStreamWithTimeout implements Closeable {
     }
 
     /**
-     * If necessary start the polling thread
+     * Start the polling thread
      */
     private void startPolling() {
-        Thread pollThreadX = this.pollThread;
-        if (pollThreadX != null) {
+        if (pollThread == null) {
             logger.trace("startPolling()");
-            pollThreadX = pollThread = new Thread(pollRunner);
-            pollThreadX.setName("OH-" + VeluxBindingConstants.THING_TYPE_BRIDGE);
-            pollThreadX.start();
+            Thread pollThread = this.pollThread = new Thread(pollRunner);
+            pollThread.setName("OH-" + bridgeInstance.getThing().getUID().getAsString());
+            pollThread.start();
         }
     }
 
@@ -198,10 +201,10 @@ class DataInputStreamWithTimeout implements Closeable {
      * Stop the polling thread
      */
     private void stopPolling() {
-        Thread pollThreadX = this.pollThread;
-        if (pollThreadX != null) {
+        Thread pollThread = this.pollThread;
+        if (pollThread != null) {
             logger.trace("stopPolling()");
-            pollThreadX.interrupt();
+            pollThread.interrupt();
             this.pollThread = null;
         }
     }

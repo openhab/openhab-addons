@@ -19,7 +19,6 @@ import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.bridge.VeluxBridge;
-import org.openhab.binding.velux.internal.bridge.VeluxBridgeInstance;
 import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
 import org.openhab.binding.velux.internal.bridge.slip.io.Connection;
@@ -27,6 +26,7 @@ import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
 import org.openhab.binding.velux.internal.bridge.slip.utils.SlipEncoding;
 import org.openhab.binding.velux.internal.bridge.slip.utils.SlipRFC1055;
 import org.openhab.binding.velux.internal.development.Threads;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.slf4j.Logger;
@@ -101,7 +101,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
      *
      * @param bridgeInstance refers to the binding-wide instance for dealing for common informations.
      */
-    public SlipVeluxBridge(VeluxBridgeInstance bridgeInstance) {
+    public SlipVeluxBridge(VeluxBridgeHandler bridgeInstance) {
         super(bridgeInstance);
         logger.trace("SlipVeluxBridge(constructor) called.");
         bridgeAPI = new SlipBridgeAPI(bridgeInstance);

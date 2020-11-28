@@ -19,8 +19,9 @@ import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
-import org.openhab.binding.velux.internal.bridge.VeluxBridgeInstance;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
+import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,8 +79,10 @@ public class Connection implements Closeable {
      * @throws java.net.ConnectException in case of unrecoverable communication failures.
      * @throws java.io.IOException in case of continuous communication I/O failures.
      */
-    public synchronized byte[] io(VeluxBridgeInstance bridgeInstance, byte[] request)
+    public synchronized byte[] io(VeluxBridgeHandler bridgeInstance, byte[] request)
             throws ConnectException, IOException {
+        VeluxBridgeConfiguration cfg = bridgeInstance.veluxBridgeConfiguration();
+        host = cfg.ipAddress;
         logger.trace("io() on {}: called.", host);
 
         lastCommunicationInMSecs = System.currentTimeMillis();
@@ -94,13 +97,8 @@ public class Connection implements Closeable {
                     // dispose old connectivity class instances (if any)
                     resetConnection();
                     try {
-                        // From configuration
-                        host = bridgeInstance.veluxBridgeConfiguration().ipAddress;
-                        int port = bridgeInstance.veluxBridgeConfiguration().tcpPort;
-                        int timeoutMsecs = bridgeInstance.veluxBridgeConfiguration().timeoutMsecs;
-
-                        logger.trace("io() on {}: connecting to port {}", host, port);
-                        connectivity = new SSLconnection(host, port, timeoutMsecs);
+                        logger.trace("io() on {}: connecting to port {}", cfg.ipAddress, cfg.tcpPort);
+                        connectivity = new SSLconnection(bridgeInstance);
                     } catch (ConnectException ce) {
                         throw new ConnectException(String
                                 .format("raised a non-recoverable error during connection setup: %s", ce.getMessage()));
