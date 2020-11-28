@@ -81,6 +81,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
     /**
      * DeviceInfo bean to store device useful info (and log them)
      */
+    @NonNullByDefault
     public class DeviceInfo {
         @Nullable
         private String friendlyName;

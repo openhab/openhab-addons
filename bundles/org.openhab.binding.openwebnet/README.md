@@ -9,7 +9,7 @@ The binding supports:
 - commands from openHAB and feedback (events) from BUS/SCS and wireless network
 
 ![F454 Gateway](doc/F454_gateway.png)
-![USB ZigBee Gateway](doc/USB_gateway.jpg)
+![ZigBee USB Gateway](doc/USB_gateway.jpg)
 
 ## Supported Things
 
@@ -35,19 +35,19 @@ The following Things and OpenWebNet `WHOs` are supported:
 
 ### For BUS/SCS
 
-| Category             | WHO          | Thing Type IDs                      | Description                                                 | Status           |
-| -------------------- | :----------: | :---------------------------------: | ----------------------------------------------------------- | ---------------- |
-| Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202  |
-| Lighting            | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers.                   | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
-| Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
+| Category             | WHO          | Thing Type IDs                               | Description                                                    | Status           |
+| -------------------- | :----------: | :------------------------------------------: | -------------------------------------------------------------- | ---------------- |
+| Gateway Management   | `13`        | `bus_gateway`                            | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
+| Lighting             | `1`         | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                       | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
+| Automation           | `2`         | `bus_automation`                        | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
 
 ### For ZigBee (Radio)
 
-| Category   | WHO   | Thing Type IDs                    | Description                                                           | Status                               |
-| ---------- | :---: | :-------------------------------: | :-------------------------------------------------------------------: | ------------------------------------ |
-| Gateway    | `13`  | `zb_gateway`                      | Wireless ZigBee USB Gateway (models: BTI-3578 / LG 088328) | Tested: BTI-3578 and LG 088328       |
-| Lighting   | `1`   | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | ZigBee dimmers, switches and 2-unit switches      | Tested: BTI-4591, BTI-3584, BTI-4585 |
-| Automation | `2`   | `zb_automation`                   | ZigBee roller shutters                                                |  |
+| Category             | WHO    | Thing Type IDs                    | Description                                                           | Status                               |
+| -------------------- | :----: | :-------------------------------: | :-------------------------------------------------------------------: | ------------------------------------ |
+| Gateway Management   | `13`  | `zb_gateway`                  | ZigBee USB Gateway (models: BTI-3578 / LG 088328)                      | Tested: BTI-3578 and LG 088328       |
+| Lighting             | `1`   | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | ZigBee dimmers, switches and 2-unit switches      | Tested: BTI-4591, BTI-3584, BTI-4585 |
+| Automation           | `2`   | `zb_automation`               | ZigBee roller shutters                                                |                                       |
 
 ## Discovery
 
@@ -64,15 +64,15 @@ For other gateways you can add them manually, see [Thing Configuration](#thing-c
 
 #### Discovery by Activation
 
-Devices can also be discovered if activated while an Inbox Scan is active: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer) to have it discovered by the binding.
+BUS devices can also be discovered if activated while an Inbox Scan is active: start a new Scan, wait 15-20 seconds and then _while the Scan is still active_ (spinning arrow in Inbox), activate the physical device (for example dim the dimmer) to have it discovered by the binding.
 
 If a device cannot be discovered automatically it's always possible to add it manually, see [Configuring Devices](#configuring-devices).
 
 ### ZigBee Discovery
 
-- Zigbee USB gateway discovery is *not supported* at the moment: the gateway thing must be added manually see [Thing Configuration](#thing-configuration) below
-- The ZigBee USB Gateway must be inserted in one of the USB ports of the openHAB computer before discovery is started
-- ***IMPORTANT NOTE:*** As for other OH2 bindings using the USB/serial ports, on Linux the `openhab` user must be member of the `dialout` group, to be able to use USB/serial port: set the group with the following command:
+- ZigBee USB gateway discovery is *not supported* at the moment: the gateway thing must be added manually see [Thing Configuration](#thing-configuration) below
+- The ZigBee USB Gateway must be inserted in one of the USB ports of the openHAB computer before a discovery is started
+- ***IMPORTANT NOTE:*** As for other openHAB bindings using the USB/serial ports, on Linux the `openhab` user must be member of the `dialout` group to be able to use USB/serial port; set the group with the following command:
 
     ```
     $ sudo usermod -a -G dialout openhab
@@ -105,12 +105,12 @@ Alternatively the BUS/SCS Gateway thing can be configured using the `.things` fi
 
 ### Configuring Wireless ZigBee USB Gateway 
 
-To add a ZigBee USB gateway manually using PaperUI: go to *Inbox > "+" > OpenWebNet > click `ADD MANUALLY`* and then select `ZigBee USB Gateway`.
+To add a ZigBee USB Gateway manually using PaperUI: go to *Inbox > "+" > OpenWebNet > click `ADD MANUALLY`* and then select `ZigBee USB Gateway`.
 
 Configuration parameters are:
 
 - `serialPort` : the serial port where the ZigBee USB Gateway is connected (`String`, *mandatory*)
-    - Example: `COM3`
+    - Examples: `/dev/ttyUSB0` (Linux/RaPi), `COM3` (Windows)
 
 ### Configuring Devices
 
@@ -119,20 +119,20 @@ Devices can be discovered automatically from Inbox after a gateway has been conf
 Devices can be also added manually from PaperUI. For each device it must be configured:
 
 - the associated gateway (`Bridge Selection` menu)
-- the `WHERE` config parameter (`OpenWebNet Device Address`):
-  - example for BUS/SCS: Point to Point `A=2 PL=4` --> `WHERE="24"`
-  - example for BUS/SCS: Point to Point `A=6 PL=4` on local bus --> `WHERE="64#4#01"`
-  - example for ZigBee devices: use decimal format address without the UNIT part and network: ZigBee `WHERE=414122201#9` --> `WHERE="4141222"`
+- the `where` config parameter (`OpenWebNet Device Address`):
+  - example for BUS/SCS device with WHERE address Point to Point `A=2 PL=4` --> `where="24"`
+  - example for BUS/SCS device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
+  - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
 
 ## Channels
 
 Devices support some of the following channels:
 
-| Channel Type ID (channel ID)        | Item Type     | Description                                                             | Read/Write |
-|--------------------------|---------------|-------------------------------------------------------------------------|:----------:|
-| `switch`               | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
-| `brightness`          | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
-| `shutter`              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
+| Channel Type ID (channel ID)                   | Item Type     | Description                                             | Read/Write |
+|------------------------------------------------|---------------|---------------------------------------------------------|:----------:|
+| `switch` or `switch_01`/`02` for ZigBee | Switch        | To switch the device `ON` and `OFF`                   |    R/W     |
+| `brightness`                               | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
+| `shutter`                                   | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
 
 ### Notes on channels
 
@@ -151,34 +151,45 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 
 ### openwebnet.things:
 
+BUS gateway and things configuration:
+
 ```xtend
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", port=20000, discoveryByActivation=false ] {
-      bus_on_off_switch        LR_switch        "Living Room Light"       [ where="51" ]
-      bus_dimmer               LR_dimmer        "Living Room Dimmer"      [ where="25#4#01" ]
-      bus_dimmer               LR_dalidimmer    "Living Room Dali-Dimmer" [ where="0311#4#01" ]
-      bus_automation           LR_shutter       "Living Room Shutter"     [ where="93", shutterRun="10050"]
+      bus_on_off_switch        LR_switch        "Living Room Light"     [ where="51" ]
+      bus_dimmer               LR_dimmer        "Living Room Dimmer"    [ where="0311#4#01" ]
+      bus_automation           LR_shutter       "Living Room Shutter"   [ where="93", shutterRun="10050"]
 }
-``` 
+```
 
+
+ZigBee USB Gateway and things configuration - for radio devices:
 
 ```xtend
-// ZigBee USB Gateway configuration for radio devices
 Bridge openwebnet:zb_gateway:myZBgateway  [serialPort="COM3"] {
-    zb_dimmer          myzigbeedimmer [ where="123456700#9"]
-    zb_on_off_switch   myzigbeeswitch [ where="765432200#9"]
+    zb_dimmer          myZB_dimmer     [ where="765432101#9"]
+    zb_on_off_switch   myZB_switch     [ where="765432201#9"]
+    zb_on_off_switch2u myZB_2U_switch  [ where="765432300#9"]
 }
 ```
 
 ### openwebnet.items:
 
-Items (Light, Dimmer, etc.) will be discovered by Google Assistant/Alexa/HomeKit if their tags are configured like in the example.
+Items (Light, Dimmer, etc.) will be discovered by Google Assistant/Alexa/HomeKit if their tags are configured like in the example:
 
 ```xtend
 Switch          iLR_switch          "Light"                             <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
 Dimmer          iLR_dimmer          "Dimmer [%.0f %%]"                  <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
-Dimmer          iLR_dalidimmer      "Dali-Dimmer [%.0f %%]"             <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dalidimmer:brightness" }
 /* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
 Rollershutter   iLR_shutter         "Shutter [%.0f %%]"                 <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
+```
+
+Example items linked to ZigBee devices:
+
+```xtend
+Dimmer          iDimmer             "Dimmer [%.0f %%]"                  <DimmableLight>  (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_dimmer:myZBgateway:myZB_dimmer:brightness" }
+Switch          iSimpleSwitch       "Kitchen Switch"                    <light>          (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_on_off_switch:myZBgateway:myZB_switch:switch_01" }
+Switch          iSwitch_01          "2U first light"                    <light>          (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_on_off_switch2u:myZBgateway:myZB_2U_switch:switch_01" }
+Switch          iSwitch_02          "2U second light"                   <light>          (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_on_off_switch2u:myZBgateway:myZB_2U_switch:switch_02" }
 ```
 
 ### openwebnet.sitemap
@@ -190,7 +201,6 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     {
           Default item=iLR_switch           icon="light"    
           Default item=iLR_dimmer           icon="light" 
-          Default item=iLR_dalidimmer       icon="light"
           Default item=iLR_shutter
     }
 }
