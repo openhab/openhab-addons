@@ -126,40 +126,40 @@
 
 		<channel-groups>
 			<channel-group id="common" typeId="commonProperties"/>
-			<channel-group id="valve_1" typeId="valveProperties">
+			<channel-group id="valveOne" typeId="valveProperties">
 				<label>Valve 1 properties</label>
 			</channel-group>
-			<channel-group id="valve_1_commands" typeId="valveCommands">
+			<channel-group id="valveOne_commands" typeId="valveCommands">
 				<label>Valve 1 commands</label>
 			</channel-group>
-			<channel-group id="valve_2" typeId="valveProperties">
+			<channel-group id="valveTwo" typeId="valveProperties">
 				<label>Valve 2 properties</label>
 			</channel-group>
-			<channel-group id="valve_2_commands" typeId="valveCommands">
+			<channel-group id="valveTwo_commands" typeId="valveCommands">
 				<label>Valve 2 commands</label>
 			</channel-group>
-			<channel-group id="valve_3" typeId="valveProperties">
+			<channel-group id="valveThree" typeId="valveProperties">
 				<label>Valve 3 properties</label>
 			</channel-group>
-			<channel-group id="valve_3_commands" typeId="valveCommands">
+			<channel-group id="valveThree_commands" typeId="valveCommands">
 				<label>Valve 3 commands</label>
 			</channel-group>
-			<channel-group id="valve_4" typeId="valveProperties">
+			<channel-group id="valveFour" typeId="valveProperties">
 				<label>Valve 4 properties</label>
 			</channel-group>
-			<channel-group id="valve_4_commands" typeId="valveCommands">
+			<channel-group id="valveFour_commands" typeId="valveCommands">
 				<label>Valve 4 Commands</label>
 			</channel-group>
-			<channel-group id="valve_5" typeId="valveProperties">
+			<channel-group id="valveFive" typeId="valveProperties">
 				<label>Valve 5 Properties</label>
 			</channel-group>
-			<channel-group id="valve_5_commands" typeId="valveCommands">
+			<channel-group id="valveFive_commands" typeId="valveCommands">
 				<label>Valve 5 Commands</label>
 			</channel-group>
-			<channel-group id="valve_6" typeId="valveProperties">
+			<channel-group id="valveSix" typeId="valveProperties">
 				<label>Valve 6 Properties</label>
 			</channel-group>
-			<channel-group id="valve_6_commands" typeId="valveCommands">
+			<channel-group id="valveSix_commands" typeId="valveCommands">
 				<label>Valve 6 Commands</label>
 			</channel-group>
 			<channel-group id="valveSet" typeId="valveSetProperties"/>

@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
 
@@ -52,7 +53,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
 
     private @NonNullByDefault({}) GardenaAccountHandler accountHandler;
-    private Future<?> scanFuture;
+    private @NonNullByDefault({}) Future<?> scanFuture;
 
     public GardenaDeviceDiscoveryService() {
         super(Collections.unmodifiableSet(Stream.of(new ThingTypeUID(BINDING_ID, "-")).collect(Collectors.toSet())),
@@ -157,10 +158,11 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
             try {
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(accountUID)
                         .withLabel(PropertyUtils.getPropertyValue(device, "common.attributes.name.value", String.class))
-                        .build();
+                        .withProperty("id", device.id).withProperty("type", device.deviceType)
+                        .withRepresentationProperty("id").build();
                 thingDiscovered(discoveryResult);
-            } catch (Exception ex) {
-                logger.error("{}", ex.getMessage(), ex);
+            } catch (GardenaException ex) {
+                logger.warn("{}", ex.getMessage());
             }
         }
     }

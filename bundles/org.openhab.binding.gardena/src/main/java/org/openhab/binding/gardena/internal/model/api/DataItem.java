@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.gardena.internal.model.api;
 
-import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.gardena.internal.util.StringUtils;
 
 /**
  * Represents a Gardena object that is sent via the Gardena API.

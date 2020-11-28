@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
 import org.openhab.binding.gardena.internal.GardenaSmartImpl;
@@ -39,14 +40,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaSmartEventListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaAccountHandler.class);
     private final static long REINITIALIZE_DELAY_SECONDS = 10;
 
-    private GardenaDeviceDiscoveryService discoveryService;
+    private @NonNullByDefault({}) GardenaDeviceDiscoveryService discoveryService;
 
     private GardenaSmart gardenaSmart = new GardenaSmartImpl();
-    private GardenaConfig gardenaConfig;
+    private @NonNullByDefault({}) GardenaConfig gardenaConfig;
     private HttpClientFactory httpClientFactory;
     private WebSocketFactory webSocketFactory;
 
@@ -87,7 +89,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                 disposeGardena();
                 scheduleReinitialize();
-                logger.debug("{}", ex.getMessage(), ex);
+                logger.warn("{}", ex.getMessage());
             }
         });
     }

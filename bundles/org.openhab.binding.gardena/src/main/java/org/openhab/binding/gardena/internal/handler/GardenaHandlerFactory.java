@@ -15,6 +15,7 @@ package org.openhab.binding.gardena.internal.handler;
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.BINDING_ID;
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.THING_TYPE_ACCOUNT;
 
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -36,12 +37,14 @@ import org.osgi.service.component.annotations.Reference;
 public class GardenaHandlerFactory extends BaseThingHandlerFactory {
     private HttpClientFactory httpClientFactory;
     private WebSocketFactory webSocketFactory;
+    private TimeZoneProvider timeZoneProvider;
 
     @Activate
     public GardenaHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference WebSocketFactory webSocketFactory) {
+            final @Reference WebSocketFactory webSocketFactory, final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClientFactory = httpClientFactory;
         this.webSocketFactory = webSocketFactory;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
             return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory);
         } else {
-            return new GardenaThingHandler(thing);
+            return new GardenaThingHandler(thing, timeZoneProvider);
         }
     }
 }

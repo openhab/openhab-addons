@@ -14,7 +14,6 @@ package org.openhab.binding.gardena.internal.util;
 
 import java.lang.reflect.Field;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 
 /**
@@ -22,7 +21,6 @@ import org.openhab.binding.gardena.internal.exception.GardenaException;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
 public class PropertyUtils {
 
     /**
@@ -37,7 +35,7 @@ public class PropertyUtils {
      */
     public static <T> T getPropertyValue(Object instance, String propertyPath, Class<T> resultClass)
             throws GardenaException {
-        String[] properties = StringUtils.split(propertyPath, ".");
+        String[] properties = propertyPath.split("\\.");
         return getPropertyValue(instance, properties, resultClass, 0);
     }
 
@@ -57,7 +55,7 @@ public class PropertyUtils {
                 return getPropertyValue(result, properties, resultClass, nestedIndex + 1);
             }
             return (T) result;
-        } catch (Exception ex) {
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
             throw new GardenaException(ex.getMessage(), ex);
         }
     }

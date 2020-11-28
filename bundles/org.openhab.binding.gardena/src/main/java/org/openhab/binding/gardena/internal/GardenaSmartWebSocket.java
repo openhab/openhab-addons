@@ -114,7 +114,7 @@ public class GardenaSmartWebSocket {
         closing = false;
         logger.debug("Connected to Gardena Webservice ({})", socketId);
 
-        openhab = scheduler.scheduleAtFixedRate(new ConnectionTrackerThread(), 2, 2, TimeUnit.MINUTES);
+        openhab = scheduler.scheduleWithFixedDelay(new ConnectionTrackerThread(), 2, 2, TimeUnit.MINUTES);
     }
 
     @OnWebSocketFrame
@@ -167,7 +167,7 @@ public class GardenaSmartWebSocket {
                     session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
                 }
             } catch (IOException ex) {
-                logger.error("{}", ex.getMessage(), ex);
+                logger.debug("{}", ex.getMessage());
             }
         }
     }

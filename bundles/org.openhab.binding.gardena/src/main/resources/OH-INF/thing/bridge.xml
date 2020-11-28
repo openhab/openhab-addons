@@ -6,8 +6,8 @@
 
 	<!-- Gardena smart system Account -->
 	<bridge-type id="account">
-		<label>Gardena smart system Account</label>
-		<description>The Gardena smart system Account</description>
+		<label>Gardena Smart System Account</label>
+		<description>The Gardena smart system account</description>
 
 		<config-description>
 			<parameter name="email" type="text" required="true">

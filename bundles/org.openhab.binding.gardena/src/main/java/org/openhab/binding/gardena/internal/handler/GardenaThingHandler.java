@@ -18,13 +18,12 @@ import static org.openhab.binding.gardena.internal.model.command.PowerSocketComm
 import static org.openhab.binding.gardena.internal.model.command.ValveCommand.ValveControl;
 import static org.openhab.binding.gardena.internal.model.command.ValveSetCommand.ValveSetControl;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
@@ -33,7 +32,9 @@ import org.openhab.binding.gardena.internal.model.Device;
 import org.openhab.binding.gardena.internal.model.api.DataItem;
 import org.openhab.binding.gardena.internal.model.command.*;
 import org.openhab.binding.gardena.internal.util.PropertyUtils;
+import org.openhab.binding.gardena.internal.util.StringUtils;
 import org.openhab.binding.gardena.internal.util.UidUtils;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -54,9 +55,11 @@ import org.slf4j.LoggerFactory;
  */
 public class GardenaThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GardenaThingHandler.class);
+    private TimeZoneProvider timeZoneProvider;
 
-    public GardenaThingHandler(Thing thing) {
+    public GardenaThingHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -112,7 +115,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     /**
      * Converts a Gardena property value to a openHAB state.
      */
-    private State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
+    private @Nullable State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
         if (isLocalDurationCommand(channelUID)) {
             String dataItemProperty = getDeviceDataItemProperty(channelUID);
             return new DecimalType(Math.round(device.getLocalService(dataItemProperty).commandDuration / 60.0));
@@ -153,7 +156,7 @@ public class GardenaThingHandler extends BaseThingHandler {
                     }
                 case "DateTime":
                     Date date = PropertyUtils.getPropertyValue(device, propertyPath, Date.class);
-                    ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+                    ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), timeZoneProvider.getTimeZone());
                     return new DateTimeType(zdt);
             }
         } catch (GardenaException e) {
@@ -200,7 +203,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         } catch (AccountHandlerNotAvailableException | GardenaDeviceNotFoundException ex) {
             // ignore
         } catch (Exception ex) {
-            logger.warn("{}", ex.getMessage(), ex);
+            logger.warn("{}", ex.getMessage());
             ((GardenaSmartEventListener) getBridge().getHandler()).onError();
         }
     }
@@ -211,8 +214,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     private GardenaCommand getGardenaCommand(String dataItemProperty, ChannelUID channelUID)
             throws GardenaException, AccountHandlerNotAvailableException {
         String commandName = channelUID.getIdWithoutGroup().toUpperCase();
-        if (StringUtils.startsWith(channelUID.getGroupId(), "valve_")
-                && StringUtils.endsWith(channelUID.getGroupId(), "_commands")) {
+        if (channelUID.getGroupId().startsWith("valve") && channelUID.getGroupId().endsWith("_commands")) {
             return new ValveCommand(ValveControl.valueOf(commandName),
                     getDevice().getLocalService(dataItemProperty).commandDuration);
         } else if ("mower_commands".equals(channelUID.getGroupId())) {

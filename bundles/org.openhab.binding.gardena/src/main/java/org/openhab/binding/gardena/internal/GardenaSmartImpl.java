@@ -13,9 +13,7 @@
 package org.openhab.binding.gardena.internal;
 
 import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -123,7 +121,6 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             startWebsockets();
             initialized = true;
         } catch (Exception ex) {
-            logger.warn("{}", ex.getMessage(), ex);
             throw new GardenaException(ex.getMessage(), ex);
         }
     }
@@ -189,14 +186,15 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             }
 
             if (status != 200 && status != 204 && status != 201 && status != 202) {
-                throw new GardenaException(String.format("Error %s %s, %s", status, contentResponse.getReason(), contentResponse.getContentAsString()));
+                throw new GardenaException(String.format("Error %s %s, %s", status, contentResponse.getReason(),
+                        contentResponse.getContentAsString()));
             }
 
             if (result == null) {
                 return null;
             }
             return gson.fromJson(contentResponse.getContentAsString(), result);
-        } catch (Exception ex) {
+        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
             throw new GardenaException(ex.getMessage(), ex);
         }
     }
@@ -355,7 +353,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
                     }, 1, TimeUnit.SECONDS);
                 }
             }
-        } catch (Exception ex) {
+        } catch (GardenaException ex) {
             logger.warn("Ignoring message: {}", ex.getMessage());
         }
     }

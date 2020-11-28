@@ -17,6 +17,7 @@ import static org.openhab.binding.gardena.internal.GardenaBindingConstants.BINDI
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gardena.internal.handler.GardenaDeviceConfig;
 import org.openhab.binding.gardena.internal.model.Device;
 import org.openhab.core.thing.Bridge;
@@ -29,6 +30,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class UidUtils {
 
     /**

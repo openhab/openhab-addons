@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.gardena.internal.config;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * The main Gardena config class.
  *
@@ -98,13 +94,16 @@ public class GardenaConfig {
      * Validate the config if email, password and apiKey is specified.
      */
     public boolean isValid() {
-        return StringUtils.isNotBlank(email) && StringUtils.isNotBlank(password) && StringUtils.isNotBlank(apiKey);
+        return email != null && !email.isBlank() && password != null && !password.isBlank() && apiKey != null
+                && !apiKey.isBlank();
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("email", email)
-                .append("password", StringUtils.isBlank(password) ? "" : StringUtils.repeat("*", password.length()))
-                .append("connectionTimeout", connectionTimeout).append("apiKey", apiKey).toString();
+        StringBuilder sb = new StringBuilder(GardenaConfig.class.getSimpleName()).append("[");
+        sb.append("email: ").append(email).append(", ");
+        sb.append("connectionTimeout: ").append(connectionTimeout).append(", ");
+        sb.append("apiKey: ").append(apiKey);
+        return sb.append("]").toString();
     }
 }

@@ -18,11 +18,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.api.*;
+import org.openhab.binding.gardena.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +42,12 @@ public class Device {
     public PowerSocketServiceDataItem powerSocket;
     public SensorServiceDataItem sensor;
     public ValveServiceDataItem valve;
-    public ValveServiceDataItem valve_1;
-    public ValveServiceDataItem valve_2;
-    public ValveServiceDataItem valve_3;
-    public ValveServiceDataItem valve_4;
-    public ValveServiceDataItem valve_5;
-    public ValveServiceDataItem valve_6;
+    public ValveServiceDataItem valveOne;
+    public ValveServiceDataItem valveTwo;
+    public ValveServiceDataItem valveThree;
+    public ValveServiceDataItem valveFour;
+    public ValveServiceDataItem valveFive;
+    public ValveServiceDataItem valveSix;
     public ValveSetServiceDataItem valveSet;
 
     private Map<String, LocalService> localServices = new HashMap<>();
@@ -123,17 +121,17 @@ public class Device {
             if (valveNumber.equals("") || valveNumber.equals("wc") || valveNumber.equals("0")) {
                 valve = (ValveServiceDataItem) dataItem;
             } else if ("1".equals(valveNumber)) {
-                valve_1 = (ValveServiceDataItem) dataItem;
+                valveOne = (ValveServiceDataItem) dataItem;
             } else if ("2".equals(valveNumber)) {
-                valve_2 = (ValveServiceDataItem) dataItem;
+                valveTwo = (ValveServiceDataItem) dataItem;
             } else if ("3".equals(valveNumber)) {
-                valve_3 = (ValveServiceDataItem) dataItem;
+                valveThree = (ValveServiceDataItem) dataItem;
             } else if ("4".equals(valveNumber)) {
-                valve_4 = (ValveServiceDataItem) dataItem;
+                valveFour = (ValveServiceDataItem) dataItem;
             } else if ("5".equals(valveNumber)) {
-                valve_5 = (ValveServiceDataItem) dataItem;
+                valveFive = (ValveServiceDataItem) dataItem;
             } else if ("6".equals(valveNumber)) {
-                valve_6 = (ValveServiceDataItem) dataItem;
+                valveSix = (ValveServiceDataItem) dataItem;
             } else {
                 throw new GardenaException("Unknown valveNumber in dataItem with id: " + dataItem.id);
             }
@@ -148,7 +146,7 @@ public class Device {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).toHashCode();
+        return id.hashCode();
     }
 
     @Override
@@ -157,6 +155,6 @@ public class Device {
             return false;
         }
         Device comp = (Device) obj;
-        return new EqualsBuilder().append(comp.id, id).isEquals();
+        return comp.id.equals(id);
     }
 }
