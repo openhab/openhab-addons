@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upnpcontrol.internal;
+package org.openhab.binding.upnpcontrol.internal.util;
 
 import java.util.ArrayList;
 import java.util.List;
