@@ -105,14 +105,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
         pollingInterval = config.pollingInterval;
         device.ifPresent(dev -> dev.setScheduler(scheduler));
-        device.ifPresent(dev -> {
-            try {
-                dev.connect();
-            } catch (EpsonProjectorException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        });
-
+        updateStatus(ThingStatus.UNKNOWN);
         schedulePollingJob();
     }
 
