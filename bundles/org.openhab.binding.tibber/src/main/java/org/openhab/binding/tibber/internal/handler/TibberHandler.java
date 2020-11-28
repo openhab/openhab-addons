@@ -416,8 +416,9 @@ public class TibberHandler extends BaseThingHandler {
 
         @OnWebSocketError
         public void onWebSocketError(Throwable e) {
-            logger.debug("Error during websocket communication: {}", e.getMessage());
-            onClose(0, e.getMessage());
+            String message = e.getMessage();
+            logger.debug("Error during websocket communication: {}", message);
+            onClose(0, message != null ? message : "null");
         }
 
         @OnWebSocketMessage

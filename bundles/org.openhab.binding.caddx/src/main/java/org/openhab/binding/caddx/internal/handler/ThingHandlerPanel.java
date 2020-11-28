@@ -41,12 +41,8 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ThingHandlerPanel.class);
     private @Nullable HashMap<String, String> panelLogMessagesMap = null;
     private @Nullable String communicatorStackPointer = null;
+    private long lastRefreshTime = 0;
 
-    /**
-     * Constructor.
-     *
-     * @param thing
-     */
     public ThingHandlerPanel(Thing thing) {
         super(thing, CaddxThingType.PANEL);
     }
@@ -77,17 +73,19 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
         }
 
         if (command instanceof RefreshType) {
-            if (CaddxBindingConstants.PANEL_FIRMWARE_VERSION.equals(channelUID.getId())) {
-                cmd = CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST;
-                data = "";
-            } else if (CaddxBindingConstants.PANEL_LOG_MESSAGE_N_0.equals(channelUID.getId())) {
+            if (CaddxBindingConstants.PANEL_LOG_MESSAGE_N_0.equals(channelUID.getId())) {
                 cmd = CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST;
+                data = "";
+            } else if (System.currentTimeMillis() - lastRefreshTime > 2000) {
+                // Refresh only if 2 seconds have passed from the last refresh
+                cmd = CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST;
                 data = "";
             } else {
                 return;
             }
 
             bridgeHandler.sendCommand(cmd, data);
+            lastRefreshTime = System.currentTimeMillis();
         } else {
             logger.debug("Unknown command {}", command);
         }
@@ -165,8 +163,8 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
 
         // get the channel id from the map
         HashMap<String, String> logMap = panelLogMessagesMap;
-        if (logMap != null && logMap.containsKey(eventNumberString)) {
-            String id = logMap.get(eventNumberString);
+        String id = logMap.get(eventNumberString);
+        if (logMap != null && id != null) {
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), id);
             updateChannel(channelUID, logEventMessage.toString());
         }

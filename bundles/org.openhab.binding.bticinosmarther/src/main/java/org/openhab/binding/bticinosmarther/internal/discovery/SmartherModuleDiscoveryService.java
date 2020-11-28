@@ -73,7 +73,7 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
     @Override
     public void activate() {
         logger.debug("Bridge[{}] Activating chronothermostat discovery service", this.bridgeUID);
-        Map<String, @Nullable Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, Boolean.TRUE);
         super.activate(properties);
     }

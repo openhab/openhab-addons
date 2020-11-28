@@ -33,7 +33,7 @@ import javax.imageio.ImageIO;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.doorbird.action.DoorbirdActions;
+import org.openhab.binding.doorbird.internal.action.DoorbirdActions;
 import org.openhab.binding.doorbird.internal.api.DoorbirdAPI;
 import org.openhab.binding.doorbird.internal.api.DoorbirdImage;
 import org.openhab.binding.doorbird.internal.api.SipStatus;

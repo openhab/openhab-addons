@@ -243,7 +243,8 @@ public class LGWebOSTVSocket {
             return;
         }
 
-        Optional.ofNullable(this.listener).ifPresent(l -> l.onError(cause.getMessage()));
+        String message = cause.getMessage();
+        Optional.ofNullable(this.listener).ifPresent(l -> l.onError(message != null ? message : ""));
     }
 
     @OnWebSocketClose

@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.meteoalerte.internal.json;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,7 +33,7 @@ public class ApiResponse {
     @SerializedName("nhits")
     private int nHits;
     private @Nullable Parameters parameters;
-    private Record[] records = {};
+    private List<Record> records = new ArrayList<>();
 
     public int getNHits() {
         return nHits;
@@ -44,7 +47,7 @@ public class ApiResponse {
         return Optional.empty();
     }
 
-    public Record[] getRecords() {
-        return records;
+    public Stream<Record> getRecords() {
+        return records.stream();
     }
 }

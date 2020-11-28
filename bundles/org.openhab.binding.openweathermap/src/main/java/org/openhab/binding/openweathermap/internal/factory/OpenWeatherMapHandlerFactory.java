@@ -61,7 +61,7 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
             .unmodifiableSet(Stream.concat(OpenWeatherMapAPIHandler.SUPPORTED_THING_TYPES.stream(),
                     AbstractOpenWeatherMapHandler.SUPPORTED_THING_TYPES.stream()).collect(Collectors.toSet()));
 
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
     private final LocationProvider locationProvider;

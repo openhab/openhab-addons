@@ -58,8 +58,8 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
         if (bridge != null) {
             final ThingHandler handler = bridge.getHandler();
             if (handler != null && handler instanceof SatelBridgeHandler) {
+                ((SatelBridgeHandler) handler).addEventListener(this);
                 this.bridgeHandler = (SatelBridgeHandler) handler;
-                this.bridgeHandler.addEventListener(this);
             }
             if (bridge.getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);

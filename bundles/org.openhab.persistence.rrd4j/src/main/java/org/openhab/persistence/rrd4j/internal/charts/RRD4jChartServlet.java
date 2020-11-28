@@ -17,10 +17,7 @@ import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.Servlet;
@@ -126,12 +123,12 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
 
         int width = 480;
         try {
-            width = Integer.parseInt(req.getParameter("w"));
+            width = Integer.parseInt(Objects.requireNonNull(req.getParameter("w")));
         } catch (Exception e) {
         }
         int height = 240;
         try {
-            height = Integer.parseInt(req.getParameter("h"));
+            height = Integer.parseInt(Objects.requireNonNull(req.getParameter("h")));
         } catch (Exception e) {
         }
         Long period = PERIODS.get(req.getParameter("period"));

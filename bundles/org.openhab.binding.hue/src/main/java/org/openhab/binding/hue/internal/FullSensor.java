@@ -15,6 +15,8 @@ package org.openhab.binding.hue.internal;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -23,7 +25,10 @@ import com.google.gson.reflect.TypeToken;
  * @author Samuel Leisering - Initial contribution
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class FullSensor extends FullHueObject {
+    public static final Type GSON_TYPE = new TypeToken<Map<String, FullSensor>>() {
+    }.getType();
 
     public static final String STATE_LAST_UPDATED = "lastupdated";
     public static final String STATE_BUTTON_EVENT = "buttonevent";
@@ -46,11 +51,8 @@ public class FullSensor extends FullHueObject {
     public static final String CONFIG_LIGHT_LEVEL_THRESHOLD_DARK = "tholddark";
     public static final String CONFIG_LIGHT_LEVEL_THRESHOLD_OFFSET = "tholdoffset";
 
-    public static final Type GSON_TYPE = new TypeToken<Map<String, FullSensor>>() {
-    }.getType();
-
-    private Map<String, Object> state;
-    private Map<String, Object> config;
+    private @NonNullByDefault({}) Map<String, Object> state;
+    private @NonNullByDefault({}) Map<String, Object> config;
 
     public Map<String, Object> getState() {
         return state;

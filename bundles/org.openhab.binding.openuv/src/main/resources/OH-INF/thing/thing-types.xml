@@ -35,6 +35,7 @@
 
 		<channels>
 			<channel id="UVIndex" typeId="UVIndex"/>
+			<channel id="Alert" typeId="Alert"/>
 			<channel id="UVColor" typeId="UVColor"/>
 			<channel id="UVMax" typeId="UVMax"/>
 			<channel id="UVMaxTime" typeId="UVMaxTime"/>
@@ -66,14 +67,14 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV Index</description>
-		<state readOnly="true" pattern="%.2f/16" min="0" max="16"/>
+		<state readOnly="true" pattern="%d/16" min="0" max="16"/>
 	</channel-type>
 
 	<channel-type id="UVMax" advanced="true">
 		<item-type>Number</item-type>
 		<label>UV Max</label>
 		<description>Max UV Index for the day (at solar noon)</description>
-		<state readOnly="true" pattern="%.2f/16" min="0" max="16"/>
+		<state readOnly="true" pattern="%d/16" min="0" max="16"/>
 	</channel-type>
 
 	<channel-type id="Ozone">
@@ -86,7 +87,8 @@
 	<channel-type id="OzoneTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Ozone Observation Time</label>
-		<description>Latest OMI ozone update time</description>
+		<description>Latest OMI ozone update timestamp.</description>
+		<category>time</category>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -94,20 +96,22 @@
 		<item-type>DateTime</item-type>
 		<label>UV Max Time</label>
 		<description>Max UV Index time (solar noon)</description>
+		<category>time</category>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="UVTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>UV Time</label>
-		<description>UV Index time</description>
+		<description>UV Index timestamp.</description>
+		<category>time</category>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="UVColor" advanced="true">
 		<item-type>Color</item-type>
-		<label>UV Color</label>
-		<description>Color associated to given UV Index.</description>
+		<label>UV Alert Color</label>
+		<description>Color associated to given UV Index alert level.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -145,6 +149,20 @@
 		<kind>trigger</kind>
 		<label>UV Max Event</label>
 		<description>Triggers when current UV Index reaches maximum of the day</description>
+	</channel-type>
+
+	<channel-type id="Alert">
+		<item-type>Number</item-type>
+		<label>UV Alert</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Low</option>
+				<option value="1">Medium</option>
+				<option value="2">High</option>
+				<option value="3">Very high</option>
+				<option value="4">Extreme</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

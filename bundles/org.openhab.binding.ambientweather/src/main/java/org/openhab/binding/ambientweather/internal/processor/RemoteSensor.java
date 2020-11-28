@@ -73,6 +73,9 @@ public class RemoteSensor {
      * there are remote sensor values
      */
     private void updateSensorChannels(AmbientWeatherStationHandler handler, int i, final @Nullable String jsonData) {
+        if (jsonData == null) {
+            return;
+        }
         String sensorNumber = String.valueOf(i);
         StringReader stringReader = new StringReader(jsonData);
         JsonReader reader = new JsonReader(stringReader);
@@ -132,6 +135,6 @@ public class RemoteSensor {
      */
     private String convertSoilMoistureToString(double soilMoisture) {
         Double key = soilMoistureMap.ceilingKey(soilMoisture);
-        return key == null ? "UNKNOWN" : soilMoistureMap.get(key);
+        return key == null ? "UNKNOWN" : soilMoistureMap.getOrDefault(key, "UNKNOWN");
     }
 }

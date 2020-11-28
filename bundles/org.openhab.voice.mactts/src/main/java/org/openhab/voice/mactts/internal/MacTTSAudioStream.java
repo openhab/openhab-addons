@@ -136,7 +136,7 @@ class MacTTSAudioStream extends FixedLengthAudioStream {
 
         stringBuffer.append("say");
 
-        stringBuffer.append(" --voice=" + this.voice.getLabel());
+        stringBuffer.append(" --voice=\"" + this.voice.getLabel() + "\"");
         stringBuffer.append(" --output-file=" + outputFile);
         stringBuffer.append(" --file-format=" + this.audioFormat.getContainer());
         stringBuffer.append(" --data-format=LEI" + audioFormat.getBitDepth() + "@" + audioFormat.getFrequency());

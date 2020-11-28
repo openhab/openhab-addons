@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.openhab.binding.mqtt.internal.MqttThingID;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
@@ -63,7 +62,6 @@ public class BrokerHandlerTest {
     @BeforeEach
     public void setUp() throws ConfigurationException, MqttException {
         scheduler = new ScheduledThreadPoolExecutor(1);
-        when(thing.getUID()).thenReturn(MqttThingID.getThingUID("10.10.0.10", 80));
         connection = spy(new MqttBrokerConnectionEx("10.10.0.10", 80, false, "BrokerHandlerTest"));
         connection.setTimeoutExecutor(scheduler, 10);
         connection.setConnectionCallback(connection);

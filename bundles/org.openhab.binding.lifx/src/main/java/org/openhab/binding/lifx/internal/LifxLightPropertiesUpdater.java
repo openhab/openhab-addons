@@ -150,14 +150,20 @@ public class LifxLightPropertiesUpdater {
         }
 
         if (packet instanceof StateVersionResponse) {
-            Product product = Product.getProductFromProductID(((StateVersionResponse) packet).getProduct());
-            long productVersion = ((StateVersionResponse) packet).getVersion();
+            long productId = ((StateVersionResponse) packet).getProduct();
+            properties.put(LifxBindingConstants.PROPERTY_PRODUCT_ID, Long.toString(productId));
 
-            properties.put(LifxBindingConstants.PROPERTY_PRODUCT_ID, Long.toString(product.getID()));
-            properties.put(LifxBindingConstants.PROPERTY_PRODUCT_NAME, product.getName());
+            long productVersion = ((StateVersionResponse) packet).getVersion();
             properties.put(LifxBindingConstants.PROPERTY_PRODUCT_VERSION, Long.toString(productVersion));
-            properties.put(LifxBindingConstants.PROPERTY_VENDOR_ID, Long.toString(product.getVendor().getID()));
-            properties.put(LifxBindingConstants.PROPERTY_VENDOR_NAME, product.getVendor().getName());
+
+            try {
+                Product product = Product.getProductFromProductID(productId);
+                properties.put(LifxBindingConstants.PROPERTY_PRODUCT_NAME, product.getName());
+                properties.put(LifxBindingConstants.PROPERTY_VENDOR_ID, Long.toString(product.getVendor().getID()));
+                properties.put(LifxBindingConstants.PROPERTY_VENDOR_NAME, product.getVendor().getName());
+            } catch (IllegalArgumentException e) {
+                logger.debug("{} : Light has an unsupported product ID: {}", logId, productId);
+            }
 
             receivedPacketTypes.add(packet.getPacketType());
         } else if (packet instanceof StateHostFirmwareResponse) {

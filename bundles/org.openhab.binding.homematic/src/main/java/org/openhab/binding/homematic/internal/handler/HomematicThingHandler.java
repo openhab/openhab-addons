@@ -150,6 +150,12 @@ public class HomematicThingHandler extends BaseThingHandler {
         if (updateDynamicChannelList(device, thingChannels)) {
             updateThing(editThing().withChannels(thingChannels).build());
         }
+
+        thingChannels.forEach(channel -> {
+            if (isLinked(channel.getUID())) {
+                channelLinked(channel.getUID());
+            }
+        });
     }
 
     /**

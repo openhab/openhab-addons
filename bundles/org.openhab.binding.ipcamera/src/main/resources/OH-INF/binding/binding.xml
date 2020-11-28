@@ -4,6 +4,5 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>IpCamera Binding</name>
-	<description>This binding helps you to use IP Cameras in Openhab 2.</description>
-	<author>Matthew Skinner</author>
+	<description>This binding interfaces IP cameras of various vendors via open protocols.</description>
 </binding:binding>

@@ -5,5 +5,4 @@
 
 	<name>Caddx Security Binding</name>
 	<description>Binding for Caddx security system with RS232 serial interface.</description>
-	<author>Georgios Moutsos</author>
 </binding:binding>

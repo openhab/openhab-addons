@@ -5,6 +5,5 @@
 
 	<name>LinuxInput Binding</name>
 	<description>This is the binding for LinuxInput.</description>
-	<author>Thomas Weißschuh</author>
 
 </binding:binding>

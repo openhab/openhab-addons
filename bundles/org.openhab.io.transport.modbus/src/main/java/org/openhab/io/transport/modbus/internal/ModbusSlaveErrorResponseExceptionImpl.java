@@ -13,6 +13,7 @@
 package org.openhab.io.transport.modbus.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
 
 import net.wimpi.modbus.ModbusSlaveException;
@@ -43,7 +44,7 @@ public class ModbusSlaveErrorResponseExceptionImpl extends ModbusSlaveErrorRespo
     }
 
     @Override
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return String.format("Slave responsed with error=%d", type);
     }
 

@@ -54,7 +54,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return stateNames;
     }
 
-    private String url = "";
+    protected String url = "";
 
     @Override
     public void initialize() {
@@ -124,14 +124,15 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     protected void sendCommand(String cmd, String param) {
         SomfyTahomaBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
-            handler.sendCommand(url, cmd, param);
+            handler.sendCommand(url, cmd, param, EXEC_URL + "apply");
         }
     }
 
     protected void refresh(String channel) {
         SomfyTahomaBridgeHandler handler = getBridgeHandler();
-        if (handler != null && stateNames.containsKey(channel)) {
-            handler.refresh(url, stateNames.get(channel));
+        String stateName = stateNames.get(channel);
+        if (handler != null && stateName != null) {
+            handler.refresh(url, stateName);
         }
     }
 

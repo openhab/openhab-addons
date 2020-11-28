@@ -10,7 +10,25 @@ The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ([AVM Hom
 
 FRITZ!Boxes (thing type `fritzbox`) are supported as bridges and they offer channels for call monitoring.
 To activate the call monitor interface on a FRITZ!Box, you need to dial once `#96*5*` on a connected telephone.
+You should hear a short audio signal as confirmation.
+This procedure opens TCP/IP port 1012 on your FRITZ!Box.
 (It can be deactivated again by dialing `#96*4*`.)
+You can test if everything is working with the Telnet program from your openHAB server:
+
+```
+telnet fritz.box 1012
+```
+
+If you see an output like this:
+
+```
+Trying 192.168.178.1...
+Connected to fritz.box.
+Escape character is '^]'.
+```
+
+then it successfully connected to the call monitor.
+If not, please make sure that the target openHAB system does not block the port on its firewall.
 
 Additionally, they serve as a bridge for accessing other AHA devices.
 For AHA functionality, the router has to run at least on firmware FRITZ!OS 6.00 and it has to support the "Smart Home" service.
@@ -61,11 +79,11 @@ Beside four customizable buttons the FRITZ!DECT 440 supports temperature reading
 
 The following sensors have been successfully tested using FRITZ!OS 7 for FRITZ!Box 7490 / 7590:
 
-- [SmartHome Tür-/Fensterkontakt (optisch)](https://www.smarthome.de/geraete/eurotronic-smarthome-tuer-fensterkontakt-optisch) - an optical door/window contact
-- [SmartHome Tür-/Fensterkontakt (magnetisch)](https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-magnetisch-weiss) - a magnetic door/window contact
-- [SmartHome Bewegungsmelder](https://www.smarthome.de/geraete/telekom-smarthome-bewegungsmelder-innen) - a motion sensor
-- [SmartHome Rauchmelder](https://www.smarthome.de/geraete/smarthome-rauchmelder-weiss) - a smoke detector
-- [SmartHome Wandtaster](https://www.smarthome.de/geraete/telekom-smarthome-wandtaster) - a switch with two buttons
+- [SmartHome Tür-/Fensterkontakt (optisch)](https://www.smarthome.de/geraete/eurotronic-smarthome-tuer-fensterkontakt-optisch) - an optical door/window contact (thing type `HAN_FUN_CONTACT`)
+- [SmartHome Tür-/Fensterkontakt (magnetisch)](https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-magnetisch-weiss) - a magnetic door/window contact (thing type `HAN_FUN_CONTACT`)
+- [SmartHome Bewegungsmelder](https://www.smarthome.de/geraete/telekom-smarthome-bewegungsmelder-innen) - a motion sensor (thing type `HAN_FUN_CONTACT`)
+- [SmartHome Rauchmelder](https://www.smarthome.de/geraete/smarthome-rauchmelder-weiss) - a smoke detector (thing type `HAN_FUN_CONTACT`)
+- [SmartHome Wandtaster](https://www.smarthome.de/geraete/telekom-smarthome-wandtaster) - a switch with two buttons (thing type `HAN_FUN_SWITCH`)
 
 The use of other Sensors should be possible, if these are compatible with DECT-ULE / HAN-FUN standards.
 

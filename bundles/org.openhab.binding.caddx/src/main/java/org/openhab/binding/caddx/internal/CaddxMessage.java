@@ -169,8 +169,14 @@ public class CaddxMessage {
         switch (caddxMessageType) {
             case ZONE_STATUS_REQUEST:
             case ZONE_STATUS_MESSAGE:
+                String zone;
+                try {
+                    zone = "" + (Integer.parseInt(getPropertyById("zone_number")) + 1);
+                } catch (NumberFormatException e) {
+                    zone = "";
+                }
                 sb.append(" [Zone: ");
-                sb.append(getPropertyById("zone_number"));
+                sb.append(zone);
                 sb.append("]");
                 break;
             case LOG_EVENT_REQUEST:
@@ -181,8 +187,14 @@ public class CaddxMessage {
                 break;
             case PARTITION_STATUS_REQUEST:
             case PARTITION_STATUS_MESSAGE:
+                String partition;
+                try {
+                    partition = "" + (Integer.parseInt(getPropertyById("partition_number")) + 1);
+                } catch (NumberFormatException e) {
+                    partition = "";
+                }
                 sb.append(" [Partition: ");
-                sb.append(getPropertyById("partition_number"));
+                sb.append(partition);
                 sb.append("]");
                 break;
             default:
@@ -196,7 +208,7 @@ public class CaddxMessage {
             logger.debug("Message does not contain property [{}]", property);
             return "";
         }
-        return propertyMap.get(property);
+        return propertyMap.getOrDefault(property, "");
     }
 
     public String getPropertyById(String id) {
@@ -204,7 +216,7 @@ public class CaddxMessage {
             logger.debug("Message does not contain id [{}]", id);
             return "";
         }
-        return idMap.get(id);
+        return idMap.getOrDefault(id, "");
     }
 
     public int @Nullable [] getReplyMessageNumbers() {

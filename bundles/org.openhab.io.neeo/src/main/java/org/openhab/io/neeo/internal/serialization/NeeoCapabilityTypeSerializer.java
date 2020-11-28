@@ -13,7 +13,6 @@
 package org.openhab.io.neeo.internal.serialization;
 
 import java.lang.reflect.Type;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,12 +36,8 @@ import com.google.gson.JsonSerializer;
 public class NeeoCapabilityTypeSerializer
         implements JsonSerializer<NeeoCapabilityType>, JsonDeserializer<NeeoCapabilityType> {
     @Override
-    public NeeoCapabilityType deserialize(@Nullable JsonElement elm, @Nullable Type type,
-            @Nullable JsonDeserializationContext jsonContext) throws JsonParseException {
-        Objects.requireNonNull(elm, "elm cannot be null");
-        Objects.requireNonNull(type, "type cannot be null");
-        Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
-
+    public @Nullable NeeoCapabilityType deserialize(JsonElement elm, Type type, JsonDeserializationContext jsonContext)
+            throws JsonParseException {
         if (elm.isJsonNull()) {
             throw new JsonParseException("NeeoCapabilityType could not be parsed from null");
         }
@@ -51,12 +46,7 @@ public class NeeoCapabilityTypeSerializer
     }
 
     @Override
-    public JsonElement serialize(NeeoCapabilityType nct, @Nullable Type type,
-            @Nullable JsonSerializationContext jsonContext) {
-        Objects.requireNonNull(nct, "nct cannot be null");
-        Objects.requireNonNull(type, "type cannot be null");
-        Objects.requireNonNull(jsonContext, "jsonContext cannot be null");
-
+    public JsonElement serialize(NeeoCapabilityType nct, Type type, JsonSerializationContext jsonContext) {
         return new JsonPrimitive(nct.toString());
     }
 }

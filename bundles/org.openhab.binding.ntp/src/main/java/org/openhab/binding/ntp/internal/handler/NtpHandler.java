@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -122,8 +123,7 @@ public class NtpHandler extends BaseThingHandler {
             logger.debug("{} using default timezone '{}', because configuration setting '{}' is null.",
                     getThing().getUID(), timeZoneProvider.getTimeZone(), PROPERTY_TIMEZONE);
         }
-        ZoneId zoneId = timeZoneId != null ? timeZoneId : timeZoneProvider.getTimeZone();
-
+        ZoneId zoneId = Objects.requireNonNullElse(timeZoneId, timeZoneProvider.getTimeZone());
         Channel stringChannel = getThing().getChannel(CHANNEL_STRING);
         if (stringChannel != null) {
             String dateTimeFormatString = stringChannel.getConfiguration()
@@ -183,7 +183,7 @@ public class NtpHandler extends BaseThingHandler {
             refreshNtpCount--;
         }
 
-        ZoneId zoneId = timeZoneId != null ? timeZoneId : timeZoneProvider.getTimeZone();
+        ZoneId zoneId = Objects.requireNonNullElse(timeZoneId, timeZoneProvider.getTimeZone());
         ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(networkTimeInMillis), zoneId);
         updateState(CHANNEL_DATE_TIME, new DateTimeType(zoned));
         dateTimeFormat.withZone(zoneId);
@@ -208,7 +208,7 @@ public class NtpHandler extends BaseThingHandler {
             timeInfo.computeDetails();
 
             long serverMillis = timeInfo.getReturnTime() + timeInfo.getOffset();
-            ZoneId zoneId = timeZoneId != null ? timeZoneId : timeZoneProvider.getTimeZone();
+            ZoneId zoneId = Objects.requireNonNullElse(timeZoneId, timeZoneProvider.getTimeZone());
             ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(serverMillis), zoneId);
             logger.debug("{} Got time update from host '{}': {}.", getThing().getUID(), hostname,
                     zoned.format(DATE_FORMATTER_WITH_TZ));

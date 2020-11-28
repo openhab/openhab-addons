@@ -49,9 +49,9 @@ import java.util.stream.Stream;
 
 import javax.measure.quantity.Temperature;
 
-import org.openhab.binding.max.actions.MaxCubeActions;
 import org.openhab.binding.max.internal.MaxBackupUtils;
 import org.openhab.binding.max.internal.MaxBindingConstants;
+import org.openhab.binding.max.internal.actions.MaxCubeActions;
 import org.openhab.binding.max.internal.command.ACommand;
 import org.openhab.binding.max.internal.command.CCommand;
 import org.openhab.binding.max.internal.command.CubeCommand;

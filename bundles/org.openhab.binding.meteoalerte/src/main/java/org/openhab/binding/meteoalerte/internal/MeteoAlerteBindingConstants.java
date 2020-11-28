@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.meteoalerte.internal;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -33,6 +30,7 @@ public class MeteoAlerteBindingConstants {
     public static final ThingTypeUID THING_TYPE_METEO_ALERT = new ThingTypeUID(BINDING_ID, "department");
 
     // List of all Channel id's
+    public static final String WAVE = "vague-submersion";
     public static final String AVALANCHE = "avalanches";
     public static final String HEAT = "canicule";
     public static final String FREEZE = "grand-froid";
@@ -41,16 +39,7 @@ public class MeteoAlerteBindingConstants {
     public static final String STORM = "orage";
     public static final String RAIN = "pluie-inondation";
     public static final String WIND = "vent";
-    public static final String WIND_ICON = "vent-icon";
-    public static final String RAIN_ICON = "pluie-inondation-icon";
-    public static final String STORM_ICON = "orage-icon";
-    public static final String FLOOD_ICON = "inondation-icon";
-    public static final String SNOW_ICON = "neige-icon";
-    public static final String HEAT_ICON = "canicule-icon";
-    public static final String FREEZE_ICON = "grand-froid-icon";
-    public static final String AVALANCHE_ICON = "avalanches-icon";
     public static final String OBSERVATION_TIME = "observation-time";
+    public static final String END_TIME = "end-time";
     public static final String COMMENT = "comment";
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_METEO_ALERT);
 }

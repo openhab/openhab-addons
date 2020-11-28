@@ -5,6 +5,5 @@
 
 	<name>Miele Binding</name>
 	<description>This is the binding for Miele@home appliances</description>
-	<author>Karel Goderis</author>
 
 </binding:binding>

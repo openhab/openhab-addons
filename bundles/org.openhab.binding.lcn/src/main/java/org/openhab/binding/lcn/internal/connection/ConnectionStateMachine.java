@@ -75,7 +75,8 @@ public class ConnectionStateMachine extends AbstractStateMachine<ConnectionState
     public void handleConnectionFailed(@Nullable Throwable e) {
         if (!(state instanceof ConnectionStateShutdown)) {
             if (e != null) {
-                connection.getCallback().onOffline(e.getMessage());
+                String message = e.getMessage();
+                connection.getCallback().onOffline(message != null ? message : "");
             } else {
                 connection.getCallback().onOffline("");
             }

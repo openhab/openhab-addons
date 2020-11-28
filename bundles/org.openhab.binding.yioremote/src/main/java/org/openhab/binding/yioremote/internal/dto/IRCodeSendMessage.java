@@ -51,11 +51,6 @@ public class IRCodeSendMessage {
     }
 
     public String getIRcodeSendMessageString() {
-        JsonObject irCodeSendMessage = new JsonObject();
-        irCodeSendMessage.addProperty("type", type);
-        irCodeSendMessage.addProperty("command", command);
-        irCodeSendMessage.addProperty("code", ircode.getCode());
-        irCodeSendMessage.addProperty("format", ircode.getFormat());
-        return irCodeSendMessage.toString();
+        return getIRcodeSendMessageJsonObject().toString();
     }
 }

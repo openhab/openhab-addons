@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
@@ -121,7 +120,8 @@ public class HandlerColorTemperatureController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            SmartHomeCapability[] capabilties, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(COLOR_TEMPERATURE_IN_KELVIN.channelId)) {
             // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
             if (containsCapabilityProperty(capabilties, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
@@ -141,8 +141,8 @@ public class HandlerColorTemperatureController extends HandlerBase {
         if (channelId.equals(COLOR_TEMPERATURE_NAME.channelId)) {
             if (containsCapabilityProperty(capabilties, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
                 if (command instanceof StringType) {
-                    String colorTemperatureName = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(colorTemperatureName)) {
+                    String colorTemperatureName = command.toFullString();
+                    if (!colorTemperatureName.isEmpty()) {
                         lastColorName = colorTemperatureName;
                         connection.smartHomeCommand(entityId, "setColorTemperature", "colorTemperatureName",
                                 colorTemperatureName);

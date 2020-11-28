@@ -102,7 +102,7 @@ public class BAE091xSensorThingHandler extends OwBaseThingHandler {
         BAE091xHandlerConfiguration configuration = getConfig().as(BAE091xHandlerConfiguration.class);
 
         Set<OwChannelConfig> wantedChannel = new HashSet<>();
-        wantedChannel.addAll(SENSOR_TYPE_CHANNEL_MAP.get(sensorType));
+        wantedChannel.addAll(SENSOR_TYPE_CHANNEL_MAP.getOrDefault(sensorType, Set.of()));
 
         // Pin1:
         switch (configuration.pin1) {

@@ -24,7 +24,6 @@ import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
@@ -87,9 +86,9 @@ public class ModbusLibraryWrapper {
     }
 
     private static ModbusRegisterArray modbusRegisterArrayFromInputRegisters(InputRegister[] inputRegisters) {
-        ModbusRegister[] registers = new ModbusRegister[inputRegisters.length];
+        int[] registers = new int[inputRegisters.length];
         for (int i = 0; i < inputRegisters.length; i++) {
-            registers[i] = new ModbusRegister(inputRegisters[i].getValue());
+            registers[i] = inputRegisters[i].getValue();
         }
         return new ModbusRegisterArray(registers);
     }
@@ -270,7 +269,7 @@ public class ModbusLibraryWrapper {
      * @return
      */
     public static Register[] convertRegisters(ModbusRegisterArray arr) {
-        return IntStream.range(0, arr.size()).mapToObj(i -> new SimpleInputRegister(arr.getRegister(i).getValue()))
+        return IntStream.range(0, arr.size()).mapToObj(i -> new SimpleInputRegister(arr.getRegister(i)))
                 .collect(Collectors.toList()).toArray(new Register[0]);
     }
 

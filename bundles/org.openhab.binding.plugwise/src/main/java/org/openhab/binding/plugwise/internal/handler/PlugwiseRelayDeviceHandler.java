@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.plugwise.internal.handler;
 
-import static java.util.stream.Collectors.*;
 import static org.openhab.binding.plugwise.internal.PlugwiseBindingConstants.*;
 import static org.openhab.core.thing.ThingStatus.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -222,10 +219,8 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
         }
     };
 
-    private final List<PlugwiseDeviceTask> recurringTasks = Stream
-            .of(clockUpdateTask, currentPowerUpdateTask, energyUpdateTask, informationUpdateTask,
-                    realTimeClockUpdateTask, setClockTask)
-            .collect(collectingAndThen(toList(), Collections::unmodifiableList));
+    private final List<PlugwiseDeviceTask> recurringTasks = List.of(clockUpdateTask, currentPowerUpdateTask,
+            energyUpdateTask, informationUpdateTask, realTimeClockUpdateTask, setClockTask);
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseRelayDeviceHandler.class);
     private final DeviceType deviceType;

@@ -96,7 +96,7 @@ Basic data like the names of all LCN modules in the bus, can be read out by open
 If not all LCN modules get listed on the first run, click on the refresh button to start another scan.
 
 When adding a module by discovery, the new *Thing*'s UID will be a combination of segment and module id using the following format:
-*S<segmentId>M<moduleId>* where *segmentId* and *moduleId* are formatted as three-digit numbers with leading zeros.
+`S<segmentId>M<moduleId>` where `segmentId` and `moduleId` are formatted as three-digit numbers with leading zeros.
 
 ### Discover PCK Gateways
 
@@ -130,7 +130,7 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 |---------------------------------|----------------------------------|------------------------|------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | Dimmer Output Control Single    | Ausgang                          | output                 | 1-4  | Dimmer, Switch                 | Sets the dimming value of an output with a given ramp.                                                                        |
 | Relay                           | Relais                           | relay                  | 1-8  | Switch                         | Controls a relay and visualizes its state.                                                                                    |
-| Visualize Binary Sensor         | Binärsensor anzeigen             | binarysensor           | 1-8  | Contact                        | Visualizes the state of a binary sensor.                                                                                      |
+| Visualize Binary Sensor         | Binärsensor anzeigen             | binarysensor           | 1-8  | Contact                        | Visualizes the state of a binary sensor (special channel mapping for some devices).                                                                                      |
 | LED Control                     | LED-Steuerung                    | led                    | 1-12 | Text (ON, OFF, BLINK, FLICKER) | Controls an LED and visualizes its current state.                                                                             |
 | Visualize Logic Operations      | Logik Funktion anzeigen          | logic                  | 1-4  | Text (NOT, OR, AND)            | Visualizes the result of the logic operation.                                                                                 |
 | Motor/Shutter on Dimmer Outputs | Motor/Rollladen an Ausgängen     | rollershutteroutput    | 1-4  | Rollershutter                  | Control roller shutters on dimmer outputs                                                                                     |
@@ -423,7 +423,21 @@ LEDs do not support the *OnOffCommand* and respectively the *Switch* Item type, 
 
 ## Full Example
 
-Config .items
+Config `.things`
+
+```
+Bridge lcn:pckGateway:myPCHK [ hostname="192.168.123.123", port=4114, username="myUser", password="myPassword", mode="native200" ] {
+	Thing module M99 "M99 MyModule" [ moduleId=99, segmentId=0 ] {
+	Channels: 
+        Rollershutter : rollershutterrelay#1 "My twisted rollershutter relay" [ invertUpDown = true ]
+		Contact : binarysensor#6 [ invertState=true ]
+		Number  : rvarsetpoint#1 [ unit="temperature" ]
+		Number  : variable#3     [ unit="temperature" ]
+	}
+}
+```
+
+Config `.items`
 
 ```
 // Dimmer Outputs
@@ -463,7 +477,7 @@ String M10_Logic2 {channel="lcn:module:b827ebfea4bb:S000M010:logic#2"[profile="t
 // OR=Some windows are open
 // AND=All windows are open
 
-// Binary Sensors
+// Binary Sensors (Channels 1-3 of LCN-B3I are mapped to BinarySensor6, BinarySensor7, BinarySensor8)
 Contact M10_BinarySensor1 {channel="lcn:module:b827ebfea4bb:S000M010:binarysensor#1"}
 
 // Variables
@@ -496,7 +510,7 @@ Switch M10_KeyLockA1 {channel="lcn:module:b827ebfea4bb:S000M010:keylocktablea#1"
 Switch M10_KeyLockD5 {channel="lcn:module:b827ebfea4bb:S000M010:keylocktabled#5"}
 ```
 
-Config .sitemap
+Config `.sitemap`
 
 ```
 sitemap lcn label="My home automation" {
@@ -535,7 +549,7 @@ sitemap lcn label="My home automation" {
         Default item=M10_Logic1 label="Logic Operation 1"
         Default item=M10_Logic2 label="Logic Operation 2"
         
-        // Binary Sensors
+        // Binary Sensors (Channels 1-3 of LCN-B3I are mapped to BinarySensor6, BinarySensor7, BinarySensor8)
         Default item=M10_BinarySensor1 label="Binary Sensor 1" 
         
         // Variables

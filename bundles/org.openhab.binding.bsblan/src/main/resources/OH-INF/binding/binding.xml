@@ -5,6 +5,5 @@
 
 	<name>BSB-LAN Binding</name>
 	<description>Binding for BSB-LAN Gateway.</description>
-	<author>Peter Schraffl</author>
 
 </binding:binding>

@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.neeo.internal;
 
-import java.util.Objects;
 import java.util.concurrent.Future;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.internal.models.NeeoDevices;
@@ -104,8 +102,7 @@ public class NeeoUtil {
      * @throws IllegalArgumentException if value is an empty string
      */
     public static void requireNotEmpty(@Nullable String value, String msg) {
-        Objects.requireNonNull(value, msg);
-        if (StringUtils.isEmpty(value)) {
+        if (value == null || value.isEmpty()) {
             throw new IllegalArgumentException(msg);
         }
     }

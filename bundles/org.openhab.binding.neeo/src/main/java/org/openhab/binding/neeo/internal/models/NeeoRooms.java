@@ -15,7 +15,6 @@ package org.openhab.binding.neeo.internal.models;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -58,7 +57,7 @@ public class NeeoRooms {
      */
     NeeoRoom getRoom(String key) {
         for (NeeoRoom room : getRooms()) {
-            if (StringUtils.equalsIgnoreCase(key, room.getKey())) {
+            if (key.equalsIgnoreCase(room.getKey())) {
                 return room;
             }
         }

@@ -91,4 +91,14 @@ public interface BluetoothDiscoveryParticipant {
             BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
         // do nothing by default
     }
+
+    /**
+     * Overriding this method allows discovery participants to dictate the order in which they should be evaluated
+     * relative to other discovery participants. Participants with a lower order value are evaluated first.
+     *
+     * @return the order of this participant, default 0
+     */
+    public default int order() {
+        return 0;
+    }
 }

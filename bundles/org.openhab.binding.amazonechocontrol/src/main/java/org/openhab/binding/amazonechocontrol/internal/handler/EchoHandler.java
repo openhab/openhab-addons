@@ -20,17 +20,12 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
@@ -96,7 +91,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private Gson gson;
     private @Nullable Device device;
@@ -376,7 +370,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     }
                 }
                 if (volume != null) {
-                    if (StringUtils.equals(device.deviceFamily, "WHA")) {
+                    if ("WHA".equals(device.deviceFamily)) {
                         connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + volume
                                 + ",\"contentFocusClientId\":\"Default\"}");
                     } else {
@@ -409,8 +403,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (channelId.equals(CHANNEL_MUSIC_PROVIDER_ID)) {
                 if (command instanceof StringType) {
                     waitForUpdate = 0;
-                    String musicProviderId = ((StringType) command).toFullString();
-                    if (!StringUtils.equals(musicProviderId, this.musicProviderId)) {
+                    String musicProviderId = command.toFullString();
+                    if (!musicProviderId.equals(this.musicProviderId)) {
                         this.musicProviderId = musicProviderId;
                         if (this.isPlaying) {
                             connection.playMusicVoiceCommand(device, this.musicProviderId, "!");
@@ -421,7 +415,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             if (channelId.equals(CHANNEL_PLAY_MUSIC_VOICE_COMMAND)) {
                 if (command instanceof StringType) {
-                    String voiceCommand = ((StringType) command).toFullString();
+                    String voiceCommand = command.toFullString();
                     if (!this.musicProviderId.isEmpty()) {
                         connection.playMusicVoiceCommand(device, this.musicProviderId, voiceCommand);
                         waitForUpdate = 3000;
@@ -447,21 +441,22 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     waitForUpdate = 4000;
                     String bluetoothId = lastKnownBluetoothMAC;
                     BluetoothState state = bluetoothState;
-                    if (state != null && (StringUtils.isEmpty(bluetoothId))) {
+                    if (state != null && (bluetoothId == null || bluetoothId.isEmpty())) {
                         PairedDevice[] pairedDeviceList = state.pairedDeviceList;
                         if (pairedDeviceList != null) {
                             for (PairedDevice paired : pairedDeviceList) {
                                 if (paired == null) {
                                     continue;
                                 }
-                                if (StringUtils.isNotEmpty(paired.address)) {
-                                    lastKnownBluetoothMAC = paired.address;
+                                String pairedAddress = paired.address;
+                                if (pairedAddress != null && !pairedAddress.isEmpty()) {
+                                    lastKnownBluetoothMAC = pairedAddress;
                                     break;
                                 }
                             }
                         }
                     }
-                    if (StringUtils.isNotEmpty(lastKnownBluetoothMAC)) {
+                    if (lastKnownBluetoothMAC != null && !lastKnownBluetoothMAC.isEmpty()) {
                         connection.bluetooth(device, lastKnownBluetoothMAC);
                     }
                 } else if (command == OnOffType.OFF) {
@@ -474,8 +469,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // amazon music commands
             if (channelId.equals(CHANNEL_AMAZON_MUSIC_TRACK_ID)) {
                 if (command instanceof StringType) {
-                    String trackId = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(trackId)) {
+                    String trackId = command.toFullString();
+                    if (!trackId.isEmpty()) {
                         waitForUpdate = 3000;
                     }
                     connection.playAmazonMusicTrack(device, trackId);
@@ -483,8 +478,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             if (channelId.equals(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID)) {
                 if (command instanceof StringType) {
-                    String playListId = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(playListId)) {
+                    String playListId = command.toFullString();
+                    if (!playListId.isEmpty()) {
                         waitForUpdate = 3000;
                     }
                     connection.playAmazonMusicPlayList(device, playListId);
@@ -493,7 +488,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (channelId.equals(CHANNEL_AMAZON_MUSIC)) {
                 if (command == OnOffType.ON) {
                     String lastKnownAmazonMusicId = this.lastKnownAmazonMusicId;
-                    if (StringUtils.isNotEmpty(lastKnownAmazonMusicId)) {
+                    if (lastKnownAmazonMusicId != null && !lastKnownAmazonMusicId.isEmpty()) {
                         waitForUpdate = 3000;
                     }
                     connection.playAmazonMusicTrack(device, lastKnownAmazonMusicId);
@@ -505,8 +500,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // radio commands
             if (channelId.equals(CHANNEL_RADIO_STATION_ID)) {
                 if (command instanceof StringType) {
-                    String stationId = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(stationId)) {
+                    String stationId = command.toFullString();
+                    if (!stationId.isEmpty()) {
                         waitForUpdate = 3000;
                     }
                     connection.playRadio(device, stationId);
@@ -515,7 +510,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (channelId.equals(CHANNEL_RADIO)) {
                 if (command == OnOffType.ON) {
                     String lastKnownRadioStationId = this.lastKnownRadioStationId;
-                    if (StringUtils.isNotEmpty(lastKnownRadioStationId)) {
+                    if (lastKnownRadioStationId != null && !lastKnownRadioStationId.isEmpty()) {
                         waitForUpdate = 3000;
                     }
                     connection.playRadio(device, lastKnownRadioStationId);
@@ -528,8 +523,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (channelId.equals(CHANNEL_REMIND)) {
                 if (command instanceof StringType) {
                     stopCurrentNotification();
-                    String reminder = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(reminder)) {
+                    String reminder = command.toFullString();
+                    if (!reminder.isEmpty()) {
                         waitForUpdate = 3000;
                         updateRemind = true;
                         currentNotification = connection.notification(device, "Reminder", reminder, null);
@@ -542,8 +537,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (channelId.equals(CHANNEL_PLAY_ALARM_SOUND)) {
                 if (command instanceof StringType) {
                     stopCurrentNotification();
-                    String alarmSound = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(alarmSound)) {
+                    String alarmSound = command.toFullString();
+                    if (!alarmSound.isEmpty()) {
                         waitForUpdate = 3000;
                         updateAlarm = true;
                         String[] parts = alarmSound.split(":", 2);
@@ -566,8 +561,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // routine commands
             if (channelId.equals(CHANNEL_TEXT_TO_SPEECH)) {
                 if (command instanceof StringType) {
-                    String text = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(text)) {
+                    String text = command.toFullString();
+                    if (!text.isEmpty()) {
                         waitForUpdate = 1000;
                         updateTextToSpeech = true;
                         startTextToSpeech(connection, device, text);
@@ -595,8 +590,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             if (channelId.equals(CHANNEL_LAST_VOICE_COMMAND)) {
                 if (command instanceof StringType) {
-                    String text = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(text)) {
+                    String text = command.toFullString();
+                    if (!text.isEmpty()) {
                         waitForUpdate = -1;
                         startTextToSpeech(connection, device, text);
                     }
@@ -604,18 +599,18 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             if (channelId.equals(CHANNEL_START_COMMAND)) {
                 if (command instanceof StringType) {
-                    String commandText = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(commandText)) {
+                    String commandText = command.toFullString();
+                    if (!commandText.isEmpty()) {
                         updateStartCommand = true;
                         if (commandText.startsWith(FLASH_BRIEFING_COMMAND_PREFIX)) {
                             // Handle custom flashbriefings commands
-                            String flashbriefing = commandText.substring(FLASH_BRIEFING_COMMAND_PREFIX.length());
-
-                            for (FlashBriefingProfileHandler flashBriefing : account
+                            String flashBriefingId = commandText.substring(FLASH_BRIEFING_COMMAND_PREFIX.length());
+                            for (FlashBriefingProfileHandler flashBriefingHandler : account
                                     .getFlashBriefingProfileHandlers()) {
-                                ThingUID flashBriefingId = flashBriefing.getThing().getUID();
-                                if (StringUtils.equals(flashBriefing.getThing().getUID().getId(), flashbriefing)) {
-                                    flashBriefing.handleCommand(new ChannelUID(flashBriefingId, CHANNEL_PLAY_ON_DEVICE),
+                                ThingUID flashBriefingUid = flashBriefingHandler.getThing().getUID();
+                                if (flashBriefingId.equals(flashBriefingHandler.getThing().getUID().getId())) {
+                                    flashBriefingHandler.handleCommand(
+                                            new ChannelUID(flashBriefingUid, CHANNEL_PLAY_ON_DEVICE),
                                             new StringType(device.serialNumber));
                                     break;
                                 }
@@ -626,15 +621,15 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                                 commandText = "Alexa." + commandText + ".Play";
                             }
                             waitForUpdate = 1000;
-                            connection.executeSequenceCommand(device, commandText, null);
+                            connection.executeSequenceCommand(device, commandText, Map.of());
                         }
                     }
                 }
             }
             if (channelId.equals(CHANNEL_START_ROUTINE)) {
                 if (command instanceof StringType) {
-                    String utterance = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(utterance)) {
+                    String utterance = command.toFullString();
+                    if (!utterance.isEmpty()) {
                         waitForUpdate = 1000;
                         updateRoutine = true;
                         connection.startRoutine(device, utterance);
@@ -669,7 +664,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             } else {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("handleCommand fails", e);
         }
     }
@@ -699,7 +694,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 try {
                     connection.setEqualizer(device, newEqualizerSetting);
                     return true;
-                } catch (HttpException | IOException | ConnectionException e) {
+                } catch (HttpException | IOException | ConnectionException | InterruptedException e) {
                     logger.debug("Update equalizer failed", e);
                     this.lastKnownEqualizer = null;
                 }
@@ -746,7 +741,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (currentConnection != null) {
                 try {
                     currentConnection.stopNotification(currentNotification);
-                } catch (IOException | URISyntaxException e) {
+                } catch (IOException | URISyntaxException | InterruptedException e) {
                     logger.warn("Stop notification failed", e);
                 }
             }
@@ -766,7 +761,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     }
                 }
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.warn("update notification state fails", e);
         }
         if (stopCurrentNotification) {
@@ -855,20 +850,19 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                             if (musicProviderId != null) {
                                 musicProviderId = musicProviderId.toUpperCase();
 
-                                if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
+                                if (musicProviderId.equals("AMAZON MUSIC")) {
                                     musicProviderId = "AMAZON_MUSIC";
                                 }
-                                if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
+                                if (musicProviderId.equals("CLOUD_PLAYER")) {
                                     musicProviderId = "AMAZON_MUSIC";
                                 }
-                                if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
+                                if (musicProviderId.startsWith("TUNEIN")) {
                                     musicProviderId = "TUNEIN";
                                 }
-                                if (StringUtils.startsWithIgnoreCase(musicProviderId, "iHeartRadio")) {
+                                if (musicProviderId.startsWith("IHEARTRADIO")) {
                                     musicProviderId = "I_HEART_RADIO";
                                 }
-                                if (StringUtils.containsIgnoreCase(musicProviderId, "Apple")
-                                        && StringUtils.containsIgnoreCase(musicProviderId, "Music")) {
+                                if (musicProviderId.equals("APPLE") && musicProviderId.contains("MUSIC")) {
                                     musicProviderId = "APPLE_MUSIC";
                                 }
                             }
@@ -880,13 +874,13 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (e.getCode() != 400) {
                     logger.info("getPlayer fails", e);
                 }
-            } catch (IOException | URISyntaxException e) {
+            } catch (IOException | URISyntaxException | InterruptedException e) {
                 logger.info("getPlayer fails", e);
             }
             // check playing
-            isPlaying = (playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING"));
+            isPlaying = (playerInfo != null && "PLAYING".equals(playerInfo.state));
 
-            isPaused = (playerInfo != null && StringUtils.equals(playerInfo.state, "PAUSED"));
+            isPaused = (playerInfo != null && "PAUSED".equals(playerInfo.state));
             synchronized (progressLock) {
                 Boolean showTime = null;
                 Long mediaLength = null;
@@ -919,8 +913,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             JsonMediaState mediaState = null;
             try {
-                if (StringUtils.equalsIgnoreCase(musicProviderId, "AMAZON_MUSIC")
-                        || StringUtils.equalsIgnoreCase(musicProviderId, "TUNEIN")) {
+                if ("AMAZON_MUSIC".equalsIgnoreCase(musicProviderId) || "TUNEIN".equalsIgnoreCase(musicProviderId)) {
                     mediaState = connection.getMediaState(device);
                 }
             } catch (HttpException e) {
@@ -929,7 +922,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 } else {
                     logger.info("getMediaState fails", e);
                 }
-            } catch (IOException | URISyntaxException e) {
+            } catch (IOException | URISyntaxException | InterruptedException e) {
                 logger.info("getMediaState fails", e);
             }
 
@@ -944,11 +937,14 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             String amazonMusicTrackId = "";
             String amazonMusicPlayListId = "";
             boolean amazonMusic = false;
-            if (mediaState != null && isPlaying && StringUtils.equals(mediaState.providerId, "CLOUD_PLAYER")
-                    && StringUtils.isNotEmpty(mediaState.contentId)) {
-                amazonMusicTrackId = mediaState.contentId;
-                lastKnownAmazonMusicId = amazonMusicTrackId;
-                amazonMusic = true;
+            if (mediaState != null) {
+                String contentId = mediaState.contentId;
+                if (isPlaying && "CLOUD_PLAYER".equals(mediaState.providerId) && contentId != null
+                        && !contentId.isEmpty()) {
+                    amazonMusicTrackId = contentId;
+                    lastKnownAmazonMusicId = amazonMusicTrackId;
+                    amazonMusic = true;
+                }
             }
 
             // handle bluetooth
@@ -963,34 +959,37 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                         if (paired == null) {
                             continue;
                         }
-                        if (paired.connected && paired.address != null) {
+                        String pairedAddress = paired.address;
+                        if (paired.connected && pairedAddress != null) {
                             bluetoothIsConnected = true;
-                            bluetoothMAC = paired.address;
+                            bluetoothMAC = pairedAddress;
                             bluetoothDeviceName = paired.friendlyName;
-                            if (StringUtils.isEmpty(bluetoothDeviceName)) {
-                                bluetoothDeviceName = paired.address;
+                            if (bluetoothDeviceName == null || bluetoothDeviceName.isEmpty()) {
+                                bluetoothDeviceName = pairedAddress;
                             }
                             break;
                         }
                     }
                 }
             }
-            if (StringUtils.isNotEmpty(bluetoothMAC)) {
+            if (!bluetoothMAC.isEmpty()) {
                 lastKnownBluetoothMAC = bluetoothMAC;
             }
 
             // handle radio
             boolean isRadio = false;
-            if (mediaState != null && StringUtils.isNotEmpty(mediaState.radioStationId)) {
-                lastKnownRadioStationId = mediaState.radioStationId;
-                if (StringUtils.equalsIgnoreCase(musicProviderId, "TUNEIN")) {
-                    isRadio = true;
-                }
-            }
             String radioStationId = "";
-            if (isRadio && mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING")
-                    && mediaState.radioStationId != null) {
-                radioStationId = mediaState.radioStationId;
+            if (mediaState != null) {
+                radioStationId = Objects.requireNonNullElse(mediaState.radioStationId, "");
+                if (!radioStationId.isEmpty()) {
+                    lastKnownRadioStationId = radioStationId;
+                    if ("TUNEIN".equalsIgnoreCase(musicProviderId)) {
+                        isRadio = true;
+                        if (!"PLAYING".equals(mediaState.currentState)) {
+                            radioStationId = "";
+                        }
+                    }
+                }
             }
 
             // handle title, subtitle, imageUrl
@@ -1021,13 +1020,13 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     QueueEntry entry = queueEntries[0];
                     if (entry != null) {
                         if (isRadio) {
-                            if (StringUtils.isEmpty(imageUrl) && entry.imageURL != null) {
+                            if ((imageUrl == null || imageUrl.isEmpty()) && entry.imageURL != null) {
                                 imageUrl = entry.imageURL;
                             }
-                            if (StringUtils.isEmpty(subTitle1) && entry.radioStationSlogan != null) {
+                            if ((subTitle1 == null || subTitle1.isEmpty()) && entry.radioStationSlogan != null) {
                                 subTitle1 = entry.radioStationSlogan;
                             }
-                            if (StringUtils.isEmpty(subTitle2) && entry.radioStationLocation != null) {
+                            if ((subTitle2 == null || subTitle2.isEmpty()) && entry.radioStationLocation != null) {
                                 subTitle2 = entry.radioStationLocation;
                             }
                         }
@@ -1039,9 +1038,10 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             String providerDisplayName = "";
             if (provider != null) {
                 if (provider.providerDisplayName != null) {
-                    providerDisplayName = provider.providerDisplayName;
+                    providerDisplayName = Objects.requireNonNullElse(provider.providerDisplayName, providerDisplayName);
                 }
-                if (StringUtils.isNotEmpty(provider.providerName) && StringUtils.isEmpty(providerDisplayName)) {
+                String providerName = provider.providerName;
+                if (providerName != null && !providerName.isEmpty() && providerDisplayName.isEmpty()) {
                     providerDisplayName = provider.providerName;
                 }
             }
@@ -1153,7 +1153,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 treble = equalizer.treble;
             }
             this.lastKnownEqualizer = equalizer;
-        } catch (IOException | URISyntaxException | HttpException | ConnectionException e) {
+        } catch (IOException | URISyntaxException | HttpException | ConnectionException | InterruptedException e) {
             logger.debug("Get equalizer failes", e);
             return;
         }
@@ -1204,20 +1204,22 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             return;
         }
         Description description = pushActivity.parseDescription();
-        if (StringUtils.isEmpty(description.firstUtteranceId)
-                || StringUtils.startsWithIgnoreCase(description.firstUtteranceId, "TextClient:")) {
+        String firstUtteranceId = description.firstUtteranceId;
+        if (firstUtteranceId == null || firstUtteranceId.isEmpty()
+                || firstUtteranceId.toLowerCase().startsWith("textclient:")) {
             return;
         }
-        if (StringUtils.isEmpty(description.firstStreamId)) {
+        String firstStreamId = description.firstStreamId;
+        if (firstStreamId == null || firstStreamId.isEmpty()) {
             return;
         }
         String spokenText = description.summary;
-        if (spokenText != null && StringUtils.isNotEmpty(spokenText)) {
+        if (spokenText != null && !spokenText.isEmpty()) {
             // remove wake word
             String wakeWordPrefix = this.wakeWord;
             if (wakeWordPrefix != null) {
                 wakeWordPrefix += " ";
-                if (StringUtils.startsWithIgnoreCase(spokenText, wakeWordPrefix)) {
+                if (spokenText.toLowerCase().startsWith(wakeWordPrefix.toLowerCase())) {
                     spokenText = spokenText.substring(wakeWordPrefix.length());
                 }
             }
@@ -1234,12 +1236,10 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         this.logger.debug("Handle push command {}", command);
         switch (command) {
             case "PUSH_VOLUME_CHANGE":
-                JsonCommandPayloadPushVolumeChange volumeChange = gson.fromJson(payload,
-                        JsonCommandPayloadPushVolumeChange.class);
+                JsonCommandPayloadPushVolumeChange volumeChange = Objects
+                        .requireNonNull(gson.fromJson(payload, JsonCommandPayloadPushVolumeChange.class));
                 Connection connection = this.findConnection();
-                @Nullable
                 Integer volumeSetting = volumeChange.volumeSetting;
-                @Nullable
                 Boolean muted = volumeChange.isMuted;
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));
@@ -1274,14 +1274,15 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         ZonedDateTime nextMusicAlarm = null;
         ZonedDateTime nextTimer = null;
         for (JsonNotificationResponse notification : notifications) {
-            if (StringUtils.equals(notification.deviceSerialNumber, device.serialNumber)) {
+            if (Objects.equals(notification.deviceSerialNumber, device.serialNumber)) {
                 // notification for this device
-                if (StringUtils.equals(notification.status, "ON")) {
+                if ("ON".equals(notification.status)) {
                     if ("Reminder".equals(notification.type)) {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
                         ZonedDateTime alarmTime = ZonedDateTime
                                 .parse(notification.originalDate + "T" + notification.originalTime + offset);
-                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                        String recurringPattern = notification.recurringPattern;
+                        if (recurringPattern != null && !recurringPattern.isBlank() && alarmTime.isBefore(now)) {
                             continue; // Ignore recurring entry if alarm time is before now
                         }
                         if (nextReminder == null || alarmTime.isBefore(nextReminder)) {
@@ -1297,7 +1298,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
                         ZonedDateTime alarmTime = ZonedDateTime
                                 .parse(notification.originalDate + "T" + notification.originalTime + offset);
-                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                        String recurringPattern = notification.recurringPattern;
+                        if (recurringPattern != null && !recurringPattern.isBlank() && alarmTime.isBefore(now)) {
                             continue; // Ignore recurring entry if alarm time is before now
                         }
                         if (nextAlarm == null || alarmTime.isBefore(nextAlarm)) {
@@ -1307,7 +1309,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
                         ZonedDateTime alarmTime = ZonedDateTime
                                 .parse(notification.originalDate + "T" + notification.originalTime + offset);
-                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                        String recurringPattern = notification.recurringPattern;
+                        if (recurringPattern != null && !recurringPattern.isBlank() && alarmTime.isBefore(now)) {
                             continue; // Ignore recurring entry if alarm time is before now
                         }
                         if (nextMusicAlarm == null || alarmTime.isBefore(nextMusicAlarm)) {

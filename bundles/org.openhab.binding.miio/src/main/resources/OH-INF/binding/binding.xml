@@ -4,7 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 	<name>Xiaomi Mi IO Binding</name>
 	<description>Binding for Xiaomi Mi IO devices like Mi Robot Vacuum</description>
-	<author>Marcel Verpaalen</author>
 
 	<config-description>
 		<parameter name="username" type="text">
@@ -18,7 +17,8 @@
 		</parameter>
 		<parameter name="country" type="text">
 			<label>Xiaomi server country</label>
-			<description>Xiaomi server country(s) (e.g. sg,de). Separate multiple servers with comma</description>
+			<description>Xiaomi server country(s) (e.g. sg,de). Separate multiple servers with comma. Leave empty for all. See
+				binding readme for country to server mapping</description>
 			<required>false</required>
 		</parameter>
 	</config-description>

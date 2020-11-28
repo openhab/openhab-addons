@@ -17,9 +17,25 @@
 			<channel id="batteryPower" typeId="batteryPower"/>
 			<channel id="batteryFuelCharge" typeId="batteryFuelCharge"/>
 			<channel id="batteryState" typeId="system.battery-level"/>
+			<channel id="batteryStateValue" typeId="batteryStateValue"/>
 			<channel id="gridPower" typeId="gridPower"/>
 			<channel id="gridPowerSupply" typeId="gridPowerSupply"/>
 			<channel id="gridPowerDraw" typeId="gridPowerDraw"/>
+			<channel id="gridPowerPhase1" typeId="gridPowerPhase1"/>
+			<channel id="gridPowerPhase2" typeId="gridPowerPhase2"/>
+			<channel id="gridPowerPhase3" typeId="gridPowerPhase3"/>
+			<channel id="gridCurrentPhase1" typeId="gridCurrentPhase1"/>
+			<channel id="gridCurrentPhase2" typeId="gridCurrentPhase2"/>
+			<channel id="gridCurrentPhase3" typeId="gridCurrentPhase3"/>
+			<channel id="gridVoltagePhase1" typeId="gridVoltagePhase1"/>
+			<channel id="gridVoltagePhase2" typeId="gridVoltagePhase2"/>
+			<channel id="gridVoltagePhase3" typeId="gridVoltagePhase3"/>
+			<channel id="gridFrequency" typeId="gridFrequency"/>
+			<channel id="batteryVoltage" typeId="batteryVoltage"/>
+			<channel id="liveBatCharge" typeId="liveBatCharge"/>
+			<channel id="liveBatDischarge" typeId="liveBatDischarge"/>
+			<channel id="liveGridImport" typeId="liveGridImport"/>
+			<channel id="liveGridExport" typeId="liveGridExport"/>
 		</channels>
 
 		<config-description>
@@ -82,6 +98,13 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
+	<channel-type id="batteryStateValue">
+		<item-type>Number</item-type>
+		<label>Battery State Value</label>
+		<category>Battery</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
 	<channel-type id="energyProduction">
 		<item-type>Number:Power</item-type>
 		<label>Solar Production</label>
@@ -110,4 +133,108 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
+	<channel-type id="gridPowerPhase1">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power Phase 1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridPowerPhase2">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power Phase 2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridPowerPhase3">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power Phase 3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridCurrentPhase1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Grid Current Phase 1</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridCurrentPhase2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Grid Current Phase 2</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridCurrentPhase3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Grid Current Phase 3</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridVoltagePhase1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Grid Voltage Phase 1</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridVoltagePhase2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Grid Voltage Phase 2</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridVoltagePhase3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Grid Voltage Phase 3</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="gridFrequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Grid Frequency</label>
+		<category>Frequency</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="liveBatCharge">
+		<item-type>Number:Energy</item-type>
+		<label>Live Bat Charge</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="liveBatDischarge">
+		<item-type>Number:Energy</item-type>
+		<label>Live Bat Discharge</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="liveGridImport">
+		<item-type>Number:Energy</item-type>
+		<label>Live Grid Import</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="liveGridExport">
+		<item-type>Number:Energy</item-type>
+		<label>Live Grid Export</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="batteryVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 </thing:thing-descriptions>

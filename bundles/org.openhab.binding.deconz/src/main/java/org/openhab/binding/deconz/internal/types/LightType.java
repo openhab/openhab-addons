@@ -39,6 +39,7 @@ public enum LightType {
     WINDOW_COVERING_DEVICE("Window covering device"),
     CONFIGURATION_TOOL("Configuration tool"),
     WARNING_DEVICE("Warning device"),
+    DOORLOCK("Door Lock"),
     UNKNOWN("");
 
     private static final Map<String, LightType> MAPPING = Arrays.stream(LightType.values())

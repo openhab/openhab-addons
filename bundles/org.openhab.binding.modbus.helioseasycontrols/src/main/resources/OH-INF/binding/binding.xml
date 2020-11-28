@@ -5,6 +5,5 @@
 
 	<name>HeliosEasyControls Binding</name>
 	<description>This is the binding for a Helios ventilation system with easyControls using a Modbus TCP implementation.</description>
-	<author>Bernhard Bauer</author>
 
 </binding:binding>

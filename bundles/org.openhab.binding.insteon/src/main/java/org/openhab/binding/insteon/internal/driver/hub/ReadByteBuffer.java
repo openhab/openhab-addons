@@ -102,7 +102,9 @@ public class ReadByteBuffer {
         }
 
         int b = Math.min(len, remaining());
-        System.arraycopy(buf, index, bytes, off, b);
+        if (bytes != null) {
+            System.arraycopy(buf, index, bytes, off, b);
+        }
         index += b;
         return b;
     }

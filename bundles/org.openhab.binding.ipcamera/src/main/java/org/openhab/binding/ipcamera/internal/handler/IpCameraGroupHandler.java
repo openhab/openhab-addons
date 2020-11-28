@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -326,11 +327,10 @@ public class IpCameraGroupHandler extends BaseThingHandler {
                         for (IpCameraHandler handler : cameraOrder) {
                             String channelPrefix = "ipcamera:" + handler.getThing().getThingTypeUID() + ":"
                                     + handler.getThing().getUID().getId() + ":";
-
                             handler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM), OnOffType.ON);
                         }
                     } else {
-                        // TODO: Do we turn all controls OFF or do we remember the state before we turned them all on?
+                        // Do we turn all controls OFF, or do we remember the state before we turned them all on?
                         hlsTurnedOn = false;
                     }
             }
@@ -362,9 +362,9 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     public void dispose() {
         startStreamServer(false);
         groupTracker.listOfGroupHandlers.remove(this);
-        if (pollCameraGroupJob != null) {
-            pollCameraGroupJob.cancel(true);
-            pollCameraGroupJob = null;
+        Future<?> future = pollCameraGroupJob;
+        if (future != null) {
+            future.cancel(true);
         }
         cameraOrder.clear();
     }

@@ -104,13 +104,13 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     @Activate
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 
     @Override
     @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void modified(@Nullable Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 

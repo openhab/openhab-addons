@@ -102,11 +102,17 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         }
 
         ThingBuilder builder = editThing();
+        boolean changed = false;
         for (Channel channel : createDynamicChannels()) {
             // we only want to add each channel, not replace all of them
-            builder.withChannel(channel);
+            if (getThing().getChannel(channel.getUID()) == null) {
+                builder.withChannel(channel);
+                changed = true;
+            }
         }
-        updateThing(builder.build());
+        if (changed) {
+            updateThing(builder.build());
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
     }

@@ -47,8 +47,8 @@ public class HttpRequest implements AutoCloseable {
     /**
      * Instantiates a new request
      */
-    public HttpRequest() {
-        client = ClientBuilder.newClient();
+    public HttpRequest(ClientBuilder clientBuilder) {
+        client = clientBuilder.build();
 
         if (logger.isDebugEnabled()) {
             client.register(new LoggingFilter(new Slf4LoggingAdapter(logger), true));
@@ -74,7 +74,8 @@ public class HttpRequest implements AutoCloseable {
                 content.close();
             }
         } catch (IOException | IllegalStateException | ProcessingException e) {
-            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, e.getMessage());
+            String message = e.getMessage();
+            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, message != null ? message : "");
         }
     }
 
@@ -100,7 +101,8 @@ public class HttpRequest implements AutoCloseable {
                 content.close();
             }
         } catch (IOException | IllegalStateException | ProcessingException e) {
-            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, e.getMessage());
+            String message = e.getMessage();
+            return new HttpResponse(HttpStatus.SERVICE_UNAVAILABLE_503, message != null ? message : "");
         }
     }
 

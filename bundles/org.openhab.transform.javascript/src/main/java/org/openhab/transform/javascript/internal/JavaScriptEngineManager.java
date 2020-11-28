@@ -57,9 +57,10 @@ public class JavaScriptEngineManager {
      */
     protected CompiledScript getScript(final String filename) throws TransformationException {
         synchronized (compiledScriptMap) {
-            if (compiledScriptMap.containsKey(filename)) {
+            CompiledScript compiledScript = compiledScriptMap.get(filename);
+            if (compiledScript != null) {
                 logger.debug("Loading JavaScript {} from cache.", filename);
-                return compiledScriptMap.get(filename);
+                return compiledScript;
             } else {
                 final String path = TransformationScriptWatcher.TRANSFORM_FOLDER + File.separator + filename;
                 logger.debug("Loading script {} from storage ", path);

@@ -5,6 +5,5 @@
 
 	<name>DenonMarantz Binding</name>
 	<description>Binding for controlling network enabled Denon and Marantz receivers.</description>
-	<author>Jan-Willem Veldhuis, Jeroen Idserda</author>
 
 </binding:binding>

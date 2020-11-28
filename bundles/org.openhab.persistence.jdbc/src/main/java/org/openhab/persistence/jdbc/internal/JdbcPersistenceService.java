@@ -12,8 +12,6 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -33,9 +32,9 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -49,8 +48,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
-        QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", configurationPolicy = ConfigurationPolicy.REQUIRE)
+        QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", //
+        property = Constants.SERVICE_PID + "=org.openhab.jdbc")
+@ConfigurableService(category = "persistence", label = "JDBC Persistence Service", description_uri = JdbcPersistenceService.CONFIG_URI)
 public class JdbcPersistenceService extends JdbcMapper implements QueryablePersistenceService {
+
+    protected static final String CONFIG_URI = "persistence:jdbc";
 
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
@@ -156,7 +159,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         if (!checkDBAccessability()) {
             logger.warn("JDBC::query: database not connected, query aborted for item '{}'", filter.getItemName());
-            return Collections.emptyList();
+            return List.of();
         }
 
         // Get the item name from the filter
@@ -168,7 +171,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
             item = itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e1) {
             logger.error("JDBC::query: unable to get item for itemName: '{}'. Ignore and give up!", itemName);
-            return Collections.emptyList();
+            return List.of();
         }
 
         if (item instanceof GroupItem) {
@@ -177,11 +180,11 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
             logger.debug("JDBC::query: item is instanceof GroupItem '{}'", itemName);
             if (item == null) {
                 logger.debug("JDBC::query: BaseItem of GroupItem is null. Ignore and give up!");
-                return Collections.emptyList();
+                return List.of();
             }
             if (item instanceof GroupItem) {
                 logger.debug("JDBC::query: BaseItem of GroupItem is a GroupItem too. Ignore and give up!");
-                return Collections.emptyList();
+                return List.of();
             }
         }
 
@@ -196,8 +199,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
         }
 
         long timerStart = System.currentTimeMillis();
-        List<HistoricItem> items = new ArrayList<>();
-        items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
+        List<HistoricItem> items = getHistItemFilterQuery(filter, conf.getNumberDecimalcount(), table, item);
 
         logger.debug("JDBC::query: query for {} returned {} rows in {} ms", item.getName(), items.size(),
                 System.currentTimeMillis() - timerStart);
@@ -224,6 +226,6 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
 
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
-        return Collections.emptyList();
+        return List.of(PersistenceStrategy.Globals.CHANGE);
     }
 }

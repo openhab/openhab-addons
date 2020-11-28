@@ -76,7 +76,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     // nonce is reused if authenticate is null so the NC needs to increment to allow this//
     public void processAuth(String authenticate, String httpMethod, String requestURI, boolean reSend) {
         if (authenticate.contains("Basic realm=\"")) {
-            if (ipCameraHandler.useDigestAuth == true) {
+            if (ipCameraHandler.useDigestAuth) {
                 // Possible downgrade authenticate attack avoided.
                 return;
             }
@@ -106,8 +106,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         }
 
         String stale = Helper.searchString(authenticate, "stale=\"");
-        if (stale.isEmpty()) {
-        } else if (stale.equalsIgnoreCase("true")) {
+        if (stale.equalsIgnoreCase("true")) {
             logger.debug("Camera reported stale=true which normally means the NONCE has expired.");
         }
 

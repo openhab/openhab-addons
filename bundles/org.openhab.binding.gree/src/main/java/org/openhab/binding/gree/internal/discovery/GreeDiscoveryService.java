@@ -58,8 +58,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
     @Activate
     public GreeDiscoveryService(@Reference GreeDeviceFinder deviceFinder,
             @Reference NetworkAddressService networkAddressService,
-            @Reference GreeTranslationProvider translationProvider,
-            @Nullable Map<String, @Nullable Object> configProperties) {
+            @Reference GreeTranslationProvider translationProvider, @Nullable Map<String, Object> configProperties) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SEC);
         this.messages = translationProvider;
         this.deviceFinder = deviceFinder;
@@ -70,7 +69,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
+    protected void modified(@Nullable Map<String, Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -98,7 +97,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
                 createResult(deviceFinder.getDevices());
             }
         } catch (GreeException e) {
-            logger.info("Discovery: {}", messages.get("discovery.exception", e.getMessage()));
+            logger.info("Discovery: {}", messages.get("discovery.exception", e.getMessageString()));
         } catch (SocketException | RuntimeException e) {
             logger.warn("Discovery: {}", messages.get("discovery.exception", "RuntimeException"), e);
         }

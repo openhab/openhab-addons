@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -629,11 +628,11 @@ class PrgProtocolHandler {
      * Sets the time on the PRG interface
      *
      * @param calendar a non-null calendar to set the time to
-     * @throws NullArgumentException if calendar is null
+     * @throws IllegalArgumentException if calendar is null
      */
     void setTime(Calendar calendar) {
         if (calendar == null) {
-            throw new NullArgumentException("calendar cannot be null");
+            throw new IllegalArgumentException("calendar cannot be null");
         }
         final String cmd = String.format("%1 %2$tk %2$tM %2$tm %2$te %2ty %3", CMD_SETTIME, calendar,
                 calendar.get(Calendar.DAY_OF_WEEK));

@@ -46,13 +46,15 @@ import org.openhab.binding.miio.internal.robot.StatusDTO;
 import org.openhab.binding.miio.internal.robot.StatusType;
 import org.openhab.binding.miio.internal.robot.VacuumErrorType;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -84,7 +86,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
     private static final float MAP_SCALE = 2.0f;
     private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
-    private static final String MAP_PATH = OpenHAB.getUserDataFolder() + File.separator + BINDING_ID + File.separator;
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
 
@@ -264,10 +265,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         StatusDTO statusInfo = GSON.fromJson(statusData, StatusDTO.class);
         safeUpdateState(CHANNEL_BATTERY, statusInfo.getBattery());
         if (statusInfo.getCleanArea() != null) {
-            updateState(CHANNEL_CLEAN_AREA, new DecimalType(statusInfo.getCleanArea() / 1000000.0));
+            updateState(CHANNEL_CLEAN_AREA,
+                    new QuantityType<>(statusInfo.getCleanArea() / 1000000.0, SIUnits.SQUARE_METRE));
         }
         if (statusInfo.getCleanTime() != null) {
-            updateState(CHANNEL_CLEAN_TIME, new DecimalType(TimeUnit.SECONDS.toMinutes(statusInfo.getCleanTime())));
+            updateState(CHANNEL_CLEAN_TIME,
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getCleanTime()), SmartHomeUnits.MINUTE));
         }
         safeUpdateState(CHANNEL_DND_ENABLED, statusInfo.getDndEnabled());
 
@@ -347,20 +350,20 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         int sideBrush = consumablesData.get("side_brush_work_time").getAsInt();
         int filter = consumablesData.get("filter_work_time").getAsInt();
         int sensor = consumablesData.get("sensor_dirty_time").getAsInt();
-        updateState(CHANNEL_CONSUMABLE_MAIN_TIME,
-                new DecimalType(ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH)));
+        updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
+                ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH), SmartHomeUnits.HOUR));
         updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(mainBrush, ConsumablesType.MAIN_BRUSH)));
-        updateState(CHANNEL_CONSUMABLE_SIDE_TIME,
-                new DecimalType(ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH)));
+        updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
+                ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH), SmartHomeUnits.HOUR));
         updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(sideBrush, ConsumablesType.SIDE_BRUSH)));
-        updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
-                new DecimalType(ConsumablesType.remainingHours(filter, ConsumablesType.FILTER)));
+        updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new QuantityType<>(
+                ConsumablesType.remainingHours(filter, ConsumablesType.FILTER), SmartHomeUnits.HOUR));
         updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(filter, ConsumablesType.FILTER)));
-        updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
-                new DecimalType(ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR)));
+        updateState(CHANNEL_CONSUMABLE_SENSOR_TIME, new QuantityType<>(
+                ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR), SmartHomeUnits.HOUR));
         updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(sensor, ConsumablesType.SENSOR)));
         return true;
@@ -379,8 +382,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean updateHistory(JsonArray historyData) {
         logger.trace("Cleaning history data: {}", historyData.toString());
         updateState(CHANNEL_HISTORY_TOTALTIME,
-                new DecimalType(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong())));
-        updateState(CHANNEL_HISTORY_TOTALAREA, new DecimalType(historyData.get(1).getAsDouble() / 1000000D));
+                new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), SmartHomeUnits.MINUTE));
+        updateState(CHANNEL_HISTORY_TOTALAREA,
+                new QuantityType<>(historyData.get(1).getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
         updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
         if (historyData.get(3).getAsJsonArray().size() > 0) {
             String lastClean = historyData.get(3).getAsJsonArray().get(0).getAsString();
@@ -410,8 +414,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         historyRecord.addProperty("finished", finished);
         updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(startTime));
         updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(endTime));
-        updateState(CHANNEL_HISTORY_DURATION, new DecimalType(duration));
-        updateState(CHANNEL_HISTORY_AREA, new DecimalType(area));
+        updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, SmartHomeUnits.MINUTE));
+        updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(area, SIUnits.SQUARE_METRE));
         updateState(CHANNEL_HISTORY_ERROR, new DecimalType(error));
         updateState(CHANNEL_HISTORY_FINISH, new DecimalType(finished));
         updateState(CHANNEL_HISTORY_RECORD, new StringType(historyRecord.toString()));
@@ -588,7 +592,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     RRMapDraw rrMap = RRMapDraw.loadImage(new ByteArrayInputStream(mapData));
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     if (logger.isDebugEnabled()) {
-                        final String mapPath = MAP_PATH + map + DATEFORMATTER.format(new Date()) + ".rrmap";
+                        final String mapPath = BINDING_USERDATA_PATH + File.separator + map
+                                + DATEFORMATTER.format(new Date()) + ".rrmap";
                         CloudUtil.writeBytesToFileNio(mapData, mapPath);
                         logger.debug("Mapdata saved to {}", mapPath);
                     }
