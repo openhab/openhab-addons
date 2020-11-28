@@ -13,7 +13,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Govee Hygrometer</label>
-		<description>A Govee Temperature Humidity Monitor</description>
+		<description>Govee Thermo-Hygrometer</description>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
@@ -67,7 +67,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Govee Monitoring Hygrometer</label>
-		<description>A Govee Temperature Humidity Monitor</description>
+		<description>Govee Thermo-Hygrometer w/ Warning Alarms</description>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>

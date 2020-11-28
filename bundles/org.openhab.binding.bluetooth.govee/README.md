@@ -4,16 +4,12 @@ This extension adds support for [Govee](https://www.govee.com/) Bluetooth Device
 
 ## Supported Things
 
-Only two thing types are supported by this extension at the moment. More may be added later.
+Only two thing types are supported by this extension at the moment.
 
-| Thing Type ID | Description                                     |
-|---------------|-------------------------------------------------|
-| govee_h5051   | Govee Wi-Fi Temperature Humidity Monitor        |
-| govee_h5052   | Govee Temperature Humidity Monitor              |
-| govee_h5071   | Govee Temperature Humidity Monitor              |
-| govee_h5072   | Govee Temperature Humidity Monitor              |
-| govee_h5074   | Govee Mini Temperature Humidity Monitor         |
-| govee_h5075   | Govee Temperature Humidity Monitor              |
+| Thing Type ID          | Description                               | Supported Models                                            |
+|------------------------|-------------------------------------------|-------------------------------------------------------------|
+| goveeHygrometer        | Govee Thermo-Hygrometer                   | H5051,H5071                                                 |
+| goveeHygrometerMonitor | Govee Thermo-Hygrometer w/ Warning Alarms | H5052,H5072,H5074,H5075,H5101,H5102,H5177,H5179,B5175,B5178 |
 
 ## Discovery
 
@@ -21,30 +17,47 @@ As any other Bluetooth device, Govee devices are discovered automatically by the
 
 ## Thing Configuration
 
-There is only a single configuration parameter `address`, which corresponds to the Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX").
+Govee things have the following configuration parameters:
+
+| Thing                  | Parameter               | Required | Default     | Description                                                               |
+|------------------------|-------------------------|----------|-------------|---------------------------------------------------------------------------|
+| all                    | address                 | yes      |             | The Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX")       |
+| all                    | refreshInterval         |          | 300         | How often, in seconds, the sensor data of the device should be refreshed  |
+| goveeHygrometer*       | temperatureCalibration  | no       |             | Offset to apply to temperature sensor readings                            |
+| goveeHygrometer*       | humidityCalibration     | no       |             | Offset to apply to humidity sensor readings                               |        
+| goveeHygrometerMonitor | temperatureWarningAlarm |          | false       | Enables warning alarms to be broadcast when temperature is out of range   |
+| goveeHygrometerMonitor | temperatureWarningMin   |          | 0           | The lower safe temperature threshold (only applies if alarm is enabled)   |
+| goveeHygrometerMonitor | temperatureWarningMax   |          | 0           | The upper safe temperature threshold (only applies if alarm is enabled)   |
+| goveeHygrometerMonitor | humidityWarningAlarm    |          | false       | Enables warning alarms to be broadcast when humidity is out of range      |
+| goveeHygrometerMonitor | humidityWarningMin      |          | 0           | The lower safe humidity threshold (only applies if alarm is enabled)      |
+| goveeHygrometerMonitor | humidityWarningMax      |          | 0           | The upper safe humidity threshold (only applies if alarm is enabled)      |
 
 ## Channels
 
-A Govee Bluetooth device has the following channels:
+Govee things have the following channels in addition to the default bluetooth channels:
 
-| Channel ID    | Item Type              | Description                        |
-|---------------|------------------------|------------------------------------|
-| temperature   | Number:Temperature     | The measured temperature           |
-| humidity      | Number:Dimensionless   | The measured humidity              |
-| battery       | Number:Dimensionless   | The measured battery               |
+| Thing                  | Channel ID       | Item Type              | Description                                           |
+|------------------------|------------------|------------------------|-------------------------------------------------------|
+| goveeHygrometer*       | temperature      | Number:Temperature     | The measured temperature                              |
+| goveeHygrometer*       | humidity         | Number:Dimensionless   | The measured relative humidity                        |
+| goveeHygrometer*       | battery          | Number:Dimensionless   | The measured battery percentage                       |
+| goveeHygrometerMonitor | temperatureAlarm | Switch                 | Indicates if current temperature is out of range. (1) |
+| goveeHygrometerMonitor | humidityAlarm    | Switch                 | Indicates if current humidity is out of range. (1)    |
+
+1) Only applies if warning alarms are enabled in the configuration.
 
 ## Example
 
 demo.things:
 
 ```
-bluetooth:govee_h5074:hci0:beacon  "Govee Temperature Humidity Monitor" (bluetooth:bluez:hci0) [ address="12:34:56:78:9A:BC" ]
+bluetooth:goveeHygrometer:hci0:beacon  "Govee Temperature Humidity Monitor" (bluetooth:bluez:hci0) [ address="12:34:56:78:9A:BC" ]
 ```
 
 demo.items:
 
 ```
-Number:Temperature      temperature "Room Temperature [%.1f %unit%]" { channel="bluetooth:govee_h5074:hci0:beacon:temperature" }
-Number:Dimensionless    humidity    "Humidity [%.0f %unit%]"         { channel="bluetooth:govee_h5074:hci0:beacon:humidity" }
-Number:Dimensionless    battery    "Battery [%.0f %unit%]"         { channel="bluetooth:govee_h5074:hci0:beacon:battery" }
+Number:Temperature      temperature "Room Temperature [%.1f %unit%]" { channel="bluetooth:goveeHygrometer:hci0:beacon:temperature" }
+Number:Dimensionless    humidity    "Humidity [%.0f %unit%]"         { channel="bluetooth:goveeHygrometer:hci0:beacon:humidity" }
+Number:Dimensionless    battery    "Battery [%.0f %unit%]"         { channel="bluetooth:goveeHygrometer:hci0:beacon:battery" }
 ```
