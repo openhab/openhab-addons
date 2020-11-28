@@ -19,9 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class UpnpControlServerConfiguration extends UpnpControlConfiguration {
-    public boolean filter = false;
-    public String sortCriteria = "+dc:title";
-    public boolean browseDown = true;
-    public boolean searchFromRoot = false;
+public class UpnpControlRendererConfiguration extends UpnpControlConfiguration {
+    public int notificationVolumeAdjustment = 10;
+    public int maxNotificationDuration = 15;
+    public int seekStep = 5;
 }

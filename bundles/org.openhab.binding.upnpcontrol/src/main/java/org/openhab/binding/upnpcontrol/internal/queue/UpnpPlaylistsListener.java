@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upnpcontrol.internal.config;
+package org.openhab.binding.upnpcontrol.internal.queue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Interface for updating playlists list in multiple handlers.
  *
  * @author Mark Herwege - Initial contribution
+ *
  */
 @NonNullByDefault
-public class UpnpControlServerConfiguration extends UpnpControlConfiguration {
-    public boolean filter = false;
-    public String sortCriteria = "+dc:title";
-    public boolean browseDown = true;
-    public boolean searchFromRoot = false;
+public interface UpnpPlaylistsListener {
+
+    public void playlistsListChanged();
 }
