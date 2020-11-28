@@ -463,9 +463,13 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             }
         } else if (acceptedItemType.startsWith(CoreItemFactory.NUMBER + ":")) {
             // Item type Number with dimension
-            if (checkStateType(itemName, stateType, "Quantity")) {
+            if (stateType == null || "Quantity".equals(stateType)) {
                 List<Class<? extends State>> stateTypes = Collections.singletonList(QuantityType.class);
                 channelState = TypeParser.parseState(stateTypes, state);
+            } else if ("Decimal".equals(stateType)) {
+                channelState = new DecimalType(state);
+            } else {
+                logger.debug("Unexpected value type {} for item {}", stateType, itemName);
             }
         } else {
             switch (acceptedItemType) {
