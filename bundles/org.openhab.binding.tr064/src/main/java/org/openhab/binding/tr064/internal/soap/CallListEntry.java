@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tr064.internal.dto.additions.Call;
 
 /**
- * The {@link org.openhab.binding.tr064.internal.soap.CallListEntry} is used for post processing the retrieved call
+ * The {@link CallListEntry} is used for post processing the retrieved call
  * lists
  *
  * @author Jan N. Klug - Initial contribution

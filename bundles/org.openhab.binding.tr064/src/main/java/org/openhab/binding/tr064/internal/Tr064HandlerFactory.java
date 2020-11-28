@@ -71,7 +71,7 @@ public class Tr064HandlerFactory extends BaseThingHandlerFactory {
         } catch (Exception e) {
             // catching exception is necessary due to the signature of HttpClient.start()
             logger.warn("Failed to start http client: {}", e.getMessage());
-            throw new IllegalStateException("Could not create HttpClient instance.");
+            throw new IllegalStateException("Could not create HttpClient instance.", e);
         }
     }
 

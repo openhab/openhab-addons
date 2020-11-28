@@ -13,7 +13,7 @@
 package org.openhab.binding.tr064.internal.soap;
 
 /**
- * The {@link org.openhab.binding.tr064.internal.soap.CallListType} is used for post processing the retrieved call list
+ * The {@link CallListType} is used for post processing the retrieved call list
  *
  * @author Jan N. Klug - Initial contribution
  */

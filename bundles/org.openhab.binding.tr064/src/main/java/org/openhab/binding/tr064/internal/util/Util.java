@@ -83,7 +83,7 @@ public class Util {
             return root.getValue().getChannel();
         } catch (JAXBException e) {
             LOGGER.warn("Failed to read channel definitions", e);
-            return Collections.emptyList();
+            return List.of();
         }
     }
 
@@ -306,7 +306,7 @@ public class Util {
      * @param clazz the class describing the XML file
      * @return unmarshalling result
      */
-    public static synchronized <T> @Nullable T getAndUnmarshalXML(HttpClient httpClient, String uri, Class<T> clazz) {
+    public static <T> @Nullable T getAndUnmarshalXML(HttpClient httpClient, String uri, Class<T> clazz) {
         try {
             ContentResponse contentResponse = httpClient.newRequest(uri).timeout(2, TimeUnit.SECONDS)
                     .method(HttpMethod.GET).send();
