@@ -42,7 +42,7 @@ import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeather
 import org.openhab.binding.openweathermap.internal.dto.onecall.OpenWeatherMapOneCallAPIData;
 import org.openhab.binding.openweathermap.internal.dto.onecallhist.OpenWeatherMapOneCallHistAPIData;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
-import org.openhab.binding.openweathermap.internal.utils.ByteArrayFileCache;
+import org.openhab.core.cache.ByteArrayFileCache;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.PointType;

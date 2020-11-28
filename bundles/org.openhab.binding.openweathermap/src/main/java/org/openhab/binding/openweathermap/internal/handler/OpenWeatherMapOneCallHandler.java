@@ -322,6 +322,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)
                             .toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
+                    break;
                 default:
                     // This should not happen
                     logger.warn("Unknown channel id {} in onecall current weather data", channelId);

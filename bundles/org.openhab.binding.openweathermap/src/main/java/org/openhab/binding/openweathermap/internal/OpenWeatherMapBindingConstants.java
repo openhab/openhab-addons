@@ -112,7 +112,4 @@ public class OpenWeatherMapBindingConstants {
 
     // List of all configuration
     public static final String CONFIG_FORECAST_DAYS = "forecastDays";
-
-    // relative number of days in history
-    public static final String CONFIG_HISTORY_DAYS = "historyDays";
 }

@@ -64,7 +64,7 @@ public class Daily {
     private double windGust;
     @SerializedName("weather")
     @Expose
-    private List<Weather__> weather = null;
+    private List<Weather> weather = null;
     @SerializedName("clouds")
     @Expose
     private int clouds;
@@ -172,11 +172,11 @@ public class Daily {
         this.windGust = windGust;
     }
 
-    public List<Weather__> getWeather() {
+    public List<Weather> getWeather() {
         return weather;
     }
 
-    public void setWeather(List<Weather__> weather) {
+    public void setWeather(List<Weather> weather) {
         this.weather = weather;
     }
 
