@@ -319,7 +319,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         JsonArray getPropString = new JsonArray();
         for (MiIoBasicChannel miChannel : refreshList) {
             if (!isLinked(miChannel.getChannel())) {
-                logger.info("Skip refresh of channel {} for {} as it is not linked", miChannel.getChannel(),
+                logger.debug("Skip refresh of channel {} for {} as it is not linked", miChannel.getChannel(),
                         getThing().getUID());
                 continue;
             }
