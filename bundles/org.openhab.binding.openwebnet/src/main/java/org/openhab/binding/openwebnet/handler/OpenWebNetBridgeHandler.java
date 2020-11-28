@@ -307,7 +307,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                                         Long.valueOf(System.currentTimeMillis()));
                                 gw.send(Lighting.requestStatus(baseMsg.getWhere().value()));
                                 return;
-
                             } catch (OWNException e) {
                                 logger.warn("discoverByActivation: Exception while requesting light state: {}",
                                         e.getMessage());
@@ -569,12 +568,12 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         if (where instanceof WhereZigBee) {
             str = ((WhereZigBee) where).valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
-            if (str.indexOf("#4#") > 0) { // local bus: APL#4#bus
-                // no change needed
-            } else if (str.indexOf('#') == 0) { // Thermo zone via central unit: #0 or #Z (Z=[1-99]) --> Z
-                str = str.substring(1);
-            } else if (str.indexOf('#') > 0) { // Thermo zone and actuator N: Z#N (Z=[1-99], N=[1-9]) --> Z
-                str = str.substring(0, str.indexOf('#'));
+            if (str.indexOf("#4#") == 0) { // no changes needed for local bus: APL#4#bus
+                if (str.indexOf('#') == 0) { // Thermo zone via central unit: #0 or #Z (Z=[1-99]) --> Z
+                    str = str.substring(1);
+                } else if (str.indexOf('#') > 0) { // Thermo zone and actuator N: Z#N (Z=[1-99], N=[1-9]) --> Z
+                    str = str.substring(0, str.indexOf('#'));
+                }
             }
         }
         return str.replace('#', 'h');
