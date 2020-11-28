@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tr064.internal;
+package org.openhab.binding.tr064.internal.soap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -24,6 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PostProcessingException extends Exception {
     private static final long serialVersionUID = 1L;
+
+    public PostProcessingException(String message) {
+        super(message);
+    }
 
     public PostProcessingException(String message, Throwable t) {
         super(message, t);

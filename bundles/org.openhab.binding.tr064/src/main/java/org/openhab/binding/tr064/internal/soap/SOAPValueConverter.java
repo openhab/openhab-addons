@@ -10,17 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tr064.internal;
+package org.openhab.binding.tr064.internal.soap;
 
 import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import javax.xml.soap.SOAPMessage;
 
@@ -29,14 +31,21 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.tr064.internal.config.Tr064ChannelConfig;
+import org.openhab.binding.tr064.internal.dto.additions.Call;
+import org.openhab.binding.tr064.internal.dto.additions.Root;
+import org.openhab.binding.tr064.internal.util.Util;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link SOAPValueConverter} converts SOAP values and openHAB states
@@ -189,7 +198,7 @@ public class SOAPValueConverter {
      */
     @SuppressWarnings("unused")
     private State processMissedCalls(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
-        return processCallList(state, channelConfig.getParameter(), "2");
+        return processCallList(state, channelConfig.getParameter(), CallListType.MISSED_COUNT);
     }
 
     /**
@@ -202,7 +211,7 @@ public class SOAPValueConverter {
      */
     @SuppressWarnings("unused")
     private State processInboundCalls(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
-        return processCallList(state, channelConfig.getParameter(), "1");
+        return processCallList(state, channelConfig.getParameter(), CallListType.INBOUND_COUNT);
     }
 
     /**
@@ -215,7 +224,7 @@ public class SOAPValueConverter {
      */
     @SuppressWarnings("unused")
     private State processRejectedCalls(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
-        return processCallList(state, channelConfig.getParameter(), "3");
+        return processCallList(state, channelConfig.getParameter(), CallListType.REJECTED_COUNT);
     }
 
     /**
@@ -228,7 +237,20 @@ public class SOAPValueConverter {
      */
     @SuppressWarnings("unused")
     private State processOutboundCalls(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
-        return processCallList(state, channelConfig.getParameter(), "4");
+        return processCallList(state, channelConfig.getParameter(), CallListType.OUTBOUND_COUNT);
+    }
+
+    /**
+     * post processor for JSON call list
+     *
+     * @param state the call list URL
+     * @param channelConfig channel config of the call list channel (contains day number)
+     * @return caller list in JSON format
+     * @throws PostProcessingException if call list could not be retrieved
+     */
+    @SuppressWarnings("unused")
+    private State processCallListJSON(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
+        return processCallList(state, channelConfig.getParameter(), CallListType.JSON_LIST);
     }
 
     /**
@@ -236,20 +258,30 @@ public class SOAPValueConverter {
      *
      * @param state the call list URL
      * @param days number of days to get
-     * @param type type of call (1=missed 2=inbound 3=rejected 4=outbund)
+     * @param type type of call (2=missed 1=inbound 4=rejected 3=outbund)
      * @return the quantity of calls of the given type within the given number of days
      * @throws PostProcessingException if the call list could not be retrieved
      */
-    private State processCallList(State state, @Nullable String days, String type) throws PostProcessingException {
-        try {
-            ContentResponse response = httpClient.newRequest(state.toString() + "&days=" + days)
-                    .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
-            String responseContent = response.getContentAsString();
-            int callCount = responseContent.split("<Type>" + type + "</Type>").length - 1;
-
-            return new DecimalType(callCount);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new PostProcessingException("Failed to get call list from URL " + state.toString(), e);
+    private State processCallList(State state, @Nullable String days, CallListType type)
+            throws PostProcessingException {
+        Root callListRoot = Util.getAndUnmarshalXML(httpClient, state.toString() + "&days=" + days, Root.class);
+        if (callListRoot == null) {
+            throw new PostProcessingException("Failed to get call list from URL " + state.toString());
         }
+        List<Call> calls = callListRoot.getCall();
+        switch (type) {
+            case INBOUND_COUNT:
+            case MISSED_COUNT:
+            case OUTBOUND_COUNT:
+            case REJECTED_COUNT:
+                long callCount = calls.stream().filter(call -> type.typeString().equals(call.getType())).count();
+                return new DecimalType(callCount);
+            case JSON_LIST:
+                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssX").serializeNulls().create();
+                List<CallListEntry> callListEntries = calls.stream().map(CallListEntry::new)
+                        .collect(Collectors.toList());
+                return new StringType(gson.toJson(callListEntries));
+        }
+        return UnDefType.UNDEF;
     }
 }
