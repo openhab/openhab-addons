@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upnpcontrol.internal;
+package org.openhab.binding.upnpcontrol.internal.queue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +49,10 @@ public class UpnpEntry {
     private @Nullable Integer originalTrackNumber;
 
     private boolean isContainer;
+
+    public UpnpEntry() {
+        this("", "", "", "");
+    }
 
     public UpnpEntry(String id, String refId, String parentId, String upnpClass) {
         this.id = id;

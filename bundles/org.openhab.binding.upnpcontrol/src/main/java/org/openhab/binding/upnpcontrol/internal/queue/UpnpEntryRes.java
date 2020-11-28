@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upnpcontrol.internal;
+package org.openhab.binding.upnpcontrol.internal.queue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-class UpnpEntryRes {
+public class UpnpEntryRes {
 
     private String protocolInfo;
     private @Nullable Long size;
@@ -28,11 +28,12 @@ class UpnpEntryRes {
     private String importUri;
     private String res = "";
 
-    UpnpEntryRes(String protocolInfo, @Nullable Long size, @Nullable String duration, @Nullable String importUri) {
-        this.protocolInfo = protocolInfo;
+    public UpnpEntryRes(String protocolInfo, @Nullable Long size, @Nullable String duration,
+            @Nullable String importUri) {
+        this.protocolInfo = protocolInfo.trim();
         this.size = size;
-        this.duration = (duration == null) ? "" : duration;
-        this.importUri = (importUri == null) ? "" : importUri;
+        this.duration = (duration == null) ? "" : duration.trim();
+        this.importUri = (importUri == null) ? "" : importUri.trim();
     }
 
     /**
@@ -46,7 +47,7 @@ class UpnpEntryRes {
      * @param res the res to set
      */
     public void setRes(String res) {
-        this.res = res;
+        this.res = res.trim();
     }
 
     public String getProtocolInfo() {

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upnpcontrol.internal;
+package org.openhab.binding.upnpcontrol.internal.util;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -28,6 +28,8 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntry;
+import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntryRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -45,16 +47,15 @@ public class UpnpXMLParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpnpXMLParser.class);
 
-    private static final MessageFormat METADATA_FORMAT = new MessageFormat(
-            "<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
-                    + "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" "
-                    + "xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\">"
-                    + "<item id=\"{0}\" parentID=\"{1}\" restricted=\"true\">" + "<dc:title>{2}</dc:title>"
-                    + "<upnp:class>{3}</upnp:class>" + "<upnp:album>{4}</upnp:album>"
-                    + "<upnp:albumArtURI>{5}</upnp:albumArtURI>" + "<dc:creator>{6}</dc:creator>"
-                    + "<upnp:artist>{7}</upnp:artist>" + "<dc:publisher>{8}</dc:publisher>"
-                    + "<upnp:genre>{9}</upnp:genre>" + "<upnp:originalTrackNumber>{10}</upnp:originalTrackNumber>"
-                    + "</item></DIDL-Lite>");
+    private static final String METADATA_PATTERN = "<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
+            + "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" "
+            + "xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\">"
+            + "<item id=\"{0}\" parentID=\"{1}\" restricted=\"true\"><dc:title>{2}</dc:title>"
+            + "<upnp:class>{3}</upnp:class><upnp:album>{4}</upnp:album>"
+            + "<upnp:albumArtURI>{5}</upnp:albumArtURI><dc:creator>{6}</dc:creator>"
+            + "<upnp:artist>{7}</upnp:artist><dc:publisher>{8}</dc:publisher>"
+            + "<upnp:genre>{9}</upnp:genre><upnp:originalTrackNumber>{10}</upnp:originalTrackNumber>"
+            + "</item></DIDL-Lite>";
 
     private enum Element {
         TITLE,
@@ -67,6 +68,62 @@ public class UpnpXMLParser {
         GENRE,
         TRACK_NUMBER,
         RES
+    }
+
+    public static Map<String, @Nullable String> getRenderingControlFromXML(String xml) {
+        if (xml.isEmpty()) {
+            LOGGER.debug("Could not parse Rendering Control from empty xml");
+            return Collections.emptyMap();
+        }
+        RenderingControlEventHandler handler = new RenderingControlEventHandler();
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.parse(new InputSource(new StringReader(xml)), handler);
+        } catch (IOException e) {
+            // This should never happen - we're not performing I/O!
+            LOGGER.error("Could not parse Rendering Control from string '{}'", xml);
+        } catch (SAXException | ParserConfigurationException s) {
+            LOGGER.error("Could not parse Rendering Control from string '{}'", xml);
+        }
+        return handler.getChanges();
+    }
+
+    private static class RenderingControlEventHandler extends DefaultHandler {
+
+        private final Map<String, @Nullable String> changes = new HashMap<>();
+
+        RenderingControlEventHandler() {
+            // shouldn't be used outside of this package.
+        }
+
+        @Override
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
+            if (qName == null) {
+                return;
+            }
+            switch (qName) {
+                case "Volume":
+                case "Mute":
+                case "Loudness":
+                    String channel = attributes == null ? null : attributes.getValue("channel");
+                    String val = attributes == null ? null : attributes.getValue("val");
+                    if (channel != null && val != null) {
+                        changes.put(channel + qName, val);
+                    }
+                    break;
+                default:
+                    if ((attributes != null) && (attributes.getValue("val") != null)) {
+                        changes.put(qName, attributes.getValue("val"));
+                    }
+                    break;
+            }
+        }
+
+        public Map<String, @Nullable String> getChanges() {
+            return changes;
+        }
     }
 
     public static Map<String, String> getAVTransportFromXML(String xml) {
@@ -88,12 +145,31 @@ public class UpnpXMLParser {
         return handler.getChanges();
     }
 
-    /**
-     * @param xml
-     * @return a list of Entries from the given xml string.
-     * @throws IOException
-     * @throws SAXException
-     */
+    private static class AVTransportEventHandler extends DefaultHandler {
+
+        private final Map<String, String> changes = new HashMap<String, String>();
+
+        AVTransportEventHandler() {
+            // shouldn't be used outside of this package.
+        }
+
+        @Override
+        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
+                @Nullable Attributes attributes) throws SAXException {
+            /*
+             * The events are all of the form <qName val="value"/> so we can get all
+             * the info we need from here.
+             */
+            if ((qName != null) && (attributes != null) && (attributes.getValue("val") != null)) {
+                changes.put(qName, attributes.getValue("val"));
+            }
+        }
+
+        public Map<String, String> getChanges() {
+            return changes;
+        }
+    }
+
     public static List<UpnpEntry> getEntriesFromXML(String xml) {
         if (xml.isEmpty()) {
             LOGGER.debug("Could not parse Entries from empty xml");
@@ -111,31 +187,6 @@ public class UpnpXMLParser {
             LOGGER.debug("Could not parse Entries from string '{}'", xml, s);
         }
         return handler.getEntries();
-    }
-
-    private static class AVTransportEventHandler extends DefaultHandler {
-
-        private final Map<String, String> changes = new HashMap<String, String>();
-
-        AVTransportEventHandler() {
-            // shouldn't be used outside of this package.
-        }
-
-        @Override
-        public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
-                @Nullable Attributes atts) throws SAXException {
-            /*
-             * The events are all of the form <qName val="value"/> so we can get all
-             * the info we need from here.
-             */
-            if ((qName != null) && (atts != null) && (atts.getValue("val") != null)) {
-                changes.put(qName, atts.getValue("val"));
-            }
-        }
-
-        public Map<String, String> getChanges() {
-            return changes;
-        }
     }
 
     private static class EntryHandler extends DefaultHandler {
@@ -356,7 +407,8 @@ public class UpnpXMLParser {
         String genre = StringEscapeUtils.escapeXml(entry.getGenre());
         Integer trackNumber = entry.getOriginalTrackNumber();
 
-        String metadata = METADATA_FORMAT.format(new Object[] { id, parentId, title, upnpClass, album, albumArtUri,
+        final MessageFormat messageFormat = new MessageFormat(METADATA_PATTERN);
+        String metadata = messageFormat.format(new Object[] { id, parentId, title, upnpClass, album, albumArtUri,
                 creator, artist, publisher, genre, trackNumber });
 
         return metadata;
