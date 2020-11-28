@@ -59,14 +59,15 @@ Thing Type ID: `pckGateway`
 | `mode`      | Dimmer resolution: `native50` or `native200` See below.                                                    | String  | Yes      |
 | `timeoutMs` | Period after which an LCN command is resent, when no acknowledge has been received (in ms) (default: 3500) | Integer | Yes      |
 
-> **IMPORTANT:** You need to configure the dimmer output resolution. This setting is valid for the **whole** LCN bus.<br />
-The setting is either 0-50 steps or 0-200 steps.
-It **has to be the same** as in the parameterizing software **LCN-PRO** under Options/Settings/Expert Settings.
-See the following screenshot.
+> **ATTENTION:** You must set the correct dimmer output resolution in the PCK Gateway Thing (`mode`)!
+This setting is crucial, and valid for the **whole** LCN bus.<br />
+It is either 0-50 steps or 0-200 steps.
+It has to be the same as in the parameterizing software LCN-PRO under Options/Settings/Expert Settings.<br />
+**When using a wrong dimmer output setting, dimming the outputs will result in unintended behavior!**
+
+Please see the following LCN-PRO screenshot to determine the dimmer output resolution for the LCN bus:
 
 ![LCN-PRO screenshot, showing the 50 or 200 steps for the dimmer outputs](doc/LCN-PRO_output_steps.png)
-
-When using a wrong dimmer output setting, dimming the outputs will result in unintended behavior.
 
 ### Thing: LCN Group
 
