@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ModuleTypeProvider.class, immediate = true)
+@Component(service = ModuleTypeProvider.class)
 public class NotificationActionTypeProvider implements ModuleTypeProvider {
 
     private static final ModuleType SEND_NOTIFICATION_ACTION = new ActionType(SendNotificationActionHandler.TYPE_ID,
