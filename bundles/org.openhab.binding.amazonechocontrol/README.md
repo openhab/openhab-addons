@@ -584,7 +584,7 @@ Expert:
 You can use a json formatted string to control title, sound and volume:
 
 ```php
-{ "sound": true, "speak":"<Speak>" "title": "<Title>", "body": "<Body Text>", "volume": 20}
+{ "sound": true, "speak":"<Speak>", "title": "<Title>", "body": "<Body Text>", "volume": 20}
 ```
 
 The combination of `sound=true` and `speak` in SSML syntax is not allowed.
