@@ -14,6 +14,7 @@ package org.openhab.binding.epsonprojector.internal;
 
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -80,8 +81,9 @@ public class EpsonProjectorDevice {
 
     private Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
 
-    @Nullable
-    private ScheduledExecutorService scheduler = null;
+    private @Nullable ScheduledExecutorService scheduler = null;
+    private @Nullable ScheduledFuture<?> timeoutJob;
+
     private EpsonProjectorConnector connection;
     private ExpiringCache<Integer> cachedLampHours = new ExpiringCache<>(Duration.ofMinutes(LAMP_REFRESH_WAIT_MINUTES),
             this::queryLamp);
@@ -128,7 +130,7 @@ public class EpsonProjectorDevice {
             ready = false;
             ScheduledExecutorService scheduler = this.scheduler;
             if (scheduler != null) {
-                scheduler.schedule(() -> {
+                timeoutJob = scheduler.schedule(() -> {
                     ready = true;
                 }, 10, TimeUnit.SECONDS);
             }
@@ -205,6 +207,11 @@ public class EpsonProjectorDevice {
     public void disconnect() throws EpsonProjectorException {
         connection.disconnect();
         connected = false;
+        ScheduledFuture<?> timeoutJob = this.timeoutJob;
+        if (timeoutJob != null) {
+            timeoutJob.cancel(true);
+            this.timeoutJob = null;
+        }
     }
 
     public boolean isConnected() {
