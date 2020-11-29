@@ -79,14 +79,14 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_MIIO)) {
-            return new MiIoGenericHandler(thing, miIoDatabaseWatchService);
+            return new MiIoGenericHandler(thing, miIoDatabaseWatchService, cloudConnector);
         }
         if (thingTypeUID.equals(THING_TYPE_BASIC)) {
-            return new MiIoBasicHandler(thing, miIoDatabaseWatchService, channelTypeRegistry);
+            return new MiIoBasicHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
         }
-        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService);
+        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector);
     }
 }

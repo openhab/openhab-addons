@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.miio.internal.handler;
 
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_COMMAND;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -33,8 +32,9 @@ import org.slf4j.LoggerFactory;
 public class MiIoGenericHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoGenericHandler.class);
 
-    public MiIoGenericHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService) {
-        super(thing, miIoDatabaseWatchService);
+    public MiIoGenericHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
+            CloudConnector cloudConnector) {
+        super(thing, miIoDatabaseWatchService, cloudConnector);
     }
 
     @Override
@@ -44,8 +44,8 @@ public class MiIoGenericHandler extends MiIoAbstractHandler {
             updateData();
             return;
         }
-        if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString()), command.toString());
+        if (handleCommandsChannels(channelUID, command)) {
+            return;
         }
     }
 
