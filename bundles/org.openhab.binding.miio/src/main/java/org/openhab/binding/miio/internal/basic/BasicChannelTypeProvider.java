@@ -104,6 +104,14 @@ public class BasicChannelTypeProvider implements ChannelTypeProvider {
                 channelTypeBuilder.withStateDescriptionFragment(sdf.build());
                 logger.debug("added stateDescription: {}", sdf);
             }
+            final String category = miChannel.getCategory();
+            if (category != null) {
+                channelTypeBuilder.withCategory(category);
+            }
+            final List<String> tags = miChannel.getTags();
+            if (tags != null && tags.size() > 0) {
+                channelTypeBuilder.withTags(tags);
+            }
             channelTypes.add(channelTypeBuilder.build());
         } catch (Exception e) {
             logger.warn("Failed creating channelType {}: {}", channelTypeUID, e.getMessage());

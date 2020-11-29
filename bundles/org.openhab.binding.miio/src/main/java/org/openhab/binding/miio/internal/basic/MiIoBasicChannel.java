@@ -74,6 +74,12 @@ public class MiIoBasicChannel {
     @SerializedName("actions")
     @Expose
     private @Nullable List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
+    @SerializedName("category")
+    @Expose
+    private @Nullable String category;
+    @SerializedName("tags")
+    @Expose
+    private @Nullable List<String> tags = new ArrayList<String>();
     @SerializedName("readmeComment")
     @Expose
     private @Nullable String readmeComment;
@@ -220,6 +226,24 @@ public class MiIoBasicChannel {
 
     public void setTransfortmation(String transfortmation) {
         this.transfortmation = transfortmation;
+    }
+
+    @Nullable
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    @Nullable
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public String getReadmeComment() {
