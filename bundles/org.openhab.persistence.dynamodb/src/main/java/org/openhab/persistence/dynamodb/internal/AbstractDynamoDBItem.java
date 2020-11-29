@@ -112,7 +112,6 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         public ZonedDateTime unconvert(String serialized) {
             return ZonedDateTime.parse(serialized, DATEFORMATTER);
         }
-
     }
 
     private static final ZonedDateTimeConverter zonedDateTimeConverter = new ZonedDateTimeConverter();
