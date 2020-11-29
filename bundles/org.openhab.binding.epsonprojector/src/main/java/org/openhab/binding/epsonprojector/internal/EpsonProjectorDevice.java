@@ -79,7 +79,7 @@ public class EpsonProjectorDevice {
     private static final String ON = "ON";
     private static final String ERR = "ERR";
 
-    private Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
+    private final Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
 
     private @Nullable ScheduledExecutorService scheduler = null;
     private @Nullable ScheduledFuture<?> timeoutJob;
@@ -88,16 +88,14 @@ public class EpsonProjectorDevice {
     private ExpiringCache<Integer> cachedLampHours = new ExpiringCache<>(Duration.ofMinutes(LAMP_REFRESH_WAIT_MINUTES),
             this::queryLamp);
     private boolean connected = false;
-    private boolean ready = false;
+    private boolean ready = true;
 
     public EpsonProjectorDevice(SerialPortManager serialPortManager, EpsonProjectorConfiguration config) {
         connection = new EpsonProjectorSerialConnector(serialPortManager, config.serialPort);
-        ready = true;
     }
 
     public EpsonProjectorDevice(EpsonProjectorConfiguration config) {
         connection = new EpsonProjectorTcpConnector(config.host, config.port);
-        ready = true;
     }
 
     public boolean isReady() {

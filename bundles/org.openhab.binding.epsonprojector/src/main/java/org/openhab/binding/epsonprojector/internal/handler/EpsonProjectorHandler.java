@@ -155,12 +155,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
 
             State state = queryDataFromDevice(epsonCommand);
 
-            if (state != null && this.getThing().getStatus() != ThingStatus.ONLINE) {
+            if (state != null) {
                 updateStatus(ThingStatus.ONLINE);
-            }
-
-            if (state != null && isLinked(channel.getUID())) {
-                updateState(channel.getUID(), state);
+                if (isLinked(channel.getUID())) {
+                    updateState(channel.getUID(), state);
+                }
             }
         } catch (IllegalArgumentException e) {
             logger.warn("Unknown channel {}", channel.getUID().getId());
