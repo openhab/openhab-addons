@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nikobus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="switch-module">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pc-link"/>
+		</supported-bridge-type-refs>
+
+		<label>Switch Module</label>
+		<description>Nikobus Switch module</description>
+
+		<channels>
+			<channel id="output-1" typeId="switch-output">
+				<label>Output 1</label>
+			</channel>
+			<channel id="output-2" typeId="switch-output">
+				<label>Output 2</label>
+			</channel>
+			<channel id="output-3" typeId="switch-output">
+				<label>Output 3</label>
+			</channel>
+			<channel id="output-4" typeId="switch-output">
+				<label>Output 4</label>
+			</channel>
+			<channel id="output-5" typeId="switch-output">
+				<label>Output 5</label>
+			</channel>
+			<channel id="output-6" typeId="switch-output">
+				<label>Output 6</label>
+			</channel>
+			<channel id="output-7" typeId="switch-output">
+				<label>Output 7</label>
+			</channel>
+			<channel id="output-8" typeId="switch-output">
+				<label>Output 8</label>
+			</channel>
+			<channel id="output-9" typeId="switch-output">
+				<label>Output 9</label>
+			</channel>
+			<channel id="output-10" typeId="switch-output">
+				<label>Output 10</label>
+			</channel>
+			<channel id="output-11" typeId="switch-output">
+				<label>Output 11</label>
+			</channel>
+			<channel id="output-12" typeId="switch-output">
+				<label>Output 12</label>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="module:address:config"/>
+	</thing-type>
+
+	<channel-type id="switch-output">
+		<item-type>Switch</item-type>
+		<label>Output</label>
+		<description>Switch Module's Output</description>
+	</channel-type>
+
+</thing:thing-descriptions>

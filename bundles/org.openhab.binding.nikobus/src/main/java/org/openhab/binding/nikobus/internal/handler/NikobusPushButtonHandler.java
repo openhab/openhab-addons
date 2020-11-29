@@ -15,9 +15,8 @@ package org.openhab.binding.nikobus.internal.handler;
 import static org.openhab.binding.nikobus.internal.NikobusBindingConstants.*;
 import static org.openhab.binding.nikobus.internal.protocol.SwitchModuleGroup.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -29,13 +28,16 @@ import org.openhab.binding.nikobus.internal.utils.Utils;
 import org.openhab.core.common.AbstractUID;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,9 +101,118 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         }
     }
 
+    private interface TriggerProcessor {
+        void process(long currentTimeMillis);
+    }
+
+    private abstract class AbstractTriggerProcessor<Config> implements TriggerProcessor {
+        private long lastCommandReceivedTimestamp = 0;
+        protected final ChannelUID channelUID;
+        protected final Config config;
+
+        // Nikobus push button will send a new message on bus every ~50ms so
+        // lets assume if we haven't received a new message in over 150ms that
+        // button was released and pressed again.
+        protected static final long BUTTON_RELEASED_MILIS = 150;
+
+        protected AbstractTriggerProcessor(Class<Config> configType, Channel channel) {
+            this.channelUID = channel.getUID();
+            this.config = channel.getConfiguration().as(configType);
+        }
+
+        @Override
+        public void process(long currentTimeMillis) {
+            if (Math.abs(currentTimeMillis - lastCommandReceivedTimestamp) > BUTTON_RELEASED_MILIS) {
+                reset(currentTimeMillis);
+            }
+            lastCommandReceivedTimestamp = currentTimeMillis;
+            processNext(currentTimeMillis);
+        }
+
+        abstract protected void reset(long currentTimeMillis);
+
+        abstract protected void processNext(long currentTimeMillis);
+    }
+
+    public static class TriggerButtonConfig {
+        public int threshold = 1000;
+    }
+
+    private class TriggerButton extends AbstractTriggerProcessor<TriggerButtonConfig> {
+        private long nextLongPressTimestamp = 0;
+        private @Nullable Future<?> triggerShortPressFuture;
+
+        TriggerButton(Channel channel) {
+            super(TriggerButtonConfig.class, channel);
+        }
+
+        @Override
+        protected void reset(long currentTimeMillis) {
+            nextLongPressTimestamp = currentTimeMillis + config.threshold;
+        }
+
+        @Override
+        protected void processNext(long currentTimeMillis) {
+            if (currentTimeMillis < nextLongPressTimestamp) {
+                Utils.cancel(triggerShortPressFuture);
+                triggerShortPressFuture = scheduler.schedule(
+                        () -> triggerChannel(channelUID, CommonTriggerEvents.SHORT_PRESSED), BUTTON_RELEASED_MILIS,
+                        TimeUnit.MILLISECONDS);
+            } else if (nextLongPressTimestamp != 0) {
+                Utils.cancel(triggerShortPressFuture);
+                nextLongPressTimestamp = 0;
+                triggerChannel(channelUID, CommonTriggerEvents.LONG_PRESSED);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "TriggerButton '" + channelUID + "', config: threshold = " + config.threshold;
+        }
+    }
+
+    public static class TriggerFilterConfig {
+        public @Nullable String command;
+        public int delay = 0;
+        public int period = -1;
+    }
+
+    private class TriggerFilter extends AbstractTriggerProcessor<TriggerFilterConfig> {
+        private long nextTriggerTimestamp = 0;
+
+        TriggerFilter(Channel channel) {
+            super(TriggerFilterConfig.class, channel);
+        }
+
+        @Override
+        protected void reset(long currentTimeMillis) {
+            nextTriggerTimestamp = currentTimeMillis + config.delay;
+        }
+
+        @Override
+        protected void processNext(long currentTimeMillis) {
+            if (currentTimeMillis >= nextTriggerTimestamp) {
+                nextTriggerTimestamp = (config.period < 0) ? Long.MAX_VALUE : currentTimeMillis + config.period;
+                String command = config.command;
+                if (command != null) {
+                    triggerChannel(channelUID, command);
+                } else {
+                    triggerChannel(channelUID);
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "TriggerFilter '" + channelUID + "', config: command = '" + config.command + "', delay = "
+                    + config.delay + ", period = " + config.period;
+        }
+    }
+
     private static final String END_OF_TRANSMISSION = "\r#E1";
     private final Logger logger = LoggerFactory.getLogger(NikobusPushButtonHandler.class);
-    private final List<ImpactedModule> impactedModules = Collections.synchronizedList(new ArrayList<>());
+    private final List<ImpactedModule> impactedModules = new CopyOnWriteArrayList<>();
+    private final List<TriggerProcessor> triggerProcessors = new CopyOnWriteArrayList<>();
     private @Nullable Future<?> requestUpdateFuture;
 
     public NikobusPushButtonHandler(Thing thing) {
@@ -117,6 +228,7 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         }
 
         impactedModules.clear();
+        triggerProcessors.clear();
 
         Object impactedModulesObject = getConfig().get(CONFIG_IMPACTED_MODULES);
         if (impactedModulesObject != null) {
@@ -152,6 +264,20 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
 
             logger.debug("Impacted modules for {} = {}", thing.getUID(), impactedModules);
         }
+
+        try {
+            for (Channel channel : thing.getChannels()) {
+                TriggerProcessor processor = createTriggerProcessor(channel);
+                if (processor != null) {
+                    triggerProcessors.add(processor);
+                }
+            }
+        } catch (RuntimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+
+        logger.debug("Trigger channels for {} = {}", thing.getUID(), triggerProcessors);
 
         NikobusPcLinkHandler pcLink = getPcLink();
         if (pcLink != null) {
@@ -197,6 +323,11 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
 
         updateState(CHANNEL_BUTTON, OnOffType.ON);
 
+        if (!triggerProcessors.isEmpty()) {
+            long currentTimeMillis = System.currentTimeMillis();
+            triggerProcessors.forEach(processor -> processor.process(currentTimeMillis));
+        }
+
         if (!impactedModules.isEmpty()) {
             Utils.cancel(requestUpdateFuture);
             requestUpdateFuture = scheduler.schedule(this::update, 400, TimeUnit.MILLISECONDS);
@@ -233,5 +364,18 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
     @Override
     protected String getAddress() {
         return "#N" + super.getAddress();
+    }
+
+    private @Nullable TriggerProcessor createTriggerProcessor(Channel channel) {
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        if (channelTypeUID != null) {
+            switch (channelTypeUID.getId()) {
+                case CHANNEL_TRIGGER_FILTER:
+                    return new TriggerFilter(channel);
+                case CHANNEL_TRIGGER_BUTTON:
+                    return new TriggerButton(channel);
+            }
+        }
+        return null;
     }
 }
