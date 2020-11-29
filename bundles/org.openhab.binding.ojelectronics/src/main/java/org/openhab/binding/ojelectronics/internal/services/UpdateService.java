@@ -84,8 +84,10 @@ public final class UpdateService {
                         logger.warn("updateThermostat failed {}", thermostat);
                     }
                     SimpleResponseModel responseModel = gson.fromJson(getContentAsString(), SimpleResponseModel.class);
-                    if (responseModel.errorCode != 0) {
-                        logger.warn("updateThermostat failed with errerCode {} {}", responseModel.errorCode,
+                    if (responseModel == null) {
+                        logger.warn("updateThermostat failed with empty result {}", thermostat);
+                    } else if (responseModel.errorCode != 0) {
+                        logger.warn("updateThermostat failed with errorCode {} {}", responseModel.errorCode,
                                 thermostat);
                     }
                 }

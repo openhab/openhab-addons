@@ -79,7 +79,7 @@ public class SignInService {
                 }
                 PostSignInResponseModel signInModel = gson.fromJson(getContentAsString(),
                         PostSignInResponseModel.class);
-                if (signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
+                if (signInModel == null || signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
                     unauthorized.run();
                     return;
                 }

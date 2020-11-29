@@ -68,6 +68,8 @@
 			<channel id="boostEndTime" typeId="boostEndTime"/>
 			<channel id="manualSetpoint" typeId="manualSetpoint"/>
 			<channel id="vacationEnabled" typeId="vacationEnabled"/>
+			<channel id="vacationBeginDay" typeId="vacationBeginDay"/>
+			<channel id="vacationEndDay" typeId="vacationEndDay"/>
 		</channels>
 		<properties>
 			<property name="vendor">OJ Electronics</property>
@@ -156,5 +158,13 @@
 		<item-type>Switch</item-type>
 		<label>Vacation Mode Enabled</label>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vacationBeginDay">
+		<item-type>Switch</item-type>
+		<label>Vacation Begin Day</label>
+	</channel-type>
+	<channel-type id="vacationEndDay">
+		<item-type>Switch</item-type>
+		<label>Vacation End Day</label>
 	</channel-type>
 </thing:thing-descriptions>

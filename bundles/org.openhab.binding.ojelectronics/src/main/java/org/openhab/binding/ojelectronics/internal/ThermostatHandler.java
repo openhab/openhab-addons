@@ -14,6 +14,7 @@ package org.openhab.binding.ojelectronics.internal;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Date;
@@ -244,6 +245,42 @@ public class ThermostatHandler extends BaseThingHandler {
         updateState(BindingConstants.CHANNEL_OWD5_GROUPNAME, StringType.valueOf(thermostat.groupName));
     }
 
+    private void updateVacationEnabled(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_VACATIONENABLED,
+                thermostat.online ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+    }
+
+    private void updateVacationBeginDay(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_VACATIONBEGINDAY,
+                new DateTimeType(
+                        ZonedDateTime.ofInstant(thermostat.vacationBeginDay.toInstant(), ZoneId.systemDefault())
+                                .truncatedTo(ChronoUnit.DAYS)));
+    }
+
+    private void updateVacationBeginDay(Command command) {
+        if (command instanceof DateTimeType) {
+            currentThermostat.vacationBeginDay = Date
+                    .from(((DateTimeType) command).getZonedDateTime().toInstant().truncatedTo(ChronoUnit.DAYS));
+        } else {
+            logger.warn("Unable to set value {}", command);
+        }
+    }
+
+    private void updateVacationEndDay(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_VACATIONENDDAY,
+                new DateTimeType(ZonedDateTime.ofInstant(thermostat.vacationEndDay.toInstant(), ZoneId.systemDefault())
+                        .truncatedTo(ChronoUnit.DAYS)));
+    }
+
+    private void updateVacationEndDay(Command command) {
+        if (command instanceof DateTimeType) {
+            currentThermostat.vacationEndDay = Date
+                    .from(((DateTimeType) command).getZonedDateTime().toInstant().truncatedTo(ChronoUnit.DAYS));
+        } else {
+            logger.warn("Unable to set value {}", command);
+        }
+    }
+
     private @Nullable String getRegulationMode(int regulationMode) {
         return REGULATION_MODES.get(regulationMode);
     }
@@ -286,6 +323,9 @@ public class ThermostatHandler extends BaseThingHandler {
         map.put(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME, this::updateComfortEndTime);
         map.put(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME, this::updateBoostEndTime);
         map.put(BindingConstants.CHANNEL_OWD5_MANUALSETPOINT, this::updateManualSetpoint);
+        map.put(BindingConstants.CHANNEL_OWD5_VACATIONENABLED, this::updateVacationEnabled);
+        map.put(BindingConstants.CHANNEL_OWD5_VACATIONBEGINDAY, this::updateVacationBeginDay);
+        map.put(BindingConstants.CHANNEL_OWD5_VACATIONENDDAY, this::updateVacationEndDay);
         return map;
     }
 
@@ -296,6 +336,8 @@ public class ThermostatHandler extends BaseThingHandler {
         map.put(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME, this::updateBoostEndTime);
         map.put(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME, this::updateComfortEndTime);
         map.put(BindingConstants.CHANNEL_OWD5_COMFORTSETPOINT, this::updateComfortSetpoint);
+        map.put(BindingConstants.CHANNEL_OWD5_VACATIONBEGINDAY, this::updateVacationBeginDay);
+        map.put(BindingConstants.CHANNEL_OWD5_VACATIONENDDAY, this::updateVacationEndDay);
         return map;
     }
 }
