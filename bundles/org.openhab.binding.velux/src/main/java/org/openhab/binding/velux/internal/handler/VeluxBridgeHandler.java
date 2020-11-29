@@ -796,19 +796,28 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     }
 
     /**
-     * If necessary initialise the thread factory and the task executor and return the latter
+     * If necessary initialise the task executor and return it
      *
      * @return the task executor
      */
     private ExecutorService getTaskExecutor() {
+        ExecutorService taskExecutor = this.taskExecutor;
+        if (taskExecutor == null || taskExecutor.isShutdown()) {
+            taskExecutor = this.taskExecutor = Executors.newSingleThreadExecutor(getThreadFactory());
+        }
+        return taskExecutor;
+    }
+
+    /**
+     * If necessary initialise the thread factory and return it
+     *
+     * @return the thread factory
+     */
+    public NamedThreadFactory getThreadFactory() {
+        NamedThreadFactory threadFactory = this.threadFactory;
         if (threadFactory == null) {
             threadFactory = new NamedThreadFactory(getThing().getUID().getAsString());
         }
-        ExecutorService taskExecutor = this.taskExecutor;
-        if (taskExecutor == null || taskExecutor.isShutdown()) {
-            logger.trace("gettaskExecutor() reinitializing the task executor");
-            taskExecutor = this.taskExecutor = Executors.newSingleThreadExecutor(threadFactory);
-        }
-        return taskExecutor;
+        return threadFactory;
     }
 }

@@ -19,7 +19,10 @@ import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,58 +55,75 @@ class DataInputStreamWithTimeout implements Closeable {
     private final Queue<byte[]> slipMessageQueue = new ConcurrentLinkedQueue<>();
 
     private InputStream inputStream;
-    private VeluxBridgeHandler bridgeInstance;
 
     private String pollException = "";
-    private @Nullable Thread pollThread = null;
+    private @Nullable Poller pollRunner = null;
+    private ExecutorService executor;
 
-    /**
-     * Task that loops to read bytes from {@link InputStream} and build SLIP packets from them.
-     * The SLIP packets are placed in a {@link ConcurrentLinkedQueue}.
-     * It loops continuously until Thread.interrupted() and then it terminates after the next socket read timeout.
-     */
-    private Runnable pollRunner = () -> {
-        byte byt;
-        byte[] buf = new byte[BUFFER_SIZE];
-        int i = 0;
-        pollException = "";
-        slipMessageQueue.clear();
-        while (!Thread.interrupted()) {
-            try {
-                buf[i] = byt = (byte) inputStream.read();
-                if (byt == SLIP_MARK) {
-                    if (i > 0) {
-                        // the minimal slip message is 7 bytes [MM PP LL CC CC KK MM]
-                        if ((i > 5) && (buf[0] == SLIP_MARK)) {
-                            slipMessageQueue.offer(Arrays.copyOfRange(buf, 0, i + 1));
-                            if (slipMessageQueue.size() > QUEUE_SIZE) {
-                                logger.warn("pollRunner() => slip message queue overflow => PLEASE REPORT !!");
-                                slipMessageQueue.poll();
-                            }
-                        }
-                        i = 0;
-                        buf[0] = SLIP_MARK;
-                        continue;
-                    }
-                }
-                if (++i >= BUFFER_SIZE) {
-                    i = 0;
-                }
-            } catch (SocketTimeoutException e) {
-                // socket read time outs are OK => just keep on polling
-                continue;
-            } catch (IOException e) {
-                // any other exception => stop polling
-                pollException = e.getMessage();
-                logger.debug("pollRunner() stopping '{}'", pollException);
-                break;
-            }
+    private class Poller implements Callable<Boolean> {
+
+        private boolean interrupted = false;
+
+        public void interrupt() {
+            interrupted = true;
         }
-        pollThread = null;
-    };
+
+        /**
+         * Task that loops to read bytes from {@link InputStream} and build SLIP packets from them. The SLIP packets are
+         * placed in a {@link ConcurrentLinkedQueue}. It loops continuously until 'interrupt()' or 'Thread.interrupt()'
+         * are called when terminates early after the next socket read timeout.
+         */
+        @Override
+        public Boolean call() throws Exception {
+            byte[] buf = new byte[BUFFER_SIZE];
+            byte byt;
+            int i = 0;
+
+            // clean start, no exception, empty queue
+            pollException = "";
+            slipMessageQueue.clear();
+
+            // loop forever or until internally or externally interrupted
+            while ((!interrupted) && (!Thread.interrupted())) {
+                try {
+                    buf[i] = byt = (byte) inputStream.read();
+                    if (byt == SLIP_MARK) {
+                        if (i > 0) {
+                            // the minimal slip message is 7 bytes [MM PP LL CC CC KK MM]
+                            if ((i > 5) && (buf[0] == SLIP_MARK)) {
+                                slipMessageQueue.offer(Arrays.copyOfRange(buf, 0, i + 1));
+                                if (slipMessageQueue.size() > QUEUE_SIZE) {
+                                    logger.warn("pollRunner() => slip message queue overflow => PLEASE REPORT !!");
+                                    slipMessageQueue.poll();
+                                }
+                            }
+                            i = 0;
+                            buf[0] = SLIP_MARK;
+                            continue;
+                        }
+                    }
+                    if (++i >= BUFFER_SIZE) {
+                        i = 0;
+                    }
+                } catch (SocketTimeoutException e) {
+                    // socket read time outs are OK => keep on polling
+                    continue;
+                } catch (IOException e) {
+                    // any other exception => stop polling
+                    pollException = e.getMessage();
+                    logger.debug("pollRunner() stopping '{}'", pollException);
+                    break;
+                }
+            }
+
+            // we only get here if shutdown or an error occurs so free ourself so we can be recreated again
+            pollRunner = null;
+            return true;
+        }
+    }
 
     /**
-     * Check if there was an exception on the polling loop thread and if so, throw it back on the caller thread.
+     * Check if there was an exception on the polling loop task and if so, throw it back on the caller thread.
      *
      * @throws IOException
      */
@@ -122,7 +142,7 @@ class DataInputStreamWithTimeout implements Closeable {
      */
     public DataInputStreamWithTimeout(InputStream stream, VeluxBridgeHandler bridge) {
         inputStream = stream;
-        bridgeInstance = bridge;
+        executor = Executors.newSingleThreadExecutor(bridge.getThreadFactory());
     }
 
     /**
@@ -143,7 +163,7 @@ class DataInputStreamWithTimeout implements Closeable {
      * @return the next SLIP message if there is one on the queue, or any empty byte[] array if not.
      * @throws IOException
      */
-    public byte[] readSlipMessage(int timeoutMSecs) throws IOException {
+    public synchronized byte[] readSlipMessage(int timeoutMSecs) throws IOException {
         startPolling();
         int i = (timeoutMSecs / SLEEP_INTERVAL_MSECS) + 1;
         while (i-- >= 0) {
@@ -154,13 +174,13 @@ class DataInputStreamWithTimeout implements Closeable {
             } catch (NoSuchElementException e) {
                 // queue empty, wait and continue
             }
+            throwIfPollException();
             try {
                 Thread.sleep(SLEEP_INTERVAL_MSECS);
             } catch (InterruptedException e) {
                 logger.debug("readSlipMessage() => thread interrupt");
                 throw new IOException("Thread Interrupted");
             }
-            throwIfPollException();
         }
         logger.debug("readSlipMessage() => no slip message after {}mS => time out", timeoutMSecs);
         return new byte[0];
@@ -186,26 +206,26 @@ class DataInputStreamWithTimeout implements Closeable {
     }
 
     /**
-     * Start the polling thread
+     * Start the polling task
      */
     private void startPolling() {
-        if (pollThread == null) {
+        Poller pollRunner = this.pollRunner;
+        if (pollRunner == null) {
             logger.trace("startPolling()");
-            Thread pollThread = this.pollThread = new Thread(pollRunner);
-            pollThread.setName("OH-" + bridgeInstance.getThing().getUID().getAsString());
-            pollThread.start();
+            pollRunner = this.pollRunner = new Poller();
+            executor.submit(pollRunner);
         }
     }
 
     /**
-     * Stop the polling thread
+     * Stop the polling task
      */
     private void stopPolling() {
-        Thread pollThread = this.pollThread;
-        if (pollThread != null) {
+        Poller pollRunner = this.pollRunner;
+        if (pollRunner != null) {
             logger.trace("stopPolling()");
-            pollThread.interrupt();
-            this.pollThread = null;
+            pollRunner.interrupt();
+            this.pollRunner = null;
         }
     }
 }

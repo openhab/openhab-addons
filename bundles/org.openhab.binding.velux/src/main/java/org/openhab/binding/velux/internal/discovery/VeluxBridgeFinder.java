@@ -22,6 +22,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Random;
@@ -78,24 +79,25 @@ public class VeluxBridgeFinder implements Closeable {
     private ScheduledExecutorService executor;
     private @Nullable Listener listener = null;
 
-    /**
-     * Listens for incoming MDNS UDP responses, and if they are from KLF bridges, adds their IP addresses to the
-     * returned set of strings
-     */
     private class Listener implements Callable<Set<String>> {
 
         private boolean interrupted = false;
+        private boolean started = false;
 
         public void interrupt() {
             interrupted = true;
         }
 
+        public boolean hasStarted() {
+            return started;
+        }
+
         /**
-         * Listens for Velux Bridges and returns their IP addresses.
-         * Normally takes SEARCH_DURATION_MSECS to complete, but calling interrupt() causes completion after the next
-         * socket read timeout i.e. after SOCKET_TIMEOUT_MSECS
+         * Listens for Velux Bridges and returns their IP addresses. It loops for SEARCH_DURATION_MSECS or until
+         * 'interrupt()' or 'Thread.interrupted()' are called when it terminates early after the next socket read
+         * timeout i.e. after SOCKET_TIMEOUT_MSECS
          *
-         * @return set of dotted IP address e.g. '123.123.123.123'
+         * @return a set of strings containing dotted IP addresses e.g. '123.123.123.123'
          */
         @Override
         public Set<String> call() throws Exception {
@@ -111,7 +113,10 @@ public class VeluxBridgeFinder implements Closeable {
                 rcvSocket.joinGroup(InetAddress.getByName(MDNS_ADDR));
                 rcvSocket.setSoTimeout(SOCKET_TIMEOUT_MSECS);
 
-                // loop until time out or interrupted (either internally or externally)
+                // tell the caller that we are ready to roll
+                started = true;
+
+                // loop until time out or internally or externally interrupted
                 while ((System.currentTimeMillis() < finishTime) && (!interrupted) && (!Thread.interrupted())) {
                     // read next packet
                     DatagramPacket rcvPacket = new DatagramPacket(rcvBytes, rcvBytes.length);
@@ -120,14 +125,16 @@ public class VeluxBridgeFinder implements Closeable {
                         if (isKlfLanResponse(rcvPacket.getData())) {
                             ipAddresses.add(rcvPacket.getAddress().getHostAddress());
                         }
-                    } catch (IOException e) {
-                        logger.trace("listenerRunnable(): mdns packet receive exception '{}'", e.getMessage());
+                    } catch (SocketTimeoutException e) {
+                        // time out is ok, continue listening
                         continue;
                     }
                 }
             } catch (IOException e) {
-                logger.debug("listenerRunnable(): udp socket create exception '{}'", e.getMessage());
+                logger.debug("listenerRunnable(): udp socket exception '{}'", e.getMessage());
             }
+            // prevent caller waiting forever in case start up failed
+            started = true;
             return ipAddresses;
         }
     }
@@ -198,7 +205,7 @@ public class VeluxBridgeFinder implements Closeable {
                         int i = 0;
                         int segLength;
                         while ((segLength = dataStream.readByte()) > 0) {
-                            i += dataStream.readNBytes(str, i, segLength);
+                            i += dataStream.read(str, i, segLength);
                             str[i] = '.';
                             i++;
                         }
@@ -216,7 +223,7 @@ public class VeluxBridgeFinder implements Closeable {
                         // parse the host name
                         i = 0;
                         while ((segLength = dataStream.readByte()) > 0) {
-                            i += dataStream.readNBytes(str, i, segLength);
+                            i += dataStream.read(str, i, segLength);
                             str[i] = '.';
                             i++;
                         }
@@ -236,10 +243,10 @@ public class VeluxBridgeFinder implements Closeable {
     }
 
     /**
-     * Private synchronized method that searches for Velux Bridges and returns their IP addresses.
-     * Takes SEARCH_DURATION_MSECS to complete.
+     * Private synchronized method that searches for Velux Bridges and returns their IP addresses. Takes
+     * SEARCH_DURATION_MSECS to complete.
      *
-     * @return set of dotted IP address e.g. '123.123.123.123'
+     * @return a set of strings containing dotted IP addresses e.g. '123.123.123.123'
      */
     private synchronized Set<String> discoverBridgeIpAddresses() {
         @Nullable
@@ -251,7 +258,6 @@ public class VeluxBridgeFinder implements Closeable {
 
         // create the listener task and start it
         Listener listener = this.listener = new Listener();
-        Future<Set<String>> future = executor.submit(listener);
 
         // create a datagram socket
         try (DatagramSocket socket = new DatagramSocket()) {
@@ -260,11 +266,17 @@ public class VeluxBridgeFinder implements Closeable {
             DatagramPacket dnsPacket = new DatagramPacket(dnsBytes, 0, dnsBytes.length,
                     InetAddress.getByName(MDNS_ADDR), MDNS_PORT);
 
+            // create listener and wait until it has started
+            Future<Set<String>> future = executor.submit(listener);
+            while (!listener.hasStarted()) {
+                Thread.sleep(SLEEP_MSECS);
+            }
+
             // send the query several times
             for (int i = 0; i < REPEAT_COUNT; i++) {
                 // send the query several times
-                Thread.sleep(SLEEP_MSECS);
                 socket.send(dnsPacket);
+                Thread.sleep(SLEEP_MSECS);
             }
 
             // wait for the listener future to get the result
@@ -282,10 +294,9 @@ public class VeluxBridgeFinder implements Closeable {
     /**
      * Constructor
      *
-     * @param executor the caller's task scheduler
+     * @param executor the caller's task executor
      */
     public VeluxBridgeFinder(ScheduledExecutorService executor) {
-        logger.trace("VeluxBridgeFinder(): called");
         this.executor = executor;
     }
 
@@ -296,7 +307,6 @@ public class VeluxBridgeFinder implements Closeable {
      */
     @Override
     public void close() throws IOException {
-        logger.trace("close(): called");
         Listener listener = this.listener;
         if (listener != null) {
             listener.interrupt();
@@ -305,8 +315,8 @@ public class VeluxBridgeFinder implements Closeable {
     }
 
     /**
-     * Static method to search for Velux Bridges and return their IP addresses.
-     * Takes SEARCH_DURATION_MSECS to complete.
+     * Static method to search for Velux Bridges and return their IP addresses. NOTE: it takes SEARCH_DURATION_MSECS to
+     * complete, so don't call it on the main thread!
      *
      * @return set of dotted IP address e.g. '123.123.123.123'
      */
