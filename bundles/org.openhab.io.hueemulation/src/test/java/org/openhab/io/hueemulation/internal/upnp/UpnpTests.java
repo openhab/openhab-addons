@@ -123,7 +123,7 @@ public class UpnpTests {
         }
 
         // UDP thread started?
-        r.startNow(r).get(5, TimeUnit.SECONDS);
+        r.startNow().get(5, TimeUnit.SECONDS);
         assertThat(subject.upnpAnnouncementThreadRunning(), is(true));
 
         // Send M-SEARCH UPNP "packet" and check if the result contains our bridge ID
