@@ -31,6 +31,7 @@ public class MiIoSendCommand {
     private final MiIoCommand command;
     private final JsonObject commandJson;
     private @Nullable JsonObject response;
+    private String cloudServer = "";
 
     public void setResponse(JsonObject response) {
         this.response = response;
@@ -40,6 +41,13 @@ public class MiIoSendCommand {
         this.id = id;
         this.command = command;
         this.commandJson = fullCommand;
+    }
+
+    public MiIoSendCommand(int id, MiIoCommand command, JsonObject fullCommand, String cloudServer) {
+        this.id = id;
+        this.command = command;
+        this.commandJson = fullCommand;
+        this.cloudServer = cloudServer;
     }
 
     public int getId() {
@@ -85,5 +93,13 @@ public class MiIoSendCommand {
             return response.get("result");
         }
         return new JsonObject();
+    }
+
+    public String getCloudServer() {
+        return cloudServer;
+    }
+
+    public void setCloudServer(String cloudServer) {
+        this.cloudServer = cloudServer;
     }
 }

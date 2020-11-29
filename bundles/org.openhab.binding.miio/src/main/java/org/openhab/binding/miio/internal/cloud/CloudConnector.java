@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -115,13 +116,21 @@ public class CloudConnector {
         return false;
     }
 
+    public String sendRPCCommand(String device, String country, MiIoSendCommand command) throws MiCloudException {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl == null || !isConnected()) {
+            throw new MiCloudException("Cannot execute request. Cloud service not available");
+        }
+        return cl.sendRPCCommand(device, country.trim().toLowerCase(), command.getCommandString());
+    }
+
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
         logger.debug("Getting vacuum map {} from Xiaomi cloud server: '{}'", mapId, country);
         String mapCountry;
         String mapUrl = "";
         final @Nullable MiCloudConnector cl = this.cloudConnector;
         if (cl == null || !isConnected()) {
-            throw new MiCloudException("Cannot execute request. Cloudservice not available");
+            throw new MiCloudException("Cannot execute request. Cloud service not available");
         }
         if (country.isEmpty()) {
             logger.debug("Server not defined in thing. Trying servers: {}", this.country);
