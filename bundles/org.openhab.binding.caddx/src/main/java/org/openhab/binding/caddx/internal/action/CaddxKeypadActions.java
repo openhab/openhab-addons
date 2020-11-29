@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.caddx.internal.action;
 
-import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "caddx")
 @NonNullByDefault
-public class CaddxKeypadActions implements ThingActions {
+public class CaddxKeypadActions implements ThingActions, ICaddxKeypadActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxKeypadActions.class);
 
     private static final String HANDLER_IS_NULL = "ThingHandlerKeypad is null!";
@@ -46,7 +47,9 @@ public class CaddxKeypadActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (ThingHandlerKeypad) handler;
+        if (handler instanceof ThingHandlerKeypad) {
+            this.handler = (ThingHandlerKeypad) handler;
+        }
     }
 
     @Override
@@ -54,8 +57,28 @@ public class CaddxKeypadActions implements ThingActions {
         return this.handler;
     }
 
+    private static ICaddxKeypadActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(CaddxKeypadActions.class.getName())) {
+            if (actions instanceof ICaddxKeypadActions) {
+                return (ICaddxKeypadActions) actions;
+            } else {
+                return (ICaddxKeypadActions) Proxy.newProxyInstance(ICaddxKeypadActions.class.getClassLoader(),
+                        new Class[] { ICaddxKeypadActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
+    }
+
+    @Override
     @RuleAction(label = "enterTerminalMode", description = "Enter terminal mode on the selected keypad")
-    public void enterTerminalMode() throws IOException {
+    public void enterTerminalMode() {
         ThingHandlerKeypad thingHandler = this.handler;
         if (thingHandler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -66,19 +89,15 @@ public class CaddxKeypadActions implements ThingActions {
     }
 
     @RuleAction(label = "enterTerminalMode", description = "Enter terminal mode on the selected keypad")
-    public static void enterTerminalMode(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxKeypadActions) {
-            ((CaddxKeypadActions) actions).enterTerminalMode();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void enterTerminalMode(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).enterTerminalMode();
     }
 
+    @Override
     @RuleAction(label = "sendKeypadTextMessage", description = "Display a message on the Keypad")
     public void sendKeypadTextMessage(
             @ActionInput(name = "displayLocation", label = "Display Location", description = "Display storage location (0=top left corner)") @Nullable String displayLocation,
-            @ActionInput(name = "text", label = "Text", description = "The text to be displayed") @Nullable String text)
-            throws IOException {
+            @ActionInput(name = "text", label = "Text", description = "The text to be displayed") @Nullable String text) {
         ThingHandlerKeypad thingHandler = handler;
         if (thingHandler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -110,11 +129,7 @@ public class CaddxKeypadActions implements ThingActions {
 
     @RuleAction(label = "sendKeypadTextMessage", description = "Display a message on the Keypad")
     public static void sendKeypadTextMessage(@Nullable ThingActions actions, @Nullable String displayLocation,
-            @Nullable String text) throws IOException {
-        if (actions instanceof CaddxKeypadActions) {
-            ((CaddxKeypadActions) actions).sendKeypadTextMessage(displayLocation, text);
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+            @Nullable String text) {
+        invokeMethodOf(actions).sendKeypadTextMessage(displayLocation, text);
     }
 }
