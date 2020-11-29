@@ -2,8 +2,6 @@
 
 With this binding it is possible to connect [OWD5/MWD5 Thermostat](https://ojelectronics.com/floorheating/products/wifi-thermostat-owd5/) of OJ Electronics.
 
-At this moment all information is read only.
-
 ## Supported Things
 
 There are two things:

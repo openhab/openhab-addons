@@ -91,7 +91,10 @@ public class ThermostatHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             final Thermostat thermostat = currentThermostat;
             if (thermostat != null && channelrefreshActions.containsKey(channelUID.getId())) {
-                channelrefreshActions.get(channelUID.getId()).accept(thermostat);
+                final @Nullable Consumer<Thermostat> consumer = channelrefreshActions.get(channelUID.getId());
+                if (consumer != null) {
+                    consumer.accept(thermostat);
+                }
             }
         } else {
             synchronized (this) {
@@ -132,7 +135,10 @@ public class ThermostatHandler extends BaseThingHandler {
         this.updatedValues = null;
         updatedValues.forEach(item -> {
             if (updateThermostatValueActions.containsKey(item.getKey())) {
-                updateThermostatValueActions.get(item.getKey()).accept(item.getValue());
+                final @Nullable Consumer<Command> consumer = updateThermostatValueActions.get(item.getKey());
+                if (consumer != null) {
+                    consumer.accept(item.getValue());
+                }
             }
         });
         return currentThermostat;
@@ -207,7 +213,10 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateRegulationMode(Command command) {
         if (command instanceof StringType && (REVERSE_REGULATION_MODES.containsKey(command.toString().toLowerCase()))) {
-            currentThermostat.regulationMode = REVERSE_REGULATION_MODES.get(command.toString().toLowerCase());
+            final @Nullable Integer mode = REVERSE_REGULATION_MODES.get(command.toString().toLowerCase());
+            if (mode != null) {
+                currentThermostat.regulationMode = mode;
+            }
         } else {
             logger.warn("Unable to set value {}", command);
         }

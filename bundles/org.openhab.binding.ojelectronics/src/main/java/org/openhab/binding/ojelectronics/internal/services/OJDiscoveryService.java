@@ -76,7 +76,8 @@ public final class OJDiscoveryService extends AbstractDiscoveryService
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof OJCloudHandler) {
-            this.bridgeHandler = (OJCloudHandler) handler;
+            final OJCloudHandler bridgeHandler = (OJCloudHandler) handler;
+            this.bridgeHandler = bridgeHandler;
             bridgeHandler.setDiscoveryService(this);
         }
     }
