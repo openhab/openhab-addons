@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.caddx.internal.action;
 
-import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "caddx")
 @NonNullByDefault
-public class CaddxPartitionActions implements ThingActions {
+public class CaddxPartitionActions implements ThingActions, ICaddxPartitionActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxPartitionActions.class);
 
     private static final String HANDLER_IS_NULL = "ThingHandlerPartition is null!";
@@ -43,12 +44,33 @@ public class CaddxPartitionActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (ThingHandlerPartition) handler;
+        if (handler instanceof ThingHandlerPartition) {
+            this.handler = (ThingHandlerPartition) handler;
+        }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return this.handler;
+    }
+
+    private static ICaddxPartitionActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(CaddxPartitionActions.class.getName())) {
+            if (actions instanceof ICaddxPartitionActions) {
+                return (ICaddxPartitionActions) actions;
+            } else {
+                return (ICaddxPartitionActions) Proxy.newProxyInstance(ICaddxPartitionActions.class.getClassLoader(),
+                        new Class[] { ICaddxPartitionActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
     }
 
     // Valid are only 4 or 6 digit pins
@@ -66,10 +88,10 @@ public class CaddxPartitionActions implements ThingActions {
         return (pin.length() == 4) ? pin + "00" : pin;
     }
 
+    @Override
     @RuleAction(label = "turnOffAnySounderOrAlarm", description = "Turn off any sounder or alarm")
     public void turnOffAnySounderOrAlarm(
-            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin)
-            throws IOException {
+            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -85,19 +107,14 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "turnOffAnySounderOrAlarm", description = "Turn off any sounder or alarm")
-    public static void turnOffAnySounderOrAlarm(@Nullable ThingActions actions, @Nullable String pin)
-            throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).turnOffAnySounderOrAlarm(pin);
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void turnOffAnySounderOrAlarm(@Nullable ThingActions actions, @Nullable String pin) {
+        invokeMethodOf(actions).turnOffAnySounderOrAlarm(pin);
     }
 
+    @Override
     @RuleAction(label = "disarm", description = "Dis-arm")
     public void disarm(
-            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin)
-            throws IOException {
+            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -113,18 +130,14 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "disarm", description = "Dis-arm")
-    public static void disarm(@Nullable ThingActions actions, @Nullable String pin) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).disarm(pin);
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void disarm(@Nullable ThingActions actions, @Nullable String pin) {
+        invokeMethodOf(actions).disarm(pin);
     }
 
+    @Override
     @RuleAction(label = "armInAwayMode", description = "Arm in away mode")
     public void armInAwayMode(
-            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin)
-            throws IOException {
+            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -140,18 +153,14 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "armInAwayMode", description = "Arm in away mode")
-    public static void armInAwayMode(@Nullable ThingActions actions, @Nullable String pin) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).armInAwayMode(pin);
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void armInAwayMode(@Nullable ThingActions actions, @Nullable String pin) {
+        invokeMethodOf(actions).armInAwayMode(pin);
     }
 
+    @Override
     @RuleAction(label = "armInStayMode", description = "Arm in stay mode")
     public void armInStayMode(
-            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin)
-            throws IOException {
+            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -167,18 +176,14 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "armInStayMode", description = "Arm in stay mode")
-    public static void armInStayMode(@Nullable ThingActions actions, @Nullable String pin) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).armInStayMode(pin);
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void armInStayMode(@Nullable ThingActions actions, @Nullable String pin) {
+        invokeMethodOf(actions).armInStayMode(pin);
     }
 
+    @Override
     @RuleAction(label = "cancel", description = "Cancel")
     public void cancel(
-            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin)
-            throws IOException {
+            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -194,18 +199,14 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "cancel", description = "Cancel")
-    public static void cancel(@Nullable ThingActions actions, @Nullable String pin) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).cancel(pin);
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void cancel(@Nullable ThingActions actions, @Nullable String pin) {
+        invokeMethodOf(actions).cancel(pin);
     }
 
+    @Override
     @RuleAction(label = "initiateAutoArm", description = "Initiate auto arm")
     public void initiateAutoArm(
-            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin)
-            throws IOException {
+            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -221,18 +222,14 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "initiateAutoArm", description = "Initiate auto arm")
-    public static void initiateAutoArm(@Nullable ThingActions actions, @Nullable String pin) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).initiateAutoArm(pin);
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void initiateAutoArm(@Nullable ThingActions actions, @Nullable String pin) {
+        invokeMethodOf(actions).initiateAutoArm(pin);
     }
 
+    @Override
     @RuleAction(label = "startWalkTestMode", description = "Start walk-test mode")
     public void startWalkTestMode(
-            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin)
-            throws IOException {
+            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -248,18 +245,14 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "startWalkTestMode", description = "Start walk-test mode")
-    public static void startWalkTestMode(@Nullable ThingActions actions, @Nullable String pin) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).startWalkTestMode(pin);
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void startWalkTestMode(@Nullable ThingActions actions, @Nullable String pin) {
+        invokeMethodOf(actions).startWalkTestMode(pin);
     }
 
+    @Override
     @RuleAction(label = "stopWalkTestMode", description = "Stop walk-test mode")
     public void stopWalkTestMode(
-            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin)
-            throws IOException {
+            @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -275,16 +268,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "stopWalkTestMode", description = "Stop walk-test mode")
-    public static void stopWalkTestMode(@Nullable ThingActions actions, @Nullable String pin) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).stopWalkTestMode(pin);
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void stopWalkTestMode(@Nullable ThingActions actions, @Nullable String pin) {
+        invokeMethodOf(actions).stopWalkTestMode(pin);
     }
 
+    @Override
     @RuleAction(label = "stay", description = "Stay (1 button arm / toggle interiors)")
-    public void stay() throws IOException {
+    public void stay() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -295,16 +285,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "stay", description = "Stay (1 button arm / toggle interiors)")
-    public static void stay(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).stay();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void stay(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).stay();
     }
 
+    @Override
     @RuleAction(label = "chime", description = "Chime (toggle chime mode)")
-    public void chime() throws IOException {
+    public void chime() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -315,16 +302,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "chime", description = "Chime (toggle chime mode)")
-    public static void chime(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).chime();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void chime(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).chime();
     }
 
+    @Override
     @RuleAction(label = "exit", description = "Exit (1 button arm / toggle instant)")
-    public void exit() throws IOException {
+    public void exit() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -335,16 +319,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "exit", description = "Exit (1 button arm / toggle instant)")
-    public static void exit(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).exit();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void exit(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).exit();
     }
 
+    @Override
     @RuleAction(label = "bypassInteriors", description = "Bypass Interiors")
-    public void bypassInteriors() throws IOException {
+    public void bypassInteriors() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -355,16 +336,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "bypassInteriors", description = "Bypass Interiors")
-    public static void bypassInteriors(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).bypassInteriors();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void bypassInteriors(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).bypassInteriors();
     }
 
+    @Override
     @RuleAction(label = "firePanic", description = "Fire Panic")
-    public void firePanic() throws IOException {
+    public void firePanic() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -375,16 +353,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "firePanic", description = "Fire Panic")
-    public static void firePanic(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).firePanic();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void firePanic(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).firePanic();
     }
 
+    @Override
     @RuleAction(label = "medicalPanic", description = "Medical Panic")
-    public void medicalPanic() throws IOException {
+    public void medicalPanic() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -395,16 +370,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "medicalPanic", description = "Medical Panic")
-    public static void medicalPanic(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).medicalPanic();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void medicalPanic(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).medicalPanic();
     }
 
+    @Override
     @RuleAction(label = "policePanic", description = "Police Panic")
-    public void policePanic() throws IOException {
+    public void policePanic() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -415,16 +387,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "policePanic", description = "Police Panic")
-    public static void policePanic(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).policePanic();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void policePanic(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).policePanic();
     }
 
+    @Override
     @RuleAction(label = "smokeDetectorReset", description = "Smoke detector reset")
-    public void smokeDetectorReset() throws IOException {
+    public void smokeDetectorReset() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -435,16 +404,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "smokeDetectorReset", description = "Smoke detector reset")
-    public static void smokeDetectorReset(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).smokeDetectorReset();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void smokeDetectorReset(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).smokeDetectorReset();
     }
 
+    @Override
     @RuleAction(label = "autoCallbackDownload", description = "Auto callback download")
-    public void autoCallbackDownload() throws IOException {
+    public void autoCallbackDownload() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -455,16 +421,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "autoCallbackDownload", description = "Auto callback download")
-    public static void autoCallbackDownload(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).autoCallbackDownload();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void autoCallbackDownload(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).autoCallbackDownload();
     }
 
+    @Override
     @RuleAction(label = "manualPickupDownload", description = "Manual pickup download")
-    public void manualPickupDownload() throws IOException {
+    public void manualPickupDownload() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -475,16 +438,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "manualPickupDownload", description = "Manual pickup download")
-    public static void manualPickupDownload(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).manualPickupDownload();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void manualPickupDownload(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).manualPickupDownload();
     }
 
+    @Override
     @RuleAction(label = "enableSilentExit", description = "Enable silent exit")
-    public void enableSilentExit() throws IOException {
+    public void enableSilentExit() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -495,16 +455,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "enableSilentExit", description = "Enable silent exit")
-    public static void enableSilentExit(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).enableSilentExit();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void enableSilentExit(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).enableSilentExit();
     }
 
+    @Override
     @RuleAction(label = "performTest", description = "Perform test")
-    public void performTest() throws IOException {
+    public void performTest() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -515,16 +472,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "performTest", description = "Perform test")
-    public static void performTest(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).performTest();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void performTest(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).performTest();
     }
 
+    @Override
     @RuleAction(label = "groupBypass", description = "Group Bypass")
-    public void groupBypass() throws IOException {
+    public void groupBypass() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -535,16 +489,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "groupBypass", description = "Group bypass")
-    public static void groupBypass(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).groupBypass();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void groupBypass(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).groupBypass();
     }
 
+    @Override
     @RuleAction(label = "auxiliaryFunction1", description = "Auxiliary Function 1")
-    public void auxiliaryFunction1() throws IOException {
+    public void auxiliaryFunction1() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -555,16 +506,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "auxiliaryFunction1", description = "Auxiliary Function 1")
-    public static void auxiliaryFunction1(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).auxiliaryFunction1();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void auxiliaryFunction1(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).auxiliaryFunction1();
     }
 
+    @Override
     @RuleAction(label = "auxiliaryFunction2", description = "Auxiliary Function 2")
-    public void auxiliaryFunction2() throws IOException {
+    public void auxiliaryFunction2() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -575,16 +523,13 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "auxiliaryFunction2", description = "Auxiliary Function 2")
-    public static void auxiliaryFunction2(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).auxiliaryFunction2();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void auxiliaryFunction2(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).auxiliaryFunction2();
     }
 
+    @Override
     @RuleAction(label = "startKeypadSounder", description = "Start keypad sounder")
-    public void startKeypadSounder() throws IOException {
+    public void startKeypadSounder() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
             logger.debug(HANDLER_IS_NULL);
@@ -595,11 +540,7 @@ public class CaddxPartitionActions implements ThingActions {
     }
 
     @RuleAction(label = "startKeypadSounder", description = "Start keypad sounder")
-    public static void startKeypadSounder(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxPartitionActions) {
-            ((CaddxPartitionActions) actions).startKeypadSounder();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void startKeypadSounder(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).startKeypadSounder();
     }
 }

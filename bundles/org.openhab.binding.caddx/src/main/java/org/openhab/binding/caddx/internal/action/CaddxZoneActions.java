@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.caddx.internal.action;
 
-import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "caddx")
 @NonNullByDefault
-public class CaddxZoneActions implements ThingActions {
+public class CaddxZoneActions implements ThingActions, ICaddxZoneActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxZoneActions.class);
 
     private static final String HANDLER_IS_NULL = "ThingHandlerZone is null!";
@@ -42,7 +43,9 @@ public class CaddxZoneActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (ThingHandlerZone) handler;
+        if (handler instanceof ThingHandlerZone) {
+            this.handler = (ThingHandlerZone) handler;
+        }
     }
 
     @Override
@@ -50,8 +53,28 @@ public class CaddxZoneActions implements ThingActions {
         return this.handler;
     }
 
+    private static ICaddxZoneActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(CaddxZoneActions.class.getName())) {
+            if (actions instanceof ICaddxZoneActions) {
+                return (ICaddxZoneActions) actions;
+            } else {
+                return (ICaddxZoneActions) Proxy.newProxyInstance(ICaddxZoneActions.class.getClassLoader(),
+                        new Class[] { ICaddxZoneActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
+    }
+
+    @Override
     @RuleAction(label = "bypass", description = "Bypass the zone")
-    public void bypass() throws IOException {
+    public void bypass() {
         // Check of parameters
         ThingHandlerZone thingHandler = this.handler;
         if (thingHandler == null) {
@@ -63,11 +86,7 @@ public class CaddxZoneActions implements ThingActions {
     }
 
     @RuleAction(label = "bypass", description = "Bypass the zone")
-    public static void bypass(@Nullable ThingActions actions) throws IOException {
-        if (actions instanceof CaddxZoneActions) {
-            ((CaddxZoneActions) actions).bypass();
-        } else {
-            throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-        }
+    public static void bypass(@Nullable ThingActions actions) {
+        invokeMethodOf(actions).bypass();
     }
 }
