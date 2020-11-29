@@ -20,7 +20,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,20 +44,18 @@ import org.slf4j.LoggerFactory;
 @Component(service = { ChannelTypeProvider.class, BasicChannelTypeProvider.class })
 @NonNullByDefault
 public class BasicChannelTypeProvider implements ChannelTypeProvider {
-    private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
+    private final Map<String, ChannelType> channelTypes = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(BasicChannelTypeProvider.class);
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return channelTypes;
+        return channelTypes.values();
     }
 
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        for (ChannelType channelType : channelTypes) {
-            if (channelType.getUID().equals(channelTypeUID)) {
-                return channelType;
-            }
+        if (channelTypes.containsKey(channelTypeUID.getAsString())) {
+            return channelTypes.get(channelTypeUID.getAsString());
         }
         return null;
     }
@@ -113,9 +112,9 @@ public class BasicChannelTypeProvider implements ChannelTypeProvider {
             if (tags != null && tags.size() > 0) {
                 channelTypeBuilder.withTags(tags);
             }
-            channelTypes.add(channelTypeBuilder.build());
+            channelTypes.put(channelTypeUID.getAsString(), channelTypeBuilder.build());
         } catch (Exception e) {
-            logger.warn("Failed creating channelType {}: {}", channelTypeUID, e.getMessage());
+            logger.warn("Failed creating channelType {}: {} ", channelTypeUID, e.getMessage());
         }
     }
 }
