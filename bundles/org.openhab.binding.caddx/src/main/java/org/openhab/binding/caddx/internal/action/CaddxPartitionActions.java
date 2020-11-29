@@ -82,7 +82,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.turnOffAnySounderOrAlarm(adjustedPin);
     }
 
-    @RuleAction(label = "turnOffAnySounderOrAlarm", description = "Turn off any sounder or alarm")
     public static void turnOffAnySounderOrAlarm(ThingActions actions, @Nullable String pin) {
         ((CaddxPartitionActions) actions).turnOffAnySounderOrAlarm(pin);
     }
@@ -104,7 +103,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.disarm(adjustedPin);
     }
 
-    @RuleAction(label = "disarm", description = "Dis-arm")
     public static void disarm(ThingActions actions, @Nullable String pin) {
         ((CaddxPartitionActions) actions).disarm(pin);
     }
@@ -126,7 +124,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.armInAwayMode(adjustedPin);
     }
 
-    @RuleAction(label = "armInAwayMode", description = "Arm in away mode")
     public static void armInAwayMode(ThingActions actions, @Nullable String pin) {
         ((CaddxPartitionActions) actions).armInAwayMode(pin);
     }
@@ -148,7 +145,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.armInStayMode(adjustedPin);
     }
 
-    @RuleAction(label = "armInStayMode", description = "Arm in stay mode")
     public static void armInStayMode(ThingActions actions, @Nullable String pin) {
         ((CaddxPartitionActions) actions).armInStayMode(pin);
     }
@@ -170,7 +166,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.cancel(adjustedPin);
     }
 
-    @RuleAction(label = "cancel", description = "Cancel")
     public static void cancel(ThingActions actions, @Nullable String pin) {
         ((CaddxPartitionActions) actions).cancel(pin);
     }
@@ -192,7 +187,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.initiateAutoArm(adjustedPin);
     }
 
-    @RuleAction(label = "initiateAutoArm", description = "Initiate auto arm")
     public static void initiateAutoArm(ThingActions actions, @Nullable String pin) {
         ((CaddxPartitionActions) actions).initiateAutoArm(pin);
     }
@@ -214,7 +208,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.startWalkTestMode(adjustedPin);
     }
 
-    @RuleAction(label = "startWalkTestMode", description = "Start walk-test mode")
     public static void startWalkTestMode(ThingActions actions, @Nullable String pin) {
         ((CaddxPartitionActions) actions).startWalkTestMode(pin);
     }
@@ -236,7 +229,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.stopWalkTestMode(adjustedPin);
     }
 
-    @RuleAction(label = "stopWalkTestMode", description = "Stop walk-test mode")
     public static void stopWalkTestMode(ThingActions actions, @Nullable String pin) {
         ((CaddxPartitionActions) actions).stopWalkTestMode(pin);
     }
@@ -252,7 +244,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.stay();
     }
 
-    @RuleAction(label = "stay", description = "Stay (1 button arm / toggle interiors)")
     public static void stay(ThingActions actions) {
         ((CaddxPartitionActions) actions).stay();
     }
@@ -268,7 +259,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.chime();
     }
 
-    @RuleAction(label = "chime", description = "Chime (toggle chime mode)")
     public static void chime(ThingActions actions) {
         ((CaddxPartitionActions) actions).chime();
     }
@@ -284,7 +274,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.exit();
     }
 
-    @RuleAction(label = "exit", description = "Exit (1 button arm / toggle instant)")
     public static void exit(ThingActions actions) {
         ((CaddxPartitionActions) actions).exit();
     }
@@ -300,7 +289,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.bypassInteriors();
     }
 
-    @RuleAction(label = "bypassInteriors", description = "Bypass Interiors")
     public static void bypassInteriors(ThingActions actions) {
         ((CaddxPartitionActions) actions).bypassInteriors();
     }
@@ -316,7 +304,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.firePanic();
     }
 
-    @RuleAction(label = "firePanic", description = "Fire Panic")
     public static void firePanic(ThingActions actions) {
         ((CaddxPartitionActions) actions).firePanic();
     }
@@ -332,7 +319,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.medicalPanic();
     }
 
-    @RuleAction(label = "medicalPanic", description = "Medical Panic")
     public static void medicalPanic(ThingActions actions) {
         ((CaddxPartitionActions) actions).medicalPanic();
     }
@@ -348,7 +334,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.policePanic();
     }
 
-    @RuleAction(label = "policePanic", description = "Police Panic")
     public static void policePanic(ThingActions actions) {
         ((CaddxPartitionActions) actions).policePanic();
     }
@@ -364,7 +349,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.smokeDetectorReset();
     }
 
-    @RuleAction(label = "smokeDetectorReset", description = "Smoke detector reset")
     public static void smokeDetectorReset(ThingActions actions) {
         ((CaddxPartitionActions) actions).smokeDetectorReset();
     }
@@ -380,7 +364,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.autoCallbackDownload();
     }
 
-    @RuleAction(label = "autoCallbackDownload", description = "Auto callback download")
     public static void autoCallbackDownload(ThingActions actions) {
         ((CaddxPartitionActions) actions).autoCallbackDownload();
     }
@@ -396,7 +379,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.manualPickupDownload();
     }
 
-    @RuleAction(label = "manualPickupDownload", description = "Manual pickup download")
     public static void manualPickupDownload(ThingActions actions) {
         ((CaddxPartitionActions) actions).manualPickupDownload();
     }
@@ -412,7 +394,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.enableSilentExit();
     }
 
-    @RuleAction(label = "enableSilentExit", description = "Enable silent exit")
     public static void enableSilentExit(ThingActions actions) {
         ((CaddxPartitionActions) actions).enableSilentExit();
     }
@@ -428,7 +409,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.performTest();
     }
 
-    @RuleAction(label = "performTest", description = "Perform test")
     public static void performTest(ThingActions actions) {
         ((CaddxPartitionActions) actions).performTest();
     }
@@ -444,7 +424,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.groupBypass();
     }
 
-    @RuleAction(label = "groupBypass", description = "Group bypass")
     public static void groupBypass(ThingActions actions) {
         ((CaddxPartitionActions) actions).groupBypass();
     }
@@ -460,7 +439,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.auxiliaryFunction1();
     }
 
-    @RuleAction(label = "auxiliaryFunction1", description = "Auxiliary Function 1")
     public static void auxiliaryFunction1(ThingActions actions) {
         ((CaddxPartitionActions) actions).auxiliaryFunction1();
     }
@@ -476,7 +454,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.auxiliaryFunction2();
     }
 
-    @RuleAction(label = "auxiliaryFunction2", description = "Auxiliary Function 2")
     public static void auxiliaryFunction2(ThingActions actions) {
         ((CaddxPartitionActions) actions).auxiliaryFunction2();
     }
@@ -492,7 +469,6 @@ public class CaddxPartitionActions implements ThingActions {
         handler.startKeypadSounder();
     }
 
-    @RuleAction(label = "startKeypadSounder", description = "Start keypad sounder")
     public static void startKeypadSounder(ThingActions actions) {
         ((CaddxPartitionActions) actions).startKeypadSounder();
     }

@@ -60,7 +60,6 @@ public class CaddxBridgeActions implements ThingActions {
         handler.restart();
     }
 
-    @RuleAction(label = "restart", description = "Restart the binding")
     public static void restart(ThingActions actions) {
         ((CaddxBridgeActions) actions).restart();
     }

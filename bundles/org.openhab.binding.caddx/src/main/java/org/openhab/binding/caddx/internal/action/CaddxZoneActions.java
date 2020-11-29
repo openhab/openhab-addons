@@ -61,7 +61,6 @@ public class CaddxZoneActions implements ThingActions {
         thingHandler.bypass();
     }
 
-    @RuleAction(label = "bypass", description = "Bypass the zone")
     public static void bypass(ThingActions actions) {
         ((CaddxZoneActions) actions).bypass();
     }

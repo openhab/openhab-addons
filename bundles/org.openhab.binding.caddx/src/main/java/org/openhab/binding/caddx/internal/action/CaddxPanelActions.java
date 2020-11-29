@@ -471,7 +471,6 @@ public class CaddxPanelActions implements ThingActions {
         handler.startKeypadSounder();
     }
 
-    @RuleAction(label = "startKeypadSounder", description = "Start keypad sounder")
     public static void startKeypadSounder(ThingActions actions) {
         ((CaddxPanelActions) actions).startKeypadSounder();
     }
