@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -19,6 +22,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
@@ -26,6 +30,7 @@ import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
 import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxProperty;
+import org.openhab.binding.caddx.internal.action.CaddxZoneActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,5 +127,21 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(CaddxZoneActions.class);
+    }
+
+    public void bypass() {
+        String cmd = CaddxBindingConstants.ZONE_BYPASSED;
+        String data = String.format("%d", getZoneNumber() - 1);
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+        bridgeHandler.sendCommand(cmd, data);
     }
 }

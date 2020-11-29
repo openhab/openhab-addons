@@ -14,7 +14,7 @@ This binding supports the following Thing types
 | panel      | Thing      | The basic representation of the alarm System.                          |
 | partition  | Thing      | Represents a controllable area within the alarm system.                |
 | zone       | Thing      | Represents a physical device such as a door, window, or motion sensor. |
-| keypad     | Thing      | Represents a keypad. (Not yet functional)                              |
+| keypad     | Thing      | Represents a keypad.                                                   |
 
 ## Discovery
 
@@ -22,7 +22,7 @@ First the bridge must be **manually** defined. The serial port, baud rate and pr
 After the bridge is manually added and available to openHAB, the binding will automatically start to discover partitions and zones and add them to the discovery inbox.
 
 Note:
-There is currently no support to discover the available keypads.
+There is no support to discover the available keypads.
 
 ## Prerequisites
 
@@ -41,7 +41,7 @@ For the binding to work the panel has also to be programmed appropriately.
 | 211      | 2       | 1,2,3,4,5   | (Flags 4 and 5 are not yet functional. Can be ignored.)                                                |
 | 211      | 3       |             |                                                                                                        |
 | 211      | 4       | 5,7,8       |                                                                                                        |
-| 212      | 1       | 192         | Programming the LCD keypad address. (Not yet functional. Can be ignored.)                              |
+| 212      | 1       | 192         | Programming the LCD keypad address.                                                                    |
 
 ### Programming locations for the NX-584E home automation module
 
@@ -55,23 +55,23 @@ For the binding to work the panel has also to be programmed appropriately.
 | 3        | 2       | 1,2,3,4,5   | (Flags 4 and 5 are not yet functional. Can be ignored.)                                                |
 | 3        | 3       |             |                                                                                                        |
 | 3        | 4       | 5,7,8       |                                                                                                        |
-| 4        | 1       | 192         | Programming the LCD keypad address. (Not yet functional. Can be ignored.)                              |
+| 4        | 1       | 192         | Programming the LCD keypad address.                                                                    |
 
 ## Thing Configuration
 
 The things can be configured either through the online configuration utility via discovery, or manually through the configuration file.
 The following table shows the available configuration parameters for each thing.
 
-| Thing     | Configuration Parameters                                                                       |
-|-----------|------------------------------------------------------------------------------------------------|
-| bridge    | `serialPort` - Serial port for the bridge - Required                                           |
-|           | `protocol` - Protocol used for the communication (Binary, Ascii) - Required - Default = Binary |
-|           | `baud` - Baud rate of the bridge - Required - Default = 9600                                   |
-|           | `maxZoneNumber` - Maximum zone number to be added during discovery - Required - Default = 16   |
-| partition | `partitionNumber` - Partition number (1-8) - Required                                          |
-| zone      | `zoneNumber` - Zone number (1-192) - Required                                                  |
-| keypad    | `keypadAddress` - Keypad address (192-255) - Required                                          |
-
+| Thing     | Configuration Parameters                                                                            |
+|-----------|-----------------------------------------------------------------------------------------------------|
+| bridge    | `serialPort` - Serial port for the bridge - Required                                                |
+|           | `protocol` - Protocol used for the communication (Binary, Ascii) - Required - Default = Binary      |
+|           | `baud` - Baud rate of the bridge - Required - Default = 9600                                        |
+|           | `maxZoneNumber` - Maximum zone number to be added during discovery - Required - Default = 16        |
+| partition | `partitionNumber` - Partition number (1-8) - Required                                               |
+| zone      | `zoneNumber` - Zone number (1-192) - Required                                                       |
+| keypad    | `keypadAddress` - Keypad address (192-255) - Required                                               |
+| keypad    | `terminalModeSeconds` - The number of Seconds the keypad has to remain in Terminal Mode. - Required |
 A full example is further below.
 
 ## Channels
@@ -214,6 +214,151 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 | zone_loss_of_supervision                         | Switch    | Zone Condition      | Loss of supervision                        |
 | zone_alarm_memory                                | Switch    | Zone Condition      | Alarm memory                               |
 | zone_bypass_memory                               | Switch    | Zone Condition      | Bypass memory                              |
+| keypad_key_pressed                               | String    | Button press        | The pressed button on the keypad           |
+
+## Rule actions
+
+The binding supports the following actions.
+
+### Bridge
+
+#### void restart()
+
+Restarts the binding communication.
+
+### Panel / Partition
+
+The partition and the panel support the following actions. When executed on panel level they will be run for all the partitions (for commands with pin, only for the partitions for which the pin has access).
+
+#### void turnOffAnySounderOrAlarm(String pin)
+
+Turn off any sounder or alarm
+
+#### void disarm(String pin)
+
+Disarm
+
+#### void armInAwayMode(String pin)
+
+Arm in away mode
+
+#### void armInStayMode(String pin)
+
+Arm in stay mode
+
+#### void cancel(String pin)
+
+Cancel
+
+#### void initiateAutoArm(String pin)
+
+Initiate auto-arm
+
+#### void startWalkTestMode(String pin)
+
+Start walk-test mode
+
+#### void stopWalkTestMode(String pin)
+
+Stop walk-test mode
+
+#### void stay()
+
+Stay (1 button arm / toggle interiors)
+
+#### void chime()
+
+Chime (toggle chime mode)
+
+#### void exit()
+
+Exit (1 button arm / toggle instant)
+
+#### void bypassInteriors()
+
+Bypass interiors
+
+#### void firePanic()
+
+Fire panic
+
+#### void medicalPanic()
+
+Medical panic
+
+#### void policePanic()
+
+Police panic
+
+#### void smokeDetectorReset()
+
+Smoke detector reset
+
+#### void autoCallbackDownload()
+
+Auto callback download
+
+#### void manualPickupDownload()
+
+Manual pickup download
+
+#### void enableSilentExit()
+
+Enable silent exit (for this arm cycle)
+
+#### void performTest()
+
+Perform test
+
+#### void groupBypass()
+
+Group bypass
+
+#### void auxiliaryFunction1()
+
+Auxiliary function 1
+
+#### void auxiliaryFunction2()
+
+Auxiliary function 2
+
+#### void startKeypadSounder()
+
+Start keypad sounder
+
+### Zone
+
+#### void bypass()
+
+Toggles the bypass state of the zone
+
+### Keypad
+
+#### void enterTerminalMode()
+
+Only one keypad should be in the Terminal Mode at a time
+
+#### void sendKeypadTextMessage(String displayLocation, String text)
+
+This action will display the ASCII text on the keypad that must be in Terminal Mode. Only NX-148e is supported. Display location: 0=top left corner
+
+### Rule Example
+
+In classic rules these are accessible as shown in the example below (adjust getActions with your ThingId and the rule condition)
+
+```
+rule "Zone Bypass on Chime Off"
+when
+    Item caddx_partition_37ad36b3_partition1_partition_chime_mode_on changed from ON to OFF
+then
+    val actions = getActions("caddx","caddx:zone:37ad36b3:zone5")
+    if (null === actions) {
+        logWarn("actions", "Actions not found, check thing ID for bridge")
+        return
+    }
+    actions.bypass()
+end
+```
 
 ## Full Example
 
