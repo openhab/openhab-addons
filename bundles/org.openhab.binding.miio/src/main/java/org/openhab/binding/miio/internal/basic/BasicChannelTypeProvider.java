@@ -17,6 +17,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -108,7 +109,7 @@ public class BasicChannelTypeProvider implements ChannelTypeProvider {
             if (category != null) {
                 channelTypeBuilder.withCategory(category);
             }
-            final List<String> tags = miChannel.getTags();
+            final LinkedHashSet<String> tags = miChannel.getTags();
             if (tags != null && tags.size() > 0) {
                 channelTypeBuilder.withTags(tags);
             }

@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -467,9 +467,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(miChannel.getChannelType());
             if (channelTypeRegistry.getChannelType(channelTypeUID) != null) {
                 newChannel = newChannel.withType(channelTypeUID);
-                final List<String> tags = miChannel.getTags();
+                final LinkedHashSet<String> tags = miChannel.getTags();
                 if (tags != null && tags.size() > 0) {
-                    newChannel.withDefaultTags(new HashSet<String>(tags));
+                    newChannel.withDefaultTags(tags);
                 }
             } else {
                 logger.debug("ChannelType '{}' is not available. Check the Json file for {}", channelTypeUID, model);
@@ -481,6 +481,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (useGeneratedChannelType) {
             newChannel = newChannel
                     .withType(new ChannelTypeUID(BINDING_ID, model.toUpperCase().replace(".", "_") + "_" + channel));
+            final LinkedHashSet<String> tags = miChannel.getTags();
+            if (tags != null && tags.size() > 0) {
+                newChannel.withDefaultTags(tags);
+            }
         }
         thingBuilder.withChannel(newChannel.build());
         return channelUID;

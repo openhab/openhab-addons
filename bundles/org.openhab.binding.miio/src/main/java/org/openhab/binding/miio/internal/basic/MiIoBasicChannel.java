@@ -16,6 +16,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -79,7 +80,7 @@ public class MiIoBasicChannel {
     private @Nullable String category;
     @SerializedName("tags")
     @Expose
-    private @Nullable List<String> tags = new ArrayList<String>();
+    private LinkedHashSet<String> tags = new LinkedHashSet<String>();
     @SerializedName("readmeComment")
     @Expose
     private @Nullable String readmeComment;
@@ -238,11 +239,11 @@ public class MiIoBasicChannel {
     }
 
     @Nullable
-    public List<String> getTags() {
+    public LinkedHashSet<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(LinkedHashSet<String> tags) {
         this.tags = tags;
     }
 
