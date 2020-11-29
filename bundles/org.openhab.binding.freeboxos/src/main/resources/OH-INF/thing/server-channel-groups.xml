@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="sensors">
+		<label>System sensors</label>
+	</channel-group-type>
+
+	<channel-group-type id="sysinfo">
+		<label>System Informations</label>
+		<channels>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="box-event" typeId="box-event"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="actions">
+		<label>Server settings</label>
+		<channels>
+			<channel id="wifi-status" typeId="wifi-status"/>
+			<channel id="ftp-status" typeId="ftp-status"/>
+			<channel id="upnpav-status" typeId="upnpav-status"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="samba">
+		<label>Windows file sharing</label>
+		<channels>
+			<channel id="fileshare-status" typeId="fileshare-status"/>
+			<channel id="printershare-status" typeId="printershare-status"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="display">
+		<label>Front display panel</label>
+		<channels>
+			<channel id="lcd-brightness" typeId="lcd-brightness"/>
+			<channel id="lcd-orientation" typeId="lcd-orientation"/>
+			<channel id="lcd-forced" typeId="lcd-forced"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="connection-status">
+		<label>Connection Status details</label>
+		<channels>
+			<channel id="line-status" typeId="line-status"/>
+			<channel id="ip-address" typeId="ip-address">
+				<label>Public IP</label>
+				<description>Public IP Address of the Freebox Server</description>
+			</channel>
+			<channel id="bandwidth-usage-up" typeId="bandwidth-usage">
+				<label>Bandwidth Usage Up</label>
+				<description>Portion of the upload bandwidth currently used</description>
+			</channel>
+			<channel id="bandwidth-usage-down" typeId="bandwidth-usage">
+				<label>Bandwidth Usage Down</label>
+				<description>Portion of the download bandwidth currently used</description>
+			</channel>
+			<channel id="rate-up" typeId="transfer-rate">
+				<label>Upload Rate</label>
+				<description>Current upload rate</description>
+			</channel>
+			<channel id="rate-down" typeId="transfer-rate">
+				<label>Download Rate</label>
+				<description>Current download rate</description>
+			</channel>
+			<channel id="bytes-up" typeId="transfer-bytes">
+				<label>Uploaded</label>
+				<description>Total data uploaded since last restart</description>
+			</channel>
+			<channel id="bytes-down" typeId="transfer-bytes">
+				<label>Downloaded</label>
+				<description>Total data downloaded since last restart</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
