@@ -31,6 +31,9 @@ import org.openhab.core.types.UnDefType;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -43,6 +46,7 @@ import io.netty.util.ReferenceCountUtil;
 @NonNullByDefault
 public class AmcrestHandler extends ChannelDuplexHandler {
     private String requestUrl = "Empty";
+    private String content = "";
     private IpCameraHandler ipCameraHandler;
 
     public AmcrestHandler(ThingHandler handler) {
@@ -60,47 +64,53 @@ public class AmcrestHandler extends ChannelDuplexHandler {
             return;
         }
         try {
-            String content = msg.toString();
-
-            if (!content.isEmpty()) {
-                ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
+            if (msg instanceof HttpContent) {
+                content += ((HttpContent) msg).content().toString(CharsetUtil.UTF_8);
             }
-            if (content.contains("Error: No Events")) {
-                if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion".equals(requestUrl)) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-                } else if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation".equals(requestUrl)) {
-                    ipCameraHandler.noAudioDetected();
+            if (msg instanceof LastHttpContent) {
+                if (!content.isEmpty()) {
+                    ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
                 }
-            } else if (content.contains("channels[0]=0")) {
-                if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion".equals(requestUrl)) {
-                    ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
-                } else if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation".equals(requestUrl)) {
-                    ipCameraHandler.audioDetected();
+                if (content.contains("Error: No Events")) {
+                    if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion".equals(requestUrl)) {
+                        ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
+                    } else if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation"
+                            .equals(requestUrl)) {
+                        ipCameraHandler.noAudioDetected();
+                    }
+                } else if (content.contains("channels[0]=0")) {
+                    if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion".equals(requestUrl)) {
+                        ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                    } else if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation"
+                            .equals(requestUrl)) {
+                        ipCameraHandler.audioDetected();
+                    }
                 }
-            }
 
-            if (content.contains("table.MotionDetect[0].Enable=false")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
-            } else if (content.contains("table.MotionDetect[0].Enable=true")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
-            }
-            // determine if the audio alarm is turned on or off.
-            if (content.contains("table.AudioDetect[0].MutationDetect=true")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
-            } else if (content.contains("table.AudioDetect[0].MutationDetect=false")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
-            }
-            // Handle AudioMutationThreshold alarm
-            if (content.contains("table.AudioDetect[0].MutationThreold=")) {
-                String value = ipCameraHandler.returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
-                ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value));
-            }
-            // Privacy Mode on/off
-            if (content.contains("Code=LensMaskOpen;") || content.contains("table.LeLensMask[0].Enable=true")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
-            } else if (content.contains("Code=LensMaskClose;")
-                    || content.contains("table.LeLensMask[0].Enable=false")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
+                if (content.contains("table.MotionDetect[0].Enable=false")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
+                } else if (content.contains("table.MotionDetect[0].Enable=true")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
+                }
+                // determine if the audio alarm is turned on or off.
+                if (content.contains("table.AudioDetect[0].MutationDetect=true")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
+                } else if (content.contains("table.AudioDetect[0].MutationDetect=false")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
+                }
+                // Handle AudioMutationThreshold alarm
+                if (content.contains("table.AudioDetect[0].MutationThreold=")) {
+                    String value = ipCameraHandler.returnValueFromString(content,
+                            "table.AudioDetect[0].MutationThreold=");
+                    ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value));
+                }
+                // Privacy Mode on/off
+                if (content.contains("Code=LensMaskOpen;") || content.contains("table.LeLensMask[0].Enable=true")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
+                } else if (content.contains("Code=LensMaskClose;")
+                        || content.contains("table.LeLensMask[0].Enable=false")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
+                }
             }
         } finally {
             ReferenceCountUtil.release(msg);
