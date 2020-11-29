@@ -30,10 +30,10 @@ public class OptionsValueListDTO {
     @Expose
     @Nullable
     public String value;
-    @SerializedName("description")
+    @SerializedName("label")
     @Expose
     @Nullable
-    public String description;
+    public String label;
 
     @Nullable
     public String getValue() {
@@ -45,11 +45,11 @@ public class OptionsValueListDTO {
     }
 
     @Nullable
-    public String getDescription() {
-        return description;
+    public String getLabel() {
+        return label;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

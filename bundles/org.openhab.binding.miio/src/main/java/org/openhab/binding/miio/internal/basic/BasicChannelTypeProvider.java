@@ -96,7 +96,7 @@ public class BasicChannelTypeProvider implements ChannelTypeProvider {
                     for (OptionsValueListDTO option : optionList) {
                         String value = option.getValue();
                         if (value != null) {
-                            options.add(new StateOption(value, option.getDescription()));
+                            options.add(new StateOption(value, option.getLabel()));
                         }
                     }
                     sdf.withOptions(options);
