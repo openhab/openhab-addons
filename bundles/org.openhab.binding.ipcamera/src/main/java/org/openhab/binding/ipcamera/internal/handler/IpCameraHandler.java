@@ -982,7 +982,6 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                 }
                 String input = (cameraConfig.getAlarmInputUrl().isEmpty()) ? rtspUri : cameraConfig.getAlarmInputUrl();
-                String outputOptions = "-f null -";
                 String filterOptions = "";
                 if (!audioAlarmEnabled) {
                     filterOptions = "-an";
@@ -991,16 +990,22 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 if (!motionAlarmEnabled && !ffmpegSnapshotGeneration) {
                     filterOptions = filterOptions.concat(" -vn");
+                } else if (motionAlarmEnabled && !cameraConfig.getMotionOptions().isEmpty()) {
+                    String usersMotionOptions = cameraConfig.getMotionOptions();
+                    if (usersMotionOptions.startsWith("-")) {
+                        // Need to put the users custom options first in the chain before the motion is detected
+                        filterOptions += " " + usersMotionOptions + ",select='gte(scene," + motionThreshold
+                                + ")',metadata=print";
+                    } else {
+                        filterOptions = filterOptions + " " + usersMotionOptions + " -vf select='gte(scene,"
+                                + motionThreshold + ")',metadata=print";
+                    }
                 } else if (motionAlarmEnabled) {
                     filterOptions = filterOptions
                             .concat(" -vf select='gte(scene," + motionThreshold + ")',metadata=print");
                 }
-                if (!cameraConfig.getUser().isEmpty()) {
-                    filterOptions += " ";// add space as the Framework does not allow spaces at start of config.
-                }
                 ffmpegRtspHelper = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, input,
-                        filterOptions + cameraConfig.getMotionOptions(), outputOptions, cameraConfig.getUser(),
-                        cameraConfig.getPassword());
+                        filterOptions, "-f null -", cameraConfig.getUser(), cameraConfig.getPassword());
                 localAlarms = ffmpegRtspHelper;
                 if (localAlarms != null) {
                     localAlarms.startConverting();
