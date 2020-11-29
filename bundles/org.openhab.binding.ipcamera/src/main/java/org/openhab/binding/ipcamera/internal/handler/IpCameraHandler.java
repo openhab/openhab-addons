@@ -1484,7 +1484,7 @@ public class IpCameraHandler extends BaseThingHandler {
     boolean streamIsStopped(String url) {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
         if (channelTracking != null) {
-            if (channelTracking.getChannel().isOpen()) {
+            if (channelTracking.getChannel().isActive()) {
                 return false; // stream is running.
             }
         }
@@ -1534,20 +1534,21 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    // runs every 8 seconds due to mjpeg streams not staying open unless they update this often.
+    /**
+     * {@link pollCameraRunnable} Polls every 8 seconds, to check camera is still ONLINE and keep mjpeg and alarm
+     * streams open and more.
+     *
+     */
     void pollCameraRunnable() {
         // Snapshot should be first to keep consistent time between shots
-        if (!snapshotUri.isEmpty()) {
-            if (updateImageChannel) {
-                sendHttpGET(snapshotUri);
-            }
-        }
         if (streamingAutoFps) {
             updateAutoFps = true;
             if (!snapshotPolling && !ffmpegSnapshotGeneration) {
                 // Dont need to poll if creating from RTSP stream with FFmpeg or we are polling at full rate already.
                 sendHttpGET(snapshotUri);
             }
+        } else if (!snapshotUri.isEmpty() && !snapshotPolling) {// we need to check camera is still online.
+            sendHttpGET(snapshotUri);
         }
         // NOTE: Use lowPriorityRequests if get request is not needed every poll.
         if (!lowPriorityRequests.isEmpty()) {
