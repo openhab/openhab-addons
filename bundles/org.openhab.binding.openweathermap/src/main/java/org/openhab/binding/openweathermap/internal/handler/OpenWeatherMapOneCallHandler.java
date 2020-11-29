@@ -161,7 +161,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                         toBeAddedChannels.addAll(createChannelsForGroup(CHANNEL_GROUP_FORECAST_TOMORROW,
                                 CHANNEL_GROUP_TYPE_ONECALL_DAILY_FORECAST));
                     }
-                    for (int i = (forecastDays < 2) ? 2 : forecastDays; i < newForecastDays; ++i) {
+                    for (int i = Math.max(forecastDays, 2); i < newForecastDays; i++) {
                         toBeAddedChannels.addAll(
                                 createChannelsForGroup(CHANNEL_GROUP_DAILY_FORECAST_PREFIX + Integer.toString(i),
                                         CHANNEL_GROUP_TYPE_ONECALL_DAILY_FORECAST));

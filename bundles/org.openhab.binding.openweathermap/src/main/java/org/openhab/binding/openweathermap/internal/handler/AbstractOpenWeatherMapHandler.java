@@ -209,7 +209,6 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
         logger.debug("Building channel group '{}' for thing '{}' and GroupType '{}'.", channelGroupId,
                 getThing().getUID(), channelGroupTypeUID);
         List<Channel> channels = new ArrayList<>();
-        @Nullable
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             for (ChannelBuilder channelBuilder : callback.createChannelBuilders(
