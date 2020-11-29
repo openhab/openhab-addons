@@ -113,7 +113,6 @@ For rgbwLed/rgbwwLed bulbs these channels are supported:
     ledlink                   Sync bulb to this zone within 3 seconds of light bulb socket power on
     ledunlink                 Clear bulb from this zone within 3 seconds of light bulb socket power on
 
-[(See the API)](http://www.limitlessled.com/dev/).
 
 Limitations:
 
