@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.caddx.internal.action;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.caddx.internal.handler.ThingHandlerZone;
@@ -33,11 +30,10 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "caddx")
 @NonNullByDefault
-public class CaddxZoneActions implements ThingActions, ICaddxZoneActions {
+public class CaddxZoneActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxZoneActions.class);
 
     private static final String HANDLER_IS_NULL = "ThingHandlerZone is null!";
-    private static final String ACTION_CLASS_IS_WRONG = "Instance is not a CaddxZoneActions class.";
 
     private @Nullable ThingHandlerZone handler;
 
@@ -53,26 +49,6 @@ public class CaddxZoneActions implements ThingActions, ICaddxZoneActions {
         return this.handler;
     }
 
-    private static ICaddxZoneActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(CaddxZoneActions.class.getName())) {
-            if (actions instanceof ICaddxZoneActions) {
-                return (ICaddxZoneActions) actions;
-            } else {
-                return (ICaddxZoneActions) Proxy.newProxyInstance(ICaddxZoneActions.class.getClassLoader(),
-                        new Class[] { ICaddxZoneActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-    }
-
-    @Override
     @RuleAction(label = "bypass", description = "Bypass the zone")
     public void bypass() {
         // Check of parameters
@@ -86,7 +62,7 @@ public class CaddxZoneActions implements ThingActions, ICaddxZoneActions {
     }
 
     @RuleAction(label = "bypass", description = "Bypass the zone")
-    public static void bypass(@Nullable ThingActions actions) {
-        invokeMethodOf(actions).bypass();
+    public static void bypass(ThingActions actions) {
+        ((CaddxZoneActions) actions).bypass();
     }
 }

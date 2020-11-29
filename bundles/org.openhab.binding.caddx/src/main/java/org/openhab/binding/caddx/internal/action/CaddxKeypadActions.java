@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.caddx.internal.action;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.caddx.internal.handler.ThingHandlerKeypad;
@@ -34,11 +31,10 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "caddx")
 @NonNullByDefault
-public class CaddxKeypadActions implements ThingActions, ICaddxKeypadActions {
+public class CaddxKeypadActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxKeypadActions.class);
 
     private static final String HANDLER_IS_NULL = "ThingHandlerKeypad is null!";
-    private static final String ACTION_CLASS_IS_WRONG = "Instance is not a CaddxKeypadActions class.";
     private static final String TEXT_IS_NULL = "The value for the text is null. Action not executed.";
     private static final String DISPLAY_LOCATION_IS_NULL = "The value for the display location is null. Action not executed.";
     private static final String DISPLAY_LOCATION_IS_INVALID = "The value for the display location [{}] is invalid. Action not executed.";
@@ -57,26 +53,6 @@ public class CaddxKeypadActions implements ThingActions, ICaddxKeypadActions {
         return this.handler;
     }
 
-    private static ICaddxKeypadActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(CaddxKeypadActions.class.getName())) {
-            if (actions instanceof ICaddxKeypadActions) {
-                return (ICaddxKeypadActions) actions;
-            } else {
-                return (ICaddxKeypadActions) Proxy.newProxyInstance(ICaddxKeypadActions.class.getClassLoader(),
-                        new Class[] { ICaddxKeypadActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-    }
-
-    @Override
     @RuleAction(label = "enterTerminalMode", description = "Enter terminal mode on the selected keypad")
     public void enterTerminalMode() {
         ThingHandlerKeypad thingHandler = this.handler;
@@ -88,12 +64,10 @@ public class CaddxKeypadActions implements ThingActions, ICaddxKeypadActions {
         thingHandler.enterTerminalMode();
     }
 
-    @RuleAction(label = "enterTerminalMode", description = "Enter terminal mode on the selected keypad")
-    public static void enterTerminalMode(@Nullable ThingActions actions) {
-        invokeMethodOf(actions).enterTerminalMode();
+    public static void enterTerminalMode(ThingActions actions) {
+        ((CaddxKeypadActions) actions).enterTerminalMode();
     }
 
-    @Override
     @RuleAction(label = "sendKeypadTextMessage", description = "Display a message on the Keypad")
     public void sendKeypadTextMessage(
             @ActionInput(name = "displayLocation", label = "Display Location", description = "Display storage location (0=top left corner)") @Nullable String displayLocation,
@@ -127,9 +101,8 @@ public class CaddxKeypadActions implements ThingActions, ICaddxKeypadActions {
         thingHandler.sendKeypadTextMessage(displayLocation, text);
     }
 
-    @RuleAction(label = "sendKeypadTextMessage", description = "Display a message on the Keypad")
-    public static void sendKeypadTextMessage(@Nullable ThingActions actions, @Nullable String displayLocation,
+    public static void sendKeypadTextMessage(ThingActions actions, @Nullable String displayLocation,
             @Nullable String text) {
-        invokeMethodOf(actions).sendKeypadTextMessage(displayLocation, text);
+        ((CaddxKeypadActions) actions).sendKeypadTextMessage(displayLocation, text);
     }
 }

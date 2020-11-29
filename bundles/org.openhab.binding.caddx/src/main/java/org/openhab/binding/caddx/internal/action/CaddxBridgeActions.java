@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.caddx.internal.action;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.caddx.internal.handler.CaddxBridgeHandler;
@@ -33,11 +30,10 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "caddx")
 @NonNullByDefault
-public class CaddxBridgeActions implements ThingActions, ICaddxBridgeActions {
+public class CaddxBridgeActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxBridgeActions.class);
 
     private static final String HANDLER_IS_NULL = "CaddxBridgeHandler is null!";
-    private static final String ACTION_CLASS_IS_WRONG = "Instance is not a CaddxBridgeActions class.";
     private @Nullable CaddxBridgeHandler handler;
 
     @Override
@@ -52,26 +48,6 @@ public class CaddxBridgeActions implements ThingActions, ICaddxBridgeActions {
         return this.handler;
     }
 
-    private static ICaddxBridgeActions invokeMethodOf(@Nullable ThingActions actions) {
-        if (actions == null) {
-            throw new IllegalArgumentException("actions cannot be null");
-        }
-        if (actions.getClass().getName().equals(CaddxBridgeActions.class.getName())) {
-            if (actions instanceof ICaddxBridgeActions) {
-                return (ICaddxBridgeActions) actions;
-            } else {
-                return (ICaddxBridgeActions) Proxy.newProxyInstance(ICaddxBridgeActions.class.getClassLoader(),
-                        new Class[] { ICaddxBridgeActions.class }, (Object proxy, Method method, Object[] args) -> {
-                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
-                                    method.getParameterTypes());
-                            return m.invoke(actions, args);
-                        });
-            }
-        }
-        throw new IllegalArgumentException(ACTION_CLASS_IS_WRONG);
-    }
-
-    @Override
     @RuleAction(label = "restart", description = "Restart the binding")
     public void restart() {
         // Check of parameters
@@ -85,7 +61,7 @@ public class CaddxBridgeActions implements ThingActions, ICaddxBridgeActions {
     }
 
     @RuleAction(label = "restart", description = "Restart the binding")
-    public static void restart(@Nullable ThingActions actions) {
-        invokeMethodOf(actions).restart();
+    public static void restart(ThingActions actions) {
+        ((CaddxBridgeActions) actions).restart();
     }
 }
