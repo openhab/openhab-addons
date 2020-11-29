@@ -128,9 +128,9 @@ public class EpsonProjectorDevice {
             ready = false;
             ScheduledExecutorService scheduler = this.scheduler;
             if (scheduler != null) {
-                scheduler.scheduleWithFixedDelay(() -> {
+                scheduler.schedule(() -> {
                     ready = true;
-                }, 0, 10000, TimeUnit.MILLISECONDS);
+                }, 10, TimeUnit.SECONDS);
             }
         }
 
