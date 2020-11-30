@@ -100,13 +100,11 @@ public class ConsumedThingImpl implements ConsumedThing {
     }
 
     private URI getPropertyUri(String propertyName) {
-        if (description.links != null) {
-            var propertyDescription = description.properties.get(propertyName);
-            if (propertyDescription != null) {
-                for (var link : propertyDescription.links) {
-                    if ((link.rel != null) && (link.href != null) && link.rel.equals("property")) {
-                        return webThingURI.resolve(link.href);
-                    }
+        var propertyDescription = description.properties.get(propertyName);
+        if (propertyDescription != null) {
+            for (var link : propertyDescription.links) {
+                if ((link.rel != null) && (link.href != null) && link.rel.equals("property")) {
+                    return webThingURI.resolve(link.href);
                 }
             }
         }
@@ -115,11 +113,9 @@ public class ConsumedThingImpl implements ConsumedThing {
     }
 
     private URI getEventStreamUri() {
-        if (this.description.links != null) {
-            for (var link : this.description.links) {
-                if ((link.rel != null) && (link.href != null) && link.rel.equals("alternate")) {
-                    return URI.create(link.href);
-                }
+        for (var link : this.description.links) {
+            if ((link.rel != null) && (link.href != null) && link.rel.equals("alternate")) {
+                return URI.create(link.href);
             }
         }
         throw new RuntimeException("webthing resource " + webThingURI
