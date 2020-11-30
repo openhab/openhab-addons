@@ -152,7 +152,8 @@ public class WebthingChannelLinkTest {
         var websocketConnectionFactory = new WebthingTest.TestWebsocketConnectionFactory();
         var webthing = WebthingTest.createTestWebthing("http://example.org:8090/", httpClientMock,
                 websocketConnectionFactory);
-        var channel = Channels.createChannel(thingUID, propertyName, Objects.requireNonNull(webthing.getPropertyDescription(propertyName)));
+        var channel = Channels.createChannel(thingUID, propertyName,
+                Objects.requireNonNull(webthing.getPropertyDescription(propertyName)));
 
         var testWebthingThingHandler = new TestWebthingThingHandler();
 
