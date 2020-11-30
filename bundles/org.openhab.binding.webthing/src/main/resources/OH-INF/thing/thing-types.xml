@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="webthing"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="generic">
+		<label>WebThing Binding Thing</label>
+		<description>Sample thing for WebThing Binding</description>
+
+		<config-description>
+			<parameter name="webThingURI" type="text" required="true">
+				<label>webThingURI</label>
+				<description>This is the url of the webthing </description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+
+	<channel-type id="Number">
+		<item-type>Number</item-type>
+		<label>Webthing Binding Channel</label>
+		<description>Number channel for Webthing Binding</description>
+	</channel-type>
+
+	<channel-type id="String">
+		<item-type>String</item-type>
+		<label>Webthing Binding Channel</label>
+		<description>String channel for Webthing Binding</description>
+	</channel-type>
+
+	<channel-type id="Contact">
+		<item-type>Contact</item-type>
+		<label>Webthing Binding Channel</label>
+		<description>Contact channel for Webthing Binding</description>
+	</channel-type>
+
+	<channel-type id="Switch">
+		<item-type>Switch</item-type>
+		<label>Webthing Binding Channel</label>
+		<description>Switch channel for Webthing Binding</description>
+	</channel-type>
+
+	<channel-type id="Color">
+		<item-type>Color</item-type>
+		<label>Webthing Binding Channel</label>
+		<description>Color channel for Webthing Binding</description>
+	</channel-type>
+
+	<channel-type id="Dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Webthing Binding Channel</label>
+		<description>Dimmer channel for Webthing Binding</description>
+	</channel-type>
+
+
+</thing:thing-descriptions>
