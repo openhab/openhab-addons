@@ -13,11 +13,13 @@
 package org.openhab.binding.webthing.internal.link;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.WebThingHandler;
 import org.openhab.binding.webthing.internal.client.ConsumedThing;
+import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
@@ -31,9 +33,12 @@ import org.slf4j.LoggerFactory;
  * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
-public class ChannelToPropertyLink extends AbstractLink implements WebThingHandler.ItemChangedListener {
+public class ChannelToPropertyLink implements WebThingHandler.ItemChangedListener {
     private final Logger logger = LoggerFactory.getLogger(ChannelToPropertyLink.class);
     private final String propertyName;
+    private final Property property;
+    private final ConsumedThing webThing;
+    private final TypeConverter typeConverter;
 
     /**
      * establish a upstream link from a Channel to a WebThing property
@@ -50,7 +55,10 @@ public class ChannelToPropertyLink extends AbstractLink implements WebThingHandl
 
     private ChannelToPropertyLink(ChannelHandler channelHandler, Channel channel, ConsumedThing webThing,
             String propertyName) {
-        super(webThing, propertyName, channel);
+        this.webThing = webThing;
+        var itemType = Optional.ofNullable(channel.getAcceptedItemType()).orElse("String");
+        this.property = webThing.getThingDescription().properties.get(propertyName);
+        this.typeConverter = TypeConverters.create(itemType, property.type);
         this.propertyName = propertyName;
         channelHandler.observeChannel(channel.getUID(), this);
     }
