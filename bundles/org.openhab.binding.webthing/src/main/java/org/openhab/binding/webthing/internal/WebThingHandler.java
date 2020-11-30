@@ -63,7 +63,9 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
         isOpen.set(true);
         updateStatus(ThingStatus.UNKNOWN);
 
+        // perform connect in background
         scheduler.execute(() -> {
+            // WebThing URI present?
             var optionalWebThingURI = getWebThingURI();
             if (optionalWebThingURI.isPresent()) {
 
@@ -76,7 +78,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
                             HEALTH_CHECK_PERIOD.getSeconds());
                 }
 
-                // starting alive watchdog which check the healthiness of the webthing connection, periodically
+                // starting alive watchdog that checks the healthiness of the WebThing connection, periodically
                 var aliveWatchdog = new AliveWatchdog();
                 aliveWatchdog.start();
                 aliveWatchdogRef.getAndSet(Optional.of(aliveWatchdog)).ifPresent(AliveWatchdog::destroy);
@@ -91,6 +93,8 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     public void dispose() {
         try {
             isOpen.set(false);
+
+            // terminate WebThing connection as well as the alive watchdog
             webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::destroy);
             aliveWatchdogRef.getAndSet(Optional.empty()).ifPresent(AliveWatchdog::destroy);
         } finally {
@@ -101,15 +105,15 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     private boolean tryReconnect(URI webThingURI) {
         if (isOpen.get()) {
             try {
-                // create the WebThing resource (if success, {@link WebThingHandler#onConnected} will be called,
-                // implicitly)
+                // create the client-side WebThing representation (if success, {@link WebThingHandler#onConnected} will
+                // be called, implicitly)
                 var webThing = ConsumedThingFactory.instance().create(webThingURI, this);
                 this.webThingConnectionRef.getAndSet(Optional.of(webThing)).ifPresent(ConsumedThing::destroy);
 
                 // update the Thing structure based on the WebThing description
                 thingStructureChanged(webThing);
 
-                // connect the Thing's channels with the WebThing properties
+                // link the Thing's channels with the WebThing properties
                 establishWebThingChannelLinks(webThing);
 
                 lastReconnect.set(Instant.now());
