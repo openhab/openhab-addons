@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -40,6 +41,8 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalSce
 import org.openhab.binding.digitalstrom.internal.providers.DsDeviceThingTypeProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DiscoveryServiceManager} manages the different scene and device discovery services and informs them about
@@ -50,6 +53,8 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class DiscoveryServiceManager
         implements SceneStatusListener, DeviceStatusListener, TemperatureControlStatusListener {
+
+    private final Logger logger = LoggerFactory.getLogger(DiscoveryServiceManager.class);
 
     private final Map<String, AbstractDiscoveryService> discoveryServices;
     private final Map<String, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -194,20 +199,24 @@ public class DiscoveryServiceManager
 
     @Override
     public void onDeviceAdded(GeneralDeviceInformation device) {
-        if (device instanceof Device) {
-            String id = ((Device) device).getHWinfo().substring(0, 2);
-            if (((Device) device).isSensorDevice()) {
-                id = ((Device) device).getHWinfo();
+        try {
+            if (device instanceof Device) {
+                String id = ((Device) device).getHWinfo().substring(0, 2);
+                if (((Device) device).isSensorDevice()) {
+                    id = ((Device) device).getHWinfo();
+                }
+                if (discoveryServices.get(id) != null) {
+                    ((DeviceDiscoveryService) discoveryServices.get(id)).onDeviceAdded(device);
+                }
             }
-            if (discoveryServices.get(id) != null) {
-                ((DeviceDiscoveryService) discoveryServices.get(id)).onDeviceAdded(device);
+            if (device instanceof Circuit) {
+                if (discoveryServices.get(DsDeviceThingTypeProvider.SupportedThingTypes.circuit.toString()) != null) {
+                    ((DeviceDiscoveryService) discoveryServices
+                            .get(DsDeviceThingTypeProvider.SupportedThingTypes.circuit.toString())).onDeviceAdded(device);
+                }
             }
-        }
-        if (device instanceof Circuit) {
-            if (discoveryServices.get(DsDeviceThingTypeProvider.SupportedThingTypes.circuit.toString()) != null) {
-                ((DeviceDiscoveryService) discoveryServices
-                        .get(DsDeviceThingTypeProvider.SupportedThingTypes.circuit.toString())).onDeviceAdded(device);
-            }
+        }catch (Exception ex){
+            logger.error("Unable to add devices {}", device);
         }
     }
 
