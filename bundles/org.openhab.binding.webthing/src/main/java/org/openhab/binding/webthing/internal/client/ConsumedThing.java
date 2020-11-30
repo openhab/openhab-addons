@@ -17,8 +17,6 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
 
-
-
 /**
  * A WebThing represents the client-side proxy of a remote devices implementing the Web Thing API according to
  * https://iot.mozilla.org/wot/
@@ -34,33 +32,32 @@ public interface ConsumedThing {
      */
     WebThingDescription getThingDescription();
 
-
     /**
      * Makes a request for Property value change notifications
      *
-     * @param propertyName   the property to be observed
-     * @param listener       the listener to call on changes
-     * @throws IOException   if the Webthing resource could not be connected
+     * @param propertyName the property to be observed
+     * @param listener the listener to call on changes
+     * @throws IOException if the Webthing resource could not be connected
      */
     void observeProperty(String propertyName, PropertyChangedListener listener) throws IOException;
 
     /**
      * Writes a single Property.
      *
-     * @param propertyName    the propertyName
+     * @param propertyName the propertyName
      * @return the current propertyValue
      * @throws IOException if the WebThing resource could not be connected
      */
-     Object readProperty(String propertyName) throws IOException;
+    Object readProperty(String propertyName) throws IOException;
 
     /**
-     *  Writes a single Property.
+     * Writes a single Property.
      *
-     * @param propertyName  the propertyName
-     * @param newValue      the new propertyValue
-     * @throws IOException  if the WebThing resource could not be connected
+     * @param propertyName the propertyName
+     * @param newValue the new propertyValue
+     * @throws IOException if the WebThing resource could not be connected
      */
-     void writeProperty(String propertyName, Object newValue) throws IOException;
+    void writeProperty(String propertyName, Object newValue) throws IOException;
 
     /**
      * closes the connection

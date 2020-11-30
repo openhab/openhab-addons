@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.client.ConsumedThing;
 import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.core.thing.Channel;
-
-import java.util.Optional;
-import java.util.OptionalInt;
-
 
 /**
  * Implementation base of a link between a WebThing Property and a channel

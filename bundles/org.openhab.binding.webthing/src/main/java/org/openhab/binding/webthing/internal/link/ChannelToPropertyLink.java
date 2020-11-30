@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.webthing.internal.WebThingHandler;
 import org.openhab.binding.webthing.internal.ChannelHandler;
+import org.openhab.binding.webthing.internal.WebThingHandler;
 import org.openhab.binding.webthing.internal.client.ConsumedThing;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-
 
 /**
  * The {@link ChannelToPropertyLink} represents an upstream link from a Channel to a WebThing property.
@@ -44,11 +43,13 @@ public class ChannelToPropertyLink extends AbstractLink implements WebThingHandl
      * @param webthing the WebThing to be linked
      * @param propertyName the property name
      */
-    public static void establish(ChannelHandler channelHandler, Channel channel, ConsumedThing webthing, String propertyName) {
+    public static void establish(ChannelHandler channelHandler, Channel channel, ConsumedThing webthing,
+            String propertyName) {
         new ChannelToPropertyLink(channelHandler, channel, webthing, propertyName);
     }
 
-    private ChannelToPropertyLink(ChannelHandler channelHandler, Channel channel, ConsumedThing webThing, String propertyName) {
+    private ChannelToPropertyLink(ChannelHandler channelHandler, Channel channel, ConsumedThing webThing,
+            String propertyName) {
         super(webThing, propertyName, channel);
         this.propertyName = propertyName;
         channelHandler.observeChannel(channel.getUID(), this);

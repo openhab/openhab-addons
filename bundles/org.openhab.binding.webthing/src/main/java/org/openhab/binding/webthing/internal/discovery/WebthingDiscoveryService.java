@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.webthing.internal.discovery;
 
+import static org.openhab.binding.webthing.internal.WebThingBindingConstants.MDNS_SERVICE_TYPE;
+import static org.openhab.binding.webthing.internal.WebThingBindingConstants.THING_TYPE_UID;
 
 import java.io.IOException;
 import java.net.URI;
@@ -42,9 +44,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.webthing.internal.WebThingBindingConstants.MDNS_SERVICE_TYPE;
-import static org.openhab.binding.webthing.internal.WebThingBindingConstants.THING_TYPE_UID;
-
 /**
  * WebThing discovery service based on mDNS. Refer https://iot.mozilla.org/wot/#web-thing-discovery
  *
@@ -61,8 +60,8 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
     /**
      * constructor
      *
-     * @param configProperties  the config props
-     * @param mdnsClient  the underlying mDNS client
+     * @param configProperties the config props
+     * @param mdnsClient the underlying mDNS client
      */
     @Activate
     public WebthingDiscoveryService(@Nullable Map<String, Object> configProperties, @Reference MDNSClient mdnsClient) {
@@ -80,14 +79,12 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
         return Set.of(THING_TYPE_UID);
     }
 
-
     @Deactivate
     @Override
     protected void deactivate() {
         super.deactivate();
         mdnsClient.removeServiceListener(MDNS_SERVICE_TYPE, this);
     }
-
 
     @Override
     public void serviceAdded(@NonNullByDefault({}) ServiceEvent serviceEvent) {
@@ -138,7 +135,8 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
      * @param isBackground true, if is background task
      */
     private void scan(boolean isBackground) {
-        var serviceInfos = isBackground ? mdnsClient.list(MDNS_SERVICE_TYPE) :  mdnsClient.list(MDNS_SERVICE_TYPE, FOREGROUND_SCAN_TIMEOUT);
+        var serviceInfos = isBackground ? mdnsClient.list(MDNS_SERVICE_TYPE)
+                : mdnsClient.list(MDNS_SERVICE_TYPE, FOREGROUND_SCAN_TIMEOUT);
         logger.debug("got {} mDNS entries", serviceInfos.length);
 
         var discoveryTasks = Arrays.stream(serviceInfos).map(DiscoveryTask::new).collect(Collectors.toList());
@@ -168,7 +166,8 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                 for (var discoveryResult : discoverWebThing(serviceInfo)) {
                     results.add(discoveryResult);
                     thingDiscovered(discoveryResult);
-                    logger.debug("WebThing '{}' ({}) discovered", discoveryResult.getLabel(), discoveryResult.getProperties().get("webThingURI"));
+                    logger.debug("WebThing '{}' ({}) discovered", discoveryResult.getLabel(),
+                            discoveryResult.getProperties().get("webThingURI"));
                 }
             } catch (Exception e) {
                 logger.warn("error occurred by discovering " + serviceInfo.getNiceTextString(), e);
@@ -177,12 +176,10 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
         }
     }
 
-
-
     /**
      * convert the serviceInfo result of the mDNS scan to discovery results
      *
-     * @param serviceInfo  the service info
+     * @param serviceInfo the service info
      * @return the associated discovery result
      */
     private Set<DiscoveryResult> discoverWebThing(ServiceInfo serviceInfo) {
@@ -210,15 +207,16 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                 if (optionalDiscoveryResult.isPresent()) {
                     discoveryResults.add(optionalDiscoveryResult.get());
                 } else {
-                    // check multiple WebThing path via https (e.g. https://192.168.0.23:8433/0, https://192.168.0.23:8433/1,...)
-                    outer:
-                    for (int i = 0; i < 50; i++) {  // search 50 entries at maximum
+                    // check multiple WebThing path via https (e.g. https://192.168.0.23:8433/0,
+                    // https://192.168.0.23:8433/1,...)
+                    outer: for (int i = 0; i < 50; i++) { // search 50 entries at maximum
                         optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + i, true));
                         if (optionalDiscoveryResult.isPresent()) {
                             discoveryResults.add(optionalDiscoveryResult.get());
                         } else if (i == 0) {
-                            // check multiple WebThing path via plain http (e.g. http://192.168.0.23:8433/0, http://192.168.0.23:8433/1,...)
-                            for (int j = 0; j < 50; j++) {  // search 50 entries at maximum
+                            // check multiple WebThing path via plain http (e.g. http://192.168.0.23:8433/0,
+                            // http://192.168.0.23:8433/1,...)
+                            for (int j = 0; j < 50; j++) { // search 50 entries at maximum
                                 optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + j, false));
                                 if (optionalDiscoveryResult.isPresent()) {
                                     discoveryResults.add(optionalDiscoveryResult.get());
@@ -239,18 +237,20 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
 
     private Optional<DiscoveryResult> discoverWebThing(URI uri) {
         try {
-            var description  = descriptionLoader.loadWebthingDescription(uri, Duration.ofSeconds(5));
+            var description = descriptionLoader.loadWebthingDescription(uri, Duration.ofSeconds(5));
 
             var id = (uri.getHost() + uri.getPort() + uri.getPath()).replaceAll("\\W", "");
             var thingUID = new ThingUID(THING_TYPE_UID, id);
-            return Optional.of(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_UID).withProperty("webThingURI", uri).withLabel(description.title).build());
+            return Optional.of(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_UID)
+                    .withProperty("webThingURI", uri).withLabel(description.title).build());
         } catch (IOException ioe) {
             return Optional.empty();
         }
     }
 
-    private URI toURI(String host, int port,String path, boolean isHttps) {
-        return isHttps ? URI.create("https://" + host + ":" + port + path) : URI.create("http://" + host + ":" + port + path);
+    private URI toURI(String host, int port, String path, boolean isHttps) {
+        return isHttps ? URI.create("https://" + host + ":" + port + path)
+                : URI.create("http://" + host + ":" + port + path);
     }
 
     private void considerService(ServiceEvent serviceEvent) {

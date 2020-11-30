@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.webthing.internal.client.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Web Thing WebSocket API property status message. Refer https://iot.mozilla.org/wot/#propertystatus-message
@@ -31,9 +30,6 @@ public class PropertyStatusMessage {
 
     @Override
     public String toString() {
-        return "PropertyStatusMessage{" +
-                "messageType='" + messageType + '\'' +
-                ", data=" + data +
-                '}';
+        return "PropertyStatusMessage{" + "messageType='" + messageType + '\'' + ", data=" + data + '}';
     }
 }
