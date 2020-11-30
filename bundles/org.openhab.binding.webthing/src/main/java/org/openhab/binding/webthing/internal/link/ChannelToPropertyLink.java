@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.WebThingHandler;
 import org.openhab.binding.webthing.internal.client.ConsumedThing;
-import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class ChannelToPropertyLink implements WebThingHandler.ItemChangedListener {
     private final Logger logger = LoggerFactory.getLogger(ChannelToPropertyLink.class);
     private final String propertyName;
-    private final Property property;
+    private final String propertyType;
     private final ConsumedThing webThing;
     private final TypeConverter typeConverter;
 
@@ -57,8 +56,8 @@ public class ChannelToPropertyLink implements WebThingHandler.ItemChangedListene
             String propertyName) {
         this.webThing = webThing;
         var itemType = Optional.ofNullable(channel.getAcceptedItemType()).orElse("String");
-        this.property = webThing.getThingDescription().properties.get(propertyName);
-        this.typeConverter = TypeConverters.create(itemType, property.type);
+        this.propertyType = webThing.getThingDescription().properties.get(propertyName).type;
+        this.typeConverter = TypeConverters.create(itemType, this.propertyType);
         this.propertyName = propertyName;
         channelHandler.observeChannel(channel.getUID(), this);
     }
@@ -68,9 +67,9 @@ public class ChannelToPropertyLink implements WebThingHandler.ItemChangedListene
         try {
             var propertyValue = typeConverter.toPropertyValue(stateCommand);
             webThing.writeProperty(propertyName, typeConverter.toPropertyValue((State) stateCommand));
-            logger.debug("property {} updated with {} ({}) ", propertyName, propertyValue, property.type);
+            logger.debug("property {} updated with {} ({}) ", propertyName, propertyValue, this.propertyType);
         } catch (IOException ioe) {
-            logger.warn("updating property {} ({}) with {} failed", propertyName, property.type, stateCommand, ioe);
+            logger.warn("updating property {} ({}) with {} failed", propertyName, this.propertyType, stateCommand, ioe);
         }
     }
 }
