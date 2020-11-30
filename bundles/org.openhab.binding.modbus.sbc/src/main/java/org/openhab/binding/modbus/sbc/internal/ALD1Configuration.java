@@ -21,6 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ALD1Configuration {
-    public int address;
     public int pollInterval;
 }
