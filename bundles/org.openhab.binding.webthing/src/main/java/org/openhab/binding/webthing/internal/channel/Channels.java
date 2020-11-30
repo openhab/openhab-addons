@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.webthing.internal.channel;
 
-
 import static org.openhab.binding.webthing.internal.WebThingBindingConstants.BINDING_ID;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.client.dto.Property;
@@ -23,10 +24,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
-
-import java.util.Set;
-
-
 
 /**
  * The {@link Channels} class is an utility class to create Channel based on the property characteristics as
@@ -40,7 +37,7 @@ public class Channels {
     /**
      * create a ChannelUIFD identifier for a given property name
      *
-     * @param thingUID  the thing uid of the associated WebThing
+     * @param thingUID the thing uid of the associated WebThing
      * @param propertyName the property name
      * @return the ChannelUID identifier
      */
@@ -51,7 +48,7 @@ public class Channels {
     /**
      * create a Channel base on a given WebThing property
      *
-     * @param thingUID   the thing uid of the associated WebThing
+     * @param thingUID the thing uid of the associated WebThing
      * @param propertyName the property name
      * @param property the WebThing property
      * @return the Channel according to the properties characteristics

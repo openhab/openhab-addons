@@ -14,7 +14,6 @@ package org.openhab.binding.webthing.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-
 /**
  * Connection listener that will be notified, if the connection state is changed
  *
@@ -29,12 +28,10 @@ public interface ConnectionListener {
     ConnectionListener EMPTY = new ConnectionListener() {
         @Override
         public void onConnected() {
-
         }
 
         @Override
         public void onDisconnected(String reason) {
-
         }
     };
 

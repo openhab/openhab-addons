@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.webthing.internal.client.dto.Property;
-
 
 /**
  * The {@link TypeMapping} class defines the mapping of Item types <-> WebThing Property types.
@@ -33,12 +31,14 @@ public class TypeMapping {
 
     /**
      * maps a property type to an item type
-     * @param propertyMetadata  the property meta data
+     * 
+     * @param propertyMetadata the property meta data
      * @return the associated item type
      */
     public static ItemType toItemType(Property propertyMetadata) {
         String type = "String";
-        @Nullable String tag = null;
+        @Nullable
+        String tag = null;
 
         switch (propertyMetadata.typeKeyword) {
             case "AlarmProperty":
@@ -93,10 +93,11 @@ public class TypeMapping {
             case "ThermostatModeProperty":
                 break;
             case "LevelProperty":
-                if((propertyMetadata.unit !=null) && propertyMetadata.unit.toLowerCase(Locale.ENGLISH).equals("percent")) {
+                if ((propertyMetadata.unit != null)
+                        && propertyMetadata.unit.toLowerCase(Locale.ENGLISH).equals("percent")) {
                     type = "Dimmer";
-                } else{
-                    type ="Number";
+                } else {
+                    type = "Number";
                 }
                 break;
             default:
@@ -118,7 +119,6 @@ public class TypeMapping {
 
         return new ItemType(type, tag);
     }
-
 
     /**
      * The item type description

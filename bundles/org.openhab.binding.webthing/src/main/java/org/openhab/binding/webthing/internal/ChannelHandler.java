@@ -17,9 +17,9 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
-
 /**
- * The {@link ChannelHandler} class provides methods to observe a channel as well to update an Item associated to a channel
+ * The {@link ChannelHandler} class provides methods to observe a channel as well to update an Item associated to a
+ * channel
  *
  * @author Gregor Roth - Initial contribution
  */
@@ -29,19 +29,18 @@ public interface ChannelHandler {
     /**
      * register a listener to observer the channel regarding item change events
      *
-     * @param channelUID  the channel identifier
-     * @param listener  the listener to be notified
+     * @param channelUID the channel identifier
+     * @param listener the listener to be notified
      */
     void observeChannel(ChannelUID channelUID, ItemChangedListener listener);
 
     /**
      * updates an Item state of a dedicated channel
      *
-     * @param channelUID  the channel identifier
+     * @param channelUID the channel identifier
      * @param command the state update command
      */
     void updateItemState(ChannelUID channelUID, Command command);
-
 
     /**
      * Listener that will be notified, if a Item state is changed
@@ -50,8 +49,9 @@ public interface ChannelHandler {
 
         /**
          * item change callback method
-         * @param channelUID     the channel identifier
-         * @param stateCommand   the item change command
+         * 
+         * @param channelUID the channel identifier
+         * @param stateCommand the item change command
          */
         void onItemStateChanged(ChannelUID channelUID, State stateCommand);
     }

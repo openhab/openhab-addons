@@ -21,7 +21,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
-
 /**
  * The {@link WebThingHandlerFactory} is responsible for creating things and thing
  * handlers.

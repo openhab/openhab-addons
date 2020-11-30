@@ -12,13 +12,6 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-import com.google.gson.Gson;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.webthing.internal.client.dto.Property;
-import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -29,6 +22,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.webthing.internal.client.dto.Property;
+import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The implementation of the client-side Webthing representation. This is based on HTTP. Bindings to alternative
@@ -47,28 +47,30 @@ public class ConsumedThingImpl implements ConsumedThing {
     private final Map<String, Property> propertyMap;
     private final WebSocketConnection websocketDownstream;
 
-
     /**
      * constructor
      *
-     * @param webThingURI         the identifier of a WebThing resource
-     * @param connectionListener  the connection listerner to observe theconnection state of the Wbthing connection
-     * @throws IOException        it the WebThing can not be connected
+     * @param webThingURI the identifier of a WebThing resource
+     * @param connectionListener the connection listerner to observe theconnection state of the Wbthing connection
+     * @throws IOException it the WebThing can not be connected
      */
     ConsumedThingImpl(URI webThingURI, ConnectionListener connectionListener) throws IOException {
-        this(webThingURI, connectionListener, HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build(), WebSocketConnectionFactory.instance());
+        this(webThingURI, connectionListener,
+                HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build(),
+                WebSocketConnectionFactory.instance());
     }
 
     /**
      * constructor
      *
      * @param webthingUrl the identifier of a WebThing resource
-     * @param connectionListener  the connection listener to observe the connection state of the WebThing connection
-     * @param httpClient  the http client to use
-     * @param  webSocketConnectionFactory the Websocket connectino fctory to be used
+     * @param connectionListener the connection listener to observe the connection state of the WebThing connection
+     * @param httpClient the http client to use
+     * @param webSocketConnectionFactory the Websocket connectino fctory to be used
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webthingUrl, ConnectionListener connectionListener, HttpClient httpClient, WebSocketConnectionFactory webSocketConnectionFactory) throws IOException {
+    ConsumedThingImpl(URI webthingUrl, ConnectionListener connectionListener, HttpClient httpClient,
+            WebSocketConnectionFactory webSocketConnectionFactory) throws IOException {
         this(webthingUrl, connectionListener, httpClient, webSocketConnectionFactory, DEFAULT_PING_PERIOD);
     }
 
@@ -76,19 +78,22 @@ public class ConsumedThingImpl implements ConsumedThing {
      * constructor
      *
      * @param webthingUrl the identifier of a WebThing resource
-     * @param connectionListener  the connection listener to observe the connection state of the WebThing connection
-     * @param httpClient  the http client to use
-     * @param  webSocketConnectionFactory the Websocket connectino fctory to be used
+     * @param connectionListener the connection listener to observe the connection state of the WebThing connection
+     * @param httpClient the http client to use
+     * @param webSocketConnectionFactory the Websocket connectino fctory to be used
      * @param pingPeriod the ping period tothe the healthiness of the connection
      * @throws IOException if the WebThing can not be connected
      */
-    private ConsumedThingImpl(URI webthingUrl, ConnectionListener connectionListener, HttpClient httpClient, WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod) throws IOException {
+    private ConsumedThingImpl(URI webthingUrl, ConnectionListener connectionListener, HttpClient httpClient,
+            WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod) throws IOException {
         this.webThingURI = webthingUrl;
         this.httpClient = httpClient;
         this.connectionListener = connectionListener;
-        this.description = new DescriptionLoader(httpClient).loadWebthingDescription(webThingURI, Duration.ofSeconds(20));
+        this.description = new DescriptionLoader(httpClient).loadWebthingDescription(webThingURI,
+                Duration.ofSeconds(20));
         this.propertyMap = parseProperties(this.description);
-        this.websocketDownstream = webSocketConnectionFactory.create(this, this.getEventStreamUri(), connectionListener, pingPeriod);
+        this.websocketDownstream = webSocketConnectionFactory.create(this, this.getEventStreamUri(), connectionListener,
+                pingPeriod);
     }
 
     private static Map<String, Property> parseProperties(WebThingDescription description) {
@@ -153,7 +158,8 @@ public class ConsumedThingImpl implements ConsumedThing {
             if (propertValue.containsKey(propertyName)) {
                 return propertValue.get(propertyName);
             } else {
-                throw new IOException("response does not include " + propertyName + "(" + propertyUri + "): " + response.body());
+                throw new IOException(
+                        "response does not include " + propertyName + "(" + propertyUri + "): " + response.body());
             }
         } catch (InterruptedException | IOException e) {
             connectionListener.onDisconnected("WebThing resource " + webThingURI + " disconnected");
@@ -172,8 +178,8 @@ public class ConsumedThingImpl implements ConsumedThing {
                 logger.debug("updating {} with {}", propertyName, newValue);
                 Map<String, Object> payload = Map.of(propertyName, newValue);
                 var json = new Gson().toJson(payload);
-                var request = HttpRequest.newBuilder().timeout(Duration.ofSeconds(30)).PUT(HttpRequest.BodyPublishers.ofString(json)).uri(propertyUri)
-                        .build();
+                var request = HttpRequest.newBuilder().timeout(Duration.ofSeconds(30))
+                        .PUT(HttpRequest.BodyPublishers.ofString(json)).uri(propertyUri).build();
                 var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() < 200 || response.statusCode() >= 300) {
                     throw new IOException("Got error response: " + response.body());
@@ -181,7 +187,8 @@ public class ConsumedThingImpl implements ConsumedThing {
             }
         } catch (InterruptedException | IOException e) {
             connectionListener.onDisconnected("WebThing resource " + webThingURI + " disconnected");
-            throw new RuntimeException("could not write " + propertyName + " (" + propertyUri + ") with " + newValue + " " + e.getMessage());
+            throw new RuntimeException("could not write " + propertyName + " (" + propertyUri + ") with " + newValue
+                    + " " + e.getMessage());
         }
     }
 

@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.*;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -33,8 +32,9 @@ class TypeConverters {
 
     /**
      * create a TypeConverter for a given Item type and property type
-     * @param itemType      the item type
-     * @param propertyType  the property type
+     * 
+     * @param itemType the item type
+     * @param propertyType the property type
      * @return the type converter
      */
     static TypeConverter create(String itemType, String propertyType) {
@@ -71,19 +71,19 @@ class TypeConverters {
         @Override
         public Command toStateCommand(Object propertyValue) {
             var value = propertyValue.toString();
-            if(!value.contains("#")){
+            if (!value.contains("#")) {
                 value = "#" + value;
             }
             Color rgb = Color.decode(value);
             float[] hsb = new float[3];
             hsb = Color.RGBtoHSB(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), hsb);
-            String hsbString = (hsb[0]*360) + "," + (hsb[1]*100) + "," + (hsb[2]*100);
+            String hsbString = (hsb[0] * 360) + "," + (hsb[1] * 100) + "," + (hsb[2] * 100);
             return HSBType.valueOf(hsbString);
         }
 
         @Override
         public Object toPropertyValue(State state) {
-            var hsb = ((HSBType)  state);
+            var hsb = ((HSBType) state);
 
             // Get HSB values
             Float hue = hsb.getHue().floatValue();
@@ -91,11 +91,10 @@ class TypeConverters {
             Float brightness = hsb.getBrightness().floatValue();
 
             // Convert HSB to RGB and then to HTML hex
-            Color rgb = Color.getHSBColor(hue/360, saturation/100, brightness/100);
+            Color rgb = Color.getHSBColor(hue / 360, saturation / 100, brightness / 100);
             return String.format("#%02x%02x%02x", rgb.getRed(), rgb.getGreen(), rgb.getBlue());
         }
     }
-
 
     private static final class SwitchTypeConverter implements TypeConverter {
 

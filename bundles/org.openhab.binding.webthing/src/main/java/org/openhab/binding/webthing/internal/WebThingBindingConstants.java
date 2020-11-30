@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.webthing.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
-
 import java.util.Collection;
 import java.util.Collections;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link WebThingBindingConstants} class defines common constants, which are
@@ -32,7 +31,8 @@ public class WebThingBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "generic");
 
-    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(WebThingBindingConstants.THING_TYPE_UID);
+    public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(WebThingBindingConstants.THING_TYPE_UID);
 
     public static final String MDNS_SERVICE_TYPE = "_webthing._tcp.local.";
 }
