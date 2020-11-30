@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
 
 /**
  *
@@ -42,7 +42,8 @@ public class WebSocketConnectionImplTest {
         var webthing = mock(ConsumedThing.class);
         when(webthing.getThingDescription()).thenReturn(description);
 
-        var downStream = new WebSocketConnectionImpl(webthing, URI.create("ws://127.0.0.1:7332/"),testListener, Duration.ofSeconds(10));
+        var downStream = new WebSocketConnectionImpl(webthing, URI.create("ws://127.0.0.1:7332/"), testListener,
+                Duration.ofSeconds(10));
         pause(100000 * 1000);
 
         assertEquals(1, testListener.numOpened.get());
@@ -58,7 +59,8 @@ public class WebSocketConnectionImplTest {
     public static void pause(long millis) {
         try {
             Thread.sleep(millis);
-        } catch (InterruptedException igonre) { }
+        } catch (InterruptedException igonre) {
+        }
     }
 
     private final class TestListener implements ConnectionListener {

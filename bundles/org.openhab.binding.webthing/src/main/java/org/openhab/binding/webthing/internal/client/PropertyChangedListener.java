@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Listener that will be notified, if a specific property of the WebThing is changed
+ * 
  * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
@@ -24,9 +24,11 @@ public interface PropertyChangedListener {
 
     /**
      * callback that will be called, if a WebThing property value is changed
-     * @param webThing     the associated WebThing
+     * 
+     * @param webThing the associated WebThing
      * @param propertyName the WebThing property name
-     * @param value        the new WebThing property value
+     * @param value the new WebThing property value
      */
-    default void onPropertyValueChanged(ConsumedThing webThing, String propertyName, Object value) { }
+    default void onPropertyValueChanged(ConsumedThing webThing, String propertyName, Object value) {
+    }
 }

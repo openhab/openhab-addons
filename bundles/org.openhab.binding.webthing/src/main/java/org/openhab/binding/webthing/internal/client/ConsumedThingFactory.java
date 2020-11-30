@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.io.IOException;
 import java.net.URI;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Factory to create new instances of the WebThing client-side proxy
@@ -27,8 +27,8 @@ public interface ConsumedThingFactory {
 
     /**
      *
-     * @param webThingURI  the identifier of a WebThing resource
-     * @param connectionListener  the connection listener to observe the connection state of the WebThing connection
+     * @param webThingURI the identifier of a WebThing resource
+     * @param connectionListener the connection listener to observe the connection state of the WebThing connection
      * @return the newly created WebThing
      * @throws IOException if the WebThing can not be connected
      */

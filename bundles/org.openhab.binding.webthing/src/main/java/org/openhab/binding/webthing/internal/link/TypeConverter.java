@@ -26,15 +26,16 @@ interface TypeConverter {
 
     /**
      * maps a Property value to an Item state command
-     * @param propertyValue  the Property value
+     * 
+     * @param propertyValue the Property value
      * @return the Item state command
      */
     Command toStateCommand(Object propertyValue);
 
-
     /**
      * maps an Item state to a Property value
-     * @param state  the Item state
+     * 
+     * @param state the Item state
      * @return the Property value
      */
     Object toPropertyValue(State state);

@@ -12,17 +12,18 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Utility class to load the WebThing description (meta data). Refer https://iot.mozilla.org/wot/#web-thing-description
@@ -41,7 +42,7 @@ public class DescriptionLoader {
     /**
      * constructor
      *
-     * @param httpClient  the http client to use
+     * @param httpClient the http client to use
      */
     DescriptionLoader(HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -50,8 +51,8 @@ public class DescriptionLoader {
     /**
      * loads the WebThing meta data
      *
-     * @param webthingURI   the WebThing URI
-     * @param timeout  the timeout
+     * @param webthingURI the WebThing URI
+     * @param timeout the timeout
      * @return the Webthing description
      * @throws IOException if the WebThing can not be connected
      */
@@ -60,8 +61,8 @@ public class DescriptionLoader {
             var request = HttpRequest.newBuilder().timeout(timeout).GET().uri(webthingURI).build();
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw new IOException("could not read resource description " + webthingURI + ". Got "
-                        + response.statusCode());
+                throw new IOException(
+                        "could not read resource description " + webthingURI + ". Got " + response.statusCode());
             }
             var description = new Gson().fromJson(response.body(), WebThingDescription.class);
             if (description.properties.size() > 0) {

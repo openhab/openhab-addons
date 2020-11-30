@@ -12,20 +12,19 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-import org.junit.Test;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.types.State;
-import org.openhab.core.library.types.StringType;
-
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Test;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
 
 /**
  *
  * @author Gregor Roth - Initial contribution
  */
 public class TypeConverterTest {
-    
+
     @Test
     public void testStringType() throws Exception {
         var typeConverter = TypeConverters.create("String", "String");
@@ -52,6 +51,5 @@ public class TypeConverterTest {
         state = typeConverter.toStateCommand(45.2);
         assertEquals(true, state instanceof DecimalType);
         assertEquals(45, typeConverter.toPropertyValue((State) state));
-
     }
 }

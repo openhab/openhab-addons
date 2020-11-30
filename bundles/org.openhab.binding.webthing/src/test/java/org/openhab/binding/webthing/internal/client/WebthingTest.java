@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-import com.pgssoft.httpclient.HttpClientMock;
-import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
-import org.junit.Test;
-
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.URI;
@@ -27,9 +24,11 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
+import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
+import org.junit.Test;
 
+import com.pgssoft.httpclient.HttpClientMock;
 
 /**
  *
@@ -42,7 +41,8 @@ public class WebthingTest {
     public void testWebthingDescription() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://example.org:8090").doReturn(load("/windsensor_response.json"));
-        httpClientMock.onGet("http://example.org:8090/properties/windspeed").doReturn(load("/windsensor_property.json"));
+        httpClientMock.onGet("http://example.org:8090/properties/windspeed")
+                .doReturn(load("/windsensor_property.json"));
 
         var webthing = createTestWebthing("http://example.org:8090", httpClientMock);
         var metadata = webthing.getThingDescription();
@@ -53,7 +53,8 @@ public class WebthingTest {
     public void testReadOnlyTest() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://example.org:8090").doReturn(load("/windsensor_response.json"));
-        httpClientMock.onGet("http://example.org:8090/properties/windspeed").doReturn(load("/windsensor_property.json"));
+        httpClientMock.onGet("http://example.org:8090/properties/windspeed")
+                .doReturn(load("/windsensor_property.json"));
 
         var webthing = createTestWebthing("http://example.org:8090", httpClientMock);
 
@@ -62,17 +63,20 @@ public class WebthingTest {
             webthing.writeProperty("windspeed", 23.0);
             Assert.fail();
         } catch (RuntimeException e) {
-            assertEquals("could not write windspeed (http://example.org:8090/properties/windspeed) with 23.0 windspeed is readOnly", e.getMessage());
+            assertEquals(
+                    "could not write windspeed (http://example.org:8090/properties/windspeed) with 23.0 windspeed is readOnly",
+                    e.getMessage());
         }
     }
-
 
     @Test
     public void testReadWriteTest() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://example.org:8090/0").doReturn(load("/awning_response.json"));
-        httpClientMock.onGet("http://example.org:8090/0/properties/target_position").doReturn(load("/awning_property.json"));
-        httpClientMock.onPut("http://example.org:8090/0/properties/target_position").withBody(is("{\"target_position\":10}")).doReturnStatus(200);
+        httpClientMock.onGet("http://example.org:8090/0/properties/target_position")
+                .doReturn(load("/awning_property.json"));
+        httpClientMock.onPut("http://example.org:8090/0/properties/target_position")
+                .withBody(is("{\"target_position\":10}")).doReturnStatus(200);
 
         var webthing = createTestWebthing("http://example.org:8090/0", httpClientMock);
 
@@ -84,15 +88,19 @@ public class WebthingTest {
     public void testWriteError() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://example.org:8090/0").doReturn(load("/awning_response.json"));
-        httpClientMock.onGet("http://example.org:8090/0/properties/target_position").doReturn(load("/awning_property.json"));
-        httpClientMock.onPut("http://example.org:8090/0/properties/target_position").withBody(is("{\"target_position\":10}")).doReturnStatus(400);
+        httpClientMock.onGet("http://example.org:8090/0/properties/target_position")
+                .doReturn(load("/awning_property.json"));
+        httpClientMock.onPut("http://example.org:8090/0/properties/target_position")
+                .withBody(is("{\"target_position\":10}")).doReturnStatus(400);
 
         var webthing = createTestWebthing("http://example.org:8090/0", httpClientMock);
         try {
             webthing.writeProperty("target_position", 10);
             Assert.fail();
         } catch (RuntimeException e) {
-            assertEquals("could not write target_position (http://example.org:8090/0/properties/target_position) with 10 Got error response: ", e.getMessage());
+            assertEquals(
+                    "could not write target_position (http://example.org:8090/0/properties/target_position) with 10 Got error response: ",
+                    e.getMessage());
         }
     }
 
@@ -107,7 +115,9 @@ public class WebthingTest {
             webthing.readProperty("windspeed");
             Assert.fail();
         } catch (RuntimeException e) {
-            assertEquals("could not read windspeed (http://example.org:8090/properties/windspeed). Got error response: ", e.getMessage());
+            assertEquals(
+                    "could not read windspeed (http://example.org:8090/properties/windspeed). Got error response: ",
+                    e.getMessage());
         }
     }
 
@@ -119,7 +129,8 @@ public class WebthingTest {
         return createTestWebthing(uri, httpClient, new TestWebsocketConnectionFactory());
     }
 
-    public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient, WebSocketConnectionFactory websocketConnectionFactory) throws IOException {
+    public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient,
+            WebSocketConnectionFactory websocketConnectionFactory) throws IOException {
         return new ConsumedThingImpl(URI.create(uri), ConnectionListener.EMPTY, httpClient, websocketConnectionFactory);
     }
 
@@ -127,7 +138,8 @@ public class WebthingTest {
         public final Map<String, PropertyChangedListener> listeners = new ConcurrentHashMap<>();
 
         @Override
-        public WebSocketConnection create(@NotNull ConsumedThing webthing, @NotNull URI webSocketURI, @NotNull ConnectionListener connectionListener, @NotNull Duration pingPeriod) {
+        public WebSocketConnection create(@NotNull ConsumedThing webthing, @NotNull URI webSocketURI,
+                @NotNull ConnectionListener connectionListener, @NotNull Duration pingPeriod) {
             return new WebSocketConnection() {
                 @Override
                 public void observeProperty(String propertyName, PropertyChangedListener listener) {
@@ -136,7 +148,6 @@ public class WebthingTest {
 
                 @Override
                 public void close() {
-
                 }
             };
         }

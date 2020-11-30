@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-
-import java.io.IOException;
-
 
 /**
  * The WebsocketConnection represents an open WebSocket connection on the Web Thing. It provides a realtime mechanism
@@ -30,8 +26,8 @@ interface WebSocketConnection {
     /**
      * Makes a request for Property value change notifications
      *
-     * @param propertyName   the property to be observed
-     * @param listener       the listener to call on changes
+     * @param propertyName the property to be observed
+     * @param listener the listener to call on changes
      */
     void observeProperty(String propertyName, PropertyChangedListener listener);
 
