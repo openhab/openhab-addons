@@ -150,12 +150,10 @@ class WebSocketConnectionImpl implements WebSocketConnection {
 
         @Override
         public void run() {
-
             // initial pause
             pause(pingPeriod);
 
             while (isOpen.get()) {
-
                 // check if connection is alive (message has been received recently)
                 var elapsedSinceLast = Duration.between(lastTimeReceived.get(), Instant.now());
                 if (elapsedSinceLast.getSeconds() > pingPeriod.getSeconds()) {
