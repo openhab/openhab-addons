@@ -117,10 +117,10 @@ class WebSocketConnectionImpl implements WebSocketConnection {
                     var propertyStatus = new Gson().fromJson(message, PropertyStatusMessage.class);
                     if (isOpen.get()) {
                         if (propertyStatus.messageType.equals("propertyStatus")) {
-                            for (var propertyName : propertyStatus.data.keySet()) {
-                                propertyChangedListeners.getOrDefault(propertyName, EMPTY_PROPERTY_CHANGED_LISTENER)
-                                        .onPropertyValueChanged(webThing, propertyName,
-                                                propertyStatus.data.get(propertyName));
+                            for (var propertyEntry : propertyStatus.data.entrySet()) {
+                                propertyChangedListeners.getOrDefault(propertyEntry.getKey(), EMPTY_PROPERTY_CHANGED_LISTENER)
+                                        .onPropertyValueChanged(webThing, propertyEntry.getKey(),
+                                                propertyStatus.data.get(propertyEntry.getValue()));
                             }
                         } else {
                             logger.debug("Ignoring received message of unknown type: {}", event.toString());
