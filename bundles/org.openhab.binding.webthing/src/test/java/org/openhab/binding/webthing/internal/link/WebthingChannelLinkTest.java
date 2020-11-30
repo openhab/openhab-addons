@@ -44,6 +44,7 @@ import com.pgssoft.httpclient.HttpClientMock;
  */
 public class WebthingChannelLinkTest {
 
+    @SuppressWarnings("null")
     @Test
     public void testChannelToProperty() throws Exception {
         HttpClientMock httpClientMock = new HttpClientMock();
