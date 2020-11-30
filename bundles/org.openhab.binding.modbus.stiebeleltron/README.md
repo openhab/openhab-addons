@@ -109,8 +109,9 @@ This group contains about the energy consumption and delivery of the heat pump.
 ### Thing Configuration
 
 ```
-Bridge modbus:tcp:bridge [ host="hostname|ip", port=502, id=1]
-Thing modbus:heatpump:stiebelEltron "StiebelEltron" (modbus:tcp:modbusbridge) [ ]
+Bridge modbus:tcp:bridge "Stiebel Modbus TCP"[ host="hostname|ip", port=502, id=1 ] {
+	Thing heatpump stiebelEltron "StiebelEltron" (modbus:tcp:modbusbridge) @"Room"  [ ]
+}
 ```
 
 
