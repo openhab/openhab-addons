@@ -55,11 +55,19 @@ public class ChannelToPropertyLink implements WebThingHandler.ItemChangedListene
     private ChannelToPropertyLink(ChannelHandler channelHandler, Channel channel, ConsumedThing webThing,
             String propertyName) {
         this.webThing = webThing;
-        var itemType = Optional.ofNullable(channel.getAcceptedItemType()).orElse("String");
-        this.propertyType = webThing.getThingDescription().properties.get(propertyName).type;
-        this.typeConverter = TypeConverters.create(itemType, this.propertyType);
-        this.propertyName = propertyName;
-        channelHandler.observeChannel(channel.getUID(), this);
+        var optionalProperty = webThing.getThingDescription().getProperty(propertyName);
+        if (optionalProperty.isPresent()) {
+            this.propertyType = optionalProperty.get().type;
+            var itemType = "String";
+            if (channel.getAcceptedItemType() != null) {
+                itemType = channel.getAcceptedItemType();
+            }
+            this.typeConverter = TypeConverters.create(itemType, propertyType);
+            this.propertyName = propertyName;
+            channelHandler.observeChannel(channel.getUID(), this);
+        } else {
+            throw new RuntimeException("property " + propertyName + " does not exits");
+        }
     }
 
     @Override

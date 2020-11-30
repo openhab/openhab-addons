@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
 import org.slf4j.Logger;
@@ -94,8 +95,9 @@ public class ConsumedThingImpl implements ConsumedThing {
     }
 
     private URI getPropertyUri(String propertyName) {
-        var propertyDescription = description.properties.get(propertyName);
-        if (propertyDescription != null) {
+        var optionalProperty = description.getProperty(propertyName);
+        if (optionalProperty.isPresent()) {
+            var propertyDescription = optionalProperty.get();
             for (var link : propertyDescription.links) {
                 if ((link.rel != null) && (link.href != null) && link.rel.equals("property")) {
                     return webThingURI.resolve(link.href);

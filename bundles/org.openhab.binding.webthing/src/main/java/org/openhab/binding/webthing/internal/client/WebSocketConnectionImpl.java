@@ -121,7 +121,7 @@ class WebSocketConnectionImpl implements WebSocketConnection {
                                 propertyChangedListeners
                                         .getOrDefault(propertyEntry.getKey(), EMPTY_PROPERTY_CHANGED_LISTENER)
                                         .onPropertyValueChanged(webThing, propertyEntry.getKey(),
-                                                propertyStatus.data.get(propertyEntry.getValue()));
+                                                propertyEntry.getValue());
                             }
                         } else {
                             logger.debug("Ignoring received message of unknown type: {}", event.toString());

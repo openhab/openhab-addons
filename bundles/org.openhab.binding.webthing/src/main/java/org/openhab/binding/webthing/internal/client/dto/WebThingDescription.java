@@ -14,6 +14,7 @@ package org.openhab.binding.webthing.internal.client.dto;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,4 +34,8 @@ public class WebThingDescription {
     public Map<String, Property> properties = Map.of();
 
     public List<Link> links = List.of();
+
+    public Optional<Property> getProperty(String propertyName) {
+        return Optional.ofNullable(properties.get(propertyName));
+    }
 }
