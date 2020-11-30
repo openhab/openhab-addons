@@ -25,9 +25,9 @@ import java.util.Map;
 @NonNullByDefault
 public class PropertyStatusMessage {
 
-    public @Nullable String messageType;
+    public String messageType = "<undefined>";
 
-    public @Nullable Map<String, Object> data = Map.of();
+    public Map<String, Object> data = Map.of();
 
     @Override
     public String toString() {
