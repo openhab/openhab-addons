@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.is;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
@@ -59,7 +60,7 @@ public class WebthingChannelLinkTest {
 
         var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClientMock);
         var channel = Channels.createChannel(thingUID, "target_position",
-                webthing.getPropertyDescription("target_position"));
+                Objects.requireNonNull(webthing.getPropertyDescription("target_position")));
 
         var testWebthingThingHandler = new TestWebthingThingHandler();
         ChannelToPropertyLink.establish(testWebthingThingHandler, channel, webthing, "target_position");
@@ -89,7 +90,7 @@ public class WebthingChannelLinkTest {
         var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClientMock,
                 websocketConnectionFactory);
         var channel = Channels.createChannel(thingUID, "target_position",
-                webthing.getPropertyDescription("target_position"));
+                Objects.requireNonNull(webthing.getPropertyDescription("target_position")));
 
         var testWebthingThingHandler = new TestWebthingThingHandler();
         PropertyToChannelLink.establish(webthing, "target_position", testWebthingThingHandler, channel);
@@ -151,7 +152,7 @@ public class WebthingChannelLinkTest {
         var websocketConnectionFactory = new WebthingTest.TestWebsocketConnectionFactory();
         var webthing = WebthingTest.createTestWebthing("http://example.org:8090/", httpClientMock,
                 websocketConnectionFactory);
-        var channel = Channels.createChannel(thingUID, propertyName, webthing.getPropertyDescription(propertyName));
+        var channel = Channels.createChannel(thingUID, propertyName, Objects.requireNonNull(webthing.getPropertyDescription(propertyName)));
 
         var testWebthingThingHandler = new TestWebthingThingHandler();
 
