@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.client.ConsumedThing;
 import org.openhab.binding.webthing.internal.client.PropertyChangedListener;
-import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.core.thing.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +32,6 @@ import org.slf4j.LoggerFactory;
 public class PropertyToChannelLink implements PropertyChangedListener {
     private final Logger logger = LoggerFactory.getLogger(PropertyToChannelLink.class);
     private final ChannelHandler channelHandler;
-    private final ConsumedThing webThing;
-    private final Property property;
     private final Channel channel;
     private final TypeConverter typeConverter;
 
@@ -55,11 +52,10 @@ public class PropertyToChannelLink implements PropertyChangedListener {
      */
     private PropertyToChannelLink(ConsumedThing webThing, String propertyName, ChannelHandler channelHandler,
             Channel channel) throws IOException {
-        this.webThing = webThing;
         this.channel = channel;
         var itemType = Optional.ofNullable(channel.getAcceptedItemType()).orElse("String");
-        this.property = webThing.getThingDescription().properties.get(propertyName);
-        this.typeConverter = TypeConverters.create(itemType, property.type);
+        var propertyType = webThing.getThingDescription().properties.get(propertyName).type;
+        this.typeConverter = TypeConverters.create(itemType, propertyType);
         this.channelHandler = channelHandler;
         webThing.observeProperty(propertyName, this);
     }
