@@ -178,10 +178,8 @@ public class SecondGenerationChannelConfiguration {
         channelConfigurationExtExt
                 .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_BATSTATEOFCHARGE,
                         "td", 145, SmartHomeUnits.PERCENT, "33556229"));
-        channelConfigurationExtExt
-                .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_SELFCONSUMPTION,
-                        "td", 148, SmartHomeUnits.WATT_HOUR, "83888128"));
-
+        channelConfigurationExtExt.add(new SecondGenerationChannelConfiguration(
+                SecondGenerationBindingConstants.CHANNEL_SELFCONSUMPTION, "td", 148, SmartHomeUnits.WATT, "83888128"));
         return channelConfigurationExtExt;
     }
 }

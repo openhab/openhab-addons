@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="kostalinverterpiko1020">
+	<thing-type id="PIKO1020">
 		<label>KOSTAL PIKO 10-20</label>
 		<description>Bindings for the KOSTAL PIKO 10-20</description>
 		<category>Inverter</category>
@@ -45,7 +45,7 @@
 			<channel typeId="statistic-autonomy-degree-day" id="autonomyDegreeDay"/>
 			<channel typeId="statistic-home-consumption-total" id="homeConsumptionTotal"/>
 			<channel typeId="statistic-own-consumption-total" id="ownConsumptionTotal"/>
-			<channel typeId="statistic-total-operating-time" id="totalOperatingTime"/>
+			<channel typeId="statistic-operating-time-total" id="operatingTimeTotal"/>
 			<channel typeId="device-local-current" id="current"/>
 			<channel typeId="device-local-current-dir" id="currentDir"/>
 			<channel typeId="device-local-charge-cycles" id="chargeCycles"/>

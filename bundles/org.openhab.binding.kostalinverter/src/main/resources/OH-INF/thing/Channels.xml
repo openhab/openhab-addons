@@ -660,7 +660,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-grid">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Actual Home Consumption Grid</label>
 		<description>Current consumption from grid</description>
 		<category>Energy</category>
@@ -743,12 +743,12 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-	<channel-type id="statistic-total-operating-time">
+	<channel-type id="statistic-operating-time-total">
 		<item-type>Number:Time</item-type>
 		<label>Total Operating Time</label>
-		<description>Total operating time</description>
+		<description>Operating Time Total</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-current">
 		<item-type>Number:ElectricCurrent</item-type>
@@ -762,14 +762,14 @@
 		<label>Current Dir</label>
 		<description>Current direction</description>
 		<category>Energy</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-charge-cycles">
 		<item-type>String</item-type>
 		<label>Charge Cycles</label>
 		<description>Total number of charge cycles</description>
 		<category>Energy</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-temperature">
 		<item-type>Number:Temperature</item-type>
@@ -783,14 +783,14 @@
 		<label>Log Interval</label>
 		<description>Set value for loginterval</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.d %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-s0-inpulse-cnt">
 		<item-type>Number:Dimensionless</item-type>
 		<label>S0 Input Pulses Counter</label>
 		<description>S0-pulse counter</description>
 		<category>Energy</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-cons-rate-total">
 		<item-type>Number:Dimensionless</item-type>

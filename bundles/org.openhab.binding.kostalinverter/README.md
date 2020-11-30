@@ -106,7 +106,7 @@ None
 | statistic-autonomy-degree-day            | Number:Dimensionless     | Total autonomy degree today                                                      |     R      |
 | statistic-home-consumption-total         | Number:Energy            | Total home consumption                                                           |     R      |
 | statistic-own-consumption-total          | Number:Energy            | Total own consumption                                                            |     R      |
-| statistic-total-operating-time           | Number:Time              | Total operating time                                                             |     R      |
+| statistic-operating-time-total           | Number:Time              | Total operating time                                                             |     R      |
 | device-local-current                     | Number:ElectricCurrent   | Current                                                                          |     R      |
 | device-local-current-dir                 | Number:Dimensionless     | Current direction of loading/unloading the battery                               |     R      |
 | device-local-charge-cycles               | Number:Dimensionless     | Total number of charge cycles                                                    |     R      |       
@@ -234,15 +234,16 @@ Second generation inverters require 4 mandatory parameters:
 | Parameter                | Description                                            | Type    |  Unit   | Default value | Example value |
 |--------------------------|--------------------------------------------------------|---------|---------|---------------|---------------|
 | url                      | Host name or IP address of your device                 | Text    | ---     | ---           | 192.168.0.2   |
-| userName                 | Username for your inverter                             | Text    | ---     | ---           | myUsername    |
-| userPassword             | Password for your inverter                             | Text    | ---     | ---           | myPassword    |
+| username                 | Username for your inverter                             | Text    | ---     | ---           | myUsername    |
+| password                 | Password for your inverter                             | Text    | ---     | ---           | myPassword    |
 | refreshInterval          | Pollingintervall of your inverter                      | Integer | Seconds | 60            | 60            |
 
 demo.things
 
 ```
 
-Thing kostalinverter:kostalinverterpiko1020:inverter [ url="http://'inverter-ip'", username="'username'", password="'password'", refreshInterval=60]
+Thing kostalinverter:PIKO1020:MyPiko1020 [ url="http://'inverter-ip'", username="'myUsername'", password="'myPassword'", refreshInterval=60]
+
 ```
 
 
@@ -287,77 +288,77 @@ String SolarStatus "Solar status [%s]" <energy> { channel="kostalinverter:kostal
 demo.items:
 
 ```
-Number:Power                SolarPower                  "PV Output Power"                           <energy>  channel="kostalinverter:kostalinverterpiko1020:inverter:gridOutputPower" }
-Number                      SolarPowerMax               "Todays Maximum [%.2f %unit%]"              <energy> 
-Number                      SolarPowerMin               "Todays Mimimum [%.2f %unit%]"              <energy> 
-Number                      SolarPowerChart             "Chart Period Solar Power"
-DateTime                    SolarPowerTimestamp         "Last Update PV Output Power [%1$ta %1$tR]" <clock>
+Number:Power                GridOutputPower             "PV Output Power"                           <energy>  { channel="kostalMyPiko1020:PIKO1020PIKO1020:MyPiko1020:gridOutputPower" }
+Number                      GridOutputPowerMax          "Todays Maximum [%.2f %unit%]"              <energy> 
+Number                      GridOutputPowerMin          "Todays Mimimum [%.2f %unit%]"              <energy> 
+Number                      GridOutputPowerChart        "Chart Period Solar Power"
+DateTime                    GridOutputPowerTimestamp    "Last Update PV Output Power [%1$ta %1$tR]" <clock>
 
-Number:Power                SolarEnergyDay              "PV Output Power Day"                       <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:yieldDay" }
-Number                      SolarEnergyDayMax           "Todays Maximum [%.2f %unit%]"              <energy> 
-Number                      SolarEnergyDayMin           "Todays Mimimum [%.2f %unit%]"              <energy> 
-Number                      SolarEnergyDayChart         "Chart Period PV Output Power Day"
-DateTime                    SolarEnergyDayTimestamp     "Last Update PV Output Power Day [%1$ta %1$tR]"     <clock>
+Number:Power                YieldDay                    "PV Output Power Day"                       <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:yieldDay" }
+Number                      YieldDayMax                 "Todays Maximum [%.2f %unit%]"              <energy> 
+Number                      YieldDayMin                 "Todays Mimimum [%.2f %unit%]"              <energy> 
+Number                      YieldDayChart               "Chart Period PV Output Power Day"
+DateTime                    YieldDayTimestamp           "Last Update PV Output Power Day [%1$ta %1$tR]"     <clock>
 
-Number:Energy               SolarEnergyTotal            "PV Output Power Total"                     <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:yieldTotal" }  
-Number                      SolarEnergyTotalMax         "Todays Maximum [%.2f %unit%]"              <energy> 
-Number                      SolarEnergyTotalMin         "Todays Mimimum [%.2f %unit%]"              <energy> 
-Number                      SolarEnergyTotalChart       "Chart Period PV Output Power Total"
-DateTime                    SolarEnergyTotalTimestamp   "Last Update PV Output Power Total [%1$ta %1$tR]"   <clock>
+Number:Energy               YieldTotal                  "PV Output Power Total"                     <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:yieldTotal" }  
+Number                      YieldTotalMax               "Todays Maximum [%.2f %unit%]"              <energy> 
+Number                      YieldTotalMin               "Todays Mimimum [%.2f %unit%]"              <energy> 
+Number                      YieldTotalChart             "Chart Period PV Output Power Total"
+DateTime                    YieldTotalTimestamp         "Last Update PV Output Power Total [%1$ta %1$tR]"   <clock>
 
-Number:Dimensionless        SolarStatus                 "Inverter Status"                           <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:operatingStatus" }
-Number                      SolarStatusMax              "Todays Maximum [%.0f]"                     <energy> 
-Number                      SolarStatusMin              "Todays Mimimum [%.0f]"                     <energy> 
-Number                      SolarStatusChart            "Chart Period Inverter Status"
-DateTime                    SolarStatusTimestamp        "Last Update Inverter Status [%1$ta %1$tR]" <clock>
+Number:Dimensionless        OperatingStatus             "Operating Status"                          <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:operatingStatus" }
+Number                      OperatingStatusMax          "Todays Maximum [%.0f]"                     <energy> 
+Number                      OperatingStatusMin          "Todays Mimimum [%.0f]"                     <energy> 
+Number                      OperatingStatusCha          "Chart Period Operating Status"
+DateTime                    OperatingStatusTimestamp    "Last Update Operating Status [%1$ta %1$tR]"        <clock>
 
-Number:ElectricPotential    GridVoltageL1               "Grid L1 Voltage"                           <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:gridVoltageL1" }
-Number:ElectricCurrent      GridCurrentL1               "Grid L1 Current"                           <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:gridCurrentL1" }
-Number:Power                GridPowerL1                 "Grid L1 Power"                             <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:gridPowerL1" }
-Number:ElectricPotential    GridVoltageL2               "Grid L2 Voltage"                           <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:gridVoltageL2" }
-Number:ElectricCurrent      GridCurrentL2               "Grid L2 Current"                           <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:gridCurrentL2" }
-Number:Power                GridPowerL2                 "Grid L2 Power"                             <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:gridPowerL2" }
-Number:ElectricPotential    GridVoltageL3               "Grid L3 Voltage"                           <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:gridVoltageL3" }
-Number:ElectricCurrent      GridCurrentL3               "Grid L3 Current"                           <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:gridCurrentL3" }
-Number:Power                GridPowerL3                 "Grid L3 Power"                             <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:gridPowerL3" }
-Number:Power                DcPvPower                   "PV DC Power"                               <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:dcPowerPV" }
-Number:ElectricPotential    Dc1Voltage                  "PV DC1 Voltage"                            <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:dc1Voltage" }
-Number:ElectricCurrent      Dc1Current                  "PV DC1 Current"                            <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:dc1Current" }
-Number:Power                Dc1Power                    "PV DC1 Power"                              <energy>    { channel="kostalinverter:kostalinverterpiko1020:inverter:dc1Power" }
-Number:ElectricPotential    Dc2Voltage                  "PV DC2 Voltage"                            <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:dc2Voltage" }
-Number:ElectricCurrent      Dc2Current                  "PV DC2 Current"                            <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:dc2Current" }
-Number:Power                Dc2Power                    "PV DC2 Power"                              <energy>    { channel="kostalinverter:kostalinverterpiko1020:inverter:dc2Power" }
-Number:ElectricPotential    Dc3Voltage                  "PV DC3 Voltage"                            <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:dc3Voltage" }
-Number:ElectricCurrent      Dc3Current                  "PV DC3 Current"                            <energy> { channel="kostalinverter:kostalinverterpiko1020:inverter:dc3Current" }
-Number:Power                Dc3Power                    "PV DC3 Power"                              <energy>    { channel="kostalinverter:kostalinverterpiko1020:inverter:dc3Power" }
-Number:Power                AktHomeConsumptionSolar     "Home Consumption Solar"                    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:aktHomeConsumptionSolar" }
-Number:Power                AktHomeConsumptionBat       "Home Consumption Battery"                  <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:aktHomeConsumptionBat" }
-Number:Power                AktHomeConsumptionGrid      "Home Consumption Grid"                     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:aktHomeConsumptionGrid" }
-Number:Power                PhaseSelHomeConsumpL1       "Home Consumption L1"                       <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:phaseSelHomeConsumpL1" }
-Number:Power                PhaseSelHomeConsumpL2       "Home Consumption L2"                       <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:phaseSelHomeConsumpL2" }
-Number:Power                PhaseSelHomeConsumpL3       "Home Consumption L3"                       <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:phaseSelHomeConsumpL3" }
-Number:Frequency            GridFreq                    "Grid Frequency"                            <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:gridFreq" }
-Number:Angle                GridCosPhi                  "Grid Phase Shift"                          <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:gridCosPhi" }
-Number:Energy               HomeConsumptionDay          "Home Consumption Daily"                    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:homeConsumptionDay" } 
-Number:Energy               OwnConsumptionDay           "Own Consumption Daily"                     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsumptionDay" } 
-Number:Dimensionless        OwnConsRate                 "Own Cons Rate Daily"                       <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsRateDay" } 
-Number:Dimensionless        AutonomyDegreeDay           "Autonomy Degree Daily"                     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:autonomyDegreeDay" }
-Number:Energy               HomeConsumptionTotal        "Home Consumption Total"                    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:homeConsumptionTotal" } 
-Number:Energy               OwnConsumptionTotal         "Own Consumption Total"                     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsumptionTotal" } 
-Number:Time                 OperatingTimeTotal          "Operating Time Total"                      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:totalOperatingTime" }
-Number:ElectricCurrent      Current                     "Current"                                   <energy>    { channel="kostalinverter:kostalinverterpiko1020:inverter:current" }
-Number:Dimensionless        CurrentDir                  "Current Direction"                         <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:currentDir" }
-Number:Dimensionless        ChargeCycles                "Charge Cycles"                             <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:chargeCycles" }
-Number:Temperature          BatteryTemperature          "BatteryTemperature"                        <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryTemperature" }
-Number:Time                 Loginterval                 "Log Interval"                              <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:loginterval" }
-Number:Dimensionless        S0InPulseCnt                "S0 Inpulse Counter"                        <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:s0InPulseCnt" }
-Number:Dimensionless        OwnConsRateTotal            "Own Cons Rate Total"                       <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsRateTotal" } 
-Number:Dimensionless        AutonomyDegreeTotal         "Autonomy Degree Total"                     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:autonomyDegreeTotal" } 
-Number:ElectricPotential    BatteryVoltage              "Battery Voltage"                           <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryVoltageSecondGen" }
-Number:Dimensionless        BatStateOfCharge            "Battery State Of Charge"                   <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batStateOfCharge" }
-Number:Energy               SelfConsumption             "Self Consumption"                          <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:selfConsumption" } 
+Number:ElectricPotential    GridVoltageL1               "Grid Voltage L1"                           <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridVoltageL1" }
+Number:ElectricCurrent      GridCurrentL1               "Grid Current L1"                           <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridCurrentL1" }
+Number:Power                GridPowerL1                 "Grid Power L1"                             <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridPowerL1" }
+Number:ElectricPotential    GridVoltageL2               "Grid Voltage L2"                           <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridVoltageL2" }
+Number:ElectricCurrent      GridCurrentL2               "Grid Current L2"                           <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridCurrentL2" }
+Number:Power                GridPowerL2                 "Grid Power L2"                             <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridPowerL2" }
+Number:ElectricPotential    GridVoltageL3               "Grid Voltage L3"                           <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridVoltageL3" }
+Number:ElectricCurrent      GridCurrentL3               "Grid Current L3"                           <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridCurrentL3" }
+Number:Power                GridPowerL3                 "Grid Power L3"                             <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridPowerL3" }
+Number:Power                DcPvPower                   "DC Power Pv"                               <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dcPowerPV" }
+Number:ElectricPotential    Dc1Voltage                  "DC1 Voltage"                               <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dc1Voltage" }
+Number:ElectricCurrent      Dc1Current                  "DC1 Current"                               <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dc1Current" }
+Number:Power                Dc1Power                    "DC1 Power"                                 <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dc1Power" }
+Number:ElectricPotential    Dc2Voltage                  "DC2 Voltage"                               <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dc2Voltage" }
+Number:ElectricCurrent      Dc2Current                  "DC2 Current"                               <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dc2Current" }
+Number:Power                Dc2Power                    "DC2 Power"                                 <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dc2Power" }
+Number:ElectricPotential    Dc3Voltage                  "DC3 Voltage"                               <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dc3Voltage" }
+Number:ElectricCurrent      Dc3Current                  "DC3 Current"                               <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dc3Current" }
+Number:Power                Dc3Power                    "DC3 Power"                                 <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:dc3Power" }
+Number:Power                AktHomeConsumptionSolar     "Akt Home Consumption Solar"                <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:aktHomeConsumptionSolar" }
+Number:Power                AktHomeConsumptionBat       "Akt Home Consumption Battery"              <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:aktHomeConsumptionBat" }
+Number:Power                AktHomeConsumptionGrid      "Akt Home Consumption Grid"                 <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:aktHomeConsumptionGrid" }
+Number:Power                PhaseSelHomeConsumpL1       "Phase Sel Home Consump L1"                 <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:phaseSelHomeConsumpL1" }
+Number:Power                PhaseSelHomeConsumpL2       "Phase Sel Home Consump L2"                 <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:phaseSelHomeConsumpL2" }
+Number:Power                PhaseSelHomeConsumpL3       "Phase Sel Home Consump L3"                 <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:phaseSelHomeConsumpL3" }
+Number:Frequency            GridFreq                    "Grid Freq"                                 <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridFreq" }
+Number:Angle                GridCosPhi                  "Grid Cos Phi"                              <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:gridCosPhi" }
+Number:Energy               HomeConsumptionDay          "Home Consumption Day"                      <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:homeConsumptionDay" } 
+Number:Energy               OwnConsumptionDay           "Own Consumption Day"                       <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:ownConsumptionDay" } 
+Number:Dimensionless        OwnConsRateDay              "Own Cons Rate Day                          <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:ownConsRateDay" } 
+Number:Dimensionless        AutonomyDegreeDay           "Autonomy Degree Day"                       <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:autonomyDegreeDay" }
+Number:Energy               HomeConsumptionTotal        "Home Consumption Total"                    <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:homeConsumptionTotal" } 
+Number:Energy               OwnConsumptionTotal         "Own Consumption Total"                     <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:ownConsumptionTotal" } 
+Number:Time                 OperatingTimeTotal          "Operating Time Total"                      <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:operatingTimeTotal" }
+Number:ElectricCurrent      Current                     "Current"                                   <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:current" }
+Number:Dimensionless        CurrentDir                  "Current Dir"                               <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:currentDir" }
+Number:Dimensionless        ChargeCycles                "Charge Cycles"                             <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:chargeCycles" }
+Number:Temperature          BatteryTemperature          "BatteryTemperature"                        <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:batteryTemperature" }
+Number:Time                 Loginterval                 "Log Interval"                              <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:loginterval" }
+Number:Dimensionless        S0InPulseCnt                "S0 InPulse Cnt"                            <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:s0InPulseCnt" }
+Number:Dimensionless        OwnConsRateTotal            "Own Cons Rate Total"                       <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:ownConsRateTotal" } 
+Number:Dimensionless        AutonomyDegreeTotal         "Autonomy Degree Total"                     <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:autonomyDegreeTotal" } 
+Number:ElectricPotential    BatteryVoltage              "Battery Voltage"                           <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:batteryVoltage" }
+Number:Dimensionless        BatStateOfCharge            "Bat State Of Charge"                       <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:batStateOfCharge" }
+Number:Power                SelfConsumption             "Self Consumption"                          <energy> { channel="kostalMyPiko1020:PIKO1020:MyPiko1020:selfConsumption" } 
 
-```
+``
 
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
