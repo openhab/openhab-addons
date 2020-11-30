@@ -13,11 +13,13 @@
 package org.openhab.binding.webthing.internal.link;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.client.ConsumedThing;
 import org.openhab.binding.webthing.internal.client.PropertyChangedListener;
+import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.core.thing.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +30,14 @@ import org.slf4j.LoggerFactory;
  * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
-public class PropertyToChannelLink extends AbstractLink implements PropertyChangedListener {
+public class PropertyToChannelLink implements PropertyChangedListener {
     private final Logger logger = LoggerFactory.getLogger(PropertyToChannelLink.class);
     private final ChannelHandler channelHandler;
+    private final ConsumedThing webThing;
+    private final Property property;
+    private final Channel channel;
+    private final TypeConverter typeConverter;
+
 
     public static void establish(ConsumedThing webThing, String propertyName, ChannelHandler thingHandler,
             Channel channel) throws IOException {
@@ -40,17 +47,21 @@ public class PropertyToChannelLink extends AbstractLink implements PropertyChang
     /**
      * establish downstream link from a WebTHing property to a Channel
      *
-     * @param webthing the WebThing to be linked
+     * @param webThing the WebThing to be linked
      * @param propertyName the property name
      * @param channelHandler the channel handler that provides updating the Item state of a channel
      * @param channel the channel to be linked
      * @throws IOException if the WebThing can not be connected
      */
-    private PropertyToChannelLink(ConsumedThing webthing, String propertyName, ChannelHandler channelHandler,
+    private PropertyToChannelLink(ConsumedThing webThing, String propertyName, ChannelHandler channelHandler,
             Channel channel) throws IOException {
-        super(webthing, propertyName, channel);
+        this.webThing = webThing;
+        this.channel = channel;
+        var itemType = Optional.ofNullable(channel.getAcceptedItemType()).orElse("String");
+        this.property = webThing.getThingDescription().properties.get(propertyName);
+        this.typeConverter = TypeConverters.create(itemType, property.type);
         this.channelHandler = channelHandler;
-        webthing.observeProperty(propertyName, this);
+        webThing.observeProperty(propertyName, this);
     }
 
     @Override
