@@ -74,7 +74,7 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
 
     public static final ThingTypeUID FIRST_GENERATION_INVERTER = new ThingTypeUID("kostalinverter", "kostalinverter");
 
-    public static final ThingTypeUID SECOND_GENERATION_INVERTER = new ThingTypeUID("kostalinverter", "PIKO1020");
+    public static final ThingTypeUID SECOND_GENERATION_INVERTER = new ThingTypeUID("kostalinverter", "piko1020");
 
     private final HttpClient httpClient;
 

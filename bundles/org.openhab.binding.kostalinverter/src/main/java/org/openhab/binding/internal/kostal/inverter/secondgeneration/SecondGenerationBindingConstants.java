@@ -29,7 +29,7 @@ public class SecondGenerationBindingConstants {
     private static final String BINDING_ID = "kostalinverter";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID SECOND_GENERATION_INVERTER = new ThingTypeUID(BINDING_ID, "PIKO1020");
+    public static final ThingTypeUID SECOND_GENERATION_INVERTER = new ThingTypeUID(BINDING_ID, "piko1020");
 
     // List of all Channel ids
     public static final String CHANNEL_GRIDOUTPUTPOWER = "gridOutputPower";

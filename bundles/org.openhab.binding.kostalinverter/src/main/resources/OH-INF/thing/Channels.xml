@@ -843,7 +843,7 @@
 	</channel-type>
 	<channel-type id="device-local-battery-usage-consumption">
 		<item-type>Number:Power</item-type>
-		<label>Battery usage Consumption</label>
+		<label>Battery Usage Consumption</label>
 		<description>Set battery usage consumption</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
@@ -852,7 +852,7 @@
 		<item-type>String</item-type>
 		<label>Battery Usage Strategy</label>
 		<description>Set battery usage strategy</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-smart-battery-control">
@@ -880,7 +880,7 @@
 		<item-type>String</item-type>
 		<label>Max Depth Of Discharge</label>
 		<description>Set max depth of discharge</description>
-		<category>String</category>
+		<category>Energy</category>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="device-local-shadow-management">

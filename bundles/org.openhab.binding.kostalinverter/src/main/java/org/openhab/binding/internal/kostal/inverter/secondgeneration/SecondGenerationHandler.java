@@ -282,7 +282,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
             // Update the channels
             if (state != null) {
                 updateState(channel, state);
-                System.out.println(channel + "  " + state);
             }
             channelValuesCounterAll++;
         }
