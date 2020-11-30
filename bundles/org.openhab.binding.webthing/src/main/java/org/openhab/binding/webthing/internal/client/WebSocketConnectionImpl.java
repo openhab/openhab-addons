@@ -118,7 +118,8 @@ class WebSocketConnectionImpl implements WebSocketConnection {
                     if (isOpen.get()) {
                         if (propertyStatus.messageType.equals("propertyStatus")) {
                             for (var propertyEntry : propertyStatus.data.entrySet()) {
-                                propertyChangedListeners.getOrDefault(propertyEntry.getKey(), EMPTY_PROPERTY_CHANGED_LISTENER)
+                                propertyChangedListeners
+                                        .getOrDefault(propertyEntry.getKey(), EMPTY_PROPERTY_CHANGED_LISTENER)
                                         .onPropertyValueChanged(webThing, propertyEntry.getKey(),
                                                 propertyStatus.data.get(propertyEntry.getValue()));
                             }
