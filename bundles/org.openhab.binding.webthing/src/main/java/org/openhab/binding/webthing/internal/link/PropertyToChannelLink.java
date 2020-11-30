@@ -52,11 +52,19 @@ public class PropertyToChannelLink implements PropertyChangedListener {
     private PropertyToChannelLink(ConsumedThing webThing, String propertyName, ChannelHandler channelHandler,
             Channel channel) throws IOException {
         this.channel = channel;
-        var itemType = Optional.ofNullable(channel.getAcceptedItemType()).orElse("String");
-        var propertyType = webThing.getThingDescription().properties.get(propertyName).type;
-        this.typeConverter = TypeConverters.create(itemType, propertyType);
-        this.channelHandler = channelHandler;
-        webThing.observeProperty(propertyName, this);
+        var optionalProperty = webThing.getThingDescription().getProperty(propertyName);
+        if (optionalProperty.isPresent()) {
+            var propertyType = optionalProperty.get().type;
+            var itemType = "String";
+            if (channel.getAcceptedItemType() != null) {
+                itemType = channel.getAcceptedItemType();
+            }
+            this.typeConverter = TypeConverters.create(itemType, propertyType);
+            this.channelHandler = channelHandler;
+            webThing.observeProperty(propertyName, this);
+        } else {
+            throw new RuntimeException("property " + propertyName + " does not exits");
+        }
     }
 
     @Override
