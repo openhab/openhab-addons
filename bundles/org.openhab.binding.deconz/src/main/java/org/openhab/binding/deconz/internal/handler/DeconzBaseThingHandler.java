@@ -194,9 +194,14 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
             if (acceptProcessing != null) {
                 acceptProcessing.run();
             }
-            logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
+            if (v.getResponseCode() != java.net.HttpURLConnection.HTTP_OK) {
+                logger.warn("Sending command {} to channel {} failed: {} - {}", originalCommand, channelUID,
+                        v.getResponseCode(), v.getBody());
+            } else {
+                logger.trace("Result code={}, body={}", v.getResponseCode(), v.getBody());
+            }
         }).exceptionally(e -> {
-            logger.debug("Sending command {} to channel {} failed: {} - {}", originalCommand, channelUID, e.getClass(),
+            logger.warn("Sending command {} to channel {} failed: {} - {}", originalCommand, channelUID, e.getClass(),
                     e.getMessage());
             return null;
         });
