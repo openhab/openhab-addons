@@ -122,9 +122,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     protected abstract void initializeThing();
 
     protected State getNAThingProperty(String channelId) {
-        Optional<State> result;
-
-        result = getBatteryHelper().flatMap(helper -> helper.getNAThingProperty(channelId));
+        Optional<State> result = getBatteryHelper().flatMap(helper -> helper.getNAThingProperty(channelId));
         if (result.isPresent()) {
             return result.get();
         }
@@ -146,15 +144,13 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     private void updateDataChannels() {
-        getThing().getChannels().stream().filter(channel -> !channel.getKind().equals(ChannelKind.TRIGGER))
-                .forEach(channel -> {
+        getThing().getChannels().stream()
+                .filter(channel -> !ChannelKind.TRIGGER.equals(channel.getKind()) && isLinked(channel.getUID()))
+                .map(channel -> channel.getUID()).forEach(this::updateChannel);
+    }
 
-                    String channelId = channel.getUID().getId();
-                    if (isLinked(channelId)) {
-                        State state = getNAThingProperty(channelId);
-                        updateState(channel.getUID(), state);
-                    }
-                });
+    private void updateChannel(ChannelUID channelUID) {
+        updateState(channelUID, getNAThingProperty(channelUID.getId()));
     }
 
     /**
@@ -162,8 +158,8 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
      * (when a channel is triggered, a rule can get all other information from the updated non-trigger channels)
      */
     private void triggerEventChannels() {
-        getThing().getChannels().stream().filter(channel -> channel.getKind().equals(ChannelKind.TRIGGER))
-                .forEach(channel -> triggerChannelIfRequired(channel.getUID().getId()));
+        getThing().getChannels().stream().filter(channel -> ChannelKind.TRIGGER.equals(channel.getKind()))
+                .map(channel -> channel.getUID().getId()).forEach(this::triggerChannelIfRequired);
     }
 
     /**
@@ -177,8 +173,8 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
-            logger.debug("Refreshing {}", channelUID);
-            updateChannels();
+            logger.debug("Refreshing '{}'", channelUID);
+            updateChannel(channelUID);
         }
     }
 
