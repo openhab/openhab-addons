@@ -17,6 +17,9 @@ import org.openhab.binding.webthing.internal.client.ConsumedThing;
 import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.core.thing.Channel;
 
+import java.util.Optional;
+import java.util.OptionalInt;
+
 
 /**
  * Implementation base of a link between a WebThing Property and a channel
@@ -40,10 +43,7 @@ class AbstractLink {
     protected AbstractLink(ConsumedThing webThing, String propertyName, Channel channel) {
         this.webThing = webThing;
         this.channel = channel;
-        var itemType = channel.getAcceptedItemType();
-        if (itemType == null) {
-            itemType = "String";
-        }
+        var itemType = Optional.ofNullable(channel.getAcceptedItemType()).orElse("String");
         this.property = webThing.getThingDescription().properties.get(propertyName);
         this.typeConverter = TypeConverters.create(itemType, property.type);
     }
