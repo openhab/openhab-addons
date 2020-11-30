@@ -66,7 +66,7 @@ public class ALD1Handler extends BaseModbusThingHandler {
             return;
         }
 
-        ModbusReadRequestBlueprint localBlueprint = blueprint = new ModbusReadRequestBlueprint(config.address,
+        ModbusReadRequestBlueprint localBlueprint = blueprint = new ModbusReadRequestBlueprint(getSlaveId(),
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, FIRST_READ_ADDRESS - 1, READ_LENGTH, TRIES);
 
         updateStatus(ThingStatus.UNKNOWN);

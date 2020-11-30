@@ -15,12 +15,11 @@ This binding does not support discovery.
 
 ## Thing Configuration
 
-The following configuration parameters apply to `ald1Unidirectional` and `ald1Bidirectional`.
+The following configuration parameter applys to `ald1Unidirectional` and `ald1Bidirectional`.
 
 | Name          | Description                              | Type    | Required |
 |---------------|------------------------------------------|---------|----------|
-| address       | Modbus slave address of the energy meter | Integer | yes      |
-| pollIntervall | Time between polling the data in ms      | Integer | yes      |
+| pollInterval  | Time between polling the data in ms      | Integer | yes      |
 
 The Thing needs a Modbus serial slave Bridge to operate.
 

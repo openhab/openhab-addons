@@ -29,8 +29,8 @@ import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 @NonNullByDefault
 public enum ALD1Registers {
     TOTAL_ENERGY(0.01f, 28, UINT32, SmartHomeUnits.KILOWATT_HOUR),
-    PARTIAL_ENERGY(0.01f, 30, UINT32, SmartHomeUnits.KILOWATT_HOUR),
-    FEEDING_BACK_ENERGY(0.01f, 30, UINT32, SmartHomeUnits.KILOWATT_HOUR),
+    PARTIAL_ENERGY(0.01f, 30, UINT32, SmartHomeUnits.KILOWATT_HOUR), // only unidirectional meters
+    FEEDING_BACK_ENERGY(0.01f, 30, UINT32, SmartHomeUnits.KILOWATT_HOUR), // only bidirectional meters
     VOLTAGE(1, 36, UINT16, SmartHomeUnits.VOLT),
     CURRENT(0.1f, 37, UINT16, SmartHomeUnits.AMPERE),
     ACTIVE_POWER(10, 38, INT16, SmartHomeUnits.WATT),
