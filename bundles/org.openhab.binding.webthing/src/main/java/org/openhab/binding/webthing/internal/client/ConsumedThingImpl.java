@@ -18,8 +18,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,7 +43,6 @@ public class ConsumedThingImpl implements ConsumedThing {
     private final ConnectionListener connectionListener;
     private final WebThingDescription description;
     private final HttpClient httpClient;
-    private final Map<String, Property> propertyMap;
     private final WebSocketConnection websocketDownstream;
 
     /**
@@ -92,17 +89,8 @@ public class ConsumedThingImpl implements ConsumedThing {
         this.connectionListener = connectionListener;
         this.description = new DescriptionLoader(httpClient).loadWebthingDescription(webThingURI,
                 Duration.ofSeconds(20));
-        this.propertyMap = parseProperties(this.description);
         this.websocketDownstream = webSocketConnectionFactory.create(this, this.getEventStreamUri(), connectionListener,
                 pingPeriod);
-    }
-
-    private static Map<String, Property> parseProperties(WebThingDescription description) {
-        Map<String, Property> propertyMap = new HashMap<>();
-        for (var propertyName : description.properties.keySet()) {
-            propertyMap.put(propertyName, description.properties.get(propertyName));
-        }
-        return Collections.unmodifiableMap(propertyMap);
     }
 
     private URI getPropertyUri(String propertyName) {
@@ -174,7 +162,7 @@ public class ConsumedThingImpl implements ConsumedThing {
 
     @Override
     public void writeProperty(String propertyName, Object newValue) {
-        var property = this.propertyMap.get(propertyName);
+        var property = description.properties.get(propertyName);
         var propertyUri = getPropertyUri(propertyName);
         try {
             if (property.readOnly) {
@@ -204,7 +192,7 @@ public class ConsumedThingImpl implements ConsumedThing {
      * @return the description (meta data) of the property
      */
     public Property getPropertyDescription(String propertyName) {
-        return propertyMap.get(propertyName);
+        return description.properties.get(propertyName);
     }
 
     @Override
