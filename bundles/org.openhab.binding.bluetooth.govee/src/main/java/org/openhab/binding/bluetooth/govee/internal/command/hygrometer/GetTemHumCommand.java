@@ -30,7 +30,6 @@ import org.openhab.core.library.unit.SmartHomeUnits;
 public class GetTemHumCommand extends GetCommand {
 
     private CompletableFuture<@Nullable TemHumDTO> resultHandler;
-    // private BiConsumer<@Nullable QuantityType<Temperature>, @Nullable QuantityType<Dimensionless>> resultHandler;
 
     public GetTemHumCommand(CompletableFuture<@Nullable TemHumDTO> resultHandler) {
         this.resultHandler = resultHandler;
