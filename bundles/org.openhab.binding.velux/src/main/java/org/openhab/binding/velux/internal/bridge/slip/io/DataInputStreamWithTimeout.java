@@ -227,5 +227,6 @@ class DataInputStreamWithTimeout implements Closeable {
             pollRunner.interrupt();
             this.pollRunner = null;
         }
+        executor.shutdown();
     }
 }
