@@ -30,23 +30,28 @@ Currently the binding does not support any Channels.
 
 ## Thing Actions
 
-All actions return a `Boolean` value to indicate if the message - parameter `message` **mandatory** - was sent successfully or not.
-The `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
+All actions return a `Boolean` value to indicate if the message was sent successfully or not.
+The parameter `message` is **mandatory**, the `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
 
-`sendMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
-`sendHtmlMessage(String message, @Nullable String title)` - This method is used to send a HTML message.
-`sendMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
-`sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a (local) path  (`attachment` **mandatory**) to the attachment and an optional parameter `contentType` to define the content-type of the attachment (default: `image/jpeg`).
-`sendURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
-`sendMessageToDevice(String device, String message, @Nullable String title)` - This method is used to send a message to a specific device. Parameter `device` **mandatory** is the name of a specific device (multiple devices may be separated by a comma).
+- `sendMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
+
+- `sendHtmlMessage(String message, @Nullable String title)` - This method is used to send a HTML message.
+
+- `sendMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
+
+- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a (local) path to the attachment (parameter `attachment` **mandatory**) and an optional `contentType` to define the content-type of the attachment (default: `image/jpeg`).
+
+- `sendURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
+
+- `sendMessageToDevice(String device, String message, @Nullable String title)` - This method is used to send a message to a specific device. Parameter `device` **mandatory** is the name of a specific device (multiple devices may be separated by a comma).
 
 The `sendPriorityMessage` action returns a `String` value (the `receipt`) if the message was sent successfully, otherwise `null`.
 
-`sendPriorityMessage(String message, @Nullable String title, @Nullable Integer priority)` - This method is used to send a priority message. Parameter `priority` is the priority (`-2`, `-1`, `0`, `1`, `2`) to be used (default: `2`).
+- `sendPriorityMessage(String message, @Nullable String title, @Nullable Integer priority)` - This method is used to send a priority message. Parameter `priority` is the priority (`-2`, `-1`, `0`, `1`, `2`) to be used (default: `2`).
 
-`cancelPriorityMessage` returns a `Boolean` value to indicate if the message was cancelled successfully or not.
+The `cancelPriorityMessage` returns a `Boolean` value to indicate if the message was cancelled successfully or not.
 
-`cancelPriorityMessage(String receipt)` - This method is used to cancel a priority message.
+- `cancelPriorityMessage(String receipt)` - This method is used to cancel a priority message.
 
 ## Full Example
 
@@ -67,7 +72,7 @@ actions.sendHtmlMessage("Hello <font color='green'>World</font>!", "openHAB")
 ```java
 val actions = getActions("pushover", "pushover:pushover-account:account")
 // send priority message
-var receipt = actions.sendPriorityMessage("Hello <font color='green'>World</font>!", "openHAB", 3)
+var receipt = actions.sendPriorityMessage("Emergency!!!", "openHAB", 2)
 
 // wait for your cancel condition
 
