@@ -35,7 +35,6 @@ public class PropertyToChannelLink implements PropertyChangedListener {
     private final Channel channel;
     private final TypeConverter typeConverter;
 
-
     public static void establish(ConsumedThing webThing, String propertyName, ChannelHandler thingHandler,
             Channel channel) throws IOException {
         new PropertyToChannelLink(webThing, propertyName, thingHandler, channel);
