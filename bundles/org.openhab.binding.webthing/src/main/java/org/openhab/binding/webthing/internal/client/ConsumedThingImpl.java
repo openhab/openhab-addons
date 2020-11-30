@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.client.dto.Property;
@@ -119,9 +120,13 @@ public class ConsumedThingImpl implements ConsumedThing {
 
     private URI getEventStreamUri() {
         for (var link : this.description.links) {
-            if ((link.rel != null) && (link.href != null) && link.rel.equals("alternate")) {
-                return URI.create(link.href);
-            }
+        	var href = link.href;
+        	if (href != null) {
+        		var rel = Optional.ofNullable(link.rel).orElse("<undefined>");
+	            if (rel.equals("alternate")) {
+	                return URI.create(href);
+	            }
+        	}
         }
         throw new RuntimeException("webthing resource " + webThingURI
                 + " does not support websocket uri. WebThing description: " + this.description);
