@@ -931,7 +931,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             assertFalse(results.isEmpty(), "No Thing with UID " + computerUID.getAsString() + " in inbox");
         });
 
-        inbox.approve(computerUID, SysteminfoDiscoveryService.DEFAULT_THING_LABEL, null);
+        inbox.approve(computerUID, SysteminfoDiscoveryService.DEFAULT_THING_LABEL);
 
         waitForAssert(() -> {
             systemInfoThing = thingRegistry.get(computerUID);
