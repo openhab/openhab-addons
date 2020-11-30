@@ -11,7 +11,7 @@ For instance, makers may use the Web Thing API to provide an open, web-based API
 
 
 ## Supported Things
-As a generic solution the WebThing binding does not depend on specific devices. All devices should be accessible implementing the Web Thing API according to the specification. 
+As a generic solution, the WebThing binding does not depend on specific devices. All devices should be accessible by implementing the Web Thing API according to the specification. 
  
 
 ## Discovery
@@ -22,15 +22,15 @@ No binding configuration required.
 
 
 ## Thing Configuration
-Due to the discovery support no manual Thing configuration is required. However, under certain circumstances textual 
-Thing configuration may be preferred. In this case the webThingURI has to be configured as shown in the .things file below:
+Due to the discovery support, no manual Thing configuration is required. However, under certain circumstances textual 
+Thing configuration may be preferred. In this case, the webThingURI has to be configured as shown in the .things file below:
 ```
 Thing webthing:generic:motionsensor [ webThingURI="http://192.168.1.27:9496/" ]
 ```
 
 ## Channels
 
-The supported channels depends on the WebThing device that is connected. Each mappable WebThing property will be mapped the a dedicated channel. For instance, to support the motion property of a Motion-Sensor WebThing, a dedicated "motion" channel will be created, automatically.
+The supported channels depend on the WebThing device that is connected. Each mappable WebThing property will be mapped the a dedicated channel. For instance, to support the motion property of a Motion-Sensor WebThing, a dedicated "motion" channel will be created, automatically.
 
 ## Full Example
 In the example below WebThings provided by the [Internet Monitor Service](https://pypi.org/project/internet-monitor-webthing/) will be connected. 
@@ -43,7 +43,7 @@ After installing the WebThing binding you should find the WebThings of your netw
 ![discovery picture](docs/discovery.png) 
 
 Here, the WebThings provided by the *Internet Monitor Service*: the *Internet Connectivity* WebThing as well as the 
-*Internet Speed Monitor* WebThing have been discovered. To add a WebThing as an openHAB Thing click the 'Add as Thing' button. 
+*Internet Speed Monitor* WebThing has been discovered. To add a WebThing as an openHAB Thing click the 'Add as Thing' button. 
 
 ![discovery picture](docs/speedmonitor.png) 
 
