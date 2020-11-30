@@ -31,7 +31,6 @@ import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
  * This is a convenience class to interact with the Thing's {@link ModbusCommunicationInterface}.
@@ -59,7 +58,25 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
     public void initialize() {
         getModbus();
 
+        try {
+            getEndpoint().getSlaveId();
+        } catch (EndpointNotInitializedException e) {
+            throw new IllegalStateException(e);
+        }
+
         initialized = true;
+    }
+
+    public int getSlaveId() {
+        try {
+            return getEndpoint().getSlaveId();
+        } catch (EndpointNotInitializedException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public boolean isDiscoveryEnabled() {
+        return getEndpoint().isDiscoveryEnabled();
     }
 
     /**
@@ -145,15 +162,6 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Get endpoint associated with this communication interface
-     *
-     * @return modbus slave endpoint
-     */
-    public ModbusSlaveEndpoint getEndpoint() {
-        return getModbus().getEndpoint();
-    }
-
-    /**
      * Retrieves the {@link ModbusCommunicationInterface} and does some validity checking.
      * Sets the ThingStatus to offline if it couldn't be retrieved and throws an unchecked exception.
      *
@@ -164,6 +172,16 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * @return the {@link ModbusCommunicationInterface}
      */
     private ModbusCommunicationInterface getModbus() {
+        ModbusCommunicationInterface communicationInterface = getEndpoint().getCommunicationInterface();
+
+        if (communicationInterface == null) {
+            throw new IllegalStateException("Failed to retrieve Modbus communication interface");
+        } else {
+            return communicationInterface;
+        }
+    }
+
+    private ModbusEndpointThingHandler getEndpoint() {
         try {
             Bridge bridge = getBridge();
             if (bridge == null) {
@@ -173,14 +191,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
             BridgeHandler handler = bridge.getHandler();
 
             if (handler instanceof ModbusEndpointThingHandler) {
-                ModbusCommunicationInterface communicationInterface = ((ModbusEndpointThingHandler) handler)
-                        .getCommunicationInterface();
-
-                if (communicationInterface == null) {
-                    throw new IllegalStateException("Failed to retrieve Modbus communication interface");
-                } else {
-                    return communicationInterface;
-                }
+                return (ModbusEndpointThingHandler) handler;
             } else {
                 throw new IllegalStateException("Bridge is not a Modbus bridge: " + handler);
             }
