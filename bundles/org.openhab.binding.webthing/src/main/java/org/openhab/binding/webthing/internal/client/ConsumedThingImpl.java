@@ -150,8 +150,9 @@ public class ConsumedThingImpl implements ConsumedThing {
                 throw new IOException("Got error response: " + response.body());
             }
             var propertValue = new Gson().fromJson(response.body(), Map.class);
-            if (propertValue.containsKey(propertyName)) {
-                return propertValue.get(propertyName);
+            var value = propertValue.get(propertyName);
+            if (value != null) {
+                return value;
             } else {
                 throw new IOException(
                         "response does not include " + propertyName + "(" + propertyUri + "): " + response.body());
@@ -193,7 +194,7 @@ public class ConsumedThingImpl implements ConsumedThing {
      * @param propertyName the propertyName
      * @return the description (meta data) of the property
      */
-    public Property getPropertyDescription(String propertyName) {
+    public @Nullable Property getPropertyDescription(String propertyName) {
         return description.properties.get(propertyName);
     }
 

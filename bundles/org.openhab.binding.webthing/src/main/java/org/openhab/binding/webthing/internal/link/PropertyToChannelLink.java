@@ -13,7 +13,6 @@
 package org.openhab.binding.webthing.internal.link;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.ChannelHandler;
@@ -55,11 +54,12 @@ public class PropertyToChannelLink implements PropertyChangedListener {
         var optionalProperty = webThing.getThingDescription().getProperty(propertyName);
         if (optionalProperty.isPresent()) {
             var propertyType = optionalProperty.get().type;
-            var itemType = "String";
-            if (channel.getAcceptedItemType() != null) {
-                itemType = channel.getAcceptedItemType();
+            var acceptedType = channel.getAcceptedItemType();
+            if (acceptedType == null) {
+                this.typeConverter = TypeConverters.create("String", propertyType);
+            } else {
+                this.typeConverter = TypeConverters.create(acceptedType, propertyType);
             }
-            this.typeConverter = TypeConverters.create(itemType, propertyType);
             this.channelHandler = channelHandler;
             webThing.observeProperty(propertyName, this);
         } else {
