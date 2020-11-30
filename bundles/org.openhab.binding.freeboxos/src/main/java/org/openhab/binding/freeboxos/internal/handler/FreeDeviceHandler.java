@@ -38,6 +38,10 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 @NonNullByDefault
 public abstract class FreeDeviceHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(FreeDeviceHandler.class);
@@ -91,7 +95,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
             });
             updateThing(editThing().withChannels(channels).build());
         } catch (FreeboxException e) {
-            logger.info("Error getting list of optional channels : {}", e);
+            logger.info("Error getting list of optional channels : {}", e.getMessage());
         }
     }
 
@@ -135,7 +139,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
             stopRefreshJob();
             scheduler.schedule(this::initialize, 2, TimeUnit.MINUTES);
         } catch (FreeboxException e) {
-            logger.debug("Error rebooting device : {}", e);
+            logger.debug("Error rebooting device : {}", e.getMessage());
         }
     }
 }

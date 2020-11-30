@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.freeboxos.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
 public class ApiConsumerConfiguration {
     public int refreshInterval = 30;
 }

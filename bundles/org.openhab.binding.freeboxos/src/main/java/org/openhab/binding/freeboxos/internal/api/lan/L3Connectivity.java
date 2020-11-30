@@ -39,7 +39,10 @@ public class L3Connectivity {
     private boolean active;
 
     private L3Af getAf() {
-        return af != null ? af : L3Af.UNKNOWN;
+        if (af != null) {
+            return af;
+        }
+        return L3Af.UNKNOWN;
     }
 
     public @Nullable String getIpv4() {

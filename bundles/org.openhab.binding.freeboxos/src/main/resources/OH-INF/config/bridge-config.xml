@@ -34,16 +34,16 @@
 			<advanced>true</advanced>
 			<default>15682</default>
 		</parameter>
-		      <parameter name="baseUrl" type="text">
-            <label>Base Url</label>
-            <advanced>true</advanced>
-            <default>/api/</default>
-        </parameter>
-        <parameter name="apiVersion" type="text">
-            <label>API Version</label>
-            <advanced>true</advanced>
-            <default>7.1</default>
-        </parameter>
+		<parameter name="baseUrl" type="text">
+			<label>Base Url</label>
+			<advanced>true</advanced>
+			<default>/api/</default>
+		</parameter>
+		<parameter name="apiVersion" type="text">
+			<label>API Version</label>
+			<advanced>true</advanced>
+			<default>7.1</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

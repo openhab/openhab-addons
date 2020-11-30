@@ -207,7 +207,7 @@ public class ApiHandler extends BaseBridgeHandler {
                 headers.remove(AUTH_HEADER);
             }
         } catch (FreeboxException e) {
-            logger.info("Error closing session : {}", e);
+            logger.info("Error closing session : {}", e.getMessage());
         }
     }
 
@@ -338,5 +338,4 @@ public class ApiHandler extends BaseBridgeHandler {
     public String getAppToken() {
         return getConfiguration().appToken;
     }
-
 }

@@ -39,5 +39,4 @@ public class ConnectionManager extends RestManager {
     // Response classes and validity evaluations
     private static class ConnectionStatusResponse extends Response<ConnectionStatus> {
     }
-
 }

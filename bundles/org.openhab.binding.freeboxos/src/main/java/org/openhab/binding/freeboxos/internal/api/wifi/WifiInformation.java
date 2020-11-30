@@ -14,6 +14,10 @@ package org.openhab.binding.freeboxos.internal.api.wifi;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 @NonNullByDefault
 public class WifiInformation {
     private @NonNullByDefault({}) String ssid;

@@ -13,14 +13,14 @@
 			<channel id="phone-event" typeId="phone-event"/>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="phone-misc">
-        <label>Phone Settings</label>
-        <channels>
-            <channel id="alternate-ring" typeId="alternate-ring"/>
-            <channel id="dect-active" typeId="dect-active"/>
-        </channels>
-    </channel-group-type>
+		<label>Phone Settings</label>
+		<channels>
+			<channel id="alternate-ring" typeId="alternate-ring"/>
+			<channel id="dect-active" typeId="dect-active"/>
+		</channels>
+	</channel-group-type>
 
 	<channel-group-type id="accepted">
 		<label>Accepted Call</label>

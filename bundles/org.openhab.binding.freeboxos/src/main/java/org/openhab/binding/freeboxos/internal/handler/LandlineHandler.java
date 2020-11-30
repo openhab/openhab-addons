@@ -120,7 +120,7 @@ public class LandlineHandler extends ApiConsumerHandler {
         if (call.getType() != CallType.MISSED) { // Missed call have no duration by definition
             updateChannelQuantity(group, CALL_DURATION, call.getDuration(), Units.SECOND);
         }
-        if (phoneNumber != null && !phoneNumber.contentEquals(call.getName())) {
+        if (phoneNumber != null && !phoneNumber.equals(call.getName())) {
             updateChannelString(group, CALL_NAME, call.getNumber());
         }
     }

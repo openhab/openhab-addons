@@ -179,7 +179,6 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
             thingDiscovered(discoveryResult);
         });
-
     }
 
     private void discoverPlayer(Map<String, @Nullable LanHost> lanHosts) throws FreeboxException {

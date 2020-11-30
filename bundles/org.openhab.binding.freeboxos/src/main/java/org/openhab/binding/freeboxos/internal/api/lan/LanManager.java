@@ -78,8 +78,8 @@ public class LanManager extends RestManager {
                 List<LanHost> intfHosts = getInterfaceHosts(intf.getName());
                 hosts.addAll(intfHosts);
             } catch (FreeboxException e) {
-                logger.info("Error getting hosts for interface '{}' - will renew interface list : {}'", intf.getName(),
-                        e);
+                logger.info("Error getting hosts for interface '{}' - will renew interface list : {}", intf.getName(),
+                        e.getMessage());
                 interfaces.clear();
                 return getHosts();
             }

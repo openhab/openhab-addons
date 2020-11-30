@@ -21,7 +21,6 @@
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:freeboxos:landline"/>
-
 	</thing-type>
 
 </thing:thing-descriptions>

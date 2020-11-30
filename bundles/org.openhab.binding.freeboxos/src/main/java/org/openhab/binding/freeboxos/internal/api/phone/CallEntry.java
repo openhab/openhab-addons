@@ -75,5 +75,4 @@ public class CallEntry {
     public int getContactId() {
         return contactId;
     }
-
 }
