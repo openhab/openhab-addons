@@ -120,13 +120,13 @@ public class ConsumedThingImpl implements ConsumedThing {
 
     private URI getEventStreamUri() {
         for (var link : this.description.links) {
-        	var href = link.href;
-        	if (href != null) {
-        		var rel = Optional.ofNullable(link.rel).orElse("<undefined>");
-	            if (rel.equals("alternate")) {
-	                return URI.create(href);
-	            }
-        	}
+            var href = link.href;
+            if (href != null) {
+                var rel = Optional.ofNullable(link.rel).orElse("<undefined>");
+                if (rel.equals("alternate")) {
+                    return URI.create(href);
+                }
+            }
         }
         throw new RuntimeException("webthing resource " + webThingURI
                 + " does not support websocket uri. WebThing description: " + this.description);
