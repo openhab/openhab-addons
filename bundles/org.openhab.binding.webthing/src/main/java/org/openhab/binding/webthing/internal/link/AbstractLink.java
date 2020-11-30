@@ -42,6 +42,10 @@ class AbstractLink {
         this.webThing = webThing;
         this.channel = channel;
         var itemType = Optional.ofNullable(channel.getAcceptedItemType()).orElse("String");
+        
+        if (!webThing.getThingDescription().properties.containsKey(propertyName)) {
+            throw new RuntimeException("property " + propertyName + " does not exist");
+        }
         this.property = webThing.getThingDescription().properties.get(propertyName);
         this.typeConverter = TypeConverters.create(itemType, property.type);
     }
