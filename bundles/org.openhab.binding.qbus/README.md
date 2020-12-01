@@ -1,4 +1,5 @@
 # Qbus Binding
+
 ![Qbus Logo](doc/Logo.JPG)
 
 This binding for Qbus communicates for all controllers of the Qbus home automation system.
@@ -19,6 +20,7 @@ With this binding you can control and read almost every output from the Qbus sys
 ## Supported Things
 
 The following things are supported by the Qbus Binding:
+
 - Dimmer 1 button, 2 button and clc as _dimmer_
 - Bistabiel, Timer1-3, Interval as _onOff_
 - Thermostats - normal and PID as _thermosats_
@@ -27,6 +29,7 @@ The following things are supported by the Qbus Binding:
 - Rollershutter and rollerhutter with slats as _rollershutter_
 
 For now the folowing Qbus things are not yet supported but will come:
+
 - DMX
 - Timer 4 & 5
 - HVAC
@@ -77,6 +80,7 @@ The Bridge connects to the QbusServer, so if the Client/Server application is in
 ## Full Example
 
 ### Things:
+
 ```
 Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, refresh=10 ] {
     dimmer                   1     "ToonzaalLED"      [ dimmerId=100 ]
@@ -88,7 +92,9 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, refresh
     rollershutter_slats      121    "Roller2"         [ rolId=264 ]
 }
 ```
+
 ### Items:
+
 ```
 Dimmer              ToonzaalLED          <light>    [ "Lighting" ]      {channel="qbus:dimmer:CTD007841:1:brightness"}
 Switch              Toonzaal230V         <light>                        {channel="qbus:onOff:CTD007841:30:switch"}
@@ -101,3 +107,4 @@ Rollershutter       Roller1                                             {channel
 Rollershutter       Roller2                                             {channel="qbus:rollershutter_slats:CTD007841:121:rollershutter"}
 Dimmer              Roller2_slats                                       {channel="qbus:rollershutter_slats:CTD007841:121:slats"}
 ```
+

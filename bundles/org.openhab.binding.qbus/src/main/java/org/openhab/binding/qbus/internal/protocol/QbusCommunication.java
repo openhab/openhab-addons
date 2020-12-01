@@ -248,12 +248,10 @@ public final class QbusCommunication {
 
             @SuppressWarnings("null")
             String confsn = this.bridgeCallBack.getSn();
+            @SuppressWarnings("null")
             String sn = qMessageGson.getSn();
             cmd = qMessageGson.getCmd();
             event = qMessageGson.getEvent();
-
-            // logger.debug(cmd);
-            // logger.debug(event);
 
             if (Integer.parseInt(confsn) == Integer.parseInt(sn)) {
                 // Get the compatible outputs from the Qbus server
@@ -341,12 +339,15 @@ public final class QbusCommunication {
 
     /**
      * Initial connection to Qbus Server to open a communication channel
+     *
+     * @throws InterruptedException
      */
-    private void Connect() {
+    private void Connect() throws InterruptedException {
         @SuppressWarnings("null")
         String confsn = this.bridgeCallBack.getSn();
         QMessageCmd qCmd = new QMessageCmd("openHAB").withSn(confsn);
         sendMessage(qCmd);
+        TimeUnit.MILLISECONDS.sleep(250);
     }
 
     /**
@@ -376,13 +377,18 @@ public final class QbusCommunication {
 
         if (data != null) {
             for (Map<String, String> scene : data) {
-                try {
-                    int id = Integer.parseInt(scene.get("id"));
-                    QbusScene Scene = new QbusScene(id);
-                    Scene.setQComm(this);
-                    this.scenes.put(id, Scene);
-                } catch (Exception e) {
-                    logger.debug("Qbus: Error in json for Scenes");
+                String idStr = scene.get("id");
+                if (idStr != null) {
+                    try {
+                        int id = Integer.parseInt(idStr);
+                        QbusScene Scene = new QbusScene(id);
+                        Scene.setQComm(this);
+                        this.scenes.put(id, Scene);
+                    } catch (Exception e) {
+                        logger.debug("Qbus: Error in json for Scenes");
+                    }
+                } else {
+                    logger.debug("Qbus: Error in json for Scenes Nullvalue");
                 }
             }
         }
@@ -393,16 +399,19 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void cmdlistco2(@Nullable List<Map<String, String>> data) {
         logger.debug("Qbus: CO2 received from Qbus server");
 
         if (data != null) {
             for (Map<String, String> co2 : data) {
+                String idStr = co2.get("id");
+                String value1Str = co2.get("value1");
+                if (idStr != null && value1Str != null) {
 
-                try {
-                    int id = Integer.parseInt(co2.get("id"));
-                    Integer co = 0;
-                    co = Integer.parseInt(co2.get("value1"));
+                    int id = Integer.parseInt(idStr);
+                    Integer co = Integer.parseInt(value1Str);
+
                     if (!this.co2.containsKey(id)) {
                         QbusCO2 CO2 = new QbusCO2(id);
                         this.co2.put(id, CO2);
@@ -410,8 +419,9 @@ public final class QbusCommunication {
                     } else {
                         this.co2.get(id).setState(co);
                     }
-                } catch (Exception e) {
-                    logger.debug("Qbus: Error in json for CO2");
+
+                } else {
+                    logger.debug("Qbus: Error in json for CO2 Nullvalue");
                 }
 
             }
@@ -423,31 +433,27 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void cmdlistrol(@Nullable List<Map<String, String>> data) {
         logger.debug("Qbus: ROL02P received from Qbus server");
 
         if (data != null) {
             for (Map<String, String> rol : data) {
-                int id = 0;
-                id = Integer.parseInt(rol.get("id"));
-                Integer rolpos = 0;
-                // Integer rolposslats = 0;
-                try {
-                    rolpos = Integer.valueOf(rol.get("value1"));
-                    // rolposslats = Integer.valueOf(rol.get("value2"));
-                } catch (Exception e) {
-                    logger.debug("Qbus: Error in json for Rollershutter");
-                }
-
-                if (!this.Rol.containsKey(id)) {
-                    QbusRol Rol = new QbusRol(id);
-                    Rol.setQComm(this);
-                    this.Rol.put(id, Rol);
-                    this.Rol.get(id).setState(rolpos);
-                    // this.Rol.get(id).setSlats(rolposslats);
+                String idStr = rol.get("id");
+                String value1Str = rol.get("value1");
+                if (idStr != null && value1Str != null) {
+                    int id = Integer.parseInt(idStr);
+                    Integer rolpos = Integer.valueOf(value1Str);
+                    if (!this.Rol.containsKey(id)) {
+                        QbusRol Rol = new QbusRol(id);
+                        Rol.setQComm(this);
+                        this.Rol.put(id, Rol);
+                        this.Rol.get(id).setState(rolpos);
+                    } else {
+                        this.Rol.get(id).setState(rolpos);
+                    }
                 } else {
-                    this.Rol.get(id).setState(rolpos);
-                    // this.Rol.get(id).setSlats(rolposslats);
+                    logger.debug("Qbus: Error in json for ROL02P Nullvalue");
                 }
             }
         }
@@ -458,31 +464,34 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void cmdlistrolslats(@Nullable List<Map<String, String>> data) {
         logger.debug("Qbus: ROL02PSLATS received from Qbus server");
 
         if (data != null) {
             for (Map<String, String> rol : data) {
-                int id = 0;
-                id = Integer.parseInt(rol.get("id"));
-                Integer rolpos = 0;
-                Integer rolposslats = 0;
-                try {
-                    rolpos = Integer.valueOf(rol.get("value1"));
-                    rolposslats = Integer.valueOf(rol.get("value2"));
-                } catch (Exception e) {
-                    logger.debug("Qbus: Error in json for Rollershutter");
-                }
 
-                if (!this.Rol.containsKey(id)) {
-                    QbusRol Rol = new QbusRol(id);
-                    Rol.setQComm(this);
-                    this.Rol.put(id, Rol);
-                    this.Rol.get(id).setState(rolpos);
-                    this.Rol.get(id).setSlats(rolposslats);
+                String idStr = rol.get("id");
+                String value1Str = rol.get("value1");
+                String value2Str = rol.get("value2");
+                if (idStr != null && value1Str != null && value2Str != null) {
+                    int id = Integer.parseInt(idStr);
+                    Integer rolpos = Integer.valueOf(value1Str);
+                    Integer rolposslats = Integer.valueOf(value2Str);
+                    rolpos = Integer.valueOf(rolpos);
+                    rolposslats = Integer.valueOf(rolposslats);
+                    if (!this.Rol.containsKey(id)) {
+                        QbusRol Rol = new QbusRol(id);
+                        Rol.setQComm(this);
+                        this.Rol.put(id, Rol);
+                        this.Rol.get(id).setState(rolpos);
+                        this.Rol.get(id).setSlats(rolposslats);
+                    } else {
+                        this.Rol.get(id).setState(rolpos);
+                        this.Rol.get(id).setSlats(rolposslats);
+                    }
                 } else {
-                    this.Rol.get(id).setState(rolpos);
-                    this.Rol.get(id).setSlats(rolposslats);
+                    logger.debug("Qbus: Error in json for ROL02P_Slats Nullvalue");
                 }
             }
         }
@@ -493,27 +502,25 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void cmdListBistabiel(@Nullable List<Map<String, String>> data) {
         logger.debug("Qbus: Bistabiel/Timers/Monos/Intervals received from Qbus server");
 
         if (data != null) {
             for (Map<String, String> bistabiel : data) {
-                int id = 0;
-                int state = 0;
-                id = Integer.parseInt(bistabiel.get("id"));
-                try {
-                    state = Integer.parseInt(bistabiel.get("value1"));
-                } catch (Exception e) {
-                    logger.debug("Qbus: Error in json for Bistabiel");
-                }
-
-                if (!this.bistabiel.containsKey(id)) {
-                    QbusBistabiel qBistabiel = new QbusBistabiel(id);
-                    qBistabiel.setState(state);
-                    qBistabiel.setQComm(this);
-                    this.bistabiel.put(id, qBistabiel);
-                } else {
-                    this.bistabiel.get(id).setState(state);
+                String idStr = bistabiel.get("id");
+                String value1Str = bistabiel.get("value1");
+                if (idStr != null && value1Str != null) {
+                    int id = Integer.parseInt(idStr);
+                    Integer state = Integer.parseInt(value1Str);
+                    if (!this.bistabiel.containsKey(id)) {
+                        QbusBistabiel qBistabiel = new QbusBistabiel(id);
+                        qBistabiel.setState(state);
+                        qBistabiel.setQComm(this);
+                        this.bistabiel.put(id, qBistabiel);
+                    } else {
+                        this.bistabiel.get(id).setState(state);
+                    }
                 }
             }
         }
@@ -524,28 +531,25 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void cmdListDimmers(@Nullable List<Map<String, String>> data) {
         logger.debug("Qbus: Dimmers received from the Qbus server");
 
         if (data != null) {
             for (Map<String, String> dimmer : data) {
-
-                int id = 0;
-                int state = 0;
-                id = Integer.parseInt(dimmer.get("id"));
-                try {
-                    state = Integer.parseInt(dimmer.get("value1"));
-                } catch (Exception e) {
-                    logger.debug("Qbus: Error in json for Dimmer");
-                }
-
-                if (!this.dimmer.containsKey(id)) {
-                    QbusDimmer qDimmer = new QbusDimmer(id);
-                    qDimmer.setState(state);
-                    qDimmer.setQComm(this);
-                    this.dimmer.put(id, qDimmer);
-                } else {
-                    this.dimmer.get(id).setState(state);
+                String idStr = dimmer.get("id");
+                String value1Str = dimmer.get("value1");
+                if (idStr != null && value1Str != null) {
+                    int id = Integer.parseInt(idStr);
+                    Integer state = Integer.parseInt(value1Str);
+                    if (!this.dimmer.containsKey(id)) {
+                        QbusDimmer qDimmer = new QbusDimmer(id);
+                        qDimmer.updateState(state);
+                        qDimmer.setQComm(this);
+                        this.dimmer.put(id, qDimmer);
+                    } else {
+                        this.dimmer.get(id).updateState(state);
+                    }
                 }
             }
         }
@@ -556,30 +560,30 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void cmdListThermostat(@Nullable List<Map<String, String>> data) {
         logger.debug("Qbus: thermostats received from the Qbus server");
 
         if (data != null) {
             for (Map<String, String> thermostat : data) {
-                int id = Integer.parseInt(thermostat.get("id"));
-                Double measured = 0.0;
-                Double setpoint = 0.0;
-                int mode = 0;
-                try {
-                    measured = Double.valueOf(thermostat.get("measured"));
-                    setpoint = Double.valueOf(thermostat.get("setpoint"));
-                    mode = Integer.valueOf(thermostat.get("mode"));
-                } catch (Exception e) {
-                    logger.debug("Qbus: Error in json for Thermostat");
-                }
+                String idStr = thermostat.get("id");
+                String measuredStr = thermostat.get("measured");
+                String setpointStr = thermostat.get("setpoint");
+                String modeStr = thermostat.get("mode");
+                if (idStr != null && measuredStr != null && setpointStr != null && modeStr != null) {
+                    int id = Integer.parseInt(idStr);
+                    Double measured = Double.valueOf(measuredStr);
+                    Double setpoint = Double.valueOf(setpointStr);
+                    Integer mode = Integer.valueOf(modeStr);
 
-                if (!this.thermostats.containsKey(id)) {
-                    QThermostat qThermostat = new QThermostat(id);
-                    qThermostat.updateState(measured, setpoint, mode);
-                    qThermostat.setQComm(this);
-                    this.thermostats.put(id, qThermostat);
-                } else {
-                    this.thermostats.get(id).updateState(measured, setpoint, mode);
+                    if (!this.thermostats.containsKey(id)) {
+                        QThermostat qThermostat = new QThermostat(id);
+                        qThermostat.updateState(measured, setpoint, mode);
+                        qThermostat.setQComm(this);
+                        this.thermostats.put(id, qThermostat);
+                    } else {
+                        this.thermostats.get(id).updateState(measured, setpoint, mode);
+                    }
                 }
             }
         }
@@ -591,11 +595,14 @@ public final class QbusCommunication {
      * @param data
      */
     private void cmdExecuteBistabiel(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
-        if (errorCode.equals(0)) {
-            logger.debug("Qbus: execute bistabiel success");
-        } else {
-            logger.warn("Qbus: error code {} returned on command execution", errorCode);
+        String errorCodeStr = data.get("error");
+        if (errorCodeStr != null) {
+            Integer errorCode = Integer.valueOf(errorCodeStr);
+            if (errorCode.equals(0)) {
+                logger.debug("Qbus: execute bistabiel success");
+            } else {
+                logger.warn("Qbus: error code {} returned on command execution", errorCode);
+            }
         }
     }
 
@@ -605,11 +612,14 @@ public final class QbusCommunication {
      * @param data
      */
     private void cmdExecuteScene(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
-        if (errorCode.equals(0)) {
-            logger.debug("Qbus: execute scene success");
-        } else {
-            logger.warn("Qbus: error code {} returned on command execution", errorCode);
+        String errorCodeStr = data.get("error");
+        if (errorCodeStr != null) {
+            Integer errorCode = Integer.valueOf(errorCodeStr);
+            if (errorCode.equals(0)) {
+                logger.debug("Qbus: execute scene success");
+            } else {
+                logger.warn("Qbus: error code {} returned on command execution", errorCode);
+            }
         }
     }
 
@@ -619,11 +629,14 @@ public final class QbusCommunication {
      * @param data
      */
     private void cmdExecuteDimmer(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
-        if (errorCode.equals(0)) {
-            logger.debug("Qbus: execute dimmer success");
-        } else {
-            logger.warn("Qbus: error code {} returned on command execution", errorCode);
+        String errorCodeStr = data.get("error");
+        if (errorCodeStr != null) {
+            Integer errorCode = Integer.valueOf(errorCodeStr);
+            if (errorCode.equals(0)) {
+                logger.debug("Qbus: execute dimmer success");
+            } else {
+                logger.warn("Qbus: error code {} returned on command execution", errorCode);
+            }
         }
     }
 
@@ -633,11 +646,14 @@ public final class QbusCommunication {
      * @param data
      */
     private void cmdExecuteSlats(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
-        if (errorCode.equals(0)) {
-            logger.debug("Qbus: execute slats success");
-        } else {
-            logger.warn("Qbus: error code {} returned on command execution", errorCode);
+        String errorCodeStr = data.get("error");
+        if (errorCodeStr != null) {
+            Integer errorCode = Integer.valueOf(errorCodeStr);
+            if (errorCode.equals(0)) {
+                logger.debug("Qbus: execute slats success");
+            } else {
+                logger.warn("Qbus: error code {} returned on command execution", errorCode);
+            }
         }
     }
 
@@ -647,11 +663,14 @@ public final class QbusCommunication {
      * @param data
      */
     private void cmdExecuteRol(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
-        if (errorCode.equals(0)) {
-            logger.debug("Qbus: execute shutter success");
-        } else {
-            logger.warn("Qbus: error code {} returned on command execution", errorCode);
+        String errorCodeStr = data.get("error");
+        if (errorCodeStr != null) {
+            Integer errorCode = Integer.valueOf(errorCodeStr);
+            if (errorCode.equals(0)) {
+                logger.debug("Qbus: execute shutter success");
+            } else {
+                logger.warn("Qbus: error code {} returned on command execution", errorCode);
+            }
         }
     }
 
@@ -661,11 +680,14 @@ public final class QbusCommunication {
      * @param data
      */
     private void cmdExecuteRolslats(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
-        if (errorCode.equals(0)) {
-            logger.debug("Qbus: execute shutter with slats success");
-        } else {
-            logger.warn("Qbus: error code {} returned on command execution", errorCode);
+        String errorCodeStr = data.get("error");
+        if (errorCodeStr != null) {
+            Integer errorCode = Integer.valueOf(errorCodeStr);
+            if (errorCode.equals(0)) {
+                logger.debug("Qbus: execute shutter with slats success");
+            } else {
+                logger.warn("Qbus: error code {} returned on command execution", errorCode);
+            }
         }
     }
 
@@ -675,11 +697,14 @@ public final class QbusCommunication {
      * @param data
      */
     private void cmdExecuteThermostat(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
-        if (errorCode.equals(0)) {
-            logger.debug("Qbus: execute thermostat success");
-        } else {
-            logger.warn("Qbus: error code {} returned on command execution", errorCode);
+        String errorCodeStr = data.get("error");
+        if (errorCodeStr != null) {
+            Integer errorCode = Integer.valueOf(errorCodeStr);
+            if (errorCode.equals(0)) {
+                logger.debug("Qbus: execute thermostat success");
+            } else {
+                logger.warn("Qbus: error code {} returned on command execution", errorCode);
+            }
         }
     }
 
@@ -688,16 +713,21 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void eventListBistabiel(List<Map<String, String>> data) {
         for (Map<String, String> bistabiel : data) {
-            int id = Integer.valueOf(bistabiel.get("id"));
-            if (!this.bistabiel.containsKey(id)) {
-                logger.warn("Qbus: bistabiel in controller not known {}", id);
-                return;
+            String idStr = bistabiel.get("id");
+            String value1Str = bistabiel.get("value1Str");
+            if (idStr != null && value1Str != null) {
+                int id = Integer.valueOf(idStr);
+                int value1 = Integer.valueOf(value1Str);
+                if (!this.bistabiel.containsKey(id)) {
+                    logger.warn("Qbus: bistabiel in controller not known {}", id);
+                    return;
+                }
+                logger.debug("Qbus: event execute bistabiel {} with state {}", id, value1);
+                this.bistabiel.get(id).setState(value1);
             }
-            Integer state = Integer.valueOf(bistabiel.get("value1"));
-            logger.debug("Qbus: event execute bistabiel {} with state {}", id, state);
-            this.bistabiel.get(id).setState(state);
         }
     }
 
@@ -706,16 +736,21 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void eventListCO2(List<Map<String, String>> data) {
         for (Map<String, String> co2 : data) {
-            int id = Integer.valueOf(co2.get("id"));
-            if (!this.co2.containsKey(id)) {
-                logger.warn("Qbus: co2 in controller not known {}", id);
-                return;
+            String idStr = co2.get("id");
+            String value1Str = co2.get("value1Str");
+            if (idStr != null && value1Str != null) {
+                int id = Integer.valueOf(idStr);
+                int value1 = Integer.valueOf(value1Str);
+                if (!this.co2.containsKey(id)) {
+                    logger.warn("Qbus: co2 in controller not known {}", id);
+                    return;
+                }
+                logger.debug("Qbus: event execute co2 {} with state {}", id, value1);
+                this.co2.get(id).setState(value1);
             }
-            Integer state = Integer.valueOf(co2.get("value1"));
-            logger.debug("Qbus: event execute co2 {} with state {}", id, state);
-            this.co2.get(id).setState(state);
         }
     }
 
@@ -724,18 +759,24 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void eventListRol(List<Map<String, String>> data) {
         for (Map<String, String> rol : data) {
-            int id = Integer.valueOf(rol.get("id"));
-            if (!this.Rol.containsKey(id)) {
-                logger.warn("Qbus: Rol02p in controller not known {}", id);
-                return;
+
+            String idStr = rol.get("id");
+            String value1Str = rol.get("value1Str");
+            if (idStr != null && value1Str != null) {
+                int id = Integer.valueOf(idStr);
+                int value1 = Integer.valueOf(value1Str);
+
+                if (!this.Rol.containsKey(id)) {
+                    logger.warn("Qbus: Rol02p in controller not known {}", id);
+                    return;
+                }
+                logger.debug("Qbus: event execute Rol02P {} with pos {}", id, value1);
+                this.Rol.get(id).setState(value1);
+
             }
-            Integer pos = Integer.valueOf(rol.get("pos"));
-            // Integer slat = Integer.valueOf(rol.get("slats"));
-            logger.debug("Qbus: event execute Rol02P {} with pos {}", id, pos);
-            this.Rol.get(id).setState(pos);
-            // this.Rol.get(id).setSlats(slat);
         }
     }
 
@@ -744,18 +785,25 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void eventListRolslats(List<Map<String, String>> data) {
         for (Map<String, String> rol : data) {
-            int id = Integer.valueOf(rol.get("id"));
-            if (!this.Rol.containsKey(id)) {
-                logger.warn("Qbus: Rol02p in controller not known {}", id);
-                return;
+            String idStr = rol.get("id");
+            String value1Str = rol.get("pos");
+            String value2Str = rol.get("slats");
+            if (idStr != null && value1Str != null && value2Str != null) {
+                int id = Integer.valueOf(idStr);
+                int value1 = Integer.valueOf(value1Str);
+                int value2 = Integer.valueOf(value2Str);
+                if (!this.Rol.containsKey(id)) {
+                    logger.warn("Qbus: Rol02p in controller not known {}", id);
+                    return;
+                }
+
+                logger.debug("Qbus: event execute ROL02P_Slats {} with pos {} and slats {}", id, value1, value2);
+                this.Rol.get(id).setState(value1);
+                this.Rol.get(id).setSlats(value2);
             }
-            Integer pos = Integer.valueOf(rol.get("pos"));
-            Integer slat = Integer.valueOf(rol.get("slats"));
-            logger.debug("Qbus: event execute ROL02P_Slats {} with pos {} and slats {}", id, pos, slat);
-            this.Rol.get(id).setState(pos);
-            this.Rol.get(id).setSlats(slat);
         }
     }
 
@@ -764,16 +812,22 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void eventListScenes(List<Map<String, String>> data) {
         for (Map<String, String> scene : data) {
-            int id = Integer.valueOf(scene.get("id"));
-            if (!this.scenes.containsKey(id)) {
-                logger.warn("Qbus: scene in controller not known {}", id);
-                return;
+            String idStr = scene.get("id");
+            String value1Str = scene.get("value1");
+            if (idStr != null && value1Str != null) {
+                int id = Integer.valueOf(idStr);
+                int value1 = Integer.valueOf(value1Str);
+                if (!this.scenes.containsKey(id)) {
+                    logger.warn("Qbus: scene in controller not known {}", id);
+                    return;
+                }
+
+                logger.debug("Qbus: event execute scene {} with state {}", id, value1);
+                this.scenes.get(id).setState(value1);
             }
-            Integer state = Integer.valueOf(scene.get("value1"));
-            logger.debug("Qbus: event execute scene {} with state {}", id, state);
-            this.scenes.get(id).setState(state);
         }
     }
 
@@ -782,16 +836,23 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void eventListDimmers(List<Map<String, String>> data) {
         for (Map<String, String> dimmer : data) {
-            int id = Integer.valueOf(dimmer.get("id"));
-            if (!this.dimmer.containsKey(id)) {
-                logger.warn("Qbus: dimmer in controller not known {}", id);
-                return;
+            String idStr = dimmer.get("id");
+            String value1Str = dimmer.get("value1");
+            if (idStr != null && value1Str != null) {
+                int id = Integer.valueOf(idStr);
+                int value1 = Integer.valueOf(value1Str);
+
+                if (!this.dimmer.containsKey(id)) {
+                    logger.warn("Qbus: dimmer in controller not known {}", id);
+                    return;
+                }
+
+                logger.debug("Qbus: event execute dimmer {} with state {}", id, value1);
+                this.dimmer.get(id).setState(value1);
             }
-            Integer state = Integer.valueOf(dimmer.get("value1"));
-            logger.debug("Qbus: event execute dimmer {} with state {}", id, state);
-            this.dimmer.get(id).setState(state);
         }
     }
 
@@ -800,19 +861,28 @@ public final class QbusCommunication {
      *
      * @param data
      */
+    @SuppressWarnings("null")
     private void eventListThermostat(List<Map<String, String>> data) {
         for (Map<String, String> thermostat : data) {
-            int id = Integer.parseInt(thermostat.get("id"));
-            if (!this.thermostats.containsKey(id)) {
-                logger.warn("Qbus: thermostat in controller not known {}", id);
-                return;
+            String idStr = thermostat.get("id");
+            String measuredStr = thermostat.get("measured");
+            String setpointdStr = thermostat.get("setpoint");
+            String modedStr = thermostat.get("mode");
+            if (idStr != null && measuredStr != null && setpointdStr != null && modedStr != null) {
+                int id = Integer.valueOf(idStr);
+                Double measured = Double.valueOf(measuredStr);
+                Double setpoint = Double.valueOf(setpointdStr);
+                Integer mode = Integer.valueOf(modedStr);
+
+                if (!this.thermostats.containsKey(id)) {
+                    logger.warn("Qbus: thermostat in controller not known {}", id);
+                    return;
+                }
+
+                logger.debug("Qbus: event execute thermostat {} with measured {}, setpoint {}, mode {}", id, measured,
+                        setpoint, mode);
+                this.thermostats.get(id).updateState(measured, setpoint, mode);
             }
-            Double measured = Double.valueOf(thermostat.get("measured"));
-            Double setpoint = Double.valueOf(thermostat.get("setpoint"));
-            Integer mode = Integer.valueOf(thermostat.get("mode"));
-            logger.debug("Qbus: event execute thermostat {} with measured {}, setpoint {}, mode {}", id, measured,
-                    setpoint, mode);
-            this.thermostats.get(id).updateState(measured, setpoint, mode);
         }
     }
 

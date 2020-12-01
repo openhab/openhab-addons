@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -37,7 +39,7 @@ import com.google.gson.JsonParseException;
 class QbusMessageDeserializer implements JsonDeserializer<QbusMessageBase> {
 
     @Override
-    public QbusMessageBase deserialize(final JsonElement json, final Type typeOfT,
+    public @Nullable QbusMessageBase deserialize(final JsonElement json, final Type typeOfT,
             final JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
 

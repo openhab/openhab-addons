@@ -15,9 +15,6 @@ package org.openhab.binding.qbus.internal.handler;
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
@@ -45,9 +42,6 @@ import org.slf4j.LoggerFactory;
 public class QbusRolHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(QbusRolHandler.class);
-
-    // private volatile int prevRolState;
-    // private volatile int prevSlatState;
 
     public QbusRolHandler(Thing thing) {
         super(thing);
@@ -79,26 +73,32 @@ public class QbusRolHandler extends BaseThingHandler {
 
         QbusRol QRol = QComm.getRol().get(RolId);
 
-        if (QComm.communicationActive()) {
-            handleCommandSelection(QRol, channelUID, command);
-        } else {
-            // We lost connection but the connection object is there, so was correctly started.
-            // Try to restart communication.
-            // This can be expensive, therefore do it in a job.
-            scheduler.submit(() -> {
-                QComm.restartCommunication();
-                // If still not active, take thing offline and return.
-                if (!QComm.communicationActive()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Qbus: communication socket error");
-                    return;
-                }
-                // Also put the bridge back online
-                QBridgeHandler.bridgeOnline();
-
-                // And finally handle the command
+        if (QRol != null) {
+            if (QComm.communicationActive()) {
                 handleCommandSelection(QRol, channelUID, command);
-            });
+            } else {
+                // We lost connection but the connection object is there, so was correctly started.
+                // Try to restart communication.
+                // This can be expensive, therefore do it in a job.
+                scheduler.submit(() -> {
+                    QComm.restartCommunication();
+                    // If still not active, take thing offline and return.
+                    if (!QComm.communicationActive()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Qbus: communication socket error");
+                        return;
+                    }
+                    // Also put the bridge back online
+                    QBridgeHandler.bridgeOnline();
+
+                    // And finally handle the command
+                    handleCommandSelection(QRol, channelUID, command);
+                });
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Qbus: RolId " + RolId + " does not match a ROL in the controller");
+            return;
         }
     }
 
@@ -227,23 +227,18 @@ public class QbusRolHandler extends BaseThingHandler {
         }
 
         QbusRol QRol = QComm.getRol().get(RolId);
-        /*
-         * int rolState = QRol.getState();
-         * int slatState = QRol.getStateSlats();
-         *
-         * this.prevRolState = rolState;
-         * this.prevSlatState = slatState;
-         *
-         */
-        QRol.setThingHandler(this);
 
-        Map<String, String> properties = new HashMap<>();
+        // Map<String, String> properties = new HashMap<>();
 
-        thing.setProperties(properties);
+        // thing.setProperties(properties);
 
-        handleStateUpdate(QRol);
-
-        logger.debug("Qbus: Slats intialized {}", RolId);
+        if (QRol != null) {
+            QRol.setThingHandler(this);
+            handleStateUpdate(QRol);
+            logger.info("Qbus: Dimmer intialized {}", RolId);
+        } else {
+            logger.info("Qbus: Dimmer not intialized {} - null", RolId);
+        }
     }
 
     /**
@@ -257,8 +252,5 @@ public class QbusRolHandler extends BaseThingHandler {
         updateState(CHANNEL_ROLLERSHUTTER, new PercentType(rolState));
         updateState(CHANNEL_SLATS, new PercentType(slatState));
         updateStatus(ThingStatus.ONLINE);
-
-        // this.prevRolState = rolState;
-        // this.prevSlatState = slatState;
     }
 }

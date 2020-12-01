@@ -15,9 +15,6 @@ package org.openhab.binding.qbus.internal.handler;
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
@@ -46,8 +43,6 @@ import org.slf4j.LoggerFactory;
 public class QbusDimmerHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(QbusDimmerHandler.class);
-
-    // private volatile int prevDimmerState;
 
     public QbusDimmerHandler(Thing thing) {
         super(thing);
@@ -79,33 +74,32 @@ public class QbusDimmerHandler extends BaseThingHandler {
 
         QbusDimmer QDimmer = QComm.getDimmer().get(dimmerId);
 
-        /*
-         * if (QDimmer == null) {
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-         * "Qbus: dimmerId " + dimmerId + " does not match a dimmer in the controller");
-         * return;
-         * }
-         */
-        if (QComm.communicationActive()) {
-            handleCommandSelection(QDimmer, channelUID, command);
-        } else {
-            // We lost connection but the connection object is there, so was correctly started.
-            // Try to restart communication.
-            // This can be expensive, therefore do it in a job.
-            scheduler.submit(() -> {
-                QComm.restartCommunication();
-                // If still not active, take thing offline and return.
-                if (!QComm.communicationActive()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Qbus: communication socket error");
-                    return;
-                }
-                // Also put the bridge back online
-                QBridgeHandler.bridgeOnline();
-
-                // And finally handle the command
+        if (QDimmer != null) {
+            if (QComm.communicationActive()) {
                 handleCommandSelection(QDimmer, channelUID, command);
-            });
+            } else {
+                // We lost connection but the connection object is there, so was correctly started.
+                // Try to restart communication.
+                // This can be expensive, therefore do it in a job.
+                scheduler.submit(() -> {
+                    QComm.restartCommunication();
+                    // If still not active, take thing offline and return.
+                    if (!QComm.communicationActive()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Qbus: communication socket error");
+                        return;
+                    }
+                    // Also put the bridge back online
+                    QBridgeHandler.bridgeOnline();
+
+                    // And finally handle the command
+                    handleCommandSelection(QDimmer, channelUID, command);
+                });
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Qbus: dimmerId " + dimmerId + " does not match a DIMMER in the controller");
+            return;
         }
     }
 
@@ -213,25 +207,18 @@ public class QbusDimmerHandler extends BaseThingHandler {
         }
 
         QbusDimmer QDimmer = QComm.getDimmer().get(dimmerId);
-        /*
-         * if (QDimmer == null) {
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-         * "Qbus: dimmerId does not match an action in the server " + dimmerId);
-         * return;
-         * }
-         */
-        // int actionState = QDimmer.getState();
 
-        // this.prevDimmerState = actionState;
-        QDimmer.setThingHandler(this);
+        // Map<String, String> properties = new HashMap<>();
 
-        Map<String, String> properties = new HashMap<>();
+        // thing.setProperties(properties);
 
-        thing.setProperties(properties);
-
-        handleStateUpdate(QDimmer);
-
-        logger.debug("Qbus: dimmer intialized {}", dimmerId);
+        if (QDimmer != null) {
+            QDimmer.setThingHandler(this);
+            handleStateUpdate(QDimmer);
+            logger.info("Qbus: Dimmer intialized {}", dimmerId);
+        } else {
+            logger.info("Qbus: Dimmer not intialized {} - null", dimmerId);
+        }
     }
 
     /**
@@ -244,7 +231,5 @@ public class QbusDimmerHandler extends BaseThingHandler {
         updateState(CHANNEL_BRIGHTNESS, new PercentType(dimmerState));
 
         updateStatus(ThingStatus.ONLINE);
-
-        // this.prevDimmerState = dimmerState;
     }
 }

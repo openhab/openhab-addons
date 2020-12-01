@@ -77,19 +77,25 @@ public class QbusThermostatHandler extends BaseThingHandler {
 
         QThermostat qThermostat = QComm.getThermostats().get(thermostatId);
 
-        if (QComm.communicationActive()) {
-            handleCommandSelection(qThermostat, channelUID, command);
-        } else {
-            scheduler.submit(() -> {
-                QComm.restartCommunication();
-                if (!QComm.communicationActive()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Qbus: communication socket error");
-                    return;
-                }
-                QBridgeHandler.bridgeOnline();
+        if (qThermostat != null) {
+            if (QComm.communicationActive()) {
                 handleCommandSelection(qThermostat, channelUID, command);
-            });
+            } else {
+                scheduler.submit(() -> {
+                    QComm.restartCommunication();
+                    if (!QComm.communicationActive()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Qbus: communication socket error");
+                        return;
+                    }
+                    QBridgeHandler.bridgeOnline();
+                    handleCommandSelection(qThermostat, channelUID, command);
+                });
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Qbus: thermostatId " + thermostatId + " does not match a THERMOSTAT in the controller");
+            return;
         }
     }
 
@@ -136,13 +142,13 @@ public class QbusThermostatHandler extends BaseThingHandler {
 
         Integer thermostatId = ((Number) config.get(CONFIG_THERMOSTAT_ID)).intValue();
 
-        Bridge nhcBridge = getBridge();
-        if (nhcBridge == null) {
+        Bridge QBrdige = getBridge();
+        if (QBrdige == null) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "Qbus: no bridge initialized for thermostat " + thermostatId);
             return;
         }
-        QbusBridgeHandler QBridgeHandler = (QbusBridgeHandler) nhcBridge.getHandler();
+        QbusBridgeHandler QBridgeHandler = (QbusBridgeHandler) QBrdige.getHandler();
         if (QBridgeHandler == null) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "Qbus: no bridge initialized for thermostat " + thermostatId);
@@ -157,11 +163,17 @@ public class QbusThermostatHandler extends BaseThingHandler {
 
         QThermostat qThermostat = QComm.getThermostats().get(thermostatId);
 
-        qThermostat.setThingHandler(this);
+        // Map<String, String> properties = new HashMap<>();
 
-        handleStateUpdate(qThermostat);
+        // thing.setProperties(properties);
 
-        logger.debug("Qbus: thermostat intialized {}", thermostatId);
+        if (qThermostat != null) {
+            qThermostat.setThingHandler(this);
+            handleStateUpdate(qThermostat);
+            logger.info("Qbus: Thermostat intialized {}", thermostatId);
+        } else {
+            logger.info("Qbus: Thermostat not intialized {} - null", thermostatId);
+        }
     }
 
     /**
