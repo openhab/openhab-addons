@@ -21,11 +21,11 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -76,9 +76,8 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDiscovery.class);
     private final CloudConnector cloudConnector;
-    private Map<String, String> cloudDevices = new HashMap<>();
-    @Nullable
-    private Configuration miioConfig;
+    private Map<String, String> cloudDevices = new ConcurrentHashMap<>();
+    private @Nullable Configuration miioConfig;
 
     @Activate
     public MiIoDiscovery(@Reference CloudConnector cloudConnector, @Reference ConfigurationAdmin configAdmin)
@@ -171,6 +170,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
 
     private void cloudDiscovery() {
         String cloudDiscoveryMode = getCloudDiscoveryMode();
+        cloudDevices.clear();
         if (cloudConnector.isConnected()) {
             List<CloudDeviceDTO> dv = cloudConnector.getDevicesList();
             for (CloudDeviceDTO device : dv) {
@@ -186,7 +186,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
                     String token = device.getToken();
                     String label = device.getName() + " " + id + " (" + device.getDid() + ")";
                     String country = device.getServer();
-                    Boolean isOnline = device.getIsOnline();
+                    boolean isOnline = device.getIsOnline();
                     String ip = device.getLocalip();
                     submitDiscovery(ip, token, id, label, country, isOnline);
                 } else {
@@ -204,11 +204,9 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
         String country = "";
         boolean isOnline = false;
-        if (cloudDevices.containsKey(id)) {
-            if (cloudDevices.get(id).contains(ip)) {
-                logger.debug("Skipped adding local found {}. Already discovered by cloud.", label);
-                return;
-            }
+        if (ip.equals(cloudDevices.get(id))) {
+            logger.debug("Skipped adding local found {}. Already discovered by cloud.", label);
+            return;
         }
         if (cloudConnector.isConnected()) {
             cloudConnector.getDevicesList();
