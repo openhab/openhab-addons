@@ -28,6 +28,9 @@ import org.openhab.core.types.RefreshType;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -40,6 +43,7 @@ import io.netty.util.ReferenceCountUtil;
 @NonNullByDefault
 public class DoorBirdHandler extends ChannelDuplexHandler {
     private IpCameraHandler ipCameraHandler;
+    private String content = "";
 
     public DoorBirdHandler(ThingHandler handler) {
         ipCameraHandler = (IpCameraHandler) handler;
@@ -51,26 +55,25 @@ public class DoorBirdHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        String content = msg.toString();
         try {
-            if (!content.isEmpty()) {
+            if (msg instanceof HttpContent) {
+                content += ((HttpContent) msg).content().toString(CharsetUtil.UTF_8);
+            }
+            if (msg instanceof LastHttpContent) {
                 ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-            } else {
-                return;
+                if (content.contains("doorbell:H")) {
+                    ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.ON);
+                }
+                if (content.contains("doorbell:L")) {
+                    ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.OFF);
+                }
+                if (content.contains("motionsensor:L")) {
+                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
+                }
+                if (content.contains("motionsensor:H")) {
+                    ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                }
             }
-            if (content.contains("doorbell:H")) {
-                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.ON);
-            }
-            if (content.contains("doorbell:L")) {
-                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.OFF);
-            }
-            if (content.contains("motionsensor:L")) {
-                ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-            }
-            if (content.contains("motionsensor:H")) {
-                ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
-            }
-
         } finally {
             ReferenceCountUtil.release(msg);
         }

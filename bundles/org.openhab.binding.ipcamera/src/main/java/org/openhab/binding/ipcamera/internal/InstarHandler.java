@@ -30,6 +30,9 @@ import org.openhab.core.types.RefreshType;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -43,6 +46,7 @@ import io.netty.util.ReferenceCountUtil;
 public class InstarHandler extends ChannelDuplexHandler {
     private IpCameraHandler ipCameraHandler;
     private String requestUrl = "Empty";
+    private String content = "";
 
     public InstarHandler(ThingHandler thingHandler) {
         ipCameraHandler = (IpCameraHandler) thingHandler;
@@ -58,66 +62,68 @@ public class InstarHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        String content = "";
-        String value1 = "";
         try {
-            content = msg.toString();
-            if (content.isEmpty()) {
-                return;
+            if (msg instanceof HttpContent) {
+                content += ((HttpContent) msg).content().toString(CharsetUtil.UTF_8);
             }
-            switch (requestUrl) {
-                case "/param.cgi?cmd=getinfrared":
-                    if (content.contains("var infraredstat=\"auto")) {
-                        ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.ON);
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
-                    }
-                    break;
-                case "/param.cgi?cmd=getoverlayattr&-region=1":// Text Overlays
-                    if (content.contains("var show_1=\"0\"")) {
-                        ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.EMPTY);
-                    } else {
-                        value1 = Helper.searchString(content, "var name_1=\"");
-                        if (!value1.isEmpty()) {
-                            ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(value1));
+            if (msg instanceof LastHttpContent) {
+                String value1 = "";
+                ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
+                switch (requestUrl) {
+                    case "/param.cgi?cmd=getinfrared":
+                        if (content.contains("var infraredstat=\"auto")) {
+                            ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
                         }
-                    }
-                    break;
-                case "/cgi-bin/hi3510/param.cgi?cmd=getmdattr":// Motion Alarm
-                    // Motion Alarm
-                    if (content.contains("var m1_enable=\"1\"")) {
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
-                    }
-                    break;
-                case "/cgi-bin/hi3510/param.cgi?cmd=getaudioalarmattr":// Audio Alarm
-                    if (content.contains("var aa_enable=\"1\"")) {
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
-                        value1 = Helper.searchString(content, "var aa_value=\"");
-                        if (!value1.isEmpty()) {
-                            ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value1));
+                        break;
+                    case "/param.cgi?cmd=getoverlayattr&-region=1":// Text Overlays
+                        if (content.contains("var show_1=\"0\"")) {
+                            ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.EMPTY);
+                        } else {
+                            value1 = Helper.searchString(content, "var name_1=\"");
+                            if (!value1.isEmpty()) {
+                                ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(value1));
+                            }
                         }
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
-                    }
-                    break;
-                case "param.cgi?cmd=getpirattr":// PIR Alarm
-                    if (content.contains("var pir_enable=\"1\"")) {
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_PIR_ALARM, OnOffType.ON);
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_PIR_ALARM, OnOffType.OFF);
-                    }
-                    // Reset the Alarm, need to find better place to put this.
-                    ipCameraHandler.noMotionDetected(CHANNEL_PIR_ALARM);
-                    break;
-                case "/param.cgi?cmd=getioattr":// External Alarm Input
-                    if (content.contains("var io_enable=\"1\"")) {
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.ON);
-                    } else {
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
-                    }
-                    break;
+                        break;
+                    case "/cgi-bin/hi3510/param.cgi?cmd=getmdattr":// Motion Alarm
+                        // Motion Alarm
+                        if (content.contains("var m1_enable=\"1\"")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
+                        }
+                        break;
+                    case "/cgi-bin/hi3510/param.cgi?cmd=getaudioalarmattr":// Audio Alarm
+                        if (content.contains("var aa_enable=\"1\"")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
+                            value1 = Helper.searchString(content, "var aa_value=\"");
+                            if (!value1.isEmpty()) {
+                                ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM,
+                                        PercentType.valueOf(value1));
+                            }
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
+                        }
+                        break;
+                    case "param.cgi?cmd=getpirattr":// PIR Alarm
+                        if (content.contains("var pir_enable=\"1\"")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_PIR_ALARM, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_PIR_ALARM, OnOffType.OFF);
+                        }
+                        // Reset the Alarm, need to find better place to put this.
+                        ipCameraHandler.noMotionDetected(CHANNEL_PIR_ALARM);
+                        break;
+                    case "/param.cgi?cmd=getioattr":// External Alarm Input
+                        if (content.contains("var io_enable=\"1\"")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.ON);
+                        } else {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
+                        }
+                        break;
+                }
             }
         } finally {
             ReferenceCountUtil.release(msg);

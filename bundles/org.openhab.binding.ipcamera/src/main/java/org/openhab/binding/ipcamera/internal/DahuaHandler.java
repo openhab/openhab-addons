@@ -64,9 +64,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 content += ((HttpContent) msg).content().toString(CharsetUtil.UTF_8);
             }
             if (msg instanceof LastHttpContent) {
-                if (!content.isEmpty()) {
-                    ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-                }
+                ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
                 // determine if the motion detection is turned on or off.
                 if (content.contains("table.MotionDetect[0].Enable=true")) {
                     ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
