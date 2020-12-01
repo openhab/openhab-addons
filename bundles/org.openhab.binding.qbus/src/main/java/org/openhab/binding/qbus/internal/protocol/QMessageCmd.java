@@ -28,7 +28,6 @@ class QMessageCmd extends QbusMessageBase {
     private Integer pos;
     private Integer value1;
     private Integer value2;
-    private Integer value3;
     private Integer mode;
     private Double setpoint;
     private String ctdsn;
@@ -52,12 +51,6 @@ class QMessageCmd extends QbusMessageBase {
         this.value2 = value2;
     }
 
-    QMessageCmd(String cmd, int id, Integer value1, Integer value2, Integer value3) {
-        this(cmd, id, value1);
-        this.value2 = value2;
-        this.value3 = value3;
-    }
-
     QMessageCmd withMode(Integer mode) {
         this.mode = mode;
         return this;
@@ -69,6 +62,7 @@ class QMessageCmd extends QbusMessageBase {
     }
 
     QMessageCmd withSn(String sn) {
+
         this.ctdsn = sn;
         return this;
     }

@@ -40,6 +40,21 @@ public final class QbusDimmer {
     }
 
     /**
+     * Update all values of the dimmer
+     *
+     * @param state
+     */
+    public void updateState(Integer state) {
+        setState(state);
+
+        QbusDimmerHandler handler = thingHandler;
+        if (handler != null) {
+            logger.debug("Qbus: update channels for {}", id);
+            handler.handleStateUpdate(this);
+        }
+    }
+
+    /**
      * This method should be called if the ThingHandler for the thing corresponding to this dimmer is initialized.
      * It keeps a record of the thing handler in this object so the thing can be updated when
      * the dimmer receives an update from the Qbus client.
