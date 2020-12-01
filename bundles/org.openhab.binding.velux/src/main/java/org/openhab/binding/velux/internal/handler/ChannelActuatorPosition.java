@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeRunProductCommand;
 import org.openhab.binding.velux.internal.bridge.common.GetProduct;
 import org.openhab.binding.velux.internal.handler.utils.Thing2VeluxActuator;
+import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -27,6 +28,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,14 +90,16 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
             bcp.setProductId(veluxActuator.getProductBridgeIndex().toInt());
             if (thisBridgeHandler.thisBridge.bridgeCommunicate(bcp) && bcp.isCommunicationSuccessful()) {
                 try {
-                    VeluxProductPosition position = new VeluxProductPosition(bcp.getProduct().getCurrentPosition());
+                    VeluxProduct product = bcp.getProduct();
+                    VeluxProductPosition position = new VeluxProductPosition(product.getDisplayPosition());
                     if (position.isValid()) {
-                        PercentType positionAsPercent = position.getPositionAsPercentType(veluxActuator.isInverted());
-                        LOGGER.trace("handleRefresh(): found actuator at level {}.", positionAsPercent);
-                        newState = positionAsPercent;
-                    } else {
-                        LOGGER.trace("handleRefresh(): level of actuator is unknown.");
+                        PercentType posPercent = position.getPositionAsPercentType(veluxActuator.isInverted());
+                        LOGGER.trace("handleRefresh(): position of actuator is {}%.", posPercent);
+                        newState = posPercent;
+                        break;
                     }
+                    LOGGER.trace("handleRefresh(): position of actuator is 'UNDEFINED'.");
+                    newState = UnDefType.UNDEF;
                 } catch (Exception e) {
                     LOGGER.warn("handleRefresh(): getProducts() exception: {}.", e.getMessage());
                 }

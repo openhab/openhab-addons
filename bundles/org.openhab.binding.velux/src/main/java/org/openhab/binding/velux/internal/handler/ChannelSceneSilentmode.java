@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Guenther Schreiner - Initial contribution.
  */
+@Deprecated
 @NonNullByDefault
 final class ChannelSceneSilentmode extends ChannelHandlerTemplate {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelSceneSilentmode.class);

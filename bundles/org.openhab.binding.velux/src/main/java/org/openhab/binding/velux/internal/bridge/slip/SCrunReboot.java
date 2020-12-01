@@ -13,11 +13,8 @@
 package org.openhab.binding.velux.internal.bridge.slip;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.velux.internal.VeluxBindingConstants;
-import org.openhab.binding.velux.internal.bridge.common.GetWLANConfig;
-import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
-import org.openhab.binding.velux.internal.things.VeluxGwWLAN;
+import org.openhab.binding.velux.internal.bridge.common.RunReboot;
+import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
 import org.slf4j.Logger;
@@ -25,51 +22,47 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Protocol specific bridge communication supported by the Velux bridge:
- * <B>Retrieve WLAN configuration</B>
+ * <B>Reboot Bridge</B>
  * <P>
  * Common Message semantic: Communication with the bridge and (optionally) storing returned information within the class
  * itself.
  * <P>
  * As 3rd level class it defines informations how to send query and receive answer through the
  * {@link org.openhab.binding.velux.internal.bridge.VeluxBridgeProvider VeluxBridgeProvider}
- * as described by the interface {@link SlipBridgeCommunicationProtocol}.
+ * as described by the {@link org.openhab.binding.velux.internal.bridge.slip.SlipBridgeCommunicationProtocol
+ * SlipBridgeCommunicationProtocol}.
  * <P>
  * Methods in addition to the mentioned interface:
  * <UL>
- * <LI>{@link #getWLANConfig} to retrieve the current WLAN configuration.</LI>
+ * <LI>{@link #runReboot} for rebooting the Velux hub.</LI>
  * </UL>
  *
- * @see GetWLANConfig
+ * @see RunReboot
  * @see SlipBridgeCommunicationProtocol
  *
- *
- * @author Guenther Schreiner - Initial contribution.
+ * @author Andrew Fiddian-Green - Initial contribution.
  */
 @NonNullByDefault
-class SCgetWLANConfig extends GetWLANConfig implements SlipBridgeCommunicationProtocol {
-    private final Logger logger = LoggerFactory.getLogger(SCgetWLANConfig.class);
+class SCrunReboot extends RunReboot implements SlipBridgeCommunicationProtocol {
+    private final Logger logger = LoggerFactory.getLogger(SCrunReboot.class);
 
-    private static final String DESCRIPTION = "Retrieve WLAN configuration";
-    private static final Command COMMAND = Command.GW_GET_NETWORK_SETUP_REQ;
+    private static final String DESCRIPTION = "Issue the reboot command";
+    private static final Command COMMAND = Command.GW_REBOOT_REQ;
 
     /*
+     * ===========================================================
      * Message Objects
      */
 
     private byte[] requestData = new byte[0];
-    private short responseCommand;
-    @SuppressWarnings("unused")
-    private byte @Nullable [] responseData;
 
     /*
      * ===========================================================
-     * Constructor Method
+     * Result Objects
      */
 
-    public SCgetWLANConfig() {
-        logger.trace("SCgetWLANConfig(constructor) called.");
-        requestData = new byte[1];
-    }
+    private boolean success = false;
+    private boolean finished = false;
 
     /*
      * ===========================================================
@@ -83,6 +76,9 @@ class SCgetWLANConfig extends GetWLANConfig implements SlipBridgeCommunicationPr
 
     @Override
     public CommandNumber getRequestCommand() {
+        success = false;
+        finished = false;
+        logger.debug("getRequestCommand() returns {} ({}).", COMMAND.name(), COMMAND.getCommand());
         return COMMAND.getCommand();
     }
 
@@ -92,31 +88,34 @@ class SCgetWLANConfig extends GetWLANConfig implements SlipBridgeCommunicationPr
     }
 
     @Override
-    public void setResponse(short thisResponseCommand, byte[] thisResponseData, boolean isSequentialEnforced) {
-        logger.trace("setResponseCommand({}, {}) called.", thisResponseCommand, new Packet(thisResponseData));
-        responseCommand = thisResponseCommand;
-        responseData = thisResponseData;
+    public void setResponse(short responseCommand, byte[] thisResponseData, boolean isSequentialEnforced) {
+        KLF200Response.introLogging(logger, responseCommand, thisResponseData);
+        success = false;
+        finished = false;
+        switch (Command.get(responseCommand)) {
+            case GW_REBOOT_CFM:
+                if (!KLF200Response.isLengthValid(logger, responseCommand, thisResponseData, 0)) {
+                    finished = true;
+                    break;
+                }
+                success = true;
+                finished = true;
+                break;
+
+            default:
+                KLF200Response.errorLogging(logger, responseCommand);
+                finished = true;
+        }
+        KLF200Response.outroLogging(logger, success, finished);
     }
 
     @Override
     public boolean isCommunicationFinished() {
-        return true;
+        return finished;
     }
 
     @Override
     public boolean isCommunicationSuccessful() {
-        return (responseCommand == Command.GW_GET_NETWORK_SETUP_CFM.getShort());
-    }
-
-    /*
-     * ===========================================================
-     * Methods in addition to interface {@link BridgeCommunicationProtocol}.
-     */
-
-    @Override
-    public VeluxGwWLAN getWLANConfig() {
-        logger.trace("getWLANConfig() called.");
-        // Enhancement idea: Velux should provide an enhanced API.
-        return new VeluxGwWLAN(VeluxBindingConstants.UNKNOWN, VeluxBindingConstants.UNKNOWN);
+        return success;
     }
 }
