@@ -208,7 +208,7 @@ public class IrccHandler extends AbstractThingHandler<IrccConfig> {
     }
 
     @Override
-    protected void refreshState() {
+    protected void refreshState(boolean initial) {
         final IrccProtocol<ThingCallback<String>> localProtocolHandler = protocolHandler.get();
         if (localProtocolHandler != null) {
             localProtocolHandler.refreshState();

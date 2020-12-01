@@ -234,11 +234,14 @@ class SimpleIpProtocol implements SocketSessionListener, AutoCloseable {
 
     /**
      * Called to refresh some of the state of the simple IP system (mainly state that either we won't get notifications
-     * for
-     * or whose state may commonly change due to remote actions.
+     * for whose state may commonly change due to remote actions.
+     * 
+     * @param includePower true to refresh power status, false otherwise
      */
-    void refreshState() {
-        refreshPower();
+    void refreshState(boolean includePower) {
+        if (includePower) {
+            refreshPower();
+        }
         refreshVolume();
         refreshChannel();
         refreshTripletChannel();
@@ -451,8 +454,7 @@ class SimpleIpProtocol implements SocketSessionListener, AutoCloseable {
         logger.debug("Sending code {}", code);
 
         sendCommand(TYPE_CONTROL, IRCC, StringUtils.leftPad(code, PARMSIZE, '0'));
-        refreshPower();
-        refreshState();
+        refreshState(true);
     }
 
     /**
@@ -829,7 +831,7 @@ class SimpleIpProtocol implements SocketSessionListener, AutoCloseable {
                 logger.debug("Unparsable {} response: {}", POWER, parms);
             }
 
-            refreshState();
+            refreshState(false);
         }
     }
 

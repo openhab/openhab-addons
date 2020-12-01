@@ -1063,6 +1063,10 @@ public abstract class AbstractScalarWebProtocol<T extends ThingCallback<String>>
             return "Remote Start";
         }
 
+        if (StringUtils.equalsIgnoreCase("IDMR_TEXT_BT_DEVICE_NAME_STRING", text)) {
+            return "Device Name";
+        }
+
         if (text != null && StringUtils.isNotEmpty(text)) {
             return text;
         }

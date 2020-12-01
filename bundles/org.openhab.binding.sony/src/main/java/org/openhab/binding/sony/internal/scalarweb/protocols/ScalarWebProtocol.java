@@ -40,8 +40,10 @@ public interface ScalarWebProtocol<T extends ThingCallback<String>> {
 
     /**
      * Refresh state
+     * 
+     * @param initial true if this is the initial refresh state after going online, false otherwise
      */
-    public void refreshState();
+    public void refreshState(boolean initial);
 
     /**
      * Refresh channel

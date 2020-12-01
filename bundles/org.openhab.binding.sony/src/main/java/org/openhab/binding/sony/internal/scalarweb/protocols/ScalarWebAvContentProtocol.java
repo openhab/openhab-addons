@@ -2415,7 +2415,7 @@ class ScalarWebAvContentProtocol<T extends ThingCallback<String>> extends Abstra
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
         final ScalarWebChannelTracker tracker = getChannelTracker();
 
         // always refresh these since they are used in lookups
@@ -2426,7 +2426,7 @@ class ScalarWebAvContentProtocol<T extends ThingCallback<String>> extends Abstra
             refreshParentalRating();
         }
 
-        if (!notificationHelper.isEnabled(ScalarWebEvent.NOTIFYPLAYINGCONTENTINFO)) {
+        if (initial || !notificationHelper.isEnabled(ScalarWebEvent.NOTIFYPLAYINGCONTENTINFO)) {
             if (tracker.isCategoryLinked(ctgy -> StringUtils.startsWith(ctgy, PLAYING))) {
                 refreshPlayingContentInfo();
             }
@@ -2435,7 +2435,7 @@ class ScalarWebAvContentProtocol<T extends ThingCallback<String>> extends Abstra
         refreshCurrentExternalInputStatus(
                 tracker.getLinkedChannelsForCategory(ctgy -> StringUtils.startsWith(ctgy, INPUT)));
 
-        if (!notificationHelper.isEnabled(ScalarWebEvent.NOTIFYEXTERNALTERMINALSTATUS)) {
+        if (initial || !notificationHelper.isEnabled(ScalarWebEvent.NOTIFYEXTERNALTERMINALSTATUS)) {
             refreshCurrentExternalTerminalsStatus();
         }
 

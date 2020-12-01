@@ -95,7 +95,7 @@ class ScalarWebCecProtocol<T extends ThingCallback<String>> extends AbstractScal
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
     }
 
     @Override

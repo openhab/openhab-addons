@@ -88,8 +88,10 @@ public abstract class AbstractThingHandler<C extends AbstractConfig> extends Bas
 
     /**
      * Called when the thing handler should attempt to refresh state. Note that this method is reentrant.
+     * 
+     * @param initial true if this is the initial refresh state after going online, false otherwise
      */
-    protected abstract void refreshState();
+    protected abstract void refreshState(boolean initial);
 
     /**
      * Returns the configuration cast to the specific type
@@ -229,32 +231,9 @@ public abstract class AbstractThingHandler<C extends AbstractConfig> extends Bas
 
         if (refresh != null && refresh > 0) {
             logger.debug("Starting state polling every {} seconds", refresh);
-            SonyUtil.cancel(refreshState.getAndSet(this.scheduler.scheduleWithFixedDelay(() -> {
-                // throw exceptions to prevent future tasks under these circumstances
-                if (isRemoved()) {
-                    throw new IllegalStateException("Thing has been removed - ending state polling");
-                }
-                if (SonyUtil.isInterrupted()) {
-                    throw new IllegalStateException("State polling has been cancelled");
-                }
-
-                // catch the various runtime exceptions that may occur here (the biggest being ProcessingException)
-                // and handle it.
-                try {
-                    if (thing.getStatus() == ThingStatus.ONLINE) {
-                        refreshState();
-                    }
-                } catch (final Exception ex) {
-                    if (StringUtils.contains(ex.getMessage(), "Connection refused")) {
-                        logger.debug("Connection refused - device is probably turned off");
-                    } else {
-                        logger.debug("Uncaught exception (refreshstate) : {}", ex.getMessage(), ex);
-                    }
-                }
-            }, refresh, refresh, TimeUnit.SECONDS)));
-        } else
-
-        {
+            SonyUtil.cancel(refreshState.getAndSet(
+                    this.scheduler.scheduleWithFixedDelay(new RefreshState(), refresh, refresh, TimeUnit.SECONDS)));
+        } else {
             logger.debug("Refresh not a positive number - polling has been disabled");
         }
     }
@@ -392,6 +371,43 @@ public abstract class AbstractThingHandler<C extends AbstractConfig> extends Bas
         public CachedCommand(ChannelUID channelUID, Command command) {
             this.channelUID = channelUID;
             this.command = command;
+        }
+    }
+
+    /**
+     * This helper class is used to manage refreshing of the state
+     */
+    private class RefreshState implements Runnable {
+
+        // boolean indicating if the refresh is the first refresh after going online
+        private boolean initial = true;
+
+        @Override
+        public void run() {
+            // throw exceptions to prevent future tasks under these circumstances
+            if (isRemoved()) {
+                throw new IllegalStateException("Thing has been removed - ending state polling");
+            }
+            if (SonyUtil.isInterrupted()) {
+                throw new IllegalStateException("State polling has been cancelled");
+            }
+
+            // catch the various runtime exceptions that may occur here (the biggest being ProcessingException)
+            // and handle it.
+            try {
+                if (thing.getStatus() == ThingStatus.ONLINE) {
+                    refreshState(initial);
+                    initial = false;
+                } else {
+                    initial = true;
+                }
+            } catch (final Exception ex) {
+                if (StringUtils.contains(ex.getMessage(), "Connection refused")) {
+                    logger.debug("Connection refused - device is probably turned off");
+                } else {
+                    logger.debug("Uncaught exception (refreshstate) : {}", ex.getMessage(), ex);
+                }
+            }
         }
     }
 }

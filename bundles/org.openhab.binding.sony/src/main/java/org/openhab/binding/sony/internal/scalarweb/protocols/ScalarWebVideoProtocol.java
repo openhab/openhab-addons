@@ -74,7 +74,7 @@ class ScalarWebVideoProtocol<T extends ThingCallback<String>> extends AbstractSc
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
         final ScalarWebChannelTracker tracker = getChannelTracker();
 
         if (tracker.isCategoryLinked(PICTUREQUALITYSETTINGS)) {

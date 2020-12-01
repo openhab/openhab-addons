@@ -99,7 +99,7 @@ class ScalarWebBrowserProtocol<T extends ThingCallback<String>> extends Abstract
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
         final ScalarWebChannelTracker tracker = getChannelTracker();
         if (tracker.isCategoryLinked(BROWSERCONTROL)) {
             refreshBrowserControl();

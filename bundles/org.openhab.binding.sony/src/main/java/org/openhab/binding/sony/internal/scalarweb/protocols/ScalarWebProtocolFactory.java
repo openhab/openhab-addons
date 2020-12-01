@@ -156,15 +156,16 @@ public class ScalarWebProtocolFactory<T extends ThingCallback<String>> implement
      * Refresh all state in all services
      *
      * @param scheduler the non-null scheduler to schedule refresh on each service
+     * @param initial true if this is the initial refresh state after going online, false otherwise
      */
-    public void refreshAllState(final ScheduledExecutorService scheduler) {
+    public void refreshAllState(final ScheduledExecutorService scheduler, boolean initial) {
         Objects.requireNonNull(scheduler, "scheduler cannot be null");
         logger.debug("Scheduling refreshState on all protocols");
         protocols.values().stream().forEach(p -> {
             final ScalarWebProtocol<?> myProtocol = p;
             scheduler.execute(() -> {
                 logger.debug("Executing refreshState on {}", myProtocol);
-                myProtocol.refreshState();
+                myProtocol.refreshState(initial);
             });
         });
     }

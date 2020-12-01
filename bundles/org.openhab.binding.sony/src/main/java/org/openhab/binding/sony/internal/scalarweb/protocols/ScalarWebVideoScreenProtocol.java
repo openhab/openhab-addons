@@ -113,7 +113,7 @@ class ScalarWebVideoScreenProtocol<T extends ThingCallback<String>> extends Abst
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
         final ScalarWebChannelTracker tracker = getChannelTracker();
         if (tracker.isCategoryLinked(AUDIOSOURCE)) {
             refreshAudioSource();

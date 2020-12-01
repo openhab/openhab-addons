@@ -219,10 +219,10 @@ class ScalarWebAudioProtocol<T extends ThingCallback<String>> extends AbstractSc
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
         final ScalarWebChannelTracker tracker = getContext().getTracker();
 
-        if (!notificationHelper.isEnabled(ScalarWebEvent.NOTIFYVOLUMEINFORMATION)) {
+        if (initial || !notificationHelper.isEnabled(ScalarWebEvent.NOTIFYVOLUMEINFORMATION)) {
             if (tracker.isCategoryLinked(VOLUME, MUTE)) {
                 refreshVolume(getChannelTracker().getLinkedChannelsForCategory(VOLUME, MUTE));
             }

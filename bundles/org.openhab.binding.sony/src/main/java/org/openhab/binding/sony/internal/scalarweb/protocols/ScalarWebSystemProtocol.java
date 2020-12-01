@@ -433,7 +433,7 @@ class ScalarWebSystemProtocol<T extends ThingCallback<String>> extends AbstractS
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
         final ScalarWebChannelTracker tracker = getChannelTracker();
         if (tracker.isCategoryLinked(CURRENTTIME)) {
             refreshCurrentTime();
@@ -447,7 +447,8 @@ class ScalarWebSystemProtocol<T extends ThingCallback<String>> extends AbstractS
         if (tracker.isCategoryLinked(POWERSAVINGMODE)) {
             refreshPowerSavingsMode();
         }
-        if (!notificationHelper.isEnabled(ScalarWebEvent.NOTIFYPOWERSTATUS)) {
+
+        if (initial || !notificationHelper.isEnabled(ScalarWebEvent.NOTIFYPOWERSTATUS)) {
             if (tracker.isCategoryLinked(POWERSTATUS)) {
                 refreshPowerStatus();
             }
@@ -465,7 +466,7 @@ class ScalarWebSystemProtocol<T extends ThingCallback<String>> extends AbstractS
             refreshSysCmd();
         }
 
-        if (!notificationHelper.isEnabled(ScalarWebEvent.NOTIFYSETTINGSUPDATE)) {
+        if (initial || !notificationHelper.isEnabled(ScalarWebEvent.NOTIFYSETTINGSUPDATE)) {
             if (tracker.isCategoryLinked(DEVICEMISCSETTING)) {
                 refreshGeneralSettings(tracker.getLinkedChannelsForCategory(DEVICEMISCSETTING),
                         ScalarWebMethod.GETDEVICEMISCSETTINGS);
@@ -484,7 +485,7 @@ class ScalarWebSystemProtocol<T extends ThingCallback<String>> extends AbstractS
             }
         }
 
-        if (!notificationHelper.isEnabled(ScalarWebEvent.NOTIFYSTORAGESTATUS)) {
+        if (initial || !notificationHelper.isEnabled(ScalarWebEvent.NOTIFYSTORAGESTATUS)) {
             if (tracker.isCategoryLinked(ctgy -> StringUtils.startsWith(ctgy, STORAGE))) {
                 refreshStorage();
             }

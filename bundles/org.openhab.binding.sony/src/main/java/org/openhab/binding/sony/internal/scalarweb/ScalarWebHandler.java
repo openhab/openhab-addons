@@ -275,7 +275,7 @@ public class ScalarWebHandler extends AbstractThingHandler<ScalarWebConfig> {
 
                 this.scheduler.submit(() -> {
                     // Refresh the state right away
-                    refreshState();
+                    refreshState(true);
 
                     // after state is refreshed - write the definition
                     // (which could include dynamic state from refresh)
@@ -406,13 +406,13 @@ public class ScalarWebHandler extends AbstractThingHandler<ScalarWebConfig> {
     }
 
     @Override
-    protected void refreshState() {
+    protected void refreshState(boolean initial) {
         final ScalarWebProtocolFactory<ThingCallback<String>> protocolHandler = protocolFactory.get();
         if (protocolHandler == null) {
             logger.debug("Protocol factory wasn't set");
         } else {
             logger.debug("Refreshing all state");
-            protocolHandler.refreshAllState(scheduler);
+            protocolHandler.refreshAllState(scheduler, initial);
         }
     }
 

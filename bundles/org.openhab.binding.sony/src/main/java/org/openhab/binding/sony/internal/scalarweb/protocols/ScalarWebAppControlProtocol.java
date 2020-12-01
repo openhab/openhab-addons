@@ -196,7 +196,7 @@ class ScalarWebAppControlProtocol<T extends ThingCallback<String>> extends Abstr
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
         final Set<ScalarWebChannel> appChannels = getChannelTracker().getLinkedChannelsForCategory(APPTITLE, APPICON,
                 APPDATA, APPSTATUS, TEXTFORM, STATUS);
         for (final ScalarWebChannel chl : appChannels) {

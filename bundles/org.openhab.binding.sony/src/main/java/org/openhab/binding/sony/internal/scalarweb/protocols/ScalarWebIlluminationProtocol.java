@@ -77,7 +77,7 @@ class ScalarWebIlluminationProtocol<T extends ThingCallback<String>> extends Abs
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
         final ScalarWebChannelTracker tracker = getContext().getTracker();
         if (tracker.isCategoryLinked(ILLUMINATIONSETTINGS)) {
             refreshGeneralSettings(tracker.getLinkedChannelsForCategory(ILLUMINATIONSETTINGS),

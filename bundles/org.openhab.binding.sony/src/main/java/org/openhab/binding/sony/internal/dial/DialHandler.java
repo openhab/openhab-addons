@@ -195,7 +195,7 @@ public class DialHandler extends AbstractThingHandler<DialConfig> {
     }
 
     @Override
-    protected void refreshState() {
+    protected void refreshState(boolean initial) {
         final DialProtocol<ThingCallback<String>> protocol = protocolHandler.get();
         if (protocol != null) {
             getThing().getChannels().stream().forEach(chn -> {

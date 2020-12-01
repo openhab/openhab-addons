@@ -247,10 +247,10 @@ public class SimpleIpHandler extends AbstractThingHandler<SimpleIpConfig> {
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
         final SimpleIpProtocol protocol = protocolHandler.get();
         if (protocol != null) {
-            protocol.refreshState();
+            protocol.refreshState(true);
         }
     }
 

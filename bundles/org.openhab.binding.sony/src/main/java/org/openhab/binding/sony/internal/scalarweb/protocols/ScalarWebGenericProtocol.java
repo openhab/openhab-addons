@@ -49,7 +49,7 @@ class ScalarWebGenericProtocol<T extends ThingCallback<String>> extends Abstract
     }
 
     @Override
-    public void refreshState() {
+    public void refreshState(boolean initial) {
     }
 
     @Override

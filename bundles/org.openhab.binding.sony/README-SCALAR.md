@@ -573,57 +573,59 @@ The system service allows management of general system settings.
 
 | Channel Type ID                 | Read/Write | Item Type         | Description                                           |
 | ------------------------------- | ---------- | ----------------- | ----------------------------------------------------- |
+| powerstatus                     | RW (1)     | Switch            | The current power status (see notes)                  |
 | currenttime                     | R          | DateTime          | Current time of the device (format depends on device) |
-| ledindicatorstatus              | RW (1)     | String            | LED indicator status                                  |
-| powersavingsmode                | RW (2)     | String            | The power savings mode                                |
+| ledindicatorstatus              | RW (2)     | String            | LED indicator status                                  |
+| powersavingsmode                | RW (3)     | String            | The power savings mode                                |
 | wolmode                         | RW         | Switch            | Whether WOL is enabled                                |
 | language                        | RW         | String            | The langauge used                                     |
-| reboot                          | RW (3)     | Switch            | Whether to reboot the device                          |
-| syscmd                          | RW (4)     | String            | The IRCC command to send                              |
+| reboot                          | RW (4)     | Switch            | Whether to reboot the device                          |
+| syscmd                          | RW (5)     | String            | The IRCC command to send                              |
 | postalcode                      | RW         | String            | The postal code of the device                         |
 | devicemiscsettings              | RW         | GeneralSetting    | Misc device settings (timezones, auot update, etc)    |
 | powersettings                   | RW         | GeneralSetting    | The power settings (wol, standby, etc)                |
 | sleepsettings                   | RW         | GeneralSetting    | The sleep timer settings                              |
 | wutangsettings                  | RW         | GeneralSetting    | The wutang settings (google cast settings)            |
-| st_devicename-{src}             | R (5)      | String            | The storage device name                               |
-| st_error-{src}                  | R (5)      | String            | Any storage errors                                    |
-| st_filesystem-{src}             | R (5)      | String            | The storage file system                               |
-| st_finalizestatus-{src}         | R (5)      | String            | The storage finalization status                       |
-| st_format-{src}                 | R (5)      | String            | The storage format                                    |
-| st_formatstatus-{src}           | R (5)      | String            | The storage format status                             |
-| st_formattable-{src}            | R (5)      | String            | The storage formattable status                        |
-| st_formatting-{src}             | R (5)      | String            | Whether the storage is formatting                     |
-| st_freecapacitymb-{src}         | R (5)      | Number:DataAmount | The storage free space                                |
-| st_hasnonstandarddata-{src}     | R (5)      | String            | Whether the storage has non-standard data             |
-| st_hasunsupportedcontents-{src} | R (5)      | String            | Whether the storage has unsupported contents          |
-| st_isavailable-{src}            | R (5)      | String            | Whether the storage is available                      |
-| st_islocked-{src}               | R (5)      | String            | Whether the storage is locked                         |
-| st_ismanagementinfofull-{src}   | R (5)      | String            | Whether the storage management info is full           |
-| st_isprotected-{src}            | R (5)      | String            | Whether the storage is protected                      |
-| st_isregistered-{src}           | R (5)      | String            | Whether the storage is registered                     |
-| st_isselfrecorded-{src}         | R (5)      | String            | Whether the storage is self recorded                  |
-| st_issqvsupported-{src}         | R (5)      | String            | Whether the storage is SQV (standard quality voice)   |
-| st_lun-{src}                    | R (5)      | Number            | The storage LUN (logical unit number)                 |
-| st_mounted-{src}                | R (5)      | String            | The storage mount status                              |
-| st_permission-{src}             | R (5)      | String            | The storage permission                                |
-| st_position-{src}               | R (5)      | String            | The storage position (front, back, internal, etc)     |
-| st_protocol-{src}               | R (5)      | String            | The storage protocol                                  |
-| st_registrationdate-{src}       | R (5)      | String            | The storage registration date                         |
-| st_systemareacapacitymb-{src}   | R (5)      | Number:DataAmount | The storage system capacity                           |
-| st_timesectofinalize-{src}      | R (5)      | Number:Time       | The time to finalize                                  |
-| st_timesectogetcontents-{src}   | R (5)      | Number:Time       | The time to get contents                              |
-| st_type-{src}                   | R (5)      | String            | The storage type                                      |
-| st_uri-{src}                    | R (5)      | String            | The storage URI                                       |
-| st_usbdevicetype-{src}          | R (5)      | String            | The storage USB device type                           |
-| st_volumelabel-{src}            | R (5)      | String            | The storage label                                     |
-| st_wholeCapacityMB-{src}        | R (5)      | Number:DataAmount | The storage whole capacity                            |
+| st_devicename-{src}             | R (6)      | String            | The storage device name                               |
+| st_error-{src}                  | R (6)      | String            | Any storage errors                                    |
+| st_filesystem-{src}             | R (6)      | String            | The storage file system                               |
+| st_finalizestatus-{src}         | R (6)      | String            | The storage finalization status                       |
+| st_format-{src}                 | R (6)      | String            | The storage format                                    |
+| st_formatstatus-{src}           | R (6)      | String            | The storage format status                             |
+| st_formattable-{src}            | R (6)      | String            | The storage formattable status                        |
+| st_formatting-{src}             | R (6)      | String            | Whether the storage is formatting                     |
+| st_freecapacitymb-{src}         | R (6)      | Number:DataAmount | The storage free space                                |
+| st_hasnonstandarddata-{src}     | R (6)      | String            | Whether the storage has non-standard data             |
+| st_hasunsupportedcontents-{src} | R (6)      | String            | Whether the storage has unsupported contents          |
+| st_isavailable-{src}            | R (6)      | String            | Whether the storage is available                      |
+| st_islocked-{src}               | R (6)      | String            | Whether the storage is locked                         |
+| st_ismanagementinfofull-{src}   | R (6)      | String            | Whether the storage management info is full           |
+| st_isprotected-{src}            | R (6)      | String            | Whether the storage is protected                      |
+| st_isregistered-{src}           | R (6)      | String            | Whether the storage is registered                     |
+| st_isselfrecorded-{src}         | R (6)      | String            | Whether the storage is self recorded                  |
+| st_issqvsupported-{src}         | R (6)      | String            | Whether the storage is SQV (standard quality voice)   |
+| st_lun-{src}                    | R (6)      | Number            | The storage LUN (logical unit number)                 |
+| st_mounted-{src}                | R (6)      | String            | The storage mount status                              |
+| st_permission-{src}             | R (6)      | String            | The storage permission                                |
+| st_position-{src}               | R (6)      | String            | The storage position (front, back, internal, etc)     |
+| st_protocol-{src}               | R (6)      | String            | The storage protocol                                  |
+| st_registrationdate-{src}       | R (6)      | String            | The storage registration date                         |
+| st_systemareacapacitymb-{src}   | R (6)      | Number:DataAmount | The storage system capacity                           |
+| st_timesectofinalize-{src}      | R (6)      | Number:Time       | The time to finalize                                  |
+| st_timesectogetcontents-{src}   | R (6)      | Number:Time       | The time to get contents                              |
+| st_type-{src}                   | R (6)      | String            | The storage type                                      |
+| st_uri-{src}                    | R (6)      | String            | The storage URI                                       |
+| st_usbdevicetype-{src}          | R (6)      | String            | The storage USB device type                           |
+| st_volumelabel-{src}            | R (6)      | String            | The storage label                                     |
+| st_wholeCapacityMB-{src}        | R (6)      | Number:DataAmount | The storage whole capacity                            |
 
-1. Sets the LED status - generally "Off", "Low" or "High" (there may be others specific to your device like "AutoBrightnessAdjust")
-2. Sets the power savings mode - generally "Off", "Low" or "High" (there may be others specific to your device)
-3. Sending 'on' to this channel will reboot the device
-4. Sends an IRCC command to the device.
+1. The power status may not be accurate on startup.  Some devices will report ON when, in fact, they are off.
+2. Sets the LED status - generally "Off", "Low" or "High" (there may be others specific to your device like "AutoBrightnessAdjust")
+3. Sets the power savings mode - generally "Off", "Low" or "High" (there may be others specific to your device)
+4. Sending 'on' to this channel will reboot the device
+5. Sends an IRCC command to the device.
 This can either be the raw IRCC command (AAAAAwAAHFoAAAAYAw==) or can be a name (`Home`) that is transformed by the transformation file
-5.  These channels will be repeated by every storage source (ie source for a scheme of ```storage```).
+6.  These channels will be repeated by every storage source (ie source for a scheme of ```storage```).
 Example: if you have a ```USB1``` and ```CD``` storage sources, you'd have a ```st_uri-usb1``` and a ```st_uri-cd``` channel.
 Please note that, on many devices, the storage information is not reliable and a bit quirky (the st_mounted status shows unmounted even though the storage is mounted).
 However, the st_mounted will reliably change when a source is physically mounted/unmounted from the unit.
