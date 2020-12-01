@@ -30,6 +30,7 @@ import org.openhab.binding.velux.internal.bridge.common.SetSceneVelocity;
  *
  * @author Guenther Schreiner - Initial contribution.
  */
+@Deprecated
 @NonNullByDefault
 class JCsetSceneVelocity extends SetSceneVelocity implements JsonBridgeCommunicationProtocol {
 

@@ -17,5 +17,6 @@
 		<properties>
 			<property name="bundleVersion">N/A</property>
 		</properties>
+		<representation-property>bundleVersion</representation-property>
 	</thing-type>
 </thing:thing-descriptions>
