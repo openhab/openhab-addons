@@ -53,7 +53,7 @@ For more information on this topic, see [Securing access to openHAB](https://www
 For a detailed walk through the account configuration, see [Account Configuration Example](#account-configuration-example).
 
 Once a Miele account is paired, all supported appliances are automatically discovered as individual things and placed in the inbox.
-They can then be paired with your favorite management UI, e.g. the PaperUI.
+They can then be paired with your favorite management UI.
 As an alternative, the binding configuration UI provides a things-file template per paired account that can be used to pair the appliances.
 
 ## Thing Configuration
@@ -634,7 +634,7 @@ We recommend the former for reasons outlined under [Account Configuration](#acco
 
 ![Pairing Successful](doc/pairing-success.png)
 
-Once the bridge instance is `ONLINE`, you can either pair things for all appliances via your favorite management UI, e.g. the Paper UI, or use a things-file.
+Once the bridge instance is `ONLINE`, you can either pair things for all appliances via your favorite management UI or use a things-file.
 The account overview provides a things-file template that is shown when you expand the account.
 This can serve as a starting point for your own things-file.
 
