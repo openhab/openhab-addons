@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:sony:irccconfig">
+		<parameter name="deviceAddress" type="text" required="true">
+			<context>network-address</context>
+			<label>Ircc URL</label>
+			<description>The URL access point for the Ircc</description>
+		</parameter>
+		<parameter name="deviceMacAddress" type="text">
+			<label>Device MAC Address</label>
+			<description>The MAC address of the device (TV, bluray, etc)</description>
+		</parameter>
+		<parameter name="commandsMapFile" type="text">
+			<label>Commands Map File</label>
+			<description>The Commands Map File</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="accessCode" type="text">
+			<label>Access Code</label>
+			<description>The access code (or "RQST" to request one)</description>
+			<default>RQST</default>
+		</parameter>
+		<parameter name="refresh" type="integer">
+			<label>Refresh Interval</label>
+			<description>The interval, in seconds, to refresh the device state (-1 to disable)</description>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="retryPolling" type="integer">
+			<label>Retry Polling</label>
+			<description>The time, in seconds, to retry a connection attempt (-1 to disable)</description>
+			<default>10</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="checkStatusPolling" type="integer">
+			<label>Status Check Interval</label>
+			<description>The time, in seconds, to check the device status (-1 to disable)</description>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="discoveredCommandsMapFile" type="text" readOnly="true">
+			<label>Discovered Commands Map File (READONLY)</label>
+			<description>The Commands Map File that was initially discovered - use the Command Maps File to override</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

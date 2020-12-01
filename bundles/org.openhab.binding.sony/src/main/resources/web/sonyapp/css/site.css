@@ -1,0 +1,107 @@
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  margin: 5px;
+}
+
+#app h1 {
+  padding: 0 15px 15px 0;
+  margin: 0;
+  display: table-cell;
+}
+
+.even {
+  background-color: lavender;
+}
+
+tr.diff {
+  background-color: orange;
+}
+
+table tr.selected {
+  background-color: aquamarine;
+}
+
+.fileRead input[type="file"] {
+  display: none;
+}
+
+.fileRead .btn {
+  margin: 0 0 3px 5px;
+  display: inline-block;
+  border: solid 1px black;
+  padding: 3px;
+}
+
+.fileRead .btn p {
+  display: inline-block;
+  margin: 0 0 0 5px;
+}
+
+.method {
+  float: left;
+  width: 50em;
+}
+
+.method #baseUrl {
+  width: 20em;
+}
+
+.method #service {
+  width: 7em;
+}
+
+.method #version {
+  width: 4em;
+}
+
+.method #parms {
+  width: 35em;
+}
+.method label {
+  display: inline-block;
+  width: 7em;
+}
+
+.method button svg {
+  margin-right: 0.5em;
+}
+
+.methods #methods {
+  border: solid 1px black;
+  padding: 5px;
+  margin-top: 5px;
+  overflow: auto;
+  height: 20em;
+}
+
+.methods #methods td {
+  white-space: nowrap;
+  padding: 0px 2px;
+  border: solid 1px lightgray;
+}
+
+.methods .title {
+  margin-left: 0.5em;
+}
+
+.methods .variationEditor {
+  width: 2em;
+}
+
+.methods button {
+  margin-left: 0.5em;
+}
+
+.methods button svg {
+  margin-right: 0.5em;
+}
+
+#results {
+  clear: both;
+  display: block;
+  width: 100em;
+  height: 20em;
+}

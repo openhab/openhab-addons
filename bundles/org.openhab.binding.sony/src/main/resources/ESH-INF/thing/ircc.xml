@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sony"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ircc">
+		<label>Sony Ircc</label>
+		<description>Sony Ircc device</description>
+
+		<channel-groups>
+			<channel-group id="primary" typeId="irccprimary"/>
+			<channel-group id="viewing" typeId="irccviewing"/>
+			<channel-group id="content" typeId="ircccontent"/>
+		</channel-groups>
+
+		<representation-property>IrccUDN</representation-property>
+		<config-description-ref uri="thing-type:sony:irccconfig"/>
+	</thing-type>
+
+	<channel-group-type id="irccprimary">
+		<label>Primary Channels</label>
+		<description>Common channels used by IRCC</description>
+		<channels>
+			<channel id="command" typeId="ircccmd"/>
+			<channel id="power" typeId="irccpower"/>
+			<channel id="contenturl" typeId="ircccontenturl"/>
+			<channel id="textfield" typeId="ircctext"/>
+			<channel id="intext" typeId="irccintext"/>
+			<channel id="inbrowser" typeId="irccinbrowser"/>
+			<channel id="isviewing" typeId="irccisviewing"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="irccviewing" advanced="true">
+		<label>Viewing Channels</label>
+		<description>The channels that are active when viewing a source</description>
+		<channels>
+			<channel id="id" typeId="irccid"/>
+			<channel id="source" typeId="irccsource"/>
+			<channel id="zone2source" typeId="irccsource2"/>
+			<channel id="class" typeId="irccclass"/>
+			<channel id="title" typeId="ircctitle"/>
+			<channel id="duration" typeId="irccduration"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="ircccontent" advanced="true">
+		<label>Content Channels</label>
+		<description>The channels that are active when content is available</description>
+		<channels>
+			<channel id="id" typeId="irccid"/>
+			<channel id="title" typeId="ircctitle"/>
+			<channel id="class" typeId="irccclass"/>
+			<channel id="source" typeId="irccsource"/>
+			<channel id="mediatype" typeId="irccmediatype"/>
+			<channel id="mediaformat" typeId="irccmediaformat"/>
+			<channel id="edition" typeId="irccedition"/>
+			<channel id="description" typeId="irccdescription"/>
+			<channel id="genre" typeId="irccgenre"/>
+			<channel id="duration" typeId="irccduration"/>
+			<channel id="rating" typeId="irccrating"/>
+			<channel id="daterelease" typeId="irccdaterelease"/>
+			<channel id="director" typeId="irccdirector"/>
+			<channel id="producer" typeId="irccproducer"/>
+			<channel id="screenwriter" typeId="irccscreenwriter"/>
+			<channel id="image" typeId="irccimage"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="irccpower">
+		<item-type>Switch</item-type>
+		<label>IRCC Power</label>
+		<description>The Power Status</description>
+	</channel-type>
+
+	<channel-type id="ircccmd">
+		<item-type>String</item-type>
+		<label>IRCC Command</label>
+		<description>The IRCC Command to send</description>
+	</channel-type>
+
+	<channel-type id="ircccontenturl" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Url</label>
+		<description>The URL of the current content</description>
+	</channel-type>
+
+	<channel-type id="ircctext" advanced="true">
+		<item-type>String</item-type>
+		<label>Field Text</label>
+		<description>The text for the current field</description>
+	</channel-type>
+
+	<channel-type id="irccintext" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Text Field</label>
+		<description>True if in a text field, false otherwise</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccinbrowser" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Web Browser</label>
+		<description>True if in a web browser, false otherwise</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccisviewing" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Viewing Source</label>
+		<description>True if viewing a source, false otherwise</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<channel-type id="irccid" advanced="true">
+		<item-type>String</item-type>
+		<label>ID</label>
+		<description>The material identifier</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ircctitle">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>The title of the material</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccclass" advanced="true">
+		<item-type>String</item-type>
+		<label>Class</label>
+		<description>The class of the material (video, etc)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccsource" advanced="true">
+		<item-type>String</item-type>
+		<label>Source</label>
+		<description>The source of the material (DVD, etc)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccsource2" advanced="true">
+		<item-type>String</item-type>
+		<label>Zone 2 Source</label>
+		<description>The source of the material on zone 2(DVD, etc)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccmediatype" advanced="true">
+		<item-type>String</item-type>
+		<label>Media Type</label>
+		<description>The media type of the material (DVD, USB, etc)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccmediaformat" advanced="true">
+		<item-type>String</item-type>
+		<label>Media Format</label>
+		<description>The media format of the material (VIDEO, etc)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccedition" advanced="true">
+		<item-type>String</item-type>
+		<label>Edition</label>
+		<description>The edition of the material</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccdescription">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>The material's description</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccgenre" advanced="true">
+		<item-type>String</item-type>
+		<label>Genre</label>
+		<description>The genre of the material (Action, Adventure, etc)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccduration" advanced="true">
+		<item-type>Number</item-type>
+		<label>Duration</label>
+		<description>The duration (in seconds) of the material</description>
+	</channel-type>
+
+	<channel-type id="irccrating" advanced="true">
+		<item-type>String</item-type>
+		<label>Rating</label>
+		<description>The rating of the material (G, PG, etc)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccdaterelease" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Release Date</label>
+		<description>The release date of the material</description>
+	</channel-type>
+
+	<channel-type id="irccdirector" advanced="true">
+		<item-type>String</item-type>
+		<label>Director</label>
+		<description>The director(s) of the material</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccproducer" advanced="true">
+		<item-type>String</item-type>
+		<label>Producer</label>
+		<description>The producer(s) of the material</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccscreenwriter" advanced="true">
+		<item-type>String</item-type>
+		<label>Screen Writer</label>
+		<description>The screen writer(s) of the material</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="irccimage" advanced="true">
+		<item-type>Image</item-type>
+		<label>Icon</label>
+		<description>The icon representing the material</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

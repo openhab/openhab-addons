@@ -1,0 +1,1723 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="sony"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="scalargroupaccesscontrol" advanced="true">
+		<label>Access Control</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupappcontrol">
+		<label>Applications Control</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupaudio">
+		<label>Audio</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupavcontent">
+		<label>A/V Content</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupbrowser">
+		<label>Browser</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupcec">
+		<label>CEC</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupcontentshare" advanced="true">
+		<label>Content Share</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupencryption" advanced="true">
+		<label>Encryption</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupguide" advanced="true">
+		<label>Guide</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupillumination" advanced="true">
+		<label>Illumnination</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupsystem">
+		<label>System</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupvideo">
+		<label>Video</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="scalargroupvideoscreen">
+		<label>Video Screen</label>
+		<channels>
+			<channel id="dynamic" typeId="dynamic"/>
+		</channels>
+	</channel-group-type>
+
+	<thing-type id="scalar">
+		<label>Sony Scalar Web</label>
+		<description>Sony Scalar Web</description>
+		<channel-groups>
+			<channel-group typeId="scalargroupaccesscontrol" id="accessControl"/>
+			<channel-group typeId="scalargroupappcontrol" id="appControl"/>
+			<channel-group typeId="scalargroupaudio" id="audio"/>
+			<channel-group typeId="scalargroupavcontent" id="avContent"/>
+			<channel-group typeId="scalargroupbrowser" id="browser"/>
+			<channel-group typeId="scalargroupcec" id="cec"/>
+			<channel-group typeId="scalargroupcontentshare" id="contentshare"/>
+			<channel-group typeId="scalargroupencryption" id="encryption"/>
+			<channel-group typeId="scalargroupguide" id="guide"/>
+			<channel-group typeId="scalargroupillumination" id="illumination"/>
+			<channel-group typeId="scalargroupsystem" id="system"/>
+			<channel-group typeId="scalargroupvideo" id="video"/>
+			<channel-group typeId="scalargroupvideoscreen" id="videoScreen"/>
+		</channel-groups>
+		<representation-property>ScalarUDN</representation-property>
+		<config-description-ref uri="thing-type:sony:scalarconfig"/>
+
+	</thing-type>
+
+	<channel-type id="dynamic" advanced="true">
+		<item-type>String</item-type>
+		<label>Dummy Channel</label>
+		<description>Dummy Channel - please ignore</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalaraudiovolume">
+		<item-type>Dimmer</item-type>
+		<label>Scalar Volume</label>
+		<description>Scalar Volume</description>
+	</channel-type>
+
+	<channel-type id="scalaraudiomute">
+		<item-type>Switch</item-type>
+		<label>Mute Audio</label>
+		<description>Mute audio on all modes [headphone, speakers, etc]</description>
+	</channel-type>
+
+	<channel-type id="scalargeneralsettingnumber" advanced="true">
+		<item-type>Number</item-type>
+		<label>General Setting Number</label>
+		<description>General Setting for a number</description>
+	</channel-type>
+
+	<channel-type id="scalargeneralsettingswitch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>General Setting Switch</label>
+		<description>General Setting for a switch</description>
+	</channel-type>
+
+	<channel-type id="scalargeneralsettingstring" advanced="true">
+		<item-type>Switch</item-type>
+		<label>General Setting String</label>
+		<description>General Setting for a string</description>
+	</channel-type>
+
+	<channel-type id="scalargeneralsettingdimmer" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>General Setting Dimmer</label>
+		<description>General Setting for a dimmer</description>
+	</channel-type>
+
+	<channel-type id="scalarsystemcurrenttime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Current Time</label>
+		<description>Current time of the device</description>
+	</channel-type>
+
+	<channel-type id="scalarsystemlanguage" advanced="true">
+		<item-type>String</item-type>
+		<label>System Language</label>
+		<description>The current language of the device</description>
+	</channel-type>
+
+	<channel-type id="scalarsystemledindicatorstatus" advanced="true">
+		<item-type>String</item-type>
+		<label>LED Status</label>
+		<description>The status of the LED indicator (Off/Low/High)</description>
+	</channel-type>
+
+	<channel-type id="scalarsystempowersavingmode" advanced="true">
+		<item-type>String</item-type>
+		<label>Power Savings Mode</label>
+		<description>The power savings mode (Off/Low/High)</description>
+	</channel-type>
+
+	<channel-type id="scalarsystempowerstatus">
+		<item-type>Switch</item-type>
+		<label>Power Status</label>
+		<description>The power status of the device</description>
+	</channel-type>
+
+	<channel-type id="scalarsystemwolmode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>WOL Mode</label>
+		<description>The wake on lan (WOL) mode</description>
+	</channel-type>
+
+	<channel-type id="scalarsystemircc">
+		<item-type>String</item-type>
+		<label>IRCC Command</label>
+		<description>The IRCC command to send to the system</description>
+	</channel-type>
+
+	<channel-type id="scalarsystemreboot" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Device Reboot</label>
+		<description>Send 'ON' to reboot the device</description>
+	</channel-type>
+
+	<channel-type id="scalarsystempostalcode" advanced="true">
+		<item-type>String</item-type>
+		<label>Postal Code</label>
+		<description>The postal code of the device</description>
+	</channel-type>
+
+	<channel-type id="scalarsystemdevicename" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Name</label>
+		<description>The storage name</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageerror" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Error</label>
+		<description>Any storage error messages</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragefilesystem" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage File System</label>
+		<description>The storage file system</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragefinalizestatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Finalization Status</label>
+		<description>The storage finalization status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageformat" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Format</label>
+		<description>The storage format</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageformatstatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Format Status</label>
+		<description>The storage format status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageformattable" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Formattable</label>
+		<description>The storage formattable status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageformatting" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Formatting</label>
+		<description>The storage formatting status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragefreecapacitymb" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Storage Free Capacity</label>
+		<description>The storage free capacity</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragehasnonstandarddata" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Non-Standard Data</label>
+		<description>Whether the storage has non-standard data</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragehasunsupportedcontents" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Unsupported Content</label>
+		<description>Whether the storage has unsupported content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageisavailable" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Availability</label>
+		<description>The storage availability status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageislocked" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Locked</label>
+		<description>The storage locked status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageismanagementinfofull" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Management Full</label>
+		<description>The storage management information full status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageisprotected" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Protection</label>
+		<description>The storage protection status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageisregistered" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Registration</label>
+		<description>The storage registration status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageisselfrecorded" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Self Recorded</label>
+		<description>The storage self recorded status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageissqvsupported" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage SQV</label>
+		<description>The storage SQV (standard quality voice) status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragelun" advanced="true">
+		<item-type>Number</item-type>
+		<label>Storage LUN</label>
+		<description>The storage logical unit number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragemounted" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Mounted</label>
+		<description>The storage mounted status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragepermission" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Permission</label>
+		<description>The storage permission status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageposition" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Position</label>
+		<description>The position of the storage (front, back, internal, etc)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageprotocol" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Protocol</label>
+		<description>The storage protocol</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageregistrationdate" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Registration Date</label>
+		<description>The storage registration date</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragesystemareacapacitymb" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Storage System Capacity</label>
+		<description>The storage system capacity</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragetimesectofinalize" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Storage Time to Finalize</label>
+		<description>The time to finalize</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragetimesectogetcontents" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Storage Time to Get Contents</label>
+		<description>The time to get storage contents</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragetype" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Type</label>
+		<description>The storage type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageuri" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage URI</label>
+		<description>The storage uri</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstorageusbdevicetype" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage USB Type</label>
+		<description>The storage USB device type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragevolumelabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Storage Label</label>
+		<description>The storage label</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarsystemstoragewholecapacitymb" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Storage Whole Capacity</label>
+		<description>The storage whole capacity</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarappcontrolapptitle" advanced="true">
+		<item-type>String</item-type>
+		<label>App Title</label>
+		<description>App title</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarappcontrolappicon" advanced="true">
+		<item-type>Image</item-type>
+		<label>App Icon</label>
+		<description>App Icon</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarappcontrolappdata" advanced="true">
+		<item-type>String</item-type>
+		<label>App Data</label>
+		<description>App Data</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarappcontrolappstatus" advanced="true">
+		<item-type>String</item-type>
+		<label>App Command</label>
+		<description>The application command</description>
+		<command>
+			<options>
+				<option value="start">Start</option>
+				<option value="stop">Stop</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="scalarappcontrolstatus" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Indicator status</label>
+		<description>Status of indicator</description>
+	</channel-type>
+
+	<channel-type id="scalarappcontroltextform" advanced="true">
+		<item-type>String</item-type>
+		<label>Text Form Entry</label>
+		<description>Current Text Form entry</description>
+	</channel-type>
+
+	<channel-type id="scalarceccontrolmode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>CEC Control Mode</label>
+		<description>Whether the device will control CEC devices or not</description>
+	</channel-type>
+
+	<channel-type id="scalarcecmhlautoinputchangemode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>CEC MHL Auto Input Change</label>
+		<description>Whether the device will automatically change inputs to active MHL sources</description>
+	</channel-type>
+
+	<channel-type id="scalarcecmhlpowerfeedmode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>CEC MHL Power Feed</label>
+		<description>Whether the device will feed power to MHL devices</description>
+	</channel-type>
+
+	<channel-type id="scalarcecpoweroffsyncmode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>CEC Power Off Sync</label>
+		<description>Whether the device will turn off with CEC</description>
+	</channel-type>
+
+	<channel-type id="scalarcecpoweronsyncmode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>CEC Power On Sync</label>
+		<description>Whether the device will power on with source</description>
+	</channel-type>
+
+	<channel-type id="scalarvideoscreenaudiosource" advanced="true">
+		<item-type>String</item-type>
+		<label>Screen Audio Source</label>
+		<description>Source of audio for the screen</description>
+	</channel-type>
+
+	<channel-type id="scalarvideoscreenbannermode" advanced="true">
+		<item-type>String</item-type>
+		<label>Screen Banner Mode</label>
+		<description>Banner mode for TV source</description>
+	</channel-type>
+
+	<channel-type id="scalarvideoscreenmultiscreenmode" advanced="true">
+		<item-type>String</item-type>
+		<label>Multi Screen Mode</label>
+		<description>Multiple Screen Mode</description>
+	</channel-type>
+
+	<channel-type id="scalarvideoscreenpipsubscreenposition" advanced="true">
+		<item-type>String</item-type>
+		<label>PIP Position</label>
+		<description>Picture-in-Picture (PIP) screen position</description>
+	</channel-type>
+
+	<channel-type id="scalarvideoscreenscenesetting" advanced="true">
+		<item-type>String</item-type>
+		<label>Scene Setting</label>
+		<description>The scene setting for the video screen</description>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolschemes" advanced="true">
+		<item-type>String</item-type>
+		<label>Schemes</label>
+		<description>A comma separated list of schemes</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolsources" advanced="true">
+		<item-type>String</item-type>
+		<label>Sources</label>
+		<description>A comma separated list of sources</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontenturi">
+		<item-type>String</item-type>
+		<label>Content URI</label>
+		<description>The URI of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentparenturi">
+		<item-type>String</item-type>
+		<label>Content Parent URI</label>
+		<description>Content Parent URI</description>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentidx">
+		<item-type>Number</item-type>
+		<label>Content Index</label>
+		<description>The index position of the content</description>
+		<state min="0"></state>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentchildcount">
+		<item-type>Number</item-type>
+		<label>Content Child Count</label>
+		<description>The total count of content's children</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentcmd">
+		<item-type>String</item-type>
+		<label>Content Command</label>
+		<description>The command for the currently selected content</description>
+		<command>
+			<options>
+				<option value="select">Select</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontenttitle">
+		<item-type>String</item-type>
+		<label>Content Title</label>
+		<description>The title of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentdispnum" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Display Number</label>
+		<description>The display number of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentoriginaldispnum" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Original Display Number</label>
+		<description>The original display number of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontenttripletstr" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Triplet ID</label>
+		<description>The triplet identifier of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentprogramnum" advanced="true">
+		<item-type>Number</item-type>
+		<label>Content Program Number</label>
+		<description>The program number of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentmediatype" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Media Type</label>
+		<description>The media type of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentprogrammediatype" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Program Media Type</label>
+		<description>The program media type of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentdirectremotenum" advanced="true">
+		<item-type>Number</item-type>
+		<label>Content Remote Number</label>
+		<description>The direct remote number for the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentepgvisibility" advanced="true">
+		<item-type>String</item-type>
+		<label>Content EPG Visibility</label>
+		<description>The EPG visibility for the content</description>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentchannelsurfingvisibility" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Channel Surfing Visibility</label>
+		<description>The channel surfing visibility for the content</description>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentvisibility" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Visibility</label>
+		<description>The visibility for the content</description>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentstartdatetime" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Start Date</label>
+		<description>The date the content was started</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentchannelname" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Channel Name</label>
+		<description>The channel name of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentfilesizebyte" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Content File Size</label>
+		<description>The content file size</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentisprotected" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Protected</label>
+		<description>Whether the content is protected or not</description>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentisalreadyplayed" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Already Played</label>
+		<description>Whether the content has been already been played or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentproductid" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Product ID</label>
+		<description>The content product id</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentcontenttype" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Type</label>
+		<description>The type of content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentstorageuri" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Storage URI</label>
+		<description>The content storage URI</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentvideocodec" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Video Codec</label>
+		<description>The video codec of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentchaptercount" advanced="true">
+		<item-type>Number</item-type>
+		<label>Content Chapter Count</label>
+		<description>The chapter count the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentdurationsec" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Content Duration</label>
+		<description>The duration of the content</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentdurationmsec" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Content Duration</label>
+		<description>The duration of the content</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentaudiocodec" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Audio Codec</label>
+		<description>Comma separated list of audio codecs available</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentaudiofrequency" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Audio Frequency</label>
+		<description>Comma separated list of audio frequencies available</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentaudiochannel" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Audio Channel</label>
+		<description>Comma separated list of audio channels available</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentsubtitlelanguage" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Subtitle Language</label>
+		<description>Comma separated list of subtitle languages available</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentsubtitletitle" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Subtitle Titles</label>
+		<description>Comma separated list of subtitle titles available</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentparentalrating" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Parental Rating</label>
+		<description>Comma separated list of parental ratings</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentparentalsystem" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Parental System</label>
+		<description>Comma separated list of parental rating systems</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentparentalcountry" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Parental Country</label>
+		<description>Comma separated list of parental rating countries</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentsizemb" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Content Size</label>
+		<description>Size of the content</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentcreatedtime" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Created Time</label>
+		<description>Time content was created</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentusercontentflag" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Content User Created</label>
+		<description>Whether the content was user created or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentfolderno" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Folder Number</label>
+		<description>Content Folder Number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentfileno" advanced="true">
+		<item-type>String</item-type>
+		<label>Content File Number</label>
+		<description>Content File Number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentartist" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Artist</label>
+		<description>Content Artist</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentgenre" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Genre</label>
+		<description>Content Genre</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentalbumname" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Album Name</label>
+		<description>Content Album Name</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentcontentkind" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Content Kind</label>
+		<description>Content Content Kind</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentisplayable" advanced="true">
+		<item-type>String</item-type>
+		<label>Content is Playable</label>
+		<description>Content is Playable</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentisbrowsable" advanced="true">
+		<item-type>String</item-type>
+		<label>Content is Browsable</label>
+		<description>Content is Browsable</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentremoteplaytype" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Remote Play Type</label>
+		<description>Content Remote Play Type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentplaylistname" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Play List Name</label>
+		<description>Content Play List Name</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentpodcastname" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Podcast Name</label>
+		<description>Content Podcast Name</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentbroadcastfreq" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Content Broadcast Freq</label>
+		<description>Content Broadcast Frequency</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentbroadcastband" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Broadcast Band</label>
+		<description>Content Broadcast Band</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentparentindex" advanced="true">
+		<item-type>Number</item-type>
+		<label>Content Parent Index</label>
+		<description>Content Parent Index</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentis3d" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Is 3D</label>
+		<description>Content is 3D</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentis4k" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Is 4K</label>
+		<description>Content is 4K</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentpath" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Path</label>
+		<description>Content Path</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentclipcount" advanced="true">
+		<item-type>Number</item-type>
+		<label>Content Clip Count</label>
+		<description>Content Clip Count</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentdescription" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Description</label>
+		<description>Content Description</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontenteventid" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Event ID</label>
+		<description>Content Event ID</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentglobalplaybackcount" advanced="true">
+		<item-type>Number</item-type>
+		<label>Content Global Playback Count</label>
+		<description>Content Global Playback Count</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontenthasresume" advanced="true">
+		<item-type>String</item-type>
+		<label>Content has Resume</label>
+		<description>Content has Resume</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentisautodelete" advanced="true">
+		<item-type>String</item-type>
+		<label>Content is Auto Delete</label>
+		<description>Content is Auto Delete</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentisnew" advanced="true">
+		<item-type>String</item-type>
+		<label>Content is New</label>
+		<description>Content is New</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentisplaylist" advanced="true">
+		<item-type>String</item-type>
+		<label>Content is Playlist</label>
+		<description>Content is Playlist</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentissoundphoto" advanced="true">
+		<item-type>String</item-type>
+		<label>Content is Sound Photo</label>
+		<description>Content is Sound Photo</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentoutput" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Output</label>
+		<description>The output identifier of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentprogramservicetype" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Program Service Type</label>
+		<description>The content program service type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentprogramtitle" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Program Title</label>
+		<description>The content program title</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentrepeattype" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Repeat Type</label>
+		<description>The content repeat type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentservice" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Service</label>
+		<description>The content service</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentsource" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Source</label>
+		<description>The content source</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentsourcelabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Source Label</label>
+		<description>The content source label</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentsynccontentpriority" advanced="true">
+		<item-type>String</item-type>
+		<label>Content Sync Priority</label>
+		<description>The content sync priority</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontenttotalcount" advanced="true">
+		<item-type>Number</item-type>
+		<label>Content Total Count</label>
+		<description>The total count of content available</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentbivlserviceid" advanced="true">
+		<item-type>String</item-type>
+		<label>Content BIVL Service ID</label>
+		<description>The Bravia Internet Video Link (BIVL) Service ID</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentbivlassetid" advanced="true">
+		<item-type>String</item-type>
+		<label>Content BIVL Asset ID</label>
+		<description>The Bravia Internet Video Link (BIVL) Asset ID</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentbivlprovider" advanced="true">
+		<item-type>String</item-type>
+		<label>Content BIVL Provider</label>
+		<description>The Bravia Internet Video Link (BIVL) Provider</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentdabcomponentlabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Content DAB Component Label</label>
+		<description>The Digital Audio Broadcasting (DAB) Component Label</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentdabdynamiclabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Content DAB Dynamic Label</label>
+		<description>The Digital Audio Broadcasting (DAB) Dynamic Label</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentdabensemblelabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Content DAB Ensemble Label</label>
+		<description>The Digital Audio Broadcasting (DAB) Ensemble Label</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentdabservicelabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Content DAB Service Label</label>
+		<description>The Digital Audio Broadcasting (DAB) Service Label</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentstate" advanced="true">
+		<item-type>String</item-type>
+		<label>Content State</label>
+		<description>The state of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolcontentstatesupplement" advanced="true">
+		<item-type>String</item-type>
+		<label>Content State Supplement</label>
+		<description>The state supplement information of the content</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolinpstatusuri" advanced="true">
+		<item-type>String</item-type>
+		<label>Input URI</label>
+		<description>URI of the input</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolinpstatustitle" advanced="true">
+		<item-type>String</item-type>
+		<label>Input Title</label>
+		<description>Title of the input</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolinpstatusconnection" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input Status</label>
+		<description>Whether the input is currently being used or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolinpstatuslabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Input Label</label>
+		<description>Label of the input</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolinpstatusicon" advanced="true">
+		<item-type>String</item-type>
+		<label>Input Icon Type</label>
+		<description>Icon meta data type representing the input</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolinpstatusstatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Input Status</label>
+		<description>The input status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontroltermstatussource">
+		<item-type>String</item-type>
+		<label>Terminal Source</label>
+		<description>The source playing on the terminal</description>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontroltermstatusuri" advanced="true">
+		<item-type>String</item-type>
+		<label>Terminal URI</label>
+		<description>URI of the Terminal</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontroltermstatustitle" advanced="true">
+		<item-type>String</item-type>
+		<label>Terminal Title</label>
+		<description>Title of the Terminal</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontroltermstatusconnection" advanced="true">
+		<item-type>String</item-type>
+		<label>Terminal Status</label>
+		<description>The terminal status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontroltermstatuslabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Terminal Label</label>
+		<description>Label of the Terminal</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontroltermstatusicon" advanced="true">
+		<item-type>Image</item-type>
+		<label>Terminal Icon</label>
+		<description>Icon representing the Terminal</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontroltermstatusactive">
+		<item-type>Switch</item-type>
+		<label>Terminal Active</label>
+		<description>Whether the terminal is active (powered on for multi zones) or not</description>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolprratingtypeage" advanced="true">
+		<item-type>Number</item-type>
+		<label>Parental Rating Age</label>
+		<description>The parental rating age type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolprratingtypesony" advanced="true">
+		<item-type>String</item-type>
+		<label>Parental Rating Sony</label>
+		<description>Sony's parental rating type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolprratingcountry" advanced="true">
+		<item-type>String</item-type>
+		<label>Parental Rating Country</label>
+		<description>The parental rating country</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolprratingcustomtypetv" advanced="true">
+		<item-type>String</item-type>
+		<label>Parental Rating TV</label>
+		<description>The TV parental rating</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolprratingcustomtypempaa" advanced="true">
+		<item-type>String</item-type>
+		<label>Parental Rating MPAA</label>
+		<description>The MPAA parental rating</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolprratingcustomtypecaenglish" advanced="true">
+		<item-type>String</item-type>
+		<label>Parental CA English</label>
+		<description>The CA English rating</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolprratingcustomtypecafrench" advanced="true">
+		<item-type>String</item-type>
+		<label>Parental CA French</label>
+		<description>The CA French rating</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolprunratedlock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Parental Unrated Lock</label>
+		<description>Whether unrated is locked or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplcommand">
+		<item-type>String</item-type>
+		<label>Playing Command</label>
+		<description>The command to control what is currently playing</description>
+		<state>
+			<options>
+				<option value="play">Play</option>
+				<option value="pause">Pause</option>
+				<option value="stop">Stop</option>
+				<option value="next">Next</option>
+				<option value="prev">Previous</option>
+				<option value="fwd">Forward</option>
+				<option value="bwd">Backward</option>
+				<option value="fwdseek">Forward Seek</option>
+				<option value="bwdseek">Backward Seek</option>
+				<option value="setpreset">Set as Preset</option>
+				<option value="getpreset">Get Preset</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplpreset" advanced="true">
+		<item-type>Number</item-type>
+		<label>Playing Preset Number</label>
+		<description>The number of the preset to assign</description>
+		<state min="1"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpluri" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing URI</label>
+		<description>The URI of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplsource" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Source</label>
+		<description>The Source of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpltitle">
+		<item-type>String</item-type>
+		<label>Playing Title</label>
+		<description>The Title of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpldispnum" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Display Number</label>
+		<description>The display number of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolploriginaldispnum" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Original Display Number</label>
+		<description>The original display number of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpltripletstr" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Triplet</label>
+		<description>The triplet of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplprogramnum" advanced="true">
+		<item-type>Number</item-type>
+		<label>Playing Program Number</label>
+		<description>The program number of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplprogramtitle" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Program Title</label>
+		<description>The program title of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplstartdatetime" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Start Date</label>
+		<description>The start date of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpldurationsec" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Playing Duration</label>
+		<description>The duration of the content currently playing</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplmediatype" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Media Type</label>
+		<description>The media type of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplplayspeed" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Speed</label>
+		<description>The speed of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplbivlserviceid" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing BIVL Service ID</label>
+		<description>The Bravia Internet Video Link (BIVL) service id of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplbivlassetid" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing BIVL Asset ID</label>
+		<description>The Bravia Internet Video Link (BIVL) asset id of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplbivlprovider" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing BIVL Provider</label>
+		<description>The Bravia Internet Video Link (BIVL) provider of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplsourcelabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Source Label</label>
+		<description>The source label of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolploutput" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Output</label>
+		<description>The output identifier of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplstate" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing State</label>
+		<description>The state of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplstatesupplement" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing State Supplement</label>
+		<description>The state supplement of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplpositionsec" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Playing Position Seconds</label>
+		<description>The current position of the content currently playing</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplpositionmsec" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Playing Position MilliSeconds</label>
+		<description>The current position of the content currently playing</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpldurationmsec" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Playing Duration MilliSeconds</label>
+		<description>The current duration of the content currently playing</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplplaystepspeed" advanced="true">
+		<item-type>Number</item-type>
+		<label>Playing Step Speed</label>
+		<description>The playing step speed of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplrepeattype" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Repeat Type</label>
+		<description>The repeat type for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplchapterindex" advanced="true">
+		<item-type>Number</item-type>
+		<label>Playing Chapter Index</label>
+		<description>The chapter index for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplchaptercount" advanced="true">
+		<item-type>Number</item-type>
+		<label>Playing Chapter Count</label>
+		<description>The chapter count for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplsubtitleindex" advanced="true">
+		<item-type>Number</item-type>
+		<label>Playing Subtitle Index</label>
+		<description>The subtitle index for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplartist" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Artist</label>
+		<description>The artist for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplgenre" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Genre</label>
+		<description>The genre for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplalbumname" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Album Name</label>
+		<description>The album name for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplcontentkind" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Content Kind</label>
+		<description>The kind of content for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplfileno" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing File Number</label>
+		<description>The file number for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplchannelname" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Channel Name</label>
+		<description>The channel name for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplplaylistname" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Playlist Name</label>
+		<description>The playlist name for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplpodcastname" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Podcast Name</label>
+		<description>The podcast name for the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpltotalcount" advanced="true">
+		<item-type>Number</item-type>
+		<label>Playing Total Count</label>
+		<description>The total count of content available</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplbroadcastfreq" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Playing Broadcast Frequency</label>
+		<description>The broad cast frequency of the content currently playing</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplbroadcastfreqband" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Broadcast Frequency Band</label>
+		<description>The broad cast frequency band of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpldabcomponentlabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing DAB Component Label</label>
+		<description>The digital audio broadcasting (DAB) component label of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpldabdynamiclabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing DAB Dynamic Label</label>
+		<description>The digital audio broadcasting (DAB) dynamic label (song, text, etc) of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpldabensemblelabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing DAB Ensemble Label</label>
+		<description>The digital audio broadcasting (DAB) ensemble label of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpldabservicelabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing DAB Service Label</label>
+		<description>The digital audio broadcasting (DAB) service label of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplaudiochannel" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Audio Channel</label>
+		<description>The audio channel of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplaudiocodec" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Audio Codec</label>
+		<description>The audio codec of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplaudiofrequency" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Audio Frequency</label>
+		<description>The audio frequency of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplparenturi" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Parent URI</label>
+		<description>The parent URI of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplservice" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Service</label>
+		<description>The service of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplindex" advanced="true">
+		<item-type>Number</item-type>
+		<label>Playing Index</label>
+		<description>The index of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplparentindex" advanced="true">
+		<item-type>Number</item-type>
+		<label>Playing Parent Index</label>
+		<description>The parent index of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplvideocodec" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Video Codec</label>
+		<description>The video codec of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplis3d" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing 3D Status</label>
+		<description>The 3d status of the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplpath" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Path</label>
+		<description>The path to the content currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolplapplicationname" advanced="true">
+		<item-type>String</item-type>
+		<label>Playing Application Name</label>
+		<description>The application name currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarwebavcontrolpresetchannel">
+		<item-type>String</item-type>
+		<label>Preset Channel</label>
+		<description>The preset channel</description>
+	</channel-type>
+
+	<channel-type id="scalarbrowseractivate">
+		<item-type>String</item-type>
+		<label>Browser Activate</label>
+		<description>The activates the browser</description>
+	</channel-type>
+
+	<channel-type id="scalarbrowsertexturl">
+		<item-type>String</item-type>
+		<label>Browser URL</label>
+		<description>The URL of the browser</description>
+	</channel-type>
+
+	<channel-type id="scalarbrowsertexttitle">
+		<item-type>String</item-type>
+		<label>Browser Page Title</label>
+		<description>The title of the current browser page</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarbrowsertexttype">
+		<item-type>String</item-type>
+		<label>Browser Page Type</label>
+		<description>The type of the current browser page</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scalarbrowsertextfavicon">
+		<item-type>Image</item-type>
+		<label>Browser Page FavIcon</label>
+		<description>The favicon of the current browser page</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

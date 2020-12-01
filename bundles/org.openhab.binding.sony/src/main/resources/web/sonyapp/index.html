@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sony</title>
+    <script src="sony/js/thirdparty/jquery.min.js"></script>
+    <script src="sony/js/thirdparty/jquery.jgrowl.min.js"></script>
+    <script src="sony/js/thirdparty/axios.min.js"></script>
+    <script src="sony/js/thirdparty/knockout-3.5.1.js"></script>
+    <script src="sony/js/thirdparty/FileSaver.min.js"></script>
+    <script src="sony/js/app.js"></script>
+    <script src="sony/js/capabilities.js"></script>
+
+    <link rel="stylesheet" href="sony/css/thirdparty/all.min.css" />
+    <link rel="stylesheet" href="sony/css/thirdparty/jquery.jgrowl.min.css" />
+    <link rel="stylesheet" href="sony/css/site.css">
+</head>
+
+<body id="app">
+    <script type="text/javascript">
+        $(document).ready(() => sonyapp.capabilities.initialize("body"))
+    </script>
+    <div id="header">
+        <h1>Sony</h1>
+    </div>
+
+    <div class="method" id="methodArea">
+        <div>
+            <label for="baseUrl">Base URL:</label>
+            <input type="text" id="baseUrl" data-bind="value: method().baseUrl" />
+        </div>
+        <div>
+            <label for="transport">Transport:</label>
+            <select id="transport" data-bind="value: method().transport">
+                <option value="auto">Auto</option>
+                <option value="websocket:jsonizer">Websocket</option>
+                <option value="xhrpost:jsonizer">HTTP</option>
+            </select>
+        </div>
+        <div>
+            <label for="service">Service:</label>
+            <input type="text" id="service" data-bind="value: method().service" />
+        </div>
+        <div>
+            <label for="command">Command:</label>
+            <input type="text" id="command" data-bind="value: method().command" />
+        </div>
+        <div>
+            <label for="version">Version:</label>
+            <input type="text" id="version" data-bind="value: method().version" />
+        </div>
+        <div>
+            <label for="parms">Parms:</label>
+            <input type="text" id="parms" data-bind="value: method().parms" />
+        </div>
+        <div>
+            <button id="execute" uib-tooltip="Run Command" data-bind="click: runCommand">
+                <i class="fas fa-running"></i>Execute
+            </button>
+        </div>
+
+    </div>
+
+    <div class="methods" id="methodsArea">
+        <div>
+            <span class="fileRead">
+                <label for="loadFile" class="btn">
+                    <i class="fas fa-upload"></i>
+                    <p>Load File</p>
+                </label>
+                <input id="loadFile" type="file" accept=".json"
+                    data-bind="event:{change: (elm,evt)=>loadFile(elm,evt)}" />
+            </span>
+
+            <span class="fileRead">
+                <label for="loadRestFile" class="btn">
+                    <i class="fas fa-upload"></i>
+                    <p>Load REST</p>
+                </label>
+                <input id="loadRestFile" type="file" accept=".json"
+                    data-bind="event: { change: (elm,evt)=>loadRestFile(elm,evt) }" />
+            </span>
+
+            <span class="fileRead">
+                <label for="mergeFile" class="btn">
+                    <i class="fas fa-object-ungroup"></i>
+                    <p>Merge File</p>
+                </label>
+                <input id="mergeFile" type="file" accept=".json"
+                    data-bind="event: { change: (elm,evt)=>mergeFile(elm,evt) }" />
+            </span>
+
+            <button id="execute" uib-tooltip="Save" data-bind="click: saveFile">
+                <i class="fas fa-save"></i>
+            </button>
+            <span class="title" data-bind="text: fileTitle"></span>
+        </div>
+        <div id="methods">
+            <table>
+                <tbody data-bind="foreach: sortedMethods">
+                    <tr
+                        data-bind="click: ()=>$root.selectMethod($data, $index()), css: { 'even': ($index() % 2 === 0), 'selected': ($index() === $root.selectedSortIdx()), 'diff': ($index() > 0 && $parent.sortedMethods()[$index()].isDuplicateKey($parent.sortedMethods()[$index() - 1]))}">
+                        <td><span data-bind="text: serviceName"></span></td>
+                        <td><span data-bind="text: method.command"></span></td>
+                        <td><span data-bind="text: method.version"></span></td>
+                        <td>
+                            <input type="number" class="variationEditor" data-bind="value: method.variation" />
+                        </td>
+                        <td><span data-bind="text: method.parms.join()"></span></td>
+                        <td><span data-bind="text: method.retVals.join()"></span></td>
+                        <td><span data-bind="text: methodType"></span></td>
+                        <td><span data-bind="text: modelName"></span></td>
+                        <td>
+                            <button data-bind="click: ()=>$root.deleteMethod($index)">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="results" id="resultsArea">
+        <div>
+            <label id="resultsLabel" for="results">Results:</label>
+            <textarea id="results" data-bind="value: result" readonly></textarea>
+        </div>
+    </div>
+
+</body>
+
+</html>

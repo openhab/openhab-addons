@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sony"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dial">
+		<label>Sony Dial</label>
+		<description>Sony Dial (DIscovery And Launch) device</description>
+
+		<channels>
+			<channel id="title" typeId="dialtitle"/>
+			<channel id="icon" typeId="dialicon"/>
+			<channel id="state" typeId="dialState"/>
+		</channels>
+
+		<representation-property>DialUDN</representation-property>
+		<config-description-ref uri="thing-type:sony:dialconfig"/>
+	</thing-type>
+
+
+	<channel-type id="dialtitle" advanced="true">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>The title of the application</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dialicon" advanced="true">
+		<item-type>Image</item-type>
+		<label>Dial Icon</label>
+		<description>The icon representing the DIAL application</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dialState">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>Whether the DIAL application is active (ON) or not (OFF)</description>
+	</channel-type>
+</thing:thing-descriptions>

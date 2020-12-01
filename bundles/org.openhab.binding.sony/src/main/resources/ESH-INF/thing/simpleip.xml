@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sony"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="simpleip">
+		<label>Sony Simple IP</label>
+		<description>Sony Simple IP Device</description>
+
+		<channels>
+			<channel id="ir" typeId="simpleipir"/>
+			<channel id="power" typeId="simpleippower"/>
+			<channel id="togglepower" typeId="simpleiptogglepower"/>
+			<channel id="volume" typeId="simpleipvolume"/>
+			<channel id="audiomute" typeId="simpleipaudiomute"/>
+			<channel id="channel" typeId="simpleipchannel"/>
+			<channel id="tripletchannel" typeId="simpleiptripletchannel"/>
+			<channel id="inputsource" typeId="simpleipinputsource"/>
+			<channel id="input" typeId="simpleipinput"/>
+			<channel id="scene" typeId="simpleipscene"/>
+			<channel id="picturemute" typeId="simpleippicturemute"/>
+			<channel id="togglepicturemute" typeId="simpleiptogglepicturemute"/>
+			<channel id="pip" typeId="simpleippip"/>
+			<channel id="togglepip" typeId="simpleiptogglepip"/>
+			<channel id="togglepipposition" typeId="simpleiptogglepipposition"/>
+		</channels>
+
+		<representation-property>SimpleUDN</representation-property>
+		<config-description-ref uri="thing-type:sony:simpleipconfig"/>
+	</thing-type>
+
+	<channel-type id="simpleipir" advanced="true">
+		<item-type>String</item-type>
+		<label>IR Code</label>
+		<description>The IR Code to send</description>
+	</channel-type>
+
+	<channel-type id="simpleippower">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power on/off device</description>
+	</channel-type>
+
+	<channel-type id="simpleiptogglepower" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Power</label>
+		<description>Toggle Power on/off</description>
+	</channel-type>
+
+	<channel-type id="simpleipvolume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>The volume</description>
+	</channel-type>
+
+	<channel-type id="simpleipaudiomute">
+		<item-type>Switch</item-type>
+		<label>Audio Mute</label>
+		<description>Mute/Unmute the audio</description>
+	</channel-type>
+
+	<channel-type id="simpleipchannel">
+		<item-type>String</item-type>
+		<label>Channel</label>
+		<description>The channel ("5.1", "50.2", etc)</description>
+	</channel-type>
+
+	<channel-type id="simpleiptripletchannel" advanced="true">
+		<item-type>String</item-type>
+		<label>Triplet Channel</label>
+		<description>The triplet channel ("32736.32736.1024")</description>
+	</channel-type>
+
+	<channel-type id="simpleipinputsource" advanced="true">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>The Input Source ("atsct", etc)</description>
+	</channel-type>
+
+	<channel-type id="simpleipinput">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>The Input ("HDMI", "TV", etc)</description>
+	</channel-type>
+
+	<channel-type id="simpleipscene" advanced="true">
+		<item-type>String</item-type>
+		<label>Scene</label>
+		<description>The scene ("auto", "auto24pSync", "general", etc)</description>
+	</channel-type>
+
+	<channel-type id="simpleippicturemute" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Picture Mute</label>
+		<description>Mute/Unmute the picture</description>
+	</channel-type>
+
+	<channel-type id="simpleiptogglepicturemute" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle Picture Mute</label>
+		<description>Toggles the picture mute</description>
+	</channel-type>
+
+	<channel-type id="simpleippip" advanced="true">
+		<item-type>Switch</item-type>
+		<label>PIP</label>
+		<description>Enables/Disabled Picture-in-Picture</description>
+	</channel-type>
+
+	<channel-type id="simpleiptogglepip" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle PIP</label>
+		<description>Toggles Picture-in-Picture</description>
+	</channel-type>
+
+	<channel-type id="simpleiptogglepipposition" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Toggle PIP Position</label>
+		<description>Toggles Picture-in-Picture Position</description>
+	</channel-type>
+</thing:thing-descriptions>
