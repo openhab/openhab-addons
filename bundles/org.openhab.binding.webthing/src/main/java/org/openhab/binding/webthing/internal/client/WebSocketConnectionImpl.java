@@ -158,7 +158,7 @@ class WebSocketConnectionImpl implements WebSocketConnection {
         @Override
         public void run() {
             // initial pause
-            pause(pingPeriod);
+            pause(pingPeriod.dividedBy(2));
 
             while (isOpen.get()) {
                 // check if connection is alive (message has been received recently)
