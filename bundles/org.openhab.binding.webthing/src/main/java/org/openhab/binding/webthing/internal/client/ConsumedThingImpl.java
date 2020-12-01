@@ -135,6 +135,9 @@ public class ConsumedThingImpl implements ConsumedThing {
     @Override
     public void observeProperty(String propertyName, PropertyChangedListener listener) throws IOException {
         this.websocketDownstream.observeProperty(propertyName, listener);
+
+        // it may take a long time before the observed property value will be changed. For this reason
+        // read and notify the current property value
         var value = readProperty(propertyName);
         listener.onPropertyValueChanged(this, propertyName, value);
     }
