@@ -59,7 +59,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
         getModbus();
 
         try {
-            getEndpoint().getSlaveId();
+            getBridgeHandler().getSlaveId();
         } catch (EndpointNotInitializedException e) {
             throw new IllegalStateException(e);
         }
@@ -69,14 +69,14 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
 
     public int getSlaveId() {
         try {
-            return getEndpoint().getSlaveId();
+            return getBridgeHandler().getSlaveId();
         } catch (EndpointNotInitializedException e) {
             throw new IllegalStateException(e);
         }
     }
 
     public boolean isDiscoveryEnabled() {
-        return getEndpoint().isDiscoveryEnabled();
+        return getBridgeHandler().isDiscoveryEnabled();
     }
 
     /**
@@ -172,7 +172,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * @return the {@link ModbusCommunicationInterface}
      */
     private ModbusCommunicationInterface getModbus() {
-        ModbusCommunicationInterface communicationInterface = getEndpoint().getCommunicationInterface();
+        ModbusCommunicationInterface communicationInterface = getBridgeHandler().getCommunicationInterface();
 
         if (communicationInterface == null) {
             throw new IllegalStateException("Failed to retrieve Modbus communication interface");
@@ -181,7 +181,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
         }
     }
 
-    private ModbusEndpointThingHandler getEndpoint() {
+    private ModbusEndpointThingHandler getBridgeHandler() {
         try {
             Bridge bridge = getBridge();
             if (bridge == null) {
