@@ -56,7 +56,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetAutomationHandler.class);
 
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("ss.SSS");
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("ss.SSS");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.AUTOMATION_SUPPORTED_THING_TYPES;
 
@@ -359,15 +359,19 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         if (movingState == MOVING_STATE_STOPPED) {
             if (newState != MOVING_STATE_STOPPED) { // moving after stop
                 startedMovingAt = System.currentTimeMillis();
-                logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAt,
-                        FORMATTER.format(new Date(startedMovingAt)));
+                synchronized (DATE_FORMATTER) {
+                    logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAt,
+                            DATE_FORMATTER.format(new Date(startedMovingAt)));
+                }
             }
         } else { // we were moving
             updatePosition();
             if (newState != MOVING_STATE_STOPPED) { // moving after moving, take new timestamp
                 startedMovingAt = System.currentTimeMillis();
-                logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAt,
-                        FORMATTER.format(new Date(startedMovingAt)));
+                synchronized (DATE_FORMATTER) {
+                    logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAt,
+                            DATE_FORMATTER.format(new Date(startedMovingAt)));
+                }
             }
             // cancel the schedule
             ScheduledFuture<?> mSc = moveSchedule;
