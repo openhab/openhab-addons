@@ -89,11 +89,10 @@ public class MyWarmupApi {
 
         AuthResponseDTO ar = GSON.fromJson(response.getContentAsString(), AuthResponseDTO.class);
 
-        if (ar.getStatus().getResult().equals("success")) {
+        if (ar != null && ar.getStatus() != null && ar.getStatus().getResult().equals("success")) {
             authToken = ar.getResponse().getToken();
             return true;
         } else {
-            logger.debug("Authentication failure {}", response.getContentAsString());
             throw new MyWarmupApiException("Authentication Failed");
         }
     }
@@ -146,7 +145,7 @@ public class MyWarmupApi {
 
             QueryResponseDTO qr = GSON.fromJson(response.getContentAsString(), QueryResponseDTO.class);
 
-            if (qr.getStatus().equals("success")) {
+            if (qr != null && qr.getStatus().equals("success")) {
                 return qr;
             }
         }
@@ -189,8 +188,7 @@ public class MyWarmupApi {
             }
             throw new MyWarmupApiException("Callout failed");
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Callout error {}", e.getMessage());
-            throw new MyWarmupApiException(e.getMessage());
+            throw new MyWarmupApiException(e);
         }
     }
 }

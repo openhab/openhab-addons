@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.warmup.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MyWarmupConfigurationDTO} class contains fields mapping thing configuration parameters for the MyWarmup.
  *
  * @author James Melville - Initial contribution
  */
+@NonNullByDefault
 public class MyWarmupConfigurationDTO {
 
-    public String username;
-    public String password;
-    public int refreshInterval;
+    public String username = "";
+    public String password = "";
+    public int refreshInterval = 300;
 }

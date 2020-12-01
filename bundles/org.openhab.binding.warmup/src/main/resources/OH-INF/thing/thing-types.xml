@@ -19,8 +19,8 @@
 				<label>Password</label>
 				<description>Password for my.warmup.com</description>
 			</parameter>
-			<parameter name="refreshIntervalSec" type="integer" unit="s" required="true" min="10">
-				<label>Refresh Interval (Seconds)</label>
+			<parameter name="refreshInterval" type="integer" unit="s" required="true" min="10">
+				<label>Refresh Interval</label>
 				<description>Interval in seconds between automatic refreshes</description>
 				<default>300</default>
 			</parameter>
@@ -50,9 +50,9 @@
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
 			</parameter>
-			<parameter name="overrideDurationMin" type="integer" unit="m" required="true">
-				<label>Override Duration (Minutes)</label>
-				<description>Duration of override when target temperature is changed</description>
+			<parameter name="overrideDuration" type="integer" unit="m" required="true">
+				<label>Override Duration</label>
+				<description>Duration in minutes of override when target temperature is changed</description>
 				<default>60</default>
 			</parameter>
 		</config-description>

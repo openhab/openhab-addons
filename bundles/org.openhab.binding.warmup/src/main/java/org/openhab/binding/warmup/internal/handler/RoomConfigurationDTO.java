@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.warmup.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RoomConfigurationDTO} class contains fields mapping thing configuration parameters for the Warmup Room.
  *
  * @author James Melville - Initial contribution
  */
+@NonNullByDefault
 public class RoomConfigurationDTO {
 
-    private String serialNumber;
-    private int overrideDuration;
+    private String serialNumber = "";
+    private int overrideDuration = 60;
 
     public String getSerialNumber() {
         return serialNumber;

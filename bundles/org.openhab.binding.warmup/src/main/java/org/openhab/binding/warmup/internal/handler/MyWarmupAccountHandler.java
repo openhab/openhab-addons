@@ -32,6 +32,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author James Melville - Initial contribution
@@ -39,6 +41,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class MyWarmupAccountHandler extends BaseBridgeHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(MyWarmupAccountHandler.class);
     private final MyWarmupApi api;
 
     private @Nullable QueryResponseDTO queryResponse = null;
@@ -54,7 +57,11 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         MyWarmupConfigurationDTO config = getConfigAs(MyWarmupConfigurationDTO.class);
-        if (config.refreshInterval >= 10) {
+        if (config.username.length() == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Username not configured");
+        } else if (config.password.length() == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not configured");
+        } else if (config.refreshInterval >= 10) {
             api.setConfiguration(config);
             refreshJob = scheduler.scheduleWithFixedDelay(this::refreshFromServer, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
@@ -90,6 +97,7 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
             queryResponse = api.getStatus();
         } catch (MyWarmupApiException e) {
             queryResponse = null;
+            logger.debug("{}", e.getMessage(), e);
         } finally {
             if (queryResponse != null) {
                 updateStatus(ThingStatus.ONLINE);

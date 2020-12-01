@@ -78,9 +78,9 @@ These run mode statuses are defined for the API. The descriptions are based on i
 ### .things file
 
 ```
-Bridge warmup:my-warmup:MyWarmup [ username="test@example.com", password="test", refreshIntervalSec=300 ]
+Bridge warmup:my-warmup:MyWarmup [ username="test@example.com", password="test", refreshInterval=300 ]
 {
-    room    bathroom    "Home - Bathroom"   [ serialNumber="AABBCCDDEEFF", overrideDurationMin=60 ]
+    room    bathroom    "Home - Bathroom"   [ serialNumber="AABBCCDDEEFF", overrideDuration=60 ]
 }
 ```
 

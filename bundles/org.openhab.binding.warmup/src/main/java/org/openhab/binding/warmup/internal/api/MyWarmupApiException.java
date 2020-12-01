@@ -13,6 +13,7 @@
 package org.openhab.binding.warmup.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Exception thrown in case of api problems.
@@ -23,7 +24,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MyWarmupApiException extends Exception {
 
-    public MyWarmupApiException(final String message) {
+    public MyWarmupApiException(@Nullable String message) {
         super(message);
+    }
+
+    public MyWarmupApiException(@Nullable String message, @Nullable Throwable cause) {
+        super(message, cause);
+    }
+
+    public MyWarmupApiException(@Nullable Throwable cause) {
+        super(cause);
     }
 }

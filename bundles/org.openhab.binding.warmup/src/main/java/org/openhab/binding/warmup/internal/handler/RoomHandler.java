@@ -50,7 +50,11 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     public void initialize() {
         super.initialize();
         config = getConfigAs(RoomConfigurationDTO.class);
-        super.refreshFromServer();
+        if (config.getSerialNumber().length() == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial Number not configured");
+        } else {
+            super.refreshFromServer();
+        }
     }
 
     @Override
@@ -109,8 +113,8 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     }
 
     private void setOverride(final QuantityType<?> command) {
-        String roomId = getThing().getProperties().get("Id");
-        String locationId = getThing().getProperties().get("Location Id");
+        String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
+        String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
 
         QuantityType<?> temp = command.toUnit(SIUnits.CELSIUS);
 
@@ -121,13 +125,13 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                 final MyWarmupAccountHandler localBridgeHandler = bridgeHandler;
                 if (localBridgeHandler != null && config != null) {
                     final int overrideDuration = config.getOverrideDuration();
-                    if (overrideDuration > 0) {
+                    if (overrideDuration > 0 && locationId != null && roomId != null) {
                         localBridgeHandler.getApi().setOverride(locationId, roomId, value, overrideDuration);
                         refreshFromServer();
                     }
                 }
             } catch (MyWarmupApiException e) {
-                logger.warn("Set Override failed: {}", e.getMessage());
+                logger.debug("Set Override failed: {}", e.getMessage(), e);
             }
         }
     }
@@ -136,12 +140,12 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         String roomId = getThing().getProperties().get("Id");
         String locationId = getThing().getProperties().get("Location Id");
         try {
-            if (bridgeHandler != null) {
+            if (bridgeHandler != null && locationId != null && roomId != null) {
                 bridgeHandler.getApi().toggleFrostProtectionMode(locationId, roomId, command);
                 refreshFromServer();
             }
         } catch (MyWarmupApiException e) {
-            logger.warn("Toggle Frost Protection failed: {}", e.getMessage());
+            logger.debug("Toggle Frost Protection failed: {}", e.getMessage(), e);
         }
     }
 }
