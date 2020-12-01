@@ -8,8 +8,8 @@ The sensors run on a coincell battery for over a year.
 
 After setup, you can disconnect the gateway from the internet to keep your sensor information private. 
 
-Please note that using the Xiaomi gateway with OpenHAB 
-requires enabling the developer mode and that multiple user reports suggest that it is no longer posible. Zigbee2Mqtt provides an alternative method to integrate Xiaomi devices.
+Please note that using the Xiaomi gateway with OpenHAB requires enabling the developer mode and that multiple user reports suggest that it is no longer posible.
+Zigbee2Mqtt provides an alternative method to integrate Xiaomi devices.
 
 ## Supported devices
 
