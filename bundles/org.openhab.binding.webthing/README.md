@@ -30,7 +30,7 @@ Thing webthing:generic:motionsensor [ webThingURI="http://192.168.1.27:9496/" ]
 
 ## Channels
 
-The supported channels depend on the WebThing device that is connected. Each mappable WebThing property will be mapped the a dedicated channel. For instance, to support the motion property of a Motion-Sensor WebThing, a dedicated "motion" channel will be created, automatically.
+The supported channels depend on the WebThing device that is connected. Each mappable WebThing property will be mapped to a dedicated channel. For instance, to support the *motion property* of a Motion-Sensor WebThing, a dedicated *motion channel* will be created, automatically.
 
 ## Full Example
 In the example below WebThings provided by the [Internet Monitor Service](https://pypi.org/project/internet-monitor-webthing/) will be connected. 
