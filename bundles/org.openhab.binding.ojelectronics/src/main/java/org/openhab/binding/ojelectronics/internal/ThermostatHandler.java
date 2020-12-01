@@ -60,18 +60,21 @@ public class ThermostatHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ThermostatHandler.class);
     private final Map<String, Consumer<Thermostat>> channelrefreshActions = createChannelRefreshActionMap();
     private final Map<String, Consumer<Command>> updateThermostatValueActions = createUpdateThermostatValueActionMap();
+    private final ZoneId timeZone;
 
-    private @Nullable LinkedList<AbstractMap.SimpleImmutableEntry<String, Command>> updatedValues;
+    private LinkedList<AbstractMap.SimpleImmutableEntry<String, Command>> updatedValues = new LinkedList<>();
     private @Nullable Thermostat currentThermostat;
 
     /**
      * Creates a new instance of {@link ThermostatHandler}
      *
      * @param thing Thing
+     * @param timeZone Time zone
      */
-    public ThermostatHandler(Thing thing) {
+    public ThermostatHandler(Thing thing, ZoneId timeZone) {
         super(thing);
         serialNumber = getConfigAs(OJElectronicsThermostatConfiguration.class).serialNumber;
+        this.timeZone = timeZone;
     }
 
     /**
@@ -98,8 +101,7 @@ public class ThermostatHandler extends BaseThingHandler {
             }
         } else {
             synchronized (this) {
-                final LinkedList<SimpleImmutableEntry<String, Command>> updatedValue = ensureUpdatedValueListExists();
-                updatedValue.add(new AbstractMap.SimpleImmutableEntry<String, Command>(channelUID.getId(), command));
+                updatedValues.add(new AbstractMap.SimpleImmutableEntry<String, Command>(channelUID.getId(), command));
             }
         }
     }
@@ -129,10 +131,10 @@ public class ThermostatHandler extends BaseThingHandler {
      */
     public @Nullable Thermostat tryHandleAndGetUpdatedThermostat() {
         final LinkedList<SimpleImmutableEntry<String, Command>> updatedValues = this.updatedValues;
-        if (updatedValues == null || updatedValues.size() == 0) {
+        if (updatedValues.size() == 0) {
             return null;
         }
-        this.updatedValues = null;
+        this.updatedValues = new LinkedList<>();
         updatedValues.forEach(item -> {
             if (updateThermostatValueActions.containsKey(item.getKey())) {
                 final @Nullable Consumer<Command> consumer = updateThermostatValueActions.get(item.getKey());
@@ -142,16 +144,6 @@ public class ThermostatHandler extends BaseThingHandler {
             }
         });
         return currentThermostat;
-    }
-
-    private LinkedList<SimpleImmutableEntry<String, Command>> ensureUpdatedValueListExists() {
-        final LinkedList<SimpleImmutableEntry<String, Command>> updatedValues = this.updatedValues;
-        if (updatedValues != null) {
-            return updatedValues;
-        }
-        LinkedList<SimpleImmutableEntry<String, Command>> internalUpdatedValue = new LinkedList<>();
-        this.updatedValues = internalUpdatedValue;
-        return internalUpdatedValue;
     }
 
     private void updateManualSetpoint(Thermostat thermostat) {
@@ -169,7 +161,7 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateBoostEndTime(Thermostat thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME,
-                new DateTimeType(ZonedDateTime.ofInstant(thermostat.boostEndTime.toInstant(), ZoneId.systemDefault())));
+                new DateTimeType(ZonedDateTime.ofInstant(thermostat.boostEndTime.toInstant(), timeZone)));
     }
 
     private void updateBoostEndTime(Command command) {
@@ -181,8 +173,8 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     private void updateComfortEndTime(Thermostat thermostat) {
-        updateState(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME, new DateTimeType(
-                ZonedDateTime.ofInstant(thermostat.comfortEndTime.toInstant(), ZoneId.systemDefault())));
+        updateState(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME,
+                new DateTimeType(ZonedDateTime.ofInstant(thermostat.comfortEndTime.toInstant(), timeZone)));
     }
 
     private void updateComfortEndTime(Command command) {
@@ -260,10 +252,8 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     private void updateVacationBeginDay(Thermostat thermostat) {
-        updateState(BindingConstants.CHANNEL_OWD5_VACATIONBEGINDAY,
-                new DateTimeType(
-                        ZonedDateTime.ofInstant(thermostat.vacationBeginDay.toInstant(), ZoneId.systemDefault())
-                                .truncatedTo(ChronoUnit.DAYS)));
+        updateState(BindingConstants.CHANNEL_OWD5_VACATIONBEGINDAY, new DateTimeType(ZonedDateTime
+                .ofInstant(thermostat.vacationBeginDay.toInstant(), timeZone).truncatedTo(ChronoUnit.DAYS)));
     }
 
     private void updateVacationBeginDay(Command command) {
@@ -276,9 +266,8 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     private void updateVacationEndDay(Thermostat thermostat) {
-        updateState(BindingConstants.CHANNEL_OWD5_VACATIONENDDAY,
-                new DateTimeType(ZonedDateTime.ofInstant(thermostat.vacationEndDay.toInstant(), ZoneId.systemDefault())
-                        .truncatedTo(ChronoUnit.DAYS)));
+        updateState(BindingConstants.CHANNEL_OWD5_VACATIONENDDAY, new DateTimeType(
+                ZonedDateTime.ofInstant(thermostat.vacationEndDay.toInstant(), timeZone).truncatedTo(ChronoUnit.DAYS)));
     }
 
     private void updateVacationEndDay(Command command) {

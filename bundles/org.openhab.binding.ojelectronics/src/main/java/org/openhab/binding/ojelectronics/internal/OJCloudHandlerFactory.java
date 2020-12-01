@@ -69,5 +69,5 @@ public class OJCloudHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         }
         return null;
-    };
+    }
 }
