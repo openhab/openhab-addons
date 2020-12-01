@@ -19,7 +19,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Mapping properties from json for miot device info
+ * Mapping properties from json for channel options
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -28,15 +28,13 @@ public class OptionsValueListDTO {
 
     @SerializedName("value")
     @Expose
-    @Nullable
-    public String value;
+    public @Nullable String value;
+
     @SerializedName("label")
     @Expose
-    @Nullable
-    public String label;
+    public @Nullable String label;
 
-    @Nullable
-    public String getValue() {
+    public @Nullable String getValue() {
         return value;
     }
 
@@ -44,8 +42,7 @@ public class OptionsValueListDTO {
         this.value = value;
     }
 
-    @Nullable
-    public String getLabel() {
+    public @Nullable String getLabel() {
         return label;
     }
 
