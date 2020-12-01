@@ -11,7 +11,7 @@ For instance, makers may use the Web Thing API to provide an open, web-based API
 
 
 ## Supported Things
-As a generic solution, the WebThing binding does not depend on specific devices. All devices should be accessible by implementing the Web Thing API according to the specification. 
+As a generic solution, the WebThing binding does not depend on specific devices. All devices implementing the Web Thing API should be accessible. 
  
 
 ## Discovery
@@ -23,7 +23,7 @@ No binding configuration required.
 
 ## Thing Configuration
 Due to the discovery support, no manual Thing configuration is required. However, under certain circumstances textual 
-Thing configuration may be preferred. In this case, the webThingURI has to be configured as shown in the .things file below:
+Thing configuration may be preferred. In this case, the webThingURI has to be configured as shown in the webthing.things file below:
 ```
 Thing webthing:generic:motionsensor [ webThingURI="http://192.168.1.27:9496/" ]
 ```
@@ -34,7 +34,7 @@ The supported channels depend on the WebThing device that is connected. Each map
 
 ## Full Example
 In the example below WebThings provided by the [Internet Monitor Service](https://pypi.org/project/internet-monitor-webthing/) will be connected. 
-This service does not require specific hardware or devices. To connect the WebThings, the service has to be installed inside the local network.   
+This service does not require specific hardware or devices. To connect the WebThings, the service has to be installed inside your local network.   
 
 
 ### Thing  
@@ -43,11 +43,11 @@ After installing the WebThing binding you should find the WebThings of your netw
 ![discovery picture](docs/discovery.png) 
 
 Here, the WebThings provided by the *Internet Monitor Service*: the *Internet Connectivity* WebThing as well as the 
-*Internet Speed Monitor* WebThing has been discovered. To add a WebThing as an openHAB Thing click the 'Add as Thing' button. 
+*Internet Speed Monitor* WebThing have been discovered. To add a WebThing as an openHAB Thing click the 'Add as Thing' button. 
 
 ![discovery picture](docs/speedmonitor.png) 
 
-Alternatively, you may add the WebThing as a openHAB Thing by using a webthings.thing file that has to be located inside the things folder.  
+Alternatively, you may add the WebThing as a openHAB Thing by using a webthing.thing file that has to be located inside the things folder.  
 ```
 Thing  webthing:generic:speedmonitor [ webThingURI="http://192.168.1.27:9496/0" ]
 ```
@@ -67,7 +67,7 @@ WebThing property name *uploadspeed*.
 
 ![channels picture](docs/channels.png) 
 
-These channels may be linked via the channels tab of the graphical user interface or manually via a webthings.items file as shown below
+These channels may be linked via the channels tab of the graphical user interface or manually via a webthing.items file as shown below
  ```
 Number uploadSpeed  "uploadspeed speed [%.0f]" {channel="webthing:generic:speedmonitor:uploadspeed"}
 Number downloadSpeed  "download speed [%.0f]" {channel="webthing:generic:speedmonitor:downloadspeed"}
