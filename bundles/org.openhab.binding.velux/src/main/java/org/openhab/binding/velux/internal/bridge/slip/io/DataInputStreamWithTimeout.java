@@ -56,7 +56,7 @@ class DataInputStreamWithTimeout implements Closeable {
 
     private InputStream inputStream;
 
-    private String pollException = "";
+    private @Nullable String pollException = null;
     private @Nullable Poller pollRunner = null;
     private ExecutorService executor;
 
@@ -80,7 +80,7 @@ class DataInputStreamWithTimeout implements Closeable {
             int i = 0;
 
             // clean start, no exception, empty queue
-            pollException = "";
+            pollException = null;
             slipMessageQueue.clear();
 
             // loop forever or until internally or externally interrupted
@@ -110,7 +110,8 @@ class DataInputStreamWithTimeout implements Closeable {
                     continue;
                 } catch (IOException e) {
                     // any other exception => stop polling
-                    pollException = e.getMessage();
+                    String msg = e.getMessage();
+                    pollException = msg != null ? msg : "Generic IOException";
                     logger.debug("pollRunner() stopping '{}'", pollException);
                     break;
                 }
@@ -128,7 +129,7 @@ class DataInputStreamWithTimeout implements Closeable {
      * @throws IOException
      */
     private void throwIfPollException() throws IOException {
-        if (!pollException.isEmpty()) {
+        if (pollException != null) {
             logger.debug("passPollException() polling loop exception {}", pollException);
             throw new IOException(pollException);
         }
