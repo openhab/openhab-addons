@@ -15,9 +15,6 @@ package org.openhab.binding.qbus.internal.handler;
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
@@ -44,8 +41,6 @@ import org.slf4j.LoggerFactory;
 public class QbusSceneHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(QbusSceneHandler.class);
-
-    // private volatile int prevSceneState;
 
     public QbusSceneHandler(Thing thing) {
         super(thing);
@@ -77,26 +72,32 @@ public class QbusSceneHandler extends BaseThingHandler {
 
         QbusScene QScene = QComm.getScenes().get(SceneId);
 
-        if (QComm.communicationActive()) {
-            handleCommandSelection(QScene, channelUID, command);
-        } else {
-            // We lost connection but the connection object is there, so was correctly started.
-            // Try to restart communication.
-            // This can be expensive, therefore do it in a job.
-            scheduler.submit(() -> {
-                QComm.restartCommunication();
-                // If still not active, take thing offline and return.
-                if (!QComm.communicationActive()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Qbus: communication socket error");
-                    return;
-                }
-                // Also put the bridge back online
-                QBridgeHandler.bridgeOnline();
-
-                // And finally handle the command
+        if (QScene != null) {
+            if (QComm.communicationActive()) {
                 handleCommandSelection(QScene, channelUID, command);
-            });
+            } else {
+                // We lost connection but the connection object is there, so was correctly started.
+                // Try to restart communication.
+                // This can be expensive, therefore do it in a job.
+                scheduler.submit(() -> {
+                    QComm.restartCommunication();
+                    // If still not active, take thing offline and return.
+                    if (!QComm.communicationActive()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Qbus: communication socket error");
+                        return;
+                    }
+                    // Also put the bridge back online
+                    QBridgeHandler.bridgeOnline();
+
+                    // And finally handle the command
+                    handleCommandSelection(QScene, channelUID, command);
+                });
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Qbus: SceneId " + SceneId + " does not match a SCENE in the controller");
+            return;
         }
     }
 
@@ -152,30 +153,28 @@ public class QbusSceneHandler extends BaseThingHandler {
 
         QbusScene QScene = QComm.getScenes().get(SceneId);
 
-        // int sceneState = QScene.getState();
-        /*
-         * this.prevSceneState = sceneState;
-         * QScene.setThingHandler(this);
-         */
-        Map<String, String> properties = new HashMap<>();
+        // Map<String, String> properties = new HashMap<>();
 
-        thing.setProperties(properties);
+        // thing.setProperties(properties);
 
-        handleStateUpdate(QScene);
-
-        logger.debug("Qbus: scene intialized {}", SceneId);
+        if (QScene != null) {
+            QScene.setThingHandler(this);
+            handleStateUpdate(QScene);
+            logger.info("Qbus: Scene intialized {}", SceneId);
+        } else {
+            logger.info("Qbus: Scene not intialized {} - null", SceneId);
+        }
     }
 
     /**
      * Method to update state of channel, called from Qbus Scene.
      */
+
     public void handleStateUpdate(QbusScene QScene) {
 
         int sceneState = QScene.getState();
 
         updateState(CHANNEL_SWITCH, (sceneState == 0) ? OnOffType.OFF : OnOffType.ON);
         updateStatus(ThingStatus.ONLINE);
-
-        // this.prevSceneState = sceneState;
     }
 }

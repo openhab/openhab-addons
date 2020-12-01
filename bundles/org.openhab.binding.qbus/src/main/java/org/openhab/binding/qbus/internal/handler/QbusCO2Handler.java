@@ -15,9 +15,6 @@ package org.openhab.binding.qbus.internal.handler;
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.binding.qbus.internal.protocol.QbusCO2;
@@ -44,8 +41,6 @@ import org.slf4j.LoggerFactory;
 public class QbusCO2Handler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(QbusCO2Handler.class);
-
-    // private volatile int prevCO2State;
 
     public QbusCO2Handler(Thing thing) {
         super(thing);
@@ -77,26 +72,32 @@ public class QbusCO2Handler extends BaseThingHandler {
 
         QbusCO2 QCO2 = QComm.getCo2().get(CO2Id);
 
-        if (QComm.communicationActive()) {
-            handleCommandSelection(QCO2, channelUID, command);
-        } else {
-            // We lost connection but the connection object is there, so was correctly started.
-            // Try to restart communication.
-            // This can be expensive, therefore do it in a job.
-            scheduler.submit(() -> {
-                QComm.restartCommunication();
-                // If still not active, take thing offline and return.
-                if (!QComm.communicationActive()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Qbus: communication socket error");
-                    return;
-                }
-                // Also put the bridge back online
-                QBridgeHandler.bridgeOnline();
-
-                // And finally handle the command
+        if (QCO2 != null) {
+            if (QComm.communicationActive()) {
                 handleCommandSelection(QCO2, channelUID, command);
-            });
+            } else {
+                // We lost connection but the connection object is there, so was correctly started.
+                // Try to restart communication.
+                // This can be expensive, therefore do it in a job.
+                scheduler.submit(() -> {
+                    QComm.restartCommunication();
+                    // If still not active, take thing offline and return.
+                    if (!QComm.communicationActive()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Qbus: communication socket error");
+                        return;
+                    }
+                    // Also put the bridge back online
+                    QBridgeHandler.bridgeOnline();
+
+                    // And finally handle the command
+                    handleCommandSelection(QCO2, channelUID, command);
+                });
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Qbus: CO2Id " + CO2Id + " does not match a CO2 in the controller");
+            return;
         }
     }
 
@@ -138,18 +139,17 @@ public class QbusCO2Handler extends BaseThingHandler {
 
         QbusCO2 QCO2 = QComm.getCo2().get(CO2Id);
 
-        // int actionState = QCO2.getState();
+        // Map<String, String> properties = new HashMap<>();
 
-        // this.prevCO2State = actionState;
-        QCO2.setThingHandler(this);
+        // thing.setProperties(properties);
 
-        Map<String, String> properties = new HashMap<>();
-
-        thing.setProperties(properties);
-
-        handleStateUpdate(QCO2);
-
-        logger.debug("Qbus: CO2 intialized {}", CO2Id);
+        if (QCO2 != null) {
+            QCO2.setThingHandler(this);
+            handleStateUpdate(QCO2);
+            logger.info("Qbus: CO2 intialized {}", CO2Id);
+        } else {
+            logger.info("Qbus: CO2 not intialized {} - null", CO2Id);
+        }
     }
 
     /**
@@ -161,7 +161,5 @@ public class QbusCO2Handler extends BaseThingHandler {
 
         updateState(CHANNEL_CO2, new DecimalType(CO2State));
         updateStatus(ThingStatus.ONLINE);
-
-        // this.prevCO2State = CO2State;
     }
 }

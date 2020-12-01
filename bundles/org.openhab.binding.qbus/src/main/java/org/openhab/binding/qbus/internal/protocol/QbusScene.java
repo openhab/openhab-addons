@@ -31,7 +31,7 @@ public final class QbusScene {
     @Nullable
     private QbusCommunication QComm;
 
-    private int id;
+    private int id = 0;
     private Integer state = 0;
 
     @Nullable

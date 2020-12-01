@@ -15,9 +15,6 @@ package org.openhab.binding.qbus.internal.handler;
 import static org.openhab.binding.qbus.internal.QbusBindingConstants.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.binding.qbus.internal.protocol.QbusBistabiel;
@@ -40,12 +37,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Koen Schockaert - Initial Contribution
  */
+
 @NonNullByDefault
 public class QbusBistabielHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(QbusBistabielHandler.class);
-
-    // private volatile int prevBistabielState;
 
     public QbusBistabielHandler(Thing thing) {
         super(thing);
@@ -77,26 +73,32 @@ public class QbusBistabielHandler extends BaseThingHandler {
 
         QbusBistabiel QBistabiel = QComm.getBistabiel().get(BistabielId);
 
-        if (QComm.communicationActive()) {
-            handleCommandSelection(QBistabiel, channelUID, command);
-        } else {
-            // We lost connection but the connection object is there, so was correctly started.
-            // Try to restart communication.
-            // This can be expensive, therefore do it in a job.
-            scheduler.submit(() -> {
-                QComm.restartCommunication();
-                // If still not active, take thing offline and return.
-                if (!QComm.communicationActive()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Qbus: communication socket error");
-                    return;
-                }
-                // Also put the bridge back online
-                QBridgeHandler.bridgeOnline();
-
-                // And finally handle the command
+        if (QBistabiel != null) {
+            if (QComm.communicationActive()) {
                 handleCommandSelection(QBistabiel, channelUID, command);
-            });
+            } else {
+                // We lost connection but the connection object is there, so was correctly started.
+                // Try to restart communication.
+                // This can be expensive, therefore do it in a job.
+                scheduler.submit(() -> {
+                    QComm.restartCommunication();
+                    // If still not active, take thing offline and return.
+                    if (!QComm.communicationActive()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Qbus: communication socket error");
+                        return;
+                    }
+                    // Also put the bridge back online
+                    QBridgeHandler.bridgeOnline();
+
+                    // And finally handle the command
+                    handleCommandSelection(QBistabiel, channelUID, command);
+                });
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Qbus: BistabielId " + BistabielId + " does not match a BISTABIEL in the controller");
+            return;
         }
     }
 
@@ -154,18 +156,17 @@ public class QbusBistabielHandler extends BaseThingHandler {
 
         QbusBistabiel QBistabiel = QComm.getBistabiel().get(BistabielId);
 
-        // int bistabielState = QBistabiel.getState();
+        // Map<String, String> properties = new HashMap<>();
 
-        // this.prevBistabielState = bistabielState;
-        QBistabiel.setThingHandler(this);
+        // thing.setProperties(properties);
 
-        Map<String, String> properties = new HashMap<>();
-
-        thing.setProperties(properties);
-
-        handleStateUpdate(QBistabiel);
-
-        logger.debug("Qbus: bistabiel intialized {}", BistabielId);
+        if (QBistabiel != null) {
+            QBistabiel.setThingHandler(this);
+            handleStateUpdate(QBistabiel);
+            logger.info("Qbus: Bistabiel intialized {}", BistabielId);
+        } else {
+            logger.info("Qbus: Bistabiel not intialized {} - null", BistabielId);
+        }
     }
 
     /**
@@ -177,7 +178,5 @@ public class QbusBistabielHandler extends BaseThingHandler {
 
         updateState(CHANNEL_SWITCH, (bistabielState == 0) ? OnOffType.OFF : OnOffType.ON);
         updateStatus(ThingStatus.ONLINE);
-
-        // this.prevBistabielState = bistabielState;
     }
 }
