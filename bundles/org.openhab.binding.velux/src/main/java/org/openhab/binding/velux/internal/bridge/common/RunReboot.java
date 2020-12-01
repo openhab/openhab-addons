@@ -21,17 +21,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * <P>
  * In addition to the common methods defined by {@link BridgeCommunicationProtocol}
  * each protocol-specific implementation has to provide the following methods:
- * <UL>
- * <LI>{@link #setMode} for retrieval of information.
- * </UL>
  *
  * @see BridgeCommunicationProtocol
  *
- * @author Guenther Schreiner - Initial contribution.
+ * @author Andrew Fiddian-Green - Initial contribution
  */
-@Deprecated
 @NonNullByDefault
-public abstract class SetSceneVelocity implements BridgeCommunicationProtocol {
-
-    public abstract SetSceneVelocity setMode(int id, boolean silent);
+public abstract class RunReboot implements BridgeCommunicationProtocol {
 }
