@@ -194,7 +194,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 }
             } else if (message.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
                 receivedStatus = message.get("code").toString().replace("\"", "");
-                if (receivedStatus.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                if (receivedStatus.matches("[0-9]?[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
                     irCodeReceivedHandler.setCode(message.get("code").toString().replace("\"", ""));
                 } else {
                     irCodeReceivedHandler.setCode("");
@@ -281,7 +281,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     public void sendIRCode(@Nullable String irCode) {
         if (irCode != null && yioRemoteDockActualStatus.equals(YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE)) {
-            if (irCode.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+            if (irCode.matches("[0-9]?[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
                 sendMessage(YioRemoteMessages.IR_SEND, irCode);
             } else {
                 logger.warn("Wrong ir code format {}", irCode);
