@@ -152,8 +152,8 @@ public class ConsumedThingImpl implements ConsumedThing {
                 connectionListener.onDisconnected("WebThing resource " + webThingURI + " disconnected");
                 throw new IOException("Got error response: " + response.body());
             }
-            var propertValue = new Gson().fromJson(response.body(), Map.class);
-            var value = propertValue.get(propertyName);
+            var properties = new Gson().fromJson(response.body(), Map.class);
+            var value = properties.get(propertyName);
             if (value != null) {
                 return value;
             } else {
