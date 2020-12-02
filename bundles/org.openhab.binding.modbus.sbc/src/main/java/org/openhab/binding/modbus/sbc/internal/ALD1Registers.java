@@ -30,6 +30,7 @@ import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
  */
 @NonNullByDefault
 public enum ALD1Registers {
+    // the following register numbers are 1-based. They need to be converted before sending them on the wire.
     TOTAL_ENERGY(0.01f, 28, UINT32, SmartHomeUnits.KILOWATT_HOUR),
     PARTIAL_ENERGY(0.01f, 30, UINT32, SmartHomeUnits.KILOWATT_HOUR), // only unidirectional meters
     FEEDING_BACK_ENERGY(0.01f, 30, UINT32, SmartHomeUnits.KILOWATT_HOUR), // only bidirectional meters
@@ -40,13 +41,13 @@ public enum ALD1Registers {
     POWER_FACTOR(0.01f, 40, UINT16, SmartHomeUnits.ONE);
 
     private BigDecimal multiplier;
-    private int registerAddress;
+    private int registerNumber;
     private ModbusConstants.ValueType type;
     private Unit<?> unit;
 
-    private ALD1Registers(float multiplier, int registerAddress, ValueType type, Unit<?> unit) {
+    private ALD1Registers(float multiplier, int registerNumber, ValueType type, Unit<?> unit) {
         this.multiplier = new BigDecimal(multiplier);
-        this.registerAddress = registerAddress;
+        this.registerNumber = registerNumber;
         this.type = type;
         this.unit = unit;
     }
@@ -59,8 +60,8 @@ public enum ALD1Registers {
         return multiplier;
     }
 
-    public int getRegisterAddress() {
-        return registerAddress;
+    public int getRegisterNumber() {
+        return registerNumber;
     }
 
     public ModbusConstants.ValueType getType() {

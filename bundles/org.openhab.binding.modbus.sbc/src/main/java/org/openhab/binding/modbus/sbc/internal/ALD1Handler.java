@@ -79,7 +79,7 @@ public class ALD1Handler extends BaseModbusThingHandler {
             }
 
             for (ALD1Registers channel : ALD1Registers.values()) {
-                int index = channel.getRegisterAddress() - FIRST_READ_REGISTER;
+                int index = channel.getRegisterNumber() - FIRST_READ_REGISTER;
 
                 ModbusBitUtilities.extractStateFromRegisters(registers, index, channel.getType())
                         .map(d -> d.toBigDecimal().multiply(channel.getMultiplier()))
