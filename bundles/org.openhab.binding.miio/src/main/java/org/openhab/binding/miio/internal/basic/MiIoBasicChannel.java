@@ -80,7 +80,7 @@ public class MiIoBasicChannel {
     private @Nullable String category;
     @SerializedName("tags")
     @Expose
-    private LinkedHashSet<String> tags = new LinkedHashSet<String>();
+    private @Nullable LinkedHashSet<String> tags;
     @SerializedName("readmeComment")
     @Expose
     private @Nullable String readmeComment;
@@ -229,8 +229,7 @@ public class MiIoBasicChannel {
         this.transfortmation = transfortmation;
     }
 
-    @Nullable
-    public String getCategory() {
+    public @Nullable String getCategory() {
         return category;
     }
 
@@ -238,8 +237,7 @@ public class MiIoBasicChannel {
         this.category = category;
     }
 
-    @Nullable
-    public LinkedHashSet<String> getTags() {
+    public @Nullable LinkedHashSet<String> getTags() {
         return tags;
     }
 
