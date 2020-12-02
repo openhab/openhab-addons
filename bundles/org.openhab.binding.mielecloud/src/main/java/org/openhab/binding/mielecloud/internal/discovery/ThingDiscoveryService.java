@@ -91,10 +91,11 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
         ThingUID thingUid = new ThingUID(thingTypeUid, bridgeHandler.getThing().getUID(),
                 deviceState.getDeviceIdentifier());
 
-        DiscoveryResult result = DiscoveryResultBuilder.create(thingUid).withBridge(bridgeHandler.getThing().getUID())
-                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(getLabel(deviceState))
-                .withProperty(Thing.PROPERTY_SERIAL_NUMBER, getSerialNumber(deviceState))
-                .withProperty(Thing.PROPERTY_MODEL_ID, getModelId(deviceState)).build();
+        DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUid)
+                .withBridge(bridgeHandler.getThing().getUID()).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
+                .withLabel(getLabel(deviceState)).withProperties(ThingPropertyExtractor.extractProperties(deviceState));
+
+        DiscoveryResult result = discoveryResultBuilder.build();
 
         thingDiscovered(result);
     }
@@ -175,28 +176,5 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
         }
 
         return getDeviceAndTechType(deviceState).orElse("Miele Device");
-    }
-
-    private String getSerialNumber(DeviceState deviceState) {
-        return deviceState.getFabNumber().orElse(deviceState.getDeviceIdentifier());
-    }
-
-    private String getModelId(DeviceState deviceState) {
-        return getDeviceAndTechType(deviceState).orElse("Unknown");
-    }
-
-    private Optional<String> getDeviceAndTechType(DeviceState deviceState) {
-        Optional<String> deviceType = deviceState.getType();
-        Optional<String> techType = deviceState.getTechType();
-        if (deviceType.isPresent() && techType.isPresent()) {
-            return Optional.of(deviceType.get() + " " + techType.get());
-        }
-        if (!deviceType.isPresent() && techType.isPresent()) {
-            return techType;
-        }
-        if (deviceType.isPresent() && !techType.isPresent()) {
-            return deviceType;
-        }
-        return Optional.empty();
     }
 }
