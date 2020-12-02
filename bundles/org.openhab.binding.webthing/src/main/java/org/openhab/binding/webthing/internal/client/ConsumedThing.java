@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
 
@@ -37,27 +35,24 @@ public interface ConsumedThing {
      *
      * @param propertyName the property to be observed
      * @param listener the listener to call on changes
-     * @throws IOException if the Webthing resource could not be connected
      */
-    void observeProperty(String propertyName, PropertyChangedListener listener) throws IOException;
+    void observeProperty(String propertyName, PropertyChangedListener listener);
 
     /**
      * Writes a single Property.
      *
      * @param propertyName the propertyName
      * @return the current propertyValue
-     * @throws IOException if the WebThing resource could not be connected
      */
-    Object readProperty(String propertyName) throws IOException;
+    Object readProperty(String propertyName);
 
     /**
      * Writes a single Property.
      *
      * @param propertyName the propertyName
      * @param newValue the new propertyValue
-     * @throws IOException if the WebThing resource could not be connected
      */
-    void writeProperty(String propertyName, Object newValue) throws IOException;
+    void writeProperty(String propertyName, Object newValue);
 
     /**
      * closes the connection
