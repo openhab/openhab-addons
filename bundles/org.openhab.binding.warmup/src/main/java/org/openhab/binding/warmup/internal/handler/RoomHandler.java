@@ -90,7 +90,6 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                             updateStatus(ThingStatus.ONLINE);
 
                             updateProperty(PROPERTY_ROOM_ID, room.getId());
-                            updateProperty(PROPERTY_SERIAL_NUMBER, serialNumber);
                             updateProperty(PROPERTY_ROOM_NAME, room.getName());
                             updateProperty(PROPERTY_LOCATION_ID, location.getId());
                             updateProperty(PROPERTY_LOCATION_NAME, location.getName());

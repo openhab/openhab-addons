@@ -92,8 +92,6 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService
             if (localBridgeUID != null && deviceSN != null) {
                 final Map<String, Object> roomProperties = new HashMap<>();
                 roomProperties.put(Thing.PROPERTY_SERIAL_NUMBER, deviceSN);
-                roomProperties.put(PROPERTY_SERIAL_NUMBER, deviceSN);
-
                 roomProperties.put(PROPERTY_ROOM_ID, room.getId());
                 roomProperties.put(PROPERTY_ROOM_NAME, room.getName());
                 roomProperties.put(PROPERTY_LOCATION_ID, location.getId());

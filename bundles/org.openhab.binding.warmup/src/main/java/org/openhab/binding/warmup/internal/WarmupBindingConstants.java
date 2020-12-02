@@ -55,7 +55,6 @@ public class WarmupBindingConstants {
     // Property Labels
     public static final String PROPERTY_ROOM_ID = "Id";
     public static final String PROPERTY_ROOM_NAME = "Name";
-    public static final String PROPERTY_SERIAL_NUMBER = "Serial Number";
     public static final String PROPERTY_LOCATION_ID = "Location Id";
     public static final String PROPERTY_LOCATION_NAME = "Location";
 
