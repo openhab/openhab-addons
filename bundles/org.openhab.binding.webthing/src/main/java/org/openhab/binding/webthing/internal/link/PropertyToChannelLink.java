@@ -68,7 +68,7 @@ public class PropertyToChannelLink implements PropertyChangedListener {
     }
 
     @Override
-    public void onPropertyValueChanged(ConsumedThing webthing, String propertyName, Object value) {
+    public void onPropertyValueChanged(String propertyName, Object value) {
         try {
             var stateCommand = typeConverter.toStateCommand(value);
             channelHandler.updateItemState(channel.getUID(), stateCommand);

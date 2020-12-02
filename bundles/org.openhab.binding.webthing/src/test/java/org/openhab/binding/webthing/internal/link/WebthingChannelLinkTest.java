@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.channel.Channels;
 import org.openhab.binding.webthing.internal.client.WebthingTest;
+import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.*;
 import org.openhab.core.types.Command;
@@ -88,8 +89,9 @@ public class WebthingChannelLinkTest {
         var thingUID = new ThingUID("webthing", "anwing");
         var channelUID = Channels.createChannelUID(thingUID, "target_position");
 
+        var connectionListener = new WebthingTest.ConnectionListenerImpl();
         var websocketConnectionFactory = new WebthingTest.TestWebsocketConnectionFactory();
-        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClientMock,
+        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClientMock, connectionListener,
                 websocketConnectionFactory);
         var channel = Channels.createChannel(thingUID, "target_position",
                 Objects.requireNonNull(webthing.getPropertyDescription("target_position")));
@@ -97,9 +99,12 @@ public class WebthingChannelLinkTest {
         var testWebthingThingHandler = new TestWebthingThingHandler();
         PropertyToChannelLink.establish(webthing, "target_position", testWebthingThingHandler, channel);
 
-        websocketConnectionFactory.listeners.get("target_position").onPropertyValueChanged(webthing, "target_position",
-                70);
-        Assert.assertEquals(new DecimalType(70), testWebthingThingHandler.itemState.get(channelUID));
+        var message = new PropertyStatusMessage();
+        message.messageType = "propertyStatus";
+        message.data = Map.of("target_position", 77);
+        websocketConnectionFactory.webSocketRef.get().sendToClient(message);
+
+        Assert.assertEquals(new DecimalType(77), testWebthingThingHandler.itemState.get(channelUID));
     }
 
     private static final class TestConsumer implements BiConsumer<ChannelUID, Command> {
@@ -151,8 +156,9 @@ public class WebthingChannelLinkTest {
         var thingUID = new ThingUID("webthing", "test");
         var channelUID = Channels.createChannelUID(thingUID, propertyName);
 
+        var connectionListener = new WebthingTest.ConnectionListenerImpl();
         var websocketConnectionFactory = new WebthingTest.TestWebsocketConnectionFactory();
-        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/", httpClientMock,
+        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/", httpClientMock, connectionListener,
                 websocketConnectionFactory);
         var channel = Channels.createChannel(thingUID, propertyName,
                 Objects.requireNonNull(webthing.getPropertyDescription(propertyName)));
@@ -160,8 +166,12 @@ public class WebthingChannelLinkTest {
         var testWebthingThingHandler = new TestWebthingThingHandler();
 
         PropertyToChannelLink.establish(webthing, propertyName, testWebthingThingHandler, channel);
-        websocketConnectionFactory.listeners.get(propertyName).onPropertyValueChanged(webthing, propertyName,
-                initialValue);
+
+        var message = new PropertyStatusMessage();
+        message.messageType = "propertyStatus";
+        message.data = Map.of(propertyName, initialValue);
+        websocketConnectionFactory.webSocketRef.get().sendToClient(message);
+
         Assert.assertEquals(initialState, testWebthingThingHandler.itemState.get(channelUID));
 
         ChannelToPropertyLink.establish(testWebthingThingHandler, channel, webthing, propertyName);

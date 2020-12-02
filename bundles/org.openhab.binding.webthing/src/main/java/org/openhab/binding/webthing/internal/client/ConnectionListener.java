@@ -23,19 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface ConnectionListener {
 
     /**
-     * "empty" instance
-     */
-    ConnectionListener EMPTY = new ConnectionListener() {
-        @Override
-        public void onConnected() {
-        }
-
-        @Override
-        public void onDisconnected(String reason) {
-        }
-    };
-
-    /**
      * callback that will be called, if the WebThing is connected
      *
      */
