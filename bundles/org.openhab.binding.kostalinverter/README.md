@@ -289,29 +289,9 @@ demo.items:
 
 ```
 Number:Power                GridOutputPower             "PV Output Power"                           <energy>  { channel="kostalinverter:piko1020:mypiko1020:gridOutputPower" }
-Number                      GridOutputPowerMax          "Todays Maximum [%.2f %unit%]"              <energy> 
-Number                      GridOutputPowerMin          "Todays Mimimum [%.2f %unit%]"              <energy> 
-Number                      GridOutputPowerChart        "Chart Period Solar Power"
-DateTime                    GridOutputPowerTimestamp    "Last Update PV Output Power [%1$ta %1$tR]" <clock>
-
 Number:Power                YieldDay                    "PV Output Power Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldDay" }
-Number                      YieldDayMax                 "Todays Maximum [%.2f %unit%]"              <energy> 
-Number                      YieldDayMin                 "Todays Mimimum [%.2f %unit%]"              <energy> 
-Number                      YieldDayChart               "Chart Period PV Output Power Day"
-DateTime                    YieldDayTimestamp           "Last Update PV Output Power Day [%1$ta %1$tR]"     <clock>
-
 Number:Energy               YieldTotal                  "PV Output Power Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldTotal" }  
-Number                      YieldTotalMax               "Todays Maximum [%.2f %unit%]"              <energy> 
-Number                      YieldTotalMin               "Todays Mimimum [%.2f %unit%]"              <energy> 
-Number                      YieldTotalChart             "Chart Period PV Output Power Total"
-DateTime                    YieldTotalTimestamp         "Last Update PV Output Power Total [%1$ta %1$tR]"   <clock>
-
 Number:Dimensionless        OperatingStatus             "Operating Status"                          <energy> { channel="kostalinverter:piko1020:mypiko1020:operatingStatus" }
-Number                      OperatingStatusMax          "Todays Maximum [%.0f]"                     <energy> 
-Number                      OperatingStatusMin          "Todays Mimimum [%.0f]"                     <energy> 
-Number                      OperatingStatusCha          "Chart Period Operating Status"
-DateTime                    OperatingStatusTimestamp    "Last Update Operating Status [%1$ta %1$tR]"        <clock>
-
 Number:ElectricPotential    GridVoltageL1               "Grid Voltage L1"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:gridVoltageL1" }
 Number:ElectricCurrent      GridCurrentL1               "Grid Current L1"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:gridCurrentL1" }
 Number:Power                GridPowerL1                 "Grid Power L1"                             <energy> { channel="kostalinverter:piko1020:mypiko1020:gridPowerL1" }

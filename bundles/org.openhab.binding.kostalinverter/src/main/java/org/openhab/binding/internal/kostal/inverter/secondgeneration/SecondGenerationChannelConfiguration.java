@@ -64,7 +64,7 @@ public class SecondGenerationChannelConfiguration {
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_GRIDCURRENTL1, "td", 19, SmartHomeUnits.AMPERE, "67109377"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
-                SecondGenerationBindingConstants.CHANNEL_GRIDPOWERL1, "td", 22, SmartHomeUnits.WATT, "67109377"));
+                SecondGenerationBindingConstants.CHANNEL_GRIDPOWERL1, "td", 22, SmartHomeUnits.WATT, "67109379"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_GRIDVOLTAGEL2, "td", 25, SmartHomeUnits.VOLT, "67109634"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
