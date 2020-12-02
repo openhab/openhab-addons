@@ -14,6 +14,7 @@ package org.openhab.binding.modbus.sbc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
