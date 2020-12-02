@@ -108,22 +108,23 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
         if (scanFuture == null) {
             scanFuture = scheduler.submit(() -> {
                 GardenaSmart gardena = accountHandler.getGardenaSmart();
-                for (Device device : gardena.getAllDevices()) {
-                    deviceDiscovered(device);
-                }
-
-                for (Thing thing : accountHandler.getThing().getThings()) {
-                    try {
-                        gardena.getDevice(UidUtils.getGardenaDeviceId(thing));
-                    } catch (GardenaException ex) {
-                        thingRemoved(thing.getUID());
+                if (gardena != null) {
+                    for (Device device : gardena.getAllDevices()) {
+                        deviceDiscovered(device);
                     }
-                }
 
-                logger.debug("Finished Gardena device discovery scan on gateway '{}'",
-                        accountHandler.getGardenaSmart().getId());
-                scanFuture = null;
-                removeOlderResults(getTimestampOfLastScan());
+                    for (Thing thing : accountHandler.getThing().getThings()) {
+                        try {
+                            gardena.getDevice(UidUtils.getGardenaDeviceId(thing));
+                        } catch (GardenaException ex) {
+                            thingRemoved(thing.getUID());
+                        }
+                    }
+
+                    logger.debug("Finished Gardena device discovery scan on gateway '{}'", gardena.getId());
+                    scanFuture = null;
+                    removeOlderResults(getTimestampOfLastScan());
+                }
             });
         } else {
             logger.debug("Gardena device discovery scan in progress");

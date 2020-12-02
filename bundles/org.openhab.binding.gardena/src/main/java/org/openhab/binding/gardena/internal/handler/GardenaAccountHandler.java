@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
 import org.openhab.binding.gardena.internal.GardenaSmartImpl;
@@ -47,8 +48,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     private @NonNullByDefault({}) GardenaDeviceDiscoveryService discoveryService;
 
-    private GardenaSmart gardenaSmart = new GardenaSmartImpl();
-    private @NonNullByDefault({}) GardenaConfig gardenaConfig;
+    private @Nullable GardenaSmart gardenaSmart;
     private HttpClientFactory httpClientFactory;
     private WebSocketFactory webSocketFactory;
 
@@ -62,10 +62,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     @Override
     public void initialize() {
         logger.debug("Initializing Gardena account '{}'", getThing().getUID().getId());
-
-        gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
-        logger.debug("{}", gardenaConfig);
-
         initializeGardena();
     }
 
@@ -80,8 +76,12 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
         final GardenaAccountHandler instance = this;
         scheduler.execute(() -> {
             try {
+                GardenaConfig gardenaConfig = getThing().getConfiguration().as(GardenaConfig.class);
+                logger.debug("{}", gardenaConfig);
+
                 String id = getThing().getUID().getId();
-                gardenaSmart.init(id, gardenaConfig, instance, scheduler, httpClientFactory, webSocketFactory);
+                gardenaSmart = new GardenaSmartImpl(id, gardenaConfig, instance, scheduler, httpClientFactory,
+                        webSocketFactory);
                 discoveryService.startScan(null);
                 discoveryService.waitForScanFinishing();
                 updateStatus(ThingStatus.ONLINE);
@@ -117,13 +117,16 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private void disposeGardena() {
         logger.debug("Disposing Gardena account '{}'", getThing().getUID().getId());
         discoveryService.stopScan();
-        gardenaSmart.dispose();
+        final GardenaSmart gardenaSmart = this.gardenaSmart;
+        if (gardenaSmart != null) {
+            gardenaSmart.dispose();
+        }
     }
 
     /**
      * Returns the Gardena smart system implementation.
      */
-    public GardenaSmart getGardenaSmart() {
+    public @Nullable GardenaSmart getGardenaSmart() {
         return gardenaSmart;
     }
 
@@ -144,20 +147,23 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     @Override
     public void onDeviceUpdated(Device device) {
         for (ThingUID thingUID : UidUtils.getThingUIDs(device, getThing())) {
-            Thing gardenaThing = getThing().getThing(thingUID);
-            try {
-                GardenaThingHandler gardenaThingHandler = (GardenaThingHandler) gardenaThing.getHandler();
-                gardenaThingHandler.updateProperties(device);
-                for (Channel channel : gardenaThing.getChannels()) {
-                    gardenaThingHandler.updateChannel(channel.getUID());
+            final Thing gardenaThing;
+            final GardenaThingHandler gardenaThingHandler;
+            if ((gardenaThing = getThing().getThing(thingUID)) != null
+                    && (gardenaThingHandler = (GardenaThingHandler) gardenaThing.getHandler()) != null) {
+                try {
+                    gardenaThingHandler.updateProperties(device);
+                    for (Channel channel : gardenaThing.getChannels()) {
+                        gardenaThingHandler.updateChannel(channel.getUID());
+                    }
+                    gardenaThingHandler.updateStatus(device);
+                } catch (GardenaException ex) {
+                    logger.error("There is something wrong with your thing '{}', please check or recreate it: {}",
+                            gardenaThing.getUID(), ex.getMessage());
+                    logger.debug("Gardena exception caught on device update.", ex);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+                } catch (AccountHandlerNotAvailableException ignore) {
                 }
-                gardenaThingHandler.updateStatus(device);
-            } catch (GardenaException ex) {
-                logger.error("There is something wrong with your thing '{}', please check or recreate it: {}",
-                        gardenaThing.getUID(), ex.getMessage());
-                logger.debug("Gardena exception caught on device update.", ex);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
-            } catch (AccountHandlerNotAvailableException ignore) {
             }
         }
     }
@@ -174,7 +180,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     public void onError() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
         disposeGardena();
-        gardenaSmart = new GardenaSmartImpl();
         scheduleReinitialize();
     }
 }

@@ -14,6 +14,8 @@ package org.openhab.binding.gardena.internal.util;
 
 import java.lang.reflect.Field;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 
 /**
@@ -21,19 +23,20 @@ import org.openhab.binding.gardena.internal.exception.GardenaException;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class PropertyUtils {
 
     /**
      * Returns true if the property is null.
      */
-    public static boolean isNull(Object instance, String propertyPath) throws GardenaException {
+    public static boolean isNull(@Nullable Object instance, String propertyPath) throws GardenaException {
         return getPropertyValue(instance, propertyPath, Object.class) == null;
     }
 
     /**
      * Returns the property value from the object instance, nested properties are possible.
      */
-    public static <T> T getPropertyValue(Object instance, String propertyPath, Class<T> resultClass)
+    public @Nullable static <T> T getPropertyValue(@Nullable Object instance, String propertyPath, Class<T> resultClass)
             throws GardenaException {
         String[] properties = propertyPath.split("\\.");
         return getPropertyValue(instance, properties, resultClass, 0);
@@ -42,8 +45,9 @@ public class PropertyUtils {
     /**
      * Iterates through the nested properties and returns the field value.
      */
-    private static <T> T getPropertyValue(Object instance, String[] properties, Class<T> resultClass, int nestedIndex)
-            throws GardenaException {
+    @SuppressWarnings("unchecked")
+    private @Nullable static <T> T getPropertyValue(@Nullable Object instance, String[] properties,
+            Class<T> resultClass, int nestedIndex) throws GardenaException {
         if (instance == null) {
             return null;
         }

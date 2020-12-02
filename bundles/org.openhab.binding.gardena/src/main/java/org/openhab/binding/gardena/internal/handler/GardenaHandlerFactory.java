@@ -15,6 +15,8 @@ package org.openhab.binding.gardena.internal.handler;
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.BINDING_ID;
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.THING_TYPE_ACCOUNT;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
@@ -33,6 +35,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.gardena")
 public class GardenaHandlerFactory extends BaseThingHandlerFactory {
     private HttpClientFactory httpClientFactory;
@@ -53,7 +56,7 @@ public class GardenaHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
             return new GardenaAccountHandler((Bridge) thing, httpClientFactory, webSocketFactory);
         } else {

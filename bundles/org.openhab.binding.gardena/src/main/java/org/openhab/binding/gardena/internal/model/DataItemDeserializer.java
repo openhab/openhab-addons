@@ -14,6 +14,8 @@ package org.openhab.binding.gardena.internal.model;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gardena.internal.model.api.DataItem;
 
 import com.google.gson.*;
@@ -23,11 +25,12 @@ import com.google.gson.*;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DataItemDeserializer implements JsonDeserializer<DataItem<?>> {
     private static Gson gson = new GsonBuilder().create();
 
     @Override
-    public DataItem<?> deserialize(JsonElement element, Type type, JsonDeserializationContext ctx)
+    public @Nullable DataItem<?> deserialize(JsonElement element, Type type, JsonDeserializationContext ctx)
             throws JsonParseException {
         JsonObject jsonObj = element.getAsJsonObject();
         return gson.fromJson(element, DataItemFactory.create(jsonObj.get("type").getAsString()));

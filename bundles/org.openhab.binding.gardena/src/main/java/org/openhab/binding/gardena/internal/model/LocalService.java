@@ -17,6 +17,7 @@ package org.openhab.binding.gardena.internal.model;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+
 public class LocalService {
     public Integer commandDuration;
 }

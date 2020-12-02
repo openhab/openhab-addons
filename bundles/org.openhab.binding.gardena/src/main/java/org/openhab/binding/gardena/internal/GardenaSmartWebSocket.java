@@ -20,6 +20,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.extensions.Frame;
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 @WebSocket
 public class GardenaSmartWebSocket {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartWebSocket.class);
@@ -50,9 +53,9 @@ public class GardenaSmartWebSocket {
     private boolean closing;
     private Instant lastPong = Instant.now();
     private ScheduledExecutorService scheduler;
-    private ScheduledFuture openhab;
+    private @Nullable ScheduledFuture<?> connectionTracker;
     private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes());
-    private PostOAuth2Response token;
+    private @Nullable PostOAuth2Response token;
     private String socketId;
 
     /**
@@ -60,7 +63,7 @@ public class GardenaSmartWebSocket {
      */
     public GardenaSmartWebSocket(GardenaSmartWebSocketListener socketEventListener,
             WebSocketCreatedResponse webSocketCreatedResponse, GardenaConfig config, ScheduledExecutorService scheduler,
-            WebSocketFactory webSocketFactory, PostOAuth2Response token, String socketId) throws Exception {
+            WebSocketFactory webSocketFactory, @Nullable PostOAuth2Response token, String socketId) throws Exception {
         this.socketEventListener = socketEventListener;
         this.scheduler = scheduler;
         this.token = token;
@@ -83,8 +86,9 @@ public class GardenaSmartWebSocket {
      */
     public synchronized void stop() {
         closing = true;
-        if (openhab != null) {
-            openhab.cancel(true);
+        final ScheduledFuture<?> connectionTracker = this.connectionTracker;
+        if (connectionTracker != null) {
+            connectionTracker.cancel(true);
         }
         if (isRunning()) {
             logger.debug("Closing Gardena Webservice client ({})", socketId);
@@ -106,7 +110,7 @@ public class GardenaSmartWebSocket {
      * Returns true, if the websocket is running.
      */
     public synchronized boolean isRunning() {
-        return session != null && session.isOpen();
+        return session.isOpen();
     }
 
     @OnWebSocketConnect
@@ -114,7 +118,7 @@ public class GardenaSmartWebSocket {
         closing = false;
         logger.debug("Connected to Gardena Webservice ({})", socketId);
 
-        openhab = scheduler.scheduleWithFixedDelay(new ConnectionTrackerThread(), 2, 2, TimeUnit.MINUTES);
+        connectionTracker = scheduler.scheduleWithFixedDelay(new ConnectionTrackerThread(), 2, 2, TimeUnit.MINUTES);
     }
 
     @OnWebSocketFrame
@@ -161,9 +165,9 @@ public class GardenaSmartWebSocket {
             try {
                 logger.trace("Sending ping ({})", socketId);
                 session.getRemote().sendPing(pingPayload);
-
+                final PostOAuth2Response accessToken = token;
                 if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT)
-                        || token.isAccessTokenExpired()) {
+                        || accessToken == null || accessToken.isAccessTokenExpired()) {
                     session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
                 }
             } catch (IOException ex) {

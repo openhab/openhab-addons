@@ -13,17 +13,13 @@
 package org.openhab.binding.gardena.internal;
 
 import java.util.Collection;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.gardena.internal.config.GardenaConfig;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.Device;
 import org.openhab.binding.gardena.internal.model.api.DataItem;
 import org.openhab.binding.gardena.internal.model.command.GardenaCommand;
-import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.WebSocketFactory;
 
 /**
  * Describes the methods required for the communication with Gardena smart system.
@@ -32,13 +28,6 @@ import org.openhab.core.io.net.http.WebSocketFactory;
  */
 @NonNullByDefault
 public interface GardenaSmart {
-
-    /**
-     * Initializes Gardena smart system.
-     */
-    public void init(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
-            ScheduledExecutorService scheduler, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory)
-            throws GardenaException;
 
     /**
      * Disposes Gardena smart system.

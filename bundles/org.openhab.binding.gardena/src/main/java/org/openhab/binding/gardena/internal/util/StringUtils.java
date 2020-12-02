@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.gardena.internal.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Some String operations from commons lang.
  */
+@NonNullByDefault
 public class StringUtils {
     /**
      * Gets the substring before the first occurrence of a separator.
      */
-    public static String substringBefore(String str, String separator) {
+    public @Nullable static String substringBefore(@Nullable String str, String separator) {
         if (str != null && !str.isEmpty()) {
             int pos = str.indexOf(separator);
             return pos == -1 ? str : str.substring(0, pos);
@@ -31,7 +35,7 @@ public class StringUtils {
     /**
      * Gets the substring before the last occurrence of a separator.
      */
-    public static String substringBeforeLast(String str, String separator) {
+    public @Nullable static String substringBeforeLast(@Nullable String str, String separator) {
         if (str != null && !str.isEmpty()) {
             int pos = str.lastIndexOf(separator);
             return pos == -1 ? str : str.substring(0, pos);
@@ -43,7 +47,7 @@ public class StringUtils {
     /**
      * Gets the substring after the last occurrence of a separator.
      */
-    public static String substringAfterLast(String str, String separator) {
+    public @Nullable static String substringAfterLast(@Nullable String str, String separator) {
         if (str != null && !str.isEmpty()) {
             int pos = str.lastIndexOf(separator);
             return pos != -1 && pos != str.length() - separator.length() ? str.substring(pos + separator.length()) : "";

@@ -15,6 +15,8 @@ package org.openhab.binding.gardena.internal;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -39,12 +41,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * {@link GardenaSmart} implementation to access Gardena smart system.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
 
@@ -62,37 +66,27 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private ScheduledExecutorService scheduler;
 
     private Map<String, Device> allDevicesById = new HashMap<>();
-    private LocationsResponse locationsResponse = new LocationsResponse();
+    private LocationsResponse locationsResponse;
     private GardenaSmartEventListener eventListener;
 
     private HttpClient httpClient;
     private List<GardenaSmartWebSocket> webSockets = new ArrayList<>();
-    private PostOAuth2Response token;
+    private @Nullable PostOAuth2Response token;
     private boolean initialized = false;
-    private HttpClientFactory httpClientFactory;
     private WebSocketFactory webSocketFactory;
 
     private Set<Device> devicesToNotify = Collections.synchronizedSet(new HashSet<>());
-    private ScheduledFuture<?> deviceToNotifyFuture;
+    private @Nullable ScheduledFuture<?> deviceToNotifyFuture;
 
-    @Override
-    public void init(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
+    public GardenaSmartImpl(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
             ScheduledExecutorService scheduler, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory)
             throws GardenaException {
         this.id = id;
         this.config = config;
         this.eventListener = eventListener;
         this.scheduler = scheduler;
-        this.httpClientFactory = httpClientFactory;
         this.webSocketFactory = webSocketFactory;
 
-        start();
-    }
-
-    /**
-     * Starts the client, loads the locations and devices.
-     */
-    private void start() throws GardenaException {
         logger.debug("Starting GardenaSmart");
         try {
             httpClient = httpClientFactory.createHttpClient(id);
@@ -150,7 +144,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     /**
      * Communicates with Gardena smart home system and parses the result.
      */
-    private <T> T executeRequest(HttpMethod method, String url, Object content, Class<T> result)
+    private <T> T executeRequest(HttpMethod method, String url, @Nullable Object content, @Nullable Class<T> result)
             throws GardenaException {
         try {
             AbstractTypedContentProvider contentProvider = null;
@@ -173,8 +167,11 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
 
             if (!URL_API_TOKEN.equals(url)) {
                 verifyToken();
-                request.header("Authorization", token.tokenType + " " + token.accessToken);
-                request.header("Authorization-provider", token.provider);
+                final PostOAuth2Response token = this.token;
+                if (token != null) {
+                    request.header("Authorization", token.tokenType + " " + token.accessToken);
+                    request.header("Authorization-provider", token.provider);
+                }
                 request.header("X-Api-Key", config.getApiKey());
             }
 
@@ -191,9 +188,9 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             }
 
             if (result == null) {
-                return null;
+                return (T) null;
             }
-            return gson.fromJson(contentResponse.getContentAsString(), result);
+            return (T) gson.fromJson(contentResponse.getContentAsString(), result);
         } catch (InterruptedException | TimeoutException | ExecutionException ex) {
             throw new GardenaException(ex.getMessage(), ex);
         }
@@ -206,6 +203,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         Fields fields = new Fields();
         fields.add("client_id", config.getApiKey());
 
+        PostOAuth2Response token = this.token;
         if (token == null || token.isRefreshTokenExpired()) {
             // new token
             logger.debug("Gardena API login using password, reason: {}",
@@ -215,6 +213,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             fields.add("password", config.getPassword());
             token = executeRequest(HttpMethod.POST, URL_API_TOKEN, fields, PostOAuth2Response.class);
             token.postProcess();
+            this.token = token;
         } else if (token.isAccessTokenExpired()) {
             // refresh token
             logger.debug("Gardena API login using refreshToken, reason: access token expired");
@@ -226,9 +225,10 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
                 token.accessToken = tempToken.accessToken;
                 token.expiresIn = tempToken.expiresIn;
                 token.postProcess();
+                this.token = token;
             } catch (GardenaException ex) {
                 // refresh token issue
-                token = null;
+                this.token = null;
                 verifyToken();
             }
         } else {
@@ -264,18 +264,17 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
      */
     public void dispose() {
         logger.debug("Disposing GardenaSmart");
+        final ScheduledFuture<?> deviceToNotifyFuture = this.deviceToNotifyFuture;
         if (deviceToNotifyFuture != null) {
             deviceToNotifyFuture.cancel(true);
         }
         stopWebsockets();
-        if (httpClient != null) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                // ignore
-            }
-            httpClient.destroy();
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            // ignore
         }
+        httpClient.destroy();
         locationsResponse = new LocationsResponse();
         allDevicesById.clear();
         initialized = false;
@@ -309,9 +308,11 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             if (initialized) {
                 scheduler.schedule(() -> {
                     Device newDevice = allDevicesById.get(deviceId);
-                    newDevice.evaluateDeviceType();
-                    if (newDevice.deviceType != null) {
-                        eventListener.onNewDevice(newDevice);
+                    if (newDevice != null) {
+                        newDevice.evaluateDeviceType();
+                        if (newDevice.deviceType != null) {
+                            eventListener.onNewDevice(newDevice);
+                        }
                     }
                 }, 3, TimeUnit.SECONDS);
             }
@@ -336,24 +337,26 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     public void onWebSocketMessage(String msg) {
         try {
             DataItem<?> dataItem = gson.fromJson(msg, DataItem.class);
-            handleDataItem(dataItem);
-            Device device = allDevicesById.get(dataItem.getDeviceId());
-            if (device != null && device.active) {
-                devicesToNotify.add(device);
+            if (dataItem != null) {
+                handleDataItem(dataItem);
+                Device device = allDevicesById.get(dataItem.getDeviceId());
+                if (device != null && device.active) {
+                    devicesToNotify.add(device);
 
-                // delay the deviceUpdated event to filter multiple events for the same device dataItem property
-                if (deviceToNotifyFuture == null) {
-                    deviceToNotifyFuture = scheduler.schedule(() -> {
-                        deviceToNotifyFuture = null;
-                        Iterator<Device> notifyIterator = devicesToNotify.iterator();
-                        while (notifyIterator.hasNext()) {
-                            eventListener.onDeviceUpdated(notifyIterator.next());
-                            notifyIterator.remove();
-                        }
-                    }, 1, TimeUnit.SECONDS);
+                    // delay the deviceUpdated event to filter multiple events for the same device dataItem property
+                    if (deviceToNotifyFuture == null) {
+                        deviceToNotifyFuture = scheduler.schedule(() -> {
+                            deviceToNotifyFuture = null;
+                            Iterator<Device> notifyIterator = devicesToNotify.iterator();
+                            while (notifyIterator.hasNext()) {
+                                eventListener.onDeviceUpdated(notifyIterator.next());
+                                notifyIterator.remove();
+                            }
+                        }, 1, TimeUnit.SECONDS);
+                    }
                 }
             }
-        } catch (GardenaException ex) {
+        } catch (GardenaException | JsonSyntaxException ex) {
             logger.warn("Ignoring message: {}", ex.getMessage());
         }
     }

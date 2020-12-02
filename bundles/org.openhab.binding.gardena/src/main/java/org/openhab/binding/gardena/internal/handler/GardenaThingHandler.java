@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
@@ -36,11 +37,9 @@ import org.openhab.binding.gardena.internal.util.StringUtils;
 import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.*;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -53,6 +52,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GardenaThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GardenaThingHandler.class);
     private TimeZoneProvider timeZoneProvider;
@@ -80,10 +80,14 @@ public class GardenaThingHandler extends BaseThingHandler {
      */
     protected void updateProperties(Device device) throws GardenaException {
         Map<String, String> properties = editProperties();
-        properties.put(PROPERTY_SERIALNUMBER,
-                PropertyUtils.getPropertyValue(device, "common.attributes.serial.value", String.class));
-        properties.put(PROPERTY_MODELTYPE,
-                PropertyUtils.getPropertyValue(device, "common.attributes.modelType.value", String.class));
+        String serial = PropertyUtils.getPropertyValue(device, "common.attributes.serial.value", String.class);
+        if (serial != null) {
+            properties.put(PROPERTY_SERIALNUMBER, serial);
+        }
+        String modelType = PropertyUtils.getPropertyValue(device, "common.attributes.modelType.value", String.class);
+        if (modelType != null) {
+            properties.put(PROPERTY_MODELTYPE, modelType);
+        }
         updateProperties(properties);
     }
 
@@ -102,12 +106,15 @@ public class GardenaThingHandler extends BaseThingHandler {
      * Updates the channel from the Gardena device.
      */
     protected void updateChannel(ChannelUID channelUID) throws GardenaException, AccountHandlerNotAvailableException {
-        boolean isCommand = channelUID.getGroupId().endsWith("_commands");
-        if (!isCommand || (isCommand && isLocalDurationCommand(channelUID))) {
-            Device device = getDevice();
-            State state = convertToState(device, channelUID);
-            if (state != null) {
-                updateState(channelUID, state);
+        String groupId = channelUID.getGroupId();
+        if (groupId != null) {
+            boolean isCommand = groupId.endsWith("_commands");
+            if (!isCommand || (isCommand && isLocalDurationCommand(channelUID))) {
+                Device device = getDevice();
+                State state = convertToState(device, channelUID);
+                if (state != null) {
+                    updateState(channelUID, state);
+                }
             }
         }
     }
@@ -130,34 +137,46 @@ public class GardenaThingHandler extends BaseThingHandler {
             propertyPath += propertyName + ".value";
         }
 
-        String acceptedItemType = StringUtils
-                .substringBefore(getThing().getChannel(channelUID.getId()).getAcceptedItemType(), ":");
-
+        String acceptedItemType = null;
         try {
-            boolean isNullPropertyValue = PropertyUtils.isNull(device, propertyPath);
-            boolean isDurationProperty = "duration".equals(propertyName);
+            Channel channel = getThing().getChannel(channelUID.getId());
+            if (channel != null) {
+                acceptedItemType = StringUtils.substringBefore(channel.getAcceptedItemType(), ":");
 
-            if (isNullPropertyValue && !isDurationProperty) {
-                return UnDefType.NULL;
-            }
-            switch (acceptedItemType) {
-                case "String":
-                    return new StringType(PropertyUtils.getPropertyValue(device, propertyPath, String.class));
-                case "Number":
-                    if (isNullPropertyValue) {
-                        return new DecimalType(0);
-                    } else {
-                        long value = PropertyUtils.getPropertyValue(device, propertyPath, Number.class).longValue();
-                        // convert duration from seconds to minutes
-                        if (isDurationProperty) {
-                            value = Math.round(value / 60.0);
-                        }
-                        return new DecimalType(value);
+                if (acceptedItemType != null) {
+                    boolean isNullPropertyValue = PropertyUtils.isNull(device, propertyPath);
+                    boolean isDurationProperty = "duration".equals(propertyName);
+
+                    if (isNullPropertyValue && !isDurationProperty) {
+                        return UnDefType.NULL;
                     }
-                case "DateTime":
-                    Date date = PropertyUtils.getPropertyValue(device, propertyPath, Date.class);
-                    ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), timeZoneProvider.getTimeZone());
-                    return new DateTimeType(zdt);
+                    switch (acceptedItemType) {
+                        case "String":
+                            return new StringType(PropertyUtils.getPropertyValue(device, propertyPath, String.class));
+                        case "Number":
+                            if (isNullPropertyValue) {
+                                return new DecimalType(0);
+                            } else {
+                                Number value = PropertyUtils.getPropertyValue(device, propertyPath, Number.class);
+                                // convert duration from seconds to minutes
+                                if (value != null) {
+                                    if (isDurationProperty) {
+                                        value = Math.round(value.longValue() / 60.0);
+                                    }
+                                    return new DecimalType(value.longValue());
+                                }
+                                return UnDefType.NULL;
+                            }
+                        case "DateTime":
+                            Date date = PropertyUtils.getPropertyValue(device, propertyPath, Date.class);
+                            if (date != null) {
+                                ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(),
+                                        timeZoneProvider.getTimeZone());
+                                return new DateTimeType(zdt);
+                            }
+                            return UnDefType.NULL;
+                    }
+                }
             }
         } catch (GardenaException e) {
             logger.warn("Channel '{}' cannot be updated as device does not contain propertyPath '{}'", channelUID,
@@ -183,28 +202,29 @@ public class GardenaThingHandler extends BaseThingHandler {
                 getDevice().getLocalService(dataItemProperty).commandDuration = quantityType.intValue() * 60;
             } else if (isOnCommand) {
                 GardenaCommand gardenaCommand = getGardenaCommand(dataItemProperty, channelUID);
-                if (gardenaCommand != null) {
-                    logger.debug("Received Gardena command: {}, {}", gardenaCommand.getClass().getSimpleName(),
-                            gardenaCommand.attributes.command);
+                logger.debug("Received Gardena command: {}, {}", gardenaCommand.getClass().getSimpleName(),
+                        gardenaCommand.attributes.command);
 
-                    DataItem<?> dataItem = PropertyUtils.getPropertyValue(getDevice(), dataItemProperty,
-                            DataItem.class);
-                    if (dataItem == null) {
-                        logger.warn("DataItem {} is empty, ignoring command.", dataItemProperty);
-                    } else {
-                        getGardenaSmart().sendCommand(dataItem, gardenaCommand);
+                DataItem<?> dataItem = PropertyUtils.getPropertyValue(getDevice(), dataItemProperty, DataItem.class);
+                if (dataItem == null) {
+                    logger.warn("DataItem {} is empty, ignoring command.", dataItemProperty);
+                } else {
+                    getGardenaSmart().sendCommand(dataItem, gardenaCommand);
 
-                        scheduler.schedule(() -> {
-                            updateState(channelUID, OnOffType.OFF);
-                        }, 3, TimeUnit.SECONDS);
-                    }
+                    scheduler.schedule(() -> {
+                        updateState(channelUID, OnOffType.OFF);
+                    }, 3, TimeUnit.SECONDS);
                 }
             }
         } catch (AccountHandlerNotAvailableException | GardenaDeviceNotFoundException ex) {
             // ignore
         } catch (Exception ex) {
             logger.warn("{}", ex.getMessage());
-            ((GardenaSmartEventListener) getBridge().getHandler()).onError();
+            final Bridge bridge;
+            final ThingHandler handler;
+            if ((bridge = getBridge()) != null && (handler = bridge.getHandler()) != null) {
+                ((GardenaSmartEventListener) handler).onError();
+            }
         }
     }
 
@@ -214,19 +234,22 @@ public class GardenaThingHandler extends BaseThingHandler {
     private GardenaCommand getGardenaCommand(String dataItemProperty, ChannelUID channelUID)
             throws GardenaException, AccountHandlerNotAvailableException {
         String commandName = channelUID.getIdWithoutGroup().toUpperCase();
-        if (channelUID.getGroupId().startsWith("valve") && channelUID.getGroupId().endsWith("_commands")) {
-            return new ValveCommand(ValveControl.valueOf(commandName),
-                    getDevice().getLocalService(dataItemProperty).commandDuration);
-        } else if ("mower_commands".equals(channelUID.getGroupId())) {
-            return new MowerCommand(MowerControl.valueOf(commandName),
-                    getDevice().getLocalService(dataItemProperty).commandDuration);
-        } else if ("valveSet_commands".equals(channelUID.getGroupId())) {
-            return new ValveSetCommand(ValveSetControl.valueOf(commandName));
-        } else if ("powerSocket_commands".equals(channelUID.getGroupId())) {
-            return new PowerSocketCommand(PowerSocketControl.valueOf(commandName),
-                    getDevice().getLocalService(dataItemProperty).commandDuration);
+        String groupId = channelUID.getGroupId();
+        if (groupId != null) {
+            if (groupId.startsWith("valve") && groupId.endsWith("_commands")) {
+                return new ValveCommand(ValveControl.valueOf(commandName),
+                        getDevice().getLocalService(dataItemProperty).commandDuration);
+            } else if ("mower_commands".equals(groupId)) {
+                return new MowerCommand(MowerControl.valueOf(commandName),
+                        getDevice().getLocalService(dataItemProperty).commandDuration);
+            } else if ("valveSet_commands".equals(groupId)) {
+                return new ValveSetCommand(ValveSetControl.valueOf(commandName));
+            } else if ("powerSocket_commands".equals(groupId)) {
+                return new PowerSocketCommand(PowerSocketControl.valueOf(commandName),
+                        getDevice().getLocalService(dataItemProperty).commandDuration);
+            }
         }
-        throw new GardenaException("Command " + channelUID.getId() + " not found");
+        throw new GardenaException("Command " + channelUID.getId() + " not found or groupId null");
     }
 
     /**
@@ -250,8 +273,12 @@ public class GardenaThingHandler extends BaseThingHandler {
     /**
      * Returns the device property for the dataItem from the channel.
      */
-    private String getDeviceDataItemProperty(ChannelUID channelUID) {
-        return StringUtils.substringBeforeLast(channelUID.getGroupId(), "_");
+    private String getDeviceDataItemProperty(ChannelUID channelUID) throws GardenaException {
+        String dataItemProperty = StringUtils.substringBeforeLast(channelUID.getGroupId(), "_");
+        if (dataItemProperty != null) {
+            return dataItemProperty;
+        }
+        throw new GardenaException("Can't extract dataItemProperty from channel group " + channelUID.getGroupId());
     }
 
     /**
@@ -269,24 +296,20 @@ public class GardenaThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns the Gardena account handler if the bridge is available.
-     */
-    private GardenaAccountHandler getGardenaAccountHandler() throws AccountHandlerNotAvailableException {
-        if (getBridge() == null || getBridge().getHandler() == null
-                || ((GardenaAccountHandler) getBridge().getHandler()).getGardenaSmart() == null) {
-            if (thing.getStatus() != ThingStatus.INITIALIZING) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
-            }
-            throw new AccountHandlerNotAvailableException("Gardena AccountHandler not yet available!");
-        }
-
-        return ((GardenaAccountHandler) getBridge().getHandler());
-    }
-
-    /**
      * Returns the Gardena smart system implementation if the bridge is available.
      */
     private GardenaSmart getGardenaSmart() throws AccountHandlerNotAvailableException {
-        return getGardenaAccountHandler().getGardenaSmart();
+        final Bridge bridge;
+        final ThingHandler handler;
+        if ((bridge = getBridge()) != null && (handler = bridge.getHandler()) != null) {
+            final GardenaSmart gardenaSmart = ((GardenaAccountHandler) handler).getGardenaSmart();
+            if (gardenaSmart != null) {
+                return gardenaSmart;
+            }
+        }
+        if (thing.getStatus() != ThingStatus.INITIALIZING) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
+        }
+        throw new AccountHandlerNotAvailableException("Gardena AccountHandler not yet available!");
     }
 }
