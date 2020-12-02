@@ -112,11 +112,12 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                     header, null, null, REQUEST_TIMEOUT_MS);
             OpenUVResponse uvResponse = gson.fromJson(jsonData, OpenUVResponse.class);
             if (uvResponse != null) {
-                if (uvResponse.getError() == null) {
+                String error = uvResponse.getError();
+                if (error == null) {
                     updateStatus(ThingStatus.ONLINE);
                     return uvResponse.getResult();
                 }
-                throw new OpenUVException(uvResponse.getError());
+                throw new OpenUVException(error);
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

@@ -74,15 +74,18 @@ public class OpenUVResult {
     }
 
     public State getUVTime() {
-        return uvTime != null ? new DateTimeType(uvTime) : UnDefType.NULL;
+        ZonedDateTime value = uvTime;
+        return value != null ? new DateTimeType(value) : UnDefType.NULL;
     }
 
     public State getUVMaxTime() {
-        return uvMaxTime != null ? new DateTimeType(uvMaxTime) : UnDefType.NULL;
+        ZonedDateTime value = uvMaxTime;
+        return value != null ? new DateTimeType(value) : UnDefType.NULL;
     }
 
     public State getOzoneTime() {
-        return ozoneTime != null ? new DateTimeType(ozoneTime) : UnDefType.NULL;
+        ZonedDateTime value = ozoneTime;
+        return value != null ? new DateTimeType(value) : UnDefType.NULL;
     }
 
     public State getSafeExposureTime(String index) {
@@ -97,5 +100,4 @@ public class OpenUVResult {
         }
         return UnDefType.NULL;
     }
-
 }
