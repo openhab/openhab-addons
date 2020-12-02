@@ -36,7 +36,7 @@ import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
  */
 @NonNullByDefault
 public class ALD1Handler extends BaseModbusThingHandler {
-    private static final int FIRST_READ_ADDRESS = 28;
+    private static final int FIRST_READ_REGISTER = 28;
     private static final int READ_LENGTH = 13;
     private static final int TRIES = 1;
     private ALD1Configuration config = new ALD1Configuration();
@@ -65,7 +65,7 @@ public class ALD1Handler extends BaseModbusThingHandler {
         }
 
         ModbusReadRequestBlueprint localBlueprint = blueprint = new ModbusReadRequestBlueprint(getSlaveId(),
-                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, FIRST_READ_ADDRESS - 1, READ_LENGTH, TRIES);
+                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, FIRST_READ_REGISTER - 1, READ_LENGTH, TRIES);
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -79,7 +79,7 @@ public class ALD1Handler extends BaseModbusThingHandler {
             }
 
             for (ALD1Registers channel : ALD1Registers.values()) {
-                int index = channel.getRegisterAddress() - FIRST_READ_ADDRESS;
+                int index = channel.getRegisterAddress() - FIRST_READ_REGISTER;
 
                 ModbusBitUtilities.extractStateFromRegisters(registers, index, channel.getType())
                         .map(DecimalType::floatValue)
