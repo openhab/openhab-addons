@@ -54,6 +54,8 @@ public class WebthingChannelLinkTest {
                 .doReturn(load("/awning_property.json"));
         httpClientMock.onPut("http://example.org:8090/0/properties/target_position")
                 .withBody(is("{\"target_position\":10}")).doReturnStatus(200);
+        httpClientMock.onPut("http://example.org:8090/0/properties/target_position")
+                .withBody(is("{\"target_position\":130}")).doReturnStatus(500);
 
         var thingUID = new ThingUID("webthing", "anwing");
         var channelUID = Channels.createChannelUID(thingUID, "target_position");

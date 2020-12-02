@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.WebThingHandler;
@@ -72,12 +70,8 @@ public class ChannelToPropertyLink implements WebThingHandler.ItemChangedListene
 
     @Override
     public void onItemStateChanged(ChannelUID channelUID, State stateCommand) {
-        try {
-            var propertyValue = typeConverter.toPropertyValue(stateCommand);
-            webThing.writeProperty(propertyName, typeConverter.toPropertyValue((State) stateCommand));
-            logger.debug("property {} updated with {} ({}) ", propertyName, propertyValue, this.propertyType);
-        } catch (IOException ioe) {
-            logger.warn("updating property {} ({}) with {} failed", propertyName, this.propertyType, stateCommand, ioe);
-        }
+        var propertyValue = typeConverter.toPropertyValue(stateCommand);
+        webThing.writeProperty(propertyName, typeConverter.toPropertyValue((State) stateCommand));
+        logger.debug("property {} updated with {} ({}) ", propertyName, propertyValue, this.propertyType);
     }
 }

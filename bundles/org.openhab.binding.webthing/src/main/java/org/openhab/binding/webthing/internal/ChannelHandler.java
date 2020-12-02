@@ -18,8 +18,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
- * The {@link ChannelHandler} class provides methods to observe a channel as well to update an Item associated to a
- * channel
+ * The {@link ChannelHandler} class is a simplified abstraction of an openHAB Channel implementing
+ * methods to observe a channel as well to update an Item associated to a channel
  *
  * @author Gregor Roth - Initial contribution
  */
