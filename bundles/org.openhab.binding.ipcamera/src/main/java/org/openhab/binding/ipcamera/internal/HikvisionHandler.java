@@ -36,13 +36,10 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.LastHttpContent;
-import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -68,164 +65,157 @@ public class HikvisionHandler extends ChannelDuplexHandler {
     // This handles the incoming http replies back from the camera.
     @Override
     public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
-        if (msg == null || ctx == null) {
+        if (msg == null || ctx == null || msg.toString().isEmpty()) {
             return;
         }
         try {
-            if (msg instanceof HttpContent) {
-                content += ((HttpContent) msg).content().toString(CharsetUtil.UTF_8);
-            }
-            if (msg instanceof LastHttpContent) {
-                logger.trace("HTTP Result back from camera is \t:{}:", content);
-                int debounce = 3;
-                if (content.contains("--boundary")) {// Alarm checking goes in here//
-                    if (content.contains("<EventNotificationAlert version=\"")) {
-                        if (content.contains("hannelID>" + nvrChannel + "</")) {// some camera use c or <dynChannelID>
-                            if (content.contains("<eventType>linedetection</eventType>")) {
-                                ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
-                                lineCount = debounce;
+            int debounce = 3;
+            content = msg.toString();
+            logger.trace("HTTP Result back from camera is \t:{}:", content);
+            if (content.contains("--boundary")) {// Alarm checking goes in here//
+                if (content.contains("<EventNotificationAlert version=\"")) {
+                    if (content.contains("hannelID>" + nvrChannel + "</")) {// some camera use c or <dynChannelID>
+                        if (content.contains("<eventType>linedetection</eventType>")) {
+                            ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
+                            lineCount = debounce;
+                        }
+                        if (content.contains("<eventType>fielddetection</eventType>")) {
+                            ipCameraHandler.motionDetected(CHANNEL_FIELD_DETECTION_ALARM);
+                            fieldCount = debounce;
+                        }
+                        if (content.contains("<eventType>VMD</eventType>")) {
+                            ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                            vmdCount = debounce;
+                        }
+                        if (content.contains("<eventType>facedetection</eventType>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
+                            faceCount = debounce;
+                        }
+                        if (content.contains("<eventType>unattendedBaggage</eventType>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ITEM_LEFT, OnOffType.ON);
+                            leftCount = debounce;
+                        }
+                        if (content.contains("<eventType>attendedBaggage</eventType>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ITEM_TAKEN, OnOffType.ON);
+                            takenCount = debounce;
+                        }
+                        if (content.contains("<eventType>PIR</eventType>")) {
+                            ipCameraHandler.motionDetected(CHANNEL_PIR_ALARM);
+                            pirCount = debounce;
+                        }
+                        if (content.contains("<eventType>videoloss</eventType>\r\n<eventState>inactive</eventState>")) {
+                            if (vmdCount > 1) {
+                                vmdCount = 1;
                             }
-                            if (content.contains("<eventType>fielddetection</eventType>")) {
-                                ipCameraHandler.motionDetected(CHANNEL_FIELD_DETECTION_ALARM);
-                                fieldCount = debounce;
+                            countDown();
+                            countDown();
+                        }
+                    } else if (content.contains("<channelID>0</channelID>")) {// NVR uses channel 0 to say all
+                                                                              // channels
+                        if (content.contains("<eventType>videoloss</eventType>\r\n<eventState>inactive</eventState>")) {
+                            if (vmdCount > 1) {
+                                vmdCount = 1;
                             }
-                            if (content.contains("<eventType>VMD</eventType>")) {
-                                ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
-                                vmdCount = debounce;
-                            }
-                            if (content.contains("<eventType>facedetection</eventType>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
-                                faceCount = debounce;
-                            }
-                            if (content.contains("<eventType>unattendedBaggage</eventType>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ITEM_LEFT, OnOffType.ON);
-                                leftCount = debounce;
-                            }
-                            if (content.contains("<eventType>attendedBaggage</eventType>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ITEM_TAKEN, OnOffType.ON);
-                                takenCount = debounce;
-                            }
-                            if (content.contains("<eventType>PIR</eventType>")) {
-                                ipCameraHandler.motionDetected(CHANNEL_PIR_ALARM);
-                                pirCount = debounce;
-                            }
-                            if (content.contains(
-                                    "<eventType>videoloss</eventType>\r\n<eventState>inactive</eventState>")) {
-                                if (vmdCount > 1) {
-                                    vmdCount = 1;
-                                }
-                                countDown();
-                                countDown();
-                            }
-                        } else if (content.contains("<channelID>0</channelID>")) {// NVR uses channel 0 to say all
-                                                                                  // channels
-                            if (content.contains(
-                                    "<eventType>videoloss</eventType>\r\n<eventState>inactive</eventState>")) {
-                                if (vmdCount > 1) {
-                                    vmdCount = 1;
-                                }
-                                countDown();
-                                countDown();
+                            countDown();
+                            countDown();
+                        }
+                    }
+                    countDown();
+                }
+            } else {
+                String replyElement = Helper.fetchXML(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<");
+                switch (replyElement) {
+                    case "MotionDetection version=":
+                        ipCameraHandler.storeHttpReply(
+                                "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection", content);
+                        if (content.contains("<enabled>true</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
+                        } else if (content.contains("<enabled>false</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
+                        }
+                        break;
+                    case "IOInputPort version=":
+                        ipCameraHandler.storeHttpReply("/ISAPI/System/IO/inputs/" + nvrChannel, content);
+                        if (content.contains("<enabled>true</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.ON);
+                        } else if (content.contains("<enabled>false</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
+                        }
+                        if (content.contains("<triggering>low</triggering>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
+                        } else if (content.contains("<triggering>high</triggering>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, OnOffType.ON);
+                        }
+                        break;
+                    case "LineDetection":
+                        ipCameraHandler.storeHttpReply("/ISAPI/Smart/LineDetection/" + nvrChannel + "01", content);
+                        if (content.contains("<enabled>true</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.ON);
+                        } else if (content.contains("<enabled>false</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.OFF);
+                        }
+                        break;
+                    case "TextOverlay version=":
+                        ipCameraHandler.storeHttpReply(
+                                "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1", content);
+                        String text = Helper.fetchXML(content, "<enabled>true</enabled>", "<displayText>");
+                        ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(text));
+                        break;
+                    case "AudioDetection version=":
+                        ipCameraHandler.storeHttpReply("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01",
+                                content);
+                        if (content.contains("<enabled>true</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
+                        } else if (content.contains("<enabled>false</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
+                        }
+                        break;
+                    case "IOPortStatus version=":
+                        if (content.contains("<ioState>active</ioState>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
+                        } else if (content.contains("<ioState>inactive</ioState>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
+                        }
+                        break;
+                    case "FieldDetection version=":
+                        ipCameraHandler.storeHttpReply("/ISAPI/Smart/FieldDetection/" + nvrChannel + "01", content);
+                        if (content.contains("<enabled>true</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM, OnOffType.ON);
+                        } else if (content.contains("<enabled>false</enabled>")) {
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM, OnOffType.OFF);
+                        }
+                        break;
+                    case "ResponseStatus version=":
+                        ////////////////// External Alarm Input ///////////////
+                        if (content.contains(
+                                "<requestURL>/ISAPI/System/IO/inputs/" + nvrChannel + "/status</requestURL>")) {
+                            // Stops checking the external alarm if camera does not have feature.
+                            if (content.contains("<statusString>Invalid Operation</statusString>")) {
+                                ipCameraHandler.lowPriorityRequests.remove(0);
+                                ipCameraHandler.logger.debug(
+                                        "Stopping checks for alarm inputs as camera appears to be missing this feature.");
                             }
                         }
-                        countDown();
-                    }
-                } else {
-                    String replyElement = Helper.fetchXML(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<");
-                    switch (replyElement) {
-                        case "MotionDetection version=":
-                            ipCameraHandler.storeHttpReply(
-                                    "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection",
-                                    content);
-                            if (content.contains("<enabled>true</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
-                            } else if (content.contains("<enabled>false</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
-                            }
-                            break;
-                        case "IOInputPort version=":
-                            ipCameraHandler.storeHttpReply("/ISAPI/System/IO/inputs/" + nvrChannel, content);
-                            if (content.contains("<enabled>true</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.ON);
-                            } else if (content.contains("<enabled>false</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
-                            }
-                            if (content.contains("<triggering>low</triggering>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
-                            } else if (content.contains("<triggering>high</triggering>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, OnOffType.ON);
-                            }
-                            break;
-                        case "LineDetection":
-                            ipCameraHandler.storeHttpReply("/ISAPI/Smart/LineDetection/" + nvrChannel + "01", content);
-                            if (content.contains("<enabled>true</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.ON);
-                            } else if (content.contains("<enabled>false</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.OFF);
-                            }
-                            break;
-                        case "TextOverlay version=":
-                            ipCameraHandler.storeHttpReply(
-                                    "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1", content);
-                            String text = Helper.fetchXML(content, "<enabled>true</enabled>", "<displayText>");
-                            ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(text));
-                            break;
-                        case "AudioDetection version=":
-                            ipCameraHandler.storeHttpReply("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01",
-                                    content);
-                            if (content.contains("<enabled>true</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
-                            } else if (content.contains("<enabled>false</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
-                            }
-                            break;
-                        case "IOPortStatus version=":
-                            if (content.contains("<ioState>active</ioState>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
-                            } else if (content.contains("<ioState>inactive</ioState>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
-                            }
-                            break;
-                        case "FieldDetection version=":
-                            ipCameraHandler.storeHttpReply("/ISAPI/Smart/FieldDetection/" + nvrChannel + "01", content);
-                            if (content.contains("<enabled>true</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM, OnOffType.ON);
-                            } else if (content.contains("<enabled>false</enabled>")) {
-                                ipCameraHandler.setChannelState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM, OnOffType.OFF);
-                            }
-                            break;
-                        case "ResponseStatus version=":
-                            ////////////////// External Alarm Input ///////////////
-                            if (content.contains(
-                                    "<requestURL>/ISAPI/System/IO/inputs/" + nvrChannel + "/status</requestURL>")) {
-                                // Stops checking the external alarm if camera does not have feature.
-                                if (content.contains("<statusString>Invalid Operation</statusString>")) {
-                                    ipCameraHandler.lowPriorityRequests.remove(0);
-                                    ipCameraHandler.logger.debug(
-                                            "Stopping checks for alarm inputs as camera appears to be missing this feature.");
-                                }
-                            }
-                            break;
-                        default:
-                            if (content.contains("<EventNotificationAlert")) {
-                                if (content.contains("hannelID>" + nvrChannel + "</")
-                                        || content.contains("<channelID>0</channelID>")) {// some camera use c or
-                                                                                          // <dynChannelID>
-                                    if (content.contains(
-                                            "<eventType>videoloss</eventType>\r\n<eventState>inactive</eventState>")) {
-                                        if (vmdCount > 1) {
-                                            vmdCount = 1;
-                                        }
-                                        countDown();
-                                        countDown();
+                        break;
+                    default:
+                        if (content.contains("<EventNotificationAlert")) {
+                            if (content.contains("hannelID>" + nvrChannel + "</")
+                                    || content.contains("<channelID>0</channelID>")) {// some camera use c or
+                                                                                      // <dynChannelID>
+                                if (content.contains(
+                                        "<eventType>videoloss</eventType>\r\n<eventState>inactive</eventState>")) {
+                                    if (vmdCount > 1) {
+                                        vmdCount = 1;
                                     }
                                     countDown();
+                                    countDown();
                                 }
-                            } else {
-                                logger.debug("Unhandled reply-{}.", content);
+                                countDown();
                             }
-                            break;
-                    }
+                        } else {
+                            logger.debug("Unhandled reply-{}.", content);
+                        }
+                        break;
                 }
             }
         } finally {

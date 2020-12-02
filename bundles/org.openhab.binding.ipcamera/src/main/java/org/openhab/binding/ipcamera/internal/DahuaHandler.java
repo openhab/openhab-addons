@@ -30,9 +30,6 @@ import org.openhab.core.types.UnDefType;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.LastHttpContent;
-import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -45,7 +42,6 @@ import io.netty.util.ReferenceCountUtil;
 @NonNullByDefault
 public class DahuaHandler extends ChannelDuplexHandler {
     private IpCameraHandler ipCameraHandler;
-    private String content = "";
     private int nvrChannel;
 
     public DahuaHandler(IpCameraHandler handler, int nvrChannel) {
@@ -56,106 +52,101 @@ public class DahuaHandler extends ChannelDuplexHandler {
     // This handles the incoming http replies back from the camera.
     @Override
     public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
-        if (msg == null || ctx == null) {
+        if (msg == null || ctx == null || msg.toString().isEmpty()) {
             return;
         }
         try {
-            if (msg instanceof HttpContent) {
-                content += ((HttpContent) msg).content().toString(CharsetUtil.UTF_8);
+            String content = msg.toString();
+            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
+            // determine if the motion detection is turned on or off.
+            if (content.contains("table.MotionDetect[0].Enable=true")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
+            } else if (content.contains("table.MotionDetect[" + nvrChannel + "].Enable=false")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
             }
-            if (msg instanceof LastHttpContent) {
-                ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-                // determine if the motion detection is turned on or off.
-                if (content.contains("table.MotionDetect[0].Enable=true")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
-                } else if (content.contains("table.MotionDetect[" + nvrChannel + "].Enable=false")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
-                }
-                // Handle motion alarm
-                if (content.contains("Code=VideoMotion;action=Start;index=0")) {
-                    ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
-                } else if (content.contains("Code=VideoMotion;action=Stop;index=0")) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-                }
-                // Handle item taken alarm
-                if (content.contains("Code=TakenAwayDetection;action=Start;index=0")) {
-                    ipCameraHandler.motionDetected(CHANNEL_ITEM_TAKEN);
-                } else if (content.contains("Code=TakenAwayDetection;action=Stop;index=0")) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_ITEM_TAKEN);
-                }
-                // Handle item left alarm
-                if (content.contains("Code=LeftDetection;action=Start;index=0")) {
-                    ipCameraHandler.motionDetected(CHANNEL_ITEM_LEFT);
-                } else if (content.contains("Code=LeftDetection;action=Stop;index=0")) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_ITEM_LEFT);
-                }
-                // Handle CrossLineDetection alarm
-                if (content.contains("Code=CrossLineDetection;action=Start;index=0")) {
-                    ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
-                } else if (content.contains("Code=CrossLineDetection;action=Stop;index=0")) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_LINE_CROSSING_ALARM);
-                }
-                // determine if the audio alarm is turned on or off.
-                if (content.contains("table.AudioDetect[0].MutationDetect=true")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
-                } else if (content.contains("table.AudioDetect[0].MutationDetect=false")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
-                }
-                // Handle AudioMutation alarm
-                if (content.contains("Code=AudioMutation;action=Start;index=0")) {
-                    ipCameraHandler.audioDetected();
-                } else if (content.contains("Code=AudioMutation;action=Stop;index=0")) {
-                    ipCameraHandler.noAudioDetected();
-                }
-                // Handle AudioMutationThreshold alarm
-                if (content.contains("table.AudioDetect[0].MutationThreold=")) {
-                    String value = ipCameraHandler.returnValueFromString(content,
-                            "table.AudioDetect[0].MutationThreold=");
-                    ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value));
-                }
-                // Handle FaceDetection alarm
-                if (content.contains("Code=FaceDetection;action=Start;index=0")) {
-                    ipCameraHandler.motionDetected(CHANNEL_FACE_DETECTED);
-                } else if (content.contains("Code=FaceDetection;action=Stop;index=0")) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_FACE_DETECTED);
-                }
-                // Handle ParkingDetection alarm
-                if (content.contains("Code=ParkingDetection;action=Start;index=0")) {
-                    ipCameraHandler.motionDetected(CHANNEL_PARKING_ALARM);
-                } else if (content.contains("Code=ParkingDetection;action=Stop;index=0")) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_PARKING_ALARM);
-                }
-                // Handle CrossRegionDetection alarm
-                if (content.contains("Code=CrossRegionDetection;action=Start;index=0")) {
-                    ipCameraHandler.motionDetected(CHANNEL_FIELD_DETECTION_ALARM);
-                } else if (content.contains("Code=CrossRegionDetection;action=Stop;index=0")) {
-                    ipCameraHandler.noMotionDetected(CHANNEL_FIELD_DETECTION_ALARM);
-                }
-                // Handle External Input alarm
-                if (content.contains("Code=AlarmLocal;action=Start;index=0")) {
-                    ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
-                } else if (content.contains("Code=AlarmLocal;action=Stop;index=0")) {
-                    ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
-                }
-                // Handle External Input alarm2
-                if (content.contains("Code=AlarmLocal;action=Start;index=1")) {
-                    ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.ON);
-                } else if (content.contains("Code=AlarmLocal;action=Stop;index=1")) {
-                    ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.OFF);
-                }
-                // CrossLineDetection alarm on/off
-                if (content.contains("table.VideoAnalyseRule[0][1].Enable=true")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.ON);
-                } else if (content.contains("table.VideoAnalyseRule[0][1].Enable=false")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.OFF);
-                }
-                // Privacy Mode on/off
-                if (content.contains("Code=LensMaskOpen;") || content.contains("table.LeLensMask[0].Enable=true")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
-                } else if (content.contains("Code=LensMaskClose;")
-                        || content.contains("table.LeLensMask[0].Enable=false")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
-                }
+            // Handle motion alarm
+            if (content.contains("Code=VideoMotion;action=Start;index=0")) {
+                ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+            } else if (content.contains("Code=VideoMotion;action=Stop;index=0")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
+            }
+            // Handle item taken alarm
+            if (content.contains("Code=TakenAwayDetection;action=Start;index=0")) {
+                ipCameraHandler.motionDetected(CHANNEL_ITEM_TAKEN);
+            } else if (content.contains("Code=TakenAwayDetection;action=Stop;index=0")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_ITEM_TAKEN);
+            }
+            // Handle item left alarm
+            if (content.contains("Code=LeftDetection;action=Start;index=0")) {
+                ipCameraHandler.motionDetected(CHANNEL_ITEM_LEFT);
+            } else if (content.contains("Code=LeftDetection;action=Stop;index=0")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_ITEM_LEFT);
+            }
+            // Handle CrossLineDetection alarm
+            if (content.contains("Code=CrossLineDetection;action=Start;index=0")) {
+                ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
+            } else if (content.contains("Code=CrossLineDetection;action=Stop;index=0")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_LINE_CROSSING_ALARM);
+            }
+            // determine if the audio alarm is turned on or off.
+            if (content.contains("table.AudioDetect[0].MutationDetect=true")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
+            } else if (content.contains("table.AudioDetect[0].MutationDetect=false")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
+            }
+            // Handle AudioMutation alarm
+            if (content.contains("Code=AudioMutation;action=Start;index=0")) {
+                ipCameraHandler.audioDetected();
+            } else if (content.contains("Code=AudioMutation;action=Stop;index=0")) {
+                ipCameraHandler.noAudioDetected();
+            }
+            // Handle AudioMutationThreshold alarm
+            if (content.contains("table.AudioDetect[0].MutationThreold=")) {
+                String value = ipCameraHandler.returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
+                ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value));
+            }
+            // Handle FaceDetection alarm
+            if (content.contains("Code=FaceDetection;action=Start;index=0")) {
+                ipCameraHandler.motionDetected(CHANNEL_FACE_DETECTED);
+            } else if (content.contains("Code=FaceDetection;action=Stop;index=0")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_FACE_DETECTED);
+            }
+            // Handle ParkingDetection alarm
+            if (content.contains("Code=ParkingDetection;action=Start;index=0")) {
+                ipCameraHandler.motionDetected(CHANNEL_PARKING_ALARM);
+            } else if (content.contains("Code=ParkingDetection;action=Stop;index=0")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_PARKING_ALARM);
+            }
+            // Handle CrossRegionDetection alarm
+            if (content.contains("Code=CrossRegionDetection;action=Start;index=0")) {
+                ipCameraHandler.motionDetected(CHANNEL_FIELD_DETECTION_ALARM);
+            } else if (content.contains("Code=CrossRegionDetection;action=Stop;index=0")) {
+                ipCameraHandler.noMotionDetected(CHANNEL_FIELD_DETECTION_ALARM);
+            }
+            // Handle External Input alarm
+            if (content.contains("Code=AlarmLocal;action=Start;index=0")) {
+                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
+            } else if (content.contains("Code=AlarmLocal;action=Stop;index=0")) {
+                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
+            }
+            // Handle External Input alarm2
+            if (content.contains("Code=AlarmLocal;action=Start;index=1")) {
+                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.ON);
+            } else if (content.contains("Code=AlarmLocal;action=Stop;index=1")) {
+                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.OFF);
+            }
+            // CrossLineDetection alarm on/off
+            if (content.contains("table.VideoAnalyseRule[0][1].Enable=true")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.ON);
+            } else if (content.contains("table.VideoAnalyseRule[0][1].Enable=false")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.OFF);
+            }
+            // Privacy Mode on/off
+            if (content.contains("Code=LensMaskOpen;") || content.contains("table.LeLensMask[0].Enable=true")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
+            } else if (content.contains("Code=LensMaskClose;")
+                    || content.contains("table.LeLensMask[0].Enable=false")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
             }
         } finally {
             ReferenceCountUtil.release(msg);

@@ -59,7 +59,7 @@ public class InstarHandler extends ChannelDuplexHandler {
     // This handles the incoming http replies back from the camera.
     @Override
     public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
-        if (msg == null || ctx == null) {
+        if (msg == null || ctx == null || msg.toString().isEmpty()) {
             return;
         }
         try {

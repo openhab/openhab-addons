@@ -249,7 +249,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             if (contentType.contains("multipart")) {
                                 closeConnection = false;
-                                if (mjpegUri.contains(requestUrl)) {
+                                if (mjpegUri.equals(requestUrl)) {
                                     if (msg instanceof HttpMessage) {
                                         // very start of stream only
                                         ReferenceCountUtil.retain(msg, 1);
@@ -268,13 +268,13 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                 }
                 if (msg instanceof HttpContent) {
-                    if (mjpegUri.contains(requestUrl)) {
+                    if (mjpegUri.equals(requestUrl)) {
                         // multiple MJPEG stream packets come back as this.
                         ReferenceCountUtil.retain(msg, 1);
                         streamToGroup(msg, mjpegChannelGroup, true);
                     } else {
                         HttpContent content = (HttpContent) msg;
-                        // Found some cameras uses Content-Type: image/jpg instead of image/jpeg
+                        // Found some cameras use Content-Type: image/jpg instead of image/jpeg
                         if (contentType.contains("image/jp")) {
                             for (int i = 0; i < content.content().capacity(); i++) {
                                 incomingJpeg[bytesAlreadyRecieved++] = content.content().getByte(i);
@@ -304,8 +304,8 @@ public class IpCameraHandler extends BaseThingHandler {
                                     super.channelRead(ctx, reply);
                                 }
                             }
-                            // HIKVISION alertStream never has a LastHttpContent as it always stays open//
-                            if (contentType.contains("multipart")) {
+                            // Alarm Streams never have a LastHttpContent as they always stay open//
+                            else if (contentType.contains("multipart")) {
                                 if (bytesAlreadyRecieved != 0) {
                                     reply = incomingMessage;
                                     incomingMessage = "";
@@ -316,13 +316,14 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             // Foscam needs this as will other cameras with chunks//
                             if (isChunked && bytesAlreadyRecieved != 0) {
+                                logger.debug("Reply is chunked.");
                                 reply = incomingMessage;
                                 super.channelRead(ctx, reply);
                             }
                         }
                     }
                 } else { // msg is not HttpContent
-                    // Foscam and Amcrest cameras need this
+                    // Foscam cameras need this
                     if (!contentType.contains("image/jp") && bytesAlreadyRecieved != 0) {
                         reply = incomingMessage;
                         logger.debug("Packet back from camera is {}", incomingMessage);

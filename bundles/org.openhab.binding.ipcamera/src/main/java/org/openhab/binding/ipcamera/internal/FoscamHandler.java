@@ -31,9 +31,6 @@ import org.openhab.core.types.UnDefType;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.LastHttpContent;
-import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
 /**
@@ -58,68 +55,61 @@ public class FoscamHandler extends ChannelDuplexHandler {
     // This handles the incoming http replies back from the camera.
     @Override
     public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
-        if (msg == null || ctx == null) {
+        if (msg == null || ctx == null || msg.toString().isEmpty()) {
             return;
         }
         try {
-            if (msg instanceof HttpContent) {
-                content += ((HttpContent) msg).content().toString(CharsetUtil.UTF_8);
+            String content = msg.toString();
+            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
+            ////////////// Motion Alarm //////////////
+            if (content.contains("<motionDetectAlarm>")) {
+                if (content.contains("<motionDetectAlarm>0</motionDetectAlarm>")) {
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
+                } else if (content.contains("<motionDetectAlarm>1</motionDetectAlarm>")) { // Enabled but no alarm
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
+                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
+                } else if (content.contains("<motionDetectAlarm>2</motionDetectAlarm>")) {// Enabled, alarm on
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
+                    ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                }
             }
-            if (msg instanceof LastHttpContent) {
-                if (!content.isEmpty()) {
-                    ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-                }
-                ////////////// Motion Alarm //////////////
-                if (content.contains("<motionDetectAlarm>")) {
-                    if (content.contains("<motionDetectAlarm>0</motionDetectAlarm>")) {
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
-                    } else if (content.contains("<motionDetectAlarm>1</motionDetectAlarm>")) { // Enabled but no alarm
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
-                        ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
-                    } else if (content.contains("<motionDetectAlarm>2</motionDetectAlarm>")) {// Enabled, alarm on
-                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
-                        ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
-                    }
-                }
 
-                ////////////// Sound Alarm //////////////
-                if (content.contains("<soundAlarm>0</soundAlarm>")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
-                    ipCameraHandler.setChannelState(CHANNEL_AUDIO_ALARM, OnOffType.OFF);
-                }
-                if (content.contains("<soundAlarm>1</soundAlarm>")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
-                    ipCameraHandler.noAudioDetected();
-                }
-                if (content.contains("<soundAlarm>2</soundAlarm>")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
-                    ipCameraHandler.audioDetected();
-                }
+            ////////////// Sound Alarm //////////////
+            if (content.contains("<soundAlarm>0</soundAlarm>")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
+                ipCameraHandler.setChannelState(CHANNEL_AUDIO_ALARM, OnOffType.OFF);
+            }
+            if (content.contains("<soundAlarm>1</soundAlarm>")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
+                ipCameraHandler.noAudioDetected();
+            }
+            if (content.contains("<soundAlarm>2</soundAlarm>")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
+                ipCameraHandler.audioDetected();
+            }
 
-                ////////////// Sound Threshold //////////////
-                if (content.contains("<sensitivity>0</sensitivity>")) {
-                    ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.ZERO);
-                }
-                if (content.contains("<sensitivity>1</sensitivity>")) {
-                    ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf("50"));
-                }
-                if (content.contains("<sensitivity>2</sensitivity>")) {
-                    ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.HUNDRED);
-                }
+            ////////////// Sound Threshold //////////////
+            if (content.contains("<sensitivity>0</sensitivity>")) {
+                ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.ZERO);
+            }
+            if (content.contains("<sensitivity>1</sensitivity>")) {
+                ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf("50"));
+            }
+            if (content.contains("<sensitivity>2</sensitivity>")) {
+                ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.HUNDRED);
+            }
 
-                //////////////// Infrared LED /////////////////////
-                if (content.contains("<infraLedState>0</infraLedState>")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.OFF);
-                }
-                if (content.contains("<infraLedState>1</infraLedState>")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.ON);
-                }
+            //////////////// Infrared LED /////////////////////
+            if (content.contains("<infraLedState>0</infraLedState>")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.OFF);
+            }
+            if (content.contains("<infraLedState>1</infraLedState>")) {
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.ON);
+            }
 
-                if (content.contains("</CGI_Result>")) {
-                    ctx.close();
-                    ipCameraHandler.logger
-                            .debug("End of FOSCAM handler reached, so closing the channel to the camera now");
-                }
+            if (content.contains("</CGI_Result>")) {
+                ctx.close();
+                ipCameraHandler.logger.debug("End of FOSCAM handler reached, so closing the channel to the camera now");
             }
         } finally {
             ReferenceCountUtil.release(msg);
