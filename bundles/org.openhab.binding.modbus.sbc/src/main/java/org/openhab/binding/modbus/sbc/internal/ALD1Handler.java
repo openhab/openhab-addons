@@ -14,7 +14,6 @@ package org.openhab.binding.modbus.sbc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -82,8 +81,8 @@ public class ALD1Handler extends BaseModbusThingHandler {
                 int index = channel.getRegisterAddress() - FIRST_READ_REGISTER;
 
                 ModbusBitUtilities.extractStateFromRegisters(registers, index, channel.getType())
-                        .map(DecimalType::floatValue)
-                        .map(v -> QuantityType.valueOf(v * channel.getMultiplier(), channel.getUnit()))
+                        .map(d -> d.toBigDecimal().multiply(channel.getMultiplier()))
+                        .map(bigDecimal -> new QuantityType<>(bigDecimal, channel.getUnit()))
                         .ifPresent(v -> updateState(createChannelUid(channel), v));
             }
         });

@@ -14,6 +14,8 @@ package org.openhab.binding.modbus.sbc.internal;
 
 import static org.openhab.io.transport.modbus.ModbusConstants.ValueType.*;
 
+import java.math.BigDecimal;
+
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,13 +39,13 @@ public enum ALD1Registers {
     REACTIVE_POWER(10, 39, INT16, SmartHomeUnits.VAR),
     POWER_FACTOR(0.01f, 40, UINT16, SmartHomeUnits.ONE);
 
-    private float multiplier;
+    private BigDecimal multiplier;
     private int registerAddress;
     private ModbusConstants.ValueType type;
     private Unit<?> unit;
 
     private ALD1Registers(float multiplier, int registerAddress, ValueType type, Unit<?> unit) {
-        this.multiplier = multiplier;
+        this.multiplier = new BigDecimal(multiplier);
         this.registerAddress = registerAddress;
         this.type = type;
         this.unit = unit;
@@ -53,7 +55,7 @@ public enum ALD1Registers {
         return unit;
     }
 
-    public float getMultiplier() {
+    public BigDecimal getMultiplier() {
         return multiplier;
     }
 
