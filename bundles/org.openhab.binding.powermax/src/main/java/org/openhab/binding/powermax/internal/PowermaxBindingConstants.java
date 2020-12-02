@@ -59,6 +59,7 @@ public class PowermaxBindingConstants {
     public static final String LAST_TRIP = "last_trip";
     public static final String BYPASSED = "bypassed";
     public static final String ARMED = "armed";
+    public static final String LOCKED = "locked";
     public static final String LOW_BATTERY = "low_battery";
     public static final String PGM_STATUS = "pgm_status";
     public static final String X10_STATUS = "x10_status";
