@@ -13,6 +13,7 @@
 package org.openhab.binding.webthing.internal.client;
 
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,19 +29,25 @@ interface WebSocketConnectionFactory {
     /**
      * create (and opens) a new WebSocket connection
      *
-     * @param webThing the associated WebThing cleint-side proxy
      * @param webSocketURI the websocket uri
      * @param connectionListener the connection listener to observe the connection state of the WebSocket connection
      * @param pingPeriod the ping period to check the healthiness of the connection
      * @return the newly opened WebSocket connection
      */
-    WebSocketConnection create(ConsumedThing webThing, URI webSocketURI, ConnectionListener connectionListener,
-            Duration pingPeriod);
+    WebSocketConnection create(URI webSocketURI, ConnectionListener connectionListener, Duration pingPeriod);
 
     /**
      * @return the default instance of the factory
      */
     static WebSocketConnectionFactory instance() {
-        return WebSocketConnectionImpl::new;
+        return new WebSocketConnectionFactory() {
+            @Override
+            public WebSocketConnection create(URI webSocketURI, ConnectionListener connectionListener,
+                    Duration pingPeriod) {
+                var webSocketConnection = new WebSocketConnectionImpl(connectionListener, pingPeriod);
+                HttpClient.newHttpClient().newWebSocketBuilder().buildAsync(webSocketURI, webSocketConnection).join();
+                return webSocketConnection;
+            }
+        };
     }
 }

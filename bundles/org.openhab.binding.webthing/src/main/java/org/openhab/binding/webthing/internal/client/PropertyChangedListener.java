@@ -24,11 +24,10 @@ public interface PropertyChangedListener {
 
     /**
      * callback that will be called, if a WebThing property value is changed
-     * 
-     * @param webThing the associated WebThing
+     *
      * @param propertyName the WebThing property name
      * @param value the new WebThing property value
      */
-    default void onPropertyValueChanged(ConsumedThing webThing, String propertyName, Object value) {
+    default void onPropertyValueChanged(String propertyName, Object value) {
     }
 }

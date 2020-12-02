@@ -83,7 +83,7 @@ public class ConsumedThingImpl implements ConsumedThing {
      * @param pingPeriod the ping period tothe the healthiness of the connection
      * @throws IOException if the WebThing can not be connected
      */
-    private ConsumedThingImpl(URI webthingUrl, ConnectionListener connectionListener, HttpClient httpClient,
+    ConsumedThingImpl(URI webthingUrl, ConnectionListener connectionListener, HttpClient httpClient,
             WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod) throws IOException {
         this.webThingURI = webthingUrl;
         this.httpClient = httpClient;
@@ -92,7 +92,7 @@ public class ConsumedThingImpl implements ConsumedThing {
                 Duration.ofSeconds(20));
 
         // opens a websocket downstream to be notified if a property value will be changed
-        this.websocketDownstream = webSocketConnectionFactory.create(this, this.getEventStreamUri(), connectionListener,
+        this.websocketDownstream = webSocketConnectionFactory.create(this.getEventStreamUri(), connectionListener,
                 pingPeriod);
     }
 
@@ -141,7 +141,7 @@ public class ConsumedThingImpl implements ConsumedThing {
         // it may take a long time before the observed property value will be changed. For this reason
         // read and notify the current property value (as starting point)
         var value = readProperty(propertyName);
-        listener.onPropertyValueChanged(this, propertyName, value);
+        listener.onPropertyValueChanged(propertyName, value);
     }
 
     @Override
