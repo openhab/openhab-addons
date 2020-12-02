@@ -216,7 +216,7 @@ public class DiscoveryServiceManager
                 }
             }
         } catch (RuntimeException ex) {
-            logger.warn("Unable to add devices {}: {}", device, ex.getMessage());
+            logger.warn("Unable to add devices {}", device, ex);
         }
     }
 
