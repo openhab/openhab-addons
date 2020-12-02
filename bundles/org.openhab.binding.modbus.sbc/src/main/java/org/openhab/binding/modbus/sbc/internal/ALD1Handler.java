@@ -14,7 +14,6 @@ package org.openhab.binding.modbus.sbc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
@@ -56,8 +55,7 @@ public class ALD1Handler extends BaseModbusThingHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void modbusInitialize() {
         config = getConfigAs(ALD1Configuration.class);
 
         if (config.pollInterval <= 0) {
