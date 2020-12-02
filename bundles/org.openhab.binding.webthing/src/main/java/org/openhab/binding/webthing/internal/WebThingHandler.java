@@ -207,7 +207,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
 
     /**
      * connects each WebThing property with a corresponding openHAB channel. After this changes will be synchronized
-     * between a WebThing property and the openHAB channe
+     * between a WebThing property and the openHAB channel
      *
      * @param webThing the WebThing to be connected
      * @throws IOException if the channels can not be connected
