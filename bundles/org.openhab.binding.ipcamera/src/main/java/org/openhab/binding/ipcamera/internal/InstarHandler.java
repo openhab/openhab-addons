@@ -43,7 +43,6 @@ import io.netty.util.ReferenceCountUtil;
 public class InstarHandler extends ChannelDuplexHandler {
     private IpCameraHandler ipCameraHandler;
     private String requestUrl = "Empty";
-    private String content = "";
 
     public InstarHandler(ThingHandler thingHandler) {
         ipCameraHandler = (IpCameraHandler) thingHandler;

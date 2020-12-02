@@ -55,7 +55,6 @@ public class HikvisionHandler extends ChannelDuplexHandler {
     private IpCameraHandler ipCameraHandler;
     private int nvrChannel;
     private int lineCount, vmdCount, leftCount, takenCount, faceCount, pirCount, fieldCount;
-    private String content = "";
 
     public HikvisionHandler(ThingHandler handler, int nvrChannel) {
         ipCameraHandler = (IpCameraHandler) handler;
@@ -70,7 +69,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
         }
         try {
             int debounce = 3;
-            content = msg.toString();
+            String content = msg.toString();
             logger.trace("HTTP Result back from camera is \t:{}:", content);
             if (content.contains("--boundary")) {// Alarm checking goes in here//
                 if (content.contains("<EventNotificationAlert version=\"")) {
