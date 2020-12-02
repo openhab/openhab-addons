@@ -115,9 +115,7 @@ public class MyHandler extends BaseModbusThingHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-
+    public void modbusInitialize() {
         // do other Thing initialization
 
         ModbusReadRequestBlueprint blueprint = new ModbusReadRequestBlueprint(getSlaveId(),
