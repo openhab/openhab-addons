@@ -47,7 +47,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     };
 
     private final Logger logger = LoggerFactory.getLogger(WebThingHandler.class);
-    private final AtomicBoolean isOpen = new AtomicBoolean(true);
+    private final AtomicBoolean isActivated = new AtomicBoolean(true);
     private final Map<ChannelUID, ItemChangedListener> itemChangedListenerMap = new ConcurrentHashMap<>();
     private final AtomicReference<Optional<ConsumedThing>> webThingConnectionRef = new AtomicReference<>(
             Optional.empty());
@@ -58,10 +58,19 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
         super(thing);
     }
 
+    private boolean isConnected() {
+        return (getThing().getStatus() == ThingStatus.ONLINE);
+    }
+
+    private boolean isDisconnected() {
+        return (getThing().getStatus() == ThingStatus.OFFLINE) || (getThing().getStatus() == ThingStatus.UNKNOWN);
+    }
+
     @Override
     public void initialize() {
-        isOpen.set(true);
         updateStatus(ThingStatus.UNKNOWN);
+        isActivated.set(true); // set with true, even though the connect may fail. In this case retries will be
+                               // triggered
 
         // perform connect in background
         scheduler.execute(() -> {
@@ -92,7 +101,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     @Override
     public void dispose() {
         try {
-            isOpen.set(false);
+            isActivated.set(false); // set to false to avoid reconnecting
 
             // terminate WebThing connection as well as the alive watchdog
             webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::destroy);
@@ -103,7 +112,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     }
 
     private boolean tryReconnect(URI webThingURI) {
-        if (isOpen.get()) {
+        if (isActivated.get()) { // will try reconnect only, if activated
             try {
                 // create the client-side WebThing representation (if success, {@link WebThingHandler#onConnected} will
                 // be called, implicitly)
@@ -113,7 +122,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
                 // update the Thing structure based on the WebThing description
                 thingStructureChanged(webThing);
 
-                // link the Thing's channels with the WebThing properties
+                // link the Thing's channels with the WebThing properties to forward properties/item updates
                 establishWebThingChannelLinks(webThing);
 
                 lastReconnect.set(Instant.now());
@@ -227,6 +236,20 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     }
 
     @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof State) {
+            try {
+                itemChangedListenerMap.getOrDefault(channelUID, EMPTY_ITEM_CHANGED_LISTENER)
+                        .onItemStateChanged(channelUID, (State) command);
+            } catch (RuntimeException e) {
+                logger.warn("updating webthing property with {} failed", command.toString(), e);
+            }
+        }
+    }
+
+    /////////////
+    // ChannelHandler methods
+    @Override
     public void observeChannel(ChannelUID channelUID, ItemChangedListener listener) {
         itemChangedListenerMap.put(channelUID, listener);
     }
@@ -235,15 +258,11 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     public void updateItemState(ChannelUID channelUID, Command command) {
         postCommand(channelUID, command);
     }
+    //
+    /////////////
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof State) {
-            itemChangedListenerMap.getOrDefault(channelUID, EMPTY_ITEM_CHANGED_LISTENER).onItemStateChanged(channelUID,
-                    (State) command);
-        }
-    }
-
+    /////////////
+    // ConnectionListener methods
     @Override
     public void onConnected() {
         updateStatus(ThingStatus.ONLINE);
@@ -259,14 +278,8 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
                     HEALTH_CHECK_PERIOD.getSeconds());
         }
     }
-
-    private boolean isConnected() {
-        return (getThing().getStatus() == ThingStatus.ONLINE);
-    }
-
-    private boolean isDisconnected() {
-        return (getThing().getStatus() == ThingStatus.OFFLINE) || (getThing().getStatus() == ThingStatus.UNKNOWN);
-    }
+    //
+    /////////////
 
     private final class AliveWatchdog extends Thread {
         private final AtomicBoolean isRunning = new AtomicBoolean(true);

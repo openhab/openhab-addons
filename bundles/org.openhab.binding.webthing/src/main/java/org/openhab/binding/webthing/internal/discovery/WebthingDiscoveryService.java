@@ -139,6 +139,8 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                 : mdnsClient.list(MDNS_SERVICE_TYPE, FOREGROUND_SCAN_TIMEOUT);
         logger.debug("got {} mDNS entries", serviceInfos.length);
 
+        // create discovery task for each detected service and process these in parallel to increase total discovery
+        // speed
         var discoveryTasks = Arrays.stream(serviceInfos).map(DiscoveryTask::new).collect(Collectors.toList());
         ExecutorService exec = Executors.newCachedThreadPool();
         try {
@@ -196,6 +198,14 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                     path = path + "/";
                 }
             }
+
+            // There are two kinds of WebThing endpoints: Endpoints supporting a single WebThing as well as
+            // endpoints supporting multiple WebThings.
+            //
+            // In the routine below the enpoint will be checked for single WebThings first, than for multiple
+            // WebThings if a ingle WebTHing has not been found.
+            // Furthermore, first it will be tried to connect the endppint using https. If this fails, as fallback
+            // plain http is used.
 
             // check single WebThing path via https (e.g. https://192.168.0.23:8433/)
             var optionalDiscoveryResult = discoverWebThing(toURI(host, port, path, true));

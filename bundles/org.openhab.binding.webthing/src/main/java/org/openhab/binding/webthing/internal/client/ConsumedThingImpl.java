@@ -90,6 +90,8 @@ public class ConsumedThingImpl implements ConsumedThing {
         this.connectionListener = connectionListener;
         this.description = new DescriptionLoader(httpClient).loadWebthingDescription(webThingURI,
                 Duration.ofSeconds(20));
+
+        // opens a websocket downstream to be notified if a property value will be changed
         this.websocketDownstream = webSocketConnectionFactory.create(this, this.getEventStreamUri(), connectionListener,
                 pingPeriod);
     }
@@ -133,11 +135,11 @@ public class ConsumedThingImpl implements ConsumedThing {
     }
 
     @Override
-    public void observeProperty(String propertyName, PropertyChangedListener listener) throws IOException {
+    public void observeProperty(String propertyName, PropertyChangedListener listener) {
         this.websocketDownstream.observeProperty(propertyName, listener);
 
         // it may take a long time before the observed property value will be changed. For this reason
-        // read and notify the current property value
+        // read and notify the current property value (as starting point)
         var value = readProperty(propertyName);
         listener.onPropertyValueChanged(this, propertyName, value);
     }
