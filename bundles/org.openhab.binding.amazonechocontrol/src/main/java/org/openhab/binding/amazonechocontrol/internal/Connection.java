@@ -1313,10 +1313,11 @@ public class Connection {
 
     public void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
-        if (speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim().isEmpty()) {
+        
+         if (speak == null) {
             return;
         }
-
+        
         // we lock announcements until we have finished adding this one
         Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
         lock.lock();
