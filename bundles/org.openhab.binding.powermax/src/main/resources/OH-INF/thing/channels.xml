@@ -109,8 +109,15 @@
 
 	<channel-type id="armed">
 		<item-type>Switch</item-type>
-		<label>Zone Armed</label>
+		<label>Zone Armed (Switch)</label>
 		<description>Whether or not the zone is armed</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="locked">
+		<item-type>Contact</item-type>
+		<label>Zone Armed (Contact)</label>
+		<description>Whether or not the zone is armed (CLOSED when armed)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
