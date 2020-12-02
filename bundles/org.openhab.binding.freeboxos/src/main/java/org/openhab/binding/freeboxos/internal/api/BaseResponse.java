@@ -29,6 +29,8 @@ public class BaseResponse {
         @SerializedName("auth_required")
         AUTHORIZATION_REQUIRED,
         @SerializedName("invalid_token")
+        INTERNAL_ERROR,
+        @SerializedName("internal_error")
         INVALID_TOKEN;
     }
 

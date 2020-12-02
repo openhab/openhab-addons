@@ -160,7 +160,7 @@ public class ApiHandler extends BaseBridgeHandler {
     @SuppressWarnings("unchecked")
     private <F, T extends Response<F>> F execute(String anUrl, String aMethod, @Nullable Object aPayload,
             @Nullable Class<T> classOfT, boolean retryAuth) throws FreeboxException {
-        Object serialized = executeUrl(anUrl, aMethod, aPayload, classOfT, retryAuth);
+        Object serialized = executeUrl(anUrl, aMethod, aPayload, classOfT, retryAuth, 3);
         if (classOfT != null) {
             return ((T) serialized).getResult();
         }
@@ -169,12 +169,12 @@ public class ApiHandler extends BaseBridgeHandler {
 
     private <F, T extends ListResponse<F>> List<F> executeList(String anUrl, String aMethod, @Nullable Object aPayload,
             Class<T> classOfT, boolean retryAuth) throws FreeboxException {
-        T serialized = executeUrl(anUrl, aMethod, aPayload, classOfT, retryAuth);
+        T serialized = executeUrl(anUrl, aMethod, aPayload, classOfT, retryAuth, 3);
         return serialized.getResult();
     }
 
-    private <T extends BaseResponse> T executeUrl(String anUrl, String aMethod, @Nullable Object aPayload,
-            @Nullable Class<T> classOfT, boolean retryAuth) throws FreeboxException {
+    private synchronized <T extends BaseResponse> T executeUrl(String anUrl, String aMethod, @Nullable Object aPayload,
+            @Nullable Class<T> classOfT, boolean retryAuth, int retryCount) throws FreeboxException {
         String serviceAnswer = "";
         try {
             String payload = aPayload != null ? gson.toJson(aPayload) : null;
@@ -185,18 +185,36 @@ public class ApiHandler extends BaseBridgeHandler {
             serviceAnswer = HttpUtil.executeUrl(aMethod, buildUrl(anUrl), headers, stream, CONTENT_TYPE,
                     DEFAULT_TIMEOUT_MS);
 
-            T serialized = gson.fromJson(serviceAnswer, classOfT != null ? classOfT : BaseResponse.class);
+            T serialized = deserialize(classOfT, serviceAnswer);
             serialized.evaluate();
             return serialized;
-        } catch (IOException | JsonSyntaxException e) {
+        } catch (IOException e) {
             throw new FreeboxException("Exception while calling " + anUrl, e);
         } catch (FreeboxException e) {
             BaseResponse response = e.getResponse();
-            if (retryAuth && response != null && response.getErrorCode() == ErrorCode.AUTHORIZATION_REQUIRED) {
-                headers.setProperty(AUTH_HEADER, getLoginManager().openSession(getConfiguration().appToken));
-                return executeUrl(anUrl, aMethod, aPayload, classOfT, false);
+            if (response != null) {
+                if (response.getErrorCode() == ErrorCode.INTERNAL_ERROR && retryCount > 0) {
+                    return executeUrl(anUrl, aMethod, aPayload, classOfT, retryAuth, retryCount - 1);
+                } else if (retryAuth && response.getErrorCode() == ErrorCode.AUTHORIZATION_REQUIRED) {
+                    headers.setProperty(AUTH_HEADER, getLoginManager().openSession(getConfiguration().appToken));
+                    return executeUrl(anUrl, aMethod, aPayload, classOfT, false, retryCount);
+                }
             }
             throw e;
+        }
+    }
+
+    private <T extends BaseResponse> T deserialize(@Nullable Class<T> classOfT, String serviceAnswer)
+            throws FreeboxException {
+        try {
+            T serialized = gson.fromJson(serviceAnswer, classOfT != null ? classOfT : BaseResponse.class);
+            return serialized;
+        } catch (JsonSyntaxException e) {
+            if (classOfT != null) {
+                BaseResponse serialized = gson.fromJson(serviceAnswer, BaseResponse.class);
+                throw new FreeboxException("Taking care of unexpected answer from api", e, serialized);
+            }
+            throw new FreeboxException(String.format("Unexpected error desiralizing '%s'", serviceAnswer), e);
         }
     }
 
