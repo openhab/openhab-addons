@@ -24,8 +24,9 @@
 				"property": "target_temperature",
 				"friendlyName": "Target Temperature",
 				"channel": "target_temperature",
-				"type": "Number:Temperature",
 				"channelType": "temperatureC",
+				"unit": "CELCIUS",
+				"type": "Number:Temperature",
 				"refresh": true,
 				"actions": [
 					{
@@ -102,6 +103,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"channelType": "temperatureC",
+				"unit": "CELCIUS",
 				"type": "Number:Temperature",
 				"refresh": true,
 				"actions": []
@@ -111,7 +113,8 @@
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
 				"channelType": "usedhours",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"actions": []

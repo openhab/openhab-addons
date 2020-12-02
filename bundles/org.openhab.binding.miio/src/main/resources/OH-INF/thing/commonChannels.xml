@@ -269,9 +269,9 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="filterhours">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Filter Use Time</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f  %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="usedhours">
 		<item-type>Number:Time</item-type>
