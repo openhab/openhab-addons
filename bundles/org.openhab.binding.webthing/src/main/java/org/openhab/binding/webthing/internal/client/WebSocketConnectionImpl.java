@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.time.Duration;
@@ -21,7 +19,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jetbrains.annotations.NotNull;
@@ -37,40 +34,73 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Gregor Roth - Initial contribution
  */
-class WebSocketConnectionImpl implements WebSocketConnection {
+class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener {
     private final static PropertyChangedListener EMPTY_PROPERTY_CHANGED_LISTENER = new PropertyChangedListener() {
     };
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnectionImpl.class);
-    private final ConsumedThing webThing;
-    private final URI webSocketURI;
-    private final WebSocket websocket;
-    private final AtomicBoolean isOpen = new AtomicBoolean(true);
     private final ConnectionListener connectionListener;
     private final Map<String, PropertyChangedListener> propertyChangedListeners = new HashMap<>();
     private final AtomicReference<Instant> lastTimeReceived = new AtomicReference<>(Instant.now());
     private final AtomicReference<String> receivedTextbufferRef = new AtomicReference<>("");
+    private final AtomicReference<WebSocket> webSocketRef = new AtomicReference<>();
 
-    /**
-     * constructor
-     * 
-     * @param webThing the associated Webthing
-     * @param webSocketURI the webSocket uri
-     * @param connectionListener the connection listener
-     * @param pingPeriod the ping period to check the healthiness of the connection
-     */
-    WebSocketConnectionImpl(ConsumedThing webThing, URI webSocketURI, ConnectionListener connectionListener,
-            Duration pingPeriod) {
-        this.webThing = webThing;
+    WebSocketConnectionImpl(ConnectionListener connectionListener, Duration pingPeriod) {
         this.connectionListener = connectionListener;
-        this.webSocketURI = webSocketURI;
-        this.websocket = HttpClient.newHttpClient().newWebSocketBuilder()
-                .buildAsync(webSocketURI, new WebSocketListener()).join();
         new ConnectionWatchDog(pingPeriod).start();
     }
 
-    @Override
     public void observeProperty(@NotNull String propertyName, @NotNull PropertyChangedListener listener) {
         propertyChangedListeners.put(propertyName, listener);
+    }
+
+    @Override
+    public void onOpen(WebSocket webSocket) {
+        webSocketRef.set(webSocket);
+        connectionListener.onConnected();
+        WebSocket.Listener.super.onOpen(webSocket);
+    }
+
+    @Override
+    public CompletionStage<?> onPong(WebSocket webSocket, ByteBuffer message) {
+        lastTimeReceived.set(Instant.now());
+        return WebSocket.Listener.super.onPong(webSocket, message);
+    }
+
+    @Override
+    public CompletionStage<?> onText(WebSocket webSocket, CharSequence event, boolean last) {
+        try {
+            lastTimeReceived.set(Instant.now());
+
+            var message = receivedTextbufferRef.accumulateAndGet(event.toString(),
+                    (received, current) -> received + current);
+            if (last) {
+                receivedTextbufferRef.set("");
+                var propertyStatus = new Gson().fromJson(message, PropertyStatusMessage.class);
+                if (propertyStatus.messageType.equals("propertyStatus")) {
+                    for (var propertyEntry : propertyStatus.data.entrySet()) {
+                        propertyChangedListeners.getOrDefault(propertyEntry.getKey(), EMPTY_PROPERTY_CHANGED_LISTENER)
+                                .onPropertyValueChanged(propertyEntry.getKey(), propertyEntry.getValue());
+                    }
+                } else {
+                    logger.debug("Ignoring received message of unknown type: {}", event.toString());
+                }
+            }
+        } catch (JsonSyntaxException se) {
+            logger.warn("received invalid message: {}", event.toString());
+        }
+
+        return WebSocket.Listener.super.onText(webSocket, event, last);
+    }
+
+    @Override
+    public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
+        close("websocket closed: " + reason);
+        return null;
+    }
+
+    @Override
+    public void onError(WebSocket webSocket, Throwable error) {
+        close("error notified. " + error.getMessage());
     }
 
     @Override
@@ -80,70 +110,13 @@ class WebSocketConnectionImpl implements WebSocketConnection {
 
     private void close(String reason) {
         try {
-            if (isOpen.getAndSet(false)) {
-                logger.debug("websocket connection {} of {} closed. {}", webSocketURI,
-                        webThing.getThingDescription().title, reason);
+            var webSocket = webSocketRef.getAndSet(null);
+            if (webSocket != null) {
                 connectionListener.onDisconnected(reason);
-                websocket.abort();
+                webSocket.abort();
             }
         } catch (Exception e) {
             logger.warn("error occurred by closing the WebSocket", e);
-        }
-    }
-
-    private final class WebSocketListener implements WebSocket.Listener {
-
-        @Override
-        public void onOpen(WebSocket webSocket) {
-            connectionListener.onConnected();
-            WebSocket.Listener.super.onOpen(webSocket);
-        }
-
-        @Override
-        public CompletionStage<?> onPong(WebSocket webSocket, ByteBuffer message) {
-            lastTimeReceived.set(Instant.now());
-            return WebSocket.Listener.super.onPong(webSocket, message);
-        }
-
-        @Override
-        public CompletionStage<?> onText(WebSocket webSocket, CharSequence event, boolean last) {
-            try {
-                lastTimeReceived.set(Instant.now());
-
-                var message = receivedTextbufferRef.accumulateAndGet(event.toString(),
-                        (received, current) -> received + current);
-                if (last) {
-                    receivedTextbufferRef.set("");
-                    var propertyStatus = new Gson().fromJson(message, PropertyStatusMessage.class);
-                    if (isOpen.get()) {
-                        if (propertyStatus.messageType.equals("propertyStatus")) {
-                            for (var propertyEntry : propertyStatus.data.entrySet()) {
-                                propertyChangedListeners
-                                        .getOrDefault(propertyEntry.getKey(), EMPTY_PROPERTY_CHANGED_LISTENER)
-                                        .onPropertyValueChanged(webThing, propertyEntry.getKey(),
-                                                propertyEntry.getValue());
-                            }
-                        } else {
-                            logger.debug("Ignoring received message of unknown type: {}", event.toString());
-                        }
-                    }
-                }
-            } catch (JsonSyntaxException se) {
-                logger.warn("received invalid message: {}", event.toString());
-            }
-
-            return WebSocket.Listener.super.onText(webSocket, event, last);
-        }
-
-        @Override
-        public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-            close("websocket closed: " + reason);
-            return null;
-        }
-
-        @Override
-        public void onError(WebSocket webSocket, Throwable error) {
-            close("error notified. " + error.getMessage());
         }
     }
 
@@ -160,7 +133,7 @@ class WebSocketConnectionImpl implements WebSocketConnection {
             // initial pause
             pause(pingPeriod.dividedBy(2));
 
-            while (isOpen.get()) {
+            while (webSocketRef.get() != null) {
                 // check if connection is alive (message has been received recently)
                 var elapsedSinceLast = Duration.between(lastTimeReceived.get(), Instant.now());
                 if (elapsedSinceLast.getSeconds() > pingPeriod.getSeconds()) {
@@ -171,9 +144,10 @@ class WebSocketConnectionImpl implements WebSocketConnection {
                 pause(pingPeriod.dividedBy(2));
 
                 // send ping
-                if (isOpen.get()) {
+                var webSocket = webSocketRef.get();
+                if (webSocket != null) {
                     try {
-                        websocket.sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
+                        webSocket.sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
                     } catch (Exception e) {
                         close("could not send ping. " + e.getMessage());
                         return;
@@ -182,12 +156,11 @@ class WebSocketConnectionImpl implements WebSocketConnection {
                 pause(pingPeriod.dividedBy(2));
             }
 
-            logger.debug("websocket of {} ({}) has been closed. terminating watchdog",
-                    webThing.getThingDescription().title, webSocketURI);
+            logger.debug("websocket has been closed. terminating watchdog");
         }
 
         private void pause(Duration delay) {
-            if (isOpen.get()) {
+            if (webSocketRef.get() != null) {
                 try {
                     Thread.sleep(delay.toMillis());
                 } catch (InterruptedException ignore) {
