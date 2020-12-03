@@ -128,6 +128,11 @@ public final class MieleCloudBindingConstants {
     public static final String CONFIG_PARAM_LOCALE = "locale";
 
     /**
+     * Name of the property storing the number of plates for hobs.
+     */
+    public static final String PROPERTY_PLATE_COUNT = "plateCount";
+
+    /**
      * Constants for all channels.
      */
     @NonNullByDefault({})

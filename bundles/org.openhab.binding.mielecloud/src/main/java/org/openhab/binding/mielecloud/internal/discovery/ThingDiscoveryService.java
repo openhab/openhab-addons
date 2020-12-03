@@ -93,7 +93,10 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
 
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUid)
                 .withBridge(bridgeHandler.getThing().getUID()).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
-                .withLabel(getLabel(deviceState)).withProperties(ThingPropertyExtractor.extractProperties(deviceState));
+                .withLabel(getLabel(deviceState));
+
+        ThingPropertyExtractor.extractProperties(deviceState).entrySet()
+                .forEach(entry -> discoveryResultBuilder.withProperty(entry.getKey(), entry.getValue()));
 
         DiscoveryResult result = discoveryResultBuilder.build();
 
@@ -176,5 +179,20 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
         }
 
         return getDeviceAndTechType(deviceState).orElse("Miele Device");
+    }
+
+    private static Optional<String> getDeviceAndTechType(DeviceState deviceState) {
+        Optional<String> deviceType = deviceState.getType();
+        Optional<String> techType = deviceState.getTechType();
+        if (deviceType.isPresent() && techType.isPresent()) {
+            return Optional.of(deviceType.get() + " " + techType.get());
+        }
+        if (!deviceType.isPresent() && techType.isPresent()) {
+            return techType;
+        }
+        if (deviceType.isPresent() && !techType.isPresent()) {
+            return deviceType;
+        }
+        return Optional.empty();
     }
 }

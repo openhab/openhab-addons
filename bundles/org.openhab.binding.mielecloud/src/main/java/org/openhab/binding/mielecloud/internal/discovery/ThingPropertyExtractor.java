@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.mielecloud.internal.discovery;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
+import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -31,8 +34,17 @@ public final class ThingPropertyExtractor {
     }
 
     public static Map<String, String> extractProperties(DeviceState deviceState) {
-        return Map.of(Thing.PROPERTY_SERIAL_NUMBER, getSerialNumber(deviceState), Thing.PROPERTY_MODEL_ID,
-                getModelId(deviceState));
+        var propertyMap = new HashMap<String, String>();
+        propertyMap.put(Thing.PROPERTY_SERIAL_NUMBER, getSerialNumber(deviceState));
+        propertyMap.put(Thing.PROPERTY_MODEL_ID, getModelId(deviceState));
+
+        if (deviceState.getRawType() == DeviceType.HOB_INDUCTION
+                || deviceState.getRawType() == DeviceType.HOB_HIGHLIGHT) {
+            deviceState.getPlateStepCount().ifPresent(plateCount -> propertyMap
+                    .put(MieleCloudBindingConstants.PROPERTY_PLATE_COUNT, plateCount.toString()));
+        }
+
+        return propertyMap;
     }
 
     private static String getSerialNumber(DeviceState deviceState) {

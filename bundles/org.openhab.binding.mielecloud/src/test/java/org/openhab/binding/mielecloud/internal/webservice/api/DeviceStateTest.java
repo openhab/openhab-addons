@@ -85,6 +85,7 @@ public class DeviceStateTest {
         Optional<Boolean> remoteControlEnabled = deviceState.isRemoteControlEnabled();
         Optional<String> ventilationStep = deviceState.getVentilationStep();
         Optional<Integer> ventilationStepRaw = deviceState.getVentilationStepRaw();
+        Optional<Integer> plateStepCount = deviceState.getPlateStepCount();
         Optional<String> plateStep = deviceState.getPlateStep(0);
         Optional<Integer> plateStepRaw = deviceState.getPlateStepRaw(0);
         boolean hasError = deviceState.hasError();
@@ -116,6 +117,7 @@ public class DeviceStateTest {
         assertFalse(remoteControlEnabled.isPresent());
         assertFalse(ventilationStep.isPresent());
         assertFalse(ventilationStepRaw.isPresent());
+        assertFalse(plateStepCount.isPresent());
         assertFalse(plateStep.isPresent());
         assertFalse(plateStepRaw.isPresent());
         assertFalse(hasError);
@@ -155,6 +157,7 @@ public class DeviceStateTest {
         Optional<Integer> progress = deviceState.getProgress();
         Optional<String> ventilationStep = deviceState.getVentilationStep();
         Optional<Integer> ventilationStepRaw = deviceState.getVentilationStepRaw();
+        Optional<Integer> plateStepCount = deviceState.getPlateStepCount();
         Optional<String> plateStep = deviceState.getPlateStep(0);
         Optional<Integer> plateStepRaw = deviceState.getPlateStepRaw(0);
         Boolean hasError = deviceState.hasError();
@@ -179,6 +182,7 @@ public class DeviceStateTest {
         assertFalse(progress.isPresent());
         assertFalse(ventilationStep.isPresent());
         assertFalse(ventilationStepRaw.isPresent());
+        assertFalse(plateStepCount.isPresent());
         assertFalse(plateStep.isPresent());
         assertFalse(plateStepRaw.isPresent());
         assertFalse(hasError);
@@ -823,10 +827,12 @@ public class DeviceStateTest {
         DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
 
         // when:
+        int plateStepCount = deviceState.getPlateStepCount().get();
         Optional<String> plateStep = deviceState.getPlateStep(0);
         Optional<Integer> plateStepRaw = deviceState.getPlateStepRaw(0);
 
         // then:
+        assertEquals(0, plateStepCount);
         assertFalse(plateStep.isPresent());
         assertFalse(plateStepRaw.isPresent());
     }
@@ -850,10 +856,12 @@ public class DeviceStateTest {
         DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
 
         // when:
+        int plateStepCount = deviceState.getPlateStepCount().get();
         Optional<String> plateStep = deviceState.getPlateStep(0);
         Optional<Integer> plateStepRaw = deviceState.getPlateStepRaw(0);
 
         // then:
+        assertEquals(1, plateStepCount);
         assertFalse(plateStep.isPresent());
         assertFalse(plateStepRaw.isPresent());
     }
@@ -875,10 +883,12 @@ public class DeviceStateTest {
         DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
 
         // when:
+        int plateStepCount = deviceState.getPlateStepCount().get();
         String plateStep = deviceState.getPlateStep(0).get();
         int plateStepRaw = deviceState.getPlateStepRaw(0).get();
 
         // then:
+        assertEquals(1, plateStepCount);
         assertEquals("1.", plateStep);
         assertEquals(2, plateStepRaw);
     }

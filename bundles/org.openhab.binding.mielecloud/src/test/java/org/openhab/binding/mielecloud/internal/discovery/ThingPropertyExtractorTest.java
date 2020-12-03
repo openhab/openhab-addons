@@ -21,7 +21,9 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.core.thing.Thing;
@@ -67,5 +69,28 @@ public class ThingPropertyExtractorTest {
         assertEquals(2, properties.size());
         assertEquals(expectedSerialNumber, properties.get(Thing.PROPERTY_SERIAL_NUMBER));
         assertEquals(expectedModelId, properties.get(Thing.PROPERTY_MODEL_ID));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "HOB_INDUCTION,2,2", "HOB_INDUCTION,4,4", "HOB_HIGHLIGHT,3,3" })
+    void propertiesForHobContainPlateCount(DeviceType deviceType, int plateCount,
+            String expectedPlateCountPropertyValue) {
+        // given:
+        var deviceState = mock(DeviceState.class);
+        when(deviceState.getRawType()).thenReturn(deviceType);
+        when(deviceState.getDeviceIdentifier()).thenReturn("000124430019");
+        when(deviceState.getFabNumber()).thenReturn(Optional.of("000124430019"));
+        when(deviceState.getType()).thenReturn(Optional.of("Induction Hob"));
+        when(deviceState.getTechType()).thenReturn(Optional.of("IH-7890"));
+        when(deviceState.getPlateStepCount()).thenReturn(Optional.of(plateCount));
+
+        // when:
+        var properties = ThingPropertyExtractor.extractProperties(deviceState);
+
+        // then:
+        assertEquals(3, properties.size());
+        assertEquals("000124430019", properties.get(Thing.PROPERTY_SERIAL_NUMBER));
+        assertEquals("Induction Hob IH-7890", properties.get(Thing.PROPERTY_MODEL_ID));
+        assertEquals(expectedPlateCountPropertyValue, properties.get(MieleCloudBindingConstants.PROPERTY_PLATE_COUNT));
     }
 }

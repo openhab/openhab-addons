@@ -373,6 +373,15 @@ public class DeviceState {
     }
 
     /**
+     * Gets the number of available plate steps.
+     *
+     * @return The number of available plate steps.
+     */
+    public Optional<Integer> getPlateStepCount() {
+        return device.flatMap(Device::getState).map(State::getPlateStep).map(List::size);
+    }
+
+    /**
      * Indicates if the device has an error that requires a user action.
      *
      * @return Whether the device has an error that requires a user action.
