@@ -99,6 +99,7 @@ This is an optional parameter and multiple values are allowed.
 | `wanAccessType`            | `String`                  |     x    | Access Type                                                    |
 | `wanConnectionStatus`      | `String`                  |          | Connection Status                                              |
 | `wanIpAddress`             | `String`                  |     x    | WAN IP Address                                                 |
+| `wanPppIpAddress`          | `String`                  |     x    | WAN IP Address (if using PPP)                                  |
 | `wanMaxDownstreamRate`     | `Number:DataTransferRate` |     x    | Max. Downstream Rate                                           |
 | `wanMaxUpstreamRate`       | `Number:DataTransferRate` |     x    | Max. Upstream Rate                                             |
 | `wanPhysicalLinkStatus`    | `String`                  |     x    | Link Status                                                    |

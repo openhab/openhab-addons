@@ -244,6 +244,12 @@
 			serviceId="urn:WANIPConnection-com:serviceId:WANIPConnection1"/>
 		<getAction name="GetInfo" argument="NewExternalIPAddress"/>
 	</channel>
+	<channel name="wanPppIpAddress" label="WAN PPP-IP Address">
+		<item type="String"/>
+		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
+			serviceId="urn:WANPPPConnection-com:serviceId:WANPPPConnection1"/>
+		<getAction name="GetInfo" argument="NewExternalIPAddress"/>
+	</channel>
 	<channel name="wanConnectionStatus" label="Connection Status">
 		<item type="String"/>
 		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
