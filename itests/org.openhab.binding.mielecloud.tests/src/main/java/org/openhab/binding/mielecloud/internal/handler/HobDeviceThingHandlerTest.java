@@ -21,13 +21,13 @@ import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingInte
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 
 /**
  * @author Björn Lange - Initial contribution
@@ -51,7 +51,6 @@ public class HobDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
         when(deviceState.isRemoteControlEnabled()).thenReturn(Optional.empty());
         when(deviceState.getStatus()).thenReturn(Optional.empty());
         when(deviceState.getStatusRaw()).thenReturn(Optional.empty());
-        when(deviceState.isPlatePresent(anyInt())).thenReturn(false);
         when(deviceState.getPlateStep(anyInt())).thenReturn(Optional.empty());
         when(deviceState.getPlateStepRaw(anyInt())).thenReturn(Optional.empty());
 
@@ -62,22 +61,16 @@ public class HobDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
         waitForAssert(() -> {
             assertEquals(NULL_VALUE_STATE, getChannelState(OPERATION_STATE));
             assertEquals(NULL_VALUE_STATE, getChannelState(OPERATION_STATE_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_1_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_1_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_1_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_2_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_2_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_2_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_3_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_3_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_3_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_4_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_4_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_4_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_5_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_5_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_5_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_6_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_6_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_6_POWER_STEP_RAW));
         });
@@ -94,18 +87,12 @@ public class HobDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
         when(deviceState.getStatusRaw()).thenReturn(Optional.of(StateType.RUNNING.getCode()));
         when(deviceState.hasError()).thenReturn(false);
         when(deviceState.hasInfo()).thenReturn(true);
-        when(deviceState.isPlatePresent(0)).thenReturn(true);
         when(deviceState.getPlateStep(0)).thenReturn(Optional.of("1."));
         when(deviceState.getPlateStepRaw(0)).thenReturn(Optional.of(2));
-        when(deviceState.isPlatePresent(1)).thenReturn(false);
         when(deviceState.getPlateStep(1)).thenReturn(Optional.empty());
-        when(deviceState.isPlatePresent(2)).thenReturn(false);
         when(deviceState.getPlateStep(2)).thenReturn(Optional.empty());
-        when(deviceState.isPlatePresent(3)).thenReturn(false);
         when(deviceState.getPlateStep(3)).thenReturn(Optional.empty());
-        when(deviceState.isPlatePresent(4)).thenReturn(false);
         when(deviceState.getPlateStep(4)).thenReturn(Optional.empty());
-        when(deviceState.isPlatePresent(5)).thenReturn(false);
         when(deviceState.getPlateStep(5)).thenReturn(Optional.empty());
 
         // when:
@@ -117,22 +104,16 @@ public class HobDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
             assertEquals(new DecimalType(StateType.RUNNING.getCode()), getChannelState(OPERATION_STATE_RAW));
             assertEquals(OnOffType.OFF, getChannelState(ERROR_STATE));
             assertEquals(OnOffType.ON, getChannelState(INFO_STATE));
-            assertEquals(OnOffType.ON, getChannelState(PLATE_1_IS_PRESENT));
             assertEquals(new StringType("1."), getChannelState(PLATE_1_POWER_STEP));
             assertEquals(new DecimalType(2), getChannelState(PLATE_1_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_2_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_2_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_2_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_3_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_3_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_3_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_4_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_4_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_4_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_5_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_5_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_5_POWER_STEP_RAW));
-            assertEquals(OnOffType.OFF, getChannelState(PLATE_6_IS_PRESENT));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_6_POWER_STEP));
             assertEquals(NULL_VALUE_STATE, getChannelState(PLATE_6_POWER_STEP_RAW));
         });
