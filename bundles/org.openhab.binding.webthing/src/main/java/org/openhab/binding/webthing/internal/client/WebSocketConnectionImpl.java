@@ -47,7 +47,7 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     /**
      * constructor
      *
-     * @param connectionListener the connection listener
+     * @param connectionListener the connection listener to be notified
      * @param pingPeriod the period pings should be sent
      */
     WebSocketConnectionImpl(ConnectionListener connectionListener, Duration pingPeriod) {
