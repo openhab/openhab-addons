@@ -95,26 +95,12 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
                 .withBridge(bridgeHandler.getThing().getUID()).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                 .withLabel(getLabel(deviceState));
 
-        ThingPropertyExtractor.extractProperties(deviceState).entrySet()
+        ThingInformationExtractor.extractProperties(thingTypeUid, deviceState).entrySet()
                 .forEach(entry -> discoveryResultBuilder.withProperty(entry.getKey(), entry.getValue()));
 
         DiscoveryResult result = discoveryResultBuilder.build();
 
         thingDiscovered(result);
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        logger.debug("Starting background discovery");
-
-        removeOlderResults(System.currentTimeMillis());
-        discoveringDevices = true;
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        logger.debug("Stopping background discovery");
-        discoveringDevices = false;
     }
 
     private Optional<ThingTypeUID> getThingTypeUID(DeviceState deviceState) {
@@ -165,6 +151,20 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Starting background discovery");
+
+        removeOlderResults(System.currentTimeMillis());
+        discoveringDevices = true;
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stopping background discovery");
+        discoveringDevices = false;
+    }
+
     /**
      * Invoked when a device is removed from the Miele cloud.
      */
@@ -178,21 +178,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
             return deviceName.get();
         }
 
-        return getDeviceAndTechType(deviceState).orElse("Miele Device");
-    }
-
-    private static Optional<String> getDeviceAndTechType(DeviceState deviceState) {
-        Optional<String> deviceType = deviceState.getType();
-        Optional<String> techType = deviceState.getTechType();
-        if (deviceType.isPresent() && techType.isPresent()) {
-            return Optional.of(deviceType.get() + " " + techType.get());
-        }
-        if (!deviceType.isPresent() && techType.isPresent()) {
-            return techType;
-        }
-        if (deviceType.isPresent() && !techType.isPresent()) {
-            return deviceType;
-        }
-        return Optional.empty();
+        return ThingInformationExtractor.getDeviceAndTechType(deviceState).orElse("Miele Device");
     }
 }

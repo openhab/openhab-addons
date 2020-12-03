@@ -19,27 +19,36 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
-import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * Helper class extracting thing properties from {@link DeviceState}s received from the Miele cloud.
+ * Helper class extracting information related to things from {@link DeviceState}s received from the Miele cloud.
  *
  * @author Björn Lange - Initial contribution
  */
 @NonNullByDefault
-public final class ThingPropertyExtractor {
-    private ThingPropertyExtractor() {
+public final class ThingInformationExtractor {
+    private ThingInformationExtractor() {
         throw new IllegalStateException(getClass().getName() + " cannot be instantiated");
     }
 
-    public static Map<String, String> extractProperties(DeviceState deviceState) {
+    /**
+     * Extracts thing properties from a {@link DeviceState}.
+     *
+     * The returned properties always contain {@link Thing#PROPERTY_SERIAL_NUMBER} and {@link Thing#PROPERTY_MODEL_ID}.
+     * More might be present depending on the type of device.
+     *
+     * @param thingTypeUid {@link ThingTypeUID} of the thing to extract properties for.
+     * @param deviceState {@link DeviceState} received from the Miele cloud.
+     * @return A {@link Map} holding the properties as key-value pairs.
+     */
+    public static Map<String, String> extractProperties(ThingTypeUID thingTypeUid, DeviceState deviceState) {
         var propertyMap = new HashMap<String, String>();
         propertyMap.put(Thing.PROPERTY_SERIAL_NUMBER, getSerialNumber(deviceState));
         propertyMap.put(Thing.PROPERTY_MODEL_ID, getModelId(deviceState));
 
-        if (deviceState.getRawType() == DeviceType.HOB_INDUCTION
-                || deviceState.getRawType() == DeviceType.HOB_HIGHLIGHT) {
+        if (MieleCloudBindingConstants.THING_TYPE_HOB.equals(thingTypeUid)) {
             deviceState.getPlateStepCount().ifPresent(plateCount -> propertyMap
                     .put(MieleCloudBindingConstants.PROPERTY_PLATE_COUNT, plateCount.toString()));
         }
@@ -55,7 +64,18 @@ public final class ThingPropertyExtractor {
         return getDeviceAndTechType(deviceState).orElse("Unknown");
     }
 
-    private static Optional<String> getDeviceAndTechType(DeviceState deviceState) {
+    /**
+     * Formats device type and tech type from the given {@link DeviceState} for the purpose of displaying then to the
+     * user.
+     *
+     * If either of device or tech type is missing then it will be omitted. If both are missing then an empty
+     * {@link Optional} will be returned.
+     *
+     * @param deviceState {@link DeviceState} obtained from the Miele cloud.
+     * @return An {@link Optional} holding the formatted value or an empty {@link Optional} if neither device type nor
+     *         tech type were present.
+     */
+    static Optional<String> getDeviceAndTechType(DeviceState deviceState) {
         Optional<String> deviceType = deviceState.getType();
         Optional<String> techType = deviceState.getTechType();
         if (deviceType.isPresent() && techType.isPresent()) {
