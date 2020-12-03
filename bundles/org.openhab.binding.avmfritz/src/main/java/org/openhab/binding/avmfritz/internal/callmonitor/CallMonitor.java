@@ -75,6 +75,7 @@ public class CallMonitor {
      */
     public void dispose() {
         reconnectJob.cancel(true);
+        CallMonitorThread monitorThread = this.monitorThread;
         if (monitorThread != null) {
             monitorThread.interrupt();
         }
