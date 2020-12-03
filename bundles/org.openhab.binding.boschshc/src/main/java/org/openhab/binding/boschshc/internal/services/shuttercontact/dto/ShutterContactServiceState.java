@@ -10,20 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.windowcontact.dto;
+package org.openhab.binding.boschshc.internal.services.shuttercontact.dto;
 
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.shuttercontact.ShutterContactState;
 
 /**
- * ShutterContactState
- *
- * @author Stefan Kästle - Initial contribution
+ * State for the shutter contact service
+ * 
+ * @author Christian Oeing - Initial contribution
  */
-public class ShutterContactState extends BoschSHCServiceState {
+public class ShutterContactServiceState extends BoschSHCServiceState {
+    /**
+     * Current state of shutter contact.
+     */
+    public ShutterContactState value;
 
-    public ShutterContactState(String type) {
+    public ShutterContactServiceState() {
         super("shutterContactState");
     }
-
-    public String value;
 }

@@ -14,18 +14,17 @@ package org.openhab.binding.boschshc.internal.devices.windowcontact;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_CONTACT;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.windowcontact.dto.ShutterContactState;
-import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
+import java.util.Arrays;
 
-import com.google.gson.JsonElement;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.shuttercontact.ShutterContactService;
+import org.openhab.binding.boschshc.internal.services.shuttercontact.ShutterContactState;
+import org.openhab.binding.boschshc.internal.services.shuttercontact.dto.ShutterContactServiceState;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 
 /**
  * The {@link BoschSHCHandler} is responsible for handling Bosch window/door contacts.
@@ -40,32 +39,12 @@ public class WindowContactHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
-        if (command instanceof RefreshType && CHANNEL_CONTACT.equals(channelUID.getId())) {
-            ShutterContactState state = this.getState("ShutterContact", ShutterContactState.class);
-            if (state != null) {
-                updateShutterContactState(state);
-            }
-        }
+    protected void initializeServices() throws BoschSHCException {
+        this.createService(ShutterContactService::new, this::updateChannels, Arrays.asList(CHANNEL_CONTACT));
     }
 
-    void updateShutterContactState(ShutterContactState state) {
-        State contact = state.value.equals("CLOSED") ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+    private void updateChannels(ShutterContactServiceState state) {
+        State contact = state.value == ShutterContactState.CLOSED ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         updateState(CHANNEL_CONTACT, contact);
-
-        logger.debug("Parsed shutter contact state state of {}: {}", this.getBoschID(), state.value);
-    }
-
-    @Override
-    public void processUpdate(String id, JsonElement state) {
-        logger.debug("WindowContact: received update: {} {}", id, state);
-        @Nullable
-        ShutterContactState shutterContactState = gson.fromJson(state, ShutterContactState.class);
-        if (shutterContactState == null) {
-            logger.warn("Received unknown update in window contact handler: {}", state);
-            return;
-        }
-        updateShutterContactState(shutterContactState);
     }
 }
