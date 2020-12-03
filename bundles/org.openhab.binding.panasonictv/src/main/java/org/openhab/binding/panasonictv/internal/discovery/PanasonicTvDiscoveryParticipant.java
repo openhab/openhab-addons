@@ -14,14 +14,13 @@ package org.openhab.binding.panasonictv.internal.discovery;
 
 import static org.openhab.binding.panasonictv.internal.PanasonicTvBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.*;
+import org.openhab.binding.panasonictv.internal.service.MediaRendererService;
+import org.openhab.binding.panasonictv.internal.service.RemoteControllerService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -41,6 +40,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = UpnpDiscoveryParticipant.class)
 public class PanasonicTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(PanasonicTvDiscoveryParticipant.class);
+    private final HashMap<String, DeviceInformation> incompleteDiscoveryResults = new HashMap<>();
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -49,32 +49,54 @@ public class PanasonicTvDiscoveryParticipant implements UpnpDiscoveryParticipant
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
-        return DeviceInformation.fromDevice(device).map(deviceInformation -> {
-            ThingUID thingUID = deviceInformation.thingUID;
-            if (thingUID == null) {
-                logger.debug("Ignoring {}: No thing UID created, probably not a Panasonic TV", deviceInformation);
-                return null;
-            }
+        DeviceInformation deviceInformation = DeviceInformation.fromDevice(device);
+        if (deviceInformation == null) {
+            return null;
+        }
 
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(CONFIG_HOST, deviceInformation.host);
-            properties.put(CONFIG_UDN, deviceInformation.udn);
-            String serialNumber = deviceInformation.serialNumber;
-            if (serialNumber != null) {
-                properties.put(PROPERTY_SERIAL, serialNumber);
-            }
+        if (!deviceInformation.manufacturer.toUpperCase().contains("PANASONIC")) {
+            logger.trace("Ignoring {}: Not a Panasonic TV", deviceInformation);
+            return null;
+        }
 
-            logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'", deviceInformation.modelName,
-                    deviceInformation.udn);
+        logger.debug("Processing {}", deviceInformation);
+        DeviceInformation resultingDeviceInformation = incompleteDiscoveryResults.compute(deviceInformation.host,
+                (k, v) -> deviceInformation.merge(v));
+        if (resultingDeviceInformation == null || !resultingDeviceInformation.isComplete()) {
+            logger.debug("{} still incomplete", deviceInformation.host);
+            return null;
+        }
 
-            String label = Objects.requireNonNullElse(deviceInformation.friendlyName, deviceInformation.udn);
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(CONFIG_UDN).withLabel(label).build();
-        }).orElse(null);
+        ThingUID thingUid = resultingDeviceInformation.thingUid;
+        String mrUdn = resultingDeviceInformation.services.get(MediaRendererService.SERVICE_NAME);
+        String rcUdn = resultingDeviceInformation.services.get(RemoteControllerService.SERVICE_NAME);
+
+        if (thingUid == null || mrUdn == null || rcUdn == null) {
+            logger.warn(
+                    "Found a complete result but something is missing: thingUid={}, mrUdn={}, rcUdn={}. Please report a bug.",
+                    thingUid, mrUdn, rcUdn);
+            return null;
+        }
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(CONFIG_MEDIARENDERER_UDN, mrUdn);
+        properties.put(CONFIG_REMOTECONTROLLER_UDN, rcUdn);
+        String serialNumber = resultingDeviceInformation.serialNumber;
+        if (serialNumber != null) {
+            properties.put(PROPERTY_SERIAL, serialNumber);
+        }
+
+        logger.debug("Created a DiscoveryResult for device '{}' ({}) with UDNs '{}' and '{}'",
+                resultingDeviceInformation.modelName, resultingDeviceInformation.host, mrUdn, rcUdn);
+
+        String label = Objects.requireNonNullElse(resultingDeviceInformation.friendlyName, mrUdn);
+        return DiscoveryResultBuilder.create(thingUid).withProperties(properties)
+                .withRepresentationProperty(CONFIG_MEDIARENDERER_UDN).withLabel(label).build();
     }
 
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
-        return DeviceInformation.fromDevice(device).map(deviceInformation1 -> deviceInformation1.thingUID).orElse(null);
+        DeviceInformation deviceInformation = DeviceInformation.fromDevice(device);
+        return deviceInformation != null ? deviceInformation.thingUid : null;
     }
 }

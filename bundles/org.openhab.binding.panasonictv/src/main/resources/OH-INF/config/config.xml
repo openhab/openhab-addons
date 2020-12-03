@@ -5,14 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:panasonictv:tv">
-		<parameter name="udn" type="text">
-			<label>UDN</label>
-			<description>The UDN of this device</description>
+		<parameter name="remoteControllerUdn" type="text" required="true">
+			<label>Remote Controller UDN</label>
+			<description>The UDN of this device's remote controller service</description>
 		</parameter>
-		<parameter name="hostName" type="text" required="true">
-			<label>Host name</label>
-			<description>Network address of the Panasonic TV.</description>
-			<context>network-address</context>
+		<parameter name="mediaRendererUdn" type="text" required="true">
+			<label>Media Renderer UDN</label>
+			<description>The UDN of this device's media renderer service</description>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" unit="ms">
 			<label>Refresh Interval</label>

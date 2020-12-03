@@ -19,8 +19,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
-import org.openhab.binding.panasonictv.internal.event.PanasonicEventListenerService;
 import org.openhab.binding.panasonictv.internal.handler.PanasonicTvHandler;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.Thing;
@@ -44,15 +42,10 @@ public class PanasonicTvHandlerFactory extends BaseThingHandlerFactory {
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_PANASONICTV);
 
     private final UpnpIOService upnpIOService;
-    private final UpnpService upnpService;
-    private final PanasonicEventListenerService panasonicEventListenerService;
 
     @Activate
-    public PanasonicTvHandlerFactory(@Reference UpnpIOService upnpIOService, @Reference UpnpService upnpService,
-            @Reference PanasonicEventListenerService panasonicEventListenerService) {
+    public PanasonicTvHandlerFactory(@Reference PanasonicUpnpIOService upnpIOService) {
         this.upnpIOService = upnpIOService;
-        this.upnpService = upnpService;
-        this.panasonicEventListenerService = panasonicEventListenerService;
     }
 
     @Override
@@ -65,7 +58,7 @@ public class PanasonicTvHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_PANASONICTV)) {
-            return new PanasonicTvHandler(thing, upnpIOService, upnpService, panasonicEventListenerService);
+            return new PanasonicTvHandler(thing, upnpIOService);
         }
 
         return null;

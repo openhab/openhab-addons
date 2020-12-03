@@ -10,12 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.panasonictv.internal.service;
+package org.openhab.binding.panasonictv.internal.api;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.panasonictv.internal.event.PanasonicEventListener;
 import org.openhab.core.types.Command;
 
 /**
@@ -31,7 +30,7 @@ public interface PanasonicTvService {
      *
      * @return List of supported
      */
-    List<String> getSupportedChannelNames();
+    Set<String> getSupportedChannelNames();
 
     /**
      * Procedure for sending command.
@@ -40,22 +39,6 @@ public interface PanasonicTvService {
      * @param command the command to be handled
      */
     void handleCommand(String channel, Command command);
-
-    /**
-     * Procedure for register event listener.
-     *
-     * @param listener
-     *            Event listener instance to handle events.
-     */
-    void addEventListener(PanasonicEventListener listener);
-
-    /**
-     * Procedure for remove event listener.
-     *
-     * @param listener
-     *            Event listener instance to remove.
-     */
-    void removeEventListener(PanasonicEventListener listener);
 
     /**
      * Procedure for starting service.

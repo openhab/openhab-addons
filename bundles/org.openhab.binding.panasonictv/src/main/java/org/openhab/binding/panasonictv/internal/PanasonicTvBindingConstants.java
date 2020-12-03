@@ -28,8 +28,8 @@ public class PanasonicTvBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_PANASONICTV = new ThingTypeUID(BINDING_ID, "tv");
 
-    public static final String CONFIG_HOST = "hostName";
-    public static final String CONFIG_UDN = "udn";
+    public static final String CONFIG_REMOTECONTROLLER_UDN = "remoteControllerUdn";
+    public static final String CONFIG_MEDIARENDERER_UDN = "mediaRendererUdn";
     public static final String PROPERTY_SERIAL = "serialNumber";
 
     // List of all remote controller thing channel id's
