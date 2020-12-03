@@ -19,8 +19,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.LocaleProvider;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.i18n.LocaleProvider;
 
 /**
  * @author Björn Lange - Initial Contribution

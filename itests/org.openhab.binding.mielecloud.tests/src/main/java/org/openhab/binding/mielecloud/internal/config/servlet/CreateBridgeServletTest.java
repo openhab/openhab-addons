@@ -21,10 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.discovery.inbox.Inbox;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
@@ -33,6 +29,10 @@ import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
 import org.openhab.binding.mielecloud.internal.util.AbstractConfigFlowTest;
 import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.util.Website;
+import org.openhab.core.config.discovery.inbox.Inbox;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.binding.ThingHandler;
 
 /**
  * @author Björn Lange - Initial Contribution

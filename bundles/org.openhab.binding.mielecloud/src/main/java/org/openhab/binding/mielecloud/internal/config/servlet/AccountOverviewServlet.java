@@ -21,14 +21,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
+import org.openhab.binding.mielecloud.internal.config.ThingsTemplateGenerator;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.inbox.Inbox;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
-import org.openhab.binding.mielecloud.internal.config.ThingsTemplateGenerator;
 
 /**
  * Servlet showing the account overview page.
@@ -50,7 +50,7 @@ public final class AccountOverviewServlet extends AbstractShowPageServlet {
 
     /**
      * Creates a new {@link AccountOverviewServlet}.
-     * 
+     *
      * @param resourceLoader Loader to use for resources.
      * @param thingRegistry openHAB thing registry.
      * @param inbox openHAB inbox for discovery results.

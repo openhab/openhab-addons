@@ -19,12 +19,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.auth.OAuthException;
 import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
 import org.openhab.binding.mielecloud.internal.config.exception.NoOngoingAuthorizationException;
 import org.openhab.binding.mielecloud.internal.config.exception.OngoingAuthorizationException;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

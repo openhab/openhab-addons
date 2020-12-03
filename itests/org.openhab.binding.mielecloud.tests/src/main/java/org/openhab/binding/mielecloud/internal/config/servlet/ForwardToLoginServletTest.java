@@ -44,10 +44,13 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
         setPrivate(getForwardToLoginServlet(), "authorizationHandler", authorizationHandler);
 
         // when:
-        Website maybePairAccountSite = getCrawler().doGetRelative("/mielecloud/forwardToLogin?"
-                + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
-                + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
+        Website maybePairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
 
         // then:
         assertTrue(maybePairAccountSite.contains(
@@ -65,10 +68,13 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
         setPrivate(getForwardToLoginServlet(), "authorizationHandler", authorizationHandler);
 
         // when:
-        Website maybePairAccountSite = getCrawler().doGetRelative("/mielecloud/forwardToLogin?"
-                + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
-                + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
+        Website maybePairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
 
         // then:
         assertTrue(maybePairAccountSite.contains(
@@ -80,9 +86,11 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
     @Test
     public void whenNoClientIdIsPassedThenTheBrowserIsRedirectedToThePairSiteAndAWarningIsDisplayed() throws Exception {
         // when:
-        Website maybePairAccountSite = getCrawler().doGetRelative("/mielecloud/forwardToLogin?"
-                + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
-                + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
+        Website maybePairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
 
         // then:
         assertTrue(maybePairAccountSite.contains(
@@ -96,8 +104,10 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
         // when:
         Website maybePairAccountSite = getCrawler()
                 .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "=&"
-                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET
-                        + "&" + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
+                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
 
         // then:
         assertTrue(maybePairAccountSite.contains(
@@ -109,9 +119,11 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
     public void whenNoClientSecretIsPassedThenTheBrowserIsRedirectedToThePairSiteAndAWarningIsDisplayed()
             throws Exception {
         // when:
-        Website maybePairAccountSite = getCrawler().doGetRelative("/mielecloud/forwardToLogin?"
-                + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
+        Website maybePairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
 
         // then:
         assertTrue(maybePairAccountSite.contains(
@@ -125,8 +137,10 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
         // when:
         Website maybePairAccountSite = getCrawler()
                 .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&" + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
-                        + "&" + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
 
         // then:
         assertTrue(maybePairAccountSite.contains(
@@ -143,10 +157,13 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
         setPrivate(getForwardToLoginServlet(), "authorizationHandler", authorizationHandler);
 
         // when:
-        Website maybePairAccountSite = getCrawler().doGetRelative("/mielecloud/forwardToLogin?"
-                + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
-                + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
+        Website maybePairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
 
         // then:
         assertTrue(maybePairAccountSite.contains(
@@ -158,9 +175,11 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
     public void whenNoBridgeUidIsPassedThenTheBrowserIsRedirectedToThePairSiteAndAWarningIsDisplayed()
             throws Exception {
         // when:
-        Website maybePairAccountSite = getCrawler().doGetRelative("/mielecloud/forwardToLogin?"
-                + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET);
+        Website maybePairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET);
 
         // then:
         assertTrue(maybePairAccountSite.contains(
@@ -172,10 +191,12 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
     public void whenAnEmptyBridgeUidIsPassedThenTheBrowserIsRedirectedToThePairSiteAndAWarningIsDisplayed()
             throws Exception {
         // when:
-        Website maybePairAccountSite = getCrawler().doGetRelative("/mielecloud/forwardToLogin?"
-                + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
-                + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=");
+        Website maybePairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=");
 
         // then:
         assertTrue(maybePairAccountSite.contains(
@@ -187,10 +208,12 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
     public void whenAMalformedBridgeUidIsPassedThenTheBrowserIsRedirectedToThePairSiteAndAWarningIsDisplayed()
             throws Exception {
         // when:
-        Website maybePairAccountSite = getCrawler().doGetRelative("/mielecloud/forwardToLogin?"
-                + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
-                + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=genesis!");
+        Website maybePairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=genesis!");
 
         // then:
         assertTrue(maybePairAccountSite.contains(

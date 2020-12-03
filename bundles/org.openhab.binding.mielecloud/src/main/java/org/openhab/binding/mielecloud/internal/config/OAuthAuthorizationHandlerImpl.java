@@ -20,15 +20,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mielecloud.internal.auth.OAuthException;
+import org.openhab.binding.mielecloud.internal.config.exception.NoOngoingAuthorizationException;
+import org.openhab.binding.mielecloud.internal.config.exception.OngoingAuthorizationException;
+import org.openhab.binding.mielecloud.internal.webservice.DefaultMieleWebservice;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.binding.mielecloud.internal.auth.OAuthException;
-import org.openhab.binding.mielecloud.internal.config.exception.NoOngoingAuthorizationException;
-import org.openhab.binding.mielecloud.internal.config.exception.OngoingAuthorizationException;
-import org.openhab.binding.mielecloud.internal.webservice.DefaultMieleWebservice;
 
 /**
  * {@link OAuthAuthorizationHandler} implementation handling the OAuth 2 authorization via openHAB services.

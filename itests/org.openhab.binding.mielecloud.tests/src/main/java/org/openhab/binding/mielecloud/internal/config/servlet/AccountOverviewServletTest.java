@@ -18,6 +18,12 @@ import static org.mockito.Mockito.*;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
+import org.openhab.binding.mielecloud.internal.util.AbstractConfigFlowTest;
+import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
+import org.openhab.binding.mielecloud.internal.util.ReflectionUtil;
+import org.openhab.binding.mielecloud.internal.util.Website;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingRegistry;
@@ -25,12 +31,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
-import org.junit.jupiter.api.Test;
-import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
-import org.openhab.binding.mielecloud.internal.util.AbstractConfigFlowTest;
-import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
-import org.openhab.binding.mielecloud.internal.util.ReflectionUtil;
-import org.openhab.binding.mielecloud.internal.util.Website;
 
 /**
  * @author Björn Lange - Initial Contribution

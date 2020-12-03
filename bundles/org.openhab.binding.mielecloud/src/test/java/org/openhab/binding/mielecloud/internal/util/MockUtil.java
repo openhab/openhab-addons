@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mielecloud.internal.util;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -20,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
-import static org.junit.jupiter.api.Assertions.fail;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Device;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceIdentLabel;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Ident;

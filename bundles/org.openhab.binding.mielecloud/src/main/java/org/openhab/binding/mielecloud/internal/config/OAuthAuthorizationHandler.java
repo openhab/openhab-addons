@@ -13,9 +13,9 @@
 package org.openhab.binding.mielecloud.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.binding.mielecloud.internal.config.exception.NoOngoingAuthorizationException;
 import org.openhab.binding.mielecloud.internal.config.exception.OngoingAuthorizationException;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * Handles OAuth 2 authorization processes.

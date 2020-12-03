@@ -67,5 +67,4 @@ public class HobDeviceThingHandler extends AbstractMieleThingHandler {
     protected void updateActionState(ActionsChannelState actions) {
         // The Hob device has no trigger actions
     }
-
 }

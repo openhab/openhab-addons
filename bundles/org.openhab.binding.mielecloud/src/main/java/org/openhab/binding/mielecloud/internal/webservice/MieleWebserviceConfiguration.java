@@ -16,9 +16,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 
 /**
  * Represents a webservice configuration.

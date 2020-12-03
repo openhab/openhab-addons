@@ -23,13 +23,6 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.types.Command;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.I18NKeys;
 import org.openhab.binding.mielecloud.internal.auth.OAuthException;
@@ -48,6 +41,13 @@ import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.exception.MieleWebserviceInitializationException;
 import org.openhab.binding.mielecloud.internal.webservice.language.CombiningLanguageProvider;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

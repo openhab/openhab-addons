@@ -192,7 +192,7 @@ public class SseConnectionTest {
         sseConnection.connect();
 
         // then:
-        assertTrue(((Boolean)getPrivate(sseConnection, "active")).booleanValue());
+        assertTrue(((Boolean) getPrivate(sseConnection, "active")).booleanValue());
     }
 
     @Test
@@ -211,7 +211,7 @@ public class SseConnectionTest {
         headersListener.onHeaders(null);
 
         // then:
-        verify(scheduler).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(scheduler).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
     }
 
     @Test
@@ -224,7 +224,7 @@ public class SseConnectionTest {
         invokePrivate(getSseConnection(), "onSseStreamClosed", new Class[] { Throwable.class }, new TimeoutException());
 
         // then:
-        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verify(getMockedSseListener()).onConnectionError(ConnectionError.TIMEOUT, 0);
         verify(getMockedBackoffStrategy()).getSecondsUntilRetry(anyInt());
     }
@@ -240,7 +240,7 @@ public class SseConnectionTest {
                 AuthorizationFailedRetryStrategy.JETTY_401_HEADER_BODY_MISMATCH_EXCEPTION_MESSAGE));
 
         // then:
-        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verifyNoMoreInteractions(getMockedScheduler());
         verify(getMockedSseListener()).onConnectionError(ConnectionError.AUTHORIZATION_FAILED, 0);
     }
@@ -256,7 +256,7 @@ public class SseConnectionTest {
                 new IllegalStateException());
 
         // then:
-        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verify(getMockedSseListener()).onConnectionError(ConnectionError.SSE_STREAM_ENDED, 0);
         verify(getMockedBackoffStrategy()).getSecondsUntilRetry(anyInt());
     }
@@ -271,7 +271,7 @@ public class SseConnectionTest {
         getRegisteredCompleteListener().onComplete(null);
 
         // then:
-        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verify(getMockedSseListener()).onConnectionError(ConnectionError.SSE_STREAM_ENDED, 0);
         verify(getMockedBackoffStrategy()).getSecondsUntilRetry(anyInt());
     }
@@ -288,7 +288,7 @@ public class SseConnectionTest {
         getRegisteredCompleteListener().onComplete(result);
 
         // then:
-        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verify(getMockedSseListener()).onConnectionError(ConnectionError.SSE_STREAM_ENDED, 0);
         verify(getMockedBackoffStrategy()).getSecondsUntilRetry(anyInt());
     }
@@ -309,7 +309,7 @@ public class SseConnectionTest {
         getRegisteredCompleteListener().onComplete(result);
 
         // then:
-        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verify(getMockedSseListener()).onConnectionError(ConnectionError.SSE_STREAM_ENDED, 0);
         verify(getMockedBackoffStrategy()).getSecondsUntilRetry(anyInt());
     }
@@ -330,7 +330,7 @@ public class SseConnectionTest {
         getRegisteredCompleteListener().onComplete(result);
 
         // then:
-        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verify(getMockedSseListener()).onConnectionError(ConnectionError.AUTHORIZATION_FAILED, 0);
     }
 
@@ -351,8 +351,8 @@ public class SseConnectionTest {
         getRegisteredCompleteListener().onComplete(result);
 
         // then:
-        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
-        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable>any(), eq(10L), eq(TimeUnit.SECONDS));
+        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
+        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable> any(), eq(10L), eq(TimeUnit.SECONDS));
         verify(getMockedSseListener()).onConnectionError(ConnectionError.TOO_MANY_RERQUESTS, 0);
         verify(getMockedBackoffStrategy()).getSecondsUntilRetry(anyInt());
     }
@@ -376,7 +376,7 @@ public class SseConnectionTest {
         getRegisteredCompleteListener().onComplete(result);
 
         // then:
-        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable>any(), eq(3600L), eq(TimeUnit.SECONDS));
+        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable> any(), eq(3600L), eq(TimeUnit.SECONDS));
         verify(getMockedSseListener()).onConnectionError(ConnectionError.TOO_MANY_RERQUESTS, 0);
     }
 
@@ -399,7 +399,7 @@ public class SseConnectionTest {
         getRegisteredCompleteListener().onComplete(result);
 
         // then:
-        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable>any(), eq(5L), eq(TimeUnit.SECONDS));
+        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable> any(), eq(5L), eq(TimeUnit.SECONDS));
         verify(getMockedSseListener()).onConnectionError(ConnectionError.TOO_MANY_RERQUESTS, 0);
     }
 
@@ -419,7 +419,7 @@ public class SseConnectionTest {
         getRegisteredCompleteListener().onComplete(result);
 
         // then:
-        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verify(getMockedSseListener()).onConnectionError(ConnectionError.SERVER_ERROR, 0);
     }
 
@@ -460,7 +460,7 @@ public class SseConnectionTest {
         getRegisteredCompleteListener().onComplete(result);
 
         // then:
-        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verify(getMockedSseListener()).onConnectionError(ConnectionError.OTHER_HTTP_ERROR, 0);
         verify(getMockedBackoffStrategy()).getSecondsUntilRetry(anyInt());
     }
@@ -521,7 +521,7 @@ public class SseConnectionTest {
                 new MieleWebserviceDisconnectSseException());
 
         // then:
-        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verifyNoMoreInteractions(getMockedScheduler());
         verifyNoInteractions(getMockedSseListener());
     }
@@ -537,7 +537,7 @@ public class SseConnectionTest {
         invokePrivate(getSseConnection(), "connectInternal");
 
         // then:
-        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any());
+        verify(getMockedScheduler()).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
         verifyNoMoreInteractions(getMockedScheduler());
         verifyNoInteractions(getMockedSseListener());
     }

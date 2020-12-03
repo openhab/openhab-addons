@@ -15,13 +15,13 @@ package org.openhab.binding.mielecloud.internal.handler;
 import static org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.Channels.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mielecloud.internal.handler.channel.ActionsChannelState;
+import org.openhab.binding.mielecloud.internal.handler.channel.DeviceChannelState;
+import org.openhab.binding.mielecloud.internal.handler.channel.TransitionChannelState;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.binding.mielecloud.internal.handler.channel.ActionsChannelState;
-import org.openhab.binding.mielecloud.internal.handler.channel.DeviceChannelState;
-import org.openhab.binding.mielecloud.internal.handler.channel.TransitionChannelState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

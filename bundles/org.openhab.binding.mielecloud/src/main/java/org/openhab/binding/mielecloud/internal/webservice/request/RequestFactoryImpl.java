@@ -21,9 +21,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.binding.mielecloud.internal.webservice.exception.MieleWebserviceInitializationException;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 
 /**
  * Default implementation of {@link RequestFactory}.

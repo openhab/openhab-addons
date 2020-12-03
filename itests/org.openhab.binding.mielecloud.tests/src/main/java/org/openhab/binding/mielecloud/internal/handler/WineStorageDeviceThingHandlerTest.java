@@ -20,9 +20,6 @@ import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingInte
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.webservice.api.ActionsState;
@@ -30,6 +27,9 @@ import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.PowerStatus;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 
 /**
  * @author Björn Lange - Initial contribution

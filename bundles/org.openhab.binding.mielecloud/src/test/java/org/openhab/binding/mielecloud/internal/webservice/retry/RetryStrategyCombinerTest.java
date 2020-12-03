@@ -63,7 +63,7 @@ public class RetryStrategyCombinerTest {
     @NonNullByDefault({})
     public void testPerformRetryableOperationInvokesRetryStrategiesInCorrectOrder() {
         // given:
-        when(first.<@Nullable String>performRetryableOperation(any(Supplier.class), any()))
+        when(first.<@Nullable String> performRetryableOperation(any(Supplier.class), any()))
                 .thenAnswer(new Answer<String>() {
                     @Override
                     public String answer(@Nullable InvocationOnMock invocation) throws Throwable {
@@ -71,7 +71,7 @@ public class RetryStrategyCombinerTest {
                         return inner.get();
                     }
                 });
-        when(second.<@Nullable String>performRetryableOperation(any(Supplier.class), any()))
+        when(second.<@Nullable String> performRetryableOperation(any(Supplier.class), any()))
                 .thenAnswer(new Answer<String>() {
                     @Override
                     public String answer(@Nullable InvocationOnMock invocation) throws Throwable {

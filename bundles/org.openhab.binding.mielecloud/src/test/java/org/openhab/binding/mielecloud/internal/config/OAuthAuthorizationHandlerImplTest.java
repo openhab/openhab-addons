@@ -24,10 +24,6 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.openhab.core.thing.ThingUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -36,6 +32,10 @@ import org.openhab.binding.mielecloud.internal.MieleCloudBindingTestConstants;
 import org.openhab.binding.mielecloud.internal.auth.OAuthException;
 import org.openhab.binding.mielecloud.internal.config.exception.NoOngoingAuthorizationException;
 import org.openhab.binding.mielecloud.internal.config.exception.OngoingAuthorizationException;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * @author Björn Lange - Initial Contribution
@@ -94,7 +94,7 @@ public final class OAuthAuthorizationHandlerImplTest {
         when(timer.isDone()).thenReturn(false);
 
         ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
-        when(scheduler.schedule(ArgumentMatchers.<Runnable>any(), anyLong(), any())).thenAnswer(invocation -> {
+        when(scheduler.schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any())).thenAnswer(invocation -> {
             scheduledRunnable = invocation.getArgument(0);
             return timer;
         });
@@ -157,7 +157,8 @@ public final class OAuthAuthorizationHandlerImplTest {
 
         // when:
         assertThrows(NoOngoingAuthorizationException.class, () -> {
-            getAuthorizationHandler().completeAuthorization("http://127.0.0.1:8080/mielecloud/result?code=abc&state=def");
+            getAuthorizationHandler()
+                    .completeAuthorization("http://127.0.0.1:8080/mielecloud/result?code=abc&state=def");
         });
     }
 
@@ -182,8 +183,8 @@ public final class OAuthAuthorizationHandlerImplTest {
 
     @Test
     public void whenGetAuthorizationUrlFromTheFrameworkFailsThenTheOngoingAuthorizationIsAborted()
-            throws org.openhab.core.auth.client.oauth2.OAuthException, IllegalArgumentException,
-            IllegalAccessException, NoSuchFieldException, SecurityException {
+            throws org.openhab.core.auth.client.oauth2.OAuthException, IllegalArgumentException, IllegalAccessException,
+            NoSuchFieldException, SecurityException {
         // given:
         when(getClientService().getAuthorizationUrl(anyString(), isNull(), isNull()))
                 .thenThrow(new org.openhab.core.auth.client.oauth2.OAuthException());

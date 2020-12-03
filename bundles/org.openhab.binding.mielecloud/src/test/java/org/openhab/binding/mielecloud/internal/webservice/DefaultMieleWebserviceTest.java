@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingTestConstants;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
@@ -44,6 +43,7 @@ import org.openhab.binding.mielecloud.internal.webservice.retry.AuthorizationFai
 import org.openhab.binding.mielecloud.internal.webservice.retry.NTimesRetryStrategy;
 import org.openhab.binding.mielecloud.internal.webservice.retry.RetryStrategy;
 import org.openhab.binding.mielecloud.internal.webservice.retry.RetryStrategyCombiner;
+import org.openhab.core.io.net.http.HttpClientFactory;
 
 /**
  * @author Björn Lange - Initial contribution
@@ -429,7 +429,7 @@ public class DefaultMieleWebserviceTest {
 
             // when:
             assertThrows(TooManyRequestsException.class, () -> {
-               webservice.putProcessAction(DEVICE_IDENTIFIER, ProcessAction.START);
+                webservice.putProcessAction(DEVICE_IDENTIFIER, ProcessAction.START);
             });
         }
     }

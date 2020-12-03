@@ -31,11 +31,13 @@ public class PairAccountServletTest extends AbstractConfigFlowTest {
     @Test
     public void whenPairAccountIsInvokedWithClientIdParameterThenTheParameterIsPlacedInTheInputBox() throws Exception {
         // when:
-        Website pairAccountSite = getCrawler().doGetRelative("/mielecloud/pair?"
-                + PairAccountServlet.CLIENT_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_ID);
+        Website pairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/pair?" + PairAccountServlet.CLIENT_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID);
 
         // then:
-        assertEquals(MieleCloudBindingIntegrationTestConstants.CLIENT_ID, pairAccountSite.getValueOfInput(CLIENT_ID_INPUT_NAME));
+        assertEquals(MieleCloudBindingIntegrationTestConstants.CLIENT_ID,
+                pairAccountSite.getValueOfInput(CLIENT_ID_INPUT_NAME));
         assertEquals("", pairAccountSite.getValueOfInput(CLIENT_SECRET_INPUT_NAME));
     }
 
@@ -43,11 +45,13 @@ public class PairAccountServletTest extends AbstractConfigFlowTest {
     public void whenPairAccountIsInvokedWithClientSecretParameterThenTheParameterIsPlacedInTheInputBox()
             throws Exception {
         // when:
-        Website pairAccountSite = getCrawler().doGetRelative("/mielecloud/pair?"
-                + PairAccountServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET);
+        Website pairAccountSite = getCrawler()
+                .doGetRelative("/mielecloud/pair?" + PairAccountServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET);
 
         // then:
         assertEquals("", pairAccountSite.getValueOfInput(CLIENT_ID_INPUT_NAME));
-        assertEquals(MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET, pairAccountSite.getValueOfInput(CLIENT_SECRET_INPUT_NAME));
+        assertEquals(MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET,
+                pairAccountSite.getValueOfInput(CLIENT_SECRET_INPUT_NAME));
     }
 }

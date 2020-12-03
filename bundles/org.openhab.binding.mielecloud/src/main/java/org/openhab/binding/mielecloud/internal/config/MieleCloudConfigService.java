@@ -19,11 +19,6 @@ import javax.servlet.ServletException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.discovery.inbox.Inbox;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.binding.mielecloud.internal.config.servlet.AccountOverviewServlet;
 import org.openhab.binding.mielecloud.internal.config.servlet.CreateBridgeServlet;
 import org.openhab.binding.mielecloud.internal.config.servlet.FailureServlet;
@@ -36,6 +31,11 @@ import org.openhab.binding.mielecloud.internal.webservice.language.CombiningLang
 import org.openhab.binding.mielecloud.internal.webservice.language.JvmLanguageProvider;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
 import org.openhab.binding.mielecloud.internal.webservice.language.OpenHabLanguageProvider;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.config.discovery.inbox.Inbox;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.thing.ThingRegistry;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;

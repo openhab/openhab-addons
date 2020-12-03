@@ -39,14 +39,15 @@ import org.openhab.binding.mielecloud.internal.webservice.exception.TooManyReque
 public class ActionStateFetcherTest {
     private ScheduledExecutorService mockImmediatelyExecutingExecutorService() {
         ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
-        when(scheduler.submit(ArgumentMatchers.<Runnable>any())).thenAnswer(new Answer<@Nullable ScheduledFuture<?>>() {
-            @Override
-            @Nullable
-            public ScheduledFuture<?> answer(@Nullable InvocationOnMock invocation) throws Throwable {
-                ((Runnable) MockUtil.requireNonNull(invocation).getArgument(0)).run();
-                return null;
-            }
-        });
+        when(scheduler.submit(ArgumentMatchers.<Runnable> any()))
+                .thenAnswer(new Answer<@Nullable ScheduledFuture<?>>() {
+                    @Override
+                    @Nullable
+                    public ScheduledFuture<?> answer(@Nullable InvocationOnMock invocation) throws Throwable {
+                        ((Runnable) MockUtil.requireNonNull(invocation).getArgument(0)).run();
+                        return null;
+                    }
+                });
         return scheduler;
     }
 

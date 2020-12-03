@@ -19,16 +19,16 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeEach;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
+import org.openhab.binding.mielecloud.internal.handler.MieleBridgeHandler;
 import org.openhab.core.config.discovery.inbox.Inbox;
+import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.openhab.core.test.storage.VolatileStorageService;
-import org.junit.jupiter.api.BeforeEach;
-import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
-import org.openhab.binding.mielecloud.internal.handler.MieleBridgeHandler;
 
 /**
  * Parent class for openHAB OSGi tests offering helper methods for common interactions with the openHAB runtime and its

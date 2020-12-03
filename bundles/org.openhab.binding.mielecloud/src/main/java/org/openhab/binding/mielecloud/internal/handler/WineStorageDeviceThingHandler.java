@@ -15,11 +15,11 @@ package org.openhab.binding.mielecloud.internal.handler;
 import static org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.Channels.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Thing;
 import org.openhab.binding.mielecloud.internal.handler.channel.ActionsChannelState;
 import org.openhab.binding.mielecloud.internal.handler.channel.DeviceChannelState;
 import org.openhab.binding.mielecloud.internal.handler.channel.TransitionChannelState;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Thing;
 
 /**
  * ThingHandler implementation for the Miele wine storage devices.

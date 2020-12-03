@@ -20,10 +20,6 @@ import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.setPri
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.config.servlet.CreateBridgeServlet;
 import org.openhab.binding.mielecloud.internal.config.servlet.ForwardToLoginServlet;
@@ -35,6 +31,10 @@ import org.openhab.binding.mielecloud.internal.util.ReflectionUtil;
 import org.openhab.binding.mielecloud.internal.util.Website;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebserviceFactory;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
 
 /**
  * @author Björn Lange - Initial Contribution
@@ -45,7 +45,8 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
         OAuthAuthorizationHandler authorizationHandler = mock(OAuthAuthorizationHandler.class);
         when(authorizationHandler.getAccessToken(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID))
                 .thenReturn(MieleCloudBindingIntegrationTestConstants.ACCESS_TOKEN);
-        when(authorizationHandler.getBridgeUid()).thenReturn(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID);
+        when(authorizationHandler.getBridgeUid())
+                .thenReturn(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID);
 
         setPrivate(getResultServlet(), "authorizationHandler", authorizationHandler);
         setPrivate(getCreateBridgeServlet(), "authorizationHandler", authorizationHandler);
@@ -78,15 +79,18 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
         Website pairAccountSite = getCrawler().doGetRelative(pairAccountUrl);
         String forwardToLoginUrl = pairAccountSite.getFormAction();
 
-        Website mieleLoginSite = getCrawler().doGetRelative(forwardToLoginUrl + "?"
-                + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
-                + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
+        Website mieleLoginSite = getCrawler()
+                .doGetRelative(forwardToLoginUrl + "?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
+                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
+                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
+                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID);
         String redirectionUrl = mieleLoginSite.getValueOfInput("redirect_uri").replace("http://127.0.0.1:8080", "");
         String state = mieleLoginSite.getValueOfInput("state");
 
-        Website resultSite = getCrawler()
-                .doGetRelative(redirectionUrl + "?code=" + MieleCloudBindingIntegrationTestConstants.AUTHORIZATION_CODE + "&state=" + state);
+        Website resultSite = getCrawler().doGetRelative(redirectionUrl + "?code="
+                + MieleCloudBindingIntegrationTestConstants.AUTHORIZATION_CODE + "&state=" + state);
         String createBridgeUrl = resultSite.getFormAction();
 
         Website finalOverview = getCrawler()

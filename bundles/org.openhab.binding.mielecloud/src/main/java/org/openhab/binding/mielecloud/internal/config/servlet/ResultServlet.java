@@ -15,10 +15,10 @@ package org.openhab.binding.mielecloud.internal.config.servlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.binding.mielecloud.internal.auth.OAuthException;
 import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
 import org.openhab.binding.mielecloud.internal.config.exception.NoOngoingAuthorizationException;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public final class ResultServlet extends AbstractRedirectionServlet {
 
     /**
      * Creates a new {@link ResultServlet}.
-     * 
+     *
      * @param authorizationHandler Handler implementing the OAuth authorization.
      */
     public ResultServlet(OAuthAuthorizationHandler authorizationHandler) {

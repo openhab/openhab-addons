@@ -28,11 +28,11 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.util.MockUtil;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
 import org.openhab.binding.mielecloud.internal.webservice.request.RequestFactoryImpl;
+import org.openhab.core.io.net.http.HttpClientFactory;
 
 /**
  * @author Björn Lange - Initial contribution

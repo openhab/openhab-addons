@@ -18,7 +18,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.openhab.binding.mielecloud.internal.config.MieleCloudConfigService;
 import org.openhab.binding.mielecloud.internal.config.servlet.AccountOverviewServlet;
@@ -26,6 +25,7 @@ import org.openhab.binding.mielecloud.internal.config.servlet.CreateBridgeServle
 import org.openhab.binding.mielecloud.internal.config.servlet.ForwardToLoginServlet;
 import org.openhab.binding.mielecloud.internal.config.servlet.ResultServlet;
 import org.openhab.binding.mielecloud.internal.config.servlet.SuccessServlet;
+import org.openhab.core.io.net.http.HttpClientFactory;
 
 /**
  * Common base class for all config flow tests.

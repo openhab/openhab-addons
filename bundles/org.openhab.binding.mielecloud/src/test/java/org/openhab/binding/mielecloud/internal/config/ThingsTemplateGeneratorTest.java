@@ -21,15 +21,15 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingTestConstants;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.junit.jupiter.api.Test;
-import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
-import org.openhab.binding.mielecloud.internal.MieleCloudBindingTestConstants;
 
 /**
  * @author Björn Lange - Initial Contribution

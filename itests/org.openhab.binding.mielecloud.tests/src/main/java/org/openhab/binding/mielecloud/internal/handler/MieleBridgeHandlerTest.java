@@ -24,14 +24,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,6 +37,14 @@ import org.openhab.binding.mielecloud.internal.webservice.ConnectionError;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebserviceFactory;
 import org.openhab.binding.mielecloud.internal.webservice.language.CombiningLanguageProvider;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.binding.builder.BridgeBuilder;
 
 /**
  * @author Björn Lange - Initial contribution

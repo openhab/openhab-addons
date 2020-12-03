@@ -8,70 +8,70 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.remote_control_can_be_started.label</label>
 		<description>@text/channel-type.mielecloud.remote_control_can_be_started.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="remote_control_can_be_stopped">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.remote_control_can_be_stopped.label</label>
 		<description>@text/channel-type.mielecloud.remote_control_can_be_stopped.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="remote_control_can_be_paused">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.remote_control_can_be_paused.label</label>
 		<description>@text/channel-type.mielecloud.remote_control_can_be_paused.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="remote_control_can_be_switched_on">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.remote_control_can_be_switched_on.label</label>
 		<description>@text/channel-type.mielecloud.remote_control_can_be_switched_on.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="remote_control_can_be_switched_off">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.remote_control_can_be_switched_off.label</label>
 		<description>@text/channel-type.mielecloud.remote_control_can_be_switched_off.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="remote_control_can_set_program_active">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.remote_control_can_set_program_active.label</label>
 		<description>@text/channel-type.mielecloud.remote_control_can_set_program_active.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="spinning_speed">
 		<item-type>String</item-type>
 		<label>@text/channel-type.mielecloud.spinning_speed.label</label>
 		<description>@text/channel-type.mielecloud.spinning_speed.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="spinning_speed_raw">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.spinning_speed_raw.label</label>
 		<description>@text/channel-type.mielecloud.spinning_speed_raw.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="program_active">
 		<item-type>String</item-type>
 		<label>@text/channel-type.mielecloud.program_active.label</label>
 		<description>@text/channel-type.mielecloud.program_active.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="program_active_raw">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.program_active_raw.label</label>
 		<description>@text/channel-type.mielecloud.program_active_raw.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dish_warmer_program_active">
@@ -106,28 +106,28 @@
 		<item-type>String</item-type>
 		<label>@text/channel-type.mielecloud.program_phase.label</label>
 		<description>@text/channel-type.mielecloud.program_phase.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="program_phase_raw">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.program_phase_raw.label</label>
 		<description>@text/channel-type.mielecloud.program_phase_raw.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="operation_state">
 		<item-type>String</item-type>
 		<label>@text/channel-type.mielecloud.operation_state.label</label>
 		<description>@text/channel-type.mielecloud.operation_state.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="operation_state_raw">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.operation_state_raw.label</label>
 		<description>@text/channel-type.mielecloud.operation_state_raw.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="program_start">
@@ -184,7 +184,7 @@
 		<label>@text/channel-type.mielecloud.finish_state.label</label>
 		<description>@text/channel-type.mielecloud.finish_state.description</description>
 		<category>Alarm</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="delayed_start_time">
@@ -192,7 +192,7 @@
 		<label>@text/channel-type.mielecloud.delayed_start_time.label</label>
 		<description>@text/channel-type.mielecloud.delayed_start_time.description</description>
 		<category>Number:Time</category>
-		<state pattern="%d sec" readOnly="true" />
+		<state pattern="%d sec" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="program_remaining_time">
@@ -200,7 +200,7 @@
 		<label>@text/channel-type.mielecloud.program_remaining_time.label</label>
 		<description>@text/channel-type.mielecloud.program_remaining_time.description</description>
 		<category>Number:Time</category>
-		<state pattern="%d sec" readOnly="true" />
+		<state pattern="%d sec" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="program_elapsed_time">
@@ -208,7 +208,7 @@
 		<label>@text/channel-type.mielecloud.program_elapsed_time.label</label>
 		<description>@text/channel-type.mielecloud.program_elapsed_time.description</description>
 		<category>Number:Time</category>
-		<state pattern="%d sec" readOnly="true" />
+		<state pattern="%d sec" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="program_progress">
@@ -216,21 +216,21 @@
 		<label>@text/channel-type.mielecloud.program_progress.label</label>
 		<description>@text/channel-type.mielecloud.program_progress.description</description>
 		<category>Number</category>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true" />
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="drying_target">
 		<item-type>String</item-type>
 		<label>@text/channel-type.mielecloud.drying_target.label</label>
 		<description>@text/channel-type.mielecloud.drying_target.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="drying_target_raw">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.drying_target_raw.label</label>
 		<description>@text/channel-type.mielecloud.drying_target_raw.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pre_heat_finished">
@@ -238,7 +238,7 @@
 		<label>@text/channel-type.mielecloud.pre_heat_finished.label</label>
 		<description>@text/channel-type.mielecloud.pre_heat_finished.description</description>
 		<category>Alarm</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature_target">
@@ -246,7 +246,7 @@
 		<label>@text/channel-type.mielecloud.temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.temperature_target.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature_current">
@@ -254,21 +254,21 @@
 		<label>@text/channel-type.mielecloud.temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.temperature_current.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ventilation_power">
 		<item-type>String</item-type>
 		<label>@text/channel-type.mielecloud.ventilation_power.label</label>
 		<description>@text/channel-type.mielecloud.ventilation_power.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ventilation_power_raw">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.ventilation_power_raw.label</label>
 		<description>@text/channel-type.mielecloud.ventilation_power_raw.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="error_state">
@@ -276,7 +276,7 @@
 		<label>@text/channel-type.mielecloud.error_state.label</label>
 		<description>@text/channel-type.mielecloud.error_state.description</description>
 		<category>Alarm</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="info_state">
@@ -284,7 +284,7 @@
 		<label>@text/channel-type.mielecloud.info_state.label</label>
 		<description>@text/channel-type.mielecloud.info_state.description</description>
 		<category>Alarm</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fridge_super_cool">
@@ -305,14 +305,14 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.super_cool_can_be_controlled.label</label>
 		<description>@text/channel-type.mielecloud.super_cool_can_be_controlled.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="super_freeze_can_be_controlled">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.super_freeze_can_be_controlled.label</label>
 		<description>@text/channel-type.mielecloud.super_freeze_can_be_controlled.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fridge_temperature_target">
@@ -320,7 +320,7 @@
 		<label>@text/channel-type.mielecloud.fridge_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.fridge_temperature_target.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fridge_temperature_current">
@@ -328,7 +328,7 @@
 		<label>@text/channel-type.mielecloud.fridge_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.fridge_temperature_current.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="freezer_temperature_target">
@@ -336,7 +336,7 @@
 		<label>@text/channel-type.mielecloud.freezer_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.freezer_temperature_target.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="freezer_temperature_current">
@@ -344,7 +344,7 @@
 		<label>@text/channel-type.mielecloud.freezer_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.freezer_temperature_current.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="top_temperature_target">
@@ -352,7 +352,7 @@
 		<label>@text/channel-type.mielecloud.top_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.top_temperature_target.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="top_temperature_current">
@@ -360,7 +360,7 @@
 		<label>@text/channel-type.mielecloud.top_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.top_temperature_current.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="middle_temperature_target">
@@ -368,7 +368,7 @@
 		<label>@text/channel-type.mielecloud.middle_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.middle_temperature_target.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="middle_temperature_current">
@@ -376,7 +376,7 @@
 		<label>@text/channel-type.mielecloud.middle_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.middle_temperature_current.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bottom_temperature_target">
@@ -384,7 +384,7 @@
 		<label>@text/channel-type.mielecloud.bottom_temperature_target.label</label>
 		<description>@text/channel-type.mielecloud.bottom_temperature_target.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bottom_temperature_current">
@@ -392,7 +392,7 @@
 		<label>@text/channel-type.mielecloud.bottom_temperature_current.label</label>
 		<description>@text/channel-type.mielecloud.bottom_temperature_current.description</description>
 		<category>Number:Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="light_switch">
@@ -406,28 +406,28 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.light_can_be_controlled.label</label>
 		<description>@text/channel-type.mielecloud.light_can_be_controlled.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="plate_power_step">
 		<item-type>String</item-type>
 		<label>@text/channel-type.mielecloud.plate_power_step.label</label>
 		<description>@text/channel-type.mielecloud.plate_power_step.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="plate_power_step_raw">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.plate_power_step_raw.label</label>
 		<description>@text/channel-type.mielecloud.plate_power_step_raw.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="door_state">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.mielecloud.door_state.label</label>
 		<description>@text/channel-type.mielecloud.door_state.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="door_alarm">
@@ -435,7 +435,7 @@
 		<label>@text/channel-type.mielecloud.door_alarm.label</label>
 		<description>@text/channel-type.mielecloud.door_alarm.description</description>
 		<category>Alarm</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="battery_level">
@@ -443,6 +443,6 @@
 		<label>@text/channel-type.mielecloud.battery_level.label</label>
 		<description>@text/channel-type.mielecloud.battery_level.description</description>
 		<category>Battery</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

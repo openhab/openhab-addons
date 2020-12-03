@@ -19,6 +19,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
+import org.openhab.binding.mielecloud.internal.auth.OAuthException;
+import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
+import org.openhab.binding.mielecloud.internal.config.exception.BridgeCreationFailedException;
+import org.openhab.binding.mielecloud.internal.config.exception.BridgeReconfigurationFailedException;
+import org.openhab.binding.mielecloud.internal.util.LocaleValidator;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.inbox.Inbox;
@@ -27,12 +33,6 @@ import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
-import org.openhab.binding.mielecloud.internal.auth.OAuthException;
-import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
-import org.openhab.binding.mielecloud.internal.config.exception.BridgeCreationFailedException;
-import org.openhab.binding.mielecloud.internal.config.exception.BridgeReconfigurationFailedException;
-import org.openhab.binding.mielecloud.internal.util.LocaleValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

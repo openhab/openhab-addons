@@ -15,10 +15,10 @@ package org.openhab.binding.mielecloud.internal.config;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 
 /**
  * Generator for templates which can be copy-pasted into .things files by the user.

@@ -13,8 +13,8 @@
 package org.openhab.binding.mielecloud.internal.handler.channel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.types.State;
 import org.openhab.binding.mielecloud.internal.webservice.api.TransitionState;
+import org.openhab.core.types.State;
 
 /**
  * Wrapper for {@link TransitionState} handling the type conversion to {@link State} for directly filling channels.
