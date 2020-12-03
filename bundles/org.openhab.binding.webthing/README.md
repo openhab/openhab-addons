@@ -2,8 +2,7 @@
 
 The WebThing binding supports an interface to remote devices implementing the Web Thing API. 
 
-The [Web Thing API](https://iot.mozilla.org/wot/) is specified by the W3C Consortium (draft). 
-The specification describes how a device or thing can be discovered and linked based on web technologies. 
+The [Web Thing API](https://iot.mozilla.org/wot/) is draft W3C submission. The specification describes how a device or thing can be discovered and linked based on web technologies. 
 Essentially, a Web Thing API is a RESTful remote interface of a device including WebSockets support to provide real-time notifications 
 of events as soon as they happen. Due to the standardization of the Web Thing API, home automation solutions such as openHAB 
 are able to detect the device's capabilities and to monitor and control the device over the web.
