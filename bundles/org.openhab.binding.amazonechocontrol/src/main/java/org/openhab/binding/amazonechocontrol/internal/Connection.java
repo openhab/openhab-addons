@@ -40,7 +40,12 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
@@ -104,11 +109,19 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWo
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWebSiteCookie;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
@@ -1157,7 +1170,11 @@ public class Connection {
         JsonObject parameters = new JsonObject();
         parameters.addProperty("action", action);
         if (property != null) {
-            if (value instanceof Boolean) {
+            if (value instanceof QuantityType) {
+                parameters.addProperty(property + ".value", ((QuantityType) value).floatValue());
+                parameters.addProperty(property + ".scale",
+                        ((QuantityType) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius" : "fahrenheit");
+            } else if (value instanceof Boolean) {
                 parameters.addProperty(property, (boolean) value);
             } else if (value instanceof String) {
                 parameters.addProperty(property, (String) value);
@@ -1183,18 +1200,18 @@ public class Connection {
                 if (errors != null && errors.isJsonArray()) {
                     JsonArray errorList = errors.getAsJsonArray();
                     if (errorList.size() > 0) {
-                        logger.info("Smart home device command failed.");
-                        logger.info("Request:");
-                        logger.info("{}", requestBody);
-                        logger.info("Answer:");
+                        logger.error("Smart home device command failed.");
+                        logger.error("Request:");
+                        logger.error("{}", requestBody);
+                        logger.error("Answer:");
                         for (JsonElement error : errorList) {
-                            logger.info("{}", error.toString());
+                            logger.error("{}", error.toString());
                         }
                     }
                 }
             }
         } catch (URISyntaxException e) {
-            logger.info("Wrong url {}", url, e);
+            logger.error("Wrong url {}", url, e);
         }
     }
 
