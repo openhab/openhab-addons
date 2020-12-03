@@ -276,7 +276,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
 
         if (wasConnectedBefore) {
-            logger.info("WebThing {} disconnected. Try reconnect (each {} sec)", getWebThingLabel(),
+            logger.info("WebThing {} disconnected. {}. Try reconnect (each {} sec)", reason, getWebThingLabel(),
                     HEALTH_CHECK_PERIOD.getSeconds());
         }
     }
