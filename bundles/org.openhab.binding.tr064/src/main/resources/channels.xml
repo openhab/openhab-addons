@@ -256,6 +256,12 @@
 			serviceId="urn:WANIPConnection-com:serviceId:WANIPConnection1"/>
 		<getAction name="GetInfo" argument="NewConnectionStatus"/>
 	</channel>
+	<channel name="wanPppConnectionStatus" label="Connection Status">
+		<item type="String"/>
+		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
+			serviceId="urn:WANPPPConnection-com:serviceId:WANPPPConnection1"/>
+		<getAction name="GetInfo" argument="NewConnectionStatus"/>
+	</channel>
 	<channel name="uptime" label="Uptime">
 		<item type="Number:Time" unit="s" statePattern="%d s"/>
 		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"

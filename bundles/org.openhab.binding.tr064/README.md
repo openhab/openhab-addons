@@ -98,6 +98,7 @@ This is an optional parameter and multiple values are allowed.
 | `uptime`                   | `Number:Time`             |          | Uptime                                                         |
 | `wanAccessType`            | `String`                  |     x    | Access Type                                                    |
 | `wanConnectionStatus`      | `String`                  |          | Connection Status                                              |
+| `wanPppConnectionStatus`   | `String`                  |          | Connection Status (if using PPP)                               |
 | `wanIpAddress`             | `String`                  |     x    | WAN IP Address                                                 |
 | `wanPppIpAddress`          | `String`                  |     x    | WAN IP Address (if using PPP)                                  |
 | `wanMaxDownstreamRate`     | `Number:DataTransferRate` |     x    | Max. Downstream Rate                                           |
