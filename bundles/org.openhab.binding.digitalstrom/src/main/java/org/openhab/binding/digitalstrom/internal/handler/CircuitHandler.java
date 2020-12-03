@@ -186,13 +186,13 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
     public void onDeviceRemoved(GeneralDeviceInformation device) {
         if (device instanceof Circuit) {
             this.circuit = (Circuit) device;
-            if (this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                if (!((Device) circuit).isPresent()) {
+            if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                if (!circuit.isPresent()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "Circuit is not present in the digitalSTROM-System.");
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "Circuit is not avaible in the digitalSTROM-System.");
+                            "Circuit is not available in the digitalSTROM-System.");
                 }
 
             }
