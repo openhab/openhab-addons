@@ -119,7 +119,11 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
         try {
             var webSocket = webSocketRef.getAndSet(null);
             if (webSocket != null) {
-                connectionListener.onDisconnected(reason);
+                try {
+                    connectionListener.onDisconnected(reason);
+                } catch (Exception e) {
+                    logger.warn("error occurred by performing on disconnect", e);
+                }
                 webSocket.abort();
             }
         } catch (Exception e) {
