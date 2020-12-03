@@ -10,9 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.panasonictv.internal.event;
+package org.openhab.binding.panasonictv.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
 
@@ -38,5 +39,5 @@ public interface PanasonicEventListener {
      * @param message of the error
      * @param e exception that might have occurred
      */
-    void reportError(ThingStatusDetail statusDetail, String message, Throwable e);
+    void reportError(ThingStatusDetail statusDetail, String message, @Nullable Throwable e);
 }

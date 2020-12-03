@@ -52,7 +52,6 @@ public class DataConverters {
             }
 
             return value;
-
         } else {
             throw new NumberFormatException("Command '" + command + "' not supported");
         }
@@ -65,9 +64,7 @@ public class DataConverters {
      * @return
      */
     public static boolean convertCommandToBooleanValue(Command command) {
-
         if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-
             boolean newValue;
 
             if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) {
@@ -80,7 +77,6 @@ public class DataConverters {
             }
 
             return newValue;
-
         } else {
             throw new NumberFormatException("Command '" + command + "' not supported for channel");
         }

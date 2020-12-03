@@ -16,19 +16,14 @@ import static org.openhab.binding.panasonictv.internal.PanasonicTvBindingConstan
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
-import org.openhab.binding.panasonictv.internal.event.PanasonicEventListener;
-import org.openhab.binding.panasonictv.internal.protocol.UpnpRemoteController;
-import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
+import org.openhab.binding.panasonictv.internal.api.PanasonicEventListener;
+import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,60 +34,23 @@ import org.slf4j.LoggerFactory;
  * @author Prakashbabu Sidaraddi - Initial contribution
  */
 @NonNullByDefault
-public class RemoteControllerService implements UpnpIOParticipant, PanasonicTvService {
-    private Logger logger = LoggerFactory.getLogger(RemoteControllerService.class);
+public class RemoteControllerService extends AbstractPanasonicTvService {
+    public static final String SERVICE_NAME = "p00RemoteController";
+    private static final String SERVICE_ID = "p00NetworkControl";
+    private static final Set<String> SUPPORTED_COMMANDS = Set.of(KEY_CODE);
+    private static final Map<String, List<ChannelConverter>> CONVERTERS = Map.of("sourceName", List
+            .of(new ChannelConverter(SOURCE_NAME, StringType::new), new ChannelConverter(SOURCE_ID, StringType::new)));
+    private static final Set<String> TV_INPUT_KEY_CODES = Set.of("NRC_HDMI1-ONOFF", "NRC_HDMI2-ONOFF",
+            "NRC_HDMI3-ONOFF", "NRC_HDMI4-ONOFF", "NRC_TV-ONOFF", "NRC_VIDEO1-ONOFF", "NRC_VIDEO2-ONOFF");
 
-    static final String SERVICE_NAME = "p00RemoteController";
+    private final Logger logger = LoggerFactory.getLogger(RemoteControllerService.class);
 
-    private Map<String, String> stateMap = new ConcurrentHashMap<>();
-    private final List<String> supportedCommandsUpnp = List.of(KEY_CODE);
+    public RemoteControllerService(ScheduledExecutorService scheduler, UpnpIOService service, String udn,
+            int refreshInterval, PanasonicEventListener listener) {
+        super(udn, service, listener, scheduler, refreshInterval, SERVICE_NAME, SERVICE_ID, SUPPORTED_COMMANDS,
+                CONVERTERS);
 
-    private String udn;
-    private UpnpRemoteController remoteController;
-
-    private List<PanasonicEventListener> listeners = new CopyOnWriteArrayList<>();
-
-    private RemoteControllerService(UpnpService upnpService, String udn, boolean upnp) {
         logger.debug("Create a Panasonic TV RemoteController service");
-        this.udn = udn;
-        this.remoteController = new UpnpRemoteController(upnpService);
-    }
-
-    static RemoteControllerService createUpnpService(UpnpService upnpService, String udn) {
-        return new RemoteControllerService(upnpService, udn, true);
-    }
-
-    @Override
-    public void addEventListener(PanasonicEventListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeEventListener(PanasonicEventListener listener) {
-        listeners.remove(listener);
-    }
-
-    @Override
-    public void start() {
-        // nothing to start
-    }
-
-    @Override
-    public void stop() {
-    }
-
-    @Override
-    public void clearCache() {
-    }
-
-    @Override
-    public String getServiceName() {
-        return SERVICE_NAME;
-    }
-
-    @Override
-    public List<String> getSupportedChannelNames() {
-        return supportedCommandsUpnp;
     }
 
     @Override
@@ -115,53 +73,16 @@ public class RemoteControllerService implements UpnpIOParticipant, PanasonicTvSe
      *
      * @param key Button code to send
      */
-    private static final List<String> tvInputKeyCodes = List.of("NRC_HDMI1-ONOFF", "NRC_HDMI2-ONOFF", "NRC_HDMI3-ONOFF",
-            "NRC_HDMI4-ONOFF", "NRC_TV-ONOFF", "NRC_VIDEO1-ONOFF", "NRC_VIDEO2-ONOFF");
-
     private void sendKeyCode(final String key) {
-        remoteController.invokeAction(this, "p00NetworkControl", "X_SendKey", Map.of("X_KeyEvent", key));
+        updateResourceState(SERVICE_ID, "X_SendKey", Map.of("X_KeyEvent", key));
 
-        if (tvInputKeyCodes.contains(key)) {
+        if (TV_INPUT_KEY_CODES.contains(key)) {
             onValueReceived("sourceName", key.substring(4, key.length() - 6), "p00NetworkControl");
         }
     }
 
     @Override
-    public String getUDN() {
-        return udn;
-    }
-
-    @Override
-    public void onStatusChanged(boolean status) {
-        logger.debug("PanasonicTV RemoteControl status changed to {}", status);
-    }
-
-    @Override
-    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-    }
-
-    @Override
-    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
-        if (variable == null) {
-            return;
-        }
-        String oldValue = stateMap.get(variable);
-        if ((value == null && oldValue == null) || (value != null && value.equals(oldValue))) {
-            logger.trace("Value '{}' for {} hasn't changed, ignoring update", value, variable);
-            return;
-        }
-
-        stateMap.compute(variable, (k, v) -> value);
-
-        State newState = (value != null) ? StringType.valueOf(value) : UnDefType.UNDEF;
-        for (PanasonicEventListener listener : listeners) {
-            switch (variable) {
-                case SOURCE_NAME:
-                case SOURCE_ID:
-                    listener.valueReceived(SOURCE_NAME, newState);
-                    listener.valueReceived(SOURCE_ID, newState);
-                    break;
-            }
-        }
+    protected void polling() {
+        // nothing to do here
     }
 }

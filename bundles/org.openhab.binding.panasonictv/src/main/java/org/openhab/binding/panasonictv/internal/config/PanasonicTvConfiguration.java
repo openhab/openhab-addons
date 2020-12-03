@@ -13,7 +13,6 @@
 package org.openhab.binding.panasonictv.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Configuration class for PanasonicTvHandler.
@@ -22,7 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class PanasonicTvConfiguration {
-    public @Nullable String hostName;
-    public @Nullable String udn;
+    public String remoteControllerUdn = "";
+    public String mediaRendererUdn = "";
     public int refreshInterval = 1000;
+
+    @Override
+    public String toString() {
+        return "PanasonicTvConfiguration{" + "remoteControllerUdn='" + remoteControllerUdn + '\''
+                + ", mediaRendererUdn='" + mediaRendererUdn + '\'' + ", refreshInterval=" + refreshInterval + '}';
+    }
 }
