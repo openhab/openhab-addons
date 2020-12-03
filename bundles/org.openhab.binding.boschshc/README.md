@@ -96,7 +96,7 @@ Binding for the Bosch Smart Home Controller.
 
 Configuration via configuration files or UI (see below).
 
-## Binding Configuration
+## Bridge Configuration
 
 You need to provide the IP address and the system password of your Bosch Smart Home Controller.
 The IP address of the controller is visible in the Bosch Smart Home Mobile App (More -> System -> Smart Home Controller) or in your network router UI.
@@ -134,7 +134,7 @@ Example:
 You define your Bosch devices by adding them either to a `.things` file in your `$OPENHAB_CONF/things` folder like this:
 
 ```
-Bridge boschshc:shc:1 [ ipAddress="192.168.x.y" ] {
+Bridge boschshc:shc:1 [ ipAddress="192.168.x.y", password="XXXXXXXXXX" ] {
   Thing in-wall-switch bathroom "Bathroom" [ id="hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX" ]
   Thing in-wall-switch bedroom "Bedroom" [ id="hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX" ]
   Thing in-wall-switch kitchen "Kitchen" [ id="hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX" ]
@@ -151,7 +151,7 @@ Bridge boschshc:shc:1 [ ipAddress="192.168.x.y" ] {
 }
 ```
 
-Or by adding them via PaperUI -> Configuration -> Things -> "+" -> Bosch Smart Home Binding.
+Or by adding them via UI: Settings -> Things -> "+" -> Bosch Smart Home Binding.
 
 ## Item Configuration
 
@@ -167,4 +167,4 @@ Switch Bosch_Living_Room "Living Room"  { channel="boschshc:in-wall-switch:1:liv
 Switch Bosch_Lelit       "Lelit"        { channel="boschshc:in-wall-switch:1:coffeemachine:power-switch" }
 ```
 
-Or by adding them via PaperUI -> Configuration -> Items -> "+".
+Or by adding them via UI: Settings -> Items -> "+".
