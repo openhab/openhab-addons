@@ -38,6 +38,44 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Meter Thing Type -->
+	<thing-type id="meter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Fronius Smart Meter</label>
+		<description>Fronius Smart Meter</description>
+
+		<channels>
+			<channel id="model" typeId="meter_model"/>
+			<channel id="serial" typeId="meter_serial"/>
+			<channel id="enable" typeId="meter_enable"/>
+			<channel id="location" typeId="meter_location"/>
+			<channel id="currentacphase1" typeId="meter_currentacphase1"/>
+			<channel id="currentacphase2" typeId="meter_currentacphase2"/>
+			<channel id="currentacphase3" typeId="meter_currentacphase3"/>
+			<channel id="voltageacphase1" typeId="meter_voltageacphase1"/>
+			<channel id="voltageacphase2" typeId="meter_voltageacphase2"/>
+			<channel id="voltageacphase3" typeId="meter_voltageacphase3"/>
+			<channel id="powerrealphase1" typeId="meter_powerrealphase1"/>
+			<channel id="powerrealphase2" typeId="meter_powerrealphase2"/>
+			<channel id="powerrealphase3" typeId="meter_powerrealphase3"/>
+			<channel id="powerfactorphase1" typeId="meter_powerfactorphase1"/>
+			<channel id="powerfactorphase2" typeId="meter_powerfactorphase2"/>
+			<channel id="powerfactorphase3" typeId="meter_powerfactorphase3"/>
+			<channel id="energyrealsumconsumed" typeId="energyrealsumconsumed"/>
+			<channel id="energyrealsumproduced" typeId="energyrealsumproduced"/>
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="integer">
+				<label>Device ID</label>
+				<description>Specific device identifier</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<channel-type id="day_energy">
 		<item-type>Number</item-type>
 		<label>Day Energy</label>
@@ -127,4 +165,116 @@
 		<description>Battery Power ( + charge, - discharge )</description>
 		<state pattern="%.2f W" readOnly="true"></state>
 	</channel-type>
+
+
+	<channel-type id="meter_model" advanced="true">
+		<item-type>String</item-type>
+		<label>Model</label>
+		<description></description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_serial" advanced="true">
+		<item-type>String</item-type>
+		<label>Serial Number</label>
+		<description>Meter's Serial Number</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_enable" advanced="true">
+		<item-type>Number</item-type>
+		<label>Enabled</label>
+		<description>Enabled</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_location" advanced="true">
+		<item-type>Number</item-type>
+		<label>Location</label>
+		<description>Meter location code</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_currentacphase1">
+		<item-type>Number</item-type>
+		<label>AC Current Phase 1</label>
+		<description></description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_currentacphase2">
+		<item-type>Number</item-type>
+		<label>AC Current Phase 2</label>
+		<description></description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_currentacphase3">
+		<item-type>Number</item-type>
+		<label>AC Current Phase 3</label>
+		<description></description>
+		<state pattern="%.2f A" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_voltageacphase1">
+		<item-type>Number</item-type>
+		<label>AC Voltage Phase 1</label>
+		<description></description>
+		<state pattern="%.2f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_voltageacphase2">
+		<item-type>Number</item-type>
+		<label>AC Voltage Phase 2</label>
+		<description></description>
+		<state pattern="%.2f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_voltageacphase3">
+		<item-type>Number</item-type>
+		<label>AC Voltage Phase 3</label>
+		<description></description>
+		<state pattern="%.2f V" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_powerrealphase1">
+		<item-type>Number</item-type>
+		<label>Real Power Phase 1</label>
+		<description></description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_powerrealphase2">
+		<item-type>Number</item-type>
+		<label>Real Power Phase 2</label>
+		<description></description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_powerrealphase3">
+		<item-type>Number</item-type>
+		<label>Real Power Phase 3</label>
+		<description></description>
+		<state pattern="%.2f W" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_powerfactorphase1">
+		<item-type>Number</item-type>
+		<label>Power Factor Phase 1</label>
+		<description></description>
+		<state pattern="%.2f" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_powerfactorphase2">
+		<item-type>Number</item-type>
+		<label>Power Factor Phase 2</label>
+		<description></description>
+		<state pattern="%.2f" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="meter_powerfactorphase3">
+		<item-type>Number</item-type>
+		<label>Power Factor Phase 3</label>
+		<description></description>
+		<state pattern="%.2f" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="energyrealsumconsumed">
+		<item-type>Number</item-type>
+		<label>Energy Real Sum Consumed</label>
+		<description>Total energy consumed through the smart meter</description>
+		<state pattern="%.2f Wh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="energyrealsumproduced">
+		<item-type>Number</item-type>
+		<label>Energy Real Sum Produced</label>
+		<description>Total energy produced through the smart meter</description>
+		<state pattern="%.2f Wh" readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>
