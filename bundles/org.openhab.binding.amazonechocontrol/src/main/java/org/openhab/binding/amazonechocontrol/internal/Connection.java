@@ -145,7 +145,7 @@ public class Connection {
     private @Nullable String accountCustomerId;
     private @Nullable String customerName;
 
-    private Map<Integer, Announcement> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
+    private Map<Integer, AnnouncementWrapper> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<Integer, TextToSpeech> textToSpeeches = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<Integer, Volume> volumes = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<String, LinkedBlockingQueue<QueueObject>> devices = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -1323,8 +1323,8 @@ public class Connection {
         Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock()));
         lock.lock();
         try {
-            Announcement announcement = Objects.requireNonNull(announcements.computeIfAbsent(
-                    Objects.hash(speak, plainBody, title), k -> new Announcement(speak, plainBody, title)));
+            AnnouncementWrapper announcement = Objects.requireNonNull(announcements.computeIfAbsent(
+                    Objects.hash(speak, plainBody, title), k -> new AnnouncementWrapper(speak, plainBody, title)));
             announcement.devices.add(device);
             announcement.ttsVolumes.add(ttsVolume);
             announcement.standardVolumes.add(standardVolume);
@@ -1342,23 +1342,13 @@ public class Connection {
         Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
         lock.lock();
         try {
-            Iterator<Announcement> iterator = announcements.values().iterator();
+            Iterator<AnnouncementWrapper> iterator = announcements.values().iterator();
             while (iterator.hasNext()) {
-                Announcement announcement = iterator.next();
+                AnnouncementWrapper announcement = iterator.next();
                 try {
                     List<Device> devices = announcement.devices;
                     if (!devices.isEmpty()) {
-                        String speak = announcement.speak;
-                        String bodyText = announcement.bodyText;
-                        String title = announcement.title;
-
-                        JsonAnnouncementContent content = new JsonAnnouncementContent();
-                        content.display.title = title == null || title.isEmpty() ? "openHAB" : title;
-                        content.display.body = bodyText;
-                        if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
-                            content.speak.type = "ssml";
-                        }
-                        content.speak.value = speak;
+                        JsonAnnouncementContent content = new JsonAnnouncementContent(announcement);
 
                         Map<String, Object> parameters = new HashMap<>();
                         parameters.put("expireAfter", "PT5S");
@@ -2016,7 +2006,7 @@ public class Connection {
                 true, true, null, 0);
     }
 
-    private static class Announcement {
+    public static class AnnouncementWrapper {
         public List<Device> devices = new ArrayList<>();
         public String speak;
         public String bodyText;
@@ -2024,7 +2014,7 @@ public class Connection {
         public List<@Nullable Integer> ttsVolumes = new ArrayList<>();
         public List<@Nullable Integer> standardVolumes = new ArrayList<>();
 
-        public Announcement(String speak, String bodyText, @Nullable String title) {
+        public AnnouncementWrapper(String speak, String bodyText, @Nullable String title) {
             this.speak = speak;
             this.bodyText = bodyText;
             this.title = title;
