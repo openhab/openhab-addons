@@ -409,13 +409,6 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="plate_is_present">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.mielecloud.plate_is_present.label</label>
-		<description>@text/channel-type.mielecloud.plate_is_present.description</description>
-		<state readOnly="true" />
-	</channel-type>
-
 	<channel-type id="plate_power_step">
 		<item-type>String</item-type>
 		<label>@text/channel-type.mielecloud.plate_power_step.label</label>

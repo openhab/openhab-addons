@@ -345,17 +345,6 @@ public class DeviceState {
     }
 
     /**
-     * Gets whether the plate of the device for the given index exists.
-     *
-     * @param index The index of the device plate for which existence shall be checked.
-     * @return Whether the plate is present.
-     */
-    public boolean isPlatePresent(int index) {
-        return device.flatMap(Device::getState).map(State::getPlateStep).flatMap(l -> getOrNull(l, index))
-                .flatMap(PlateStep::getValueRaw).isPresent();
-    }
-
-    /**
      * Gets the plate power step of the device for the given index.
      *
      * @param index The index of the device plate for which the power step shall be obtained.

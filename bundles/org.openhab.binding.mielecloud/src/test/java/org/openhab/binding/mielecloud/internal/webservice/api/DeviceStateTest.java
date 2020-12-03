@@ -87,7 +87,6 @@ public class DeviceStateTest {
         Optional<Integer> ventilationStepRaw = deviceState.getVentilationStepRaw();
         Optional<String> plateStep = deviceState.getPlateStep(0);
         Optional<Integer> plateStepRaw = deviceState.getPlateStepRaw(0);
-        boolean platePresent = deviceState.isPlatePresent(0);
         boolean hasError = deviceState.hasError();
         boolean hasInfo = deviceState.hasInfo();
         Optional<Boolean> doorState = deviceState.getDoorState();
@@ -119,7 +118,6 @@ public class DeviceStateTest {
         assertFalse(ventilationStepRaw.isPresent());
         assertFalse(plateStep.isPresent());
         assertFalse(plateStepRaw.isPresent());
-        assertFalse(platePresent);
         assertFalse(hasError);
         assertFalse(hasInfo);
         assertFalse(doorState.isPresent());
@@ -159,7 +157,6 @@ public class DeviceStateTest {
         Optional<Integer> ventilationStepRaw = deviceState.getVentilationStepRaw();
         Optional<String> plateStep = deviceState.getPlateStep(0);
         Optional<Integer> plateStepRaw = deviceState.getPlateStepRaw(0);
-        boolean platePresent = deviceState.isPlatePresent(0);
         Boolean hasError = deviceState.hasError();
         Optional<Boolean> doorState = deviceState.getDoorState();
         Optional<Boolean> doorAlarm = deviceState.getDoorAlarm();
@@ -184,7 +181,6 @@ public class DeviceStateTest {
         assertFalse(ventilationStepRaw.isPresent());
         assertFalse(plateStep.isPresent());
         assertFalse(plateStepRaw.isPresent());
-        assertFalse(platePresent);
         assertFalse(hasError);
         assertFalse(doorState.isPresent());
         assertFalse(doorAlarm.isPresent());
@@ -829,12 +825,10 @@ public class DeviceStateTest {
         // when:
         Optional<String> plateStep = deviceState.getPlateStep(0);
         Optional<Integer> plateStepRaw = deviceState.getPlateStepRaw(0);
-        boolean platePresent = deviceState.isPlatePresent(0);
 
         // then:
         assertFalse(plateStep.isPresent());
         assertFalse(plateStepRaw.isPresent());
-        assertFalse(platePresent);
     }
 
     @Test
@@ -858,12 +852,10 @@ public class DeviceStateTest {
         // when:
         Optional<String> plateStep = deviceState.getPlateStep(0);
         Optional<Integer> plateStepRaw = deviceState.getPlateStepRaw(0);
-        boolean platePresent = deviceState.isPlatePresent(0);
 
         // then:
         assertFalse(plateStep.isPresent());
         assertFalse(plateStepRaw.isPresent());
-        assertFalse(platePresent);
     }
 
     @Test
@@ -885,12 +877,10 @@ public class DeviceStateTest {
         // when:
         String plateStep = deviceState.getPlateStep(0).get();
         int plateStepRaw = deviceState.getPlateStepRaw(0).get();
-        boolean platePresent = deviceState.isPlatePresent(0);
 
         // then:
         assertEquals("1.", plateStep);
         assertEquals(2, plateStepRaw);
-        assertTrue(platePresent);
     }
 
     @Test

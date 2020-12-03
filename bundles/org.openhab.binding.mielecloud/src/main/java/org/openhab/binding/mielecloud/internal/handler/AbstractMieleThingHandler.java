@@ -22,16 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.I18NKeys;
 import org.openhab.binding.mielecloud.internal.handler.channel.ActionsChannelState;
 import org.openhab.binding.mielecloud.internal.handler.channel.DeviceChannelState;
@@ -47,6 +37,16 @@ import org.openhab.binding.mielecloud.internal.webservice.api.TransitionState;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.ProcessAction;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
 import org.openhab.binding.mielecloud.internal.webservice.exception.TooManyRequestsException;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +67,7 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
 
     /**
      * Creates a new {@link AbstractMieleThingHandler}.
-     * 
+     *
      * @param thing The thing to handle.
      */
     public AbstractMieleThingHandler(Thing thing) {

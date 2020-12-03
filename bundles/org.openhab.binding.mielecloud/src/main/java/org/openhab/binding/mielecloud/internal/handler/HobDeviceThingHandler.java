@@ -15,10 +15,10 @@ package org.openhab.binding.mielecloud.internal.handler;
 import static org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.Channels.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.Thing;
 import org.openhab.binding.mielecloud.internal.handler.channel.ActionsChannelState;
 import org.openhab.binding.mielecloud.internal.handler.channel.DeviceChannelState;
 import org.openhab.binding.mielecloud.internal.handler.channel.TransitionChannelState;
+import org.openhab.core.thing.Thing;
 
 /**
  * ThingHandler implementation for the Miele hob devices.
@@ -44,22 +44,16 @@ public class HobDeviceThingHandler extends AbstractMieleThingHandler {
         updateState(channel(OPERATION_STATE_RAW), device.getOperationStateRaw());
         updateState(channel(ERROR_STATE), device.getErrorState());
         updateState(channel(INFO_STATE), device.getInfoState());
-        updateState(channel(PLATE_1_IS_PRESENT), device.isPlatePresent(0));
         updateState(channel(PLATE_1_POWER_STEP), device.getPlateStep(0));
         updateState(channel(PLATE_1_POWER_STEP_RAW), device.getPlateStepRaw(0));
-        updateState(channel(PLATE_2_IS_PRESENT), device.isPlatePresent(1));
         updateState(channel(PLATE_2_POWER_STEP), device.getPlateStep(1));
         updateState(channel(PLATE_2_POWER_STEP_RAW), device.getPlateStepRaw(1));
-        updateState(channel(PLATE_3_IS_PRESENT), device.isPlatePresent(2));
         updateState(channel(PLATE_3_POWER_STEP), device.getPlateStep(2));
         updateState(channel(PLATE_3_POWER_STEP_RAW), device.getPlateStepRaw(2));
-        updateState(channel(PLATE_4_IS_PRESENT), device.isPlatePresent(3));
         updateState(channel(PLATE_4_POWER_STEP), device.getPlateStep(3));
         updateState(channel(PLATE_4_POWER_STEP_RAW), device.getPlateStepRaw(3));
-        updateState(channel(PLATE_5_IS_PRESENT), device.isPlatePresent(4));
         updateState(channel(PLATE_5_POWER_STEP), device.getPlateStep(4));
         updateState(channel(PLATE_5_POWER_STEP_RAW), device.getPlateStepRaw(4));
-        updateState(channel(PLATE_6_IS_PRESENT), device.isPlatePresent(5));
         updateState(channel(PLATE_6_POWER_STEP), device.getPlateStep(5));
         updateState(channel(PLATE_6_POWER_STEP_RAW), device.getPlateStepRaw(5));
     }

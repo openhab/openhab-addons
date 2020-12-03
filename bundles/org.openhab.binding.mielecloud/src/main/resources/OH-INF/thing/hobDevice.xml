@@ -18,22 +18,16 @@
 			<channel id="operation_state_raw" typeId="operation_state_raw" />
 			<channel id="error_state" typeId="error_state" />
 			<channel id="info_state" typeId="info_state" />
-			<channel id="plate_1_is_present" typeId="plate_is_present" />
 			<channel id="plate_1_power_step" typeId="plate_power_step" />
 			<channel id="plate_1_power_step_raw" typeId="plate_power_step_raw" />
-			<channel id="plate_2_is_present" typeId="plate_is_present" />
 			<channel id="plate_2_power_step" typeId="plate_power_step" />
 			<channel id="plate_2_power_step_raw" typeId="plate_power_step_raw" />
-			<channel id="plate_3_is_present" typeId="plate_is_present" />
 			<channel id="plate_3_power_step" typeId="plate_power_step" />
 			<channel id="plate_3_power_step_raw" typeId="plate_power_step_raw" />
-			<channel id="plate_4_is_present" typeId="plate_is_present" />
 			<channel id="plate_4_power_step" typeId="plate_power_step" />
 			<channel id="plate_4_power_step_raw" typeId="plate_power_step_raw" />
-			<channel id="plate_5_is_present" typeId="plate_is_present" />
 			<channel id="plate_5_power_step" typeId="plate_power_step" />
 			<channel id="plate_5_power_step_raw" typeId="plate_power_step_raw" />
-			<channel id="plate_6_is_present" typeId="plate_is_present" />
 			<channel id="plate_6_power_step" typeId="plate_power_step" />
 			<channel id="plate_6_power_step_raw" typeId="plate_power_step_raw" />
 		</channels>

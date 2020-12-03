@@ -19,15 +19,15 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.types.State;
 import org.openhab.binding.mielecloud.internal.webservice.api.CoolingDeviceTemperatureState;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.PowerStatus;
 import org.openhab.binding.mielecloud.internal.webservice.api.ProgramStatus;
 import org.openhab.binding.mielecloud.internal.webservice.api.WineStorageDeviceTemperatureState;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
 
 /**
  * Wrapper for {@link DeviceState} handling the type conversion to {@link State} for directly filling channels.
@@ -163,10 +163,6 @@ public final class DeviceChannelState {
 
     public State getVentilationPowerRaw() {
         return ChannelTypeUtil.intToState(device.getVentilationStepRaw());
-    }
-
-    public State isPlatePresent(int index) {
-        return OnOffType.from(device.isPlatePresent(index));
     }
 
     public State getPlateStep(int index) {
