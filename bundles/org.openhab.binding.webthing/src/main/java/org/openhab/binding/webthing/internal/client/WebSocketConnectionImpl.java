@@ -62,7 +62,7 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
 
     @Override
     public void onOpen(WebSocket webSocket) {
-        webSocketRef.set(webSocket); // save websocket ref to be able to send ping
+        webSocketRef.set(webSocket);   // save websocket ref to be able to send ping
         connectionListener.onConnected();
         WebSocket.Listener.super.onOpen(webSocket);
     }
