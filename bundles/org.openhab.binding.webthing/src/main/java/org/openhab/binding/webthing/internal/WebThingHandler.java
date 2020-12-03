@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class WebThingHandler extends BaseThingHandler implements ChannelHandler, ConnectionListener {
-    private static final Duration RECONNECT_PERIOD = Duration.ofHours(32);
+    private static final Duration RECONNECT_PERIOD = Duration.ofHours(23);
     private static final Duration HEALTH_CHECK_PERIOD = Duration.ofSeconds(80);
     private static final ItemChangedListener EMPTY_ITEM_CHANGED_LISTENER = (channelUID, stateCommand) -> {
     };
@@ -256,7 +256,9 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
 
     @Override
     public void updateItemState(ChannelUID channelUID, Command command) {
-        postCommand(channelUID, command);
+        if (isActivated.get()) {
+            postCommand(channelUID, command);
+        }
     }
     //
     /////////////
@@ -311,9 +313,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
                     } else {
                         // force reconnecting periodically, to fix erroneous states that occurs for unknown reasons
                         var elapsedSinceLastReconnect = Duration.between(lastReconnect.get(), Instant.now());
-                        var isReconnectRequired = isConnected()
-                                && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds());
-                        if (isReconnectRequired) {
+                        if (isConnected() && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds())) {
                             var reconnected = getWebThingURI().map(WebThingHandler.this::tryReconnect).orElse(false);
                             if (reconnected) {
                                 logger.info("WebThing {} reconnected. Triggered by periodically reconnect (each {} h)",

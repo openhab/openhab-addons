@@ -44,18 +44,25 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     private final AtomicReference<String> receivedTextbufferRef = new AtomicReference<>("");
     private final AtomicReference<WebSocket> webSocketRef = new AtomicReference<>();
 
+    /**
+     * constructor
+     *
+     * @param connectionListener the connection listener
+     * @param pingPeriod the period pings should be sent
+     */
     WebSocketConnectionImpl(ConnectionListener connectionListener, Duration pingPeriod) {
         this.connectionListener = connectionListener;
         new ConnectionWatchDog(pingPeriod).start();
     }
 
+    @Override
     public void observeProperty(@NotNull String propertyName, @NotNull PropertyChangedListener listener) {
         propertyChangedListeners.put(propertyName, listener);
     }
 
     @Override
     public void onOpen(WebSocket webSocket) {
-        webSocketRef.set(webSocket);
+        webSocketRef.set(webSocket);   // save websocket ref to be able to send ping
         connectionListener.onConnected();
         WebSocket.Listener.super.onOpen(webSocket);
     }
