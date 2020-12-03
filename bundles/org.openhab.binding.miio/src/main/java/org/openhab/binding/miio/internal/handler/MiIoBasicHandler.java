@@ -291,6 +291,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         int maxProperties = device.getDevice().getMaxProperties();
         JsonArray getPropString = new JsonArray();
         for (MiIoBasicChannel miChannel : refreshList) {
+            if (!isLinked(miChannel.getChannel())) {
+                logger.debug("Skip refresh of channel {} for {} as it is not linked", miChannel.getChannel(),
+                        getThing().getUID());
+                continue;
+            }
             JsonElement property;
             if (miChannel.isMiOt()) {
                 JsonObject json = new JsonObject();
