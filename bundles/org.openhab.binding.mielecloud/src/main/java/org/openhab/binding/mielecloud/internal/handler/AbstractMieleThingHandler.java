@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.I18NKeys;
+import org.openhab.binding.mielecloud.internal.discovery.ThingInformationExtractor;
 import org.openhab.binding.mielecloud.internal.handler.channel.ActionsChannelState;
 import org.openhab.binding.mielecloud.internal.handler.channel.DeviceChannelState;
 import org.openhab.binding.mielecloud.internal.handler.channel.TransitionChannelState;
@@ -174,6 +175,7 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
         latestTransitionState = new TransitionState(latestTransitionState, deviceState);
         latestDeviceState = deviceState;
 
+        updateThingProperties(deviceState);
         updateDeviceState(new DeviceChannelState(latestDeviceState));
         updateTransitionState(new TransitionChannelState(latestTransitionState));
         updateThingStatus(latestDeviceState);
@@ -266,6 +268,15 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
             return POWER_OFF;
         }
         return POWER_ON;
+    }
+
+    /**
+     * Updates the thing properties. This is necessary if properties have not been set during discovery.
+     */
+    private void updateThingProperties(DeviceState deviceState) {
+        var properties = editProperties();
+        properties.putAll(ThingInformationExtractor.extractProperties(getThing().getThingTypeUID(), deviceState));
+        updateProperties(properties);
     }
 
     /**

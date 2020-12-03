@@ -544,4 +544,28 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         // then:
         verify(getWebserviceMock(), never()).putPowerState(anyString(), anyBoolean());
     }
+
+    @Test
+    public void testMissingPropertiesAreSetWhenAStateUpdateIsReceivedFromTheCloud() {
+        // given:
+        assertFalse(getThingHandler().getThing().getProperties().containsKey(Thing.PROPERTY_SERIAL_NUMBER));
+        assertFalse(getThingHandler().getThing().getProperties().containsKey(Thing.PROPERTY_MODEL_ID));
+
+        var deviceState = mock(DeviceState.class);
+        when(deviceState.getRawType()).thenReturn(DeviceType.UNKNOWN);
+        when(deviceState.getDeviceIdentifier()).thenReturn(MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER);
+        when(deviceState.getFabNumber())
+                .thenReturn(Optional.of(MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER));
+        when(deviceState.getType()).thenReturn(Optional.of("Unknown device type"));
+        when(deviceState.getTechType()).thenReturn(Optional.of("UK-4567"));
+
+        // when:
+        getThingHandler().onDeviceStateUpdated(deviceState);
+
+        // then:
+        assertEquals(MieleCloudBindingIntegrationTestConstants.SERIAL_NUMBER,
+                getThingHandler().getThing().getProperties().get(Thing.PROPERTY_SERIAL_NUMBER));
+        assertEquals("Unknown device type UK-4567",
+                getThingHandler().getThing().getProperties().get(Thing.PROPERTY_MODEL_ID));
+    }
 }
