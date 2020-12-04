@@ -42,8 +42,7 @@ public class EnoceanBleHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    @Nullable
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(EnoceanBleBindingConstants.THING_TYPE_PTM215B)) {

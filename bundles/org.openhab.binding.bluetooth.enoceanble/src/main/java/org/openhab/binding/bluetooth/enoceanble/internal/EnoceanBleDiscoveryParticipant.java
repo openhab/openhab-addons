@@ -50,8 +50,7 @@ public class EnoceanBleDiscoveryParticipant implements BluetoothDiscoveryPartici
     }
 
     @Override
-    @Nullable
-    public ThingUID getThingUID(BluetoothDiscoveryDevice device) {
+    public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
         Integer manufacturerId = device.getManufacturerId();
         logger.warn("Discovered device {} with manufacturerId {} and name {}", device.getAddress(), manufacturerId,
                 device.getName());
@@ -63,8 +62,7 @@ public class EnoceanBleDiscoveryParticipant implements BluetoothDiscoveryPartici
     }
 
     @Override
-    @Nullable
-    public DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
+    public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
         ThingUID thingUID = getThingUID(device);
         if (thingUID == null) {
             return null;
