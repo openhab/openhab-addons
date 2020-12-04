@@ -76,6 +76,7 @@ The configuration of your amazon account must be done in the 'Amazon Account' de
 1) Create an 'Amazon Account' thing
 2) open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and login.
 3) You should see now a message that the login was successful
+4) If you encounter redirect/page refresh issues, enable two-factor authentication (2FA) on your Amazon account.
 
 ## Discovery
 
