@@ -507,7 +507,7 @@
 	</channel-type>
 	<channel-type id="device-local-operating-status">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Operating status</label>
+		<label>Operating Status</label>
 		<description>Operating status</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d"/>
@@ -738,7 +738,7 @@
 	</channel-type>
 	<channel-type id="statistic-own-consumption-total">
 		<item-type>Number:Energy</item-type>
-		<label>Total own consumption</label>
+		<label>Total Own Consumption</label>
 		<description>Total own consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
