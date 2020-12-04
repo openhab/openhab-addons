@@ -55,30 +55,28 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
     public abstract void modbusInitialize();
 
     @Override
-    final public void initialize() {
+    public final void initialize() {
         try {
             // check if the Bridge is configured correctly (fail-fast)
             getModbus();
-            getBridgeHandler().getSlaveId();
-
-            modbusInitialize();
-        } catch (EndpointNotInitializedException | IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Modbus initialization failed: " + e.getMessage());
+            getSlaveId();
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
         }
+
+        modbusInitialize();
     }
 
     /**
      * Get Slave ID, also called as unit id, represented by the thing
      *
      * @return slave id represented by this thing handler
-     * @throws EndpointNotInitializedException in case the initialization is not complete
      */
     public int getSlaveId() {
         try {
             return getBridgeHandler().getSlaveId();
         } catch (EndpointNotInitializedException e) {
-            throw new IllegalStateException(e);
+            throw new IllegalStateException("Bridge not initialized");
         }
     }
 
@@ -123,6 +121,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
      * @param task poll task to unregister
      * @return whether poll task was unregistered. Poll task is not unregistered in case of unexpected errors or
      *         in the case where the poll task is not registered in the first place
+     * @throws IllegalStateException when this communication has been closed already
      */
     public boolean unregisterRegularPoll(PollTask task) {
         periodicPollers.remove(task);
@@ -167,21 +166,11 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
         return future;
     }
 
-    /**
-     * Retrieves the {@link ModbusCommunicationInterface} and does some validity checking.
-     * Sets the ThingStatus to offline if it couldn't be retrieved and throws an unchecked exception.
-     *
-     * The unchecked exception should not be caught by the implementing class, as the initialization of the Thing
-     * already fails if the {@link ModbusCommunicationInterface} cannot be retrieved.
-     *
-     * @throws IllegalStateException if the {@link ModbusCommunicationInterface} couldn't be retrieved.
-     * @return the {@link ModbusCommunicationInterface}
-     */
     private ModbusCommunicationInterface getModbus() {
         ModbusCommunicationInterface communicationInterface = getBridgeHandler().getCommunicationInterface();
 
         if (communicationInterface == null) {
-            throw new IllegalStateException("Failed to retrieve Modbus communication interface");
+            throw new IllegalStateException("Bridge not initialized");
         } else {
             return communicationInterface;
         }
@@ -191,7 +180,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
         try {
             Bridge bridge = getBridge();
             if (bridge == null) {
-                throw new IllegalStateException("Thing has no Bridge set");
+                throw new IllegalStateException("No Bridge configured");
             }
 
             BridgeHandler handler = bridge.getHandler();
@@ -199,11 +188,10 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
             if (handler instanceof ModbusEndpointThingHandler) {
                 return (ModbusEndpointThingHandler) handler;
             } else {
-                throw new IllegalStateException("Bridge is not a Modbus bridge: " + handler);
+                throw new IllegalStateException("Not a Modbus Bridge: " + handler);
             }
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Modbus initialization failed: " + e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
             throw e;
         }
     }
