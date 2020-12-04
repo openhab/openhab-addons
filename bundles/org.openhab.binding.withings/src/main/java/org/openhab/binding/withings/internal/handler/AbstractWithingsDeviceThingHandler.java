@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.WithingsDataModel;
 import org.openhab.binding.withings.internal.api.device.DevicesResponse;
@@ -48,17 +47,14 @@ public abstract class AbstractWithingsDeviceThingHandler extends AbstractWithing
 
     private void updateProperties(DevicesResponse.Device device) {
         Map<String, String> properties = editProperties();
-        @Nullable
         String deviceId = device.getDeviceId();
         if (deviceId != null) {
             properties.put(WithingsBindingConstants.PROPERTY_DEVICE_ID, deviceId);
         }
-        @Nullable
         Integer modelId = device.getModelId();
         if (modelId != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, String.valueOf(modelId));
         }
-        @Nullable
         String model = device.getModel();
         if (model != null) {
             properties.put(WithingsBindingConstants.PROPERTY_DEVICE_MODEL, model);
