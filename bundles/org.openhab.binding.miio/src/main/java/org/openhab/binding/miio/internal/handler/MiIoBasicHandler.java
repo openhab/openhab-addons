@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +35,7 @@ import org.openhab.binding.miio.internal.MiIoQuantiyTypes;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.basic.ActionConditions;
+import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.CommandParameterType;
 import org.openhab.binding.miio.internal.basic.Conversions;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
@@ -95,11 +97,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private @Nullable MiIoBasicDevice miioDevice;
     private Map<ChannelUID, MiIoBasicChannel> actions = new HashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
+    private BasicChannelTypeProvider basicChannelTypeProvider;
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
-            CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry) {
+            CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
+            BasicChannelTypeProvider basicChannelTypeProvider) {
         super(thing, miIoDatabaseWatchService, cloudConnector);
         this.channelTypeRegistry = channelTypeRegistry;
+        this.basicChannelTypeProvider = basicChannelTypeProvider;
     }
 
     @Override
@@ -259,7 +264,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 updateData();
             }, 3000, TimeUnit.MILLISECONDS);
         } else {
-            logger.debug("Actions not loaded yet");
+            logger.debug("Actions not loaded yet, or none available");
         }
     }
 
@@ -409,8 +414,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 for (MiIoBasicChannel miChannel : device.getDevice().getChannels()) {
                     logger.debug("properties {}", miChannel);
                     if (!miChannel.getType().isEmpty()) {
-                        ChannelUID channelUID = addChannel(thingBuilder, miChannel.getChannel(),
-                                miChannel.getChannelType(), miChannel.getType(), miChannel.getFriendlyName());
+                        basicChannelTypeProvider.addChannelType(miChannel, deviceName);
+                        ChannelUID channelUID = addChannel(thingBuilder, miChannel, deviceName);
                         if (channelUID != null) {
                             actions.put(channelUID, miChannel);
                             channelsAdded++;
@@ -440,9 +445,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         return false;
     }
 
-    private @Nullable ChannelUID addChannel(ThingBuilder thingBuilder, @Nullable String channel, String channelType,
-            @Nullable String datatype, String friendlyName) {
-        if (channel == null || channel.isEmpty() || datatype == null || datatype.isEmpty()) {
+    private @Nullable ChannelUID addChannel(ThingBuilder thingBuilder, MiIoBasicChannel miChannel, String model) {
+        String channel = miChannel.getChannel();
+        String dataType = miChannel.getType();
+        if (channel.isEmpty() || dataType.isEmpty()) {
             logger.info("Channel '{}', UID '{}' cannot be added incorrectly configured database. ", channel,
                     getThing().getUID());
             return null;
@@ -455,22 +461,30 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             logger.info("Channel '{}' for thing {} already exist... removing", channel, getThing().getUID());
             thingBuilder.withoutChannel(new ChannelUID(getThing().getUID(), channel));
         }
-        ChannelBuilder newChannel = ChannelBuilder.create(channelUID, datatype).withLabel(friendlyName);
-        boolean useGenericChannelType = false;
-        if (!channelType.isBlank()) {
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(channelType);
+        ChannelBuilder newChannel = ChannelBuilder.create(channelUID, dataType).withLabel(miChannel.getFriendlyName());
+        boolean useGeneratedChannelType = false;
+        if (!miChannel.getChannelType().isBlank()) {
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(miChannel.getChannelType());
             if (channelTypeRegistry.getChannelType(channelTypeUID) != null) {
                 newChannel = newChannel.withType(channelTypeUID);
+                final LinkedHashSet<String> tags = miChannel.getTags();
+                if (tags != null && tags.size() > 0) {
+                    newChannel.withDefaultTags(tags);
+                }
             } else {
-                logger.debug("ChannelType '{}' is not available. Check the Json file for {}", channelTypeUID,
-                        getThing().getUID());
-                useGenericChannelType = true;
+                logger.debug("ChannelType '{}' is not available. Check the Json file for {}", channelTypeUID, model);
+                useGeneratedChannelType = true;
             }
         } else {
-            useGenericChannelType = true;
+            useGeneratedChannelType = true;
         }
-        if (useGenericChannelType) {
-            newChannel = newChannel.withType(new ChannelTypeUID(BINDING_ID, datatype.toLowerCase()));
+        if (useGeneratedChannelType) {
+            newChannel = newChannel
+                    .withType(new ChannelTypeUID(BINDING_ID, model.toUpperCase().replace(".", "_") + "_" + channel));
+            final LinkedHashSet<String> tags = miChannel.getTags();
+            if (tags != null && tags.size() > 0) {
+                newChannel.withDefaultTags(tags);
+            }
         }
         thingBuilder.withChannel(newChannel.build());
         return channelUID;

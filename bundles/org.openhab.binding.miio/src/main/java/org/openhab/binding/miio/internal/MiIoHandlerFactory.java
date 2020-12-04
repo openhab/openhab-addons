@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
@@ -52,11 +53,12 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
     private CloudConnector cloudConnector;
     private ChannelTypeRegistry channelTypeRegistry;
+    private BasicChannelTypeProvider basicChannelTypeProvider;
 
     @Activate
     public MiIoHandlerFactory(@Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference MiIoDatabaseWatchService miIoDatabaseWatchService, @Reference CloudConnector cloudConnector,
-            Map<String, Object> properties) {
+            @Reference BasicChannelTypeProvider basicChannelTypeProvider, Map<String, Object> properties) {
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.cloudConnector = cloudConnector;
         @Nullable
@@ -68,6 +70,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         cloudConnector.setCredentials(username, password, country);
         scheduler.submit(() -> cloudConnector.isConnected());
         this.channelTypeRegistry = channelTypeRegistry;
+        this.basicChannelTypeProvider = basicChannelTypeProvider;
     }
 
     @Override
@@ -82,7 +85,8 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
             return new MiIoGenericHandler(thing, miIoDatabaseWatchService, cloudConnector);
         }
         if (thingTypeUID.equals(THING_TYPE_BASIC)) {
-            return new MiIoBasicHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
+            return new MiIoBasicHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
+                    basicChannelTypeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
