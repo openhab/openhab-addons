@@ -40,6 +40,8 @@ import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDActionType;
 import org.openhab.binding.tr064.internal.phonebook.Phonebook;
 import org.openhab.binding.tr064.internal.phonebook.PhonebookProvider;
 import org.openhab.binding.tr064.internal.phonebook.Tr064PhonebookImpl;
+import org.openhab.binding.tr064.internal.soap.SOAPConnector;
+import org.openhab.binding.tr064.internal.soap.SOAPValueConverter;
 import org.openhab.binding.tr064.internal.util.SCPDUtil;
 import org.openhab.binding.tr064.internal.util.Util;
 import org.openhab.core.cache.ExpiringCacheMap;

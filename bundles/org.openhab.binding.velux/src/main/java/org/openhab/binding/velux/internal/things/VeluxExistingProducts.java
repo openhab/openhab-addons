@@ -121,10 +121,10 @@ public class VeluxExistingProducts {
             return false;
         }
         VeluxProduct thisProduct = this.get(bridgeProductIndex);
-        if (thisProduct.setState(productState) || thisProduct.setCurrentPosition(productPosition)
-                || thisProduct.setTarget(productTarget)) {
-            dirty = true;
-
+        dirty |= thisProduct.setState(productState);
+        dirty |= thisProduct.setCurrentPosition(productPosition);
+        dirty |= thisProduct.setTarget(productTarget);
+        if (dirty) {
             String uniqueIndex = thisProduct.isV2() ? thisProduct.getSerialNumber()
                     : thisProduct.getProductUniqueIndex();
             logger.trace("update(): updating by UniqueIndex {}.", uniqueIndex);

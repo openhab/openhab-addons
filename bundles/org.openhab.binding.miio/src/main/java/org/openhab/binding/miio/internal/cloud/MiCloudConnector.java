@@ -176,10 +176,27 @@ public class MiCloudConnector {
     }
 
     public String getDeviceStatus(String device, String country) throws MiCloudException {
-        String url = getApiUrl(country) + "/home/device_list";
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("data", "{\"dids\":[\"" + device + "\"]}");
-        final String response = request(url, map);
+        final String response = request("/home/device_list", country, "{\"dids\":[\"" + device + "\"]}");
+        logger.debug("response: {}", response);
+        return response;
+    }
+
+    public String sendRPCCommand(String device, String country, String command) throws MiCloudException {
+        if (device.length() != 8) {
+            logger.debug("Device ID ('{}') incorrect or missing. Command not send: {}", device, command);
+        }
+        if (country.length() > 3 || country.length() < 2) {
+            logger.debug("Country ('{}') incorrect or missing. Command not send: {}", device, command);
+        }
+        String id = "";
+        try {
+            id = String.valueOf(Long.parseUnsignedLong(device, 16));
+        } catch (NumberFormatException e) {
+            String err = "Could not parse device ID ('" + device.toString() + "')";
+            logger.debug("{}", err);
+            throw new MiCloudException(err, e);
+        }
+        final String response = request("/home/rpc/" + id, country, command);
         logger.debug("response: {}", response);
         return response;
     }
@@ -211,12 +228,9 @@ public class MiCloudConnector {
     }
 
     public String getDeviceString(String country) {
-        String url = getApiUrl(country) + "/home/device_list";
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("data", "{\"getVirtualModel\":false,\"getHuamiDevices\":0}");
         String resp;
         try {
-            resp = request(url, map);
+            resp = request("/home/device_list", country, "{\"getVirtualModel\":false,\"getHuamiDevices\":0}");
             logger.trace("Get devices response: {}", resp);
             if (resp.length() > 2) {
                 CloudUtil.saveDeviceInfoFile(resp, country, logger);
@@ -228,8 +242,15 @@ public class MiCloudConnector {
         return "";
     }
 
+    public String request(String urlPart, String country, String params) throws MiCloudException {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("data", params);
+        return request(urlPart, country, map);
+    }
+
     public String request(String urlPart, String country, Map<String, String> params) throws MiCloudException {
-        String url = getApiUrl(country) + urlPart;
+        String url = urlPart.trim();
+        url = getApiUrl(country) + (url.startsWith("/app") ? url.substring(4) : url);
         String response = request(url, params);
         logger.debug("Request to {} server {}. Response: {}", country, urlPart, response);
         return response;
@@ -276,7 +297,8 @@ public class MiCloudConnector {
 
             logger.trace("fieldcontent: {}", fields.toString());
             final ContentResponse response = request.send();
-            if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
+            if (response.getStatus() >= HttpStatus.BAD_REQUEST_400
+                    && response.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR_500) {
                 this.serviceToken = "";
             }
             return response.getContentAsString();

@@ -14,8 +14,6 @@ package org.openhab.binding.dwdunwetter.internal.data;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Enum for the urgency of the warning.
  *
@@ -38,7 +36,7 @@ public enum Urgency {
     }
 
     public static Urgency getUrgency(String input) {
-        return Arrays.asList(Urgency.values()).stream()
-                .filter(urg -> StringUtils.equalsIgnoreCase(input, urg.getText())).findAny().orElse(UNKNOWN);
+        return Arrays.asList(Urgency.values()).stream().filter(urg -> input.equalsIgnoreCase(urg.getText())).findAny()
+                .orElse(UNKNOWN);
     }
 }

@@ -398,7 +398,12 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                     listener.onAppliancePropertyChanged(uid, dp);
                                 }
                             } catch (SocketTimeoutException e) {
-                                Thread.sleep(500);
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException ex) {
+                                    logger.debug("Eventlistener has been interrupted.");
+                                    break;
+                                }
                             }
                         }
                     } catch (Exception ex) {
@@ -632,6 +637,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         if (pollingJob != null) {
             pollingJob.cancel(true);
             pollingJob = null;
+        }
+        if (eventListenerJob != null) {
+            eventListenerJob.cancel(true);
+            eventListenerJob = null;
         }
     }
 }
