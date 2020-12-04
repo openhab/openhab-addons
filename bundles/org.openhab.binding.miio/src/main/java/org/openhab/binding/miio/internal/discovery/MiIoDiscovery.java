@@ -95,9 +95,14 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         if (miioConfig != null) {
             try {
                 Dictionary<String, Object> properties = miioConfig.getProperties();
-                String cloudDiscoveryModeConfig = ((String) properties.get("cloudDiscoveryMode")).toLowerCase();
+                String cloudDiscoveryModeConfig = (String) properties.get("cloudDiscoveryMode");
+                if (cloudDiscoveryModeConfig == null) {
+                    cloudDiscoveryModeConfig = DISABLED;
+                } else {
+                    cloudDiscoveryModeConfig = cloudDiscoveryModeConfig.toLowerCase();
+                }
                 return Set.of(SUPPORTED, ALL).contains(cloudDiscoveryModeConfig) ? cloudDiscoveryModeConfig : DISABLED;
-            } catch (NullPointerException | ClassCastException | SecurityException e) {
+            } catch (ClassCastException | SecurityException e) {
                 logger.debug("Error getting cloud discovery configuration: {}", e.getMessage());
             }
         }
