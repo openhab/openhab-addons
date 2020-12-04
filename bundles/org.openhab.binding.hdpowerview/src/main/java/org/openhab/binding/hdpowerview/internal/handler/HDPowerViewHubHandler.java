@@ -63,6 +63,7 @@ import com.google.gson.JsonParseException;
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
+    private final ClientBuilder clientBuilder;
 
     private long refreshInterval;
     private long hardRefreshInterval;
@@ -74,8 +75,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
-    public HDPowerViewHubHandler(Bridge bridge) {
+    public HDPowerViewHubHandler(Bridge bridge, ClientBuilder clientBuilder) {
         super(bridge);
+        this.clientBuilder = clientBuilder;
     }
 
     @Override
@@ -114,7 +116,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        webTargets = new HDPowerViewWebTargets(ClientBuilder.newClient(), host);
+        webTargets = new HDPowerViewWebTargets(clientBuilder.build(), host);
         refreshInterval = config.refresh;
         hardRefreshInterval = config.hardRefresh;
         schedulePoll();
