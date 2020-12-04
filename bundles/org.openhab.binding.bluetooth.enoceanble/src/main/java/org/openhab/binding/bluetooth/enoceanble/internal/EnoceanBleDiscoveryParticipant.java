@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This discovery participant is able to recognize ruuvitag devices and create discovery results for them.
+ * This discovery participant is able to recognize enoceanble devices and create discovery results for them.
  *
  * @author Patrick Fink - Initial contribution
  *

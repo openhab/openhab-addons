@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Patrick Fink - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.ruuvitag")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.enoceanble")
 public class EnoceanBleHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
