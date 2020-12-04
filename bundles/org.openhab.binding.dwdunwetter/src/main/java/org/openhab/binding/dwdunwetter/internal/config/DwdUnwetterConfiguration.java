@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.dwdunwetter.internal.config;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,5 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class DwdUnwetterConfiguration {
     public int refresh;
     public int warningCount;
-    public String cellId = StringUtils.EMPTY;
+    public String cellId = "";
 }

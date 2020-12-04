@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Guenther Schreiner - Initial contribution
  */
+@Deprecated
 @NonNullByDefault
 public class VeluxBridgeSetSceneVelocity {
     private final Logger logger = LoggerFactory.getLogger(VeluxBridgeSetSceneVelocity.class);

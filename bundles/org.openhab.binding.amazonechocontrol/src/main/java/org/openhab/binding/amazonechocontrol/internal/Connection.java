@@ -45,7 +45,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -56,7 +55,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementContent;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget.TargetDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
@@ -147,7 +145,7 @@ public class Connection {
     private @Nullable String accountCustomerId;
     private @Nullable String customerName;
 
-    private Map<Integer, Announcement> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
+    private Map<Integer, AnnouncementWrapper> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<Integer, TextToSpeech> textToSpeeches = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<Integer, Volume> volumes = Collections.synchronizedMap(new LinkedHashMap<>());
     private Map<String, LinkedBlockingQueue<QueueObject>> devices = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -1313,16 +1311,20 @@ public class Connection {
 
     public void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
-        if (speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim().isEmpty()) {
+        String plainSpeak = speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
+        String plainBody = bodyText.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
+
+        if (plainSpeak.isEmpty() && plainBody.isEmpty()) {
+            // if there is neither a bodytext nor (except tags) a speaktext, we have nothing to announce
             return;
         }
 
         // we lock announcements until we have finished adding this one
-        Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock()));
         lock.lock();
         try {
-            Announcement announcement = Objects.requireNonNull(announcements.computeIfAbsent(
-                    Objects.hash(speak, bodyText, title), k -> new Announcement(speak, bodyText, title)));
+            AnnouncementWrapper announcement = Objects.requireNonNull(announcements.computeIfAbsent(
+                    Objects.hash(speak, plainBody, title), k -> new AnnouncementWrapper(speak, plainBody, title)));
             announcement.devices.add(device);
             announcement.ttsVolumes.add(ttsVolume);
             announcement.standardVolumes.add(standardVolume);
@@ -1340,38 +1342,18 @@ public class Connection {
         Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
         lock.lock();
         try {
-            Iterator<Announcement> iterator = announcements.values().iterator();
+            Iterator<AnnouncementWrapper> iterator = announcements.values().iterator();
             while (iterator.hasNext()) {
-                Announcement announcement = iterator.next();
+                AnnouncementWrapper announcement = iterator.next();
                 try {
                     List<Device> devices = announcement.devices;
                     if (!devices.isEmpty()) {
-                        String speak = announcement.speak;
-                        String bodyText = announcement.bodyText;
-                        String title = announcement.title;
+                        JsonAnnouncementContent content = new JsonAnnouncementContent(announcement);
 
                         Map<String, Object> parameters = new HashMap<>();
                         parameters.put("expireAfter", "PT5S");
-                        JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
-                        JsonAnnouncementContent content = new JsonAnnouncementContent();
-                        content.display.title = title == null || title.isEmpty() ? "openHAB" : title;
-                        content.display.body = bodyText;
-                        content.display.body = speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
-                        if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
-                            content.speak.type = "ssml";
-                        }
-                        content.speak.value = speak;
-
-                        contentArray[0] = content;
-
-                        parameters.put("content", contentArray);
-
-                        JsonAnnouncementTarget target = new JsonAnnouncementTarget();
-                        target.customerId = devices.get(0).deviceOwnerCustomerId;
-                        TargetDevice[] targetDevices = devices.stream().map(TargetDevice::new)
-                                .collect(Collectors.toList()).toArray(new TargetDevice[0]);
-                        target.devices = targetDevices;
-                        parameters.put("target", target);
+                        parameters.put("content", new JsonAnnouncementContent[] { content });
+                        parameters.put("target", new JsonAnnouncementTarget(devices));
 
                         String customerId = getCustomerId(devices.get(0).deviceOwnerCustomerId);
                         if (customerId != null) {
@@ -2024,7 +2006,7 @@ public class Connection {
                 true, true, null, 0);
     }
 
-    private static class Announcement {
+    public static class AnnouncementWrapper {
         public List<Device> devices = new ArrayList<>();
         public String speak;
         public String bodyText;
@@ -2032,7 +2014,7 @@ public class Connection {
         public List<@Nullable Integer> ttsVolumes = new ArrayList<>();
         public List<@Nullable Integer> standardVolumes = new ArrayList<>();
 
-        public Announcement(String speak, String bodyText, @Nullable String title) {
+        public AnnouncementWrapper(String speak, String bodyText, @Nullable String title) {
             this.speak = speak;
             this.bodyText = bodyText;
             this.title = title;

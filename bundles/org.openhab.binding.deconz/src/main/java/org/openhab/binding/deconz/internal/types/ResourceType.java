@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public enum ResourceType {
     GROUPS("groups", "action"),
     LIGHTS("lights", "state"),
-    SENSORS("sensors", ""),
+    SENSORS("sensors", "config"),
     UNKNOWN("", "");
 
     private static final Map<String, ResourceType> MAPPING = Arrays.stream(ResourceType.values())

@@ -35,6 +35,7 @@ public class Tr064RootConfiguration extends Tr064BaseThingConfiguration {
     public List<String> rejectedCallDays = Collections.emptyList();
     public List<String> inboundCallDays = Collections.emptyList();
     public List<String> outboundCallDays = Collections.emptyList();
+    public List<String> callListDays = Collections.emptyList();
     public int phonebookInterval = 0;
 
     public boolean isValid() {

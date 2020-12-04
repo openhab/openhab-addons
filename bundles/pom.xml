@@ -95,6 +95,7 @@
     <module>org.openhab.binding.enigma2</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enturno</module>
+    <module>org.openhab.binding.epsonprojector</module>
     <module>org.openhab.binding.etherrain</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.exec</module>
@@ -136,6 +137,7 @@
     <module>org.openhab.binding.ipcamera</module>
     <module>org.openhab.binding.intesis</module>
     <module>org.openhab.binding.ipp</module>
+    <module>org.openhab.binding.irobot</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.ism8</module>
     <module>org.openhab.binding.jablotron</module>
@@ -233,6 +235,7 @@
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
+    <module>org.openhab.binding.pushover</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.revogi</module>

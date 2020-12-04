@@ -191,6 +191,8 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 updateState(BYPASSED, state.isSensorBypassed(num) ? OnOffType.ON : OnOffType.OFF);
             } else if (channel.equals(ARMED) && (state.isSensorArmed(num) != null)) {
                 updateState(ARMED, state.isSensorArmed(num) ? OnOffType.ON : OnOffType.OFF);
+            } else if (channel.equals(LOCKED) && (state.isSensorArmed(num) != null)) {
+                updateState(LOCKED, state.isSensorArmed(num) ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             } else if (channel.equals(LOW_BATTERY) && (state.isSensorLowBattery(num) != null)) {
                 updateState(LOW_BATTERY, state.isSensorLowBattery(num) ? OnOffType.ON : OnOffType.OFF);
             }

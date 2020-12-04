@@ -25,12 +25,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -198,11 +198,11 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     @Override
-    public void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
+    public void startAnnouncement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer volume) throws IOException, URISyntaxException {
         EchoHandler echoHandler = findEchoHandlerBySerialNumber(device.serialNumber);
         if (echoHandler != null) {
-            echoHandler.startAnnouncment(device, speak, bodyText, title, volume);
+            echoHandler.startAnnouncement(device, speak, bodyText, title, volume);
         }
     }
 
@@ -596,12 +596,10 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     public @Nullable Device findDeviceJson(@Nullable String serialNumber) {
-        Device result = null;
-        if (serialNumber != null && !serialNumber.isEmpty()) {
-            Map<String, Device> jsonSerialNumberDeviceMapping = this.jsonSerialNumberDeviceMapping;
-            result = jsonSerialNumberDeviceMapping.get(serialNumber);
+        if (serialNumber == null || serialNumber.isEmpty()) {
+            return null;
         }
-        return result;
+        return this.jsonSerialNumberDeviceMapping.get(serialNumber);
     }
 
     public @Nullable Device findDeviceJsonBySerialOrName(@Nullable String serialOrName) {
@@ -609,15 +607,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             return null;
         }
 
-        Optional<Device> device = this.jsonSerialNumberDeviceMapping.values().stream().filter(
+        return this.jsonSerialNumberDeviceMapping.values().stream().filter(
                 d -> serialOrName.equalsIgnoreCase(d.serialNumber) || serialOrName.equalsIgnoreCase(d.accountName))
-                .findFirst();
-
-        if (device.isPresent()) {
-            return device.get();
-        } else {
-            return null;
-        }
+                .findFirst().orElse(null);
     }
 
     public List<Device> updateDeviceList() {
@@ -636,15 +628,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         }
         if (devices != null) {
             // create new device map
-            Map<String, Device> newJsonSerialDeviceMapping = new HashMap<>();
-            for (Device device : devices) {
-                String serialNumber = device.serialNumber;
-                if (serialNumber != null) {
-                    newJsonSerialDeviceMapping.put(serialNumber, device);
-                }
-
-            }
-            jsonSerialNumberDeviceMapping = newJsonSerialDeviceMapping;
+            jsonSerialNumberDeviceMapping = devices.stream().filter(device -> device.serialNumber != null)
+                    .collect(Collectors.toMap(d -> Objects.requireNonNull(d.serialNumber), d -> d));
         }
 
         WakeWord[] wakeWords = currentConnection.getWakeWords();
