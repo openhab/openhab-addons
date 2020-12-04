@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SafeExposureConfiguration {
-    public int index = -1;
+    public String index = "II";
 }
