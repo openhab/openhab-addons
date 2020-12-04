@@ -491,14 +491,14 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-	<channel-type id="statistic-yield-day">
-		<item-type>Number:Power</item-type>
+	<channel-type id="statistic-yield-day-second-gen">
+		<item-type>Number:Energy</item-type>
 		<label>Yield Day</label>
 		<description>Total produced power today</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-	<channel-type id="statistic-yield-total">
+	<channel-type id="statistic-yield-total-second-gen">
 		<item-type>Number:Energy</item-type>
 		<label>Yield Total</label>
 		<description>Total produced power</description>
@@ -506,11 +506,11 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-operating-status">
-		<item-type>String</item-type>
-		<label>Status</label>
-		<description>Current operating status</description>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Operating status</label>
+		<description>Operating status</description>
 		<category>Energy</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="device-local-grid-voltage-l1">
 		<item-type>Number:ElectricPotential</item-type>
@@ -689,7 +689,7 @@
 	</channel-type>
 	<channel-type id="device-local-grid-freq">
 		<item-type>Number:Frequency</item-type>
-		<label>Grid Freq</label>
+		<label>Grid Frequency</label>
 		<description>Current frequency on grid</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -738,15 +738,15 @@
 	</channel-type>
 	<channel-type id="statistic-own-consumption-total">
 		<item-type>Number:Energy</item-type>
-		<label>Own Consumption Total</label>
+		<label>Total own consumption</label>
 		<description>Total own consumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-operating-time-total">
 		<item-type>Number:Time</item-type>
-		<label>Total Operating Time</label>
-		<description>Operating Time Total</description>
+		<label>Operating Time Total</label>
+		<description>Total Operating Time</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -762,40 +762,40 @@
 		<label>Current Dir</label>
 		<description>Current direction</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="device-local-charge-cycles">
-		<item-type>String</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Charge Cycles</label>
 		<description>Total number of charge cycles</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="device-local-battery-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Temperature</label>
 		<description>Current battery temperature</description>
-		<category>Temperature</category>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-loginterval">
 		<item-type>Number:Time</item-type>
 		<label>Log Interval</label>
-		<description>Set value for loginterval</description>
+		<description>Current value for log interval</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.d %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-s0-inpulse-cnt">
 		<item-type>Number:Dimensionless</item-type>
 		<label>S0 Input Pulses Counter</label>
 		<description>S0-pulse counter</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="statistic-own-cons-rate-total">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Own Cons Rate Total</label>
-		<description>Total own comsumption rate</description>
+		<description>Total own consumption rate</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

@@ -9,8 +9,8 @@
 		<category>Inverter</category>
 		<channels>
 			<channel typeId="device-local-grid-output-power" id="gridOutputPower"/>
-			<channel typeId="statistic-yield-day" id="yieldDay"/>
-			<channel typeId="statistic-yield-total" id="yieldTotal"/>
+			<channel typeId="statistic-yield-day-second-gen" id="yieldDaySecondGen"/>
+			<channel typeId="statistic-yield-total-second-gen" id="yieldTotalSecondGen"/>
 			<channel typeId="device-local-operating-status" id="operatingStatus"/>
 			<channel typeId="device-local-grid-voltage-l1" id="gridVoltageL1"/>
 			<channel typeId="device-local-grid-current-l1" id="gridCurrentL1"/>

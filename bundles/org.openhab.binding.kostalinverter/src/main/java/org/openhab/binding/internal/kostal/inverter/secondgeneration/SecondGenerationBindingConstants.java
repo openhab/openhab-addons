@@ -33,8 +33,8 @@ public class SecondGenerationBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_GRIDOUTPUTPOWER = "gridOutputPower";
-    public static final String CHANNEL_YIELD_DAY = "yieldDay";
-    public static final String CHANNEL_YIELD_TOTAL = "yieldTotal";
+    public static final String CHANNEL_YIELD_DAY_SECOND_GEN = "yieldDaySecondGen";
+    public static final String CHANNEL_YIELD_TOTAL_SECOND_GEN = "yieldTotalSecondGen";
     public static final String CHANNEL_OPERATING_STATUS = "operatingStatus";
     public static final String CHANNEL_GRIDVOLTAGEL1 = "gridVoltageL1";
     public static final String CHANNEL_GRIDCURRENTL1 = "gridCurrentL1";
@@ -70,7 +70,7 @@ public class SecondGenerationBindingConstants {
     public static final String CHANNEL_AUTONOMYDEGREE_DAY = "autonomyDegreeDay";
     public static final String CHANNEL_HOMECONSUMPTION_TOTAL = "homeConsumptionTotal";
     public static final String CHANNEL_OWNCONSUMPTION_TOTAL = "ownConsumptionTotal";
-    public static final String CHANNEL_TOTALOPERATINGTIME = "totalOperatingTime";
+    public static final String CHANNEL_OPERATINGTIME_TOTAL = "operatingTimeTotal";
     public static final String CHANNEL_CURRENT = "current";
     public static final String CHANNEL_CURRENTDIR = "currentDir";
     public static final String CHANNEL_CHARGECYCLES = "chargeCycles";

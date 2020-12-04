@@ -70,8 +70,8 @@ None
 | Channel Type ID                          | Item Type                | Description                                                                      | Read Write |
 |------------------------------------------|--------------------------|----------------------------------------------------------------------------------|:----------:|    
 | device-local-grid-output-power           | Number:Power             | Current output power to the grid                                                 |     R      |              
-| statistic-yield-day                      | Number:Energy            | Total produced power today                                                       |     R      |                
-| statistic-yield-total                    | Number:Energy            | Total produced power                                                             |     R      |
+| statistic-yield-day-second-gen           | Number:Energy            | Total produced power today                                                       |     R      |                
+| statistic-yield-total-second-gen         | Number:Energy            | Total produced power                                                             |     R      |
 | device-local-operating-status            | Number:Dimensionless     | Current operating status, 0 = Standby, 3 = WO-IDLE                               |     R      |
 | device-local-grid-voltage-l1             | Number:ElectricPotential | Current output voltage to the grid, L1                                           |     R      |
 | device-local-grid-current-l1             | Number:ElectricCurrent   | Current output current to the grid, L1                                           |     R      |
@@ -288,9 +288,9 @@ String SolarStatus "Solar status [%s]" <energy> { channel="kostalinverter:kostal
 demo.items:
 
 ```
-Number:Power                GridOutputPower             "PV Output Power"                           <energy>  { channel="kostalinverter:piko1020:mypiko1020:gridOutputPower" }
-Number:Power                YieldDay                    "PV Output Power Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldDay" }
-Number:Energy               YieldTotal                  "PV Output Power Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldTotal" }  
+Number:Power                GridOutputPower             "PV Output Power"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:gridOutputPower" }
+Number:Energy               YieldDaySecondGen           "PV Output Power Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldDaySecondGen" }
+Number:Energy               YieldTotalSecondGen         "PV Output Power Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldTotalSecondgen" }  
 Number:Dimensionless        OperatingStatus             "Operating Status"                          <energy> { channel="kostalinverter:piko1020:mypiko1020:operatingStatus" }
 Number:ElectricPotential    GridVoltageL1               "Grid Voltage L1"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:gridVoltageL1" }
 Number:ElectricCurrent      GridCurrentL1               "Grid Current L1"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:gridCurrentL1" }
@@ -346,6 +346,7 @@ Number:Power                SelfConsumption             "Self Consumption"      
 demo.items:
 
 ```
+
 Number:Energy                MyPlentiCore100WithBattery_DEVICE_LOCAL_DC_POWER                         <energy> { channel="kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery:deviceLocalDCPower"}
 Number:Energy                MyPlentiCore100WithBattery_DEVICE_LOCAL_HOMECONSUMPTION_FROM_BATTERY     <energy> { channel="kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery:deviceLocalHomeconsumptionFromBattery"}
 Number:Energy                MyPlentiCore100WithBattery_DEVICE_LOCAL_HOMECONSUMPTION_FROM_GRID        <energy> { channel="kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery:deviceLocalHomeconsumptionFromGrid"}

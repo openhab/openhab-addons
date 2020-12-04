@@ -52,11 +52,12 @@ public class SecondGenerationChannelConfiguration {
 
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_GRIDOUTPUTPOWER, "td", 4, SmartHomeUnits.WATT, "67109120"));
+        channelConfiguration.add(
+                new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_YIELD_DAY_SECOND_GEN,
+                        "td", 7, SmartHomeUnits.WATT_HOUR, "251658754"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
-                SecondGenerationBindingConstants.CHANNEL_YIELD_DAY, "td", 7, SmartHomeUnits.WATT_HOUR, "251658754"));
-        channelConfiguration
-                .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_YIELD_TOTAL,
-                        "td", 10, SmartHomeUnits.KILOWATT_HOUR, "251658753"));
+                SecondGenerationBindingConstants.CHANNEL_YIELD_TOTAL_SECOND_GEN, "td", 10, SmartHomeUnits.KILOWATT_HOUR,
+                "251658753"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_OPERATING_STATUS, "td", 13, SmartHomeUnits.ONE, "16780032"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
@@ -146,7 +147,7 @@ public class SecondGenerationChannelConfiguration {
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_OWNCONSUMPTION_TOTAL,
                         "td", 112, SmartHomeUnits.WATT_HOUR, "251659265"));
         channelConfigurationExt.add(
-                new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_TOTALOPERATINGTIME,
+                new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_OPERATINGTIME_TOTAL,
                         "td", 115, SmartHomeUnits.HOUR, "251658496"));
         channelConfigurationExt.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_CURRENT, "td", 118, SmartHomeUnits.AMPERE, "33556238"));
