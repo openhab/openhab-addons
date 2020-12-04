@@ -256,6 +256,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     private void updateStates() {
         if (!initFinished) {
             logger.debug("Ignoring call for updating states as this instance is not initialized yet.");
+            return;
         }
         final Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
