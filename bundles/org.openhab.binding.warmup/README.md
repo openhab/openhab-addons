@@ -20,6 +20,7 @@ The Warmup binding supports the following thing types:
 | `room`   | Room  | A room containing an individual Warmup 4iE device which is a WiFi connected device which controls a heating circuit. |
 
 ### Room
+
 The device is optimised for controlling underfloor heating (electric or hydronic), although it can also control central heating circuits.
 The device reports the temperature from one of two thermostats, either a floor temperature probe or the air temperature at the device.
 The separate temperatures do not appear to be reported through the API. It appears to be possible to configure two devices in a primary / secondary configuration, but it is not clear how this might be represented by the API and hasn't been implemented.
