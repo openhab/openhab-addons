@@ -28,16 +28,16 @@
 		</supported-bridge-type-refs>
 		<label>Flic Button</label>
 		<description>The thing(-type) representing a Flic Button</description>
+		<channels>
+			<channel id="rawbutton" typeId="system.rawbutton"/>
+			<channel id="button" typeId="system.button"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+		</channels>
 		<config-description>
 			<parameter name="address" type="text">
 				<label>Address</label>
 				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
 			</parameter>
 		</config-description>
-		<channels>
-			<channel id="rawbutton" typeId="system.rawbutton"/>
-			<channel id="button" typeId="system.button"/>
-			<channel id="battery-level" typeId="system.battery-level"/>
-		</channels>
 	</thing-type>
 </thing:thing-descriptions>

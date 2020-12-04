@@ -20,6 +20,7 @@ is not required anymore.
 ## Discovery
 
 * There is no automatic discovery for flicd-bridge available.
+  
 * After flicd-bridge is (manually) configured, buttons will be automatically discovered via background discovery as soon
   as they're addded with [simpleclient](https://github.com/50ButtonsEach/fliclib-linux-hci) . If they're already
   attached to the flicd-bridge before configuring this binding, they can be discovered by triggering an active scan.
@@ -45,17 +46,17 @@ If flicd is running on a remote host, please do not forget to start it with the 
 
 ### button
 
-There are no configuration parameters for buttons available and normally no textual configuration is necessary as buttons are autodiscovered as soon as the bridge is configured. If you want to use textual configuration anyway, you can do it like this:
+For the button, the only config parameter is the MAC address. Normally, no textual configuration is necessary as buttons are autodiscovered as soon as the bridge is configured. If you want to use textual configuration anyway, you can do it like this:
 
 ```
 Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port="<YOUR_PORT>"] {
-    Thing button <MAC_ADDRESS> "<YOUR_LABEL>"
-    Thing button <MAC_ADDRESS> "<YOUR_LABEL>"
+    Thing button myflic1 "<YOUR_LABEL>" [address = <MAC_ADDRESS>]
+    Thing button myflic2 "<YOUR_LABEL>" [address =<MAC_ADDRESS> ]
     ...
 }
 ```
 
-You can lookup the MAC addresses of your buttons within the inbox of Paper UI. You're free to choose any label you like for your button.
+You can lookup the MAC addresses of your buttons within the inbox of the UI. You're free to choose any label you like for your button.
 
 ## Channels
 
@@ -72,7 +73,7 @@ You can lookup the MAC addresses of your buttons within the inbox of Paper UI. Y
 
 1. Setup and run flicd as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci). Please consider that you need a seperate Bluetooth adapter. Shared usage with other Bluetooth services (e.g. Bluez) is not possible.
 1. Connect your buttons to flicd using the simpleclient as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci). Flicd has to run in background the whole time, simpleclient can be killed after you successfully tested the button connection.
-1. Add a flicd-bridge via PaperUI or Textual Configuration. Please consider that flicd does only accept connections from localhost by default, to enable remote connections from openHAB you have to use the `--server-addr` parameter as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci).
+1. Add a flicd-bridge via UI or Textual Configuration. Please consider that flicd does only accept connections from localhost by default, to enable remote connections from openHAB you have to use the `--server-addr` parameter as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci).
 1. When the bridge is online, buttons newly added via simpleclient will automatically get discovered via background Discovery. To discover buttons that were set up before the Binding setup, please run an active scan.
 
 ### Configuration Example using Profiles
@@ -82,17 +83,17 @@ You can lookup the MAC addresses of your buttons within the inbox of Paper UI. Y
 demo.things:
 
 ```
-Bridge bluetooth:bluegiga:bluegiga0 "Bluegiga Adapter" [ port="/dev/ttyBLUEGIGA", discovery=false ] {
-    Thing ptm215b rocker_livingroom "Rocker Living Room" [ address = "E2:15:00:00:53:F9" ]
-    Thing ptm215b rocker_kitchen "Rocker Kitchen" [ address = "E2:15:00:00:53:98" ]
+Bridge flicbutton:flicd-bridge:local-flicd {
+	Thing button flic_livingroom "Yellow Button Living Room" [address = "60:13:B3:02:18:BD"]
+	Thing button flic_kitchen "Black Button Kitchen" [address = "B5:7E:59:78:86:9F"]
 }
 ```
 
 demo.items:
 
 ```
-Dimmer Light_LivingRoom  { channel="milight:rgbLed:milight2:4:ledbrightness", channel="bluetooth:ptm215b:bluegiga0:rocker_livingroom:rocker1" [profile="rawbutton-to-on-off"], channel="bluetooth:ptm215b:bluegiga0:rocker_kitchen:rocker1" [profile="rawbutton-to-on-off"] }  // We have a combined kitchen / livingroom, so we control the living room lights with switches from the living room and from the kitchen
-Switch Light_Kitchen    { channel="hue:group:1:kitchen-bulbs:switch", channel="bluetooth:ptm215b:bluegiga0:rocker_kitchen:rocker2" [profile="rawbutton-to-on-off"] }
+Dimmer Light_LivingRoom  { channel="milight:rgbLed:milight2:4:ledbrightness", channel="flicbutton:button:local-flicd:flic_livingroom:rawbutton" [profile="rawbutton-toggle-switch"], channel="flicbutton:button:local-flicd:flic_kitchen:rawbutton" [profile="rawbutton-toggle-switch"] }  // We have a combined kitchen / livingroom, so we control the living room lights with switches from the living room and from the kitchen
+Switch Light_Kitchen    { channel="hue:group:1:kitchen-bulbs:switch", channel="flicbutton:button:local-flicd:flic_kitchen:rawbutton" [profile="rawbutton-toggle-switch"] }
 ```
 
 ### Configuration Example using Rules
@@ -103,7 +104,7 @@ The following rules help to initially test your setup as they'll trigger log mes
     rule "Button rule using the button channel"
 
     when
-        Channel "flicbutton:button:1:80-e4-da-71-12-34:button" triggered SHORT_PRESSED
+        Channel "flicbutton:button:local-flicd:flic_livingroom:button" triggered SHORT_PRESSED
     then
         logInfo("Flic", "Flic 'short pressed' triggered")
     end
@@ -111,7 +112,7 @@ The following rules help to initially test your setup as they'll trigger log mes
     rule "Button rule directly using the rawbutton channel"
 
     when
-        Channel "flicbutton:button:1:80-e4-da-71-12-34:rawbutton" triggered
+        Channel "flicbutton:button:local-flicd:flic_livingroom:rawbutton" triggered
     then
         logInfo("Flic", "Flic pressed: " + receivedEvent.event)
     end

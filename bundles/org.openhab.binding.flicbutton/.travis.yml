@@ -1,9 +1,0 @@
-language: java
-jdk: openjdk11
-before_install:
-  - wget https://github.com/openhab/openhab-addons/archive/2.5.x.tar.gz
-  - tar xzf 2.5.x.tar.gz
-  - mkdir openhab-addons-2.5.x/bundles/org.openhab.binding.flicbutton
-  - shopt -s extglob dotglob 
-  - mv !(openhab-addons-2.5.x) openhab-addons-2.5.x/bundles/org.openhab.binding.flicbutton
-  - cd openhab-addons-2.5.x/bundles/org.openhab.binding.flicbutton
