@@ -14,7 +14,6 @@ package org.openhab.binding.ojelectronics.internal;
 
 import static org.openhab.binding.ojelectronics.internal.BindingConstants.THING_TYPE_OWD5;
 
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Set;
 
@@ -40,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 public class ThermostatHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_OWD5);
-    private final ZoneId timeZone;
+    private final TimeZoneProvider timeZoneProvider;
 
     /**
      * Creates a new factory
@@ -49,7 +48,7 @@ public class ThermostatHandlerFactory extends BaseThingHandlerFactory {
      */
     @Activate
     public ThermostatHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
-        this.timeZone = timeZoneProvider.getTimeZone();
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -65,7 +64,7 @@ public class ThermostatHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_OWD5.equals(thingTypeUID)) {
-            return new ThermostatHandler(thing, timeZone);
+            return new ThermostatHandler(thing, timeZoneProvider);
         }
 
         return null;

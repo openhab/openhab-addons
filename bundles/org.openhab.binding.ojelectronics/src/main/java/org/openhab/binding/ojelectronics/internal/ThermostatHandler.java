@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.ojelectronics.internal;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.AbstractMap;
@@ -29,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsThermostatConfiguration;
 import org.openhab.binding.ojelectronics.internal.models.Thermostat;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -60,7 +60,7 @@ public class ThermostatHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ThermostatHandler.class);
     private final Map<String, Consumer<Thermostat>> channelrefreshActions = createChannelRefreshActionMap();
     private final Map<String, Consumer<Command>> updateThermostatValueActions = createUpdateThermostatValueActionMap();
-    private final ZoneId timeZone;
+    private final TimeZoneProvider timeZoneProvider;
 
     private LinkedList<AbstractMap.SimpleImmutableEntry<String, Command>> updatedValues = new LinkedList<>();
     private @Nullable Thermostat currentThermostat;
@@ -69,12 +69,12 @@ public class ThermostatHandler extends BaseThingHandler {
      * Creates a new instance of {@link ThermostatHandler}
      *
      * @param thing Thing
-     * @param timeZone Time zone
+     * @param timeZoneProvider Time zone
      */
-    public ThermostatHandler(Thing thing, ZoneId timeZone) {
+    public ThermostatHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
         serialNumber = getConfigAs(OJElectronicsThermostatConfiguration.class).serialNumber;
-        this.timeZone = timeZone;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -160,8 +160,8 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     private void updateBoostEndTime(Thermostat thermostat) {
-        updateState(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME,
-                new DateTimeType(ZonedDateTime.ofInstant(thermostat.boostEndTime.toInstant(), timeZone)));
+        updateState(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME, new DateTimeType(
+                ZonedDateTime.ofInstant(thermostat.boostEndTime.toInstant(), timeZoneProvider.getTimeZone())));
     }
 
     private void updateBoostEndTime(Command command) {
@@ -173,8 +173,8 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     private void updateComfortEndTime(Thermostat thermostat) {
-        updateState(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME,
-                new DateTimeType(ZonedDateTime.ofInstant(thermostat.comfortEndTime.toInstant(), timeZone)));
+        updateState(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME, new DateTimeType(
+                ZonedDateTime.ofInstant(thermostat.comfortEndTime.toInstant(), timeZoneProvider.getTimeZone())));
     }
 
     private void updateComfortEndTime(Command command) {
@@ -252,8 +252,10 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     private void updateVacationBeginDay(Thermostat thermostat) {
-        updateState(BindingConstants.CHANNEL_OWD5_VACATIONBEGINDAY, new DateTimeType(ZonedDateTime
-                .ofInstant(thermostat.vacationBeginDay.toInstant(), timeZone).truncatedTo(ChronoUnit.DAYS)));
+        updateState(BindingConstants.CHANNEL_OWD5_VACATIONBEGINDAY,
+                new DateTimeType(
+                        ZonedDateTime.ofInstant(thermostat.vacationBeginDay.toInstant(), timeZoneProvider.getTimeZone())
+                                .truncatedTo(ChronoUnit.DAYS)));
     }
 
     private void updateVacationBeginDay(Command command) {
@@ -266,8 +268,10 @@ public class ThermostatHandler extends BaseThingHandler {
     }
 
     private void updateVacationEndDay(Thermostat thermostat) {
-        updateState(BindingConstants.CHANNEL_OWD5_VACATIONENDDAY, new DateTimeType(
-                ZonedDateTime.ofInstant(thermostat.vacationEndDay.toInstant(), timeZone).truncatedTo(ChronoUnit.DAYS)));
+        updateState(BindingConstants.CHANNEL_OWD5_VACATIONENDDAY,
+                new DateTimeType(
+                        ZonedDateTime.ofInstant(thermostat.vacationEndDay.toInstant(), timeZoneProvider.getTimeZone())
+                                .truncatedTo(ChronoUnit.DAYS)));
     }
 
     private void updateVacationEndDay(Command command) {
