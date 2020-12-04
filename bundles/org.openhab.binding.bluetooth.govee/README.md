@@ -19,20 +19,22 @@ As any other Bluetooth device, Govee devices are discovered automatically by the
 
 Govee things have the following configuration parameters:
 
-| Thing                       | Parameter               | Required | Default | Description                                                               |
-|-----------------------------|-------------------------|----------|---------|---------------------------------------------------------------------------|
-| all                         | address                 | yes      |         | The Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX")       |
-| all                         | refreshInterval         |          | 300     | How often, in seconds, the sensor data of the device should be refreshed  |
-| goveeHygrometer<sup>1</sup> | temperatureCalibration  | no       |         | Offset to apply to temperature sensor readings (in °C)                    |
-| goveeHygrometer<sup>1</sup> | humidityCalibration     | no       |         | Offset to apply to humidity sensor readings                               |        
-| goveeHygrometerMonitor      | temperatureWarningAlarm |          | false   | Enables warning alarms to be broadcast when temperature is out of range   |
-| goveeHygrometerMonitor      | temperatureWarningMin   |          | 0       | The lower safe temperature threshold (only applies if alarm is enabled)   |
-| goveeHygrometerMonitor      | temperatureWarningMax   |          | 0       | The upper safe temperature threshold (only applies if alarm is enabled)   |
-| goveeHygrometerMonitor      | humidityWarningAlarm    |          | false   | Enables warning alarms to be broadcast when humidity is out of range      |
-| goveeHygrometerMonitor      | humidityWarningMin      |          | 0       | The lower safe humidity threshold (only applies if alarm is enabled)      |
-| goveeHygrometerMonitor      | humidityWarningMax      |          | 0       | The upper safe humidity threshold (only applies if alarm is enabled)      |
+| Thing                       | Parameter               | Required | Default | Description                                                                       |
+|-----------------------------|-------------------------|----------|---------|-----------------------------------------------------------------------------------|
+| all                         | address                 | yes      |         | The Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX")               |
+| all                         | refreshInterval         |          | 300     | How often, in seconds, the sensor data of the device should be refreshed          |
+| goveeHygrometer<sup>1</sup> | temperatureCalibration  | no       |         | Offset to apply to temperature<sup>2</sup> sensor readings                        |
+| goveeHygrometer<sup>1</sup> | humidityCalibration     | no       |         | Offset to apply to humidity sensor readings                                       |        
+| goveeHygrometerMonitor      | temperatureWarningAlarm |          | false   | Enables warning alarms to be broadcast when temperature is out of specified range |
+| goveeHygrometerMonitor      | temperatureWarningMin   |          | 0       | The lower safe temperature<sup>2</sup> threshold <sup>3</sup>                     |
+| goveeHygrometerMonitor      | temperatureWarningMax   |          | 0       | The upper safe temperature<sup>2</sup> threshold <sup>3</sup>                     |
+| goveeHygrometerMonitor      | humidityWarningAlarm    |          | false   | Enables warning alarms to be broadcast when humidity is out of specified range    |
+| goveeHygrometerMonitor      | humidityWarningMin      |          | 0       | The lower safe humidity threshold <sup>3</sup>                                    |
+| goveeHygrometerMonitor      | humidityWarningMax      |          | 0       | The upper safe humidity threshold <sup>3</sup>                                    |
 
 1. Available to both `goveeHygrometer` and `goveeHygrometerMonitor` thing types.
+2. In °C
+3. Only applies if alarm feature is enabled
 
 ## Channels
 
