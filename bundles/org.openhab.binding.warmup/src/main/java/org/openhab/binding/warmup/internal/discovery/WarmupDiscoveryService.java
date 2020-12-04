@@ -50,13 +50,7 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
     public void deactivate() {
-        super.deactivate();
     }
 
     @Override
