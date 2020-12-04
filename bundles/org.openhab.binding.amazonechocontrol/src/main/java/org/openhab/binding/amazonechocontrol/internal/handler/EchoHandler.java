@@ -713,7 +713,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     }
 
     @Override
-    public void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
+    public void startAnnouncement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer volume) throws IOException, URISyntaxException {
         Connection connection = this.findConnection();
         if (connection == null) {

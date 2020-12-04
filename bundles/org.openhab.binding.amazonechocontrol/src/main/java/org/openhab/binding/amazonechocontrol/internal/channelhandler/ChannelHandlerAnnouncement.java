@@ -92,7 +92,7 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                         body = e.getLocalizedMessage();
                     }
                 }
-                thingHandler.startAnnouncment(device, speak, Objects.requireNonNullElse(body, ""), title, volume);
+                thingHandler.startAnnouncement(device, speak, Objects.requireNonNullElse(body, ""), title, volume);
             }
             refreshChannel();
         }
