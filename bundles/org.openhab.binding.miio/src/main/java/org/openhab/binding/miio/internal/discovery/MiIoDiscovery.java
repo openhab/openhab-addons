@@ -94,7 +94,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     private String getCloudDiscoveryMode() {
         if (miioConfig != null) {
             try {
-                Dictionary<String, Object> properties = miioConfig.getProperties();
+                Dictionary<String, @Nullable Object> properties = miioConfig.getProperties();
                 String cloudDiscoveryModeConfig = (String) properties.get("cloudDiscoveryMode");
                 if (cloudDiscoveryModeConfig == null) {
                     cloudDiscoveryModeConfig = DISABLED;
