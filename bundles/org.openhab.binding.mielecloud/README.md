@@ -159,7 +159,6 @@ Depending on the exact appliance configuration not all channels might be support
 | bottom_temperature_current | Number | The currently measured temperature of the bottom area. | Yes |
 | light_switch | Switch | Indicates if the light of the device is enabled. | No |
 | light_can_be_controlled | Switch | Indicates if the light of the device can be controlled. | Yes |
-| plate_is_present | Switch | Indicates if plate is present. | Yes |
 | plate_power_step | String | The power level of the heating plate. | Yes |
 | plate_power_step_raw | Number | The raw power level of the heating plate. | Yes |
 | door_state | Switch | Indicates if the door of the device is open. | Yes |
@@ -321,22 +320,16 @@ Depending on the exact appliance configuration not all channels might be support
 | operation_state_raw | operation_state_raw |
 | error_state | error_state |
 | info_state | info_state |
-| plate_1_is_present | plate_is_present |
 | plate_1_power_step | plate_power_step |
 | plate_1_power_step_raw | plate_power_step_raw |
-| plate_2_is_present | plate_is_present |
 | plate_2_power_step | plate_power_step |
 | plate_2_power_step_raw | plate_power_step_raw |
-| plate_3_is_present | plate_is_present |
 | plate_3_power_step | plate_power_step |
 | plate_3_power_step_raw | plate_power_step_raw |
-| plate_4_is_present | plate_is_present |
 | plate_4_power_step | plate_power_step |
 | plate_4_power_step_raw | plate_power_step_raw |
-| plate_5_is_present | plate_is_present |
 | plate_5_power_step | plate_power_step |
 | plate_5_power_step_raw | plate_power_step_raw |
-| plate_6_is_present | plate_is_present |
 | plate_6_power_step | plate_power_step |
 | plate_6_power_step_raw | plate_power_step_raw |
 
@@ -516,6 +509,31 @@ A valid door state can be expected when the appliance is in one of the following
 - `4`: Program selected, waiting to start
 - `5`: Running
 - `6`: Paused
+
+## Properties
+
+The following chapters list the properties offered by appliances.
+
+### Common Properties
+
+| Property Name | Description                                                                   |
+| ------------- | ----------------------------------------------------------------------------- |
+| serialNumber  | Serial number of the appliance, only present for physical appliances          |
+| modelId       | Model ID of the appliance                                                     |
+| vendor        | Always "Miele"                                                                |
+
+### Account
+
+| Property Name | Description                                                                   |
+| ------------- | ----------------------------------------------------------------------------- |
+| connection    | Type of connection used by the account, always "INTERNET"                     |
+| accessToken   | The currently used OAuth 2 access token for accessing the Miele 3rd Party API |
+
+### Hob
+
+| Property Name | Description                                                                   |
+| ------------- | ----------------------------------------------------------------------------- |
+| plateCount    | Number of plates offered by the appliance                                     |
 
 ## Full Example
 
