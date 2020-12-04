@@ -37,17 +37,17 @@ import tec.uom.se.unit.Units;
 public enum MiIoQuantiyTypes {
 
     CELCIUS(SIUnits.CELSIUS, "C"),
-    FAHRENHEIT(ImperialUnits.FAHRENHEIT, ""),
+    FAHRENHEIT(ImperialUnits.FAHRENHEIT),
     SECOND(SmartHomeUnits.SECOND, "seconds"),
     MINUTE(SmartHomeUnits.MINUTE, "minutes"),
     HOUR(SmartHomeUnits.HOUR, "hours"),
-    AMPERE(SmartHomeUnits.AMPERE, ""),
-    WATT(SmartHomeUnits.WATT, ""),
-    SQUARE_METRE(Units.SQUARE_METRE, "square_meter,squaremeter"),
-    PERCENT(SmartHomeUnits.PERCENT, "");
+    AMPERE(SmartHomeUnits.AMPERE),
+    WATT(SmartHomeUnits.WATT),
+    SQUARE_METRE(Units.SQUARE_METRE, "square_meter", "squaremeter"),
+    PERCENT(SmartHomeUnits.PERCENT);
 
     private final Unit<?> unit;
-    private final String aliasses;
+    private final String[] aliasses;
 
     private static Map<String, Unit<?>> stringMap = Arrays.stream(values())
             .collect(Collectors.toMap(Enum::toString, MiIoQuantiyTypes::getUnit));
@@ -55,14 +55,14 @@ public enum MiIoQuantiyTypes {
     private static Map<String, Unit<?>> aliasMap() {
         Map<String, Unit<?>> aliassesMap = new HashMap<>();
         for (MiIoQuantiyTypes miIoQuantiyType : values()) {
-            for (String alias : miIoQuantiyType.getAliasses().split(",")) {
+            for (String alias : miIoQuantiyType.getAliasses()) {
                 aliassesMap.put(alias.toLowerCase(), miIoQuantiyType.getUnit());
             }
         }
         return aliassesMap;
     }
 
-    private MiIoQuantiyTypes(Unit<?> unit, String aliasses) {
+    private MiIoQuantiyTypes(Unit<?> unit, String... aliasses) {
         this.unit = unit;
         this.aliasses = aliasses;
     }
@@ -71,14 +71,15 @@ public enum MiIoQuantiyTypes {
         return unit;
     }
 
-    public String getAliasses() {
+    public String[] getAliasses() {
         return aliasses;
     }
 
     public static @Nullable Unit<?> get(String unitName) {
-        if (stringMap.containsKey(unitName.toUpperCase())) {
-            return stringMap.get(unitName.toUpperCase());
+        Unit<?> unit = stringMap.get(unitName.toUpperCase());
+        if (unit == null) {
+            unit = aliasMap().get(unitName.toLowerCase());
         }
-        return aliasMap().get(unitName.toLowerCase());
+        return unit;
     }
 }
