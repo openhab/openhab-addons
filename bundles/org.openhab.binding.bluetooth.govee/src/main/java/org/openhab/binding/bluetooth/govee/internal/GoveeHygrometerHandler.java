@@ -72,7 +72,7 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
     private static final UUID PROTOCOL_CHAR_UUID = UUID.fromString("494e5445-4c4c-495f-524f-434b535f2011");
     private static final UUID KEEP_ALIVE_CHAR_UUID = UUID.fromString("494e5445-4c4c-495f-524f-434b535f2012");
 
-    private static byte[] SCAN_HEADER = { (byte) 0xFF, (byte) 0x88, (byte) 0xEC };
+    private static final byte[] SCAN_HEADER = { (byte) 0xFF, (byte) 0x88, (byte) 0xEC };
 
     private final Logger logger = LoggerFactory.getLogger(GoveeHygrometerHandler.class);
 
@@ -138,11 +138,6 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
 
     @Override
     public void dispose() {
-        try {
-            throw new Exception();
-        } catch (Exception ex) {
-            logger.debug("Disposing Govee Hygrometer {} model: {}", address, model, ex);
-        }
         initializeJob.cancel(false);
         scanJob.cancel(false);
         keepAliveJob.cancel(false);

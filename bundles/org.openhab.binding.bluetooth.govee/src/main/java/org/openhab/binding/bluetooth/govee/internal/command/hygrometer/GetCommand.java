@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.bluetooth.govee.internal.command.hygrometer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * @author Connor Petty - Initial Contribution
  *
  */
+@NonNullByDefault
 public abstract class GetCommand extends GoveeCommand {
 
     @Override

@@ -175,9 +175,9 @@
 	<channel-type id="govee-temperature-alarm">
 		<item-type>Switch</item-type>
 		<label>Temperature Warning Alarm</label>
-		<description>If temperature warnings are enabled, then this alarm indicates
-			whether the current temperature is out of
-			range
+		<description>
+			If temperature warnings are enabled, then this alarm indicates whether the current temperature is out of
+			range.
 		</description>
 		<category>Alarm</category>
 	</channel-type>
@@ -185,8 +185,8 @@
 	<channel-type id="govee-humidity-alarm">
 		<item-type>Switch</item-type>
 		<label>Humidity Warning Alarm</label>
-		<description>If humidity warnings are enabled, then this alarm indicates
-			whether the current humidity is out of range
+		<description>
+			If humidity warnings are enabled, then this alarm indicates whether the current humidity is out of range.
 		</description>
 		<category>Alarm</category>
 	</channel-type>

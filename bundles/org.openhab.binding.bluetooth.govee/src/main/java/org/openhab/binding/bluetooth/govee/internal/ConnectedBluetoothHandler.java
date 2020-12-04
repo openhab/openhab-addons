@@ -60,7 +60,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     private @Nullable BluetoothCompletionStatus completeStatus;
 
     private boolean connectOnDemand;
-    private int idleDisconnectDelay = 1000;
+    private int idleDisconnectDelayMs = 1000;
 
     protected @Nullable ScheduledExecutorService connectionTaskExecutor;
     private volatile boolean servicesDiscovered;
@@ -82,13 +82,12 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
         super.initialize();
 
-        // Object connectOnDemandRaw = getConfig().get(BluetoothBindingConstants.CONFIGURATION_CONNECT_ON_DEMAND);
         connectOnDemand = true;
 
         Object idleDisconnectDelayRaw = getConfig().get("idleDisconnectDelay");
-        idleDisconnectDelay = 1000;
+        idleDisconnectDelayMs = 1000;
         if (idleDisconnectDelayRaw instanceof Number) {
-            idleDisconnectDelay = ((Number) idleDisconnectDelayRaw).intValue();
+            idleDisconnectDelayMs = ((Number) idleDisconnectDelayRaw).intValue();
         }
 
         if (!connectOnDemand) {
@@ -147,7 +146,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     private void scheduleDisconnect() {
         cancel(pendingDisconnect);
-        pendingDisconnect = getConnectionTaskExecutor().schedule(device::disconnect, idleDisconnectDelay,
+        pendingDisconnect = getConnectionTaskExecutor().schedule(device::disconnect, idleDisconnectDelayMs,
                 TimeUnit.MILLISECONDS);
     }
 
@@ -282,7 +281,6 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
         return executeWithConnection(serviceUUID, characteristicUUID, characteristic -> {
             if (enableNotification) {
                 if (!device.enableNotifications(characteristic)) {
-                    // logger.debug("Failed to enable notifications for characteristic {}", characteristic.getUuid());
                     throw new BluetoothException(
                             "Failed to start characteristic notification" + characteristic.getUuid());
                 }

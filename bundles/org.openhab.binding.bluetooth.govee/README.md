@@ -19,32 +19,35 @@ As any other Bluetooth device, Govee devices are discovered automatically by the
 
 Govee things have the following configuration parameters:
 
-| Thing                  | Parameter               | Required | Default     | Description                                                               |
-|------------------------|-------------------------|----------|-------------|---------------------------------------------------------------------------|
-| all                    | address                 | yes      |             | The Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX")       |
-| all                    | refreshInterval         |          | 300         | How often, in seconds, the sensor data of the device should be refreshed  |
-| goveeHygrometer*       | temperatureCalibration  | no       |             | Offset to apply to temperature sensor readings                            |
-| goveeHygrometer*       | humidityCalibration     | no       |             | Offset to apply to humidity sensor readings                               |        
-| goveeHygrometerMonitor | temperatureWarningAlarm |          | false       | Enables warning alarms to be broadcast when temperature is out of range   |
-| goveeHygrometerMonitor | temperatureWarningMin   |          | 0           | The lower safe temperature threshold (only applies if alarm is enabled)   |
-| goveeHygrometerMonitor | temperatureWarningMax   |          | 0           | The upper safe temperature threshold (only applies if alarm is enabled)   |
-| goveeHygrometerMonitor | humidityWarningAlarm    |          | false       | Enables warning alarms to be broadcast when humidity is out of range      |
-| goveeHygrometerMonitor | humidityWarningMin      |          | 0           | The lower safe humidity threshold (only applies if alarm is enabled)      |
-| goveeHygrometerMonitor | humidityWarningMax      |          | 0           | The upper safe humidity threshold (only applies if alarm is enabled)      |
+| Thing                       | Parameter               | Required | Default | Description                                                               |
+|-----------------------------|-------------------------|----------|---------|---------------------------------------------------------------------------|
+| all                         | address                 | yes      |         | The Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX")       |
+| all                         | refreshInterval         |          | 300     | How often, in seconds, the sensor data of the device should be refreshed  |
+| goveeHygrometer<sup>1</sup> | temperatureCalibration  | no       |         | Offset to apply to temperature sensor readings (in °C)                    |
+| goveeHygrometer<sup>1</sup> | humidityCalibration     | no       |         | Offset to apply to humidity sensor readings                               |        
+| goveeHygrometerMonitor      | temperatureWarningAlarm |          | false   | Enables warning alarms to be broadcast when temperature is out of range   |
+| goveeHygrometerMonitor      | temperatureWarningMin   |          | 0       | The lower safe temperature threshold (only applies if alarm is enabled)   |
+| goveeHygrometerMonitor      | temperatureWarningMax   |          | 0       | The upper safe temperature threshold (only applies if alarm is enabled)   |
+| goveeHygrometerMonitor      | humidityWarningAlarm    |          | false   | Enables warning alarms to be broadcast when humidity is out of range      |
+| goveeHygrometerMonitor      | humidityWarningMin      |          | 0       | The lower safe humidity threshold (only applies if alarm is enabled)      |
+| goveeHygrometerMonitor      | humidityWarningMax      |          | 0       | The upper safe humidity threshold (only applies if alarm is enabled)      |
+
+1. Available to both `goveeHygrometer` and `goveeHygrometerMonitor` thing types.
 
 ## Channels
 
 Govee things have the following channels in addition to the default bluetooth channels:
 
-| Thing                  | Channel ID       | Item Type              | Description                                           |
-|------------------------|------------------|------------------------|-------------------------------------------------------|
-| goveeHygrometer*       | temperature      | Number:Temperature     | The measured temperature                              |
-| goveeHygrometer*       | humidity         | Number:Dimensionless   | The measured relative humidity                        |
-| goveeHygrometer*       | battery          | Number:Dimensionless   | The measured battery percentage                       |
-| goveeHygrometerMonitor | temperatureAlarm | Switch                 | Indicates if current temperature is out of range. (1) |
-| goveeHygrometerMonitor | humidityAlarm    | Switch                 | Indicates if current humidity is out of range. (1)    |
+| Thing                       | Channel ID       | Item Type              | Description                                                    |
+|-----------------------------|------------------|------------------------|----------------------------------------------------------------|
+| goveeHygrometer<sup>1</sup> | temperature      | Number:Temperature     | The measured temperature                                       |
+| goveeHygrometer<sup>1</sup> | humidity         | Number:Dimensionless   | The measured relative humidity                                 |
+| goveeHygrometer<sup>1</sup> | battery          | Number:Dimensionless   | The measured battery percentage                                |
+| goveeHygrometerMonitor      | temperatureAlarm | Switch                 | Indicates if current temperature is out of range. <sup>2</sup> |
+| goveeHygrometerMonitor      | humidityAlarm    | Switch                 | Indicates if current humidity is out of range. <sup>2</sup>    |
 
-1) Only applies if warning alarms are enabled in the configuration.
+1. Available to both `goveeHygrometer` and `goveeHygrometerMonitor` thing types.
+2. Only applies if warning alarms are enabled in the configuration.
 
 ## Example
 
