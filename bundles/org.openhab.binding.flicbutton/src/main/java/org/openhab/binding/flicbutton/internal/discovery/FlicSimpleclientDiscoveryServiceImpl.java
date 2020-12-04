@@ -132,8 +132,7 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(flicButtonUID).withBridge(bridgeUID)
                 .withLabel("Flic Button " + bdaddr.toString().replace(":", ""))
                 .withProperty(FlicButtonBindingConstants.CONFIG_ADDRESS, bdaddr.toString())
-                .withRepresentationProperty(FlicButtonBindingConstants.CONFIG_ADDRESS)
-                .build();
+                .withRepresentationProperty(FlicButtonBindingConstants.CONFIG_ADDRESS).build();
         this.thingDiscovered(discoveryResult);
         return flicButtonUID;
     }
