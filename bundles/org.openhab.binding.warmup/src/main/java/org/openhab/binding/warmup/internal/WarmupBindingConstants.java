@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.warmup.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,10 +32,8 @@ public class WarmupBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "my-warmup");
     public static final ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_ROOM)));
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_ROOM)));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_ROOM);
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(THING_TYPE_ROOM);
 
     // Room Channel Ids
     public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";

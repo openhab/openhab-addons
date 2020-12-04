@@ -9,13 +9,17 @@ The binding api implementation has been derived from the implementations at http
 
 ## Supported Things
 
-### Bridge
+The Warmup binding supports the following thing types:
 
-Credentials to my.warmup.com which allow the rest of the system to function.
+| Bridge         | Label             | Description                                                                            |
+|----------------|-------------------|----------------------------------------------------------------------------------------|
+| `my-warmup`    | My Warmup Account | The account credentials for my.warmup.com which acts as an API to the Warmup device(s) |
+
+| Thing    | Label | Description                                                                                                          |
+|----------|-------|----------------------------------------------------------------------------------------------------------------------|
+| `room`   | Room  | A room containing an individual Warmup 4iE device which is a WiFi connected device which controls a heating circuit. |
 
 ### Room
-
-A room containing an individual Warmup 4iE device which is a WiFi connected device which controls a heating circuit. 
 The device is optimised for controlling underfloor heating (electric or hydronic), although it can also control central heating circuits.
 The device reports the temperature from one of two thermostats, either a floor temperature probe or the air temperature at the device.
 The separate temperatures do not appear to be reported through the API. It appears to be possible to configure two devices in a primary / secondary configuration, but it is not clear how this might be represented by the API and hasn't been implemented.
