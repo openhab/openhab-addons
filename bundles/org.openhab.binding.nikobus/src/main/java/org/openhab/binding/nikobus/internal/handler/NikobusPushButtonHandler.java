@@ -49,166 +49,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
-    private static class ImpactedModule {
-        private final ThingUID thingUID;
-        private final SwitchModuleGroup group;
-
-        ImpactedModule(ThingUID thingUID, SwitchModuleGroup group) {
-            this.thingUID = thingUID;
-            this.group = group;
-        }
-
-        public ThingUID getThingUID() {
-            return thingUID;
-        }
-
-        public SwitchModuleGroup getGroup() {
-            return group;
-        }
-
-        @Override
-        public String toString() {
-            return "'" + thingUID + "'-" + group;
-        }
-    }
-
-    private static class ImpactedModuleUID extends AbstractUID {
-        ImpactedModuleUID(String uid) {
-            super(uid);
-        }
-
-        String getThingTypeId() {
-            return getSegment(0);
-        }
-
-        String getThingId() {
-            return getSegment(1);
-        }
-
-        SwitchModuleGroup getGroup() {
-            if (getSegment(2).equals("1")) {
-                return FIRST;
-            }
-            if (getSegment(2).equals("2")) {
-                return SECOND;
-            }
-            throw new IllegalArgumentException("Unexpected group found " + getSegment(2));
-        }
-
-        @Override
-        protected int getMinimalNumberOfSegments() {
-            return 3;
-        }
-    }
-
-    private interface TriggerProcessor {
-        void process(long currentTimeMillis);
-    }
-
-    private abstract class AbstractTriggerProcessor<Config> implements TriggerProcessor {
-        private long lastCommandReceivedTimestamp = 0;
-        protected final ChannelUID channelUID;
-        protected final Config config;
-
-        // Nikobus push button will send a new message on bus every ~50ms so
-        // lets assume if we haven't received a new message in over 150ms that
-        // button was released and pressed again.
-        protected static final long BUTTON_RELEASED_MILIS = 150;
-
-        protected AbstractTriggerProcessor(Class<Config> configType, Channel channel) {
-            this.channelUID = channel.getUID();
-            this.config = channel.getConfiguration().as(configType);
-        }
-
-        @Override
-        public void process(long currentTimeMillis) {
-            if (Math.abs(currentTimeMillis - lastCommandReceivedTimestamp) > BUTTON_RELEASED_MILIS) {
-                reset(currentTimeMillis);
-            }
-            lastCommandReceivedTimestamp = currentTimeMillis;
-            processNext(currentTimeMillis);
-        }
-
-        abstract protected void reset(long currentTimeMillis);
-
-        abstract protected void processNext(long currentTimeMillis);
-    }
-
-    public static class TriggerButtonConfig {
-        public int threshold = 1000;
-    }
-
-    private class TriggerButton extends AbstractTriggerProcessor<TriggerButtonConfig> {
-        private long nextLongPressTimestamp = 0;
-        private @Nullable Future<?> triggerShortPressFuture;
-
-        TriggerButton(Channel channel) {
-            super(TriggerButtonConfig.class, channel);
-        }
-
-        @Override
-        protected void reset(long currentTimeMillis) {
-            nextLongPressTimestamp = currentTimeMillis + config.threshold;
-        }
-
-        @Override
-        protected void processNext(long currentTimeMillis) {
-            if (currentTimeMillis < nextLongPressTimestamp) {
-                Utils.cancel(triggerShortPressFuture);
-                triggerShortPressFuture = scheduler.schedule(
-                        () -> triggerChannel(channelUID, CommonTriggerEvents.SHORT_PRESSED), BUTTON_RELEASED_MILIS,
-                        TimeUnit.MILLISECONDS);
-            } else if (nextLongPressTimestamp != 0) {
-                Utils.cancel(triggerShortPressFuture);
-                nextLongPressTimestamp = 0;
-                triggerChannel(channelUID, CommonTriggerEvents.LONG_PRESSED);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "TriggerButton '" + channelUID + "', config: threshold = " + config.threshold;
-        }
-    }
-
-    public static class TriggerFilterConfig {
-        public @Nullable String command;
-        public int delay = 0;
-        public int period = -1;
-    }
-
-    private class TriggerFilter extends AbstractTriggerProcessor<TriggerFilterConfig> {
-        private long nextTriggerTimestamp = 0;
-
-        TriggerFilter(Channel channel) {
-            super(TriggerFilterConfig.class, channel);
-        }
-
-        @Override
-        protected void reset(long currentTimeMillis) {
-            nextTriggerTimestamp = currentTimeMillis + config.delay;
-        }
-
-        @Override
-        protected void processNext(long currentTimeMillis) {
-            if (currentTimeMillis >= nextTriggerTimestamp) {
-                nextTriggerTimestamp = (config.period < 0) ? Long.MAX_VALUE : currentTimeMillis + config.period;
-                String command = config.command;
-                if (command != null) {
-                    triggerChannel(channelUID, command);
-                } else {
-                    triggerChannel(channelUID);
-                }
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "TriggerFilter '" + channelUID + "', config: command = '" + config.command + "', delay = "
-                    + config.delay + ", period = " + config.period;
-        }
-    }
-
     private static final String END_OF_TRANSMISSION = "\r#E1";
     private final Logger logger = LoggerFactory.getLogger(NikobusPushButtonHandler.class);
     private final List<ImpactedModule> impactedModules = new CopyOnWriteArrayList<>();
@@ -377,5 +217,165 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             }
         }
         return null;
+    }
+
+    private static class ImpactedModule {
+        private final ThingUID thingUID;
+        private final SwitchModuleGroup group;
+
+        ImpactedModule(ThingUID thingUID, SwitchModuleGroup group) {
+            this.thingUID = thingUID;
+            this.group = group;
+        }
+
+        public ThingUID getThingUID() {
+            return thingUID;
+        }
+
+        public SwitchModuleGroup getGroup() {
+            return group;
+        }
+
+        @Override
+        public String toString() {
+            return "'" + thingUID + "'-" + group;
+        }
+    }
+
+    private static class ImpactedModuleUID extends AbstractUID {
+        ImpactedModuleUID(String uid) {
+            super(uid);
+        }
+
+        String getThingTypeId() {
+            return getSegment(0);
+        }
+
+        String getThingId() {
+            return getSegment(1);
+        }
+
+        SwitchModuleGroup getGroup() {
+            if (getSegment(2).equals("1")) {
+                return FIRST;
+            }
+            if (getSegment(2).equals("2")) {
+                return SECOND;
+            }
+            throw new IllegalArgumentException("Unexpected group found " + getSegment(2));
+        }
+
+        @Override
+        protected int getMinimalNumberOfSegments() {
+            return 3;
+        }
+    }
+
+    private interface TriggerProcessor {
+        void process(long currentTimeMillis);
+    }
+
+    private abstract class AbstractTriggerProcessor<Config> implements TriggerProcessor {
+        private long lastCommandReceivedTimestamp = 0;
+        protected final ChannelUID channelUID;
+        protected final Config config;
+
+        // Nikobus push button will send a new message on bus every ~50ms so
+        // lets assume if we haven't received a new message in over 150ms that
+        // button was released and pressed again.
+        protected static final long BUTTON_RELEASED_MILIS = 150;
+
+        protected AbstractTriggerProcessor(Class<Config> configType, Channel channel) {
+            this.channelUID = channel.getUID();
+            this.config = channel.getConfiguration().as(configType);
+        }
+
+        @Override
+        public void process(long currentTimeMillis) {
+            if (Math.abs(currentTimeMillis - lastCommandReceivedTimestamp) > BUTTON_RELEASED_MILIS) {
+                reset(currentTimeMillis);
+            }
+            lastCommandReceivedTimestamp = currentTimeMillis;
+            processNext(currentTimeMillis);
+        }
+
+        abstract protected void reset(long currentTimeMillis);
+
+        abstract protected void processNext(long currentTimeMillis);
+    }
+
+    public static class TriggerButtonConfig {
+        public int threshold = 1000;
+    }
+
+    private class TriggerButton extends AbstractTriggerProcessor<TriggerButtonConfig> {
+        private long nextLongPressTimestamp = 0;
+        private @Nullable Future<?> triggerShortPressFuture;
+
+        TriggerButton(Channel channel) {
+            super(TriggerButtonConfig.class, channel);
+        }
+
+        @Override
+        protected void reset(long currentTimeMillis) {
+            nextLongPressTimestamp = currentTimeMillis + config.threshold;
+        }
+
+        @Override
+        protected void processNext(long currentTimeMillis) {
+            if (currentTimeMillis < nextLongPressTimestamp) {
+                Utils.cancel(triggerShortPressFuture);
+                triggerShortPressFuture = scheduler.schedule(
+                        () -> triggerChannel(channelUID, CommonTriggerEvents.SHORT_PRESSED), BUTTON_RELEASED_MILIS,
+                        TimeUnit.MILLISECONDS);
+            } else if (nextLongPressTimestamp != 0) {
+                Utils.cancel(triggerShortPressFuture);
+                nextLongPressTimestamp = 0;
+                triggerChannel(channelUID, CommonTriggerEvents.LONG_PRESSED);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "TriggerButton '" + channelUID + "', config: threshold = " + config.threshold;
+        }
+    }
+
+    public static class TriggerFilterConfig {
+        public @Nullable String command;
+        public int delay = 0;
+        public int period = -1;
+    }
+
+    private class TriggerFilter extends AbstractTriggerProcessor<TriggerFilterConfig> {
+        private long nextTriggerTimestamp = 0;
+
+        TriggerFilter(Channel channel) {
+            super(TriggerFilterConfig.class, channel);
+        }
+
+        @Override
+        protected void reset(long currentTimeMillis) {
+            nextTriggerTimestamp = currentTimeMillis + config.delay;
+        }
+
+        @Override
+        protected void processNext(long currentTimeMillis) {
+            if (currentTimeMillis >= nextTriggerTimestamp) {
+                nextTriggerTimestamp = (config.period < 0) ? Long.MAX_VALUE : currentTimeMillis + config.period;
+                String command = config.command;
+                if (command != null) {
+                    triggerChannel(channelUID, command);
+                } else {
+                    triggerChannel(channelUID);
+                }
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "TriggerFilter '" + channelUID + "', config: command = '" + config.command + "', delay = "
+                    + config.delay + ", period = " + config.period;
+        }
     }
 }
