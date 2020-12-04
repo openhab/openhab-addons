@@ -129,8 +129,7 @@ public class Message {
         // If the message is a Request sent to the boiler or an Answer returned to the
         // thermostat, and it's ID is equal to the previous message, then this is an
         // override sent by the OpenTherm Gateway
-        return other != null && this.getID() == other.getID()
-                && (CodeType.R.equals(this.getCode()) || CodeType.A.equals(this.getCode()));
+        return other != null && this.getID() == other.getID() && (this.code == CodeType.R || this.code == CodeType.A);
     }
 
     @Override
@@ -138,8 +137,8 @@ public class Message {
         return String.format("%s - %s - %s", this.code, this.id, this.data);
     }
 
-    public Message(String code, MessageType messageType, int id, String data) {
-        this.code = CodeType.valueOf(code);
+    public Message(CodeType code, MessageType messageType, int id, String data) {
+        this.code = code;
         this.messageType = messageType;
         this.id = id;
         this.data = data;
@@ -148,7 +147,7 @@ public class Message {
     public static @Nullable Message parse(String message) {
         if (messagePattern.matcher(message).matches()) {
             // For now, only parse TBRA codes
-            String code = message.substring(0, 1);
+            CodeType code = CodeType.valueOf(message.substring(0, 1));
             MessageType messageType = getMessageType(message.substring(1, 3));
             int id = Integer.valueOf(message.substring(3, 5), 16);
             String data = message.substring(5);
