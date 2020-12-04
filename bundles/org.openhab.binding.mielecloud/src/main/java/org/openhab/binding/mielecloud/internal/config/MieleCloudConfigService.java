@@ -74,15 +74,10 @@ public final class MieleCloudConfigService {
 
     private final Logger logger = LoggerFactory.getLogger(MieleCloudConfigService.class);
 
-    @Nullable
     private HttpService httpService;
-    @Nullable
     private OAuthFactory oauthFactory;
-    @Nullable
     private Inbox inbox;
-    @Nullable
     private ThingRegistry thingRegistry;
-    @Nullable
     private LocaleProvider localeProvider;
 
     /**
@@ -115,49 +110,14 @@ public final class MieleCloudConfigService {
     @Nullable
     private CreateBridgeServlet createBridgeServlet;
 
-    @Reference
-    protected void setHttpService(HttpService httpService) {
+    @Activate
+    public MieleCloudConfigService(@Reference HttpService httpService, @Reference OAuthFactory oauthFactory,
+            @Reference Inbox inbox, @Reference ThingRegistry thingRegistry, @Reference LocaleProvider localeProvider) {
         this.httpService = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
-    }
-
-    @Reference
-    protected void setOAuthFactory(OAuthFactory oauthFactory) {
         this.oauthFactory = oauthFactory;
-    }
-
-    protected void unsetOAuthFactory(OAuthFactory oauthFactory) {
-        this.oauthFactory = null;
-    }
-
-    @Reference
-    protected void setInbox(Inbox inbox) {
         this.inbox = inbox;
-    }
-
-    protected void unsetInbox(Inbox inbox) {
-        this.inbox = null;
-    }
-
-    @Reference
-    protected void setThingRegistry(ThingRegistry thingRegistry) {
         this.thingRegistry = thingRegistry;
-    }
-
-    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = null;
-    }
-
-    @Reference
-    protected void setLocaleProvider(LocaleProvider localeProvider) {
         this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = null;
     }
 
     @Nullable
@@ -191,27 +151,6 @@ public final class MieleCloudConfigService {
     }
 
     private void registerWebsite(BundleContext bundleContext) {
-        final HttpService httpService = this.httpService;
-        if (httpService == null) {
-            logger.warn("Http service is missing. Miele Cloud binding website will not be available.");
-            return;
-        }
-        final OAuthFactory oauthFactory = this.oauthFactory;
-        if (oauthFactory == null) {
-            logger.warn("OAuth factory is missing. Miele Cloud binding website will not be available.");
-            return;
-        }
-        final Inbox inbox = this.inbox;
-        if (inbox == null) {
-            logger.warn("Inbox is missing. Miele Cloud binding website will not be available.");
-            return;
-        }
-        final ThingRegistry thingRegistry = this.thingRegistry;
-        if (thingRegistry == null) {
-            logger.warn("Thing registry is missing. Miele Cloud binding website will not be available.");
-            return;
-        }
-
         ResourceLoader resourceLoader = new ResourceLoader(WEBSITE_RESOURCE_BASE_PATH, bundleContext);
         OAuthAuthorizationHandler authorizationHandler = new OAuthAuthorizationHandlerImpl(oauthFactory,
                 ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON));
@@ -249,13 +188,7 @@ public final class MieleCloudConfigService {
     }
 
     private LanguageProvider createLanguageProvider() {
-        final LocaleProvider localeProvider = this.localeProvider;
-        if (localeProvider == null) {
-            return new JvmLanguageProvider();
-        } else {
-            return new CombiningLanguageProvider(new OpenHabLanguageProvider(localeProvider),
-                    new JvmLanguageProvider());
-        }
+        return new CombiningLanguageProvider(new OpenHabLanguageProvider(localeProvider), new JvmLanguageProvider());
     }
 
     @Deactivate
@@ -280,12 +213,6 @@ public final class MieleCloudConfigService {
     }
 
     private void unregisterWebResource(String alias) {
-        final HttpService httpService = this.httpService;
-        if (httpService == null) {
-            logger.warn("Http service is missing. Cannot unregister Miele Cloud binding website alias {}.", alias);
-            return;
-        }
-
         try {
             httpService.unregister(alias);
         } catch (IllegalArgumentException e) {

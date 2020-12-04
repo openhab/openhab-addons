@@ -59,26 +59,10 @@ public class OpenHabOAuthTokenRefresherTest {
     }
 
     @Test
-    public void whenTheOAuthFactoryIsNotAvailableThenNoRefreshListenerCanBeRegistered() {
-        // given:
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-
-        OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
-
-        // when:
-        assertThrows(OAuthException.class, () -> {
-            refresher.setRefreshListener(listener, MieleCloudBindingTestConstants.SERVICE_HANDLE);
-        });
-    }
-
-    @Test
     public void whenTheAccountWasNotConfiguredPriorToTheThingInitializingThenNoRefreshListenerCanBeRegistered() {
         // given:
         OAuthFactory oauthFactory = mock(OAuthFactory.class);
-
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-        refresher.setOAuthFactory(oauthFactory);
-
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
 
         // when:
@@ -97,8 +81,7 @@ public class OpenHabOAuthTokenRefresherTest {
         when(oauthFactory.getOAuthClientService(MieleCloudBindingTestConstants.SERVICE_HANDLE))
                 .thenReturn(oauthClientService);
 
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-        refresher.setOAuthFactory(oauthFactory);
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
 
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
 
@@ -124,7 +107,7 @@ public class OpenHabOAuthTokenRefresherTest {
         when(oauthFactory.getOAuthClientService(MieleCloudBindingTestConstants.SERVICE_HANDLE))
                 .thenReturn(oauthClientService);
 
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
         when(oauthClientService.refreshToken()).thenAnswer(new Answer<@Nullable AccessTokenResponse>() {
             @Override
             @Nullable
@@ -134,7 +117,6 @@ public class OpenHabOAuthTokenRefresherTest {
                 return accessTokenResponse;
             }
         });
-        refresher.setOAuthFactory(oauthFactory);
 
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
         refresher.setRefreshListener(listener, MieleCloudBindingTestConstants.SERVICE_HANDLE);
@@ -158,7 +140,7 @@ public class OpenHabOAuthTokenRefresherTest {
         when(oauthFactory.getOAuthClientService(MieleCloudBindingTestConstants.SERVICE_HANDLE))
                 .thenReturn(oauthClientService);
 
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
         when(oauthClientService.refreshToken()).thenAnswer(new Answer<@Nullable AccessTokenResponse>() {
             @Override
             @Nullable
@@ -168,7 +150,6 @@ public class OpenHabOAuthTokenRefresherTest {
                 return accessTokenResponse;
             }
         });
-        refresher.setOAuthFactory(oauthFactory);
 
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
         refresher.setRefreshListener(listener, MieleCloudBindingTestConstants.SERVICE_HANDLE);
@@ -195,8 +176,7 @@ public class OpenHabOAuthTokenRefresherTest {
         when(oauthFactory.getOAuthClientService(MieleCloudBindingTestConstants.SERVICE_HANDLE))
                 .thenReturn(oauthClientService);
 
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-        refresher.setOAuthFactory(oauthFactory);
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
 
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
         refresher.setRefreshListener(listener, MieleCloudBindingTestConstants.SERVICE_HANDLE);
@@ -223,8 +203,7 @@ public class OpenHabOAuthTokenRefresherTest {
         when(oauthFactory.getOAuthClientService(MieleCloudBindingTestConstants.SERVICE_HANDLE))
                 .thenReturn(oauthClientService);
 
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-        refresher.setOAuthFactory(oauthFactory);
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
 
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
         refresher.setRefreshListener(listener, MieleCloudBindingTestConstants.SERVICE_HANDLE);
@@ -251,8 +230,7 @@ public class OpenHabOAuthTokenRefresherTest {
         when(oauthFactory.getOAuthClientService(MieleCloudBindingTestConstants.SERVICE_HANDLE))
                 .thenReturn(oauthClientService);
 
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-        refresher.setOAuthFactory(oauthFactory);
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
 
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
         refresher.setRefreshListener(listener, MieleCloudBindingTestConstants.SERVICE_HANDLE);
@@ -272,7 +250,8 @@ public class OpenHabOAuthTokenRefresherTest {
     public void whenTheRefreshListenerIsUnsetAndWasNotRegisteredBeforeThenNothingHappens()
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         // given:
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
+        OAuthFactory oauthFactory = mock(OAuthFactory.class);
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
 
         // when:
         refresher.unsetRefreshListener(MieleCloudBindingTestConstants.SERVICE_HANDLE);
@@ -280,22 +259,6 @@ public class OpenHabOAuthTokenRefresherTest {
         // then:
         assertFalse(hasAccessTokenRefreshListenerForServiceHandle(refresher,
                 MieleCloudBindingTestConstants.SERVICE_HANDLE));
-    }
-
-    @Test
-    public void whenTheOAuthFactoryIsUnsetThenTheReferenceIsCleared()
-            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-        // given:
-        OAuthFactory oauthFactory = mock(OAuthFactory.class);
-
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-        refresher.setOAuthFactory(oauthFactory);
-
-        // when:
-        refresher.unsetOAuthFactory(oauthFactory);
-
-        // then:
-        assertNull(ReflectionUtil.getPrivate(refresher, "oauthFactory"));
     }
 
     @Test
@@ -308,13 +271,11 @@ public class OpenHabOAuthTokenRefresherTest {
         when(oauthFactory.getOAuthClientService(MieleCloudBindingTestConstants.SERVICE_HANDLE))
                 .thenReturn(oauthClientService);
 
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-        refresher.setOAuthFactory(oauthFactory);
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
 
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
 
         refresher.setRefreshListener(listener, MieleCloudBindingTestConstants.SERVICE_HANDLE);
-        refresher.unsetOAuthFactory(oauthFactory);
 
         // when:
         refresher.unsetRefreshListener(MieleCloudBindingTestConstants.SERVICE_HANDLE);
@@ -334,8 +295,7 @@ public class OpenHabOAuthTokenRefresherTest {
         when(oauthFactory.getOAuthClientService(MieleCloudBindingTestConstants.SERVICE_HANDLE))
                 .thenReturn(oauthClientService);
 
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-        refresher.setOAuthFactory(oauthFactory);
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
 
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
 
@@ -360,8 +320,7 @@ public class OpenHabOAuthTokenRefresherTest {
         when(oauthFactory.getOAuthClientService(MieleCloudBindingTestConstants.SERVICE_HANDLE))
                 .thenReturn(oauthClientService);
 
-        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher();
-        refresher.setOAuthFactory(oauthFactory);
+        OpenHabOAuthTokenRefresher refresher = new OpenHabOAuthTokenRefresher(oauthFactory);
 
         OAuthTokenRefreshListener listener = mock(OAuthTokenRefreshListener.class);
         refresher.setRefreshListener(listener, MieleCloudBindingTestConstants.SERVICE_HANDLE);

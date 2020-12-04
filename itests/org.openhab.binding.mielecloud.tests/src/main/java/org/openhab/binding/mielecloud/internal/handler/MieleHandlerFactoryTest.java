@@ -15,7 +15,7 @@ package org.openhab.binding.mielecloud.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants.*;
-import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.getPrivate;
+import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.*;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -109,7 +109,7 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         OpenHabOAuthTokenRefresher tokenRefresher = getService(OAuthTokenRefresher.class,
                 OpenHabOAuthTokenRefresher.class);
         assertNotNull(tokenRefresher);
-        tokenRefresher.setOAuthFactory(oAuthFactory);
+        setPrivate(Objects.requireNonNull(tokenRefresher), "oauthFactory", oAuthFactory);
     }
 
     @Test

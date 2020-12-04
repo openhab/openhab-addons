@@ -152,8 +152,7 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
         OpenHabOAuthTokenRefresher tokenRefresher = getService(OAuthTokenRefresher.class,
                 OpenHabOAuthTokenRefresher.class);
         assertNotNull(tokenRefresher);
-        tokenRefresher.unsetOAuthFactory(oAuthFactory);
-        tokenRefresher.setOAuthFactory(oAuthFactory);
+        setPrivate(Objects.requireNonNull(tokenRefresher), "oauthFactory", oAuthFactory);
     }
 
     private void initializeBridgeWithTokens() {
@@ -194,7 +193,8 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
     }
 
     @Test
-    public void testThingStatusIsSetToOfflineWithDetailConfigurationErrorAndDescriptionWhenTheMieleAccountHasNotBeenAuthorized() {
+    public void testThingStatusIsSetToOfflineWithDetailConfigurationErrorAndDescriptionWhenTheMieleAccountHasNotBeenAuthorized()
+            throws Exception {
         // given:
         OAuthFactory oAuthFactory = mock(OAuthFactory.class);
         Mockito.when(oAuthFactory.getOAuthClientService(SERVICE_HANDLE)).thenReturn(null);
@@ -203,8 +203,7 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
                 OpenHabOAuthTokenRefresher.class);
         assertNotNull(tokenRefresher);
         // Clear the setup configuration and use the failing one for this test.
-        tokenRefresher.unsetOAuthFactory(oAuthFactory);
-        tokenRefresher.setOAuthFactory(oAuthFactory);
+        setPrivate(Objects.requireNonNull(tokenRefresher), "oauthFactory", oAuthFactory);
 
         // when:
         getHandler().initialize();
@@ -225,8 +224,7 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
                 OpenHabOAuthTokenRefresher.class);
         assertNotNull(tokenRefresher);
         // Clear the setup configuration and use the failing one for this test.
-        tokenRefresher.unsetOAuthFactory(oAuthFactory);
-        tokenRefresher.setOAuthFactory(oAuthFactory);
+        setPrivate(Objects.requireNonNull(tokenRefresher), "oauthFactory", oAuthFactory);
 
         getHandler().initialize();
 

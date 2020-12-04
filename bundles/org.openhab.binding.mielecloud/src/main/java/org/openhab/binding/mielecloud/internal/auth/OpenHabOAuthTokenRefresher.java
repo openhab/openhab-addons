@@ -24,6 +24,7 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -39,17 +40,12 @@ import org.slf4j.LoggerFactory;
 public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
     private final Logger logger = LoggerFactory.getLogger(OpenHabOAuthTokenRefresher.class);
 
-    @Nullable
-    private OAuthFactory oauthFactory;
+    private final OAuthFactory oauthFactory;
     private Map<String, @Nullable AccessTokenRefreshListener> listenerByServiceHandle = new HashMap<>();
 
-    @Reference
-    public void setOAuthFactory(OAuthFactory oauthFactory) {
+    @Activate
+    public OpenHabOAuthTokenRefresher(@Reference OAuthFactory oauthFactory) {
         this.oauthFactory = oauthFactory;
-    }
-
-    public void unsetOAuthFactory(OAuthFactory oauthFactory) {
-        this.oauthFactory = null;
     }
 
     @Override
@@ -96,11 +92,6 @@ public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
     }
 
     private OAuthClientService getOAuthClientService(String serviceHandle) {
-        final OAuthFactory oauthFactory = this.oauthFactory;
-        if (oauthFactory == null) {
-            throw new OAuthException("OAuth factory is not available.");
-        }
-
         final OAuthClientService clientService = oauthFactory.getOAuthClientService(serviceHandle);
         if (clientService == null) {
             throw new OAuthException("OAuth client service is not available.");
@@ -142,12 +133,6 @@ public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
 
     @Override
     public void removeTokensFromStorage(String serviceHandle) {
-        final OAuthFactory oauthFactory = this.oauthFactory;
-        if (oauthFactory == null) {
-            logger.warn("Could not remove tokens from store because OAuth factory is not available.");
-            return;
-        }
-
         oauthFactory.deleteServiceAndAccessToken(serviceHandle);
     }
 }
