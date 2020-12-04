@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WithingsDiscoveryService extends AbstractDiscoveryService {
 
-    private static final int SEARCH_TIME = 5;
+    private static final int SEARCH_TIME_SECONDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(WithingsDiscoveryService.class);
 
@@ -59,7 +59,7 @@ public class WithingsDiscoveryService extends AbstractDiscoveryService {
 
     public WithingsDiscoveryService(WithingsBridgeHandler bridgeHandler, AccessTokenService accessTokenService,
             HttpClient httpClient, LocaleProvider localeProvider, TranslationProvider translationProvider) {
-        super(WithingsBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
+        super(WithingsBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME_SECONDS);
         this.bridgeHandler = bridgeHandler;
         this.accessTokenService = accessTokenService;
         this.httpClient = httpClient;

@@ -72,21 +72,6 @@ public abstract class AbstractWithingsThingHandler extends BaseThingHandler impl
         }
     }
 
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
-        super.updateStatus(status, statusDetail);
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
-    }
-
     protected abstract boolean updateThingData(WithingsDataModel model);
 
     @Override

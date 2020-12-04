@@ -68,8 +68,6 @@ public class WithingsBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Withings API bridge handler.");
-
         configuration = getConfigAs(WithingsBridgeConfiguration.class);
 
         scheduleTokenInitAndRefresh();
@@ -105,15 +103,13 @@ public class WithingsBridgeHandler extends BaseBridgeHandler {
                 if (accessTokenService.getAccessToken().isPresent()) {
                     connectionSucceed();
                 } else {
-                    logger.warn("There is no valid access token! Please configure a new auth-code.");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "Please configure a new auth-code");
                 }
             } catch (Exception e) {
-                logger.warn("Unable to connect Withings API : {}", e.getMessage(), e);
+                logger.warn("Unable to connect to Withings API: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Withings API access failed, will retry in " + WithingsBindingConstants.TOKEN_REFRESH_SECONDS
-                                + " seconds.");
+                        "Unable to connect to Withings API: " + e.getMessage());
             }
         }, 2, WithingsBindingConstants.TOKEN_REFRESH_SECONDS, TimeUnit.SECONDS);
     }

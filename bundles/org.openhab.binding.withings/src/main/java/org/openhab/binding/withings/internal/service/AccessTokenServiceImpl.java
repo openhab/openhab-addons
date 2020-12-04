@@ -79,8 +79,7 @@ public class AccessTokenServiceImpl implements AccessTokenInitializableService {
                     return Optional.ofNullable(tokenReadFunction.apply(accessTokenResponse));
                 }
             } catch (OAuthException | OAuthResponseException | IOException e) {
-                logger.warn("Error on reading access token! Message: {}", e.getMessage());
-                logger.debug("Error on reading access token!", e);
+                logger.warn("Error on reading access token! Message: {}", e.getMessage(), e);
             }
         }
         return Optional.empty();

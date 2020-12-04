@@ -22,22 +22,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class LatestSleepData {
 
-    private final long sleepStart;
-    private final long sleepEnd;
+    private final long sleepStartTimestamp;
+    private final long sleepEndTimestamp;
     private final SleepResponse.SleepData sleepData;
 
-    public LatestSleepData(long sleepStart, long sleepEnd, SleepResponse.SleepData sleepData) {
-        this.sleepStart = sleepStart;
-        this.sleepEnd = sleepEnd;
+    public LatestSleepData(long sleepStartTimestamp, long sleepEndTimestamp, SleepResponse.SleepData sleepData) {
+        this.sleepStartTimestamp = sleepStartTimestamp;
+        this.sleepEndTimestamp = sleepEndTimestamp;
         this.sleepData = sleepData;
     }
 
     public Date getSleepStart() {
-        return new Date(sleepStart * 1000L);
+        return new Date(sleepStartTimestamp * 1000L);
     }
 
     public Date getSleepEnd() {
-        return new Date(sleepEnd * 1000L);
+        return new Date(sleepEndTimestamp * 1000L);
     }
 
     public Integer getSleepScore() {

@@ -90,10 +90,8 @@ public class WithingsHandlerFactory extends BaseThingHandlerFactory {
             return new SleepMonitorThingHandler(thing);
         } else if (thingTypeUID.equals(PERSON_THING_TYPE)) {
             return new PersonThingHandler(thing);
-        } else {
-            logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
-            return null;
         }
+        return null;
     }
 
     @Override

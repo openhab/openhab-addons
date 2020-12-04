@@ -94,11 +94,10 @@ public abstract class AbstractAPIHandler {
             if (responseObject != null && responseObject.isSuccessful()) {
                 return Optional.of(responseObject);
             } else {
-                logger.warn("Error on executing API data request. State: {}", responseObject.getStatus());
+                logger.warn("Error on executing API data request. Response information: {}", responseObject);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error on accessing API data! Message: {}", e.getMessage());
-            logger.debug("Error on accessing API data!", e);
         }
         return Optional.empty();
     }

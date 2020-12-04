@@ -19,7 +19,7 @@ Register a new Withings application here: https://account.withings.com/partner/a
 
 ### 2. Bridge Configuration
 
-- Create a new Withings API Thing with Paper UI
+- Create a new Withings API Thing with Main UI
 - Enter the Client-ID and Client-Secret from your registered application
   - Generate and set a new auth-code
   - Navigate to the following URL with your web browser (and replace "{CLIENT-ID}" with your Client-ID: https://account.withings.com/oauth2_user/authorize2?response_type=code&redirect_uri=https://myopenhab.org&state=statevalue&scope=user.info,user.metrics,user.activity&client_id={CLIENT-ID}
@@ -28,7 +28,7 @@ Register a new Withings application here: https://account.withings.com/partner/a
 
 ### 3. Discover Things
 
-When the Withings API Thing is configured, your devices will be found automatically within Paper UI (just start a scan within the Paper UI inbox).
+When the Withings API Thing is configured, your devices will be found automatically within Main UI (just start a scan within the Main UI inbox).
 
 ## Channels
 
