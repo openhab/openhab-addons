@@ -76,6 +76,7 @@ The account has the following parameters:
 | locale      | mandatory | The locale to use for full text channels of things from this account. Possible values are `en`, `de`, `da`, `es`, `fr`, `it`, `nl`, `nb`. Default is `en`. | Prior to the 7th January 2021 `da`, `es`, `fr`, `it`, `nl` and `nb` will default to English. |
 
 Example things-file:
+
 ```
 Bridge mielecloud:account:home [ locale="en" ]
 ```
@@ -87,6 +88,7 @@ This can be used as a starting point for a custom things-file.
 All Miele cloud appliance things have no configuration parameters.
 
 Example things-file:
+
 ```
 Bridge mielecloud:account:home [ locale="en" ] {
     Thing coffee_system 000703261234 "Coffee machine CVA7440" [ ]
@@ -661,6 +663,7 @@ This can serve as a starting point for your own things-file.
 ## Rule Ideas
 
 Here are some ideas on what could be done with this binding. You have more ideas or even an example? Great! Feel free to contribute!
+
 - Notify yourself of a finished dishwasher, tumble dryer, washer dryer or washing machine, e.g. by changing the lighting
 - Control the supercooler / superfreezer of your freezer, fridge or fridge-freezer combination with a voice assistant
 - Notify yourself when the oven has finished pre-heating
