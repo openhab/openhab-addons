@@ -130,7 +130,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                     }
                 }
             } catch (MyWarmupApiException e) {
-                logger.debug("Set Override failed: {}", e.getMessage(), e);
+                logger.debug("Set Override failed: {}", e.getMessage());
             }
         }
     }
@@ -144,7 +144,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                 refreshFromServer();
             }
         } catch (MyWarmupApiException e) {
-            logger.debug("Toggle Frost Protection failed: {}", e.getMessage(), e);
+            logger.debug("Toggle Frost Protection failed: {}", e.getMessage());
         }
     }
 }
