@@ -40,6 +40,7 @@ public class FlicButtonBindingConstants {
     // List of all configuration options
     public static final String CONFIG_HOST_NAME = "hostname";
     public static final String CONFIG_PORT = "port";
+    public static final String CONFIG_ADDRESS = "address";
 
     // List of all Channel ids
     public final static String CHANNEL_ID_RAWBUTTON_EVENTS = "rawbutton";

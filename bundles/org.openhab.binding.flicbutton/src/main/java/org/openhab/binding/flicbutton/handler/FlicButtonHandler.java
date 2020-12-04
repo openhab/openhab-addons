@@ -15,25 +15,23 @@
  */
 package org.openhab.binding.flicbutton.handler;
 
-import static org.openhab.binding.flicbutton.FlicButtonBindingConstants.*;
-
-import java.io.IOException;
-import java.util.Objects;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import org.openhab.binding.flicbutton.internal.util.FlicButtonUtils;
+import io.flic.fliclib.javaclient.BatteryStatusListener;
+import io.flic.fliclib.javaclient.Bdaddr;
+import io.flic.fliclib.javaclient.ButtonConnectionChannel;
+import io.flic.fliclib.javaclient.enums.ConnectionStatus;
+import io.flic.fliclib.javaclient.enums.DisconnectReason;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.*;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.flic.fliclib.javaclient.BatteryStatusListener;
-import io.flic.fliclib.javaclient.Bdaddr;
-import io.flic.fliclib.javaclient.ButtonConnectionChannel;
-import io.flic.fliclib.javaclient.enums.ConnectionStatus;
-import io.flic.fliclib.javaclient.enums.DisconnectReason;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static org.openhab.binding.flicbutton.FlicButtonBindingConstants.*;
 
 /**
  * The {@link FlicButtonHandler} is responsible for handling commands, which are
@@ -47,6 +45,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     private ScheduledFuture<?> delayedDisconnectTask;
     private DisconnectReason latestDisconnectReason;
     private ButtonConnectionChannel eventConnection;
+    private Bdaddr bdaddr;
     BatteryStatusListener batteryConnection;
 
     public FlicButtonHandler(Thing thing) {
@@ -54,7 +53,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     }
 
     public Bdaddr getBdaddr() {
-        return FlicButtonUtils.getBdAddrFromThingUID(getThing().getUID());
+        return bdaddr;
     }
 
     @Override
@@ -65,6 +64,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     @Override
     public void initialize() {
         super.initialize();
+        bdaddr = new Bdaddr((String) this.getThing().getConfiguration().get(CONFIG_ADDRESS));
         if (bridgeValid) {
             initializeThing();
         }
