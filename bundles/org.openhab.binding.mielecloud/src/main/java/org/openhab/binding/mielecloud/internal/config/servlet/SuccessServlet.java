@@ -151,7 +151,6 @@ public class SuccessServlet extends AbstractShowPageServlet {
      *
      * @author Björn Lange - Initial contribution
      */
-    @NonNullByDefault({})
     private static final class Language implements Comparable<Language> {
         private final String code;
         private final String name;

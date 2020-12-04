@@ -87,7 +87,6 @@ public final class MieleWebserviceConfiguration {
         return new MieleWebserviceConfigurationBuilder();
     }
 
-    @NonNullByDefault({})
     public static final class MieleWebserviceConfigurationBuilder {
         @Nullable
         private HttpClientFactory httpClientFactory;

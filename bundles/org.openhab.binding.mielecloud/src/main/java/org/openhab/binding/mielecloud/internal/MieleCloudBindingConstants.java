@@ -135,7 +135,6 @@ public final class MieleCloudBindingConstants {
     /**
      * Constants for all channels.
      */
-    @NonNullByDefault({})
     public static final class Channels {
         private Channels() {
         }
@@ -211,7 +210,6 @@ public final class MieleCloudBindingConstants {
     /**
      * Constants for i18n keys.
      */
-    @NonNullByDefault({})
     public static final class I18NKeys {
         private I18NKeys() {
         }

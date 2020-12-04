@@ -740,7 +740,6 @@ public class DefaultMieleWebserviceTest {
      *
      * @author Roland Edelhoff - Initial contribution.
      */
-    @NonNullByDefault({})
     private static class UncatchedRetryStrategy implements RetryStrategy {
 
         @Override
