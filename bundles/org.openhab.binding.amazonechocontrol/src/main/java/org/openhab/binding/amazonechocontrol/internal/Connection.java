@@ -1170,10 +1170,10 @@ public class Connection {
         JsonObject parameters = new JsonObject();
         parameters.addProperty("action", action);
         if (property != null) {
-            if (value instanceof QuantityType) {
-                parameters.addProperty(property + ".value", ((QuantityType) value).floatValue());
+            if (value instanceof QuantityType<?>) {
+                parameters.addProperty(property + ".value", ((QuantityType<?>) value).floatValue());
                 parameters.addProperty(property + ".scale",
-                        ((QuantityType) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius" : "fahrenheit");
+                        ((QuantityType<?>) value).getUnit().equals(SIUnits.CELSIUS) ? "celsius" : "fahrenheit");
             } else if (value instanceof Boolean) {
                 parameters.addProperty(property, (boolean) value);
             } else if (value instanceof String) {
@@ -1200,18 +1200,18 @@ public class Connection {
                 if (errors != null && errors.isJsonArray()) {
                     JsonArray errorList = errors.getAsJsonArray();
                     if (errorList.size() > 0) {
-                        logger.error("Smart home device command failed.");
-                        logger.error("Request:");
-                        logger.error("{}", requestBody);
-                        logger.error("Answer:");
+                        logger.warn("Smart home device command failed.");
+                        logger.warn("Request:");
+                        logger.warn("{}", requestBody);
+                        logger.warn("Answer:");
                         for (JsonElement error : errorList) {
-                            logger.error("{}", error.toString());
+                            logger.warn("{}", error.toString());
                         }
                     }
                 }
             }
         } catch (URISyntaxException e) {
-            logger.error("Wrong url {}", url, e);
+            logger.warn("Wrong url {}", url, e);
         }
     }
 
