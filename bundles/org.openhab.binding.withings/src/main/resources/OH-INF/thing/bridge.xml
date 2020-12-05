@@ -9,16 +9,14 @@
 		<description>This bridge represents the gateway to the Withings API.</description>
 
 		<config-description uri="thing-type:withings:bridge">
-			<parameter name="clientId" type="text">
+			<parameter name="clientId" type="text" required="true">
 				<label>Client ID</label>
 				<description>Client ID provided for the application you created</description>
-				<required>true</required>
 			</parameter>
 
-			<parameter name="clientSecret" type="text">
+			<parameter name="clientSecret" type="text" required="true">
 				<label>Client Secret</label>
 				<description>Client Secret provided for the application you created</description>
-				<required>true</required>
 				<context>password</context>
 			</parameter>
 
@@ -28,7 +26,6 @@
 					detailed instructions on how to generate an auth-code. The auth-code is redeemed once
 					(therefore the field is
 					cleared when it could redeemed successfully).</description>
-				<required>false</required>
 			</parameter>
 
 		</config-description>

@@ -7,6 +7,4 @@
 	<description>The Withings binding integrates devices from Withings for example scales</description>
 	<author>Sven Strohschein</author>
 
-	<config-description/>
-
 </binding:binding>

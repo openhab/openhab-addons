@@ -141,7 +141,7 @@ public class WithingsDiscoveryService extends AbstractDiscoveryService {
     }
 
     private static String createDeviceThingName(DevicesResponseDTO.Device device) {
-        if (WithingsBindingConstants.SCALE_THING_TYPE.getId().equals(device.getType())) {
+        if (WithingsBindingConstants.SCALE_THING_TYPE.getId().equalsIgnoreCase(device.getType())) {
             return WithingsBindingConstants.VENDOR + ' ' + device.getModel() + " Scale";
         }
         return WithingsBindingConstants.VENDOR + ' ' + device.getType();

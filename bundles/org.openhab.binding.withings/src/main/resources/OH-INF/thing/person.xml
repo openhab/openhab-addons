@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="Person">
+	<thing-type id="person">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="withingsapi"/>
 		</supported-bridge-type-refs>
@@ -30,21 +30,21 @@
 	</thing-type>
 
 	<channel-type id="weight">
-		<item-type>Number</item-type>
+		<item-type>Number:Mass</item-type>
 		<label>Weight</label>
 		<description>Weight of the person in kg</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="height">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Height</label>
 		<description>Height of the person in meters</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fatMass">
-		<item-type>Number</item-type>
+		<item-type>Number:Mass</item-type>
 		<label>Fat Mass</label>
 		<description>Fat mass weight in kg</description>
 		<state readOnly="true"/>
@@ -65,7 +65,7 @@
 	</channel-type>
 
 	<channel-type id="lastSleepScore">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Last Sleep Score</label>
 		<description>Last sleep score</description>
 		<state readOnly="true"/>

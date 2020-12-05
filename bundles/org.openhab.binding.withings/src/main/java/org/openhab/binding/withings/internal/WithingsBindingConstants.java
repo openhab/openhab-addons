@@ -52,9 +52,9 @@ public class WithingsBindingConstants {
 
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "withingsapi");
 
-    public static final ThingTypeUID SCALE_THING_TYPE = new ThingTypeUID(BINDING_ID, "Scale");
-    public static final ThingTypeUID SLEEP_MONITOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "SleepMonitor");
-    public static final ThingTypeUID PERSON_THING_TYPE = new ThingTypeUID(BINDING_ID, "Person");
+    public static final ThingTypeUID SCALE_THING_TYPE = new ThingTypeUID(BINDING_ID, "scale");
+    public static final ThingTypeUID SLEEP_MONITOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "sleepMonitor");
+    public static final ThingTypeUID PERSON_THING_TYPE = new ThingTypeUID(BINDING_ID, "person");
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
             .of(SCALE_THING_TYPE, SLEEP_MONITOR_THING_TYPE, PERSON_THING_TYPE).collect(Collectors.toSet());
