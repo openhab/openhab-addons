@@ -244,10 +244,22 @@
 			serviceId="urn:WANIPConnection-com:serviceId:WANIPConnection1"/>
 		<getAction name="GetInfo" argument="NewExternalIPAddress"/>
 	</channel>
+	<channel name="wanPppIpAddress" label="WAN PPP-IP Address">
+		<item type="String"/>
+		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
+			serviceId="urn:WANPPPConnection-com:serviceId:WANPPPConnection1"/>
+		<getAction name="GetInfo" argument="NewExternalIPAddress"/>
+	</channel>
 	<channel name="wanConnectionStatus" label="Connection Status">
 		<item type="String"/>
 		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
 			serviceId="urn:WANIPConnection-com:serviceId:WANIPConnection1"/>
+		<getAction name="GetInfo" argument="NewConnectionStatus"/>
+	</channel>
+	<channel name="wanPppConnectionStatus" label="Connection Status">
+		<item type="String"/>
+		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
+			serviceId="urn:WANPPPConnection-com:serviceId:WANPPPConnection1"/>
 		<getAction name="GetInfo" argument="NewConnectionStatus"/>
 	</channel>
 	<channel name="uptime" label="Uptime">
@@ -256,6 +268,10 @@
 			serviceId="urn:WANIPConnection-com:serviceId:WANIPConnection1"/>
 		<getAction name="GetInfo" argument="NewUptime"/>
 	</channel>
-
-
+	<channel name="pppUptime" label="Uptime">
+		<item type="Number:Time" unit="s" statePattern="%d s"/>
+		<service deviceType="urn:dslforum-org:device:WANConnectionDevice:1"
+			serviceId="urn:WANPPPConnection-com:serviceId:WANPPPConnection1"/>
+		<getAction name="GetInfo" argument="NewUptime"/>
+	</channel>
 </channels>
