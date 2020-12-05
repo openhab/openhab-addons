@@ -72,7 +72,6 @@ The following table shows the available configuration parameters for each thing.
 | zone      | `zoneNumber` - Zone number (1-192) - Required                                                       |
 | keypad    | `keypadAddress` - Keypad address (192-255) - Required                                               |
 | keypad    | `terminalModeSeconds` - The number of Seconds the keypad has to remain in Terminal Mode. - Required |
-A full example is further below.
 
 ## Channels
 
@@ -216,149 +215,64 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 | zone_bypass_memory                               | Switch    | Zone Condition      | Bypass memory                              |
 | keypad_key_pressed                               | String    | Button press        | The pressed button on the keypad           |
 
-## Rule actions
-
-The binding supports the following actions.
-
-### Bridge
-
-#### void restart()
-
-Restarts the binding communication.
-
-### Panel / Partition
-
-The partition and the panel support the following actions. When executed on panel level they will be run for all the partitions (for commands with pin, only for the partitions for which the pin has access).
-
-#### void turnOffAnySounderOrAlarm(String pin)
-
-Turn off any sounder or alarm
-
-#### void disarm(String pin)
-
-Disarm
-
-#### void armInAwayMode(String pin)
-
-Arm in away mode
-
-#### void armInStayMode(String pin)
-
-Arm in stay mode
-
-#### void cancel(String pin)
-
-Cancel
-
-#### void initiateAutoArm(String pin)
-
-Initiate auto-arm
-
-#### void startWalkTestMode(String pin)
-
-Start walk-test mode
-
-#### void stopWalkTestMode(String pin)
-
-Stop walk-test mode
-
-#### void stay()
-
-Stay (1 button arm / toggle interiors)
-
-#### void chime()
-
-Chime (toggle chime mode)
-
-#### void exit()
-
-Exit (1 button arm / toggle instant)
-
-#### void bypassInteriors()
-
-Bypass interiors
-
-#### void firePanic()
-
-Fire panic
-
-#### void medicalPanic()
-
-Medical panic
-
-#### void policePanic()
-
-Police panic
-
-#### void smokeDetectorReset()
-
-Smoke detector reset
-
-#### void autoCallbackDownload()
-
-Auto callback download
-
-#### void manualPickupDownload()
-
-Manual pickup download
-
-#### void enableSilentExit()
-
-Enable silent exit (for this arm cycle)
-
-#### void performTest()
-
-Perform test
-
-#### void groupBypass()
-
-Group bypass
-
-#### void auxiliaryFunction1()
-
-Auxiliary function 1
-
-#### void auxiliaryFunction2()
-
-Auxiliary function 2
-
-#### void startKeypadSounder()
-
-Start keypad sounder
-
-### Zone
-
-#### void bypass()
-
-Toggles the bypass state of the zone
-
-### Keypad
-
-#### void enterTerminalMode()
-
-Only one keypad should be in the Terminal Mode at a time
-
-#### void sendKeypadTextMessage(String displayLocation, String text)
-
-This action will display the ASCII text on the keypad that must be in Terminal Mode. Only NX-148e is supported. Display location: 0=top left corner
-
-### Rule Example
-
-In classic rules these are accessible as shown in the example below (adjust getActions with your ThingId and the rule condition)
-
-```
-rule "Zone Bypass on Chime Off"
-when
-    Item caddx_partition_37ad36b3_partition1_partition_chime_mode_on changed from ON to OFF
-then
-    val actions = getActions("caddx","caddx:zone:37ad36b3:zone5")
-    if (null === actions) {
-        logWarn("actions", "Actions not found, check thing ID for bridge")
-        return
-    }
-    actions.bypass()
-end
-```
+## Thing actions
+
+The binding supports the following actions on the respective things.
+
+| Thing     | Name                            | Description                                              | Specification                                                   |
+|-----------|---------------------------------|----------------------------------------------------------|-----------------------------------------------------------------|
+| bridge    | restart                         | Restart the binding                                      | void restart()                                                  |
+| zone      | bypass                          | Bypass the zone                                          | void bypass()                                                   |
+| keypad    | enterTerminalMode               | Enter terminal mode on the selected keypad               | void enterTerminalMode()                                        |
+| keypad    | sendKeypadTextMessage           | Display a message on the Keypad                          | void sendKeypadTextMessage(String displayLocation, String text) |
+| partition | turnOffAnySounderOrAlarm        | Turn off any sounder or alarm                            | void turnOffAnySounderOrAlarm(String pin)                       |
+| partition | disarm                          | Dis-arm                                                  | void disarm(String pin)                                         |
+| partition | armInAwayMode                   | Arm in away mode                                         | void armInAwayMode(String pin)                                  |
+| partition | armInStayMode                   | Arm in stay mode                                         | void armInStayMode(String pin)                                  |
+| partition | cancel                          | Cancel                                                   | void cancel(String pin)                                         |
+| partition | initiateAutoArm                 | Initiate auto arm                                        | void initiateAutoArm(String pin)                                |
+| partition | startWalkTestMode               | Start walk-test mode                                     | void startWalkTestMode(String pin)                              |
+| partition | stopWalkTestMode                | Stop walk-test mode                                      | void stopWalkTestMode(String pin)                               |
+| partition | stay                            | Stay (1 button arm / toggle interiors)                   | void stay()                                                     |
+| partition | chime                           | Chime (toggle chime mode)                                | void chime()                                                    |
+| partition | exit                            | Exit (1 button arm / toggle instant)                     | void exit()                                                     |
+| partition | bypassInteriors                 | Bypass Interiors                                         | void bypassInteriors()                                          |
+| partition | firePanic                       | Fire Panic                                               | void firePanic()                                                |
+| partition | medicalPanic                    | Medical Panic                                            | void medicalPanic()                                             |
+| partition | policePanic                     | Police Panic                                             | void policePanic()                                              |
+| partition | smokeDetectorReset              | Smoke detector reset                                     | void smokeDetectorReset()                                       |
+| partition | autoCallbackDownload            | Auto callback download                                   | void autoCallbackDownload()                                     |
+| partition | manualPickupDownload            | Manual pickup download                                   | void manualPickupDownload()                                     |
+| partition | enableSilentExit                | Enable silent exit                                       | void enableSilentExit()                                         |
+| partition | performTest                     | Perform test                                             | void performTest()                                              |
+| partition | groupBypass                     | Group Bypass                                             | void groupBypass()                                              |
+| partition | auxiliaryFunction1              | Auxiliary Function 1                                     | void auxiliaryFunction1()                                       |
+| partition | auxiliaryFunction2              | Auxiliary Function 2                                     | void auxiliaryFunction2()                                       |
+| partition | startKeypadSounder              | Start keypad sounder                                     | void startKeypadSounder()                                       |
+| panel     | turnOffAnySounderOrAlarmOnPanel | Turn off any sounder or alarm on all partitions          | void turnOffAnySounderOrAlarm(String pin)                       |
+| panel     | disarmOnPanel                   | Dis-arm all partitions                                   | void disarm(String pin)                                         |
+| panel     | armInAwayModeOnPanel            | Arm in away mode on all partitions                       | void armInAwayMode(String pin)                                  |
+| panel     | armInStayModeOnPanel            | Arm in stay mode on all partitions                       | void armInStayMode(String pin)                                  |
+| panel     | cancelOnPanel                   | Cancel command on all partitions                         | void cancel(String pin)                                         |
+| panel     | initiateAutoArmOnPanel          | Initiate auto arm on all partitions                      | void initiateAutoArm(String pin)                                |
+| panel     | startWalkTestModeOnPanel        | Start walk-test mode on all partitions                   | void startWalkTestMode(String pin)                              |
+| panel     | stopWalkTestModeOnPanel         | Stop walk-test mode on all partitions                    | void stopWalkTestMode(String pin)                               |
+| panel     | stayOnPanel                     | Stay (1 button arm / toggle interiors) on all partitions | void stay()                                                     |
+| panel     | chimeOnPanel                    | Chime (toggle chime mode) on all partitions              | void chime()                                                    |
+| panel     | exitOnPanel                     | Exit (1 button arm / toggle instant) on all partitions   | void exit()                                                     |
+| panel     | bypassInteriorsOnPanel          | Bypass Interiors on all partitions                       | void bypassInteriors()                                          |
+| panel     | firePanicOnPanel                | Fire Panic on all partitions                             | void firePanic()                                                |
+| panel     | medicalPanicOnPanel             | Medical Panic on all partitions                          | void medicalPanic()                                             |
+| panel     | policePanicOnPanel              | Police Panic on all partitions                           | void policePanic()                                              |
+| panel     | smokeDetectorResetOnPanel       | Smoke detector reset on all partitions                   | void smokeDetectorReset()                                       |
+| panel     | autoCallbackDownloadOnPanel     | Auto callback download on all partitions                 | void autoCallbackDownload()                                     |
+| panel     | manualPickupDownloadOnPanel     | Manual pickup download on all partitions                 | void manualPickupDownload()                                     |
+| panel     | enableSilentExitOnPanel         | Enable silent exit on all partitions                     | void enableSilentExit()                                         |
+| panel     | performTestOnPanel              | Perform test on all partitions                           | void performTest()                                              |
+| panel     | groupBypassOnPanel              | Group Bypass on all partitions                           | void groupBypass()                                              |
+| panel     | auxiliaryFunction1OnPanel       | Auxiliary Function 1 on all partitions                   | void auxiliaryFunction1()                                       |
+| panel     | auxiliaryFunction2OnPanel       | Auxiliary Function 2 on all partitions                   | void auxiliaryFunction2()                                       |
+| panel     | startKeypadSounderOnPanel       | Start keypad sounder on all partitions                   | void startKeypadSounder()                                       |
 
 ## Full Example
 
@@ -416,4 +330,21 @@ sitemap home label="Home" {
         }
     }
 }
+```
+
+The following is a rule example with calling of an action on the binding
+
+```
+rule "Zone Bypass on Chime Off"
+when
+    Item caddx_partition_thebridge_partition1_partition_chime_mode_on changed from ON to OFF
+then
+    val actions = getActions("caddx","caddx:zone:thebridge:zone4")
+    if (null === actions) {
+        logWarn("actions", "Actions not found, check thing ID for the Zone")
+        return
+    }
+    
+    actions.bypass()
+end
 ```
