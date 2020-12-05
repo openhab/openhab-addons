@@ -356,14 +356,20 @@ public class RemoteopenhabRestClient {
                 case "ItemStateEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "state");
                     payload = jsonParser.fromJson(event.payload, RemoteopenhabEventPayload.class);
-                    itemsListeners
-                            .forEach(listener -> listener.onItemStateEvent(itemName, payload.type, payload.value));
+                    itemsListeners.forEach(
+                            listener -> listener.onItemStateEvent(itemName, payload.type, payload.value, false));
+                    break;
+                case "ItemStateChangedEvent":
+                    itemName = extractItemNameFromTopic(event.topic, event.type, "statechanged");
+                    payload = jsonParser.fromJson(event.payload, RemoteopenhabEventPayload.class);
+                    itemsListeners.forEach(
+                            listener -> listener.onItemStateEvent(itemName, payload.type, payload.value, true));
                     break;
                 case "GroupItemStateChangedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "statechanged");
                     payload = jsonParser.fromJson(event.payload, RemoteopenhabEventPayload.class);
-                    itemsListeners
-                            .forEach(listener -> listener.onItemStateEvent(itemName, payload.type, payload.value));
+                    itemsListeners.forEach(
+                            listener -> listener.onItemStateEvent(itemName, payload.type, payload.value, false));
                     break;
                 case "ItemAddedEvent":
                     itemName = extractItemNameFromTopic(event.topic, event.type, "added");
@@ -411,7 +417,6 @@ public class RemoteopenhabRestClient {
                             .forEach(listener -> listener.onChannelTriggered(triggerEvent.channel, triggerEvent.event));
                     break;
                 case "ItemStatePredictedEvent":
-                case "ItemStateChangedEvent":
                 case "ItemCommandEvent":
                 case "ThingStatusInfoEvent":
                 case "ThingUpdatedEvent":
