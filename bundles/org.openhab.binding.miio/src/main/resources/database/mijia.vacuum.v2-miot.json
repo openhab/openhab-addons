@@ -71,6 +71,9 @@
 						}
 					}
 				],
+				"tags": [
+					"Control"
+				],
 				"readmeComment": "This channel accepts `start`, `stop`, `findme` and `dock`."
 			},
 			{
@@ -81,33 +84,39 @@
 				"channel": "status",
 				"channelType": "MijiaVacuumV2_status",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Sweeping"
+						},
+						{
+							"value": "3",
+							"label": "Paused"
+						},
+						{
+							"value": "4",
+							"label": "Error"
+						},
+						{
+							"value": "5",
+							"label": "Charging"
+						},
+						{
+							"value": "6",
+							"label": "Go Charging"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [],
-				"value-list": [
-					{
-						"value": 1,
-						"description": "Idle"
-					},
-					{
-						"value": 2,
-						"description": "Sweeping"
-					},
-					{
-						"value": 3,
-						"description": "Paused"
-					},
-					{
-						"value": 4,
-						"description": "Error"
-					},
-					{
-						"value": 5,
-						"description": "Charging"
-					},
-					{
-						"value": 6,
-						"description": "Go Charging"
-					}
+				"tags": [
+					"Status"
 				],
 				"readmeComment": "Value mapping [1\u003d\"Idle\",2\u003d\"Sweeping\",3\u003d\"Paused\",4\u003d\"Error\",5\u003d\"Charging\",6\u003d\"Go Charging\"]"
 			},
@@ -119,61 +128,67 @@
 				"channel": "fault",
 				"channelType": "MijiaVacuumV2_fault",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Left-wheel-error"
+						},
+						{
+							"value": "2",
+							"label": "Right-wheel-error"
+						},
+						{
+							"value": "3",
+							"label": "Cliff-error"
+						},
+						{
+							"value": "4",
+							"label": "Low-battery-error"
+						},
+						{
+							"value": "5",
+							"label": "Bump-error"
+						},
+						{
+							"value": "6",
+							"label": "Main-brush-error"
+						},
+						{
+							"value": "7",
+							"label": "Side-brush-error"
+						},
+						{
+							"value": "8",
+							"label": "Fan-motor-error"
+						},
+						{
+							"value": "9",
+							"label": "Dustbin-error"
+						},
+						{
+							"value": "10",
+							"label": "Charging-error"
+						},
+						{
+							"value": "11",
+							"label": "No-wate-error"
+						},
+						{
+							"value": "12",
+							"label": "Pick-up-error"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "No Faults"
-					},
-					{
-						"value": 1,
-						"description": "Left-wheel-error"
-					},
-					{
-						"value": 2,
-						"description": "Right-wheel-error"
-					},
-					{
-						"value": 3,
-						"description": "Cliff-error"
-					},
-					{
-						"value": 4,
-						"description": "Low-battery-error"
-					},
-					{
-						"value": 5,
-						"description": "Bump-error"
-					},
-					{
-						"value": 6,
-						"description": "Main-brush-error"
-					},
-					{
-						"value": 7,
-						"description": "Side-brush-error"
-					},
-					{
-						"value": 8,
-						"description": "Fan-motor-error"
-					},
-					{
-						"value": 9,
-						"description": "Dustbin-error"
-					},
-					{
-						"value": 10,
-						"description": "Charging-error"
-					},
-					{
-						"value": 11,
-						"description": "No-wate-error"
-					},
-					{
-						"value": 12,
-						"description": "Pick-up-error"
-					}
+				"tags": [
+					"Status"
 				],
 				"readmeComment": "Value mapping [0\u003d\"No Faults\",1\u003d\"Left-wheel-error\",2\u003d\"Right-whelel-error\",3\u003d\"Cliff-error\",4\u003d\"Low-battery-error\",5\u003d\"Bump-error\",6\u003d\"Main-brush-error\",7\u003d\"Side-brush-error\",8\u003d\"Fan-motor-error\",9\u003d\"Dustbin-error\",10\u003d\"Charging-error\",11\u003d\"No-wate-error\",12\u003d\"Pick-up-error\"]"
 			},
@@ -185,6 +200,22 @@
 				"channel": "mode",
 				"channelType": "MijiaVacuumV2_mode",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Auto-clean"
+						},
+						{
+							"value": "2",
+							"label": "Spot-clean"
+						},
+						{
+							"value": "3",
+							"label": "Wallflow-clean"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -192,19 +223,8 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"value-list": [
-					{
-						"value": 1,
-						"description": "Auto-clean"
-					},
-					{
-						"value": 2,
-						"description": "Spot-clean"
-					},
-					{
-						"value": 3,
-						"description": "Wallflow-clean"
-					}
+				"tags": [
+					"Control"
 				],
 				"readmeComment": "Value mapping [1\u003d\"Auto-clean\",2\u003d\"Spot-clean\",3\u003d\"Wallflow-clean\"]"
 			},
@@ -216,6 +236,23 @@
 				"channel": "target-water-level",
 				"channelType": "MijiaVacuumV2_target-water-level",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Level1"
+						},
+						{
+							"value": "2",
+							"label": "Level2"
+						},
+						{
+							"value": "3",
+							"label": "Level3"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -223,19 +260,8 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"value-list": [
-					{
-						"value": 1,
-						"description": "Level1"
-					},
-					{
-						"value": 2,
-						"description": "Level2"
-					},
-					{
-						"value": 3,
-						"description": "Level3"
-					}
+				"tags": [
+					"Setpoint"
 				],
 				"readmeComment": "Value mapping [1\u003d\"Level1\",2\u003d\"Level2\",3\u003d\"Level3\"]"
 			},
@@ -247,6 +273,26 @@
 				"channel": "fan-level",
 				"channelType": "MijiaVacuumV2_fan-level",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Silence"
+						},
+						{
+							"value": "1",
+							"label": "Stanrd"
+						},
+						{
+							"value": "2",
+							"label": "Middle"
+						},
+						{
+							"value": "3",
+							"label": "Enchance"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -254,23 +300,8 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "Silence"
-					},
-					{
-						"value": 1,
-						"description": "Stanrd"
-					},
-					{
-						"value": 2,
-						"description": "Middle"
-					},
-					{
-						"value": 3,
-						"description": "Enchance"
-					}
+				"tags": [
+					"Setpoint"
 				],
 				"readmeComment": "Value mapping [0\u003d\"Silence\",1\u003d\"Stanrd\",2\u003d\"Middle\",3\u003d\"Enchance\"]"
 			},
@@ -293,21 +324,27 @@
 				"channel": "charging-state",
 				"channelType": "MijiaVacuumV2_charging-state",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Not-charging"
+						},
+						{
+							"value": "1",
+							"label": "Charging"
+						},
+						{
+							"value": "2",
+							"label": "Charging-competely"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "Not-charging"
-					},
-					{
-						"value": 1,
-						"description": "Charging"
-					},
-					{
-						"value": 2,
-						"description": "Charging-competely"
-					}
+				"tags": [
+					"Status"
 				],
 				"readmeComment": "Value mapping [0\u003d\"Not-charging\",1\u003d\"Charging\",2\u003d\"Charging-competely\"]"
 			},
@@ -325,6 +362,9 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"tags": [
+					"Alarm"
 				]
 			},
 			{
@@ -341,6 +381,9 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Setpoint"
 				]
 			},
 			{
@@ -352,7 +395,10 @@
 				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "filter-left-time",
@@ -363,7 +409,10 @@
 				"channelType": "miot_uint16",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "brush-life-level",
@@ -374,7 +423,10 @@
 				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "brush-left-time",
@@ -385,7 +437,10 @@
 				"channelType": "miot_uint16",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "brush-life-level1",
@@ -396,7 +451,10 @@
 				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "brush-left-time1",
@@ -407,7 +465,10 @@
 				"channelType": "miot_uint16",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "clean-area",
@@ -416,9 +477,12 @@
 				"friendlyName": "Clean Record - Clean Area",
 				"channel": "clean-area",
 				"channelType": "miot_uint16",
-				"type": "Number",
+				"type": "Number:Area",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "clean-time",
@@ -427,7 +491,8 @@
 				"friendlyName": "Clean Record - Clean Time",
 				"channel": "clean-time",
 				"channelType": "miot_uint16",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"actions": []
 			},
@@ -472,49 +537,51 @@
 				"channel": "language",
 				"channelType": "MijiaVacuumV2_language",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "English"
+						},
+						{
+							"value": "1",
+							"label": "简体中文"
+						},
+						{
+							"value": "2",
+							"label": "Español"
+						},
+						{
+							"value": "3",
+							"label": "Русский"
+						},
+						{
+							"value": "4",
+							"label": "Italiano"
+						},
+						{
+							"value": "5",
+							"label": "Français"
+						},
+						{
+							"value": "6",
+							"label": "Deutsch"
+						},
+						{
+							"value": "7",
+							"label": "한국어"
+						},
+						{
+							"value": "8",
+							"label": "Polski"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
-					}
-				],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "English"
-					},
-					{
-						"value": 1,
-						"description": "简体中文"
-					},
-					{
-						"value": 2,
-						"description": "Español"
-					},
-					{
-						"value": 3,
-						"description": "Русский"
-					},
-					{
-						"value": 4,
-						"description": "Italiano"
-					},
-					{
-						"value": 5,
-						"description": "Français"
-					},
-					{
-						"value": 6,
-						"description": "Deutsch"
-					},
-					{
-						"value": 7,
-						"description": "한국어"
-					},
-					{
-						"value": 8,
-						"description": "Polski"
 					}
 				],
 				"readmeComment": "Value mapping [0\u003d\"English\",1\u003d\"简体中文\",2\u003d\"Español\",3\u003d\"Русский\",4\u003d\"Italiano\",5\u003d\"Français\",6\u003d\"Deutsch\",7\u003d\"한국어\",8\u003d\"Polski\"]"
@@ -543,18 +610,21 @@
 				"channel": "mop-status",
 				"channelType": "MijiaVacuumV2_mop-status",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Mop Uninstall"
+						},
+						{
+							"value": "1",
+							"label": "Mop Install"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "Mop Uninstall"
-					},
-					{
-						"value": 1,
-						"description": "Mop Install"
-					}
-				],
 				"readmeComment": "Value mapping [0\u003d\"MopUninstall\",1\u003d\"MopInstall\"]"
 			}
 		],
