@@ -126,7 +126,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private void parseAPIKeyResponse(AsyncHttpClient.Result r) {
         if (r.getResponseCode() == 403) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Allow authentification for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
+                    "Allow authentication for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
             stopTimer();
             scheduledFuture = scheduler.schedule(() -> requestApiKey(), POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
         } else if (r.getResponseCode() == 200) {
