@@ -22,51 +22,51 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public interface ICaddxPanelActions {
-    public void turnOffAnySounderOrAlarm(@Nullable String pin);
+    public void turnOffAnySounderOrAlarmOnPanel(@Nullable String pin);
 
-    public void disarm(@Nullable String pin);
+    public void disarmOnPanel(@Nullable String pin);
 
-    public void armInAwayMode(@Nullable String pin);
+    public void armInAwayModeOnPanel(@Nullable String pin);
 
-    public void armInStayMode(@Nullable String pin);
+    public void armInStayModeOnPanel(@Nullable String pin);
 
-    public void cancel(@Nullable String pin);
+    public void cancelOnPanel(@Nullable String pin);
 
-    public void initiateAutoArm(@Nullable String pin);
+    public void initiateAutoArmOnPanel(@Nullable String pin);
 
-    public void startWalkTestMode(@Nullable String pin);
+    public void startWalkTestModeOnPanel(@Nullable String pin);
 
-    public void stopWalkTestMode(@Nullable String pin);
+    public void stopWalkTestModeOnPanel(@Nullable String pin);
 
-    public void stay();
+    public void stayOnPanel();
 
-    public void chime();
+    public void chimeOnPanel();
 
-    public void exit();
+    public void exitOnPanel();
 
-    public void bypassInteriors();
+    public void bypassInteriorsOnPanel();
 
-    public void firePanic();
+    public void firePanicOnPanel();
 
-    public void medicalPanic();
+    public void medicalPanicOnPanel();
 
-    public void policePanic();
+    public void policePanicOnPanel();
 
-    public void smokeDetectorReset();
+    public void smokeDetectorResetOnPanel();
 
-    public void autoCallbackDownload();
+    public void autoCallbackDownloadOnPanel();
 
-    public void manualPickupDownload();
+    public void manualPickupDownloadOnPanel();
 
-    public void enableSilentExit();
+    public void enableSilentExitOnPanel();
 
-    public void performTest();
+    public void performTestOnPanel();
 
-    public void groupBypass();
+    public void groupBypassOnPanel();
 
-    public void auxiliaryFunction1();
+    public void auxiliaryFunction1OnPanel();
 
-    public void auxiliaryFunction2();
+    public void auxiliaryFunction2OnPanel();
 
-    public void startKeypadSounder();
+    public void startKeypadSounderOnPanel();
 }
