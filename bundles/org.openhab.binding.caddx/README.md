@@ -72,7 +72,6 @@ The following table shows the available configuration parameters for each thing.
 | zone      | `zoneNumber` - Zone number (1-192) - Required                                                       |
 | keypad    | `keypadAddress` - Keypad address (192-255) - Required                                               |
 | keypad    | `terminalModeSeconds` - The number of Seconds the keypad has to remain in Terminal Mode. - Required |
-A full example is further below.
 
 ## Channels
 
@@ -216,9 +215,9 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 | zone_bypass_memory                               | Switch    | Zone Condition      | Bypass memory                              |
 | keypad_key_pressed                               | String    | Button press        | The pressed button on the keypad           |
 
-## Rule actions
+## Thing actions
 
-The binding supports the following actions.
+The binding supports the following actions on the respective things.
 
 | Thing     | Name                            | Description                                              | Specification                                                   |
 |-----------|---------------------------------|----------------------------------------------------------|-----------------------------------------------------------------|
