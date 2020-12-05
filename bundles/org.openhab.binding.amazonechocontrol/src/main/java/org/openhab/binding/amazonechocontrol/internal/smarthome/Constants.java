@@ -36,6 +36,7 @@ public class Constants {
         HANDLER_FACTORY.put(HandlerSecurityPanelController.INTERFACE, HandlerSecurityPanelController::new);
         HANDLER_FACTORY.put(HandlerAcousticEventSensor.INTERFACE, HandlerAcousticEventSensor::new);
         HANDLER_FACTORY.put(HandlerTemperatureSensor.INTERFACE, HandlerTemperatureSensor::new);
+        HANDLER_FACTORY.put(HandlerThermostatController.INTERFACE, HandlerThermostatController::new);
         HANDLER_FACTORY.put(HandlerPercentageController.INTERFACE, HandlerPercentageController::new);
         HANDLER_FACTORY.put(HandlerPowerLevelController.INTERFACE, HandlerPowerLevelController::new);
     }
