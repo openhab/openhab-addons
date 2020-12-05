@@ -183,8 +183,8 @@ public class PanasonicUpnpIOService implements UpnpIOService, RegistryListener {
             Device deviceRoot = subscription.getService().getDevice().getRoot();
             String serviceId = subscription.getService().getServiceId().getId();
 
-            logger.debug("A GENA subscription '{}' for device '{}' failed", serviceId,
-                    deviceRoot.getIdentity().getUdn());
+            logger.debug("A GENA subscription '{}' for device '{}' failed: {}", serviceId,
+                    deviceRoot.getIdentity().getUdn(), response.getResponseDetails(), e);
 
             for (UpnpIOParticipant participant : participants) {
                 if (Objects.equals(getDevice(participant), deviceRoot)) {
@@ -205,14 +205,14 @@ public class PanasonicUpnpIOService implements UpnpIOService, RegistryListener {
 
     @Activate
     public void activate() {
-        logger.debug("Starting UPnP IO service...");
+        logger.debug("Starting Panasonic UPnP IO service...");
         upnpService.getRegistry().getRemoteDevices().forEach(device -> informParticipants(device, true));
         upnpService.getRegistry().addListener(this);
     }
 
     @Deactivate
     public void deactivate() {
-        logger.debug("Stopping UPnP IO service...");
+        logger.debug("Stopping Panasonic UPnP IO service...");
         upnpService.getRegistry().removeListener(this);
     }
 
@@ -228,7 +228,7 @@ public class PanasonicUpnpIOService implements UpnpIOService, RegistryListener {
             if (device != null) {
                 Service subService = searchSubService(serviceID, device);
                 if (subService != null) {
-                    logger.trace("Setting up an UPNP service subscription '{}' for particpant '{}'", serviceID,
+                    logger.trace("Setting up an UPNP service subscription '{}' for participant '{}'", serviceID,
                             participant.getUDN());
 
                     UpnpSubscriptionCallback callback = new UpnpSubscriptionCallback(subService, duration);
@@ -314,7 +314,7 @@ public class PanasonicUpnpIOService implements UpnpIOService, RegistryListener {
 
                         ActionException anException = invocation.getFailure();
                         if (anException != null && anException.getMessage() != null) {
-                            logger.debug("{}", anException.getMessage());
+                            logger.debug("Invoking Action failed: {}", anException.getMessage());
                         }
 
                         Map<String, ActionArgumentValue> result = invocation.getOutputMap();

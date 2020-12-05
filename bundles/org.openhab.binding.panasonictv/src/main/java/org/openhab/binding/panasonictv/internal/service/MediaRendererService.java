@@ -82,15 +82,19 @@ public class MediaRendererService extends AbstractPanasonicTvService {
         int newValue;
 
         try {
-            newValue = DataConverters.convertCommandToIntValue(command, 0, 100,
-                    Integer.parseInt(stateMap.getOrDefault("CurrentVolume", "")));
+            String oldValue = stateMap.get("CurrentVolume");
+            if (oldValue == null) {
+                logger.debug("Old value for 'CurrentVolume' not found, assuming 0");
+                oldValue = "0";
+            }
+            newValue = DataConverters.convertCommandToIntValue(command, 0, 100, Integer.parseInt(oldValue));
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Command '" + command + "' not supported");
         }
 
         updateResourceState(SERVICE_ID, "SetVolume",
                 Map.of("InstanceID", "0", "Channel", "Master", "DesiredVolume", Integer.toString(newValue)));
-        updateResourceState(SERVICE_ID, "GetVolume", Map.of("InstanceID", "0", "Channel", "Master"));
+        // updateResourceState(SERVICE_ID, "GetVolume", Map.of("InstanceID", "0", "Channel", "Master"));
     }
 
     private void setMute(Command command) {
@@ -104,6 +108,6 @@ public class MediaRendererService extends AbstractPanasonicTvService {
 
         updateResourceState(SERVICE_ID, "SetMute",
                 Map.of("InstanceID", "0", "Channel", "Master", "DesiredMute", Boolean.toString(newValue)));
-        updateResourceState(SERVICE_ID, "GetMute", Map.of("InstanceID", "0", "Channel", "Master"));
+        // updateResourceState(SERVICE_ID, "GetMute", Map.of("InstanceID", "0", "Channel", "Master"));
     }
 }

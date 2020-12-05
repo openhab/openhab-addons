@@ -166,7 +166,7 @@ public abstract class AbstractPanasonicTvService implements UpnpIOParticipant, P
         if (pollingJob != null) {
             stop();
         }
-        logger.debug("Start refresh task, interval={}", refreshInterval);
+        logger.debug("Start refresh task for service {}, interval={}", serviceName, refreshInterval);
         this.pollingJob = scheduler.scheduleWithFixedDelay(this::internalPolling, 0, refreshInterval,
                 TimeUnit.MILLISECONDS);
     }
@@ -197,7 +197,7 @@ public abstract class AbstractPanasonicTvService implements UpnpIOParticipant, P
             }
             polling();
         } else {
-            logger.debug("Service not registered, skipping polling, trying to register.");
+            logger.debug("Service {} not registered, skipping polling, trying to register.", serviceName);
             reportError("UPnP device registration not found", null);
             service.registerParticipant(this);
         }
@@ -206,6 +206,7 @@ public abstract class AbstractPanasonicTvService implements UpnpIOParticipant, P
     protected abstract void polling();
 
     protected void updateResourceState(String serviceId, String actionId, Map<String, String> inputs) {
+        logger.trace("Invoking serviceId='{}', actionId='{}', inputs='{}'", serviceId, actionId, inputs);
         service.invokeAction(this, serviceId, actionId, inputs).forEach((k, v) -> onValueReceived(k, v, serviceId));
     }
 }
