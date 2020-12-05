@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.WithingsDataModel;
+import org.openhab.binding.withings.internal.exception.UnknownChannelException;
 import org.openhab.binding.withings.internal.service.person.Person;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.*;
@@ -97,7 +98,7 @@ public class PersonThingHandler extends AbstractWithingsThingHandler {
                         }
                         break;
                     default:
-                        throw new RuntimeException("Unknown channel \"" + channelUID.getId() + "\"!");
+                        throw new UnknownChannelException(channelUID);
                 }
                 if (state != null) {
                     updateState(channelUID, state);

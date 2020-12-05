@@ -15,6 +15,7 @@ package org.openhab.binding.withings.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.device.DevicesResponseDTO;
+import org.openhab.binding.withings.internal.exception.UnknownChannelException;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -40,7 +41,7 @@ public class SleepMonitorThingHandler extends AbstractWithingsDeviceThingHandler
                 if (WithingsBindingConstants.CHANNEL_SLEEP_MONITOR_LAST_CONNECTION.equals(channelUID.getId())) {
                     state = createDateTimeType(device.getLastSessionDate());
                 } else {
-                    throw new RuntimeException("Unknown channel \"" + channelUID.getId() + "\"!");
+                    throw new UnknownChannelException(channelUID);
                 }
                 updateState(channelUID, state);
             }

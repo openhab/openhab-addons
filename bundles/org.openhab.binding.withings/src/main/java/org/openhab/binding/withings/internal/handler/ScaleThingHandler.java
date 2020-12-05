@@ -15,6 +15,7 @@ package org.openhab.binding.withings.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.device.DevicesResponseDTO;
+import org.openhab.binding.withings.internal.exception.UnknownChannelException;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
 import org.openhab.core.types.State;
@@ -44,7 +45,7 @@ public class ScaleThingHandler extends AbstractWithingsDeviceThingHandler {
                         state = createDateTimeType(device.getLastSessionDate());
                         break;
                     default:
-                        throw new RuntimeException("Unknown channel \"" + channelUID.getId() + "\"!");
+                        throw new UnknownChannelException(channelUID);
                 }
                 updateState(channelUID, state);
             }

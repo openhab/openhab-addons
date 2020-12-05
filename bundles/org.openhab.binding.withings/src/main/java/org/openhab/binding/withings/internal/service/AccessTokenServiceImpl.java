@@ -49,10 +49,10 @@ public class AccessTokenServiceImpl implements AccessTokenInitializableService {
 
     @Override
     public void importAccessToken(AccessTokenResponse accessTokenResponse) throws OAuthException {
-        if (oAuthService == null) {
-            throw new RuntimeException("The AccessTokenService isn't initialized!");
+        if (oAuthService != null) {
+            oAuthService.importAccessTokenResponse(accessTokenResponse);
         }
-        oAuthService.importAccessTokenResponse(accessTokenResponse);
+        logger.warn("The AccessTokenService isn't initialized! The access token couldn't get imported.");
     }
 
     @Override
