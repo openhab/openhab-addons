@@ -101,4 +101,22 @@ public final class Utils {
     public static String minLengthString(String string, int length) {
         return String.format("%-" + length + "s", string);
     }
+
+    public static String toHEX(String value) {
+        try {
+            return String.format("%08X", Long.parseUnsignedLong(value));
+        } catch (NumberFormatException e) {
+            //
+        }
+        return value;
+    }
+
+    public static String fromHEX(String value) {
+        try {
+            return String.format("%d", Long.parseUnsignedLong(value, 16));
+        } catch (NumberFormatException e) {
+            //
+        }
+        return value;
+    }
 }
