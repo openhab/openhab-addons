@@ -3,9 +3,9 @@
 This binding adds support for the
 [EnOcean BLE PTM215B](https://www.enocean.com/de/produkte/enocean_module_24ghz_ble/ptm-215b/) rocker.
 
-Currently, it does not work seamlessly work with the
-[BlueZ Binding](https://www.openhab.org/addons/bindings/bluetooth.bluez) because of limitations of this binding,
-particularly the underlying tinyB library. The recommended / tested Bluetooth bridge binding is the
+**Currently, it does not work with the
+[BlueZ Binding](https://www.openhab.org/addons/bindings/bluetooth.bluez)**.
+The recommended / tested Bluetooth bridge binding is the
 [BlueGiga Binding](https://www.openhab.org/addons/bindings/bluetooth.bluegiga).
 
 ## Supported Things
