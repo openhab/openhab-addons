@@ -48,6 +48,11 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
 				]
 			},
 			{
@@ -104,7 +109,12 @@
 				"type": "Number:Temperature",
 				"unit": "CELCIUS",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "brightness",
@@ -158,53 +168,56 @@
 				"channel": "country-code",
 				"channelType": "ZhimiHeaterZb1_country-code",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Unknown"
+						},
+						{
+							"value": "1",
+							"label": "US"
+						},
+						{
+							"value": "82",
+							"label": "KR"
+						},
+						{
+							"value": "44",
+							"label": "EU"
+						},
+						{
+							"value": "81",
+							"label": "JP"
+						},
+						{
+							"value": "7",
+							"label": "RU"
+						},
+						{
+							"value": "86",
+							"label": "CN"
+						},
+						{
+							"value": "852",
+							"label": "HK"
+						},
+						{
+							"value": "886",
+							"label": "TW"
+						},
+						{
+							"value": "33",
+							"label": "FR"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
-					}
-				],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "Unknown"
-					},
-					{
-						"value": 1,
-						"description": "US"
-					},
-					{
-						"value": 82,
-						"description": "KR"
-					},
-					{
-						"value": 44,
-						"description": "EU"
-					},
-					{
-						"value": 81,
-						"description": "JP"
-					},
-					{
-						"value": 7,
-						"description": "RU"
-					},
-					{
-						"value": 86,
-						"description": "CN"
-					},
-					{
-						"value": 852,
-						"description": "HK"
-					},
-					{
-						"value": 886,
-						"description": "TW"
-					},
-					{
-						"value": 33,
-						"description": "FR"
 					}
 				],
 				"readmeComment": "Value mapping [0\u003d\"Unknown\",1\u003d\"US\",82\u003d\"KR\",44\u003d\"EU\",81\u003d\"JP\",7\u003d\"RU\",86\u003d\"CN\",852\u003d\"HK\",886\u003d\"TW\",33\u003d\"FR\"]"
