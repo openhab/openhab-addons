@@ -6,7 +6,10 @@ It consists of devices communicating over a ZigBee network with a ZigBee - WiFi 
 The devices are very affordable and you can get them from your favourite chinese marktes like [AliExpress](https://www.aliexpress.com/) or [GearBest](https://www.gearbest.com).
 The sensors run on a coincell battery for over a year. 
 
-After setup, you can disconnect the gateway from the internet to keep your sensor information private.
+After setup, you can disconnect the gateway from the internet to keep your sensor information private. 
+
+Please note that using the Xiaomi gateway with OpenHAB requires enabling the developer mode and that multiple user reports suggest that it is no longer posible.
+Zigbee2Mqtt provides an alternative method to integrate Xiaomi devices.
 
 ## Supported devices
 
