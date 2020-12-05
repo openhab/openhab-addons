@@ -38,12 +38,12 @@ public class MeasuresHandler extends AbstractAPIHandler {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("meastypes", "1,4,8"); // 1 = weight in kg, 4 = height in meters, 8 = fat mass in kg
 
-        Optional<MeasuresResponse> measuresResponse = executePOSTRequest(MEASURE_API_URL, "getmeas", parameters,
-                MeasuresResponse.class);
+        Optional<MeasuresResponseDTO> measuresResponse = executePOSTRequest(MEASURE_API_URL, "getmeas", parameters,
+                MeasuresResponseDTO.class);
         if (measuresResponse.isPresent()) {
-            MeasuresResponse.MeasuresBody body = measuresResponse.get().getBody();
+            MeasuresResponseDTO.MeasuresBody body = measuresResponse.get().getBody();
             if (body != null) {
-                List<MeasuresResponse.MeasureGroup> measureGroups = body.getMeasureGroups();
+                List<MeasuresResponseDTO.MeasureGroup> measureGroups = body.getMeasureGroups();
                 if (measureGroups != null && !measureGroups.isEmpty()) {
                     measureGroups.sort(Comparator.reverseOrder());
 
@@ -55,27 +55,27 @@ public class MeasuresHandler extends AbstractAPIHandler {
         return Optional.empty();
     }
 
-    private Optional<MeasuresResponse.Measure> findFirstWeightMeasure(
-            List<MeasuresResponse.MeasureGroup> measureGroups) {
+    private Optional<MeasuresResponseDTO.Measure> findFirstWeightMeasure(
+            List<MeasuresResponseDTO.MeasureGroup> measureGroups) {
         return findMeasure(measureGroups, WEIGHT_TYPE);
     }
 
-    private Optional<MeasuresResponse.Measure> findFirstHeightMeasure(
-            List<MeasuresResponse.MeasureGroup> measureGroups) {
+    private Optional<MeasuresResponseDTO.Measure> findFirstHeightMeasure(
+            List<MeasuresResponseDTO.MeasureGroup> measureGroups) {
         return findMeasure(measureGroups, HEIGHT_TYPE);
     }
 
-    private Optional<MeasuresResponse.Measure> findFirstFatMassMeasure(
-            List<MeasuresResponse.MeasureGroup> measureGroups) {
+    private Optional<MeasuresResponseDTO.Measure> findFirstFatMassMeasure(
+            List<MeasuresResponseDTO.MeasureGroup> measureGroups) {
         return findMeasure(measureGroups, FAT_MASS_TYPE);
     }
 
-    private Optional<MeasuresResponse.Measure> findMeasure(List<MeasuresResponse.MeasureGroup> measureGroups,
+    private Optional<MeasuresResponseDTO.Measure> findMeasure(List<MeasuresResponseDTO.MeasureGroup> measureGroups,
             int searchedType) {
-        for (MeasuresResponse.MeasureGroup measureGroup : measureGroups) {
-            List<MeasuresResponse.Measure> measures = measureGroup.getMeasures();
+        for (MeasuresResponseDTO.MeasureGroup measureGroup : measureGroups) {
+            List<MeasuresResponseDTO.Measure> measures = measureGroup.getMeasures();
             if (measures != null) {
-                for (MeasuresResponse.Measure measure : measures) {
+                for (MeasuresResponseDTO.Measure measure : measures) {
                     if (searchedType == measure.getType()) {
                         return Optional.of(measure);
                     }

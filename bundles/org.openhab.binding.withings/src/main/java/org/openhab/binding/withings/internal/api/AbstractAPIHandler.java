@@ -18,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -49,17 +48,17 @@ public abstract class AbstractAPIHandler {
         this.httpClient = httpClient;
     }
 
-    protected <@NonNull T extends BaseResponse> Optional<T> executeAuthPOSTRequest(String url, String action,
+    protected <T extends BaseResponseDTO> Optional<T> executeAuthPOSTRequest(String url, String action,
             Map<String, String> parameters, Class<T> responseType) {
         return executePOSTRequest(url, action, parameters, responseType, false);
     }
 
-    protected <@NonNull T extends BaseResponse> Optional<T> executePOSTRequest(String url, String action,
+    protected <T extends BaseResponseDTO> Optional<T> executePOSTRequest(String url, String action,
             Map<String, String> parameters, Class<T> responseType) {
         return executePOSTRequest(url, action, parameters, responseType, true);
     }
 
-    protected <@NonNull T extends BaseResponse> Optional<T> executePOSTRequest(String url, String action,
+    protected <T extends BaseResponseDTO> Optional<T> executePOSTRequest(String url, String action,
             Map<String, String> parameters, Class<T> responseType, boolean useAccessToken) {
 
         Optional<String> accessToken;

@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.device.DevicesHandler;
-import org.openhab.binding.withings.internal.api.device.DevicesResponse;
+import org.openhab.binding.withings.internal.api.device.DevicesResponseDTO;
 import org.openhab.binding.withings.internal.handler.WithingsBridgeHandler;
 import org.openhab.binding.withings.internal.service.AccessTokenService;
 import org.openhab.binding.withings.internal.service.person.Person;
@@ -82,8 +82,8 @@ public class WithingsDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Starting scan for Withings devices...");
 
         DevicesHandler devicesHandler = new DevicesHandler(accessTokenService, httpClient);
-        List<DevicesResponse.Device> devices = devicesHandler.loadDevices();
-        for (DevicesResponse.Device device : devices) {
+        List<DevicesResponseDTO.Device> devices = devicesHandler.loadDevices();
+        for (DevicesResponseDTO.Device device : devices) {
 
             Optional<ThingUID> thingUID = findThingUID(device.getType(), device.getDeviceId());
             if (thingUID.isPresent()) {
@@ -140,7 +140,7 @@ public class WithingsDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(discoveryResult);
     }
 
-    private static String createDeviceThingName(DevicesResponse.Device device) {
+    private static String createDeviceThingName(DevicesResponseDTO.Device device) {
         if (WithingsBindingConstants.SCALE_THING_TYPE.getId().equals(device.getType())) {
             return WithingsBindingConstants.VENDOR + ' ' + device.getModel() + " Scale";
         }

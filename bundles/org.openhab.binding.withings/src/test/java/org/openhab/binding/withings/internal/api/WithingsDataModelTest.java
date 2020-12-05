@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.withings.internal.api.device.DevicesResponse;
+import org.openhab.binding.withings.internal.api.device.DevicesResponseDTO;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -28,7 +28,7 @@ public class WithingsDataModelTest {
 
     @Test
     public void testGetDevice() {
-        DevicesResponse.Device device = new DevicesResponse.Device("deviceId");
+        DevicesResponseDTO.Device device = new DevicesResponseDTO.Device("deviceId");
 
         WithingsDataModel model = new WithingsDataModel(Collections.singletonList(device), Optional.empty());
         assertEquals(Optional.of(device), model.getDevice("deviceId"));
@@ -36,9 +36,9 @@ public class WithingsDataModelTest {
 
     @Test
     public void testGetDevice_MultipleDevices() {
-        DevicesResponse.Device device1 = new DevicesResponse.Device("deviceId1");
-        DevicesResponse.Device device2 = new DevicesResponse.Device("deviceId");
-        DevicesResponse.Device device3 = new DevicesResponse.Device("deviceId4");
+        DevicesResponseDTO.Device device1 = new DevicesResponseDTO.Device("deviceId1");
+        DevicesResponseDTO.Device device2 = new DevicesResponseDTO.Device("deviceId");
+        DevicesResponseDTO.Device device3 = new DevicesResponseDTO.Device("deviceId4");
 
         WithingsDataModel model = new WithingsDataModel(Arrays.asList(device1, device2, device3), Optional.empty());
         assertEquals(Optional.of(device2), model.getDevice("deviceId"));
@@ -46,7 +46,7 @@ public class WithingsDataModelTest {
 
     @Test
     public void testGetDevice_UnknownDeviceId() {
-        DevicesResponse.Device device = new DevicesResponse.Device("deviceId");
+        DevicesResponseDTO.Device device = new DevicesResponseDTO.Device("deviceId");
 
         WithingsDataModel model = new WithingsDataModel(Collections.singletonList(device), Optional.empty());
         assertEquals(Optional.empty(), model.getDevice("deviceId2"));

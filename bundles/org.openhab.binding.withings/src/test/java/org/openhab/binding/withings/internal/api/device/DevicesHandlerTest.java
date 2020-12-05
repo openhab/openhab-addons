@@ -43,10 +43,10 @@ public class DevicesHandlerTest extends AbstractAPIHandlerTest {
                 + "                \"deviceid\": \"5116c0a294e4ce90c9f0af500119c531bef0aa51\"\n" + "            }\n"
                 + "        ]\n" + "    }\n" + "}");
 
-        List<DevicesResponse.Device> devices = devicesHandler.loadDevices();
+        List<DevicesResponseDTO.Device> devices = devicesHandler.loadDevices();
         assertEquals(1, devices.size());
 
-        DevicesResponse.Device device = devices.get(0);
+        DevicesResponseDTO.Device device = devices.get(0);
         assertEquals("5116c0a294e4ce90c9f0af500119c531bef0aa51", device.getDeviceId());
         assertEquals("Scale", device.getType());
         assertEquals(4, device.getModelId().intValue());
@@ -66,7 +66,7 @@ public class DevicesHandlerTest extends AbstractAPIHandlerTest {
                 + "                \"deviceid\": \"5116c0a294e4ce90c9f0af500119c531bef0aa51\"\n" + "            }\n"
                 + "        ]\n" + "    }\n" + "}");
 
-        List<DevicesResponse.Device> devices = devicesHandler.loadDevices();
+        List<DevicesResponseDTO.Device> devices = devicesHandler.loadDevices();
         assertEquals(0, devices.size());
     }
 
@@ -75,7 +75,7 @@ public class DevicesHandlerTest extends AbstractAPIHandlerTest {
         mockAccessToken();
         mockRequest("{\n" + "    \"status\": 0\n}");
 
-        List<DevicesResponse.Device> devices = devicesHandler.loadDevices();
+        List<DevicesResponseDTO.Device> devices = devicesHandler.loadDevices();
         assertEquals(0, devices.size());
     }
 
@@ -84,7 +84,7 @@ public class DevicesHandlerTest extends AbstractAPIHandlerTest {
         mockAccessToken();
         mockRequest("{\n" + "    \"status\": 0,\n    \"body\": {\n    }\n" + "}");
 
-        List<DevicesResponse.Device> devices = devicesHandler.loadDevices();
+        List<DevicesResponseDTO.Device> devices = devicesHandler.loadDevices();
         assertEquals(0, devices.size());
     }
 
@@ -94,7 +94,7 @@ public class DevicesHandlerTest extends AbstractAPIHandlerTest {
         mockRequest("{\n" + "    \"status\": 0,\n" + "    \"body\": {\n" + "        \"devices\": [\n" + "        ]\n"
                 + "    }\n" + "}");
 
-        List<DevicesResponse.Device> devices = devicesHandler.loadDevices();
+        List<DevicesResponseDTO.Device> devices = devicesHandler.loadDevices();
         assertEquals(0, devices.size());
     }
 
@@ -104,13 +104,13 @@ public class DevicesHandlerTest extends AbstractAPIHandlerTest {
         mockRequestWithException();
 
         // TimeoutException occurs, but it is only logged to fulfill the coding guidelines of OpenHAB
-        List<DevicesResponse.Device> devices = devicesHandler.loadDevices();
+        List<DevicesResponseDTO.Device> devices = devicesHandler.loadDevices();
         assertEquals(0, devices.size());
     }
 
     @Test
     public void testLoadDevices_AccessTokenMissing() {
-        List<DevicesResponse.Device> devices = devicesHandler.loadDevices();
+        List<DevicesResponseDTO.Device> devices = devicesHandler.loadDevices();
         assertEquals(0, devices.size());
     }
 }

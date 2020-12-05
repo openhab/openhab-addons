@@ -14,14 +14,14 @@ package org.openhab.binding.withings.internal.api.measure;
 
 import java.util.List;
 
-import org.openhab.binding.withings.internal.api.BaseResponse;
+import org.openhab.binding.withings.internal.api.BaseResponseDTO;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Sven Strohschein - Initial contribution
  */
-public class MeasuresResponse extends BaseResponse {
+public class MeasuresResponseDTO extends BaseResponseDTO {
 
     private MeasuresBody body;
 
@@ -54,7 +54,7 @@ public class MeasuresResponse extends BaseResponse {
         }
 
         @Override
-        public int compareTo(MeasuresResponse.MeasureGroup measureGroup) {
+        public int compareTo(MeasuresResponseDTO.MeasureGroup measureGroup) {
             return date.compareTo(measureGroup.date);
         }
     }

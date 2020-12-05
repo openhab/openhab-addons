@@ -24,9 +24,9 @@ public class LatestSleepData {
 
     private final long sleepStartTimestamp;
     private final long sleepEndTimestamp;
-    private final SleepResponse.SleepData sleepData;
+    private final SleepResponseDTO.SleepData sleepData;
 
-    public LatestSleepData(long sleepStartTimestamp, long sleepEndTimestamp, SleepResponse.SleepData sleepData) {
+    public LatestSleepData(long sleepStartTimestamp, long sleepEndTimestamp, SleepResponseDTO.SleepData sleepData) {
         this.sleepStartTimestamp = sleepStartTimestamp;
         this.sleepEndTimestamp = sleepEndTimestamp;
         this.sleepData = sleepData;

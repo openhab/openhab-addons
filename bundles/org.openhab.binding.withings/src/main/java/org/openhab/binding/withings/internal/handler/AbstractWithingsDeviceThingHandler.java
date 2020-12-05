@@ -18,7 +18,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.WithingsDataModel;
-import org.openhab.binding.withings.internal.api.device.DevicesResponse;
+import org.openhab.binding.withings.internal.api.device.DevicesResponseDTO;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -35,9 +35,9 @@ public abstract class AbstractWithingsDeviceThingHandler extends AbstractWithing
     public final boolean updateThingData(WithingsDataModel model) {
         final String thingId = getThing().getUID().getId();
 
-        Optional<DevicesResponse.Device> deviceOptional = model.getDevice(thingId);
+        Optional<DevicesResponseDTO.Device> deviceOptional = model.getDevice(thingId);
         if (deviceOptional.isPresent()) {
-            DevicesResponse.Device device = deviceOptional.get();
+            DevicesResponseDTO.Device device = deviceOptional.get();
             updateProperties(device);
             updateChannels(device);
             return true;
@@ -45,7 +45,7 @@ public abstract class AbstractWithingsDeviceThingHandler extends AbstractWithing
         return false;
     }
 
-    private void updateProperties(DevicesResponse.Device device) {
+    private void updateProperties(DevicesResponseDTO.Device device) {
         Map<String, String> properties = editProperties();
         String deviceId = device.getDeviceId();
         if (deviceId != null) {
@@ -62,5 +62,5 @@ public abstract class AbstractWithingsDeviceThingHandler extends AbstractWithing
         updateProperties(properties);
     }
 
-    protected abstract void updateChannels(DevicesResponse.Device device);
+    protected abstract void updateChannels(DevicesResponseDTO.Device device);
 }

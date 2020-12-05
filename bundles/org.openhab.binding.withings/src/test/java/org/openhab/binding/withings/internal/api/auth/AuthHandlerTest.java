@@ -41,7 +41,7 @@ public class AuthHandlerTest extends AbstractAPIHandlerTest {
                 + "        \"scope\": \"user.info,user.metrics,user.activity\",\n" + "        \"expires_in\": 10800,\n"
                 + "        \"token_type\": \"Bearer\"\n" + "    }\n" + "}");
 
-        Optional<WithingsAccessTokenResponse> tokenResponse = authHandler.redeemAuthCode("clientId", "clientSecret",
+        Optional<WithingsAccessTokenResponseDTO> tokenResponse = authHandler.redeemAuthCode("clientId", "clientSecret",
                 "authCode");
         assertTrue(tokenResponse.isPresent());
 
@@ -63,8 +63,8 @@ public class AuthHandlerTest extends AbstractAPIHandlerTest {
                 + "        \"scope\": \"user.info,user.metrics,user.activity\",\n" + "        \"expires_in\": 10800,\n"
                 + "        \"token_type\": \"Bearer\"\n" + "    }\n" + "}");
 
-        Optional<WithingsAccessTokenResponse> tokenResponse = authHandler.refreshAccessToken("clientId", "clientSecret",
-                "refreshToken");
+        Optional<WithingsAccessTokenResponseDTO> tokenResponse = authHandler.refreshAccessToken("clientId",
+                "clientSecret", "refreshToken");
         assertTrue(tokenResponse.isPresent());
 
         AccessTokenResponse accessTokenResponse = tokenResponse.get().createAccessTokenResponse();

@@ -44,7 +44,7 @@ public class LatestMeasureDataTest {
         assertEquals(BigDecimal.valueOf(19.1), person.getFatMass());
     }
 
-    private Optional<MeasuresResponse.Measure> measure(int value, int unit) {
-        return Optional.of(new MeasuresResponse.Measure(value, 8, unit));
+    private Optional<MeasuresResponseDTO.Measure> measure(int value, int unit) {
+        return Optional.of(new MeasuresResponseDTO.Measure(value, 8, unit));
     }
 }

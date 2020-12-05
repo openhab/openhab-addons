@@ -14,14 +14,14 @@ package org.openhab.binding.withings.internal.api.sleep;
 
 import java.util.List;
 
-import org.openhab.binding.withings.internal.api.BaseResponse;
+import org.openhab.binding.withings.internal.api.BaseResponseDTO;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Sven Strohschein - Initial contribution
  */
-public class SleepResponse extends BaseResponse {
+public class SleepResponseDTO extends BaseResponseDTO {
 
     private SleepBody body;
 

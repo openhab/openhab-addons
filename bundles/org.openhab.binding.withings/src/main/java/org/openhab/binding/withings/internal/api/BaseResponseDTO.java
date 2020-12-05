@@ -15,7 +15,7 @@ package org.openhab.binding.withings.internal.api;
 /**
  * @author Sven Strohschein - Initial contribution
  */
-public abstract class BaseResponse {
+public abstract class BaseResponseDTO {
 
     private int status;
 

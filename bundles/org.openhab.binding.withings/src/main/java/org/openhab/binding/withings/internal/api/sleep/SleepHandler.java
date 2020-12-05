@@ -36,17 +36,17 @@ public class SleepHandler extends AbstractAPIHandler {
         parameters.put("data_fields", "sleep_score");
         parameters.put("lastupdate", "");
 
-        Optional<SleepResponse> sleepResponse = executePOSTRequest(MEASURE_API_URL, "getsummary", parameters,
-                SleepResponse.class);
+        Optional<SleepResponseDTO> sleepResponse = executePOSTRequest(MEASURE_API_URL, "getsummary", parameters,
+                SleepResponseDTO.class);
 
         if (sleepResponse.isPresent()) {
-            SleepResponse.SleepBody body = sleepResponse.get().getBody();
+            SleepResponseDTO.SleepBody body = sleepResponse.get().getBody();
             if (body != null) {
-                List<SleepResponse.SleepSeries> sleepSeries = body.getSeries();
+                List<SleepResponseDTO.SleepSeries> sleepSeries = body.getSeries();
                 if (sleepSeries != null && !sleepSeries.isEmpty()) {
                     sleepSeries.sort(Comparator.reverseOrder());
 
-                    SleepResponse.SleepSeries latestSleepSeries = sleepSeries.get(0);
+                    SleepResponseDTO.SleepSeries latestSleepSeries = sleepSeries.get(0);
                     return Optional.of(new LatestSleepData(latestSleepSeries.getStartDate(),
                             latestSleepSeries.getEndDate(), latestSleepSeries.getData()));
                 }

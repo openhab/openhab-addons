@@ -31,13 +31,13 @@ public class DevicesHandler extends AbstractAPIHandler {
         super(accessTokenService, httpClient);
     }
 
-    public List<DevicesResponse.Device> loadDevices() {
-        Optional<DevicesResponse> devicesResponse = executePOSTRequest(USER_API_URL, "getdevice", new HashMap<>(),
-                DevicesResponse.class);
+    public List<DevicesResponseDTO.Device> loadDevices() {
+        Optional<DevicesResponseDTO> devicesResponse = executePOSTRequest(USER_API_URL, "getdevice", new HashMap<>(),
+                DevicesResponseDTO.class);
         if (devicesResponse.isPresent()) {
-            DevicesResponse.DevicesBody body = devicesResponse.get().getBody();
+            DevicesResponseDTO.DevicesBody body = devicesResponse.get().getBody();
             if (body != null) {
-                List<DevicesResponse.Device> devices = body.getDevices();
+                List<DevicesResponseDTO.Device> devices = body.getDevices();
                 if (devices != null) {
                     return devices;
                 }

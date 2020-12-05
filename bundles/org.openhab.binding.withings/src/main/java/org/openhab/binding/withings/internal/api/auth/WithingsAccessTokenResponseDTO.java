@@ -14,7 +14,7 @@ package org.openhab.binding.withings.internal.api.auth;
 
 import java.time.LocalDateTime;
 
-import org.openhab.binding.withings.internal.api.BaseResponse;
+import org.openhab.binding.withings.internal.api.BaseResponseDTO;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 
 import com.google.gson.annotations.SerializedName;
@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @author Sven Strohschein - Initial contribution
  */
-public class WithingsAccessTokenResponse extends BaseResponse {
+public class WithingsAccessTokenResponseDTO extends BaseResponseDTO {
 
     private WithingsAccessTokenResponseBody body;
 

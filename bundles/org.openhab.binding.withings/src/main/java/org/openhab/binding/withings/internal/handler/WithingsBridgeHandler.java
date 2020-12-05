@@ -23,9 +23,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
 import org.openhab.binding.withings.internal.api.WithingsDataModel;
 import org.openhab.binding.withings.internal.api.auth.AuthHandler;
-import org.openhab.binding.withings.internal.api.auth.WithingsAccessTokenResponse;
+import org.openhab.binding.withings.internal.api.auth.WithingsAccessTokenResponseDTO;
 import org.openhab.binding.withings.internal.api.device.DevicesHandler;
-import org.openhab.binding.withings.internal.api.device.DevicesResponse;
+import org.openhab.binding.withings.internal.api.device.DevicesResponseDTO;
 import org.openhab.binding.withings.internal.config.WithingsBridgeConfiguration;
 import org.openhab.binding.withings.internal.service.AccessTokenInitializableService;
 import org.openhab.binding.withings.internal.service.person.Person;
@@ -126,7 +126,7 @@ public class WithingsBridgeHandler extends BaseBridgeHandler {
     }
 
     private void updateData() {
-        List<DevicesResponse.Device> devices = new DevicesHandler(accessTokenService, httpClient).loadDevices();
+        List<DevicesResponseDTO.Device> devices = new DevicesHandler(accessTokenService, httpClient).loadDevices();
         Optional<Person> person = new PersonHandler(accessTokenService, httpClient).loadPerson();
 
         currentModel = Optional.of(new WithingsDataModel(devices, person));
@@ -151,7 +151,7 @@ public class WithingsBridgeHandler extends BaseBridgeHandler {
             logger.debug("Redeem auth-code...");
 
             AuthHandler authHandler = new AuthHandler(accessTokenService, httpClient);
-            Optional<WithingsAccessTokenResponse> tokenResponse = authHandler.redeemAuthCode(configuration.clientId,
+            Optional<WithingsAccessTokenResponseDTO> tokenResponse = authHandler.redeemAuthCode(configuration.clientId,
                     configuration.clientSecret, configuration.authCode);
 
             try {
@@ -185,8 +185,8 @@ public class WithingsBridgeHandler extends BaseBridgeHandler {
         try {
 
             AuthHandler authHandler = new AuthHandler(accessTokenService, httpClient);
-            Optional<WithingsAccessTokenResponse> tokenResponse = authHandler.refreshAccessToken(configuration.clientId,
-                    configuration.clientSecret, refreshToken);
+            Optional<WithingsAccessTokenResponseDTO> tokenResponse = authHandler
+                    .refreshAccessToken(configuration.clientId, configuration.clientSecret, refreshToken);
 
             if (tokenResponse.isPresent()) {
                 AccessTokenResponse accessTokenResponse = tokenResponse.get().createAccessTokenResponse();

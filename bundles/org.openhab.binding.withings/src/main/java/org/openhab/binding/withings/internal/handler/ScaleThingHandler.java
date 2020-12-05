@@ -14,7 +14,7 @@ package org.openhab.binding.withings.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.withings.internal.WithingsBindingConstants;
-import org.openhab.binding.withings.internal.api.device.DevicesResponse;
+import org.openhab.binding.withings.internal.api.device.DevicesResponseDTO;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
 import org.openhab.core.types.State;
@@ -29,7 +29,7 @@ public class ScaleThingHandler extends AbstractWithingsDeviceThingHandler {
         super(thing);
     }
 
-    protected void updateChannels(DevicesResponse.Device device) {
+    protected void updateChannels(DevicesResponseDTO.Device device) {
         for (Channel channel : getThing().getChannels()) {
 
             ChannelUID channelUID = channel.getUID();

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.withings.internal.api.device.DevicesResponse;
+import org.openhab.binding.withings.internal.api.device.DevicesResponseDTO;
 import org.openhab.binding.withings.internal.service.person.Person;
 
 /**
@@ -25,20 +25,20 @@ import org.openhab.binding.withings.internal.service.person.Person;
 @NonNullByDefault
 public class WithingsDataModel {
 
-    private final List<DevicesResponse.Device> devices;
+    private final List<DevicesResponseDTO.Device> devices;
     private final Optional<Person> person;
 
-    public WithingsDataModel(List<DevicesResponse.Device> devices, Optional<Person> person) {
+    public WithingsDataModel(List<DevicesResponseDTO.Device> devices, Optional<Person> person) {
         this.devices = devices;
         this.person = person;
     }
 
-    public List<DevicesResponse.Device> getDevices() {
+    public List<DevicesResponseDTO.Device> getDevices() {
         return devices;
     }
 
-    public Optional<DevicesResponse.Device> getDevice(String deviceId) {
-        for (DevicesResponse.Device device : getDevices()) {
+    public Optional<DevicesResponseDTO.Device> getDevice(String deviceId) {
+        for (DevicesResponseDTO.Device device : getDevices()) {
             if (deviceId.equals(device.getDeviceId())) {
                 return Optional.of(device);
             }

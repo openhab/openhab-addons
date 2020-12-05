@@ -29,8 +29,8 @@ public class LatestMeasureData {
     private final @Nullable BigDecimal height;
     private final @Nullable BigDecimal fatMass;
 
-    public LatestMeasureData(Optional<MeasuresResponse.Measure> weight, Optional<MeasuresResponse.Measure> height,
-            Optional<MeasuresResponse.Measure> fatMass) {
+    public LatestMeasureData(Optional<MeasuresResponseDTO.Measure> weight, Optional<MeasuresResponseDTO.Measure> height,
+            Optional<MeasuresResponseDTO.Measure> fatMass) {
         this.weight = calculateValue(weight, 1);
         this.height = calculateValue(height, 2);
         this.fatMass = calculateValue(fatMass, 1);
@@ -48,9 +48,10 @@ public class LatestMeasureData {
         return fatMass;
     }
 
-    private static @Nullable BigDecimal calculateValue(Optional<MeasuresResponse.Measure> measureOptional, int scale) {
+    private static @Nullable BigDecimal calculateValue(Optional<MeasuresResponseDTO.Measure> measureOptional,
+            int scale) {
         if (measureOptional.isPresent()) {
-            MeasuresResponse.Measure measure = measureOptional.get();
+            MeasuresResponseDTO.Measure measure = measureOptional.get();
             BigDecimal divisor = createUnitDivisor(measure.getUnit());
             return BigDecimal.valueOf(measure.getValue()).divide(divisor, scale, RoundingMode.HALF_UP);
         }

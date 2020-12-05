@@ -34,7 +34,8 @@ public class AuthHandler extends AbstractAPIHandler {
         super(accessTokenService, httpClient);
     }
 
-    public Optional<WithingsAccessTokenResponse> redeemAuthCode(String clientId, String clientSecret, String authCode) {
+    public Optional<WithingsAccessTokenResponseDTO> redeemAuthCode(String clientId, String clientSecret,
+            String authCode) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("client_id", clientId);
         parameters.put("client_secret", clientSecret);
@@ -42,10 +43,10 @@ public class AuthHandler extends AbstractAPIHandler {
         parameters.put("code", authCode);
         parameters.put("redirect_uri", REDIRECT_URI);
 
-        return executeAuthPOSTRequest(API_URL_TOKEN, "requesttoken", parameters, WithingsAccessTokenResponse.class);
+        return executeAuthPOSTRequest(API_URL_TOKEN, "requesttoken", parameters, WithingsAccessTokenResponseDTO.class);
     }
 
-    public Optional<WithingsAccessTokenResponse> refreshAccessToken(String clientId, String clientSecret,
+    public Optional<WithingsAccessTokenResponseDTO> refreshAccessToken(String clientId, String clientSecret,
             String refreshToken) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("client_id", clientId);
@@ -53,6 +54,6 @@ public class AuthHandler extends AbstractAPIHandler {
         parameters.put("grant_type", "refresh_token");
         parameters.put("refresh_token", refreshToken);
 
-        return executeAuthPOSTRequest(API_URL_TOKEN, "requesttoken", parameters, WithingsAccessTokenResponse.class);
+        return executeAuthPOSTRequest(API_URL_TOKEN, "requesttoken", parameters, WithingsAccessTokenResponseDTO.class);
     }
 }
