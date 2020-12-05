@@ -171,8 +171,7 @@ public class Ffmpeg {
     public void startConverting() {
         if (!ipCameraFfmpegThread.isAlive()) {
             ipCameraFfmpegThread = new IpCameraFfmpegThread();
-            logger.debug("Starting ffmpeg with this command now:{}",
-                    ffmpegCommand.replaceAll(password, "********"));
+            logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand.replaceAll(password, "********"));
             ipCameraFfmpegThread.start();
             running = true;
             if (format.equals(FFmpegFormat.HLS)) {
