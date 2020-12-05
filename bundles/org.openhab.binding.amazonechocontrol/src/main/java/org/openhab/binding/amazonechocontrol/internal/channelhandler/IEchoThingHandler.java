@@ -26,6 +26,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
  */
 @NonNullByDefault
 public interface IEchoThingHandler extends IAmazonThingHandler {
-    void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
+    void startAnnouncement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer volume) throws IOException, URISyntaxException;
 }

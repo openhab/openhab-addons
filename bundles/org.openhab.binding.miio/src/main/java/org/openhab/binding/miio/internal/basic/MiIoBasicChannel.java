@@ -16,6 +16,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,6 +57,9 @@ public class MiIoBasicChannel {
     @SerializedName("unit")
     @Expose
     private @Nullable String unit;
+    @SerializedName("stateDescription")
+    @Expose
+    private @Nullable StateDescriptionDTO stateDescription;
     @SerializedName("refresh")
     @Expose
     private @Nullable Boolean refresh;
@@ -71,6 +75,12 @@ public class MiIoBasicChannel {
     @SerializedName("actions")
     @Expose
     private @Nullable List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
+    @SerializedName("category")
+    @Expose
+    private @Nullable String category;
+    @SerializedName("tags")
+    @Expose
+    private @Nullable LinkedHashSet<String> tags;
     @SerializedName("readmeComment")
     @Expose
     private @Nullable String readmeComment;
@@ -167,6 +177,14 @@ public class MiIoBasicChannel {
         this.unit = unit;
     }
 
+    public @Nullable StateDescriptionDTO getStateDescription() {
+        return stateDescription;
+    }
+
+    public void setStateDescription(@Nullable StateDescriptionDTO stateDescription) {
+        this.stateDescription = stateDescription;
+    }
+
     public Boolean getRefresh() {
         final @Nullable Boolean rf = refresh;
         return rf != null && rf.booleanValue() && !getProperty().isEmpty();
@@ -209,6 +227,22 @@ public class MiIoBasicChannel {
 
     public void setTransfortmation(String transfortmation) {
         this.transfortmation = transfortmation;
+    }
+
+    public @Nullable String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public @Nullable LinkedHashSet<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(LinkedHashSet<String> tags) {
+        this.tags = tags;
     }
 
     public String getReadmeComment() {

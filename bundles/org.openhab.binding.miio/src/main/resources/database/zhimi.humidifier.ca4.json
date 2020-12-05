@@ -151,10 +151,10 @@
 				"channel": "usedhours",
 				"channelType": "usedhours",
 				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"unit": "hours",
 				"actions": []
 			},
 			{
@@ -202,6 +202,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"channelType": "temperatureC",
+				"unit": "CELCIUS",
 				"type": "Number:Temperature",
 				"refresh": true,
 				"ChannelGroup": "Status",

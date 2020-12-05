@@ -17,8 +17,8 @@ import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -147,7 +147,7 @@ public class ConfigStore {
         determineHighestAssignedHueID();
 
         if (config.uuid.isEmpty()) {
-            config.uuid = UUID.randomUUID().toString();
+            config.uuid = getHueUUID();
             writeUUIDFuture = scheduler.schedule(() -> {
                 logger.info("No unique ID assigned yet. Assigning {} and restarting...", config.uuid);
                 WriteConfig.setUUID(configAdmin, config.uuid);
@@ -156,6 +156,19 @@ public class ConfigStore {
         } else {
             modified(properties);
         }
+    }
+
+    private static String getHueUUID() {
+        // Hue API example is AA:BB:CC:DD:EE:FF:00:11-XX
+        // XX is generated from the item.
+        final Random r = new Random();
+        int n = r.nextInt(255);
+        final StringBuilder uuid = new StringBuilder(String.format("%02X", n));
+        for (int i = 0; i < 7; i++) {
+            n = r.nextInt(255);
+            uuid.append(String.format(":%02X", n));
+        }
+        return uuid.toString();
     }
 
     private @Nullable InetAddress byName(@Nullable String address) {
@@ -311,7 +324,7 @@ public class ConfigStore {
             metadataRegistry.add(new Metadata(key, String.valueOf(hueId), null));
         }
 
-        return String.valueOf(hueId);
+        return String.format("%02X", hueId);
     }
 
     public boolean isReady() {

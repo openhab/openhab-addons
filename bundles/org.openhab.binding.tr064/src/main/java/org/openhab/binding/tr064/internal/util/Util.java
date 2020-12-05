@@ -14,9 +14,13 @@ package org.openhab.binding.tr064.internal.util;
 
 import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +33,10 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tr064.internal.ChannelConfigException;
 import org.openhab.binding.tr064.internal.Tr064RootHandler;
 import org.openhab.binding.tr064.internal.config.Tr064BaseThingConfiguration;
@@ -75,7 +83,7 @@ public class Util {
             return root.getValue().getChannel();
         } catch (JAXBException e) {
             LOGGER.warn("Failed to read channel definitions", e);
-            return Collections.emptyList();
+            return List.of();
         }
     }
 
@@ -274,7 +282,7 @@ public class Util {
             }
             return parameters;
         } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
-            throw new ChannelConfigException("Could not get required parameter '" + channelId
+            throw new ChannelConfigException("Could not get required parameter for channel '" + channelId
                     + "' from thing config (missing, empty or invalid)");
         }
     }
@@ -289,5 +297,33 @@ public class Util {
             // if an error occurs, returning an empty Optional is fine
         }
         return Optional.empty();
+    }
+
+    /**
+     * generic unmarshaller
+     *
+     * @param uri the uri of the XML file
+     * @param clazz the class describing the XML file
+     * @return unmarshalling result
+     */
+    public static <T> @Nullable T getAndUnmarshalXML(HttpClient httpClient, String uri, Class<T> clazz) {
+        try {
+            ContentResponse contentResponse = httpClient.newRequest(uri).timeout(2, TimeUnit.SECONDS)
+                    .method(HttpMethod.GET).send();
+            byte[] response = contentResponse.getContent();
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("XML = {}", new String(response));
+            }
+            InputStream xml = new ByteArrayInputStream(response);
+
+            JAXBContext context = JAXBContext.newInstance(clazz);
+            Unmarshaller um = context.createUnmarshaller();
+            return um.unmarshal(new StreamSource(xml), clazz).getValue();
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            LOGGER.debug("HTTP Failed to GET uri '{}': {}", uri, e.getMessage());
+        } catch (JAXBException e) {
+            LOGGER.debug("Unmarshalling failed: {}", e.getMessage());
+        }
+        return null;
     }
 }

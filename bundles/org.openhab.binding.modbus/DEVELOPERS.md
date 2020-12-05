@@ -107,7 +107,7 @@ public class MyHandler extends BaseModbusThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            ModbusReadRequestBlueprint blueprint = new ModbusReadRequestBlueprint(42,
+            ModbusReadRequestBlueprint blueprint = new ModbusReadRequestBlueprint(getSlaveId(),
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 1, 2);
 
             submitOneTimePoll(blueprint, this::readSuccessful, this::readError);
@@ -115,12 +115,10 @@ public class MyHandler extends BaseModbusThingHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-
+    public void modbusInitialize() {
         // do other Thing initialization
 
-        ModbusReadRequestBlueprint blueprint = new ModbusReadRequestBlueprint(42,
+        ModbusReadRequestBlueprint blueprint = new ModbusReadRequestBlueprint(getSlaveId(),
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 1, 2);
 
         registerRegularPoll(blueprint, 1000, 0, this::readSuccessful, this::readError);

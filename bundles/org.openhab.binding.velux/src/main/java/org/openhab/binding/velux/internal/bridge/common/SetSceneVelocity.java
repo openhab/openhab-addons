@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Guenther Schreiner - Initial contribution.
  */
+@Deprecated
 @NonNullByDefault
 public abstract class SetSceneVelocity implements BridgeCommunicationProtocol {
 

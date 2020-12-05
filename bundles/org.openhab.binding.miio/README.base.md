@@ -65,22 +65,25 @@ Optional configuration is the refresh interval and the deviceID. Note that the d
 The configuration for model is automatically retrieved from the device in normal operation. 
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
 
-| Parameter       | Type    | Required | Description                                                       |
-|-----------------|---------|----------|-------------------------------------------------------------------|
-| host            | text    | true     | Device IP address                                                 |
-| token           | text    | true     | Token for communication (in Hex)                                  |
-| deviceId        | text    | true     | Device ID number for communication (in Hex)                       |
-| model           | text    | false    | Device model string, used to determine the subtype                |
-| refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled) |
-| timeout         | integer | false    | Timeout time in milliseconds                                      |
+| Parameter       | Type    | Required | Description                                                         |
+|-----------------|---------|----------|---------------------------------------------------------------------|
+| host            | text    | true     | Device IP address                                                   |
+| token           | text    | true     | Token for communication (in Hex)                                    |
+| deviceId        | text    | true     | Device ID number for communication (in Hex)                         |
+| model           | text    | false    | Device model string, used to determine the subtype                  |
+| refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled)   |
+| timeout         | integer | false    | Timeout time in milliseconds                                        |
+| communication   | test    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
+
+Note: Suggest to use the cloud communication only for devices that require it. It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 
 ### Example Thing file
 
-`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx", model="philips.light.bulb" ]` 
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx", model="philips.light.bulb", communication="direct"  ]` 
 
 or in case of unknown models include the model information of a similar device that is supported:
 
-`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4" ]`
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4", communication="cloud"]`
 
 # Mi IO Devices
 
@@ -152,6 +155,7 @@ Alternatively as described above, double check for multiple connections for sing
 _Your device is on a different subnet?_
 This is in most cases not working. 
 Firmware of the device don't accept commands coming from other subnets.
+Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
 The most common problem is a wrong userId/password. Try to fix your userId/password.
@@ -177,9 +181,10 @@ All devices have available the following channels (marked as advanced) besides t
 | network#bssid    | String  | Network BSSID                       |
 | network#rssi     | Number  | Network RSSI                        |
 | network#life     | Number  | Network Life                        |
-| actions#commands | String  | send commands. see below            |
+| actions#commands | String  | send commands direct. see below     |
+| actions#rpc      | String  | send commands via cloud. see below  |
 
-note: the ADVANCED  `actions#commands` channel can be used to send commands that are not automated via the binding. This is available for all devices
+note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
 
 
