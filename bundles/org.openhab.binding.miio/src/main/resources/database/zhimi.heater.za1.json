@@ -25,14 +25,19 @@
 				"friendlyName": "Target Temperature",
 				"channel": "target_temperature",
 				"channelType": "temperatureC",
-				"unit": "CELCIUS",
 				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_target_temperature",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
 				]
 			},
 			{
@@ -103,10 +108,15 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"channelType": "temperatureC",
-				"unit": "CELCIUS",
 				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "use_time",
@@ -117,7 +127,8 @@
 				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			}
 		],
 		"experimental": true

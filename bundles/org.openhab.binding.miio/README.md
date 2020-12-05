@@ -1386,8 +1386,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | brush-left-time  | Number  | Brush Cleaner - Brush Left Time     |            |
 | brush-life-level1 | Number  | Brush Cleaner - Brush Life Level    |            |
 | brush-left-time1 | Number  | Brush Cleaner - Brush Left Time     |            |
-| clean-area       | Number  | Clean Record - Clean Area           |            |
-| clean-time       | Number  | Clean Record - Clean Time           |            |
+| clean-area       | Number:Area | Clean Record - Clean Area           |            |
+| clean-time       | Number:Time | Clean Record - Clean Time           |            |
 | total-clean-area | Number  | Clean Record - Total Clean Area     |            |
 | total-clean-time | Number  | Clean Record - Total Clean Time     |            |
 | total-clean-count | Number  | Clean Record - Total Clean Count    |            |
@@ -4446,8 +4446,8 @@ Number brush-life-level "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="
 Number brush-left-time "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
 Number brush-life-level1 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
 Number brush-left-time1 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
-Number clean-area "Clean Record - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
-Number clean-time "Clean Record - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
+Number:Area clean-area "Clean Record - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
+Number:Time clean-time "Clean Record - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
 Number total-clean-area "Clean Record - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
 Number total-clean-time "Clean Record - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
 Number total-clean-count "Clean Record - Total Clean Count" (G_vacuum) {channel="miio:basic:vacuum:total-clean-count"}
