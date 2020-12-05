@@ -179,7 +179,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         if (cloudConnector.isConnected()) {
             List<CloudDeviceDTO> dv = cloudConnector.getDevicesList();
             for (CloudDeviceDTO device : dv) {
-                String id = String.format("%08X", Long.parseUnsignedLong(device.getDid()));
+                String id = Utils.toHEX(device.getDid());
                 if (cloudDiscoveryMode.contentEquals(SUPPORTED)) {
                     if (MiIoDevices.getType(device.getModel()).getThingType().equals(THING_TYPE_UNSUPPORTED)) {
                         logger.warn("Discovered from cloud, but ignored because not supported: {} {}", id, device);
@@ -206,7 +206,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         Message msg = new Message(response);
         String token = Utils.getHex(msg.getChecksum());
         String id = Utils.getHex(msg.getDeviceId());
-        String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+        String label = "Xiaomi Mi Device " + id + " (" + Utils.fromHEX(id) + ")";
         String country = "";
         boolean isOnline = false;
         if (ip.equals(cloudDevices.get(id))) {
@@ -219,7 +219,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
             if (cloudInfo != null) {
                 logger.debug("Cloud Info: {}", cloudInfo);
                 token = cloudInfo.getToken();
-                label = cloudInfo.getName() + " " + id + " (" + Long.parseUnsignedLong(id, 16) + ")";
+                label = cloudInfo.getName() + " " + id + " (" + Utils.fromHEX(id) + ")";
                 country = cloudInfo.getServer();
                 isOnline = cloudInfo.getIsOnline();
             }
@@ -232,14 +232,14 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
                 .withProperty(PROPERTY_DID, id);
         if (IGNORED_TOKENS.contains(token)) {
-            logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Long.parseUnsignedLong(id, 16), ip, uid);
+            logger.debug("Discovered Mi Device {} ({}) at {} as {}", id, Utils.fromHEX(id), ip, uid);
             logger.debug(
                     "No token discovered for device {}. For options how to get the token, check the binding readme.",
                     id);
             dr = dr.withRepresentationProperty(PROPERTY_DID).withLabel(label);
         } else {
-            logger.debug("Discovered Mi Device {} ({}) at {} as {} with token {}", id, Long.parseUnsignedLong(id, 16),
-                    ip, uid, token);
+            logger.debug("Discovered Mi Device {} ({}) at {} as {} with token {}", id, Utils.fromHEX(id), ip, uid,
+                    token);
             dr = dr.withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(PROPERTY_DID)
                     .withLabel(label + " with token");
         }
