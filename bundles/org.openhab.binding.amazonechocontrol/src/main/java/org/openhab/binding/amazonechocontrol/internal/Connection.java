@@ -1200,18 +1200,18 @@ public class Connection {
                 if (errors != null && errors.isJsonArray()) {
                     JsonArray errorList = errors.getAsJsonArray();
                     if (errorList.size() > 0) {
-                        logger.warn("Smart home device command failed.");
-                        logger.warn("Request:");
-                        logger.warn("{}", requestBody);
-                        logger.warn("Answer:");
+                        logger.info("Smart home device command failed.");
+                        logger.info("Request:");
+                        logger.info("{}", requestBody);
+                        logger.info("Answer:");
                         for (JsonElement error : errorList) {
-                            logger.warn("{}", error.toString());
+                            logger.info("{}", error.toString());
                         }
                     }
                 }
             }
         } catch (URISyntaxException e) {
-            logger.warn("Wrong url {}", url, e);
+            logger.info("Wrong url {}", url, e);
         }
     }
 
