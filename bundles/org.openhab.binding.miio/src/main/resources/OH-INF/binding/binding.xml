@@ -21,6 +21,18 @@
 				binding readme for country to server mapping</description>
 			<required>false</required>
 		</parameter>
+		<parameter name="cloudDiscoveryMode" type="text">
+			<default>disabled</default>
+			<label>Cloud Discovery Mode</label>
+			<description>Allow for discovery via the cloud. This may be used for devices that are not on the same network as
+				OpenHAB server</description>
+			<options>
+				<option value="disabled">Local discovery only (Default)</option>
+				<option value="supportedOnly">Discover online supported devices from Xiaomi cloud</option>
+				<option value="all">Discover all online devices from Xiaomi cloud</option>
+			</options>
+			<required>false</required>
+		</parameter>
 	</config-description>
 
 </binding:binding>
