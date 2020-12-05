@@ -96,9 +96,12 @@ This is an optional parameter and multiple values are allowed.
 | `tamEnable`                | `Switch`                  |          | Enable/Disable the answering machine with the given index.     |
 | `tamNewMessages`           | `Number`                  |          | The number of new messages of the given answering machine.     |
 | `uptime`                   | `Number:Time`             |          | Uptime                                                         |
+| `pppUptime`                | `Number:Time`             |          | Uptime (if using PPP)                                          |
 | `wanAccessType`            | `String`                  |     x    | Access Type                                                    |
 | `wanConnectionStatus`      | `String`                  |          | Connection Status                                              |
+| `wanPppConnectionStatus`   | `String`                  |          | Connection Status (if using PPP)                               |
 | `wanIpAddress`             | `String`                  |     x    | WAN IP Address                                                 |
+| `wanPppIpAddress`          | `String`                  |     x    | WAN IP Address (if using PPP)                                  |
 | `wanMaxDownstreamRate`     | `Number:DataTransferRate` |     x    | Max. Downstream Rate                                           |
 | `wanMaxUpstreamRate`       | `Number:DataTransferRate` |     x    | Max. Upstream Rate                                             |
 | `wanPhysicalLinkStatus`    | `String`                  |     x    | Link Status                                                    |
