@@ -49,9 +49,15 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.CallbackQuery;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.PhotoSize;
 import com.pengrad.telegrambot.model.Update;
@@ -70,6 +76,7 @@ import okhttp3.OkHttpClient;
  * @author Jens Runge - Initial contribution
  * @author Alexander Krasnogolowy - using Telegram library from pengrad
  * @author Jan N. Klug - handle file attachments
+ * @author Michael Murton - add trigger channel
  */
 @NonNullByDefault
 public class TelegramHandler extends BaseThingHandler {
@@ -105,6 +112,9 @@ public class TelegramHandler extends BaseThingHandler {
             return Objects.equals(chatId, other.chatId) && Objects.equals(replyId, other.replyId);
         }
     }
+
+    private static Gson gson = new Gson();
+    private static JsonParser json = new JsonParser();
 
     private final List<Long> authorizedSenderChatId = new ArrayList<>();
     private final List<Long> receiverChatId = new ArrayList<>();
@@ -267,6 +277,7 @@ public class TelegramHandler extends BaseThingHandler {
             String replyId = null;
 
             Message message = update.message();
+            CallbackQuery callbackQuery = update.callbackQuery();
 
             if (message != null) {
                 chatId = message.chat().id();
@@ -277,6 +288,99 @@ public class TelegramHandler extends BaseThingHandler {
                     continue; // this is very important regarding security to avoid commands from an unknown
                     // chat
                 }
+
+                // build and publish messageEvent trigger channel payload
+                JsonObject messageRaw = json.parse(gson.toJson(message)).getAsJsonObject();
+                JsonObject messagePayload = new JsonObject();
+                messagePayload.addProperty("message_id", message.messageId());
+                messagePayload.addProperty("from",
+                        String.join(" ", new String[] { message.from().firstName(), message.from().lastName() }));
+                messagePayload.addProperty("chat_id", message.chat().id());
+                if (messageRaw.has("text")) {
+                    messagePayload.addProperty("text", message.text());
+                }
+                if (messageRaw.has("animation")) {
+                    JsonObject animationPayload = messageRaw.getAsJsonObject("animation");
+                    String animationURL = getFullDownloadUrl(
+                            animationPayload.getAsJsonPrimitive("file_id").getAsString());
+                    animationPayload.addProperty("file_url", animationURL);
+                    messagePayload.addProperty("animation_url", animationURL);
+                    if (animationPayload.has("thumb")) {
+                        animationPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
+                                animationPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
+                    }
+                }
+                if (messageRaw.has("audio")) {
+                    JsonObject audioPayload = messageRaw.getAsJsonObject("audio");
+                    String audioURL = getFullDownloadUrl(audioPayload.getAsJsonPrimitive("file_id").getAsString());
+                    audioPayload.addProperty("file_url", audioURL);
+                    messagePayload.addProperty("audio_url", audioURL);
+                    if (audioPayload.has("thumb")) {
+                        audioPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
+                                audioPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
+                    }
+                }
+                if (messageRaw.has("document")) {
+                    JsonObject documentPayload = messageRaw.getAsJsonObject("document");
+                    String documentURL = getFullDownloadUrl(
+                            documentPayload.getAsJsonPrimitive("file_id").getAsString());
+                    documentPayload.addProperty("file_url", documentURL);
+                    messagePayload.addProperty("document_url", documentURL);
+                    if (documentPayload.has("thumb")) {
+                        documentPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
+                                documentPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
+                    }
+                }
+                if (messageRaw.has("photo")) {
+                    JsonArray photoURLArray = new JsonArray();
+                    for (JsonElement photoPayload : messageRaw.getAsJsonArray("photo")) {
+                        JsonObject photoPayloadObject = photoPayload.getAsJsonObject();
+                        String photoURL = getFullDownloadUrl(
+                                photoPayloadObject.getAsJsonPrimitive("file_id").getAsString());
+                        photoPayloadObject.addProperty("file_url", photoURL);
+                        photoURLArray.add(photoURL);
+                    }
+                    messagePayload.add("photo_url", photoURLArray);
+                }
+                if (messageRaw.has("sticker")) {
+                    JsonObject stickerPayload = messageRaw.getAsJsonObject("sticker");
+                    String stickerURL = getFullDownloadUrl(stickerPayload.getAsJsonPrimitive("file_id").getAsString());
+                    stickerPayload.addProperty("file_url", stickerURL);
+                    messagePayload.addProperty("sticker_url", stickerURL);
+                    if (stickerPayload.has("thumb")) {
+                        stickerPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
+                                stickerPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
+                    }
+                }
+                if (messageRaw.has("video")) {
+                    JsonObject videoPayload = messageRaw.getAsJsonObject("video");
+                    String videoURL = getFullDownloadUrl(videoPayload.getAsJsonPrimitive("file_id").getAsString());
+                    videoPayload.addProperty("file_url", videoURL);
+                    messagePayload.addProperty("video_url", videoURL);
+                    if (videoPayload.has("thumb")) {
+                        videoPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
+                                videoPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
+                    }
+                }
+                if (messageRaw.has("video_note")) {
+                    JsonObject videoNotePayload = messageRaw.getAsJsonObject("animation");
+                    String videoNoteURL = getFullDownloadUrl(
+                            videoNotePayload.getAsJsonPrimitive("file_id").getAsString());
+                    videoNotePayload.addProperty("file_url", videoNoteURL);
+                    messagePayload.addProperty("video_note_url", videoNoteURL);
+                    if (videoNotePayload.has("thumb")) {
+                        videoNotePayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
+                                videoNotePayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
+                    }
+                }
+                if (messageRaw.has("voice")) {
+                    JsonObject voicePayload = messageRaw.getAsJsonObject("voice");
+                    String voiceURL = getFullDownloadUrl(voicePayload.getAsJsonPrimitive("file_id").getAsString());
+                    voicePayload.addProperty("file_url", voiceURL);
+                    messagePayload.addProperty("voice_url", voiceURL);
+                }
+                triggerEvent(MESSAGEEVENT, messagePayload.toString());
+                triggerEvent(MESSAGERAWEVENT, messageRaw.toString());
 
                 // process content
                 if (message.audio() != null) {
@@ -300,28 +404,44 @@ public class TelegramHandler extends BaseThingHandler {
                 }
 
                 // process metadata
-                lastMessageDate = message.date();
-                lastMessageFirstName = message.from().firstName();
-                lastMessageLastName = message.from().lastName();
-                lastMessageUsername = message.from().username();
-            } else if (update.callbackQuery() != null && update.callbackQuery().message() != null
-                    && update.callbackQuery().message().text() != null) {
-                String[] callbackData = update.callbackQuery().data().split(" ", 2);
+                if (lastMessageURL != null || lastMessageText != null) {
+                    lastMessageDate = message.date();
+                    lastMessageFirstName = message.from().firstName();
+                    lastMessageLastName = message.from().lastName();
+                    lastMessageUsername = message.from().username();
+                }
+            } else if (callbackQuery != null && callbackQuery.message() != null
+                    && callbackQuery.message().text() != null) {
+                String[] callbackData = callbackQuery.data().split(" ", 2);
 
                 if (callbackData.length == 2) {
                     replyId = callbackData[0];
                     lastMessageText = callbackData[1];
-                    lastMessageDate = update.callbackQuery().message().date();
-                    lastMessageFirstName = update.callbackQuery().from().firstName();
-                    lastMessageLastName = update.callbackQuery().from().lastName();
-                    lastMessageUsername = update.callbackQuery().from().username();
-                    chatId = update.callbackQuery().message().chat().id();
-                    replyIdToCallbackId.put(new ReplyKey(chatId, replyId), update.callbackQuery().id());
-                    logger.debug("Received callbackId {} for chatId {} and replyId {}", update.callbackQuery().id(),
-                            chatId, replyId);
+                    lastMessageDate = callbackQuery.message().date();
+                    lastMessageFirstName = callbackQuery.from().firstName();
+                    lastMessageLastName = callbackQuery.from().lastName();
+                    lastMessageUsername = callbackQuery.from().username();
+                    chatId = callbackQuery.message().chat().id();
+                    replyIdToCallbackId.put(new ReplyKey(chatId, replyId), callbackQuery.id());
+
+                    // build and publish callbackEvent trigger channel payload
+                    JsonObject callbackRaw = json.parse(gson.toJson(callbackQuery)).getAsJsonObject();
+                    JsonObject callbackPayload = new JsonObject();
+                    callbackPayload.addProperty("message_id", callbackQuery.message().messageId());
+                    callbackPayload.addProperty("from", String.join(" ",
+                            new String[] { callbackQuery.from().firstName(), callbackQuery.from().lastName() }));
+                    callbackPayload.addProperty("chat_id", callbackQuery.message().chat().id());
+                    callbackPayload.addProperty("callback_id", callbackQuery.id());
+                    callbackPayload.addProperty("reply_id", callbackQuery.data().split(" ", 2)[0]);
+                    callbackPayload.addProperty("text", callbackQuery.data().split(" ", 2)[1]);
+                    triggerEvent(CALLBACKEVENT, callbackPayload.toString());
+                    triggerEvent(CALLBACKRAWEVENT, callbackRaw.toString());
+
+                    logger.debug("Received callbackId {} for chatId {} and replyId {}", callbackQuery.id(), chatId,
+                            replyId);
                 } else {
                     logger.warn("The received callback query {} has not the right format (must be seperated by spaces)",
-                            update.callbackQuery().data());
+                            callbackQuery.data());
                 }
             }
             updateChannel(CHATID, chatId != null ? new StringType(chatId.toString()) : UnDefType.NULL);
@@ -374,6 +494,10 @@ public class TelegramHandler extends BaseThingHandler {
 
     public void updateChannel(String channelName, State state) {
         updateState(new ChannelUID(getThing().getUID(), channelName), state);
+    }
+
+    public void triggerEvent(String channelName, String payload) {
+        triggerChannel(new ChannelUID(getThing().getUID(), channelName), payload);
     }
 
     @Override
