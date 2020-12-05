@@ -36,7 +36,7 @@ public class TypeMapping {
      * @return the associated item type
      */
     public static ItemType toItemType(Property propertyMetadata) {
-        String type = "String";
+        String type = "string";
         @Nullable
         String tag = null;
 
@@ -48,46 +48,46 @@ public class TypeMapping {
             case "MotionProperty":
             case "OnOffProperty":
             case "PushedProperty":
-                type = "Switch";
+                type = "switch";
                 tag = "Switchable";
                 break;
             case "CurrentProperty":
             case "FrequencyProperty":
             case "InstantaneousPowerProperty":
             case "VoltageProperty":
-                type = "Number";
+                type = "number";
                 break;
             case "HeatingCoolingProperty":
             case "ImageProperty":
             case "VideoProperty":
-                type = "String";
+                type = "string";
                 break;
             case "BrightnessProperty":
             case "HumidityProperty":
-                type = "Dimmer";
+                type = "dimmer";
                 break;
             case "ColorModeProperty":
-                type = "String";
-                tag = "Lighting";
+                type = "string";
+                tag = "lighting";
                 break;
             case "ColorProperty":
-                type = "Color";
+                type = "color";
                 tag = "Lighting";
                 break;
             case "ColorTemperatureProperty":
-                type = "Dimmer";
+                type = "dimmer";
                 tag = "Lighting";
                 break;
             case "OpenProperty":
-                type = "Contact";
+                type = "contact";
                 tag = "ContactSensor";
                 break;
             case "TargetTemperatureProperty":
-                type = "Number";
+                type = "number";
                 tag = "TargetTemperature";
                 break;
             case "TemperatureProperty":
-                type = "Number";
+                type = "number";
                 tag = "CurrentTemperature";
                 break;
             case "ThermostatModeProperty":
@@ -95,23 +95,23 @@ public class TypeMapping {
             case "LevelProperty":
                 if ((propertyMetadata.unit != null)
                         && propertyMetadata.unit.toLowerCase(Locale.ENGLISH).equals("percent")) {
-                    type = "Dimmer";
+                    type = "dimmer";
                 } else {
-                    type = "Number";
+                    type = "number";
                 }
                 break;
             default:
                 switch (propertyMetadata.type.toLowerCase(Locale.ENGLISH)) {
                     case "boolean":
-                        type = "Switch";
+                        type = "switch";
                         tag = "Switchable";
                         break;
                     case "integer":
                     case "number":
-                        type = "Number";
+                        type = "number";
                         break;
                     default:
-                        type = "String";
+                        type = "string";
                         break;
                 }
                 break;
