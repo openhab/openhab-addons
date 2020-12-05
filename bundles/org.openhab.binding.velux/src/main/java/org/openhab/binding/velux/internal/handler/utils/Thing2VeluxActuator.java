@@ -49,13 +49,11 @@ public class Thing2VeluxActuator {
     private boolean isInverted = false;
     private VeluxProduct thisProduct = VeluxProduct.UNKNOWN;
 
-    private static final String bridgeThingTypeUId = VeluxBindingConstants.THING_TYPE_BRIDGE.toString();
-
     // Private
 
     private void mapThing2Velux() {
-        if (channelUID.toString().startsWith(bridgeThingTypeUId)) {
-            logger.trace("mapThing2Velux(): {} is on a bridge thing, no mapping, exiting.", channelUID);
+        if (channelUID.toString().startsWith(VeluxBindingConstants.BRIDGE_THING_TYPE_UID)) {
+            logger.trace("mapThing2Velux(): channel {} is on a Bridge Thing, exiting.", channelUID);
             return;
         }
 
