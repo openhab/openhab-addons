@@ -34,8 +34,7 @@ public class AccessTokenServiceImpl implements AccessTokenInitializableService {
     private final Logger logger = LoggerFactory.getLogger(AccessTokenServiceImpl.class);
 
     private final OAuthFactory oAuthFactory;
-    @Nullable
-    private OAuthClientService oAuthService;
+    private @Nullable OAuthClientService oAuthService;
 
     public AccessTokenServiceImpl(OAuthFactory oAuthFactory) {
         this.oAuthFactory = oAuthFactory;
