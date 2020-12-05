@@ -95,9 +95,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            if (initFinished) {
-                updateStates();
-            }
+            updateStates();
         }
     }
 
@@ -121,14 +119,13 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
         }
         configuration = config;
 
+        updateChannelSet(config);
+        initFinished = true;
         if (iCalendarBridge.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
-        } else {
-            updateChannelSet(config);
-            updateStates();
         }
-        initFinished = true;
+        updateStates();
     }
 
     @Override
@@ -257,6 +254,10 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
      * Updates all states and channels. Reschedules an update if no error occurs.
      */
     private void updateStates() {
+        if (!initFinished) {
+            logger.debug("Ignoring call for updating states as this instance is not initialized yet.");
+            return;
+        }
         final Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
             logger.debug("Bridge not instantiated!");

@@ -183,6 +183,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 ThingHandler handler = childThing.getHandler();
                 if (handler instanceof CalendarUpdateListener) {
                     try {
+                        logger.trace("Notifying {} about fresh calendar.", handler.getThing().getUID());
                         ((CalendarUpdateListener) handler).onCalendarUpdated();
                     } catch (Exception e) {
                         logger.trace("The update of a child handler failed. Ignoring.", e);
