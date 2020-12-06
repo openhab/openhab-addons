@@ -69,7 +69,7 @@ public class ConsumedThingImpl implements ConsumedThing {
      * @throws IOException if the WebThing can not be connected
      */
     ConsumedThingImpl(URI webthingUrl, DisconnectionListener disconnectionListener, HttpClient httpClient,
-                      WebSocketConnectionFactory webSocketConnectionFactory) throws IOException {
+            WebSocketConnectionFactory webSocketConnectionFactory) throws IOException {
         this(webthingUrl, disconnectionListener, httpClient, webSocketConnectionFactory, DEFAULT_PING_PERIOD);
     }
 
@@ -84,7 +84,7 @@ public class ConsumedThingImpl implements ConsumedThing {
      * @throws IOException if the WebThing can not be connected
      */
     ConsumedThingImpl(URI webthingUrl, DisconnectionListener disconnectionListener, HttpClient httpClient,
-                      WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod) throws IOException {
+            WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod) throws IOException {
         this.webThingURI = webthingUrl;
         this.httpClient = httpClient;
         this.disconnectionListener = disconnectionListener;
