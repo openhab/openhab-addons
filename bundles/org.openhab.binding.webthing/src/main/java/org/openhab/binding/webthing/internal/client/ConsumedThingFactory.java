@@ -14,6 +14,7 @@ package org.openhab.binding.webthing.internal.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -28,11 +29,11 @@ public interface ConsumedThingFactory {
     /**
      *
      * @param webThingURI the identifier of a WebThing resource
-     * @param disconnectionListener the listener that will be called, if the connection is disconnected
+     * @param errorHandler the error handler
      * @return the newly created WebThing
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThing create(URI webThingURI, DisconnectionListener disconnectionListener) throws IOException;
+    ConsumedThing create(URI webThingURI, Consumer<String> errorHandler) throws IOException;
 
     /**
      * @return the default instance of the factory

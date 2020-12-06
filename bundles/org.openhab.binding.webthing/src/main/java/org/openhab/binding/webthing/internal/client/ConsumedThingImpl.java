@@ -20,6 +20,8 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,21 +43,21 @@ public class ConsumedThingImpl implements ConsumedThing {
     private static final Duration DEFAULT_PING_PERIOD = Duration.ofSeconds(90);
     private final Logger logger = LoggerFactory.getLogger(ConsumedThingImpl.class);
     private final URI webThingURI;
-    private final DisconnectionListener disconnectionListener;
+    private final Consumer<String> errorHandler;
     private final WebThingDescription description;
     private final HttpClient httpClient;
     private final WebSocketConnection websocketDownstream;
+    private final AtomicBoolean isOpen = new AtomicBoolean(true);
 
     /**
      * constructor
      *
      * @param webThingURI the identifier of a WebThing resource
-     * @param disconnectionListener the connection listener that will be called, if th econnection is disconnected
+     * @param errorHandler the error handler
      * @throws IOException it the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webThingURI, DisconnectionListener disconnectionListener) throws IOException {
-        this(webThingURI, disconnectionListener,
-                HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build(),
+    ConsumedThingImpl(URI webThingURI, Consumer<String> errorHandler) throws IOException {
+        this(webThingURI, errorHandler, HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build(),
                 WebSocketConnectionFactory.instance());
     }
 
@@ -63,36 +65,36 @@ public class ConsumedThingImpl implements ConsumedThing {
      * constructor
      *
      * @param webthingUrl the identifier of a WebThing resource
-     * @param disconnectionListener the connection listener that will be called, if th econnection is disconnected
+     * @param errorHandler the error handler
      * @param httpClient the http client to use
      * @param webSocketConnectionFactory the Websocket connectino fctory to be used
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webthingUrl, DisconnectionListener disconnectionListener, HttpClient httpClient,
+    ConsumedThingImpl(URI webthingUrl, Consumer<String> errorHandler, HttpClient httpClient,
             WebSocketConnectionFactory webSocketConnectionFactory) throws IOException {
-        this(webthingUrl, disconnectionListener, httpClient, webSocketConnectionFactory, DEFAULT_PING_PERIOD);
+        this(webthingUrl, errorHandler, httpClient, webSocketConnectionFactory, DEFAULT_PING_PERIOD);
     }
 
     /**
      * constructor
      *
      * @param webthingUrl the identifier of a WebThing resource
-     * @param disconnectionListener the connection listener that will be called, if th econnection is disconnected
+     * @param errorHandler the error handler
      * @param httpClient the http client to use
      * @param webSocketConnectionFactory the Websocket connectino fctory to be used
      * @param pingPeriod the ping period tothe the healthiness of the connection
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webthingUrl, DisconnectionListener disconnectionListener, HttpClient httpClient,
+    ConsumedThingImpl(URI webthingUrl, Consumer<String> errorHandler, HttpClient httpClient,
             WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod) throws IOException {
         this.webThingURI = webthingUrl;
         this.httpClient = httpClient;
-        this.disconnectionListener = disconnectionListener;
+        this.errorHandler = errorHandler;
         this.description = new DescriptionLoader(httpClient).loadWebthingDescription(webThingURI,
                 Duration.ofSeconds(20));
 
         // opens a websocket downstream to be notified if a property value will be changed
-        this.websocketDownstream = webSocketConnectionFactory.create(this.getEventStreamUri(), disconnectionListener,
+        this.websocketDownstream = webSocketConnectionFactory.create(this.getEventStreamUri(), this::onError,
                 pingPeriod);
     }
 
@@ -120,13 +122,21 @@ public class ConsumedThingImpl implements ConsumedThing {
                 }
             }
         }
-        throw new RuntimeException("webthing resource " + webThingURI
-                + " does not support websocket uri. WebThing description: " + this.description);
+        throw new RuntimeException("webthing " + webThingURI + " does not support websocket uri. WebThing description: "
+                + this.description);
     }
 
     @Override
-    public void destroy() {
+    public void close() {
+        isOpen.set(false);
         this.websocketDownstream.close();
+    }
+
+    void onError(String reason) {
+        if (isOpen.get()) {
+            errorHandler.accept(reason);
+        }
+        close();
     }
 
     @Override
@@ -151,7 +161,7 @@ public class ConsumedThingImpl implements ConsumedThing {
             var request = HttpRequest.newBuilder().timeout(Duration.ofSeconds(30)).GET().uri(propertyUri).build();
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                disconnectionListener.onDisconnected("WebThing resource " + webThingURI + " disconnected");
+                onError("WebThing resource " + webThingURI + " disconnected");
                 throw new IOException("Got error response: " + response.body());
             }
             var properties = new Gson().fromJson(response.body(), Map.class);
@@ -163,7 +173,7 @@ public class ConsumedThingImpl implements ConsumedThing {
                         "response does not include " + propertyName + "(" + propertyUri + "): " + response.body());
             }
         } catch (InterruptedException | IOException e) {
-            disconnectionListener.onDisconnected("WebThing resource " + webThingURI + " disconnected");
+            onError("WebThing resource " + webThingURI + " disconnected");
             throw new RuntimeException("could not read " + propertyName + " (" + propertyUri + "). " + e.getMessage());
         }
     }
@@ -187,7 +197,7 @@ public class ConsumedThingImpl implements ConsumedThing {
                 }
             }
         } catch (InterruptedException | IOException e) {
-            disconnectionListener.onDisconnected("WebThing resource " + webThingURI + " disconnected");
+            onError("WebThing resource " + webThingURI + " disconnected");
             throw new RuntimeException("could not write " + propertyName + " (" + propertyUri + ") with " + newValue
                     + " " + e.getMessage());
         }
