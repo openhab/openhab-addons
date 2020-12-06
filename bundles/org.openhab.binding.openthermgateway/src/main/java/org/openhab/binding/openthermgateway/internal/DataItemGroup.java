@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 
 /**
  * The {@link DataItemGroup} represents a list of all possible DataItem messages within the OpenTherm specification.
@@ -113,13 +114,13 @@ public class DataItemGroup {
                 new DataItem(12, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "0x0c:l") });
         g.put(13, new DataItem[] { new DataItem(13, Msg.READ, ByteType.HIGHBYTE, DataType.UINT8, 0, "0x0d:h"),
                 new DataItem(13, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "0x0d:l") });
-        g.put(14, new DataItem[] { new DataItem(14, Msg.READ, ByteType.LOWBYTE, DataType.FLOAT, 0, "maxrelmdulevel") });
+        g.put(14, new DataItem[] { new DataItem(14, Msg.READ, ByteType.LOWBYTE, DataType.FLOAT, 0, "maxrelmdulevel", SmartHomeUnits.PERCENT) });
         g.put(15, new DataItem[] { new DataItem(15, Msg.READ, ByteType.HIGHBYTE, DataType.UINT8, 0, "maxcapkw"),
                 new DataItem(15, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "maxcapprc") });
         g.put(16, new DataItem[] {
                 new DataItem(16, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "roomsetpoint", SIUnits.CELSIUS) });
-        g.put(17, new DataItem[] { new DataItem(17, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "modulevel") });
-        g.put(18, new DataItem[] { new DataItem(18, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "waterpressure") });
+        g.put(17, new DataItem[] { new DataItem(17, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "modulevel", SmartHomeUnits.PERCENT) });
+        g.put(18, new DataItem[] { new DataItem(18, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "waterpressure", SmartHomeUnits.BAR) });
         g.put(19, new DataItem[] { new DataItem(19, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "dhwflow") });
         g.put(20, new DataItem[] { new DataItem(20, Msg.READWRITE, ByteType.BOTH, DataType.DOWTOD, 0, "dowtod") });
         g.put(21, new DataItem[] { new DataItem(21, Msg.READWRITE, ByteType.HIGHBYTE, DataType.UINT8, 0, "month"),
