@@ -57,5 +57,5 @@ public interface ConsumedThing {
     /**
      * closes the connection
      */
-    void destroy();
+    void close();
 }
