@@ -28,12 +28,11 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
-
-import tec.uom.se.unit.MetricPrefix;
 
 /**
  * The {@link TeslaChannelSelectorProxy} class is a helper class to instantiate
