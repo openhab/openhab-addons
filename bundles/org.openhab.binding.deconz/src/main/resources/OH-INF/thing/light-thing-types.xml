@@ -74,9 +74,6 @@
 		<label>Color-Temperature Light</label>
 		<description>A dimmable light with adjustable color temperature.</description>
 		<category>Lightbulb</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
 			<channel typeId="ct" id="color_temperature"/>
@@ -94,9 +91,6 @@
 		<label>Color Light</label>
 		<description>A dimmable light with adjustable color.</description>
 		<category>Lightbulb</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 		<channels>
 			<channel typeId="color" id="color"/>
 		</channels>
