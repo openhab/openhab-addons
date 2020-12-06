@@ -28,11 +28,11 @@ public interface ConsumedThingFactory {
     /**
      *
      * @param webThingURI the identifier of a WebThing resource
-     * @param connectionListener the connection listener to observe the connection state of the WebThing connection
+     * @param disconnectionListener the listener that will be called, if the connection is disconnected
      * @return the newly created WebThing
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThing create(URI webThingURI, ConnectionListener connectionListener) throws IOException;
+    ConsumedThing create(URI webThingURI, DisconnectionListener disconnectionListener) throws IOException;
 
     /**
      * @return the default instance of the factory

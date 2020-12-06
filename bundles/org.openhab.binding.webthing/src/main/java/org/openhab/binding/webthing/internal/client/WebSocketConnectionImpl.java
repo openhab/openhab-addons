@@ -38,7 +38,7 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     private final static PropertyChangedListener EMPTY_PROPERTY_CHANGED_LISTENER = new PropertyChangedListener() {
     };
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnectionImpl.class);
-    private final ConnectionListener connectionListener;
+    private final DisconnectionListener disconnectionListener;
     private final Map<String, PropertyChangedListener> propertyChangedListeners = new HashMap<>();
     private final AtomicReference<Instant> lastTimeReceived = new AtomicReference<>(Instant.now());
     private final AtomicReference<String> receivedTextbufferRef = new AtomicReference<>("");
@@ -47,11 +47,11 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     /**
      * constructor
      *
-     * @param connectionListener the connection listener to be notified
+     * @param disconnectionListener the connection listener to be notified
      * @param pingPeriod the period pings should be sent
      */
-    WebSocketConnectionImpl(ConnectionListener connectionListener, Duration pingPeriod) {
-        this.connectionListener = connectionListener;
+    WebSocketConnectionImpl(DisconnectionListener disconnectionListener, Duration pingPeriod) {
+        this.disconnectionListener = disconnectionListener;
         new ConnectionWatchDog(pingPeriod).start();
     }
 
@@ -63,7 +63,6 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     @Override
     public void onOpen(WebSocket webSocket) {
         webSocketRef.set(webSocket); // save websocket ref to be able to send ping
-        connectionListener.onConnected();
         WebSocket.Listener.super.onOpen(webSocket);
     }
 
@@ -120,7 +119,7 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
             var webSocket = webSocketRef.getAndSet(null);
             if (webSocket != null) {
                 try {
-                    connectionListener.onDisconnected(reason);
+                    disconnectionListener.onDisconnected(reason);
                 } catch (Exception e) {
                     logger.warn("error occurred by performing on disconnect", e);
                 }
