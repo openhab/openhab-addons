@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
-public class WebThingHandler extends BaseThingHandler implements ChannelHandler, DisconnectionListener {
+public class WebThingHandler extends BaseThingHandler implements ChannelHandler {
     private static final Duration RECONNECT_PERIOD = Duration.ofHours(23);
     private static final Duration HEALTH_CHECK_PERIOD = Duration.ofSeconds(80);
     private static final ItemChangedListener EMPTY_ITEM_CHANGED_LISTENER = (channelUID, stateCommand) -> {
@@ -90,7 +90,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
                 // starting alive watchdog that checks the healthiness of the WebThing connection, periodically
                 var aliveWatchdog = new AliveWatchdog();
                 aliveWatchdog.start();
-                aliveWatchdogRef.getAndSet(Optional.of(aliveWatchdog)).ifPresent(AliveWatchdog::destroy);
+                aliveWatchdogRef.getAndSet(Optional.of(aliveWatchdog)).ifPresent(AliveWatchdog::close);
             } else {
                 logger.warn("could not initialize WebThing. URI is not set or invalid. {}",
                         getConfigAs(WebThingConfiguration.class).webThingURI);
@@ -104,8 +104,8 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
             isActivated.set(false); // set to false to avoid reconnecting
 
             // terminate WebThing connection as well as the alive watchdog
-            webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::destroy);
-            aliveWatchdogRef.getAndSet(Optional.empty()).ifPresent(AliveWatchdog::destroy);
+            webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::close);
+            aliveWatchdogRef.getAndSet(Optional.empty()).ifPresent(AliveWatchdog::close);
         } finally {
             super.dispose();
         }
@@ -115,8 +115,8 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
         if (isActivated.get()) { // will try reconnect only, if activated
             try {
                 // create the client-side WebThing representation
-                var webThing = ConsumedThingFactory.instance().create(webThingURI, this);
-                this.webThingConnectionRef.getAndSet(Optional.of(webThing)).ifPresent(ConsumedThing::destroy);
+                var webThing = ConsumedThingFactory.instance().create(webThingURI, this::onError);
+                this.webThingConnectionRef.getAndSet(Optional.of(webThing)).ifPresent(ConsumedThing::close);
 
                 // update the Thing structure based on the WebThing description
                 thingStructureChanged(webThing);
@@ -128,10 +128,25 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
                 updateStatus(ThingStatus.ONLINE);
                 return true;
             } catch (Exception e) {
-                onDisconnected("connecting " + webThingURI + " failed (" + e.getMessage() + ")");
+                var msg = e.getMessage();
+                if (msg == null) {
+                    msg = "";
+                }
+                logger.info("connecting {}  failed ({})", webThingURI, msg);
+                onError(msg);
             }
         }
         return false;
+    }
+
+    public void onError(String reason) {
+        var wasConnectedBefore = isConnected();
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::close);
+        if (wasConnectedBefore) {
+            logger.info("WebThing {} disconnected. {}. Try reconnect (each {} sec)", reason, getWebThingLabel(),
+                    HEALTH_CHECK_PERIOD.getSeconds());
+        }
     }
 
     private Optional<URI> getWebThingURI() {
@@ -263,28 +278,6 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     //
     /////////////
 
-    /////////////
-    // DisconnectionListener methods
-
-    @Override
-    public void onDisconnected(String reason) {
-        var wasConnectedBefore = isConnected();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-
-        if (wasConnectedBefore) {
-            var optionalWebThingURI = getWebThingURI();
-            if (optionalWebThingURI.isPresent()) {
-                logger.info("WebThing {} disconnected. {}. Try reconnecting", reason, getWebThingLabel());
-                tryReconnect(optionalWebThingURI.get());
-            } else {
-                logger.info("WebThing {} disconnected. {}. Try reconnect (each {} sec)", reason, getWebThingLabel(),
-                        HEALTH_CHECK_PERIOD.getSeconds());
-            }
-        }
-    }
-    //
-    /////////////
-
     private final class AliveWatchdog extends Thread {
         private final AtomicBoolean isRunning = new AtomicBoolean(true);
 
@@ -292,7 +285,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
             setDaemon(true);
         }
 
-        public void destroy() {
+        public void close() {
             isRunning.set(false);
         }
 

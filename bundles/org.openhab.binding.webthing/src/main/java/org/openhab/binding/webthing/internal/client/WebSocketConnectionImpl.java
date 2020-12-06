@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
+import java.io.IOException;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.time.Duration;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
@@ -38,7 +40,7 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     private final static PropertyChangedListener EMPTY_PROPERTY_CHANGED_LISTENER = new PropertyChangedListener() {
     };
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnectionImpl.class);
-    private final DisconnectionListener disconnectionListener;
+    private final Consumer<String> errorHandler;
     private final Map<String, PropertyChangedListener> propertyChangedListeners = new HashMap<>();
     private final AtomicReference<Instant> lastTimeReceived = new AtomicReference<>(Instant.now());
     private final AtomicReference<String> receivedTextbufferRef = new AtomicReference<>("");
@@ -47,12 +49,24 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     /**
      * constructor
      *
-     * @param disconnectionListener the connection listener to be notified
+     * @param errorHandler the errorHandler
      * @param pingPeriod the period pings should be sent
      */
-    WebSocketConnectionImpl(DisconnectionListener disconnectionListener, Duration pingPeriod) {
-        this.disconnectionListener = disconnectionListener;
+    WebSocketConnectionImpl(Consumer<String> errorHandler, Duration pingPeriod) {
+        this.errorHandler = errorHandler;
         new ConnectionWatchDog(pingPeriod).start();
+    }
+
+    @Override
+    public void close() {
+        try {
+            var webSocket = webSocketRef.getAndSet(null);
+            if (webSocket != null) {
+                webSocket.abort();
+            }
+        } catch (Exception e) {
+            logger.warn("error occurred by closing the WebSocket", e);
+        }
     }
 
     @Override
@@ -100,33 +114,20 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
 
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-        close("websocket closed: " + reason);
+        onError(webSocket, new IOException("websocket closed by peer. " + reason));
         return null;
     }
 
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
-        close("error notified. " + error.getMessage());
+        onError(error.getMessage());
     }
 
-    @Override
-    public void close() {
-        close("");
-    }
-
-    private void close(String reason) {
+    private void onError(String message) {
         try {
-            var webSocket = webSocketRef.getAndSet(null);
-            if (webSocket != null) {
-                try {
-                    disconnectionListener.onDisconnected(reason);
-                } catch (Exception e) {
-                    logger.warn("error occurred by performing on disconnect", e);
-                }
-                webSocket.abort();
-            }
+            errorHandler.accept(message);
         } catch (Exception e) {
-            logger.warn("error occurred by closing the WebSocket", e);
+            logger.warn("error occurred by performing on disconnect", e);
         }
     }
 
@@ -147,7 +148,7 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
                 // check if connection is alive (message has been received recently)
                 var elapsedSinceLast = Duration.between(lastTimeReceived.get(), Instant.now());
                 if (elapsedSinceLast.getSeconds() > pingPeriod.getSeconds()) {
-                    close("connection seems to be broken (last message received at " + lastTimeReceived.get() + ", "
+                    onError("connection seems to be broken (last message received at " + lastTimeReceived.get() + ", "
                             + elapsedSinceLast.getSeconds() + " sec ago)");
                     return;
                 }
@@ -159,7 +160,7 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
                     try {
                         webSocket.sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
                     } catch (Exception e) {
-                        close("could not send ping. " + e.getMessage());
+                        onError("could not send ping " + e.getMessage());
                         return;
                     }
                 }

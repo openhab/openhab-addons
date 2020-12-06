@@ -15,6 +15,7 @@ package org.openhab.binding.webthing.internal.client;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -30,11 +31,11 @@ interface WebSocketConnectionFactory {
      * create (and opens) a new WebSocket connection
      *
      * @param webSocketURI the websocket uri
-     * @param disconnectionListener the connection listener that will be called, if th econnection is disconnected
+     * @param errorHandler the error handler
      * @param pingPeriod the ping period to check the healthiness of the connection
      * @return the newly opened WebSocket connection
      */
-    WebSocketConnection create(URI webSocketURI, DisconnectionListener disconnectionListener, Duration pingPeriod);
+    WebSocketConnection create(URI webSocketURI, Consumer<String> errorHandler, Duration pingPeriod);
 
     /**
      * @return the default instance of the factory
@@ -42,9 +43,8 @@ interface WebSocketConnectionFactory {
     static WebSocketConnectionFactory instance() {
         return new WebSocketConnectionFactory() {
             @Override
-            public WebSocketConnection create(URI webSocketURI, DisconnectionListener connectionListener,
-                    Duration pingPeriod) {
-                var webSocketConnection = new WebSocketConnectionImpl(connectionListener, pingPeriod);
+            public WebSocketConnection create(URI webSocketURI, Consumer<String> errorHandler, Duration pingPeriod) {
+                var webSocketConnection = new WebSocketConnectionImpl(errorHandler, pingPeriod);
                 HttpClient.newHttpClient().newWebSocketBuilder().buildAsync(webSocketURI, webSocketConnection).join();
                 return webSocketConnection;
             }

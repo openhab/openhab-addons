@@ -89,9 +89,9 @@ public class WebthingChannelLinkTest {
         var thingUID = new ThingUID("webthing", "anwing");
         var channelUID = Channels.createChannelUID(thingUID, "target_position");
 
-        var connectionListener = new WebthingTest.DisconnectionListenerImpl();
+        var errorHandler = new WebthingTest.ErrorHandler();
         var websocketConnectionFactory = new WebthingTest.TestWebsocketConnectionFactory();
-        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClientMock, connectionListener,
+        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/0", httpClientMock, errorHandler,
                 websocketConnectionFactory);
         var channel = Channels.createChannel(thingUID, "target_position",
                 Objects.requireNonNull(webthing.getPropertyDescription("target_position")));
@@ -156,9 +156,9 @@ public class WebthingChannelLinkTest {
         var thingUID = new ThingUID("webthing", "test");
         var channelUID = Channels.createChannelUID(thingUID, propertyName);
 
-        var connectionListener = new WebthingTest.DisconnectionListenerImpl();
+        var errorHandler = new WebthingTest.ErrorHandler();
         var websocketConnectionFactory = new WebthingTest.TestWebsocketConnectionFactory();
-        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/", httpClientMock, connectionListener,
+        var webthing = WebthingTest.createTestWebthing("http://example.org:8090/", httpClientMock, errorHandler,
                 websocketConnectionFactory);
         var channel = Channels.createChannel(thingUID, propertyName,
                 Objects.requireNonNull(webthing.getPropertyDescription(propertyName)));
