@@ -58,9 +58,6 @@
 		<label>Dimmable Light</label>
 		<description>A dimmable light.</description>
 		<category>Lightbulb</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
 		</channels>

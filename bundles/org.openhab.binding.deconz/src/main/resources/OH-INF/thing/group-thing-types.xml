@@ -9,9 +9,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Light Group</label>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
+		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="all_on" id="all_on"/>
 			<channel typeId="any_on" id="any_on"/>
