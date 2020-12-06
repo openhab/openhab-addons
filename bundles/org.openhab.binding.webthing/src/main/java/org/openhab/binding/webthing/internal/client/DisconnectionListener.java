@@ -15,18 +15,12 @@ package org.openhab.binding.webthing.internal.client;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Connection listener that will be notified, if the connection state is changed
+ * Connection listener that will be notified, if the connection is disconnected
  *
  * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
-public interface ConnectionListener {
-
-    /**
-     * callback that will be called, if the WebThing is connected
-     *
-     */
-    void onConnected();
+public interface DisconnectionListener {
 
     /**
      * callback that will be called, if the stream is disconnected

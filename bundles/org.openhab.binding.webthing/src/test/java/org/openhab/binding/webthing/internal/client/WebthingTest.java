@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jetbrains.annotations.NotNull;
@@ -134,11 +133,10 @@ public class WebthingTest {
         httpClientMock.onGet("http://example.org:8090/0/properties/target_position")
                 .doReturn(load("/awning_property.json"));
 
-        var connectionListener = new ConnectionListenerImpl();
+        var connectionListener = new DisconnectionListenerImpl();
         var webSocketFactory = new TestWebsocketConnectionFactory();
         var webthing = createTestWebthing("http://example.org:8090/0", httpClientMock, connectionListener,
                 webSocketFactory);
-        assertTrue(connectionListener.onConnectedRef.get());
 
         var propertyChangedListenerImpl = new PropertyChangedListenerImpl();
         webthing.observeProperty("target_position", propertyChangedListenerImpl);
@@ -179,11 +177,11 @@ public class WebthingTest {
     }
 
     public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient) throws IOException {
-        return createTestWebthing(uri, httpClient, new ConnectionListenerImpl(), new TestWebsocketConnectionFactory());
+        return createTestWebthing(uri, httpClient, new DisconnectionListenerImpl(), new TestWebsocketConnectionFactory());
     }
 
     public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient,
-            ConnectionListener connectionListener, WebSocketConnectionFactory websocketConnectionFactory)
+                                                       DisconnectionListener connectionListener, WebSocketConnectionFactory websocketConnectionFactory)
             throws IOException {
         return new ConsumedThingImpl(URI.create(uri), connectionListener, httpClient, websocketConnectionFactory,
                 Duration.ofMillis(100));
@@ -193,7 +191,7 @@ public class WebthingTest {
         public final AtomicReference<WebSocketImpl> webSocketRef = new AtomicReference<>();
 
         @Override
-        public WebSocketConnection create(@NotNull URI webSocketURI, @NotNull ConnectionListener connectionListener,
+        public WebSocketConnection create(@NotNull URI webSocketURI, @NotNull DisconnectionListener connectionListener,
                 @NotNull Duration pingPeriod) {
             var webSocketConnection = new WebSocketConnectionImpl(connectionListener, pingPeriod);
             var webSocket = new WebSocketImpl(webSocketConnection);
@@ -277,14 +275,8 @@ public class WebthingTest {
         }
     }
 
-    public static class ConnectionListenerImpl implements ConnectionListener {
-        public final AtomicBoolean onConnectedRef = new AtomicBoolean(false);
+    public static class DisconnectionListenerImpl implements DisconnectionListener {
         public final AtomicReference<String> onDisconnectedRef = new AtomicReference<>();
-
-        @Override
-        public void onConnected() {
-            onConnectedRef.set(true);
-        }
 
         @Override
         public void onDisconnected(String reason) {
