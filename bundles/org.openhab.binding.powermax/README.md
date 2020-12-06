@@ -155,6 +155,7 @@ In case it fails after all the retries, you still have the option to later trigg
 -   Visonic does not provide a specification of the RS232 protocol and, thus, use this binding at your own risk.
 -   The binding is not able to arm/disarm a particular partition.
 -   The compatibility of the binding with the Powermaster alarm panel series is probably only partial.
+-   In order to be able to bypass zones, you must first enable this feature by updating your panel configuration. Look at your installer's manual.
 
 ## Full Example
 
