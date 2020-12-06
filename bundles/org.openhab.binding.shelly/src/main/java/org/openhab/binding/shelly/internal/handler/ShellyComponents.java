@@ -31,8 +31,6 @@ import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.SmartHomeUnits;
 
-import tec.uom.se.unit.Units;
-
 /***
  * The{@link ShellyComponents} implements updates for supplemental components
  * Meter will be used by Relay + Light; Sensor is part of H&T, Flood, Door Window, Sense
@@ -276,7 +274,7 @@ public class ShellyComponents {
                         : getDouble(sdata.tmp.tF);
                 if (getString(sdata.tmp.units).toUpperCase().equals(SHELLY_TEMP_FAHRENHEIT)) {
                     // convert Fahrenheit to Celsius
-                    temp = ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS).convert(temp).doubleValue();
+                    temp = ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(temp).doubleValue();
                 }
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                         toQuantityType(temp.doubleValue(), DIGITS_TEMP, SIUnits.CELSIUS));

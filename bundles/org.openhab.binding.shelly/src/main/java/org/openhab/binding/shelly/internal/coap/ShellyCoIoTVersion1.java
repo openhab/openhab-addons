@@ -33,8 +33,6 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tec.uom.se.unit.Units;
-
 /**
  * The {@link ShellyCoIoTVersion1} implements the parsing for CoIoT version 1
  *
@@ -84,7 +82,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                     case "temperature": // Sensor Temp
                         if (getString(getProfile().settings.temperatureUnits)
                                 .equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT)) {
-                            value = ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS).convert(getDouble(s.value))
+                            value = ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(getDouble(s.value))
                                     .doubleValue();
                         }
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,

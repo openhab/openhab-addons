@@ -19,13 +19,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.annotations.SerializedName;
-
-import tec.uom.se.AbstractUnit;
-import tec.uom.se.unit.Units;
 
 /**
  * private class: a generic data point
@@ -142,14 +140,14 @@ public abstract class BasePoint {
                     return ImperialUnits.FAHRENHEIT;
                 }
                 case DEGREES_KELVIN: {
-                    return Units.KELVIN;
+                    return SmartHomeUnits.KELVIN;
                 }
                 case PERCENT_RELATIVE_HUMIDITY: {
-                    return Units.PERCENT;
+                    return SmartHomeUnits.PERCENT;
                 }
             }
         }
-        return AbstractUnit.ONE;
+        return SmartHomeUnits.ONE;
     }
 
     /*
