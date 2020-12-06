@@ -24,12 +24,11 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.annotations.SerializedName;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@code Measure} class defines the dto for Smarther API measure object.
@@ -101,7 +100,8 @@ public class Measure {
                         .orElse(UnDefType.UNDEF);
                 break;
             case PERCENTAGE:
-                state = optValue.<State> map(t -> new QuantityType<Dimensionless>(new DecimalType(t), Units.PERCENT))
+                state = optValue
+                        .<State> map(t -> new QuantityType<Dimensionless>(new DecimalType(t), SmartHomeUnits.PERCENT))
                         .orElse(UnDefType.UNDEF);
                 break;
             case DIMENSIONLESS:

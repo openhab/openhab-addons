@@ -27,6 +27,7 @@ import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiExcept
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerStationConfig;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -36,8 +37,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * @author Florian Schmidt - Refactoring
@@ -91,7 +90,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             return;
         }
         QuantityType<?> quantity = (QuantityType<?>) command;
-        this.nextDurationTime = quantity.toUnit(Units.SECOND).toBigDecimal();
+        this.nextDurationTime = quantity.toUnit(SmartHomeUnits.SECOND).toBigDecimal();
         updateState(channelUID, quantity);
     }
 
@@ -183,7 +182,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
                             + " for the OpenSprinkler device. Exception received: " + exp);
         }
 
-        return new QuantityType<>(remainingWaterTime, Units.SECOND);
+        return new QuantityType<>(remainingWaterTime, SmartHomeUnits.SECOND);
     }
 
     @Override
@@ -204,7 +203,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             case NEXT_DURATION:
                 BigDecimal duration = nextDurationValue();
                 if (duration != null) {
-                    updateState(channel, new QuantityType<>(duration, Units.SECOND));
+                    updateState(channel, new QuantityType<>(duration, SmartHomeUnits.SECOND));
                 }
                 break;
             case STATION_QUEUED:

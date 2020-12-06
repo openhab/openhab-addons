@@ -27,11 +27,10 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.UnDefType;
-
-import tec.uom.se.unit.Units;
 
 /**
  * Implements a percentage value. Minimum and maximum are definable.
@@ -88,7 +87,7 @@ public class PercentageValue extends Value {
         } else //
                // A quantity type need to be converted according to the current min/max values
         if (command instanceof QuantityType) {
-            QuantityType<?> qty = ((QuantityType<?>) command).toUnit(Units.PERCENT);
+            QuantityType<?> qty = ((QuantityType<?>) command).toUnit(SmartHomeUnits.PERCENT);
             if (qty != null) {
                 BigDecimal v = qty.toBigDecimal();
                 v = v.subtract(min).multiply(HUNDRED).divide(max.subtract(min), MathContext.DECIMAL128);
