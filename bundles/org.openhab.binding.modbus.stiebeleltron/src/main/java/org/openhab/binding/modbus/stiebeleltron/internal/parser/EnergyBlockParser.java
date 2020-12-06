@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.stiebeleltron.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.EnergyBlock;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
  * Parses inverter modbus data into an Energy Block

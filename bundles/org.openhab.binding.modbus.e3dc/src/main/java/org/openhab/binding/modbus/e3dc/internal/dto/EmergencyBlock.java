@@ -18,9 +18,9 @@ import java.util.BitSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.io.transport.modbus.ModbusBitUtilities;
 
 /**
  * The {@link EmergencyBlock} Data object for E3DC Info Block
