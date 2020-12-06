@@ -177,11 +177,12 @@ public class WebthingTest {
     }
 
     public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient) throws IOException {
-        return createTestWebthing(uri, httpClient, new DisconnectionListenerImpl(), new TestWebsocketConnectionFactory());
+        return createTestWebthing(uri, httpClient, new DisconnectionListenerImpl(),
+                new TestWebsocketConnectionFactory());
     }
 
     public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient,
-                                                       DisconnectionListener connectionListener, WebSocketConnectionFactory websocketConnectionFactory)
+            DisconnectionListener connectionListener, WebSocketConnectionFactory websocketConnectionFactory)
             throws IOException {
         return new ConsumedThingImpl(URI.create(uri), connectionListener, httpClient, websocketConnectionFactory,
                 Duration.ofMillis(100));
