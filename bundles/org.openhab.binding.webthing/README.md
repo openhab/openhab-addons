@@ -21,6 +21,11 @@ No binding configuration required.
 
 
 ## Thing Configuration
+
+| Parameter | Description   | Required  | 
+|----------|--------|-------------|
+| webThingURI | the URI of the WebThing | true  |
+
 Due to the discovery support, no manual Thing configuration is required. However, under certain circumstances textual 
 Thing configuration may be preferred. In this case, the webThingURI has to be configured as shown in the webthing.things file below:
 ```
