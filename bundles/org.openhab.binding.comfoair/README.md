@@ -237,7 +237,7 @@ Switch	comfoairFreezeMode			"Freeze [MAP(comfoair_freeze.map):%s]"		<climate>	(C
 sitemap comfoair label="ComfoAir" {
 	Frame label="Main" {
 		Text item=comfoairError labelcolor=[!="No Errors"="red"] valuecolor=[!="No Errors"="red"]
-		Switch item=comfoairControl mappings=[0="CCEase", 1="Computer"]
+		Switch item=comfoairControl mappings=[OFF="CCEase", ON="Computer"]
 		Switch item=comfoairErrorReset mappings=[1="Reset"]
 		Switch item=comfoairFilterReset mappings=[1="Reset"]
 	}
