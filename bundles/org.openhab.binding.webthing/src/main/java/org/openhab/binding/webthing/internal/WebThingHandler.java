@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
-public class WebThingHandler extends BaseThingHandler implements ChannelHandler, ConnectionListener {
+public class WebThingHandler extends BaseThingHandler implements ChannelHandler, DisconnectionListener {
     private static final Duration RECONNECT_PERIOD = Duration.ofHours(23);
     private static final Duration HEALTH_CHECK_PERIOD = Duration.ofSeconds(80);
     private static final ItemChangedListener EMPTY_ITEM_CHANGED_LISTENER = (channelUID, stateCommand) -> {
@@ -114,8 +114,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     private boolean tryReconnect(URI webThingURI) {
         if (isActivated.get()) { // will try reconnect only, if activated
             try {
-                // create the client-side WebThing representation (if success, {@link WebThingHandler#onConnected} will
-                // be called, implicitly)
+                // create the client-side WebThing representation
                 var webThing = ConsumedThingFactory.instance().create(webThingURI, this);
                 this.webThingConnectionRef.getAndSet(Optional.of(webThing)).ifPresent(ConsumedThing::destroy);
 
@@ -126,6 +125,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
                 establishWebThingChannelLinks(webThing);
 
                 lastReconnect.set(Instant.now());
+                updateStatus(ThingStatus.ONLINE);
                 return true;
             } catch (Exception e) {
                 onDisconnected("connecting " + webThingURI + " failed (" + e.getMessage() + ")");
@@ -264,11 +264,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
     /////////////
 
     /////////////
-    // ConnectionListener methods
-    @Override
-    public void onConnected() {
-        updateStatus(ThingStatus.ONLINE);
-    }
+    // DisconnectionListener methods
 
     @Override
     public void onDisconnected(String reason) {
@@ -276,8 +272,14 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler,
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
 
         if (wasConnectedBefore) {
-            logger.info("WebThing {} disconnected. {}. Try reconnect (each {} sec)", reason, getWebThingLabel(),
-                    HEALTH_CHECK_PERIOD.getSeconds());
+            var optionalWebThingURI = getWebThingURI();
+            if (optionalWebThingURI.isPresent()) {
+                logger.info("WebThing {} disconnected. {}. Try reconnecting", reason, getWebThingLabel());
+                tryReconnect(optionalWebThingURI.get());
+            } else {
+                logger.info("WebThing {} disconnected. {}. Try reconnect (each {} sec)", reason, getWebThingLabel(),
+                        HEALTH_CHECK_PERIOD.getSeconds());
+            }
         }
     }
     //

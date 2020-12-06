@@ -30,11 +30,11 @@ interface WebSocketConnectionFactory {
      * create (and opens) a new WebSocket connection
      *
      * @param webSocketURI the websocket uri
-     * @param connectionListener the connection listener to observe the connection state of the WebSocket connection
+     * @param disconnectionListener the connection listener that will be called, if th econnection is disconnected
      * @param pingPeriod the ping period to check the healthiness of the connection
      * @return the newly opened WebSocket connection
      */
-    WebSocketConnection create(URI webSocketURI, ConnectionListener connectionListener, Duration pingPeriod);
+    WebSocketConnection create(URI webSocketURI, DisconnectionListener disconnectionListener, Duration pingPeriod);
 
     /**
      * @return the default instance of the factory
@@ -42,7 +42,7 @@ interface WebSocketConnectionFactory {
     static WebSocketConnectionFactory instance() {
         return new WebSocketConnectionFactory() {
             @Override
-            public WebSocketConnection create(URI webSocketURI, ConnectionListener connectionListener,
+            public WebSocketConnection create(URI webSocketURI, DisconnectionListener connectionListener,
                     Duration pingPeriod) {
                 var webSocketConnection = new WebSocketConnectionImpl(connectionListener, pingPeriod);
                 HttpClient.newHttpClient().newWebSocketBuilder().buildAsync(webSocketURI, webSocketConnection).join();
