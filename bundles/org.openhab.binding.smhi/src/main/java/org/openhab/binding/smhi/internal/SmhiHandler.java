@@ -31,7 +31,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -195,35 +195,35 @@ public class SmhiHandler extends BaseThingHandler {
                     newState = new QuantityType<>(value, MetricPrefix.KILO(SIUnits.METRE));
                     break;
                 case WIND_DIRECTION:
-                    newState = new QuantityType<>(value, SmartHomeUnits.DEGREE_ANGLE);
+                    newState = new QuantityType<>(value, Units.DEGREE_ANGLE);
                     break;
                 case WIND_SPEED:
                 case GUST:
-                    newState = new QuantityType<>(value, SmartHomeUnits.METRE_PER_SECOND);
+                    newState = new QuantityType<>(value, Units.METRE_PER_SECOND);
                     break;
                 case RELATIVE_HUMIDITY:
                 case THUNDER_PROBABILITY:
-                    newState = new QuantityType<>(value, SmartHomeUnits.PERCENT);
+                    newState = new QuantityType<>(value, Units.PERCENT);
                     break;
                 case PERCENT_FROZEN:
                     // Smhi returns -9 for spp if there's no precipitation, convert to UNDEF
                     if (value.intValue() == -9) {
                         newState = UnDefType.UNDEF;
                     } else {
-                        newState = new QuantityType<>(value, SmartHomeUnits.PERCENT);
+                        newState = new QuantityType<>(value, Units.PERCENT);
                     }
                     break;
                 case HIGH_CLOUD_COVER:
                 case MEDIUM_CLOUD_COVER:
                 case LOW_CLOUD_COVER:
                 case TOTAL_CLOUD_COVER:
-                    newState = new QuantityType<>(value.multiply(OCTAS_TO_PERCENT), SmartHomeUnits.PERCENT);
+                    newState = new QuantityType<>(value.multiply(OCTAS_TO_PERCENT), Units.PERCENT);
                     break;
                 case PRECIPITATION_MAX:
                 case PRECIPITATION_MEAN:
                 case PRECIPITATION_MEDIAN:
                 case PRECIPITATION_MIN:
-                    newState = new QuantityType<>(value, SmartHomeUnits.MILLIMETRE_PER_HOUR);
+                    newState = new QuantityType<>(value, Units.MILLIMETRE_PER_HOUR);
                     break;
                 default:
                     newState = new DecimalType(value);

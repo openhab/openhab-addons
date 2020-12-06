@@ -43,7 +43,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -252,13 +252,13 @@ public class TibberHandler extends BaseThingHandler {
         if (!channelValue.contains("null")) {
             if (channelID.contains("consumption") || channelID.contains("Consumption")
                     || channelID.contains("accumulatedProduction")) {
-                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), SmartHomeUnits.KILOWATT_HOUR));
+                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), Units.KILOWATT_HOUR));
             } else if (channelID.contains("power") || channelID.contains("Power")) {
-                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), SmartHomeUnits.WATT));
+                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), Units.WATT));
             } else if (channelID.contains("voltage")) {
-                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), SmartHomeUnits.VOLT));
+                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), Units.VOLT));
             } else if (channelID.contains("live_current")) {
-                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), SmartHomeUnits.AMPERE));
+                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), Units.AMPERE));
             } else {
                 updateState(channelID, new DecimalType(channelValue));
             }

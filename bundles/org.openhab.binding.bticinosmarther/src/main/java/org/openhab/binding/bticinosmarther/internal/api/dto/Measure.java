@@ -24,7 +24,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -100,8 +100,7 @@ public class Measure {
                         .orElse(UnDefType.UNDEF);
                 break;
             case PERCENTAGE:
-                state = optValue
-                        .<State> map(t -> new QuantityType<Dimensionless>(new DecimalType(t), SmartHomeUnits.PERCENT))
+                state = optValue.<State> map(t -> new QuantityType<Dimensionless>(new DecimalType(t), Units.PERCENT))
                         .orElse(UnDefType.UNDEF);
                 break;
             case DIMENSIONLESS:
