@@ -57,14 +57,9 @@ public class FoscamHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        String content = msg.toString();
         try {
-            if (!content.isEmpty()) {
-                ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-            } else {
-                return;
-            }
-
+            String content = msg.toString();
+            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             ////////////// Motion Alarm //////////////
             if (content.contains("<motionDetectAlarm>")) {
                 if (content.contains("<motionDetectAlarm>0</motionDetectAlarm>")) {
@@ -115,7 +110,6 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 ctx.close();
                 ipCameraHandler.logger.debug("End of FOSCAM handler reached, so closing the channel to the camera now");
             }
-
         } finally {
             ReferenceCountUtil.release(msg);
         }
