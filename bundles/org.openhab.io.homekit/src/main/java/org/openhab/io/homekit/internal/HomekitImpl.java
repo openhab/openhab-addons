@@ -81,7 +81,6 @@ public class HomekitImpl implements Homekit {
 
     private HomekitSettings processConfig(Map<String, Object> config) {
         HomekitSettings settings = (new Configuration(config)).as(HomekitSettings.class);
-        settings.process();
         if (settings.networkInterface == null) {
             settings.networkInterface = networkAddressService.getPrimaryIpv4HostAddress();
         }
