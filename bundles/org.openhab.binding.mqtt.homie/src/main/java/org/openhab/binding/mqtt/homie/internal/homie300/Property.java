@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A homie Property (which translates into an ESH channel).
+ * A homie Property (which translates into a channel).
  *
  * @author David Graeff - Initial contribution
  */
@@ -65,7 +65,6 @@ public class Property implements AttributeChanged {
     public final String propertyID;
     // Runtime state
     protected @Nullable ChannelState channelState;
-    // ESH
     public final ChannelUID channelUID;
     public final ChannelTypeUID channelTypeUID;
     private ChannelType type;

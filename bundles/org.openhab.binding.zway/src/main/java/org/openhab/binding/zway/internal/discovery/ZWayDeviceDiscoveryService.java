@@ -131,7 +131,7 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                     /*
                      * Properties
                      * - Configuration: DEVICE_CONFIG_NODE_ID
-                     * - ESH default properties:
+                     * - System properties:
                      * --- PROPERTY_VENDOR
                      * --- other default properties not available
                      * - Custom properties:

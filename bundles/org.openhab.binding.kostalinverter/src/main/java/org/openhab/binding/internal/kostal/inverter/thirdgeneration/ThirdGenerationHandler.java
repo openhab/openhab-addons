@@ -244,7 +244,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                 break;
             }
             case AMPERE_HOUR: {
-                // Ampere hours are not supported by ESH, but 1 AH is equal tp 3600 coulomb...
+                // Ampere hours is not a supported unit, but 1 AH is equal tp 3600 coulomb...
                 updateState(channeluid, new QuantityType<>(value * 3600, Units.COULOMB));
                 break;
             }
