@@ -14,7 +14,7 @@ As a generic solution, the WebThing binding does not depend on specific devices.
  
 
 ## Discovery
-Once the binding is activated all reachable WebThing devices will be detected via mDNS, automatically.
+Once the binding is activated all reachable **WebThing devices will be detected automatically** (via mDNS).
 
 ## Binding Configuration
 No binding configuration required.
@@ -26,7 +26,7 @@ No binding configuration required.
 |----------|--------|-------------|
 | webThingURI | the URI of the WebThing | true  |
 
-Due to the discovery support, no manual Thing configuration is required. However, under certain circumstances textual 
+Due to the discovery support, **no manual Thing configuration is required** in general. However, under certain circumstances textual 
 Thing configuration may be preferred. In this case, the webThingURI has to be configured as shown in the webthing.things file below:
 ```
 Thing webthing:generic:motionsensor [ webThingURI="http://192.168.1.27:9496/" ]
@@ -34,7 +34,7 @@ Thing webthing:generic:motionsensor [ webThingURI="http://192.168.1.27:9496/" ]
 
 ## Channels
 
-The supported channels depend on the WebThing device that is connected. Each mappable WebThing property will be mapped to a dedicated channel. For instance, to support the *motion property* of a Motion-Sensor WebThing, a dedicated *motion channel* will be created, automatically.
+The supported channels depend on the WebThing device that is connected. Each mappable **WebThing property will be mapped to a dedicated channel, automatically**. For instance, to support the *motion property* of a Motion-Sensor WebThing, a dedicated *motion channel* will be created, automatically.
 
 | Thing | channel  | type   | description                  |
 |--------|----------|--------|------------------------------|
