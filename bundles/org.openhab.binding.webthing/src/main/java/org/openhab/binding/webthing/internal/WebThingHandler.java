@@ -142,8 +142,12 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     public void onError(String reason) {
         var wasConnectedBefore = isConnected();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+
+        // close the WebThing connection. If the handler is still active, the WebThing connection
+        // will be re-established within the periodically watchdog task
         webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::close);
-        if (wasConnectedBefore) {
+
+        if (wasConnectedBefore) { // to reduce log messages, just log in case of connection state changed
             logger.info("WebThing {} disconnected. {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
                     HEALTH_CHECK_PERIOD.getSeconds());
         }
