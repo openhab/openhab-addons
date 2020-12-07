@@ -39,16 +39,23 @@ The following configuration options are available:
 
 ## Supported Things
 
-This binding support just one thing type: The Nuki Smart Lock. Create one `smartlock` per Nuki Smart Lock available in you home automation environment.
+This binding supports the Nuki Smart Lock and the Nuki Opener. 
+Create one `smartlock` per Nuki Smart Lock and one `opener` per Nuki Opener available in you home automation environment.
 
-The following configuration options are available:
+The following configuration options are available for the `smartlock`:
 
 | Parameter | Description                                                                                                                                                                                               | Comment       |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
 | nukiId    | The `Nuki-ID` of the Nuki Smart Lock. It is a 8-digit hexadecimal string. Look it up on the sticker on the back of the Nuki Smart Lock (remove mounting plate).                                           | Required      |
 | unlatch   | If set to `true` the Nuki Smart Lock will unlock the door but then also automatically pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open. | Default false |
 
-## Supported Channels
+The following configuration options are available for the `opener`:
+
+| Parameter | Description                                                                                                                                                                                               | Comment       |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| nukiId    | The `Nuki-ID` of the Nuki Smart Lock. It is a 8-digit hexadecimal string. Look it up on the sticker on the back of the Nuki Smart Lock (remove mounting plate).                                           | Required      |
+
+## Supported Channels Smart Lock
 
 - **lock** (Switch)  
     Use this channel with a Switch Item to lock and unlock the door.
@@ -65,6 +72,18 @@ The following configuration options are available:
 - **doorsensorState** (Number)  
     Use this channel if you want to display the current door state provided by the door sensor.  
     Supported Door Sensor States are : `0` (Unavailable), `1` (Deactivated), `2` (Closed), `3` (Open), `4` (Unknown) and `5` (Calibrating).
+
+## Supported Channels Opener
+
+- **lock** (Switch)  
+    Use this channel with a Switch Item to lock and unlock the door.
+
+- **lockState** (Number)  
+    Use this channel if you want to execute other supported lock actions or to display the current lock state.  
+    Supported Lock States are : `0` (Untrained), `1` (Online), `2` (Unlocking), `3` (Ring-to-Open Active), `4` (Locking), `5` (Open), `6` (Unlocked Lock 'n' Go), `7` (Opening), `253` (Boot Run), `1002` (Unlocking Lock 'n' Go), `1007`(Unlatching Lock'n' Go), `254` (Motor Blocked) and `255` (Undefined).  
+
+- **lowBattery** (Switch)  
+    Use this channel to receive a low battery warning.
 
 ## Full Example
 
