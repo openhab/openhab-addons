@@ -40,7 +40,7 @@ import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -264,14 +264,13 @@ public class LinkyHandler extends BaseThingHandler {
 
     private void updateKwhChannel(String channelId, double consumption) {
         logger.debug("Update channel {} with {}", channelId, consumption);
-        updateState(channelId, Double.isNaN(consumption) ? UnDefType.UNDEF
-                : new QuantityType<>(consumption, SmartHomeUnits.KILOWATT_HOUR));
+        updateState(channelId,
+                Double.isNaN(consumption) ? UnDefType.UNDEF : new QuantityType<>(consumption, Units.KILOWATT_HOUR));
     }
 
     private void updateVAChannel(String channelId, double power) {
         logger.debug("Update channel {} with {}", channelId, power);
-        updateState(channelId,
-                Double.isNaN(power) ? UnDefType.UNDEF : new QuantityType<>(power, SmartHomeUnits.VOLT_AMPERE));
+        updateState(channelId, Double.isNaN(power) ? UnDefType.UNDEF : new QuantityType<>(power, Units.VOLT_AMPERE));
     }
 
     /**

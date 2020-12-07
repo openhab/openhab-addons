@@ -53,7 +53,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -411,6 +411,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             actions = new HashMap<>();
             final MiIoBasicDevice device = this.miioDevice;
             if (device != null) {
+                for (Channel cn : getThing().getChannels()) {
+                    logger.trace("Channel '{}' for thing {} already exist... removing", cn.getUID(),
+                            getThing().getUID());
+                    if (!PERSISTENT_CHANNELS.contains(cn.getUID().getId().toString())) {
+                        thingBuilder.withoutChannels(cn);
+                    }
+                }
                 for (MiIoBasicChannel miChannel : device.getDevice().getChannels()) {
                     logger.debug("properties {}", miChannel);
                     if (!miChannel.getType().isEmpty()) {
@@ -454,13 +461,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             return null;
         }
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channel);
-
-        // TODO: Need to understand if this harms anything. If yes, channel only to be added when not there already.
-        // current way allows to have no issues when channels are changing.
-        if (getThing().getChannel(channel) != null) {
-            logger.info("Channel '{}' for thing {} already exist... removing", channel, getThing().getUID());
-            thingBuilder.withoutChannel(new ChannelUID(getThing().getUID(), channel));
-        }
         ChannelBuilder newChannel = ChannelBuilder.create(channelUID, dataType).withLabel(miChannel.getFriendlyName());
         boolean useGeneratedChannelType = false;
         if (!miChannel.getChannelType().isBlank()) {
@@ -606,14 +606,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SIUnits.CELSIUS));
                 break;
             case "electriccurrent":
-                updateState(basicChannel.getChannel(),
-                        new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.AMPERE));
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), Units.AMPERE));
                 break;
             case "energy":
-                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.WATT));
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), Units.WATT));
                 break;
             case "time":
-                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.HOUR));
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), Units.HOUR));
                 break;
             default:
                 updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
