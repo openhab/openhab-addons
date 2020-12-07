@@ -324,7 +324,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "OH 1.x server not supported by the binding");
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
-                List<RemoteopenhabItem> items = restClient.getRemoteItems();
+                List<RemoteopenhabItem> items = restClient.getRemoteItems("name,type,groupType,state,stateDescription");
 
                 createChannels(items, true);
                 setStateOptions(items);
