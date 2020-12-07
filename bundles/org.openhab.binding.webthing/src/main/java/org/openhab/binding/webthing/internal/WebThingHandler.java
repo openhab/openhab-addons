@@ -315,9 +315,8 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                                         getWebThingLabel(), RECONNECT_PERIOD.toHours());
                             } else {
                                 logger.debug(
-                                        "could not reconnect WebThing {} triggered by periodically reconnect (each {} h). Try it later (periodically each {} sec)",
-                                        getWebThingLabel(), RECONNECT_PERIOD.toHours(),
-                                        HEALTH_CHECK_PERIOD.getSeconds());
+                                        "could not reconnect WebThing {} (periodical reconnect). Next trial in {} sec",
+                                        getWebThingLabel(), HEALTH_CHECK_PERIOD.getSeconds());
                             }
 
                         }
