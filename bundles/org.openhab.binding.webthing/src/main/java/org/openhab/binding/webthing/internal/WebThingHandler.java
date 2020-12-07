@@ -132,7 +132,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                 if (msg == null) {
                     msg = "";
                 }
-                logger.info("connecting {}  failed ({})", webThingURI, msg);
+                logger.info("connecting {} failed ({})", webThingURI, msg);
                 onError(msg);
             }
         }
@@ -311,7 +311,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                         if (isConnected() && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds())) {
                             var reconnected = getWebThingURI().map(WebThingHandler.this::tryReconnect).orElse(false);
                             if (reconnected) {
-                                logger.info("WebThing {} reconnected. Triggered by periodically reconnect (each {} h)",
+                                logger.info("WebThing {} reconnected. (periodical reconnect each {} h)",
                                         getWebThingLabel(), RECONNECT_PERIOD.toHours());
                             } else {
                                 logger.debug(
