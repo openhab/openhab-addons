@@ -19,6 +19,7 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
@@ -1278,8 +1279,11 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if ("ON".equals(notification.status)) {
                     if ("Reminder".equals(notification.type)) {
                         String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
-                        ZonedDateTime alarmTime = ZonedDateTime
-                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        String date = notification.originalDate != null ? notification.originalDate
+                                : ZonedDateTime.now().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+                        String time = notification.originalTime != null ? notification.originalTime : "00:00:00";
+                        ZonedDateTime alarmTime = ZonedDateTime.parse(date + "T" + time + offset,
+                                DateTimeFormatter.ISO_DATE_TIME);
                         String recurringPattern = notification.recurringPattern;
                         if (recurringPattern != null && !recurringPattern.isBlank() && alarmTime.isBefore(now)) {
                             continue; // Ignore recurring entry if alarm time is before now
