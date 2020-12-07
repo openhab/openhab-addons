@@ -50,6 +50,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -1191,25 +1193,21 @@ public class Connection {
         String requestBody = json.toString();
         try {
             String resultBody = makeRequestAndReturnString("PUT", url, requestBody, true, null);
-            logger.debug("{}", resultBody);
+            logger.trace("Request '{}' resulted in '{}", requestBody, resultBody);
             JsonObject result = parseJson(resultBody, JsonObject.class);
             if (result != null) {
                 JsonElement errors = result.get("errors");
                 if (errors != null && errors.isJsonArray()) {
                     JsonArray errorList = errors.getAsJsonArray();
                     if (errorList.size() > 0) {
-                        logger.info("Smart home device command failed.");
-                        logger.info("Request:");
-                        logger.info("{}", requestBody);
-                        logger.info("Answer:");
-                        for (JsonElement error : errorList) {
-                            logger.info("{}", error.toString());
-                        }
+                        logger.warn("Smart home device command failed. The request '{}' resulted in error(s): {}",
+                                requestBody, StreamSupport.stream(errorList.spliterator(), false)
+                                        .map(JsonElement::toString).collect(Collectors.joining(" / ")));
                     }
                 }
             }
         } catch (URISyntaxException e) {
-            logger.info("Wrong url {}", url, e);
+            logger.warn("URL '{}' has invalid format for request '{}': {}", url, requestBody, e.getMessage());
         }
     }
 
