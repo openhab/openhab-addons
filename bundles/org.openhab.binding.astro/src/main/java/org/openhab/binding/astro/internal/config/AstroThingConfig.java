@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Thing configuration from Eclipse SmartHome.
+ * Astro Thing configuration.
  *
  * @author Gerhard Riegler - Initial contribution
  */
