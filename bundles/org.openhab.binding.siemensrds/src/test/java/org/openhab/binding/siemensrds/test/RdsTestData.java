@@ -36,7 +36,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
@@ -294,13 +294,13 @@ public class RdsTestData {
 
             state = dataPoints.getPointByClass("'SpTRShft").getState();
             assertTrue(state instanceof QuantityType<?>);
-            QuantityType<?> kelvin = ((QuantityType<?>) state).toUnit(SmartHomeUnits.KELVIN);
+            QuantityType<?> kelvin = ((QuantityType<?>) state).toUnit(Units.KELVIN);
             assertNotNull(kelvin);
             assertEquals(0, kelvin.floatValue(), 0.01);
 
             state = dataPoints.getPointByClass("'RHuRel").getState();
             assertTrue(state instanceof QuantityType<?>);
-            QuantityType<?> relativeHumidity = ((QuantityType<?>) state).toUnit(SmartHomeUnits.PERCENT);
+            QuantityType<?> relativeHumidity = ((QuantityType<?>) state).toUnit(Units.PERCENT);
             assertNotNull(relativeHumidity);
             assertEquals(46.86865, relativeHumidity.floatValue(), 0.1);
 
@@ -320,7 +320,7 @@ public class RdsTestData {
 
             state = dataPoints.getPointByClass("'TRBltnMsvAdj").getState();
             assertTrue(state instanceof QuantityType<?>);
-            kelvin = ((QuantityType<?>) state).toUnit(SmartHomeUnits.KELVIN);
+            kelvin = ((QuantityType<?>) state).toUnit(Units.KELVIN);
             assertNotNull(kelvin);
             assertEquals(35.0, celsius.floatValue(), 0.01);
 
@@ -482,7 +482,7 @@ public class RdsTestData {
 
             tempPoint = dataPoints.getPointByClass("'SpTRShft");
             assertTrue(tempPoint instanceof BasePoint);
-            assertEquals(SmartHomeUnits.KELVIN, tempPoint.getUnit());
+            assertEquals(Units.KELVIN, tempPoint.getUnit());
         } catch (RdsCloudException e) {
             fail(e.getMessage());
         }

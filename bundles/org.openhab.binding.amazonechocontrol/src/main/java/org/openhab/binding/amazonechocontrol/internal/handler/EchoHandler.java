@@ -68,7 +68,7 @@ import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -330,7 +330,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (command instanceof QuantityType<?>) {
                     QuantityType<?> value = (QuantityType<?>) command;
                     @Nullable
-                    QuantityType<?> seconds = value.toUnit(SmartHomeUnits.SECOND);
+                    QuantityType<?> seconds = value.toUnit(Units.SECOND);
                     if (seconds != null) {
                         mediaPosition = seconds.longValue();
                     }
@@ -1183,10 +1183,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 } else {
                     updateState(CHANNEL_MEDIA_PROGRESS, UnDefType.UNDEF);
                 }
-                updateState(CHANNEL_MEDIA_PROGRESS_TIME,
-                        new QuantityType<>(currentPlayTimeMs / 1000, SmartHomeUnits.SECOND));
+                updateState(CHANNEL_MEDIA_PROGRESS_TIME, new QuantityType<>(currentPlayTimeMs / 1000, Units.SECOND));
                 if (updateMediaLength) {
-                    updateState(CHANNEL_MEDIA_LENGTH, new QuantityType<>(mediaLengthMs / 1000, SmartHomeUnits.SECOND));
+                    updateState(CHANNEL_MEDIA_LENGTH, new QuantityType<>(mediaLengthMs / 1000, Units.SECOND));
                 }
             } else {
                 updateState(CHANNEL_MEDIA_PROGRESS, UnDefType.UNDEF);

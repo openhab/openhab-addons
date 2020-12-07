@@ -62,7 +62,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -414,16 +414,14 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         updateChannel(grp + CH_RUNTIME_DATE, EcobeeUtils.undefOrString(runtime.runtimeDate));
         updateChannel(grp + CH_RUNTIME_INTERVAL, EcobeeUtils.undefOrDecimal(runtime.runtimeInterval));
         updateChannel(grp + CH_ACTUAL_TEMPERATURE, EcobeeUtils.undefOrTemperature(runtime.actualTemperature));
-        updateChannel(grp + CH_ACTUAL_HUMIDITY,
-                EcobeeUtils.undefOrQuantity(runtime.actualHumidity, SmartHomeUnits.PERCENT));
+        updateChannel(grp + CH_ACTUAL_HUMIDITY, EcobeeUtils.undefOrQuantity(runtime.actualHumidity, Units.PERCENT));
         updateChannel(grp + CH_RAW_TEMPERATURE, EcobeeUtils.undefOrTemperature(runtime.rawTemperature));
         updateChannel(grp + CH_SHOW_ICON_MODE, EcobeeUtils.undefOrDecimal(runtime.showIconMode));
         updateChannel(grp + CH_DESIRED_HEAT, EcobeeUtils.undefOrTemperature(runtime.desiredHeat));
         updateChannel(grp + CH_DESIRED_COOL, EcobeeUtils.undefOrTemperature(runtime.desiredCool));
-        updateChannel(grp + CH_DESIRED_HUMIDITY,
-                EcobeeUtils.undefOrQuantity(runtime.desiredHumidity, SmartHomeUnits.PERCENT));
+        updateChannel(grp + CH_DESIRED_HUMIDITY, EcobeeUtils.undefOrQuantity(runtime.desiredHumidity, Units.PERCENT));
         updateChannel(grp + CH_DESIRED_DEHUMIDITY,
-                EcobeeUtils.undefOrQuantity(runtime.desiredDehumidity, SmartHomeUnits.PERCENT));
+                EcobeeUtils.undefOrQuantity(runtime.desiredDehumidity, Units.PERCENT));
         updateChannel(grp + CH_DESIRED_FAN_MODE, EcobeeUtils.undefOrString(runtime.desiredFanMode));
         if (runtime.desiredHeatRange != null && runtime.desiredHeatRange.size() == 2) {
             updateChannel(grp + CH_DESIRED_HEAT_RANGE_LOW,
@@ -538,9 +536,9 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         updateChannel(grp + CH_RANDOM_START_DELAY_COOL, EcobeeUtils.undefOrDecimal(settings.randomStartDelayCool));
         updateChannel(grp + CH_RANDOM_START_DELAY_HEAT, EcobeeUtils.undefOrDecimal(settings.randomStartDelayHeat));
         updateChannel(grp + CH_HUMIDITY_HIGH_ALERT,
-                EcobeeUtils.undefOrQuantity(settings.humidityHighAlert, SmartHomeUnits.PERCENT));
+                EcobeeUtils.undefOrQuantity(settings.humidityHighAlert, Units.PERCENT));
         updateChannel(grp + CH_HUMIDITY_LOW_ALERT,
-                EcobeeUtils.undefOrQuantity(settings.humidityLowAlert, SmartHomeUnits.PERCENT));
+                EcobeeUtils.undefOrQuantity(settings.humidityLowAlert, Units.PERCENT));
         updateChannel(grp + CH_DISABLE_HEAT_PUMP_ALERTS, EcobeeUtils.undefOrOnOff(settings.disableHeatPumpAlerts));
         updateChannel(grp + CH_DISABLE_ALERTS_ON_IDT, EcobeeUtils.undefOrOnOff(settings.disableAlertsOnIdt));
         updateChannel(grp + CH_HUMIDITY_ALERT_NOTIFY, EcobeeUtils.undefOrOnOff(settings.humidityAlertNotify));
@@ -695,7 +693,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
                 updateChannel(grp + CH_FORECAST_PRESSURE,
                         EcobeeUtils.undefOrQuantity(forecast.pressure, ImperialUnits.INCH_OF_MERCURY));
                 updateChannel(grp + CH_FORECAST_RELATIVE_HUMIDITY,
-                        EcobeeUtils.undefOrQuantity(forecast.relativeHumidity, SmartHomeUnits.PERCENT));
+                        EcobeeUtils.undefOrQuantity(forecast.relativeHumidity, Units.PERCENT));
                 updateChannel(grp + CH_FORECAST_DEWPOINT, EcobeeUtils.undefOrTemperature(forecast.dewpoint));
                 updateChannel(grp + CH_FORECAST_VISIBILITY,
                         EcobeeUtils.undefOrQuantity(forecast.visibility, SIUnits.METRE));
@@ -705,8 +703,8 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
                         EcobeeUtils.undefOrQuantity(forecast.windGust, ImperialUnits.MILES_PER_HOUR));
                 updateChannel(grp + CH_FORECAST_WIND_DIRECTION, EcobeeUtils.undefOrString(forecast.windDirection));
                 updateChannel(grp + CH_FORECAST_WIND_BEARING,
-                        EcobeeUtils.undefOrQuantity(forecast.windBearing, SmartHomeUnits.DEGREE_ANGLE));
-                updateChannel(grp + CH_FORECAST_POP, EcobeeUtils.undefOrQuantity(forecast.pop, SmartHomeUnits.PERCENT));
+                        EcobeeUtils.undefOrQuantity(forecast.windBearing, Units.DEGREE_ANGLE));
+                updateChannel(grp + CH_FORECAST_POP, EcobeeUtils.undefOrQuantity(forecast.pop, Units.PERCENT));
                 updateChannel(grp + CH_FORECAST_TEMP_HIGH, EcobeeUtils.undefOrTemperature(forecast.tempHigh));
                 updateChannel(grp + CH_FORECAST_TEMP_LOW, EcobeeUtils.undefOrTemperature(forecast.tempLow));
                 updateChannel(grp + CH_FORECAST_SKY, EcobeeUtils.undefOrDecimal(forecast.sky));
