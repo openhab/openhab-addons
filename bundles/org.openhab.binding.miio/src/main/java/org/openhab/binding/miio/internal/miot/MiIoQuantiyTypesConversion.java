@@ -29,7 +29,7 @@ public enum MiIoQuantiyTypesConversion {
 
     TIME("Time", "seconds", "minutes", "minute", "hour", "hours"),
     TEMPERATURE("Temperature", "c", "celcius", "f", "farenheith"),
-    DIMENSIONLESS("Dimensionless", "percent"),
+    DIMENSIONLESS("Dimensionless", "percent", "percentage"),
     ELECTRIC_POTENTIAL("ElectricPotential", "volt"),;
 
     private final String unitType;

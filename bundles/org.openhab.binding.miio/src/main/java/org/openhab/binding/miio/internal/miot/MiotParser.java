@@ -139,7 +139,7 @@ public class MiotParser {
     public void writeDevice(String path, MiIoBasicDevice device) {
         String usersJson = GSON.toJson(device);
         try (PrintWriter out = new PrintWriter(path)) {
-            usersJson = usersJson.replace("\n", "\r\n");
+            usersJson = usersJson.replace("\n", "\r\n").replace("  ", "\t");
             out.println(usersJson);
             logger.info("Database file created:{}", path);
         } catch (FileNotFoundException e) {
@@ -148,6 +148,7 @@ public class MiotParser {
     }
 
     public MiIoBasicDevice getDevice(JsonElement urnData) {
+        Set<String> unknownUnits = new HashSet<>();
         StringBuilder channelConfigText = new StringBuilder("Suggested additional channelType \r\n");
         StringBuilder actionText = new StringBuilder("Manual actions for execution\r\n");
 
@@ -197,7 +198,7 @@ public class MiotParser {
                         }
                         if (property.unit != null && !property.unit.isBlank()) {
                             // TODO: can I do something with this info?
-                            if (!property.unit.contains("percentage") && !property.unit.contains("none")) {
+                            if (!property.unit.contains("none")) {
                                 miIoBasicChannel.setUnit(property.unit);
                             }
                         }
@@ -213,6 +214,8 @@ public class MiotParser {
                             case "uint8":
                             case "uint16":
                             case "uint32":
+                            case "int8":
+                            case "int16":
                             case "int32":
                             case "float":
                                 StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
@@ -226,8 +229,13 @@ public class MiotParser {
                                             "%." + (property.format.contentEquals("uint8") ? "0" : "1") + "f %unit%");
                                 } else {
                                     miIoBasicChannel.setType("Number");
+
                                     stateDescription.setPattern(
                                             "%." + (property.format.contentEquals("uint8") ? "0" : "1") + "f");
+
+                                    if (property.unit != null) {
+                                        unknownUnits.add(property.unit);
+                                    }
                                 }
                                 miIoBasicChannel.setStateDescription(stateDescription);
                                 break;
@@ -337,6 +345,12 @@ public class MiotParser {
         }
         logger.info(channelConfigText.toString());
         logger.info(actionText.toString());
+
+        unknownUnits.remove("none");
+        if (unknownUnits.size() > 0) {
+            logger.info("New units identified (inform developer): {}", String.join(", ", unknownUnits));
+        }
+
         this.device = device;
         return device;
     }
