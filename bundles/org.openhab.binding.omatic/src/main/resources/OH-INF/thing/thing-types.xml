@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omatic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="machine">
+		<label>State Machine</label>
+		<description>A State Machine representing an appliance, which will monitor and measure power and energy</description>
+		<channels>
+			<channel id="power-input" typeId="power-input"/>
+			<channel id="energy-input" typeId="energy-input"/>
+			<channel id="energy1" typeId="energy1"/>
+			<channel id="energy2" typeId="energy2"/>
+			<channel id="cost1" typeId="cost1"/>
+			<channel id="cost2" typeId="cost2"/>
+			<channel id="power" typeId="power"/>
+			<channel id="max-power" typeId="max-power"/>
+			<channel id="total-energy1" typeId="total-energy1"/>
+			<channel id="total-energy2" typeId="total-energy2"/>
+			<channel id="total-cost1" typeId="total-cost1"/>
+			<channel id="total-cost2" typeId="total-cost2"/>
+			<channel id="time" typeId="time"/>
+			<channel id="time-str" typeId="time-str"/>
+			<channel id="total-time" typeId="total-time"/>
+			<channel id="total-time-str" typeId="total-time-str"/>
+			<channel id="running" typeId="running"/>
+			<channel id="state" typeId="state"/>
+			<channel id="reset" typeId="reset"/>
+			<channel id="started" typeId="started"/>
+			<channel id="completed" typeId="completed"/>
+			<channel id="disable" typeId="disable"/>
+		</channels>
+		<representation-property>name</representation-property>
+		<config-description>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Name of appliance, for instance washingmachine, dishwasher, dryingcabinet etc, must be unique</description>
+			</parameter>
+			<parameter name="activeThreshold" type="decimal" required="true">
+				<label>Active Threshold</label>
+				<description>Threshold for when the appliance is considered to be transitioned to state active</description>
+				<default>40</default>
+			</parameter>
+			<parameter name="idleTime" type="integer" required="true">
+				<label>Idle Time</label>
+				<description>Time in seconds for the appliance to be idling, if this it's idling more than this time it will be
+					considered to be finished or not active.</description>
+				<default>50</default>
+			</parameter>
+			<parameter name="cost" type="decimal" required="true">
+				<label>Cost</label>
+				<default>0.1</default>
+				<description>Cost for 1 kWh in the selected currency</description>
+			</parameter>
+			<parameter name="timerDelay" type="decimal" required="true">
+				<label>Timer Delay</label>
+				<default>10</default>
+				<description>Delay for timer updating state if no power value is present</description>
+			</parameter>
+			<parameter name="dateFormat" type="text" required="true">
+				<label>Date Format</label>
+				<default>YYYY-MM-dd HH:mm:ss</default>
+				<description>Date and time format used for started / completed</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="power-input">
+		<item-type>Number</item-type>
+		<label>Power Input</label>
+		<description>Power input to the state machine</description>
+	</channel-type>
+	<channel-type id="energy-input">
+		<item-type>Number</item-type>
+		<label>Energy Input</label>
+		<description>Energy input to the state machine</description>
+	</channel-type>
+	<channel-type id="energy1">
+		<item-type>Number</item-type>
+		<label>Energy(Measured)</label>
+		<description>Current machine consumption kWh</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="energy2">
+		<item-type>Number</item-type>
+		<label>Energy(Estimated)</label>
+		<description>Current machine consumption kWh</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="cost1">
+		<item-type>Number</item-type>
+		<label>Cost(Measured)</label>
+		<description>Current machine cost based on price and measured consumption kWh</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="cost2">
+		<item-type>Number</item-type>
+		<label>Cost(Estimated)</label>
+		<description>Current machine cost based on price and estimated consumption kWh</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>Current Power from the state machine</description>
+	</channel-type>
+	<channel-type id="max-power">
+		<item-type>Number</item-type>
+		<label>Maximum Power</label>
+		<description>Single most measured power value</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="total-energy1">
+		<item-type>Number</item-type>
+		<label>Total Energy(Measured)</label>
+		<description>Total measured energy</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="total-energy2">
+		<item-type>Number</item-type>
+		<label>Total Energy(Estimated)</label>
+		<description>Total estimated energy</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="total-cost1">
+		<item-type>Number</item-type>
+		<label>Total Cost(Measured)</label>
+		<description>Total cost based on measured energy</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="total-cost2">
+		<item-type>Number</item-type>
+		<label>Total Cost(Estimated)</label>
+		<description>Total cost based on estimated energy</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="time">
+		<item-type>Number</item-type>
+		<label>Running Time</label>
+		<description>Current machine running time in seconds</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="time-str">
+		<item-type>String</item-type>
+		<label>Running Time</label>
+		<description>Current machine running time formatted as String</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="total-time">
+		<item-type>String</item-type>
+		<label>Total Running Time</label>
+		<description>Total running time</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="total-time-str">
+		<item-type>String</item-type>
+		<label>Total Running Time</label>
+		<description>Total running time formatted as String</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>Current state machine state, i.e: off, idle, active, finished</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="running">
+		<item-type>Switch</item-type>
+		<label>Running</label>
+		<description>On when the state machine is running, off otherwise</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="started">
+		<item-type>String</item-type>
+		<label>Started</label>
+		<description>When the state machine was started</description>
+	</channel-type>
+	<channel-type id="completed">
+		<item-type>String</item-type>
+		<label>Completed</label>
+		<description>When the state machine was completed</description>
+	</channel-type>
+	<channel-type id="disable">
+		<item-type>Switch</item-type>
+		<label>Disable</label>
+		<description>Disables the state machine</description>
+	</channel-type>
+	<channel-type id="reset">
+		<item-type>Switch</item-type>
+		<label>Reset Meters</label>
+		<description>Will reset energy, power and running time meters</description>
+	</channel-type>
+</thing:thing-descriptions>

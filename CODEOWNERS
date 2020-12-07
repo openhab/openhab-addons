@@ -179,6 +179,7 @@
 /bundles/org.openhab.binding.nzwateralerts/ @cossey
 /bundles/org.openhab.binding.oceanic/ @kgoderis
 /bundles/org.openhab.binding.ojelectronics/ @EvilPingu
+/bundles/org.openhab.binding.omatic/ @Seaside
 /bundles/org.openhab.binding.omnikinverter/ @hansbogert
 /bundles/org.openhab.binding.onebusaway/ @sdwilsh
 /bundles/org.openhab.binding.onewire/ @J-N-K
