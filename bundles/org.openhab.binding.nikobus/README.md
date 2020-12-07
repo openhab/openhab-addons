@@ -170,6 +170,29 @@ Thing push-button pb1 [ address = "28092A", impactedModules = "switch-module:s1:
 
 In addition to the status requests triggered by button presses, there is also a scheduled status update interval defined by the `refreshInterval` parameter and explained above.
 
+#### Push Button Trigger Channels
+
+Beside receiving a status update (ON) when a physical Nikobus push button is pressed (and kept pressed), additional triggers can be added and configured to determine how press&hold of a physical push button should generate trigger events. Two types of trigger channels are supported:
+
+* filter trigger and
+* button trigger.
+
+##### Filter Trigger
+
+* `command` - command to be send,
+* `delay` - a required delay in milliseconds defining how much time must a button be pressed before an initial trigger event is fired,
+* `period` - optional time in milliseconds between successive triggers.
+
+Examples:
+
+* `command = PRESSED, delay = 0, period = <empty>` - triggers `PRESSED` event immediatelly when Nikobus button is pressed and is not triggered anymore while holding down the button,
+* `command = INCREMENT, delay = 1000, period = 500` - triggers initial `INCREMENT` event after 1 second and then every half a second while holding down the button.
+
+
+##### Button Trigger
+
+`threshold` - a required long-press threshold in miliseconds. Defines how long must a button be pressed before a long press event is triggered - pressing&holding a Nikobus push-button for `threshold` or more miliseconds will trigger long press event, otherwise a short press event will be triggered.
+
 ## Discovery
 
 Pressing a physical Nikobus push-button will generate a new inbox entry with an exception of buttons already discovered or setup.
@@ -245,6 +268,7 @@ so
 ```
 
 Above example `14E7F4:3` would give:
+
 * for 4 buttons switch - push button A,
 * for 8 buttons switch - push button 2A.
 
