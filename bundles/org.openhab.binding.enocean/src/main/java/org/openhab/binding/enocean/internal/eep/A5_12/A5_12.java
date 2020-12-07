@@ -21,7 +21,7 @@ import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.HexUtils;
@@ -36,11 +36,11 @@ public abstract class A5_12 extends _4BSMessage {
     }
 
     protected State calcCumulativeValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.ONE);
+        return new QuantityType<>(value, Units.ONE);
     }
 
     protected State calcCurrentValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.ONE);
+        return new QuantityType<>(value, Units.ONE);
     }
 
     protected State getCumulativeValue() {

@@ -34,7 +34,7 @@ import org.openhab.binding.netatmo.internal.channelhelper.RadioHelper;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -63,13 +63,13 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
-    public static final Unit<Dimensionless> API_HUMIDITY_UNIT = SmartHomeUnits.PERCENT;
+    public static final Unit<Dimensionless> API_HUMIDITY_UNIT = Units.PERCENT;
     public static final Unit<Pressure> API_PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
     public static final Unit<Speed> API_WIND_SPEED_UNIT = SIUnits.KILOMETRE_PER_HOUR;
-    public static final Unit<Angle> API_WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
+    public static final Unit<Angle> API_WIND_DIRECTION_UNIT = Units.DEGREE_ANGLE;
     public static final Unit<Length> API_RAIN_UNIT = MILLI(SIUnits.METRE);
-    public static final Unit<Dimensionless> API_CO2_UNIT = SmartHomeUnits.PARTS_PER_MILLION;
-    public static final Unit<Dimensionless> API_NOISE_UNIT = SmartHomeUnits.DECIBEL;
+    public static final Unit<Dimensionless> API_CO2_UNIT = Units.PARTS_PER_MILLION;
+    public static final Unit<Dimensionless> API_NOISE_UNIT = Units.DECIBEL;
 
     private final Logger logger = LoggerFactory.getLogger(AbstractNetatmoThingHandler.class);
 

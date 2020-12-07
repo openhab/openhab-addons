@@ -30,7 +30,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 
@@ -315,7 +315,7 @@ public class TeslaChannelSelectorProxy {
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
                 BigDecimal value = ((DecimalType) someState).toBigDecimal();
-                return new QuantityType<>(value, SmartHomeUnits.DEGREE_ANGLE);
+                return new QuantityType<>(value, Units.DEGREE_ANGLE);
             }
         },
         EST_RANGE("est_range", "estimatedrange", DecimalType.class, false) {
@@ -421,7 +421,7 @@ public class TeslaChannelSelectorProxy {
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
                 BigDecimal value = ((DecimalType) someState).toBigDecimal();
-                return new QuantityType<>(value, SmartHomeUnits.DEGREE_ANGLE);
+                return new QuantityType<>(value, Units.DEGREE_ANGLE);
             }
         },
         HONK_HORN(null, "honkhorn", OnOffType.class, false) {
