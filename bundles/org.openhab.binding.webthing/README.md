@@ -2,10 +2,10 @@
 
 The WebThing binding supports an interface to smart home device supporting the Web Thing API. 
 
-The [Web Thing API](https://iot.mozilla.org/wot/) describes how smart home devices or things can be discovered and linked. 
-Essentially, such smart home devices provide a Web-based API that can be used by smart home systems such as openHAB 
-to monitor and control your smart home device.
-These days, the Web Thing API is primarily used by makers to provide an open and common API to their physical smart home devices. 
+The [Web Thing API](https://iot.mozilla.org/wot/) describes an open and generic standard to discover and link smart home devices 
+like motion sensors, web-connected displays or awning controls. Devices implementing the Web Thing standard can be integrated 
+into smart home systems such as openHAB to monitor and control them.
+These days, the Web Thing API is primarily used by makers to provide a common API to their physical devices. 
 For instance, the Web Thing API has been used by makers to provide an open way to control [LEDs on a ESP8266 board](https://github.com/WebThingsIO/webthing-arduino) 
 or to monitor [a PIR motion sensor on Raspberry Pi](https://pypi.org/project/pi-pir-webthing/).
 
