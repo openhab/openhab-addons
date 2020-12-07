@@ -48,7 +48,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -292,7 +292,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     private void handleCurrentHumidityCommand(ChannelUID channelUID, Command command, SensiboSky sensiboSky) {
         if (command instanceof RefreshType) {
-            updateState(channelUID, new QuantityType<>(sensiboSky.getHumidity(), SmartHomeUnits.PERCENT));
+            updateState(channelUID, new QuantityType<>(sensiboSky.getHumidity(), Units.PERCENT));
         }
     }
 

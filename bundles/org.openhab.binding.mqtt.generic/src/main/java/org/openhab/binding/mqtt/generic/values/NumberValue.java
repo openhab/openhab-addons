@@ -23,7 +23,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.UpDownType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.UnDefType;
@@ -110,7 +110,7 @@ public class NumberValue extends Value {
         } else if (command instanceof QuantityType<?>) {
             QuantityType<?> qType = (QuantityType<?>) command;
 
-            if (qType.getUnit().isCompatible(SmartHomeUnits.ONE)) {
+            if (qType.getUnit().isCompatible(Units.ONE)) {
                 newValue = qType.toBigDecimal();
             } else {
                 qType = qType.toUnit(unit);

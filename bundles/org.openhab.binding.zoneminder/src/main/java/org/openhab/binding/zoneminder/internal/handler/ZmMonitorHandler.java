@@ -35,7 +35,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -215,7 +215,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
                     ZonedDateTime.ofInstant(event.getEnd().toInstant(), timeZoneProvider.getTimeZone())));
             updateChannelState(CHANNEL_EVENT_FRAMES, new DecimalType(event.getFrames()));
             updateChannelState(CHANNEL_EVENT_ALARM_FRAMES, new DecimalType(event.getAlarmFrames()));
-            updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<Time>(event.getLength(), SmartHomeUnits.SECOND));
+            updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<Time>(event.getLength(), Units.SECOND));
         }
     }
 

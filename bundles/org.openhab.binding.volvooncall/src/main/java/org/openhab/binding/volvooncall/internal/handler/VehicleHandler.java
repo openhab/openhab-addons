@@ -15,7 +15,7 @@ package org.openhab.binding.volvooncall.internal.handler;
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.SIUnits.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;

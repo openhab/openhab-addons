@@ -14,7 +14,7 @@ package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.SmartHomeUnits.PERCENT;
+import static org.openhab.core.library.unit.Units.PERCENT;
 
 import java.math.BigDecimal;
 import java.util.Arrays;

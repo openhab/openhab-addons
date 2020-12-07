@@ -54,7 +54,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -270,7 +270,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (statusInfo.getCleanTime() != null) {
             updateState(CHANNEL_CLEAN_TIME,
-                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getCleanTime()), SmartHomeUnits.MINUTE));
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(statusInfo.getCleanTime()), Units.MINUTE));
         }
         safeUpdateState(CHANNEL_DND_ENABLED, statusInfo.getDndEnabled());
 
@@ -350,20 +350,20 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         int sideBrush = consumablesData.get("side_brush_work_time").getAsInt();
         int filter = consumablesData.get("filter_work_time").getAsInt();
         int sensor = consumablesData.get("sensor_dirty_time").getAsInt();
-        updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_MAIN_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(mainBrush, ConsumablesType.MAIN_BRUSH), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(mainBrush, ConsumablesType.MAIN_BRUSH)));
-        updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_SIDE_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(sideBrush, ConsumablesType.SIDE_BRUSH), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(sideBrush, ConsumablesType.SIDE_BRUSH)));
-        updateState(CHANNEL_CONSUMABLE_FILTER_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(filter, ConsumablesType.FILTER), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(filter, ConsumablesType.FILTER), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(filter, ConsumablesType.FILTER)));
-        updateState(CHANNEL_CONSUMABLE_SENSOR_TIME, new QuantityType<>(
-                ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR), SmartHomeUnits.HOUR));
+        updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
+                new QuantityType<>(ConsumablesType.remainingHours(sensor, ConsumablesType.SENSOR), Units.HOUR));
         updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
                 new DecimalType(ConsumablesType.remainingPercent(sensor, ConsumablesType.SENSOR)));
         return true;
@@ -382,7 +382,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean updateHistory(JsonArray historyData) {
         logger.trace("Cleaning history data: {}", historyData.toString());
         updateState(CHANNEL_HISTORY_TOTALTIME,
-                new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), SmartHomeUnits.MINUTE));
+                new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), Units.MINUTE));
         updateState(CHANNEL_HISTORY_TOTALAREA,
                 new QuantityType<>(historyData.get(1).getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
         updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
@@ -414,7 +414,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         historyRecord.addProperty("finished", finished);
         updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(startTime));
         updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(endTime));
-        updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, SmartHomeUnits.MINUTE));
+        updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
         updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(area, SIUnits.SQUARE_METRE));
         updateState(CHANNEL_HISTORY_ERROR, new DecimalType(error));
         updateState(CHANNEL_HISTORY_FINISH, new DecimalType(finished));
