@@ -18,7 +18,7 @@ import static org.openhab.core.library.unit.MetricPrefix.HECTO;
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 import static org.openhab.core.library.unit.SIUnits.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

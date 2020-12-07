@@ -47,7 +47,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -703,7 +703,7 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
         checkSetURI(0, null, false);
         checkMetadataChannels(0, false);
         verify(handler, times(3)).setVolume(new PercentType(50));
-        verify(callback, times(2)).stateUpdated(trackPositionChannelUID, new QuantityType<>(10, SmartHomeUnits.SECOND));
+        verify(callback, times(2)).stateUpdated(trackPositionChannelUID, new QuantityType<>(10, Units.SECOND));
     }
 
     @Test
