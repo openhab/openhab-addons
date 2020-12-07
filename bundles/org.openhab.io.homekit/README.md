@@ -33,8 +33,6 @@ HomeKit integration supports following accessory types:
 - Carbon Dioxide Sensor
 - Carbon Monoxide Sensor
 
-**Attention: Some tags have been renamed. Old style may not be supported in future versions. See below for details.**
-
 ## Global Configuration
 
 Your first step will be to create the `homekit.cfg` in your `$OPENHAB_CONF/services` folder.
@@ -93,22 +91,12 @@ A complex accessory will be made up of multiple openHAB items, e.g. HomeKit Ther
 Complex accessories require a tag on a Group Item indicating the accessory type, as well as tags on the items it composes.
 
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
-The mapping between openHAB items and HomeKit accessory and characteristics is done by means of tagging.
-You can tag openHAB items using:
-
-- [tags](https://www.openhab.org/docs/configuration/items.html#tags) (deprecated)
-- [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
-
+The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
 e.g.
 
 ```xtend
-Switch leaksensor_tag       "Leak Sensor with Tag"  [ "LeakSensor" ]
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 ```
-
-The HomeKit integration currently supports both options. You can mix both options in the same configuration file.
-If an openHAB item has both, tags and metadata, then HomeKit integration will use only metadata and ignore tags.
-In general, the `tag` way is considered legacy and may be removed in future releases.
 
 You can link one openHAB item to one or more HomeKit accessory, e.g.
 
@@ -132,15 +120,7 @@ Rollershutter 	window_covering 	"Window Rollershutter"  	{homekit="WindowCoverin
 
 If the shorthand version has only a characteristic then it must be a part of a group which has a HomeKit accessory type.
 You can use openHAB group to define complex accessories. The group item must indicate the HomeKit accessory type, 
-e.g. LeakSensor definition using tags
-
-```xtend
-Group  gLegacy_leaksensor               "Legacy Leak sensor Group"                                      [ "LeakSensor" ]
-Switch legacy_leaksensor                "Legacy Leak sensor"                    (gLegacy_Leaksensor)    [ "LeakDetectedState" ]
-Switch legacy_leaksensor_battery        "Legacy Leak sensor battery status"     (gLegacy_Leaksensor)    [ "homekit:BatteryLowStatus" ]
-```
-
-using metadata
+e.g. LeakSensor definition 
 
 ```xtend
 Group  gLeakSensor                      "Leak Sensor Group"                                              {homekit="LeakSensor"}
@@ -344,71 +324,10 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 |                      |                             | LockCurrentState             | Switch                   | current states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                              |
 |                      |                             | LockTargetState              | Switch                   | target states of lock mechanism (OFF=SECURED, ON=UNSECURED)                                                                                                                                                                                                                                               |
 
-### Legacy tags
-
-Following tags are still supported but could be removed in the future releases. Please consider replacing them with the new style.
-
-| Old (tag style)                  | New (metadata style)                            |
-|:---------------------------------|:------------------------------------------------|
-| homekit:HeatingCoolingMode       | CurrentHeatingCoolingMode                       |
-| homekit:TargetHeatingCoolingMode | TargetHeatingCoolingMode                        |
-| homekit:TargetTemperature        | TargetTemperature                               |
-| homekit:BatteryLowStatus         | BatteryLowStatus                                |
-| homekit:BatteryLevel             | mapping to BatteryLowStatus                     |
-| CurrentHumidity                  | RelativeHumidity                                |
-| Blinds                           | WindowCovering                                  |
-| DimmableLighting                 | Lighting with characteristic Brightness         |
-| ColorfulLighting                 | Lighting with characteristic Brightness and Hue |
-
 
 ### Examples
 
 See the sample below for example items:
-
-#### Using "tag"
-
-```xtend
-Color           legacy_color_light_single         "Legacy Color Light Single"                                  [ "Lighting" ]
-Color           legacy_color_light_dimmable       "Legacy Color Light Dimmable"                                [ "DimmableLighting" ]
-Color           legacy_color_light_hue            "Legacy Color Light Hue"                                     [ "ColorfulLighting" ]
-
-Rollershutter   legacy_window_covering            "Legacy Window Rollershutter"                                [ "WindowCovering" ]
-Switch          legacy_switch_single              "Legacy Switch single"                                       [ "Switchable" ]
-Switch          legacy_contactsensor_single       "Legacy Contact Sensor single"                               [ "ContactSensor" ]
-Switch          legacy_leaksensor_single          "Legacy Leak Sensor single"                                  [ "LeakSensor" ]
-Switch          legacy_leaksensor_single2         "Legacy Leak Sensor single 2"                                [ "LeakSensor", "LeakSensor.LeakDetectedState" ]
-Switch          legacy_motionsensor_single        "Legacy Motion Sensor"                                       [ "MotionSensor" ]
-Switch          legacy_occupancy_single           "Legacy Occupanncy Sensor"                                   [ "OccupancySensor" ]
-Switch          legacy_smoke_single               "Legacy Smoke Sensor"                                        [ "SmokeSensor" ]
-Number          legacy_humidity_single            "Legacy Humidity Sensor"                                     [ "CurrentHumidity" ]
-Number          legacy_temperature_sensor		  "Temperature Sensor"		                                   ["TemperatureSensor"]
-
-Switch          legacy_lock                       "Legacy Lock single"                                         [ "Lock" ]
-
-Switch          legacy_valve_single               "Legacy Valve Single"                                        [ "Valve" ]
-
-Group           gLegacy_Valve                     "Legacy Valve Group"                                         [ "Valve" ]
-Switch          legacy_valve_active               "Legacy Valve active"                 (gLegacy_Valve)        [ "Active" ]
-Number          legacy_valve_duration             "Legacy Valve duration"               (gLegacy_Valve)        [ "Duration" ]
-Number          legacy_valve_remaining_duration   "Legacy Valve remaining duration"     (gLegacy_Valve)        [ "RemainingDuration" ]
-
-Group           gLegacy_Thermo                    "Legacy Thermostat"                                          [ "Thermostat" ]
-Number          legacy_thermostat_current_temp    "L Therm. Cur. Temp. [%.1f C]"        (gLegacy_Thermo)       [ "CurrentTemperature" ]
-Number          legacy_thermostat_target_temp     "L Therm. Target Temp.[%.1f C]"       (gLegacy_Thermo)       [ "homekit:TargetTemperature" ]
-String          legacy_thermostat_current_mode    "Legacy Thermostat Current Mode"      (gLegacy_Thermo)       [ "homekit:CurrentHeatingCoolingMode" ]
-String          legacy_thermostat_target_mode     "Thermostat Target Mode"              (gLegacy_Thermo)       [ "homekit:TargetHeatingCoolingMode" ]
-
-Group           gLegacy_Leaksensor                "Legacy Leak Sensor Group"                                   [ "LeakSensor" ]
-Switch          legacy_leaksensor                 "Legacy Leak Sensor"                  (gLegacy_Leaksensor)   [ "LeakSensor" ]
-Switch          legacy_leaksensor_bat             "Legacy Leak sensor battery status"   (gLegacy_Leaksensor)   [ "homekit:BatteryLowStatus" ]
-Switch          legacy_leaksensor_fault           "Legacy Leak sensor fault"            (gLegacy_Leaksensor)   [ "FaultStatus" ]
-
-Group           gLegacy_Security                  "Legacy Security System Group"                               [ "SecuritySystem" ]
-String          legacy_SecurityCurrentState       "Security Current State"              (gLegacy_Security)     [ "CurrentSecuritySystemState" ]
-String          legacy_SecurityTargetState        "Security Target State"               (gLegacy_Security)     [ "TargetSecuritySystemState" ]
-```
-
-#### Using "metadata"
 
 ```xtend
 Color           color_light_single         "Color Light Single"                                      {homekit="Lighting"}
