@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -37,6 +38,8 @@ import org.openhab.binding.miio.internal.basic.DeviceMapping;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceAction;
+import org.openhab.binding.miio.internal.basic.OptionsValueListDTO;
+import org.openhab.binding.miio.internal.basic.StateDescriptionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,6 +139,7 @@ public class MiotParser {
     public void writeDevice(String path, MiIoBasicDevice device) {
         String usersJson = GSON.toJson(device);
         try (PrintWriter out = new PrintWriter(path)) {
+            usersJson = usersJson.replace("\n", "\r\n");
             out.println(usersJson);
             logger.info("Database file created:{}", path);
         } catch (FileNotFoundException e) {
@@ -199,7 +203,8 @@ public class MiotParser {
                         }
                         miIoBasicChannel.setProperty(propertyId);
                         miIoBasicChannel.setChannel(chanId);
-                        miIoBasicChannel.setChannelType("miot_" + property.format);
+
+                        // miIoBasicChannel.setChannelType("miot_" + property.format);
 
                         switch (property.format) {
                             case "bool":
@@ -210,7 +215,21 @@ public class MiotParser {
                             case "uint32":
                             case "int32":
                             case "float":
-                                miIoBasicChannel.setType("Number");
+                                StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
+                                if (stateDescription == null) {
+                                    stateDescription = new StateDescriptionDTO();
+                                }
+                                String type = MiIoQuantiyTypesConversion.getType(property.unit);
+                                if (type != null) {
+                                    miIoBasicChannel.setType("Number" + ":" + type);
+                                    stateDescription.setPattern(
+                                            "%." + (property.format.contentEquals("uint8") ? "0" : "1") + "f %unit%");
+                                } else {
+                                    miIoBasicChannel.setType("Number");
+                                    stateDescription.setPattern(
+                                            "%." + (property.format.contentEquals("uint8") ? "0" : "1") + "f");
+                                }
+                                miIoBasicChannel.setStateDescription(stateDescription);
                                 break;
                             case "string":
                                 miIoBasicChannel.setType("String");
@@ -221,14 +240,31 @@ public class MiotParser {
                                 break;
                         }
                         miIoBasicChannel.setRefresh(true);
+                        // add option values
                         if (property.valueList != null && property.valueList.size() > 0) {
-                            miIoBasicChannel.setValueList(property.valueList);
+                            StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
+                            if (stateDescription == null) {
+                                stateDescription = new StateDescriptionDTO();
+                            }
+                            stateDescription.setPattern(null);
+                            List<OptionsValueListDTO> channeloptions = new LinkedList<>();
+                            for (OptionsValueDescriptionsListDTO miotOption : property.valueList) {
+                                // miIoBasicChannel.setValueList(property.valueList);
+                                OptionsValueListDTO basicOption = new OptionsValueListDTO();
+                                basicOption.setLabel(miotOption.getDescription());
+                                basicOption.setValue(String.valueOf(miotOption.value));
+                                channeloptions.add(basicOption);
+                            }
+                            stateDescription.setOptions(channeloptions);
+                            miIoBasicChannel.setStateDescription(stateDescription);
                             // Use custom channelType to support the properties mapping
-                            miIoBasicChannel.setChannelType(captializedName(model).replace(" ", "") + "_" + chanId);
+                            // miIoBasicChannel.setChannelType(captializedName(model).replace(" ", "") + "_" + chanId);
+
+                            // Add the mapping to the readme
                             StringBuilder mapping = new StringBuilder();
                             mapping.append("Value mapping [");
 
-                            for (OptionsValueListDTO valueMap : property.valueList) {
+                            for (OptionsValueDescriptionsListDTO valueMap : property.valueList) {
                                 mapping.append(String.format("%d=\"%s\",", valueMap.value, valueMap.description));
                             }
                             mapping.deleteCharAt(mapping.length() - 1);
@@ -258,6 +294,13 @@ public class MiotParser {
                             }
                             miIoDeviceActions.add(action);
                             miIoBasicChannel.setActions(miIoDeviceActions);
+                        } else {
+                            StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
+                            if (stateDescription == null) {
+                                stateDescription = new StateDescriptionDTO();
+                            }
+                            stateDescription.setReadOnly(true);
+                            miIoBasicChannel.setStateDescription(stateDescription);
                         }
                         miIoBasicChannels.add(miIoBasicChannel);
                         channelConfigText = printChannelDefinitions(channelConfigText, miIoBasicChannel, model,
@@ -335,7 +378,7 @@ public class MiotParser {
             sb.append(">\r\n");
             if (property.valueList != null && property.valueList.size() > 0) {
                 sb.append("<options>\r\n");
-                for (OptionsValueListDTO valueMap : property.valueList) {
+                for (OptionsValueDescriptionsListDTO valueMap : property.valueList) {
                     sb.append(String.format("<option value=\"%d\">%s</option>\r\n", valueMap.value,
                             valueMap.description));
                 }

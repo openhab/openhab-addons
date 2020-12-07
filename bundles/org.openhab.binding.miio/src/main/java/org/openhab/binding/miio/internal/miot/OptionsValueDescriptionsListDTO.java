@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
-public class OptionsValueListDTO {
+public class OptionsValueDescriptionsListDTO {
 
     @SerializedName("value")
     @Expose

@@ -13,6 +13,8 @@
 
 package org.openhab.binding.miio.internal;
 
+import java.io.File;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Disabled;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
@@ -37,11 +39,13 @@ public class MiotJsonFileCreator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MiotJsonFileCreator.class);
 
     private static final String BASEDIR = "./src/main/resources/database/";
+    private static final String FILENAME_EXTENSION = "-miot.json";
+    private static final boolean overwriteFile = false;
 
     @Disabled
     public static void main(String[] args) {
 
-        String model = "zhimi.heater.zb1";
+        String model = "dreame.vacuum.mc1808";
         if (args.length > 0) {
             model = args[0];
         }
@@ -53,8 +57,16 @@ public class MiotJsonFileCreator {
             MiIoBasicDevice device = miotParser.getDevice();
             if (device != null) {
                 LOGGER.info("Device: {}", device);
-                miotParser.writeDevice(BASEDIR + model + "-miot.json", device);
-                // miotParser.writeEmuDevice(BASEDIR + model + "-miotEMU.json", device);
+
+                String fileName = String.format("%s%s%s", BASEDIR, model, FILENAME_EXTENSION);
+                if (!overwriteFile) {
+                    int counter = 0;
+                    while (new File(fileName).isFile()) {
+                        fileName = String.format("%s%s-%d%s", BASEDIR, model, counter, FILENAME_EXTENSION);
+                        counter++;
+                    }
+                }
+                miotParser.writeDevice(fileName, device);
             }
             LOGGER.info("finished");
         } catch (MiotParseException e) {

@@ -41,7 +41,7 @@ public class PropertyDTO {
     public List<String> access = null;
     @SerializedName("value-list")
     @Expose
-    public List<OptionsValueListDTO> valueList = null;
+    public List<OptionsValueDescriptionsListDTO> valueList = null;
     @SerializedName("value-range")
     @Expose
     public List<Integer> valueRange = null;
