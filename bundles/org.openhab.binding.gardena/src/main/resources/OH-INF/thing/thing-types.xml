@@ -592,7 +592,7 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Light Intensity</label>
 		<description>Light intensity in Lux</description>
-		<state readOnly="true" pattern="%d lx"/>
+		<state readOnly="true" pattern="%d lux"/>
 	</channel-type>
 
 	<channel-type id="temperature">
