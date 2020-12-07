@@ -124,6 +124,8 @@ Currently the miio binding supports more than 210 different models.
 | Yeelight Smart Bath Heater   | miio:unsupported | yeelight.bhf_light.v2  | No        |            |
 | Gosund Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes       |            |
 | XIAOMI MIJIA WIDETECH WDH318EFW1 Dehumidifier | miio:unsupported | nwt.derh.wdh318efw1    | No        |            |
+| Vacuum 1C STYTJ01ZHM         | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       |            |
+| dreame.vacuum.p2008          | miio:basic       | [dreame.vacuum.p2008](#dreame-vacuum-p2008) | Yes       | Identified manual actions for execution<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"battery-start-charge","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":9,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":10,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Purifier mb1          | miio:basic       | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | Yes       |            |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | Yes       |            |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mc2](#zhimi-airpurifier-mc2) | Yes       |            |
@@ -242,7 +244,6 @@ Currently the miio binding supports more than 210 different models.
 | Xiaomi Mijia vacuum V-RVCLM21B | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes       |            |
 | Xiaomi Mijia vacuum mop STYJ02YM | miio:basic       | [viomi.vacuum.v7](#viomi-vacuum-v7) | Yes       |            |
 | Xiaomi Mijia vacuum mop STYJ02YM v2 | miio:basic       | [viomi.vacuum.v8](#viomi-vacuum-v8) | Yes       |            |
-| Vacuum 1C STYTJ01ZHM         | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       |            |
 | roborock.vacuum.c1           | miio:unsupported | roborock.vacuum.c1     | No        |            |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
 | Rockrobo Xiaowa Sweeper v3   | miio:unsupported | roborock.sweeper.e2v3  | No        |            |
@@ -969,6 +970,79 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Model            | String  | Device Information-Device Model     |            |
 | SerialNumber     | String  | Device Information-Device Serial Number |            |
 | On               | Switch  | Switch-Switch Status                |            |
+
+### Vacuum 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| vacuumaction     | String  | Vacuum Action                       |            |
+| BatteryLevel     | Number  | Battery-Battery Level               |            |
+| ChargingState    | Number  | Battery-Charging State              |            |
+| Fault            | Number  | Robot Cleaner-Device Fault          |            |
+| Status           | Number  | Robot Cleaner-Status                |            |
+| BrushLeftTime    | String  | Main Cleaning Brush-Brush Left Time |            |
+| BrushLifeLevel   | Number  | Main Cleaning Brush-Brush Life Level |            |
+| FilterLifeLevel  | Number  | Filter-Filter Life Level            |            |
+| FilterLeftTime   | String  | Filter-Filter Left Time             |            |
+| BrushLeftTime1   | String  | Side Cleaning Brush-Brush Left Time |            |
+| BrushLifeLevel1  | Number  | Side Cleaning Brush-Brush Life Level |            |
+| WorkMode         | Number  | clean-workmode                      |            |
+| Area             | String  | clean-area                          |            |
+| Timer            | String  | clean-timer                         |            |
+| Mode             | Number  | clean-mode                          |            |
+| TotalCleanTime   | String  | clean-total time                    |            |
+| TotalCleanTimes  | String  | clean-total times                   |            |
+| TotalCleanArea   | String  | clean-Total area                    |            |
+| CleanLogStartTime | String  | clean-Start Time                    |            |
+| ButtonLed        | String  | clean-led                           |            |
+| TaskDone         | Number  | clean-task done                     |            |
+| LifeSieve        | String  | consumable-life-sieve               |            |
+| LifeBrushSide    | String  | consumable-life-brush-side          |            |
+| LifeBrushMain    | String  | consumable-life-brush-main          |            |
+| Enable           | Switch  | annoy-enable                        |            |
+| StartTime        | String  | annoy-start-time                    |            |
+| StopTime         | String  | annoy-stop-time                     |            |
+| MapView          | String  | map-map-view                        |            |
+| Volume           | Number  | audio-volume                        |            |
+| VoicePackets     | String  | audio-voiceId                       |            |
+| TimeZone         | String  | timezone                            |            |
+
+### dreame.vacuum.p2008 (<a name="dreame-vacuum-p2008">dreame.vacuum.p2008</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| status           | Number  | Robot Cleaner - Status              | Value mapping [1="Sweeping",2="Idle",3="Paused",4="Error",5="Go Charging",6="Charging"] |
+| fault            | Number  | Robot Cleaner - Device Fault        | Value mapping [0="No Faults"] |
+| battery-level    | Number  | Battery - Battery Level             |            |
+| charging-state   | Number  | Battery - Charging State            | Value mapping [1="Charging",2="Not Charging",5="Go Charging"] |
+| brush-left-time  | Number:Time | Main Cleaning Brush - Brush Left Time |            |
+| brush-life-level | Number:Dimensionless | Main Cleaning Brush - Brush Life Level |            |
+| brush-left-time1 | Number:Time | Side Cleaning Brush - Brush Left Time |            |
+| brush-life-level1 | Number:Dimensionless | Side Cleaning Brush - Brush Life Level |            |
+| filter-life-level | Number:Dimensionless | Filter - Filter Life Level          |            |
+| filter-left-time | Number:Time | Filter - Filter Left Time           |            |
+| work-mode        | Number  | Vacuum Extend - Work Mode           |            |
+| cleaning-time    | Number:Time | Vacuum Extend - Cleaning Time       |            |
+| cleaning-area    | Number:Area | Vacuum Extend - Cleaning Area       |            |
+| cleaning-mode    | Number  | Vacuum Extend - Cleaning Mode       | Value mapping [0="",1="",2="",3=""] |
+| mop-mode         | Number  | Vacuum Extend - Mop Mode            | Value mapping [1="low",2="medium",3="high"] |
+| waterbox-status  | Number  | Vacuum Extend - Waterbox Status     | Value mapping [0="",1=""] |
+| task-status      | Number  | Vacuum Extend - Task Status         | Value mapping [0="",1=""] |
+| break-point-restart | Number  | Vacuum Extend - Break Point Restart | Value mapping [0="Off",1="On"] |
+| carpet-press     | Number  | Vacuum Extend - Carpet Press        | Value mapping [0="Off",1="On"] |
+| enable           | Switch  | Do Not Disturb - Enable             |            |
+| start-time       | String  | Do Not Disturb - Start Time         |            |
+| end-time         | String  | Do Not Disturb - End Time           |            |
+| volume           | Number  | Audio - Volume                      |            |
+| voice-packet-id  | String  | Audio - Voice Packet Id             |            |
+| voice-change-state | String  | Audio - Voice Change State          |            |
+| time-zone        | String  | Time - Time Zone                    |            |
+| timer-clean      | String  | Time - Timer Clean                  |            |
+| first-clean-time | Number  | Clean Logs - First Clean Time       |            |
+| total-clean-time | Number:Time | Clean Logs - Total Clean Time       |            |
+| total-clean-times | Number  | Clean Logs - Total Clean Times      |            |
+| total-clean-area | Number  | Clean Logs - Total Clean Area       |            |
+| save-map-status  | Number  | Vslam Extend - Save Map Status      | Value mapping [0="Off",1="On",-1="Not Enabled"] |
 
 ### Mi Air Purifier mb1 (<a name="zhimi-airpurifier-mb1">zhimi.airpurifier.mb1</a>) Channels
 
@@ -2069,42 +2143,6 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | has_map          | Number  | has_map                             |            |
 | is_mop           | Number  | is_mop                              |            |
 | has_newmap       | Number  | has_newmap                          |            |
-
-### Vacuum 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| vacuumaction     | String  | Vacuum Action                       |            |
-| BatteryLevel     | Number  | Battery-Battery Level               |            |
-| ChargingState    | Number  | Battery-Charging State              |            |
-| Fault            | Number  | Robot Cleaner-Device Fault          |            |
-| Status           | Number  | Robot Cleaner-Status                |            |
-| BrushLeftTime    | String  | Main Cleaning Brush-Brush Left Time |            |
-| BrushLifeLevel   | Number  | Main Cleaning Brush-Brush Life Level |            |
-| FilterLifeLevel  | Number  | Filter-Filter Life Level            |            |
-| FilterLeftTime   | String  | Filter-Filter Left Time             |            |
-| BrushLeftTime1   | String  | Side Cleaning Brush-Brush Left Time |            |
-| BrushLifeLevel1  | Number  | Side Cleaning Brush-Brush Life Level |            |
-| WorkMode         | Number  | clean-workmode                      |            |
-| Area             | String  | clean-area                          |            |
-| Timer            | String  | clean-timer                         |            |
-| Mode             | Number  | clean-mode                          |            |
-| TotalCleanTime   | String  | clean-total time                    |            |
-| TotalCleanTimes  | String  | clean-total times                   |            |
-| TotalCleanArea   | String  | clean-Total area                    |            |
-| CleanLogStartTime | String  | clean-Start Time                    |            |
-| ButtonLed        | String  | clean-led                           |            |
-| TaskDone         | Number  | clean-task done                     |            |
-| LifeSieve        | String  | consumable-life-sieve               |            |
-| LifeBrushSide    | String  | consumable-life-brush-side          |            |
-| LifeBrushMain    | String  | consumable-life-brush-main          |            |
-| Enable           | Switch  | annoy-enable                        |            |
-| StartTime        | String  | annoy-start-time                    |            |
-| StopTime         | String  | annoy-stop-time                     |            |
-| MapView          | String  | map-map-view                        |            |
-| Volume           | Number  | audio-volume                        |            |
-| VoicePackets     | String  | audio-voiceId                       |            |
-| TimeZone         | String  | timezone                            |            |
 
 ###  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
 
@@ -3956,6 +3994,85 @@ String SerialNumber "Device Information-Device Serial Number" (G_plug) {channel=
 Switch On "Switch-Switch Status" (G_plug) {channel="miio:basic:plug:On"}
 ```
 
+### Vacuum 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_vacuum "Vacuum 1C STYTJ01ZHM" <status>
+String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number BatteryLevel "Battery-Battery Level" (G_vacuum) {channel="miio:basic:vacuum:BatteryLevel"}
+Number ChargingState "Battery-Charging State" (G_vacuum) {channel="miio:basic:vacuum:ChargingState"}
+Number Fault "Robot Cleaner-Device Fault" (G_vacuum) {channel="miio:basic:vacuum:Fault"}
+Number Status "Robot Cleaner-Status" (G_vacuum) {channel="miio:basic:vacuum:Status"}
+String BrushLeftTime "Main Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime"}
+Number BrushLifeLevel "Main Cleaning Brush-Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:BrushLifeLevel"}
+Number FilterLifeLevel "Filter-Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:FilterLifeLevel"}
+String FilterLeftTime "Filter-Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:FilterLeftTime"}
+String BrushLeftTime1 "Side Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime1"}
+Number BrushLifeLevel1 "Side Cleaning Brush-Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:BrushLifeLevel1"}
+Number WorkMode "clean-workmode" (G_vacuum) {channel="miio:basic:vacuum:WorkMode"}
+String Area "clean-area" (G_vacuum) {channel="miio:basic:vacuum:Area"}
+String Timer "clean-timer" (G_vacuum) {channel="miio:basic:vacuum:Timer"}
+Number Mode "clean-mode" (G_vacuum) {channel="miio:basic:vacuum:Mode"}
+String TotalCleanTime "clean-total time" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTime"}
+String TotalCleanTimes "clean-total times" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTimes"}
+String TotalCleanArea "clean-Total area" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanArea"}
+String CleanLogStartTime "clean-Start Time" (G_vacuum) {channel="miio:basic:vacuum:CleanLogStartTime"}
+String ButtonLed "clean-led" (G_vacuum) {channel="miio:basic:vacuum:ButtonLed"}
+Number TaskDone "clean-task done" (G_vacuum) {channel="miio:basic:vacuum:TaskDone"}
+String LifeSieve "consumable-life-sieve" (G_vacuum) {channel="miio:basic:vacuum:LifeSieve"}
+String LifeBrushSide "consumable-life-brush-side" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushSide"}
+String LifeBrushMain "consumable-life-brush-main" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushMain"}
+Switch Enable "annoy-enable" (G_vacuum) {channel="miio:basic:vacuum:Enable"}
+String StartTime "annoy-start-time" (G_vacuum) {channel="miio:basic:vacuum:StartTime"}
+String StopTime "annoy-stop-time" (G_vacuum) {channel="miio:basic:vacuum:StopTime"}
+String MapView "map-map-view" (G_vacuum) {channel="miio:basic:vacuum:MapView"}
+Number Volume "audio-volume" (G_vacuum) {channel="miio:basic:vacuum:Volume"}
+String VoicePackets "audio-voiceId" (G_vacuum) {channel="miio:basic:vacuum:VoicePackets"}
+String TimeZone "timezone" (G_vacuum) {channel="miio:basic:vacuum:TimeZone"}
+```
+
+### dreame.vacuum.p2008 (dreame.vacuum.p2008) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_vacuum "dreame.vacuum.p2008" <status>
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number battery-level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number charging-state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging-state"}
+Number:Time brush-left-time "Main Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
+Number:Dimensionless brush-life-level "Main Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
+Number:Time brush-left-time1 "Side Cleaning Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
+Number:Dimensionless brush-life-level1 "Side Cleaning Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
+Number:Dimensionless filter-life-level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter-life-level"}
+Number:Time filter-left-time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
+Number work-mode "Vacuum Extend - Work Mode" (G_vacuum) {channel="miio:basic:vacuum:work-mode"}
+Number:Time cleaning-time "Vacuum Extend - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning-time"}
+Number:Area cleaning-area "Vacuum Extend - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning-area"}
+Number cleaning-mode "Vacuum Extend - Cleaning Mode" (G_vacuum) {channel="miio:basic:vacuum:cleaning-mode"}
+Number mop-mode "Vacuum Extend - Mop Mode" (G_vacuum) {channel="miio:basic:vacuum:mop-mode"}
+Number waterbox-status "Vacuum Extend - Waterbox Status" (G_vacuum) {channel="miio:basic:vacuum:waterbox-status"}
+Number task-status "Vacuum Extend - Task Status" (G_vacuum) {channel="miio:basic:vacuum:task-status"}
+Number break-point-restart "Vacuum Extend - Break Point Restart" (G_vacuum) {channel="miio:basic:vacuum:break-point-restart"}
+Number carpet-press "Vacuum Extend - Carpet Press" (G_vacuum) {channel="miio:basic:vacuum:carpet-press"}
+Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
+String start-time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start-time"}
+String end-time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end-time"}
+Number volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+String voice-packet-id "Audio - Voice Packet Id" (G_vacuum) {channel="miio:basic:vacuum:voice-packet-id"}
+String voice-change-state "Audio - Voice Change State" (G_vacuum) {channel="miio:basic:vacuum:voice-change-state"}
+String time-zone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:time-zone"}
+String timer-clean "Time - Timer Clean" (G_vacuum) {channel="miio:basic:vacuum:timer-clean"}
+Number first-clean-time "Clean Logs - First Clean Time" (G_vacuum) {channel="miio:basic:vacuum:first-clean-time"}
+Number:Time total-clean-time "Clean Logs - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
+Number total-clean-times "Clean Logs - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:total-clean-times"}
+Number total-clean-area "Clean Logs - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
+Number save-map-status "Vslam Extend - Save Map Status" (G_vacuum) {channel="miio:basic:vacuum:save-map-status"}
+```
+
 ### Mi Air Purifier mb1 (zhimi.airpurifier.mb1) item file lines
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -5285,45 +5402,6 @@ Number remember_map "remember_map" (G_vacuum) {channel="miio:basic:vacuum:rememb
 Number has_map "has_map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
 Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
 Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
-```
-
-### Vacuum 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines
-
-note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_vacuum "Vacuum 1C STYTJ01ZHM" <status>
-String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
-Number BatteryLevel "Battery-Battery Level" (G_vacuum) {channel="miio:basic:vacuum:BatteryLevel"}
-Number ChargingState "Battery-Charging State" (G_vacuum) {channel="miio:basic:vacuum:ChargingState"}
-Number Fault "Robot Cleaner-Device Fault" (G_vacuum) {channel="miio:basic:vacuum:Fault"}
-Number Status "Robot Cleaner-Status" (G_vacuum) {channel="miio:basic:vacuum:Status"}
-String BrushLeftTime "Main Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime"}
-Number BrushLifeLevel "Main Cleaning Brush-Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:BrushLifeLevel"}
-Number FilterLifeLevel "Filter-Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:FilterLifeLevel"}
-String FilterLeftTime "Filter-Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:FilterLeftTime"}
-String BrushLeftTime1 "Side Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime1"}
-Number BrushLifeLevel1 "Side Cleaning Brush-Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:BrushLifeLevel1"}
-Number WorkMode "clean-workmode" (G_vacuum) {channel="miio:basic:vacuum:WorkMode"}
-String Area "clean-area" (G_vacuum) {channel="miio:basic:vacuum:Area"}
-String Timer "clean-timer" (G_vacuum) {channel="miio:basic:vacuum:Timer"}
-Number Mode "clean-mode" (G_vacuum) {channel="miio:basic:vacuum:Mode"}
-String TotalCleanTime "clean-total time" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTime"}
-String TotalCleanTimes "clean-total times" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTimes"}
-String TotalCleanArea "clean-Total area" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanArea"}
-String CleanLogStartTime "clean-Start Time" (G_vacuum) {channel="miio:basic:vacuum:CleanLogStartTime"}
-String ButtonLed "clean-led" (G_vacuum) {channel="miio:basic:vacuum:ButtonLed"}
-Number TaskDone "clean-task done" (G_vacuum) {channel="miio:basic:vacuum:TaskDone"}
-String LifeSieve "consumable-life-sieve" (G_vacuum) {channel="miio:basic:vacuum:LifeSieve"}
-String LifeBrushSide "consumable-life-brush-side" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushSide"}
-String LifeBrushMain "consumable-life-brush-main" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushMain"}
-Switch Enable "annoy-enable" (G_vacuum) {channel="miio:basic:vacuum:Enable"}
-String StartTime "annoy-start-time" (G_vacuum) {channel="miio:basic:vacuum:StartTime"}
-String StopTime "annoy-stop-time" (G_vacuum) {channel="miio:basic:vacuum:StopTime"}
-String MapView "map-map-view" (G_vacuum) {channel="miio:basic:vacuum:MapView"}
-Number Volume "audio-volume" (G_vacuum) {channel="miio:basic:vacuum:Volume"}
-String VoicePackets "audio-voiceId" (G_vacuum) {channel="miio:basic:vacuum:VoicePackets"}
-String TimeZone "timezone" (G_vacuum) {channel="miio:basic:vacuum:TimeZone"}
 ```
 
 ###  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch (090615.switch.xswitch01) item file lines
