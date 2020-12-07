@@ -48,15 +48,7 @@ public enum HomekitAccessoryType {
     HEATER_COOLER("HeaterCooler"),
     LIGHT_SENSOR("LightSensor"),
     AIR_QUALITY_SENSOR("AirQualitySensor"),
-    DUMMY("Dummy"),
-    @Deprecated()
-    BLINDS("Blinds"),
-    @Deprecated()
-    OLD_DIMMABLE_LIGHTBULB("DimmableLighting"),
-    @Deprecated()
-    OLD_HUMIDITY_SENSOR("CurrentHumidity"),
-    @Deprecated()
-    OLD_COLORFUL_LIGHTBULB("ColorfulLighting");
+    DUMMY("Dummy");
 
     private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();
 
