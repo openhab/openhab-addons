@@ -107,6 +107,10 @@ public final class MiIoBindingConstants {
     public static final String PROPERTY_TIMEOUT = "timeout";
     public static final String PROPERTY_CLOUDSERVER = "cloudServer";
 
+    public static final Set<String> PERSISTENT_CHANNELS = Collections.unmodifiableSet(
+            Stream.of(CHANNEL_COMMAND, CHANNEL_RPC, CHANNEL_SSID, CHANNEL_BSSID, CHANNEL_RSSI, CHANNEL_LIFE)
+                    .collect(Collectors.toSet()));
+
     public static final byte[] DISCOVER_STRING = org.openhab.binding.miio.internal.Utils
             .hexStringToByteArray("21310020ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
     public static final int PORT = 54321;
