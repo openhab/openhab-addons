@@ -32,7 +32,7 @@ import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractReco
 import org.openhab.binding.neohub.internal.NeoHubBindingConstants.NeoHubReturnResult;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -369,7 +369,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
                         onlineDeviceCount++;
                     }
                 }
-                state = new QuantityType<>((100.0 * onlineDeviceCount) / totalDeviceCount, SmartHomeUnits.PERCENT);
+                state = new QuantityType<>((100.0 * onlineDeviceCount) / totalDeviceCount, Units.PERCENT);
             }
             updateState(CHAN_MESH_NETWORK_QOS, state);
         }

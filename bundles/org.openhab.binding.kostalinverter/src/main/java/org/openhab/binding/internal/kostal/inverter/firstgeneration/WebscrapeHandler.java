@@ -27,7 +27,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -52,20 +52,20 @@ public class WebscrapeHandler extends BaseThingHandler {
 
     public WebscrapeHandler(Thing thing) {
         super(thing);
-        channelConfigs.add(new ChannelConfig("acPower", "td", 4, SmartHomeUnits.WATT));
-        channelConfigs.add(new ChannelConfig("totalEnergy", "td", 7, SmartHomeUnits.KILOWATT_HOUR));
-        channelConfigs.add(new ChannelConfig("dayEnergy", "td", 10, SmartHomeUnits.KILOWATT_HOUR));
+        channelConfigs.add(new ChannelConfig("acPower", "td", 4, Units.WATT));
+        channelConfigs.add(new ChannelConfig("totalEnergy", "td", 7, Units.KILOWATT_HOUR));
+        channelConfigs.add(new ChannelConfig("dayEnergy", "td", 10, Units.KILOWATT_HOUR));
         channelConfigs.add(new ChannelConfig("status", "td", 13, null));
-        channelConfigs.add(new ChannelConfig("str1Voltage", "td", 19, SmartHomeUnits.VOLT));
-        channelConfigs.add(new ChannelConfig("str1Current", "td", 25, SmartHomeUnits.AMPERE));
-        channelConfigs.add(new ChannelConfig("str2Voltage", "td", 33, SmartHomeUnits.VOLT));
-        channelConfigs.add(new ChannelConfig("str2Current", "td", 39, SmartHomeUnits.AMPERE));
-        channelConfigs.add(new ChannelConfig("l1Voltage", "td", 22, SmartHomeUnits.VOLT));
-        channelConfigs.add(new ChannelConfig("l1Power", "td", 28, SmartHomeUnits.WATT));
-        channelConfigs.add(new ChannelConfig("l2Voltage", "td", 36, SmartHomeUnits.VOLT));
-        channelConfigs.add(new ChannelConfig("l2Power", "td", 42, SmartHomeUnits.WATT));
-        channelConfigs.add(new ChannelConfig("l3Voltage", "td", 46, SmartHomeUnits.VOLT));
-        channelConfigs.add(new ChannelConfig("l3Power", "td", 49, SmartHomeUnits.WATT));
+        channelConfigs.add(new ChannelConfig("str1Voltage", "td", 19, Units.VOLT));
+        channelConfigs.add(new ChannelConfig("str1Current", "td", 25, Units.AMPERE));
+        channelConfigs.add(new ChannelConfig("str2Voltage", "td", 33, Units.VOLT));
+        channelConfigs.add(new ChannelConfig("str2Current", "td", 39, Units.AMPERE));
+        channelConfigs.add(new ChannelConfig("l1Voltage", "td", 22, Units.VOLT));
+        channelConfigs.add(new ChannelConfig("l1Power", "td", 28, Units.WATT));
+        channelConfigs.add(new ChannelConfig("l2Voltage", "td", 36, Units.VOLT));
+        channelConfigs.add(new ChannelConfig("l2Power", "td", 42, Units.WATT));
+        channelConfigs.add(new ChannelConfig("l3Voltage", "td", 46, Units.VOLT));
+        channelConfigs.add(new ChannelConfig("l3Power", "td", 49, Units.WATT));
     }
 
     @Override

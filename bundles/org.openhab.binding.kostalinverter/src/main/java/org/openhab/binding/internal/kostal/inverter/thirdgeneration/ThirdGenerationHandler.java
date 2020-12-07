@@ -44,7 +44,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -220,7 +220,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                 break;
             }
             case PERCEMTAGE: {
-                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.PERCENT));
+                updateState(channeluid, new QuantityType<>(value, Units.PERCENT));
                 break;
             }
             case KILOGRAM: {
@@ -228,28 +228,28 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                 break;
             }
             case SECONDS: {
-                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.SECOND));
+                updateState(channeluid, new QuantityType<>(value, Units.SECOND));
                 break;
             }
             case KILOWATT_HOUR: {
-                updateState(channeluid, new QuantityType<>(value / 1000, SmartHomeUnits.KILOWATT_HOUR));
+                updateState(channeluid, new QuantityType<>(value / 1000, Units.KILOWATT_HOUR));
                 break;
             }
             case WATT: {
-                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.WATT));
+                updateState(channeluid, new QuantityType<>(value, Units.WATT));
                 break;
             }
             case AMPERE: {
-                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.AMPERE));
+                updateState(channeluid, new QuantityType<>(value, Units.AMPERE));
                 break;
             }
             case AMPERE_HOUR: {
                 // Ampere hours are not supported by ESH, but 1 AH is equal tp 3600 coulomb...
-                updateState(channeluid, new QuantityType<>(value * 3600, SmartHomeUnits.COULOMB));
+                updateState(channeluid, new QuantityType<>(value * 3600, Units.COULOMB));
                 break;
             }
             case VOLT: {
-                updateState(channeluid, new QuantityType<>(value, SmartHomeUnits.VOLT));
+                updateState(channeluid, new QuantityType<>(value, Units.VOLT));
                 break;
             }
             default: {

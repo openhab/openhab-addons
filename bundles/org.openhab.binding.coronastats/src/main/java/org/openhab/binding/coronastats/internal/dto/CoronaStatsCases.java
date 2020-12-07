@@ -21,7 +21,7 @@ import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -58,7 +58,7 @@ public class CoronaStatsCases {
         if (count == -1) {
             return UnDefType.NULL;
         } else {
-            return new QuantityType<Dimensionless>(count, SmartHomeUnits.ONE);
+            return new QuantityType<Dimensionless>(count, Units.ONE);
         }
     }
 }

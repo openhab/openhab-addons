@@ -46,7 +46,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -222,11 +222,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
 
     private void updatePowermeter(@Nullable PowerMeterModel powerMeterModel) {
         if (powerMeterModel != null) {
-            updateThingChannelState(CHANNEL_ENERGY,
-                    new QuantityType<>(powerMeterModel.getEnergy(), SmartHomeUnits.WATT_HOUR));
-            updateThingChannelState(CHANNEL_POWER, new QuantityType<>(powerMeterModel.getPower(), SmartHomeUnits.WATT));
-            updateThingChannelState(CHANNEL_VOLTAGE,
-                    new QuantityType<>(powerMeterModel.getVoltage(), SmartHomeUnits.VOLT));
+            updateThingChannelState(CHANNEL_ENERGY, new QuantityType<>(powerMeterModel.getEnergy(), Units.WATT_HOUR));
+            updateThingChannelState(CHANNEL_POWER, new QuantityType<>(powerMeterModel.getPower(), Units.WATT));
+            updateThingChannelState(CHANNEL_VOLTAGE, new QuantityType<>(powerMeterModel.getVoltage(), Units.VOLT));
         }
     }
 

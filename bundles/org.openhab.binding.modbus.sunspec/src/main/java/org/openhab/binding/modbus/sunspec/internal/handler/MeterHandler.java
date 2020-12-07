@@ -13,7 +13,7 @@
 package org.openhab.binding.modbus.sunspec.internal.handler;
 
 import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sunspec.internal.dto.MeterModelBlock;
