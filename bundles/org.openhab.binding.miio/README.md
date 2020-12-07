@@ -242,7 +242,7 @@ Currently the miio binding supports more than 210 different models.
 | Xiaomi Mijia vacuum V-RVCLM21B | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes       |            |
 | Xiaomi Mijia vacuum mop STYJ02YM | miio:basic       | [viomi.vacuum.v7](#viomi-vacuum-v7) | Yes       |            |
 | Xiaomi Mijia vacuum mop STYJ02YM v2 | miio:basic       | [viomi.vacuum.v8](#viomi-vacuum-v8) | Yes       |            |
-| Vacuum 1C STYTJ01ZHM         | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       |            |
+| Vacuum 1C STYTJ01ZHM         | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       | Identified manual actions for execution<br />`action{"did":"battery-start-charge","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-start-sweep","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":3,"aiid":2,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":26,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":27,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":28,"aiid":1,"in":[]}`<br />`action{"did":"clean-start-clean","siid":18,"aiid":1,"in":[]}`<br />`action{"did":"clean-stop-clean","siid":18,"aiid":2,"in":[]}`<br />`action{"did":"remote-start-remote","siid":21,"aiid":1,"in":[1.0, 2.0]}`<br />`action{"did":"remote-stop-remote","siid":21,"aiid":2,"in":[]}`<br />`action{"did":"remote-exit-remote","siid":21,"aiid":3,"in":[]}`<br />`action{"did":"map-map-req","siid":23,"aiid":1,"in":[2.0]}`<br />`action{"did":"audio-position","siid":24,"aiid":1,"in":[]}`<br />`action{"did":"audio-set-voice","siid":24,"aiid":2,"in":[]}`<br />`action{"did":"audio-play-sound","siid":24,"aiid":3,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | roborock.vacuum.c1           | miio:unsupported | roborock.vacuum.c1     | No        |            |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
 | Rockrobo Xiaowa Sweeper v3   | miio:unsupported | roborock.sweeper.e2v3  | No        |            |
@@ -2076,35 +2076,35 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 |------------------|---------|-------------------------------------|------------|
 | vacuumaction     | String  | Vacuum Action                       |            |
 | BatteryLevel     | Number  | Battery-Battery Level               |            |
-| ChargingState    | Number  | Battery-Charging State              |            |
-| Fault            | Number  | Robot Cleaner-Device Fault          |            |
-| Status           | Number  | Robot Cleaner-Status                |            |
-| BrushLeftTime    | String  | Main Cleaning Brush-Brush Left Time |            |
+| ChargingState    | Number  | Battery-Charging State              | Value mapping [1="Charging",2="Not Charging",4="Charging",5="Go Charging"] |
+| Fault            | Number  | Robot Cleaner-Device Fault          | Value mapping [0="No faults"] |
+| Status           | Number  | Robot Cleaner-Status                | Value mapping [1="Sweeping",2="Idle",3="Paused",4="Error",5="Go Charging",6="Charging"] |
+| BrushLeftTime    | Number:Time | Main Cleaning Brush-Brush Left Time |            |
 | BrushLifeLevel   | Number  | Main Cleaning Brush-Brush Life Level |            |
-| FilterLifeLevel  | Number  | Filter-Filter Life Level            |            |
-| FilterLeftTime   | String  | Filter-Filter Left Time             |            |
-| BrushLeftTime1   | String  | Side Cleaning Brush-Brush Left Time |            |
+| FilterLifeLevel  | Number  | Filter - Filter Life Level          |            |
+| FilterLeftTime   | Number:Time | Filter-Filter Left Time             |            |
+| BrushLeftTime1   | Number:Time | Side Cleaning Brush-Brush Left Time |            |
 | BrushLifeLevel1  | Number  | Side Cleaning Brush-Brush Life Level |            |
 | WorkMode         | Number  | clean-workmode                      |            |
 | Area             | String  | clean-area                          |            |
 | Timer            | String  | clean-timer                         |            |
-| Mode             | Number  | clean-mode                          |            |
-| TotalCleanTime   | String  | clean-total time                    |            |
-| TotalCleanTimes  | String  | clean-total times                   |            |
-| TotalCleanArea   | String  | clean-Total area                    |            |
-| CleanLogStartTime | String  | clean-Start Time                    |            |
-| ButtonLed        | String  | clean-led                           |            |
-| TaskDone         | Number  | clean-task done                     |            |
-| LifeSieve        | String  | consumable-life-sieve               |            |
-| LifeBrushSide    | String  | consumable-life-brush-side          |            |
-| LifeBrushMain    | String  | consumable-life-brush-main          |            |
-| Enable           | Switch  | annoy-enable                        |            |
-| StartTime        | String  | annoy-start-time                    |            |
-| StopTime         | String  | annoy-stop-time                     |            |
-| MapView          | String  | map-map-view                        |            |
-| Volume           | Number  | audio-volume                        |            |
-| VoicePackets     | String  | audio-voiceId                       |            |
-| TimeZone         | String  | timezone                            |            |
+| Mode             | Number  | clean-mode                          | Value mapping [0="quiet",1="standard",2="medium",3="strong"] |
+| TotalCleanTime   | Number:Time | Clean - Total Clean Time            |            |
+| TotalCleanTimes  | Number  | Clean - Total Clean Times           |            |
+| TotalCleanArea   | Number:Area | Clean - Total Clean Area            |            |
+| CleanLogStartTime | Number  | Clean - Clean Log Start Time        |            |
+| ButtonLed        | Number  | Clean - Button Led                  |            |
+| TaskDone         | Number  | Clean - Task Done                   | Value mapping [0="",1=""] |
+| LifeSieve        | String  | Consumable - Life Sieve             |            |
+| LifeBrushSide    | String  | Consumable - Life Brush Side        |            |
+| LifeBrushMain    | String  | Consumable - Life Brush Main        |            |
+| Enable           | Switch  | Annoy - Enable                      |            |
+| StartTime        | String  | Annoy - Start Time                  |            |
+| StopTime         | String  | Annoy - Stop Time                   |            |
+| MapView          | String  | Map - Map View                      |            |
+| Volume           | Number  | Audio - Volume                      |            |
+| VoicePackets     | String  | Audio - Voice Packets               |            |
+| TimeZone         | String  | Time - Time Zone                    |            |
 
 ###  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
 
@@ -5298,32 +5298,32 @@ Number BatteryLevel "Battery-Battery Level" (G_vacuum) {channel="miio:basic:vacu
 Number ChargingState "Battery-Charging State" (G_vacuum) {channel="miio:basic:vacuum:ChargingState"}
 Number Fault "Robot Cleaner-Device Fault" (G_vacuum) {channel="miio:basic:vacuum:Fault"}
 Number Status "Robot Cleaner-Status" (G_vacuum) {channel="miio:basic:vacuum:Status"}
-String BrushLeftTime "Main Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime"}
+Number:Time BrushLeftTime "Main Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime"}
 Number BrushLifeLevel "Main Cleaning Brush-Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:BrushLifeLevel"}
-Number FilterLifeLevel "Filter-Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:FilterLifeLevel"}
-String FilterLeftTime "Filter-Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:FilterLeftTime"}
-String BrushLeftTime1 "Side Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime1"}
+Number FilterLifeLevel "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:FilterLifeLevel"}
+Number:Time FilterLeftTime "Filter-Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:FilterLeftTime"}
+Number:Time BrushLeftTime1 "Side Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime1"}
 Number BrushLifeLevel1 "Side Cleaning Brush-Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:BrushLifeLevel1"}
 Number WorkMode "clean-workmode" (G_vacuum) {channel="miio:basic:vacuum:WorkMode"}
 String Area "clean-area" (G_vacuum) {channel="miio:basic:vacuum:Area"}
 String Timer "clean-timer" (G_vacuum) {channel="miio:basic:vacuum:Timer"}
 Number Mode "clean-mode" (G_vacuum) {channel="miio:basic:vacuum:Mode"}
-String TotalCleanTime "clean-total time" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTime"}
-String TotalCleanTimes "clean-total times" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTimes"}
-String TotalCleanArea "clean-Total area" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanArea"}
-String CleanLogStartTime "clean-Start Time" (G_vacuum) {channel="miio:basic:vacuum:CleanLogStartTime"}
-String ButtonLed "clean-led" (G_vacuum) {channel="miio:basic:vacuum:ButtonLed"}
-Number TaskDone "clean-task done" (G_vacuum) {channel="miio:basic:vacuum:TaskDone"}
-String LifeSieve "consumable-life-sieve" (G_vacuum) {channel="miio:basic:vacuum:LifeSieve"}
-String LifeBrushSide "consumable-life-brush-side" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushSide"}
-String LifeBrushMain "consumable-life-brush-main" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushMain"}
-Switch Enable "annoy-enable" (G_vacuum) {channel="miio:basic:vacuum:Enable"}
-String StartTime "annoy-start-time" (G_vacuum) {channel="miio:basic:vacuum:StartTime"}
-String StopTime "annoy-stop-time" (G_vacuum) {channel="miio:basic:vacuum:StopTime"}
-String MapView "map-map-view" (G_vacuum) {channel="miio:basic:vacuum:MapView"}
-Number Volume "audio-volume" (G_vacuum) {channel="miio:basic:vacuum:Volume"}
-String VoicePackets "audio-voiceId" (G_vacuum) {channel="miio:basic:vacuum:VoicePackets"}
-String TimeZone "timezone" (G_vacuum) {channel="miio:basic:vacuum:TimeZone"}
+Number:Time TotalCleanTime "Clean - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTime"}
+Number TotalCleanTimes "Clean - Total Clean Times" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanTimes"}
+Number:Area TotalCleanArea "Clean - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:TotalCleanArea"}
+Number CleanLogStartTime "Clean - Clean Log Start Time" (G_vacuum) {channel="miio:basic:vacuum:CleanLogStartTime"}
+Number ButtonLed "Clean - Button Led" (G_vacuum) {channel="miio:basic:vacuum:ButtonLed"}
+Number TaskDone "Clean - Task Done" (G_vacuum) {channel="miio:basic:vacuum:TaskDone"}
+String LifeSieve "Consumable - Life Sieve" (G_vacuum) {channel="miio:basic:vacuum:LifeSieve"}
+String LifeBrushSide "Consumable - Life Brush Side" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushSide"}
+String LifeBrushMain "Consumable - Life Brush Main" (G_vacuum) {channel="miio:basic:vacuum:LifeBrushMain"}
+Switch Enable "Annoy - Enable" (G_vacuum) {channel="miio:basic:vacuum:Enable"}
+String StartTime "Annoy - Start Time" (G_vacuum) {channel="miio:basic:vacuum:StartTime"}
+String StopTime "Annoy - Stop Time" (G_vacuum) {channel="miio:basic:vacuum:StopTime"}
+String MapView "Map - Map View" (G_vacuum) {channel="miio:basic:vacuum:MapView"}
+Number Volume "Audio - Volume" (G_vacuum) {channel="miio:basic:vacuum:Volume"}
+String VoicePackets "Audio - Voice Packets" (G_vacuum) {channel="miio:basic:vacuum:VoicePackets"}
+String TimeZone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:TimeZone"}
 ```
 
 ###  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch (090615.switch.xswitch01) item file lines
