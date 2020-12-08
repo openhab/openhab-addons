@@ -63,10 +63,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT,
             THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE, THING_TYPE_DOORLOCK);
 
-    private static final List<String> EFFECT_DEFAULT_OPTIONS = List.of("none", "colorloop");
-    private static final Map<String, List<String>> EFFECT_COMMAND_OPTIONS = Map.of("TS0601",
-            List.of("none", "steady", "snow", "rainbow", "snake", "tinkle", "fireworks", "flag", "waves", "updown",
-                    "vintage", "fading", "collide", "strobe", "sparkles", "carnival", "glow"));
     private static final long DEFAULT_COMMAND_EXPIRY_TIME = 250; // in ms
     private static final int BRIGHTNESS_DIM_STEP = 26; // ~ 10%
 
@@ -299,7 +295,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             return;
         }
         if (stateResponse.state.effect != null) {
-            checkAndUpdateEffectChannels(stateResponse);
+        checkAndUpdateEffectChannels(stateResponse);
         }
         messageReceived(config.id, stateResponse);
     }
