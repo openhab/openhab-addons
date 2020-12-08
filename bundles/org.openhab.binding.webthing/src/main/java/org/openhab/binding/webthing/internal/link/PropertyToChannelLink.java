@@ -46,10 +46,9 @@ public class PropertyToChannelLink implements PropertyChangedListener {
      * @param propertyName the property name
      * @param channelHandler the channel handler that provides updating the Item state of a channel
      * @param channel the channel to be linked
-     * @throws IOException if the WebThing can not be connected
      */
     private PropertyToChannelLink(ConsumedThing webThing, String propertyName, ChannelHandler channelHandler,
-            Channel channel) throws IOException {
+            Channel channel) {
         this.channel = channel;
         var optionalProperty = webThing.getThingDescription().getProperty(propertyName);
         if (optionalProperty.isPresent()) {
