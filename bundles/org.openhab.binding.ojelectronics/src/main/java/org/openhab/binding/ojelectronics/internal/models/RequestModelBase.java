@@ -10,21 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ojelectronics.internal.models.groups;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.openhab.binding.ojelectronics.internal.models;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ojelectronics.internal.models.ResponseModelBase;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Model for the response of a content group
+ * Base model for all requests
  *
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class GroupContentResponseModel extends ResponseModelBase {
+public abstract class RequestModelBase {
 
-    public List<GroupContent> groupContents = new ArrayList<GroupContent>();
+    @SerializedName("APIKEY")
+    public String apiKey = "";
+
+    /**
+     * Add API-Key
+     *
+     * @param apiKey API-Key
+     * @return Model
+     */
+    public RequestModelBase withApiKey(String apiKey) {
+        this.apiKey = apiKey;
+        return this;
+    }
 }

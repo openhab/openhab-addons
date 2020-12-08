@@ -10,20 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ojelectronics.internal.models.userprofile;
+package org.openhab.binding.ojelectronics.internal.models;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ojelectronics.internal.models.ResponseModelBase;
 
 /**
- * Response-Model after signing in
+ * Response model without additional properties
  *
- * @author Christian Kittel - Initial Contribution
+ * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class PostSignInResponseModel extends ResponseModelBase {
-
-    public String sessionId = "";
-
-    public String userName = "";
+public class SimpleResponseModel extends ResponseModelBase {
 }
