@@ -22,6 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DwdUnwetterConfiguration {
     public int refresh;
-    public int warningCount;
+    public int warningCount = 1;
     public String cellId = "";
 }

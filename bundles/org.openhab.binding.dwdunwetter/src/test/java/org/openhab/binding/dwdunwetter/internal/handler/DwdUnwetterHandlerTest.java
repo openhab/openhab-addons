@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdunwetter;
+package org.openhab.binding.dwdunwetter.internal.handler;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.InputStream;
@@ -34,16 +34,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.dwdunwetter.internal.DwdUnwetterBindingConstants;
-import org.openhab.binding.dwdunwetter.internal.handler.DwdUnwetterHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -65,6 +66,10 @@ public class DwdUnwetterHandlerTest extends JavaTest {
 
     @BeforeEach
     public void setUp() {
+        when(callback.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class)))
+                .thenAnswer(invocation -> ChannelBuilder.create(invocation.getArgument(0, ChannelUID.class))
+                        .withType(invocation.getArgument(1, ChannelTypeUID.class)));
+
         handler = new DwdUnwetterHandler(thing);
         handler.setCallback(callback);
         // mock getConfiguration to prevent NPEs
