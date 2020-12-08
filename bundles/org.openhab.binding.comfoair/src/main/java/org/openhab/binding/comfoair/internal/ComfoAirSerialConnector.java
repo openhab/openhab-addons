@@ -242,9 +242,9 @@ public class ComfoAirSerialConnector {
                                 int startIndex = -1;
                                 int endIndex = -1;
 
-                                for (int i = 5; i < (responseBlock.length - 11) && endIndex < 0; i++) {
+                                for (int i = 4; i < (responseBlock.length - 11) && endIndex < 0; i++) {
                                     if (responseBlock[i] == START[0] && responseBlock[i + 1] == START[1]
-                                            && ((responseBlock[i + 2] & 0xff) == command.getReplyCmd())) {
+                                            && ((responseBlock[i + 3] & 0xff) == command.getReplyCmd())) {
                                         startIndex = i;
                                         for (int j = startIndex; j < responseBlock.length; j++) {
                                             if (responseBlock[j] == END[0] && responseBlock[j + 1] == END[1]) {
