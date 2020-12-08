@@ -217,7 +217,10 @@ public class VeluxProduct {
     // Class helper methods
 
     public String getProductUniqueIndex() {
-        return this.name.toString().concat("#").concat(this.typeId.toString());
+        if (!v2 || serialNumber.startsWith(VeluxProductSerialNo.UNKNOWN)) {
+            return name.toString();
+        }
+        return VeluxProductSerialNo.cleaned(serialNumber);
     }
 
     // Getter and Setter methods

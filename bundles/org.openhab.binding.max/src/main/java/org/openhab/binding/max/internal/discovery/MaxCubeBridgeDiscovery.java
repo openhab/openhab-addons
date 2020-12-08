@@ -156,8 +156,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
 
     private void discoveryResultSubmission(String IpAddress, String cubeSerialNumber, String rfAddress) {
         if (cubeSerialNumber != null) {
-            logger.trace("Adding new MAX! Cube Lan Gateway on {} with id '{}' to Smarthome inbox", IpAddress,
-                    cubeSerialNumber);
+            logger.trace("Adding new MAX! Cube Lan Gateway on {} with id '{}' to inbox", IpAddress, cubeSerialNumber);
             Map<String, Object> properties = new HashMap<>(2);
             properties.put(PROPERTY_IP_ADDRESS, IpAddress);
             properties.put(PROPERTY_SERIAL_NUMBER, cubeSerialNumber);

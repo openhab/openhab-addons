@@ -31,7 +31,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -110,13 +110,13 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
 
     private State getHeatChannel1Demand() {
         return getData().heatingChannels.size() >= 1
-                ? new QuantityType<>(getData().heatingChannels.get(0).getPercentageDemand(), SmartHomeUnits.PERCENT)
+                ? new QuantityType<>(getData().heatingChannels.get(0).getPercentageDemand(), Units.PERCENT)
                 : UnDefType.UNDEF;
     }
 
     private State getHeatChannel2Demand() {
         return getData().heatingChannels.size() >= 2
-                ? new QuantityType<>(getData().heatingChannels.get(1).getPercentageDemand(), SmartHomeUnits.PERCENT)
+                ? new QuantityType<>(getData().heatingChannels.get(1).getPercentageDemand(), Units.PERCENT)
                 : UnDefType.UNDEF;
     }
 

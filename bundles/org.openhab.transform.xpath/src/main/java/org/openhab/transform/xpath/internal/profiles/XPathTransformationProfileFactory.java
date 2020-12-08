@@ -60,7 +60,7 @@ public class XPathTransformationProfileFactory implements ProfileFactory, Profil
         return Arrays.asList(XPathTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=XPATH)")
+    @Reference(target = "(openhab.transform=XPATH)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

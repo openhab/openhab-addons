@@ -188,7 +188,7 @@ public class ChannelState implements MqttMessageSubscriber {
             return;
         }
 
-        // Map the string to an ESH command, update the cached value and post the command to the framework
+        // Map the string to a command, update the cached value and post the command to the framework
         try {
             cachedValue.update(command);
         } catch (IllegalArgumentException | IllegalStateException e) {

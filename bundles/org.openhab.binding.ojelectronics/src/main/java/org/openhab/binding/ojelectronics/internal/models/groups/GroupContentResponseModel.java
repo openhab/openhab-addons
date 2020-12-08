@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.ojelectronics.internal.models.ResponseModelBase;
 
 /**
  * Model for the response of a content group
@@ -23,9 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class GroupContentResponseModel {
+public class GroupContentResponseModel extends ResponseModelBase {
 
     public List<GroupContent> groupContents = new ArrayList<GroupContent>();
-
-    public int errorCode;
 }

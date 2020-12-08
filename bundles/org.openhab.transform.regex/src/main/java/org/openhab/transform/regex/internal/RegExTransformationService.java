@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Thomas.Eichstaedt-Engelen
  */
 @NonNullByDefault
-@Component(property = { "smarthome.transform=REGEX" })
+@Component(property = { "openhab.transform=REGEX" })
 public class RegExTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(RegExTransformationService.class);
