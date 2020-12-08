@@ -163,6 +163,7 @@ class TypeConverters {
 
     private static final class StringTypeConverter implements TypeConverter {
 
+        @SuppressWarnings("unchecked")
         @Override
         public Command toStateCommand(Object propertyValue) {
             String textValue = propertyValue.toString();
