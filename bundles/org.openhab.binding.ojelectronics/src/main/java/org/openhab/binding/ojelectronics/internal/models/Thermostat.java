@@ -10,12 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ojelectronics.internal.models.groups;
+package org.openhab.binding.ojelectronics.internal.models;
 
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ojelectronics.internal.models.groups.Schedule;
 
 import com.google.gson.annotations.SerializedName;
 
