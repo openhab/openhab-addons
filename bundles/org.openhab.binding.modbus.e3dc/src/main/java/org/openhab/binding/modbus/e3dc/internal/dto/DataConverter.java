@@ -16,8 +16,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.io.transport.modbus.ModbusBitUtilities;
-import org.openhab.io.transport.modbus.ValueBuffer;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.core.io.transport.modbus.ValueBuffer;
 
 /**
  * The {@link DataConverter} Helper class to convert bytes from modbus into desired data format
