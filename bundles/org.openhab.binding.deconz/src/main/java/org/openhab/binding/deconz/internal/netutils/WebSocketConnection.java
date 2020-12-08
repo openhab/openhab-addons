@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -51,29 +52,33 @@ public class WebSocketConnection {
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
 
     private final WebSocketClient client;
+    private final String socketName;
+    private final Gson gson;
+
     private final WebSocketConnectionListener connectionListener;
     private final Map<Map.Entry<ResourceType, String>, WebSocketMessageListener> listeners = new ConcurrentHashMap<>();
 
-    private final Gson gson;
-    private boolean connected = false;
+    private ConnectionState connected = ConnectionState.DISCONNECTED;
 
     public WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client, Gson gson) {
         this.connectionListener = listener;
         this.client = client;
         this.client.setMaxIdleTimeout(0);
         this.gson = gson;
+        this.socketName = ((QueuedThreadPool) client.getExecutor()).getName();
     }
 
     public void start(String ip) {
-        if (connected) {
+        if (connected == ConnectionState.CONNECTED) {
+            return;
+        } else if (connected == ConnectionState.CONNECTING) {
+            logger.debug("{} already connecting", socketName);
             return;
         }
         try {
             URI destUri = URI.create("ws://" + ip);
-
             client.start();
-
-            logger.debug("Connecting to: {}", destUri);
+            logger.debug("Trying to connect {} to {}", socketName, destUri);
             client.connect(this, destUri).get();
         } catch (Exception e) {
             connectionListener.connectionError(e);
@@ -82,10 +87,10 @@ public class WebSocketConnection {
 
     public void close() {
         try {
-            connected = false;
+            connected = ConnectionState.DISCONNECTING;
             client.stop();
         } catch (Exception e) {
-            logger.debug("Error while closing connection", e);
+            logger.debug("{} encountered an error while closing connection", socketName, e);
         }
         client.destroy();
     }
@@ -98,17 +103,18 @@ public class WebSocketConnection {
         listeners.remove(Map.entry(resourceType, sensorID));
     }
 
+    @SuppressWarnings("unused")
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        connected = true;
-        logger.debug("Connect: {}", session.getRemoteAddress().getAddress());
+        connected = ConnectionState.CONNECTED;
+        logger.debug("{} successfully connected to {}", this, session.getRemoteAddress().getAddress());
         connectionListener.connectionEstablished();
     }
 
-    @SuppressWarnings("null")
+    @SuppressWarnings("null, unused")
     @OnWebSocketMessage
     public void onMessage(String message) {
-        logger.trace("Raw data received by websocket: {}", message);
+        logger.trace("Raw data received by websocket {}: {}", socketName, message);
 
         DeconzBaseMessage changedMessage = gson.fromJson(message, DeconzBaseMessage.class);
         if (changedMessage.r == ResourceType.UNKNOWN) {
@@ -137,19 +143,36 @@ public class WebSocketConnection {
         }
     }
 
+    @SuppressWarnings("unused")
     @OnWebSocketError
     public void onError(Throwable cause) {
-        connected = false;
+        connected = ConnectionState.DISCONNECTED;
         connectionListener.connectionError(cause);
     }
 
+    @SuppressWarnings("unused")
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        connected = false;
+        connected = ConnectionState.DISCONNECTED;
         connectionListener.connectionLost(reason);
     }
 
+    /**
+     * check connection state (successfully connected)
+     *
+     * @return true if connected, false if connecting, disconnecting or disconnected
+     */
     public boolean isConnected() {
-        return connected;
+        return connected == ConnectionState.CONNECTED;
+    }
+
+    /**
+     * used internally to represent the connection state
+     */
+    private enum ConnectionState {
+        CONNECTING,
+        CONNECTED,
+        DISCONNECTING,
+        DISCONNECTED
     }
 }
