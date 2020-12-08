@@ -22,10 +22,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sunspec.internal.InverterStatus;
 import org.openhab.binding.modbus.sunspec.internal.dto.InverterModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.InverterModelParser;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.UnDefType;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -18,9 +18,9 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
+import org.openhab.core.io.transport.modbus.ValueBuffer;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.io.transport.modbus.ValueBuffer;
 
 /**
  * The {@link StringBlock} Data object for E3DC Info Block
