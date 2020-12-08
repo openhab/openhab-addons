@@ -138,6 +138,7 @@
 			<label>@text/config.velux.thing.rollershutter.serial.label</label>
 			<description>@text/config.velux.thing.rollershutter.serial.description</description>
 			<required>true</required>
+			<default>00:00:00:00:00:00:00:00</default>
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="name" type="text">
