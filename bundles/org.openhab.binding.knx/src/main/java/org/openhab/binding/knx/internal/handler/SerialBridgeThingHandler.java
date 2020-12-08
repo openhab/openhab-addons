@@ -23,8 +23,11 @@ import org.openhab.binding.knx.internal.config.SerialBridgeConfiguration;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tuwien.auto.calimero.secure.KnxSecureException;
 
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
@@ -57,7 +60,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
         SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
         client = new SerialClient(config.getAutoReconnectPeriod(), thing.getUID(), config.getResponseTimeout(),
                 config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), config.getSerialPort(),
-                config.useCemi(), serialPortManager, getCommandExtensionData(), this);
+                config.useCemi(), serialPortManager, getCommandExtensionData(), openhabSecurity, this);
 
         updateStatus(ThingStatus.UNKNOWN);
         // delay actual initialization, allow for longer runtime of actual initialization
@@ -65,6 +68,32 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
     }
 
     public void initializeLater() {
+        SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
+        try {
+            if (initializeSecurity(config.getKeyringFile(), config.getKeyringPassword())) {
+                if (keyring.isPresent()) {
+                    logger.info("KNX secure available for {} devices, {} group addresses",
+                            openhabSecurity.deviceToolKeys().size(), openhabSecurity.groupKeys().size());
+
+                    logger.debug("Secure group addresses and associated devices: {}",
+                            secHelperGetSecureGroupAddresses(openhabSecurity));
+                } else {
+                    logger.debug("KNX secure: keyring is not available");
+                }
+            } else {
+                logger.debug("KNX security not configured");
+            }
+        } catch (KnxSecureException e) {
+            logger.debug("{}, {}", thing.getUID(), e.toString());
+
+            String message = e.getLocalizedMessage();
+            if (message == null) {
+                message = e.getClass().getSimpleName();
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "KNX security: " + message);
+            return;
+        }
+
         SerialClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.initialize();

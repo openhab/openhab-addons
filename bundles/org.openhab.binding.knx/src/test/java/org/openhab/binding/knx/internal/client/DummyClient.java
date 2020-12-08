@@ -32,7 +32,7 @@ public class DummyClient extends AbstractKNXClient {
 
     public DummyClient() {
         super(0, new ThingUID("dummy connection"), 0, 0, 0, null, new CommandExtensionData(Collections.emptyMap()),
-                null);
+                null, null);
     }
 
     @Override
