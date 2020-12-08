@@ -391,10 +391,10 @@ public class JdbcBaseDAO {
         String itemType = getItemType(item);
 
         logger.debug("JDBC::storeItemValueProvider: item '{}' as Type '{}' in '{}' with state '{}'", item.getName(),
-                itemType, vo.getTableName(), item.getState().toString());
+                itemType, vo.getTableName(), item.getState());
 
         // insertItemValue
-        logger.debug("JDBC::storeItemValueProvider: getState: '{}'", item.getState().toString());
+        logger.debug("JDBC::storeItemValueProvider: getState: '{}'", item.getState());
         if ("COLORITEM".equals(itemType)) {
             vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
             vo.setValue(item.getState().toString());
@@ -407,9 +407,9 @@ public class JdbcBaseDAO {
                 vo.setValue(newVal.doubleValue());
             } else if (it.toUpperCase().contains("DECIMAL") || it.toUpperCase().contains("NUMERIC")) {
                 vo.setValueTypes(it, java.math.BigDecimal.class);
-                DecimalType newVal = (DecimalType) item.getState();
-                logger.debug("JDBC::storeItemValueProvider: newVal.toBigDecimal: '{}'", newVal.toBigDecimal());
-                vo.setValue(newVal.toBigDecimal());
+                BigDecimal newVal = BigDecimal.valueOf(((Number) item.getState()).doubleValue());
+                logger.debug("JDBC::storeItemValueProvider: newVal.toBigDecimal: '{}'", newVal);
+                vo.setValue(newVal);
             } else if (it.toUpperCase().contains("INT")) {
                 vo.setValueTypes(it, java.lang.Integer.class);
                 Number newVal = (Number) item.getState();
@@ -417,8 +417,7 @@ public class JdbcBaseDAO {
                 vo.setValue(newVal.intValue());
             } else {// fall back to String
                 vo.setValueTypes(it, java.lang.String.class);
-                logger.warn("JDBC::storeItemValueProvider: item.getState().toString(): '{}'",
-                        item.getState().toString());
+                logger.warn("JDBC::storeItemValueProvider: item.getState().toString(): '{}'", item.getState());
                 vo.setValue(item.getState().toString());
             }
         } else if ("ROLLERSHUTTERITEM".equals(itemType) || "DIMMERITEM".equals(itemType)) {
@@ -449,8 +448,7 @@ public class JdbcBaseDAO {
              */
             // All other items should return the best format by default
             vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
-            logger.debug("JDBC::storeItemValueProvider: other: item.getState().toString(): '{}'",
-                    item.getState().toString());
+            logger.debug("JDBC::storeItemValueProvider: other: item.getState().toString(): '{}'", item.getState());
             vo.setValue(item.getState().toString());
         }
         return vo;
