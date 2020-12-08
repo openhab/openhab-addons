@@ -563,7 +563,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     public synchronized void deviceRemoved() {
         deviceDeletionPending = false;
         if (getThing().getStatus() == ThingStatus.REMOVING) {
-            // thing removal was initiated on ESH side
+            // thing removal was initiated
             updateStatus(ThingStatus.REMOVED);
         } else {
             // device removal was initiated on homematic side, thing is not removed

@@ -221,7 +221,7 @@ public enum BluetoothUnit {
     }
 
     /**
-     * This class contains the set of units that are not yet defined in SmarthomeUnits.
+     * This class contains the set of units that are not yet defined in Units.
      * Once these units are added to the core then this class will be removed.
      *
      * @author cpetty

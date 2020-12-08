@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  */
 @NonNullByDefault
-@Component(property = { "smarthome.transform=BIN2JSON" })
+@Component(property = { "openhab.transform=BIN2JSON" })
 public class Bin2JsonTransformationService implements TransformationService {
 
     private Logger logger = LoggerFactory.getLogger(Bin2JsonTransformationService.class);

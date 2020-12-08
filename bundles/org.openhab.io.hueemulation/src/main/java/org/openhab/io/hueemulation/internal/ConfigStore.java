@@ -77,7 +77,7 @@ import com.google.gson.GsonBuilder;
 public class ConfigStore {
 
     public static final String METAKEY = "HUEEMU";
-    public static final String EVENT_ADDRESS_CHANGED = "ESH_EMU_CONFIG_ADDR_CHANGED";
+    public static final String EVENT_ADDRESS_CHANGED = "HUE_EMU_CONFIG_ADDR_CHANGED";
 
     private final Logger logger = LoggerFactory.getLogger(ConfigStore.class);
 

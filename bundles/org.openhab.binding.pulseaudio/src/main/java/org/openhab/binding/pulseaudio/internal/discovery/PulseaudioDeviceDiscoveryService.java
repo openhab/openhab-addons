@@ -88,8 +88,8 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         }
 
         if (thingType != null) {
-            logger.trace("Adding new pulseaudio {} with name '{}' to smarthome inbox",
-                    device.getClass().getSimpleName(), uidName);
+            logger.trace("Adding new pulseaudio {} with name '{}' to inbox", device.getClass().getSimpleName(),
+                    uidName);
             ThingUID thingUID = new ThingUID(thingType, bridge.getUID(), device.getUIDName());
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withBridge(bridge.getUID()).withLabel(device.getUIDName()).build();

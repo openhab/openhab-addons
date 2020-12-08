@@ -292,7 +292,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         ZWaveController zwaveController = mZWayApi.getZWaveController();
         if (zwaveController != null) {
             Map<String, String> properties = editProperties();
-            // ESH default properties
+            // System properties
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, zwaveController.getData().getAPIVersion().getValue());
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, zwaveController.getData().getZWaveChip().getValue());
             // Thing.PROPERTY_MODEL_ID not available, only manufacturerProductId

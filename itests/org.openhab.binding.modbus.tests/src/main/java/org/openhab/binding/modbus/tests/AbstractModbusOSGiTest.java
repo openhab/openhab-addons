@@ -217,7 +217,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 
     protected void mockTransformation(String name, TransformationService service) {
         Dictionary<String, Object> params = new Hashtable<>();
-        params.put("smarthome.transform", name);
+        params.put("openhab.transform", name);
         registerService(service, params);
     }
 
