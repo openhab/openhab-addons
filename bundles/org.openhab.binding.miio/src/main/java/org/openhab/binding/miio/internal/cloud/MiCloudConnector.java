@@ -158,7 +158,7 @@ public class MiCloudConnector {
         try {
             JsonElement response = PARSER.parse(mapResponse);
             if (response.isJsonObject()) {
-                logger.debug("Received  JSON message {}", response.toString());
+                logger.debug("Received  JSON message {}", response);
                 if (response.getAsJsonObject().has("result")
                         && response.getAsJsonObject().get("result").isJsonObject()) {
                     JsonObject jo = response.getAsJsonObject().get("result").getAsJsonObject();
