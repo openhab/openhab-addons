@@ -215,7 +215,6 @@ public class MiCloudConnector {
             if (resp.isJsonObject()) {
                 final JsonObject jor = resp.getAsJsonObject();
                 if (jor.has("result")) {
-                    @Nullable
                     CloudDeviceListDTO cdl = GSON.fromJson(jor.get("result"), CloudDeviceListDTO.class);
                     if (cdl != null) {
                         devicesList.addAll(cdl.getCloudDevices());
@@ -460,7 +459,6 @@ public class MiCloudConnector {
         logger.trace("Xiaomi login step 2 content = {}", content2);
 
         JsonElement resp2 = new JsonParser().parse(parseJson(content2));
-        @Nullable
         CloudLoginDTO jsonResp = GSON.fromJson(resp2, CloudLoginDTO.class);
         if (jsonResp == null) {
             throw new MiCloudException("Error getting logon details from step 2: " + content2);

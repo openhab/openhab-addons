@@ -382,7 +382,6 @@ public class RRMapDraw {
         } catch (IOException e) {
             logger.debug("Error loading image ohlogo.png:: {}", e.getMessage());
         }
-        @Nullable
         String fontName = getAvailableFont("Helvetica,Arial,Roboto,Verdana,Times,Serif,Dialog".split(","));
         if (fontName == null) {
             return; // no available fonts to draw text
