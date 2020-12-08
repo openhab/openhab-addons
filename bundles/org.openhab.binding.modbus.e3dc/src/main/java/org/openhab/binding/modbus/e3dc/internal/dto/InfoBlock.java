@@ -14,10 +14,10 @@ package org.openhab.binding.modbus.e3dc.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
+import org.openhab.core.io.transport.modbus.ValueBuffer;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.util.HexUtils;
-import org.openhab.io.transport.modbus.ValueBuffer;
 
 /**
  * The {@link InfoBlock} Data object for E3DC Info Block
