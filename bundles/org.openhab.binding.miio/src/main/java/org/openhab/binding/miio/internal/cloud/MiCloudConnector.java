@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -513,7 +512,6 @@ public class MiCloudConnector {
             try {
                 URI uri = URI.create(url);
                 logger.trace("Cookie dump for {}", uri);
-                @Nullable
                 CookieStore cs = httpClient.getCookieStore();
                 if (cs != null) {
                     List<HttpCookie> cookies = cs.get(uri);
