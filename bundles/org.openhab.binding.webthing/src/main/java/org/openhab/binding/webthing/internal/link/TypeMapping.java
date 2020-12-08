@@ -123,7 +123,6 @@ public class TypeMapping {
     /**
      * The item type description
      */
-    @NonNullByDefault
     public static class ItemType {
         private final String type;
         private final @Nullable String tag;
