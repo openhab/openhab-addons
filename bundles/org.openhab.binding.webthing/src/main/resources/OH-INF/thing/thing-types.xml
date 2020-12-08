@@ -12,7 +12,7 @@
 		<config-description>
 			<parameter name="webThingURI" type="text" required="true">
 				<label>webThingURI</label>
-				<description>This is the url of the webthing </description>
+				<description>This is the url of the WebThing </description>
 			</parameter>
 		</config-description>
 
