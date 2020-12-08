@@ -152,14 +152,12 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             }
             final long refreshTime = refreshTimeBD.longValue();
             if (calendarFile.isFile()) {
-                updateStatus(ThingStatus.UNKNOWN);
+                updateStatus(ThingStatus.ONLINE);
 
                 scheduler.submit(() -> {
                     // reload calendar file asynchronously
                     if (reloadCalendar()) {
-                        updateStatus(ThingStatus.ONLINE);
                         updateStates();
-                        rescheduleCalendarStateUpdate();
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "The calendar seems to be configured correctly, but the local copy of calendar could not be loaded.");
