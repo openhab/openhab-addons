@@ -295,7 +295,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             return;
         }
         if (stateResponse.state.effect != null) {
-        checkAndUpdateEffectChannels(stateResponse);
+            checkAndUpdateEffectChannels(stateResponse);
         }
         messageReceived(config.id, stateResponse);
     }
@@ -407,6 +407,19 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 if (bri != null) {
                     updateState(channelId, toPercentType(bri));
                 }
+                break;
+            case CHANNEL_EFFECT:
+                String effect = newState.effect;
+                if (effect != null) {
+                    updateState(channelId, new StringType(effect));
+                }
+                break;
+            case CHANNEL_EFFECT_SPEED:
+                Integer effectSpeed = newState.effectSpeed;
+                if (effectSpeed != null) {
+                    updateState(channelId, new DecimalType(effectSpeed));
+                }
+                break;
             default:
         }
     }
