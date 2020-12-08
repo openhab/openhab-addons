@@ -215,13 +215,11 @@ public class MiotParser {
                             case "uint8":
                             case "uint16":
                             case "uint32":
-                            case "uint64":
                             case "int8":
                             case "int16":
                             case "int32":
                             case "int64":
                             case "float":
-                            case "double":
                                 StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
                                 if (stateDescription == null) {
                                     stateDescription = new StateDescriptionDTO();
@@ -253,6 +251,10 @@ public class MiotParser {
                                 break;
                             case "string":
                                 miIoBasicChannel.setType("String");
+                                break;
+                            case "hex":
+                                miIoBasicChannel.setType("String");
+                                logger.info("no type mapping implemented for {}", property.format);
                                 break;
                             default:
                                 miIoBasicChannel.setType("String");

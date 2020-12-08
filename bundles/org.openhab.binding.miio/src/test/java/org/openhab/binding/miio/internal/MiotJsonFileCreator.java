@@ -45,7 +45,7 @@ public class MiotJsonFileCreator {
     @Disabled
     public static void main(String[] args) {
 
-        String model = "yeelink.switch.sw1";
+        String model = "viomi.dishwasher.m02";
         if (args.length > 0) {
             model = args[0];
         }

@@ -27,10 +27,33 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public enum MiIoQuantiyTypesConversion {
 
-    TIME("Time", "seconds", "minutes", "minute", "hour", "hours"),
-    TEMPERATURE("Temperature", "c", "celcius", "f", "farenheith"),
-    DIMENSIONLESS("Dimensionless", "percent", "percentage"),
-    ELECTRIC_POTENTIAL("ElectricPotential", "volt"),;
+    ANGLE("Angle", "arcdegrees", "radians"),
+    DENSITY("Density", "mg/m3"),
+    DIMENSIONLESS("Dimensionless", "percent", "percentage", "ppm"),
+    ELECTRIC_POTENTIAL("ElectricPotential", "volt"),
+    ILLUMINANCE("Illuminance", "lux"),
+    PRESSURE("Pressure", "pascal"),
+    TEMPERATURE("Temperature", "c", "celcius", "f", "farenheith", "kelvin", "K"),
+    TIME("Time", "seconds", "minutes", "minute", "hour", "hours", "days", "Months"),
+    VOLUME("Volume", "litre", "liter");
+    /*
+     * availale options according to miot spec:
+     * percentage
+     * Celsius degrees Celsius
+     * seconds
+     * minutes
+     * hours
+     * days
+     * kelvin temperature scale
+     * pascal Pascal (atmospheric pressure unit)
+     * arcdegrees radians (angle units)
+     * rgb RGB (color)
+     * watt (power)
+     * litre
+     * ppm ppm concentration
+     * lux Lux (illuminance)
+     * mg/m3 milligrams per cubic meter
+     */
 
     private final String unitType;
     private final String[] aliasses;
