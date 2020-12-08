@@ -228,10 +228,11 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
 
     /**
      * Starts the websocket connection.
+     *
      * {@link #requestFullState} need to be called first to obtain the websocket port.
      */
     private void startWebsocket() {
-        if (websocket.isConnected() || websocketPort == 0) {
+        if (websocket.isConnected() || websocketPort == 0 || websocketReconnect == false) {
             return;
         }
 
@@ -284,9 +285,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         }
         stopTimer();
         // Wait for POLL_FREQUENCY_SEC after a connection error before trying again
-        if (websocketReconnect) {
-            scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
-        }
+        scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
     }
 
     @Override
@@ -298,9 +297,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     @Override
     public void connectionLost(String reason) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        if (websocketReconnect) {
-            startWebsocket();
-        }
+        startWebsocket();
     }
 
     /**
