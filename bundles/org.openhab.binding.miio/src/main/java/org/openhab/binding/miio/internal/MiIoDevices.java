@@ -260,6 +260,7 @@ public enum MiIoDevices {
     YEELIGHT_C2("yeelink.light.color2", "Yeelight Color Bulb YLDP06YL 10W", THING_TYPE_BASIC),
     YEELIGHT_C3("yeelink.light.color3", "Yeelight Color Bulb YLDP02YL 9W", THING_TYPE_BASIC),
     YEELIGHT_C4("yeelink.light.color4", "Yeelight Bulb YLDP13YL (8,5W)", THING_TYPE_BASIC),
+    YEELINK_SWITCH_SW1("yeelink.switch.sw1", "Yeelight Dual Control Module", THING_TYPE_BASIC),
     YL_CEILING1("yilai.light.ceiling1", "Yeelight yilai ceiling", THING_TYPE_BASIC),
     YL_CEILING2("yilai.light.ceiling2", "Yeelight yilai ceiling", THING_TYPE_BASIC),
     YL_CEILING3("yilai.light.ceiling3", "Yeelight yilai ceiling", THING_TYPE_BASIC),
