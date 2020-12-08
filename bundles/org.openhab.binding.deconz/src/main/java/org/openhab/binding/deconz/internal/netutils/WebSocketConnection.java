@@ -65,7 +65,7 @@ public class WebSocketConnection {
         this.client = client;
         this.client.setMaxIdleTimeout(0);
         this.gson = gson;
-        this.socketName = ((QueuedThreadPool) client.getExecutor()).getName();
+        this.socketName = ((QueuedThreadPool) client.getExecutor()).getName() + "$" + this.hashCode();
     }
 
     public void start(String ip) {
@@ -107,7 +107,7 @@ public class WebSocketConnection {
     @OnWebSocketConnect
     public void onConnect(Session session) {
         connected = ConnectionState.CONNECTED;
-        logger.debug("{} successfully connected to {}", this, session.getRemoteAddress().getAddress());
+        logger.debug("{} successfully connected to {}", socketName, session.getRemoteAddress().getAddress());
         connectionListener.connectionEstablished();
     }
 
