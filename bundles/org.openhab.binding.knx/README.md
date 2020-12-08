@@ -66,6 +66,9 @@ At its base, the _ip_ bridge accepts the following configuration parameters:
 | tunnelUserId        | No           | KNX secure: Tunnel user id for secure tunnel mode (if specified, it must be a number >0)                     | -                                                    |
 | tunnelUserPassword  | No           | KNX secure: Tunnel user key for secure tunnel mode                                                           | -                                                    |
 | tunnelDeviceAuthentication  | No   | KNX secure: Tunnel device authentication for secure tunnel mode                                              | -                                                    |
+| keyringFile         | No           | KNX secure: Keyring file exported from ETS and placed in openHAB config/misc folder. Mandatory to decode secure GAs. | -                                                    |
+| keyringPassword     | No           | KNX secure: Keyring file password (set during export from ETS)                                               | -                                                    |
+| tunnelSourceAddress | No           | KNX secure: Physical KNX address of tunnel in secure mode to identify tunnel. If given, openHAB will read tunnelUserId, tunnelUserPassword, tunnelDeviceAuthentication from keyring  | -         |
 
 ### Serial Gateway
 
@@ -79,6 +82,8 @@ The _serial_ bridge accepts the following configuration parameters:
 | readRetriesLimit    | N        | Limits the read retries while initialization from the KNX bus                                                | 3             |
 | autoReconnectPeriod | N        | Seconds between connect retries when KNX link has been lost, 0 means never retry                             | 0             |
 | useCemi             | N        | Use newer CEMI message format, useful for newer devices like KNX RF sticks, kBerry, etc.                     | false         |
+| keyringFile         | N        | KNX secure: Keyring file exported from ETS and placed in openHAB config/misc folder. Mandatory to decode secure GAs. | -     |
+| keyringPassword     | N        | KNX secure: Keyring file password (set during export from ETS)                                               | -             |
 
 ## Things
 
@@ -452,16 +457,22 @@ It **requires a KNX Secure Router or a Secure IP Interface** and a KNX installat
 
 For _Secure routing_ mode, the so-called `backbone key` needs to be configured in openHAB.
 It is created by the ETS tool and cannot be changed via the ETS user interface.
+There are two possible ways to provide the key to openHAB:
 
 - The backbone key can be extracted from Security report (ETS, Reports, Security, look for a 32-digit key) and specified in parameter `routerBackboneKey`.
+- The backbone key is included in ETS keyring export (ETS, project settings, export keyring). Keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and also requires `keyringPassword`.
 
 For _Secure tunneling_ with a Secure IP Interface (or a router in tunneling mode), more parameters are required.
 A unique device authentication key, and a specific tunnel identifier and password need to be available.
+It can be provided to openHAB in two different ways:
 
 - All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`.
  `tunnelUserId` is a number that is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...).
  `tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface, you will see the different tunnels listed) and denoted as "Password".
  `tunnelDeviceAuthentication` is set in the properties of the IP interface itself; check for the tab "IP" and the description "Authentication Code".
+- All necessary information is included in ETS keyring export (ETS, project settings, export keyring).
+ Keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and `keyringPassword`.
+ In addition, `tunnelSourceAddress` needs to be set to uniquely identify the tunnel in use.
 
 ### KNX Data Secure
 
@@ -469,7 +480,14 @@ KNX Data Secure protects the content of messages on the KNX bus.
 In a KNX installation, both classic and secure group addresses can coexist.
 Data Secure does _not_ necessarily require a KNX Secure Router or a Secure IP Interface, but a KNX installation with newer KNX devices that support Data Secure and with **security features enabled in the ETS tool**.
 
-> NOTE: **openHAB currently ignores messages with secure group addresses.**
+**openHAB ignores messages with secure group addresses, unless data secure is configured.**
+
+> NOTE: openHAB currently does fully support passive (listening) access to secure group addresses.
+Write access to secure group addresses is currently disabled in openHAB.
+Initial/periodic read will fail, avoid automatic read (< in thing definition).
+
+All necessary information to decode secure group addresses is included in ETS keyring export (ETS, project settings, export keyring).
+Keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and also requires `keyringPassword`.
 
 ## Examples
 

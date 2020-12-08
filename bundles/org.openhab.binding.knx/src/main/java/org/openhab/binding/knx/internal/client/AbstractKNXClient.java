@@ -93,6 +93,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private final StatusUpdateCallback statusUpdateCallback;
     private final ScheduledExecutorService knxScheduler;
     private final CommandExtensionData commandExtensionData;
+    protected final Security openhabSecurity;
 
     private @Nullable ProcessCommunicator processCommunicator;
     private @Nullable ProcessCommunicationResponder responseCommunicator;
@@ -140,7 +141,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     public AbstractKNXClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, CommandExtensionData commandExtensionData,
-            StatusUpdateCallback statusUpdateCallback) {
+            Security openhabSecurity, StatusUpdateCallback statusUpdateCallback) {
         this.autoReconnectPeriod = autoReconnectPeriod;
         this.thingUID = thingUID;
         this.responseTimeout = responseTimeout;
@@ -149,6 +150,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         this.knxScheduler = knxScheduler;
         this.statusUpdateCallback = statusUpdateCallback;
         this.commandExtensionData = commandExtensionData;
+        this.openhabSecurity = openhabSecurity;
     }
 
     public void initialize() {
@@ -189,7 +191,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             logger.trace("connect() ignored, closing down");
             return false;
         }
-
         if (isConnected()) {
             return true;
         }
@@ -360,7 +361,15 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
         ReadDatapoint datapoint = readDatapoints.poll();
+
         if (datapoint != null) {
+            // TODO #8872: allow write access, currently only listening mode
+            if (openhabSecurity.groupKeys().containsKey(datapoint.getDatapoint().getMainAddress())) {
+                logger.debug("outgoing secure communication not implemented, explicit read from GA '{}' skipped",
+                        datapoint.getDatapoint().getMainAddress());
+                return;
+            }
+
             datapoint.incrementRetries();
             try {
                 logger.trace("Sending a Group Read Request telegram for {}", datapoint.getDatapoint().getMainAddress());
@@ -532,9 +541,16 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
 
+        // TODO #8872: allow write access, currently only listening mode
+        if (openhabSecurity.groupKeys().containsKey(groupAddress)) {
+            logger.debug("outgoing secure communication not implemented, write to GA '{}' skipped", groupAddress);
+            return;
+        }
+
         Datapoint datapoint = new CommandDP(groupAddress, thingUID.toString(), 0,
                 NORMALIZED_DPT.getOrDefault(dpt, dpt));
         String mappedValue = ValueEncoder.encode(type, dpt);
+
         if (mappedValue == null) {
             logger.debug("Value '{}' of type '{}' cannot be mapped to datapoint '{}'", type, type.getClass(),
                     datapoint);
