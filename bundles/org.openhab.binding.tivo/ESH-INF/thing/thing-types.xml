@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<thing:thing-descriptions bindingId="tivo"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 
+           http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <thing-type id="sckt">
+        <label>TiVo DVR Controller</label>
+        <description>Monitor and control your TiVo via DIRECT SOCKET commands leveraging the TIVO protocol 1.1 specification.  The TiVo TCP Control Protocol is an ASCII-based command protocol for remote control of a TiVo DVR over a TCP local network connection (the WAN or cable network interface cannot be used). The commands allow
+control of channel changes, user interface navigation and allow the client to send simulated remote control button presses to the Digital Video Recorder.<![CDATA[ <br /><br /> ]]>See https://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf for supported commands / codes for each channel.</description>
+
+        <channels>
+            <channel id="channelForce" typeId="channelForce"/>
+            <channel id="channelSet" typeId="channelSet"/>
+            <channel id="menuTeleport" typeId="menuTeleport"/>
+            <channel id="irCommand" typeId="irCommand"/>
+            <channel id="kbdCommand" typeId="kbdCommand"/>
+            <channel id="dvrStatus" typeId="dvrStatus"/>
+            <channel id="customCmd" typeId="customCmd"/>
+        </channels>
+        
+        <config-description>
+        	<parameter name="deviceName" type="text" required="true">
+				<default>My Tivo</default>
+				<required>true</required>
+				<label>Device Name</label>
+				<description>A friendly name to refer to this device.<![CDATA[ <b> ]]>Default: Device name specified on the TiVo.<![CDATA[ </b> ]]></description>
+			</parameter>
+        	<parameter name="address" type="text" required="true">
+            	<default></default>
+            	<required>true</required>
+            	<label>Address</label>
+            	<description>The IP address or host name of your TiVo box</description>
+            	<context>network-address</context>
+        	</parameter>
+        	<parameter name="tcpPort" type="integer" max="65535" min="1">
+				<default>31339</default>
+				<required>true</required>
+				<label>TCP Port</label>
+				<description>The TCP port number used to connect to the TiVo.<![CDATA[ <b> ]]>Default: 31339<![CDATA[ </b> ]]></description>
+			</parameter>
+			<parameter name="numRetry" type="integer" max="20" min="0">
+				<default>5</default>
+				<required>true</required>
+				<label>Connection Retries</label>
+				<description>The number of times to attempt reconnection to the TiVo box, if there is a connection failure.<![CDATA[ <b> ]]>Default: 5<![CDATA[ </b> ]]></description>
+			</parameter>
+			<parameter name="keepConActive" type="boolean">
+				<default>true</default>
+				<required>true</required>
+				<label>Keep Connection Open</label>
+				<description>Keep connection to the TiVo open.  Recommended for monitoring the TiVo for changes in TV channels.  Disable if other applications that use the Remote Control Protocol port will also be used e.g. mobile remote control applications.<![CDATA[ <b> ]]>Default: True (Enabled)<![CDATA[ </b> ]]></description>
+			</parameter>
+			<parameter name="pollForChanges" type="boolean">
+				<default>true</default>
+				<required>true</required>
+				<label>Poll for Channel Changes</label>
+				<description>Check TiVo for channel changes.  Enable if openHAB and a physical remote control (or other services use the Remote Control Protocol) will be used. <![CDATA[ <b> ]]>Default: True (Enabled)<![CDATA[ </b> ]]></description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" max="65535" min="3">
+				<default>10</default>
+				<required>true</required>
+				<label>Polling Interval (Seconds)</label>
+				<description>Number of seconds between polling jobs to update status information from the TiVo. <![CDATA[ <b> ]]>Default: 10<![CDATA[ </b> ]]></description>
+			</parameter>
+			<parameter name="cmdWaitInterval" type="integer" max="65535" min="0">
+                <default>200</default>
+                <required>true</required>
+                <label>Command Wait Interval (Milliseconds)</label>
+                <description>Period to wait AFTER a command is sent to the TiVo in milliseconds, before checking that the command has completed. <![CDATA[ <b> ]]>Default: 200<![CDATA[ </b> ]]></description>
+            </parameter>
+            <parameter name="ignoreChannels" type="text">
+                <default></default>
+                <required>false</required>
+                <label>Channels to Ignore</label>
+                <description>Used in channel UP/DOWN operations to avoid invalid channel numbers that are not part of your subscription (these impact the speed of changing channels).  Channels you list in a comma separated list e.g. 109, 111, 999 are skipped/ignored when changing the channel UP or DOWN.<![CDATA[ <br /><br /> ]]>You can also exclude a range of channel numbers by using a hyphen between the lower and upper numbers e.g. 109, 101, 800-850, 999.  New entries are sorted into numerical order when saved.<![CDATA[ <br /><br /> ]]>During normal channel changing operations any invalid channels detected are automatically learnt and added to this list, however the maximum gap for 'auto learning' between valid channels is 10.  Any gap larger than this will not be automatically learnt and the Channel UP/DOWN operation will fail.  If your service has gap(s) larger than 10 channels, you should exclude these manually or use the<![CDATA[ <b> ]]> Perform Channel Scan<![CDATA[ </b> ]]> function to populate this list. <![CDATA[ <br /><br /><b> ]]>Default: NULL (blank)<![CDATA[ </b> ]]></description>
+            </parameter>
+            <parameter name="minChannel" type="integer" max="9999" min="1">
+                <default>100</default>
+                <required>true</required>
+                <label>Min Channel Number</label>
+                <description>The first valid channel number available on the TiVo. <![CDATA[ <b> ]]>Default: 100 (min 1)<![CDATA[ </b> ]]></description>
+            </parameter>
+            <parameter name="maxChannel" type="integer" max="9999" min="1">
+                <default>999</default>
+                <required>true</required>
+                <label>Max Channel Number</label>
+                <description>The last valid channel number available on the TiVo. <![CDATA[ <b> ]]>Default: 999 (max 9999)<![CDATA[ </b> ]]></description>
+            </parameter>
+            <parameter name="ignoreChannelScan" type="boolean">
+                <default>false</default>
+                <required>true</required>
+                <label>Perform Channel Scan</label>
+                <description>Performs a channel scan between <![CDATA[ <b> ]]> Min Channel Number<![CDATA[ </b> ]]> and <![CDATA[ <b> ]]> Max Channel Number<![CDATA[ </b> ]]>, populates the <![CDATA[ <b> ]]> Channels to Ignore <![CDATA[ </b> ]]> settings for any channels that are not accessible/part of your subscription.  <![CDATA[ <p><p><b> ]]> Note: <![CDATA[ </b> ]]> Existing <![CDATA[ <b> ]]> Channels to Ignore <![CDATA[ </b> ]]> settings are retained, you will need to manually remove any entries for new channels added to your service (or remove all existing <![CDATA[ <b> ]]> Channels to Ignore <![CDATA[ </b> ]]> and run a new scan).<![CDATA[ <br /><br /><b> ]]>Default: false<![CDATA[ </b> ]]></description>
+            </parameter>
+        </config-description>
+    </thing-type>
+
+    <channel-type id="channelForce">
+        <item-type>Number</item-type>
+        <label>Current Channel - Forced (FORCECH)</label>
+        <description>Displays the current channel number.  When changed, tunes the DVR to the specified channel, cancelling any recordings in progress if necessary i.e. all tuners are already in use / recording. The TiVo must be in Live TV mode for this command to work.  Type: Number (1-9999), DisplayFormat: %n</description>
+        <category>ChannelChange</category>
+        <state min="1" max="9999" step="1" pattern="%n" ></state>
+    </channel-type>
+    <channel-type id="channelSet">
+        <item-type>Number</item-type>
+        <label>Current Channel - Request (SETCH)</label>
+        <description>Displays the current channel number.  When changed, tunes the DVR to the specified channel (unless a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work.   Type: Number (1-9999), DisplayFormat: %n</description>
+        <category>ChannelChange</category>
+        <state min="1" max="9999" step="1" pattern="%n" />
+    </channel-type>
+    <channel-type id="menuTeleport">
+        <item-type>String</item-type>
+        <label>Change Special/Menu Screen (TELEPORT)</label>
+        <description>Change to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My Shows).  Type: String</description>
+        <state readOnly="false">
+            <options>
+                <option value="TIVO">TIVO</option>
+                <option value="LIVETV">LIVETV</option>
+                <option value="GUIDE">GUIDE</option>
+                <option value="NOWPLAYING">NOWPLAYING</option>
+            </options>        
+        </state>
+    </channel-type>
+    <channel-type id="irCommand">
+        <item-type>String</item-type>
+        <label>Remote Control Button (IRCODE)</label>
+        <description>Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote Protocol 1.1 for supported codes.   Type: String</description>
+        <state readOnly="false"/>
+    </channel-type>
+    <channel-type id="kbdCommand">
+        <item-type>String</item-type>
+        <label>Keyboard Command (KEYBOARD)</label>
+        <description>Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z.  See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes.  Type: String</description>
+        <state readOnly="false"/>
+    </channel-type>
+    <channel-type id="dvrStatus">
+        <item-type>String</item-type>
+        <label>TiVo Status</label>
+        <description>Action return code / channel information returned by the TiVo.  Type: String</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>
+        <channel-type id="customCmd">
+        <item-type>String</item-type>
+        <label>Custom Command</label>
+        <description>Send custom commands.  Both the command and action strings must be supplied.  Note: support is only provided for documented commands / responses. <![CDATA[ </b> ]]> Type: String</description>
+        <state readOnly="false"/>
+    </channel-type>
+</thing:thing-descriptions>
