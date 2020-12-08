@@ -13,8 +13,10 @@
 package org.openhab.binding.velux.internal.handler.utils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
+import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
@@ -50,32 +52,60 @@ public class Thing2VeluxActuator {
     // Private
 
     private void mapThing2Velux() {
-        if (!ThingConfiguration.exists(bridgeHandler, channelUID,
-                VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER)) {
-            logger.trace("mapThing2Velux(): aborting processing as {} is not set within {}.",
-                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER, channelUID);
+        if (channelUID.toString().startsWith(VeluxBindingConstants.BRIDGE_THING_TYPE_UID)) {
+            logger.trace("mapThing2Velux(): channel {} is on a Bridge Thing, exiting.", channelUID);
             return;
         }
-        String actuatorSerial = (String) ThingConfiguration.getValue(bridgeHandler, channelUID,
-                VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
-        logger.trace("mapThing2Velux(): found actuatorSerial={}.", actuatorSerial);
 
-        // Handle value inversion
-        boolean propertyInverted = false;
-        if (ThingConfiguration.exists(bridgeHandler, channelUID, VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED)) {
-            propertyInverted = (boolean) ThingConfiguration.getValue(bridgeHandler, channelUID,
-                    VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED);
+        // the uniqueIndex is the serial number (if valid)
+        String uniqueIndex = null;
+        boolean invert = false;
+        if (ThingConfiguration.exists(bridgeHandler, channelUID, VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER)) {
+            String serial = (String) ThingConfiguration.getValue(bridgeHandler, channelUID,
+                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
+            invert = VeluxProductSerialNo.indicatesRevertedValues(serial);
+            serial = VeluxProductSerialNo.cleaned(serial);
+            uniqueIndex = ("".equals(serial) || serial.equals(VeluxProductSerialNo.UNKNOWN)) ? null : serial;
         }
-        isInverted = propertyInverted || VeluxProductSerialNo.indicatesRevertedValues(actuatorSerial);
-        logger.trace("mapThing2Velux(): found isInverted={}.", isInverted);
-        actuatorSerial = VeluxProductSerialNo.cleaned(actuatorSerial);
+        logger.trace("mapThing2Velux(): in {} serialNumber={}.", channelUID, uniqueIndex);
 
-        if (!bridgeHandler.bridgeParameters.actuators.getChannel().existingProducts.isRegistered(actuatorSerial)) {
-            logger.warn("mapThing2Velux(): cannot work on unknown actuator with serial {}.", actuatorSerial);
+        // if serial number not valid, the uniqueIndex is name (if valid)
+        if (uniqueIndex == null) {
+            if (ThingConfiguration.exists(bridgeHandler, channelUID, VeluxBindingProperties.PROPERTY_ACTUATOR_NAME)) {
+                String name = (String) ThingConfiguration.getValue(bridgeHandler, channelUID,
+                        VeluxBindingProperties.PROPERTY_ACTUATOR_NAME);
+                uniqueIndex = ("".equals(name) || name.equals(VeluxBindingConstants.UNKNOWN)) ? null : name;
+            }
+            logger.trace("mapThing2Velux(): in {} name={}.", channelUID, uniqueIndex);
+        }
+
+        if (uniqueIndex == null) {
+            logger.warn("mapThing2Velux(): in {} cannot find a uniqueIndex, aborting.", channelUID);
+            return;
+        } else {
+            logger.trace("mapThing2Velux(): in {} uniqueIndex={}, proceeding.", channelUID, uniqueIndex);
+        }
+
+        // handle value inversion
+        if (!invert) {
+            if (ThingConfiguration.exists(bridgeHandler, channelUID,
+                    VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED)) {
+                invert = (boolean) ThingConfiguration.getValue(bridgeHandler, channelUID,
+                        VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED);
+            }
+        }
+        isInverted = invert;
+        logger.trace("mapThing2Velux(): in {} isInverted={}.", channelUID, isInverted);
+
+        VeluxExistingProducts existing = bridgeHandler.bridgeParameters.actuators.getChannel().existingProducts;
+
+        if (!existing.isRegistered(uniqueIndex)) {
+            logger.warn("mapThing2Velux(): actuator with uniqueIndex={} is not registered", uniqueIndex);
             return;
         }
-        logger.trace("mapThing2Velux(): fetching actuator for {}.", actuatorSerial);
-        thisProduct = bridgeHandler.bridgeParameters.actuators.getChannel().existingProducts.get(actuatorSerial);
+
+        logger.trace("mapThing2Velux(): fetching actuator for {}.", uniqueIndex);
+        thisProduct = existing.get(uniqueIndex);
         logger.debug("mapThing2Velux(): found actuator {}.", thisProduct);
         return;
     }
