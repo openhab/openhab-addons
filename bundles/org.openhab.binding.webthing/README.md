@@ -46,7 +46,7 @@ This service does not require specific hardware or devices. To connect the WebTh
 
 
 ### Thing  
-After installing the WebThing binding you should find the WebThings of your network in your openHAB Thing browser as shown below.
+After installing the WebThing binding you should find the WebThings of your network in the things section of your openHAB administration interface as shown below.
  
 ![discovery picture](docs/discovery.png) 
 
