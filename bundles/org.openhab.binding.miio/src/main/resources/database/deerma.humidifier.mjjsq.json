@@ -1,0 +1,93 @@
+{
+	"deviceMapping": {
+		"id": [
+			"deerma.humidifier.mjjsq"
+		],
+		"channels": [
+			{
+				"property": "OnOff_State",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Set_OnOff",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "Humidifier_Gear",
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Set_HumidifierGears",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "Humidity_Value",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Set_HumiValue",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "HumiSet_Value",
+				"friendlyName": "Humidity Setting",
+				"channel": "humidity_set",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "Led_State",
+				"friendlyName": "LED",
+				"channel": "ked",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "TipSound_State",
+				"friendlyName": "TipSound_State",
+				"channel": "sound",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "wet_and_protect",
+				"friendlyName": "wet_and_protect",
+				"channel": "wet_and_protect",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "Set_wet_and_protect",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "watertankstatus",
+				"friendlyName": "Watertank Status",
+				"channel": "watertankstatus",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			}
+		]
+	}
+}
