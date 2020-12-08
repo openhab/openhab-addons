@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Warning Device</label>
 		<description>A warning device</description>
+		<category>Siren</category>
 		<channels>
 			<channel id="alert" typeId="alert"></channel>
 		</channels>
@@ -25,6 +26,7 @@
 		</supported-bridge-type-refs>
 		<label>Window Covering</label>
 		<description>A device to cover windows.</description>
+		<category>Blinds</category>
 		<channels>
 			<channel typeId="position" id="position"/>
 		</channels>
@@ -55,6 +57,7 @@
 		</supported-bridge-type-refs>
 		<label>Dimmable Light</label>
 		<description>A dimmable light.</description>
+		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
 		</channels>
@@ -70,6 +73,7 @@
 		</supported-bridge-type-refs>
 		<label>Color-Temperature Light</label>
 		<description>A dimmable light with adjustable color temperature.</description>
+		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="brightness" id="brightness"/>
 			<channel typeId="ct" id="color_temperature"/>
@@ -86,6 +90,7 @@
 		</supported-bridge-type-refs>
 		<label>Color Light</label>
 		<description>A dimmable light with adjustable color.</description>
+		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="color" id="color"/>
 		</channels>
@@ -101,6 +106,7 @@
 		</supported-bridge-type-refs>
 		<label>Color Light</label>
 		<description>A dimmable light with adjustable color.</description>
+		<category>Lightbulb</category>
 		<channels>
 			<channel typeId="color" id="color"/>
 			<channel typeId="ct" id="color_temperature"/>
@@ -117,6 +123,7 @@
 		</supported-bridge-type-refs>
 		<label>Doorlock</label>
 		<description>A doorlock that can be locked (ON) or unlocked (OFF).</description>
+		<category>Lock</category>
 		<channels>
 			<channel typeId="lock" id="switch"/>
 		</channels>
@@ -129,34 +136,51 @@
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
+		<category>Rollershutter</category>
 		<state pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="onoff">
 		<item-type>Switch</item-type>
 		<label>On/Off</label>
+		<category>Switch</category>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
+		<category>Slider</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 		<state pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
+		<category>Colorpicker</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ct">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 		<state pattern="%d K" min="15" max="100000" step="100"/>
 	</channel-type>
 
 	<channel-type id="alert">
 		<item-type>Switch</item-type>
 		<label>Alert</label>
+		<category>Alarm</category>
 	</channel-type>
 
 	<channel-type id="lock">
