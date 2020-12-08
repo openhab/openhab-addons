@@ -15,6 +15,7 @@ package org.openhab.binding.miio.internal.miot;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -214,10 +215,13 @@ public class MiotParser {
                             case "uint8":
                             case "uint16":
                             case "uint32":
+                            case "uint64":
                             case "int8":
                             case "int16":
                             case "int32":
+                            case "int64":
                             case "float":
+                            case "double":
                                 StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
                                 if (stateDescription == null) {
                                     stateDescription = new StateDescriptionDTO();
@@ -236,6 +240,14 @@ public class MiotParser {
                                     if (property.unit != null) {
                                         unknownUnits.add(property.unit);
                                     }
+                                }
+                                if (property.valueRange != null && property.valueRange.size() == 3) {
+                                    stateDescription
+                                            .setMinimum(BigDecimal.valueOf(property.valueRange.get(0).doubleValue()));
+                                    stateDescription
+                                            .setMaximum(BigDecimal.valueOf(property.valueRange.get(1).doubleValue()));
+                                    stateDescription
+                                            .setStep(BigDecimal.valueOf(property.valueRange.get(2).doubleValue()));
                                 }
                                 miIoBasicChannel.setStateDescription(stateDescription);
                                 break;
