@@ -64,29 +64,38 @@ public class ComfoAirHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
+        if (comfoAirConnector != null) {
+            boolean isActive = !comfoAirConnector.getIsSuspended();
+            String channelActivate = ComfoAirBindingConstants.CG_CONTROL_PREFIX
+                    + ComfoAirBindingConstants.CHANNEL_ACTIVATE;
 
-        if (command instanceof RefreshType) {
-            Channel channel = this.thing.getChannel(channelUID);
-            if (channel != null) {
-                updateChannelState(channel);
-            }
-        } else {
-            ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, command);
+            if (isActive || channelId == channelActivate) {
+                if (command instanceof RefreshType) {
+                    Channel channel = this.thing.getChannel(channelUID);
+                    if (channel != null) {
+                        updateChannelState(channel);
+                    }
+                } else {
+                    ComfoAirCommand changeCommand = ComfoAirCommandType.getChangeCommand(channelId, command);
 
-            if (changeCommand != null) {
-                Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked)
-                        .map(ChannelUID::getId).collect(Collectors.toSet());
-                sendCommand(changeCommand, channelId);
+                    if (changeCommand != null) {
+                        Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID)
+                                .filter(this::isLinked).map(ChannelUID::getId).collect(Collectors.toSet());
+                        sendCommand(changeCommand, channelId);
 
-                Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
-                        .getAffectedReadCommands(channelId, keysToUpdate);
+                        Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
+                                .getAffectedReadCommands(channelId, keysToUpdate);
 
-                if (affectedReadCommands.size() > 0) {
-                    Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
-                    affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
+                        if (affectedReadCommands.size() > 0) {
+                            Runnable updateThread = new AffectedItemsUpdateThread(affectedReadCommands);
+                            affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
+                        }
+                    } else {
+                        logger.warn("Unhandled command type: {}, channelId: {}", command.toString(), channelId);
+                    }
                 }
             } else {
-                logger.warn("Unhandled command type: {}, channelId: {}", command.toString(), channelId);
+                logger.debug("Binding control is currently not active.");
             }
         }
     }
