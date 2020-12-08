@@ -60,7 +60,7 @@ public class JinjaTransformationProfileFactory implements ProfileFactory, Profil
         return Arrays.asList(JinjaTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=JINJA)")
+    @Reference(target = "(openhab.transform=JINJA)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - added command whitelist service
  */
 @NonNullByDefault
-@Component(property = { "smarthome.transform=EXEC" })
+@Component(property = { "openhab.transform=EXEC" })
 public class ExecTransformationService implements TransformationService {
     private final Logger logger = LoggerFactory.getLogger(ExecTransformationService.class);
     private final ExecTransformationWhitelistWatchService execTransformationWhitelistWatchService;
