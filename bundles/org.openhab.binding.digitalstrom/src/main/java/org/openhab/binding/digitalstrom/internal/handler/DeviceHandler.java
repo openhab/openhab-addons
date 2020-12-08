@@ -311,7 +311,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                     if (deviceStateUpdate.isSensorUpdateType()) {
                         updateState(getSensorChannelID(deviceStateUpdate.getTypeAsSensorEnum()),
                                 new DecimalType(deviceStateUpdate.getValueAsFloat()));
-                        logger.debug("Update ESH-State");
+                        logger.debug("Update state");
                         return;
                     }
                     if (deviceStateUpdate.isBinarayInputType()) {
@@ -402,7 +402,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                     }
                     updateState(DsChannelTypeProvider.SHADE, new PercentType(percent));
                 }
-                logger.debug("Update ESH-State");
+                logger.debug("Update state");
             }
         }
     }
@@ -736,14 +736,14 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         if (!channelList.isEmpty()) {
             Iterator<Channel> channelInter = channelList.iterator();
             while (channelInter.hasNext()) {
-                Channel eshChannel = channelInter.next();
-                if (DsChannelTypeProvider.isOutputChannel(eshChannel.getUID().getId())) {
-                    if (!eshChannel.getUID().getId().equals(currentChannel)
-                            && !(device.isShade() && eshChannel.getUID().getId().equals(DsChannelTypeProvider.SHADE))) {
+                Channel channel = channelInter.next();
+                if (DsChannelTypeProvider.isOutputChannel(channel.getUID().getId())) {
+                    if (!channel.getUID().getId().equals(currentChannel)
+                            && !(device.isShade() && channel.getUID().getId().equals(DsChannelTypeProvider.SHADE))) {
                         channelInter.remove();
                         channelListChanged = true;
                     } else {
-                        if (!eshChannel.getUID().getId().equals(DsChannelTypeProvider.SHADE)) {
+                        if (!channel.getUID().getId().equals(DsChannelTypeProvider.SHADE)) {
                             channelIsAlreadyLoaded = true;
                         }
                     }

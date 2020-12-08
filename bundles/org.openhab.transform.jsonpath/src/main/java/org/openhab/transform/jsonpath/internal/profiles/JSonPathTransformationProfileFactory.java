@@ -60,7 +60,7 @@ public class JSonPathTransformationProfileFactory implements ProfileFactory, Pro
         return Arrays.asList(JSonPathTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=JSONPATH)")
+    @Reference(target = "(openhab.transform=JSONPATH)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

@@ -303,7 +303,7 @@ class GoogleCloudAPI {
     }
 
     /**
-     * Converts ESH audio format to Google parameters.
+     * Converts audio format to Google parameters.
      *
      * @param codec Requested codec
      * @return String array of Google audio format and the file extension to use.
