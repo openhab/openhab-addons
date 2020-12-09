@@ -257,6 +257,15 @@ public class TelegramHandler extends BaseThingHandler {
         return bot.getFullFilePath(bot.execute(new GetFile(fileId)).file());
     }
 
+    private void addFileUrlsToPayload(JsonObject filePayload) {
+        filePayload.addProperty("file_url",
+                getFullDownloadUrl(filePayload.getAsJsonPrimitive("file_id").getAsString()));
+        if (filePayload.has("thumb")) {
+            filePayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
+                    filePayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
+        }
+    }
+
     private int handleUpdates(List<Update> updates) {
         final TelegramBot localBot = bot;
         if (localBot == null) {
@@ -300,36 +309,16 @@ public class TelegramHandler extends BaseThingHandler {
                     messagePayload.addProperty("text", message.text());
                 }
                 if (messageRaw.has("animation")) {
-                    JsonObject animationPayload = messageRaw.getAsJsonObject("animation");
-                    String animationURL = getFullDownloadUrl(
-                            animationPayload.getAsJsonPrimitive("file_id").getAsString());
-                    animationPayload.addProperty("file_url", animationURL);
-                    messagePayload.addProperty("animation_url", animationURL);
-                    if (animationPayload.has("thumb")) {
-                        animationPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
-                                animationPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
-                    }
+                    addFileUrlsToPayload(messageRaw.getAsJsonObject("animation"));
+                    messagePayload.add("animation_url", messageRaw.getAsJsonObject("animation").get("file_url"));
                 }
                 if (messageRaw.has("audio")) {
-                    JsonObject audioPayload = messageRaw.getAsJsonObject("audio");
-                    String audioURL = getFullDownloadUrl(audioPayload.getAsJsonPrimitive("file_id").getAsString());
-                    audioPayload.addProperty("file_url", audioURL);
-                    messagePayload.addProperty("audio_url", audioURL);
-                    if (audioPayload.has("thumb")) {
-                        audioPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
-                                audioPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
-                    }
+                    addFileUrlsToPayload(messageRaw.getAsJsonObject("audio"));
+                    messagePayload.add("audio_url", messageRaw.getAsJsonObject("audio").get("file_url"));
                 }
                 if (messageRaw.has("document")) {
-                    JsonObject documentPayload = messageRaw.getAsJsonObject("document");
-                    String documentURL = getFullDownloadUrl(
-                            documentPayload.getAsJsonPrimitive("file_id").getAsString());
-                    documentPayload.addProperty("file_url", documentURL);
-                    messagePayload.addProperty("document_url", documentURL);
-                    if (documentPayload.has("thumb")) {
-                        documentPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
-                                documentPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
-                    }
+                    addFileUrlsToPayload(messageRaw.getAsJsonObject("document"));
+                    messagePayload.add("document_url", messageRaw.getAsJsonObject("document").get("file_url"));
                 }
                 if (messageRaw.has("photo")) {
                     JsonArray photoURLArray = new JsonArray();
@@ -343,35 +332,16 @@ public class TelegramHandler extends BaseThingHandler {
                     messagePayload.add("photo_url", photoURLArray);
                 }
                 if (messageRaw.has("sticker")) {
-                    JsonObject stickerPayload = messageRaw.getAsJsonObject("sticker");
-                    String stickerURL = getFullDownloadUrl(stickerPayload.getAsJsonPrimitive("file_id").getAsString());
-                    stickerPayload.addProperty("file_url", stickerURL);
-                    messagePayload.addProperty("sticker_url", stickerURL);
-                    if (stickerPayload.has("thumb")) {
-                        stickerPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
-                                stickerPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
-                    }
+                    addFileUrlsToPayload(messageRaw.getAsJsonObject("sticker"));
+                    messagePayload.add("sticker_url", messageRaw.getAsJsonObject("sticker").get("file_url"));
                 }
                 if (messageRaw.has("video")) {
-                    JsonObject videoPayload = messageRaw.getAsJsonObject("video");
-                    String videoURL = getFullDownloadUrl(videoPayload.getAsJsonPrimitive("file_id").getAsString());
-                    videoPayload.addProperty("file_url", videoURL);
-                    messagePayload.addProperty("video_url", videoURL);
-                    if (videoPayload.has("thumb")) {
-                        videoPayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
-                                videoPayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
-                    }
+                    addFileUrlsToPayload(messageRaw.getAsJsonObject("video"));
+                    messagePayload.add("video_url", messageRaw.getAsJsonObject("video").get("file_url"));
                 }
                 if (messageRaw.has("video_note")) {
-                    JsonObject videoNotePayload = messageRaw.getAsJsonObject("animation");
-                    String videoNoteURL = getFullDownloadUrl(
-                            videoNotePayload.getAsJsonPrimitive("file_id").getAsString());
-                    videoNotePayload.addProperty("file_url", videoNoteURL);
-                    messagePayload.addProperty("video_note_url", videoNoteURL);
-                    if (videoNotePayload.has("thumb")) {
-                        videoNotePayload.getAsJsonObject("thumb").addProperty("file_url", getFullDownloadUrl(
-                                videoNotePayload.getAsJsonObject("thumb").getAsJsonPrimitive("file_id").getAsString()));
-                    }
+                    addFileUrlsToPayload(messageRaw.getAsJsonObject("video_note"));
+                    messagePayload.add("video_note_url", messageRaw.getAsJsonObject("video_note").get("file_url"));
                 }
                 if (messageRaw.has("voice")) {
                     JsonObject voicePayload = messageRaw.getAsJsonObject("voice");
@@ -432,8 +402,8 @@ public class TelegramHandler extends BaseThingHandler {
                             new String[] { callbackQuery.from().firstName(), callbackQuery.from().lastName() }));
                     callbackPayload.addProperty("chat_id", callbackQuery.message().chat().id());
                     callbackPayload.addProperty("callback_id", callbackQuery.id());
-                    callbackPayload.addProperty("reply_id", callbackQuery.data().split(" ", 2)[0]);
-                    callbackPayload.addProperty("text", callbackQuery.data().split(" ", 2)[1]);
+                    callbackPayload.addProperty("reply_id", callbackData[0]);
+                    callbackPayload.addProperty("text", callbackData[1]);
                     triggerEvent(CALLBACKEVENT, callbackPayload.toString());
                     triggerEvent(CALLBACKRAWEVENT, callbackRaw.toString());
 
