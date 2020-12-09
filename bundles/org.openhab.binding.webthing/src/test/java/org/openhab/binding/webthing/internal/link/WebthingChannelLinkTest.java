@@ -13,6 +13,7 @@
 package org.openhab.binding.webthing.internal.link;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,8 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.channel.Channels;
 import org.openhab.binding.webthing.internal.client.WebthingTest;
@@ -72,7 +72,7 @@ public class WebthingChannelLinkTest {
 
         try {
             testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, new DecimalType(130));
-            Assert.fail("should not been successful (server returns an error on this value)");
+            fail("should not been successful (server returns an error on this value)");
         } catch (Exception expected) {
         }
     }
@@ -104,7 +104,7 @@ public class WebthingChannelLinkTest {
         message.data = Map.of("target_position", 77);
         websocketConnectionFactory.webSocketRef.get().sendToClient(message);
 
-        Assert.assertEquals(new DecimalType(77), testWebthingThingHandler.itemState.get(channelUID));
+        assertEquals(new DecimalType(77), testWebthingThingHandler.itemState.get(channelUID));
     }
 
     private static final class TestConsumer implements BiConsumer<ChannelUID, Command> {
@@ -172,7 +172,7 @@ public class WebthingChannelLinkTest {
         message.data = Map.of(propertyName, initialValue);
         websocketConnectionFactory.webSocketRef.get().sendToClient(message);
 
-        Assert.assertEquals(initialState, testWebthingThingHandler.itemState.get(channelUID));
+        assertEquals(initialState, testWebthingThingHandler.itemState.get(channelUID));
 
         ChannelToPropertyLink.establish(testWebthingThingHandler, channel, webthing, propertyName);
         testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, updatedState);

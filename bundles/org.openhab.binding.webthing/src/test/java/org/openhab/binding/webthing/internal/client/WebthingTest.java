@@ -13,7 +13,8 @@
 package org.openhab.binding.webthing.internal.client;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,8 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
 
 import com.google.gson.Gson;
@@ -67,7 +67,7 @@ public class WebthingTest {
         assertEquals(34.0, webthing.readProperty("windspeed"));
         try {
             webthing.writeProperty("windspeed", 23.0);
-            Assert.fail();
+            fail();
         } catch (RuntimeException e) {
             assertEquals(
                     "could not write windspeed (http://example.org:8090/properties/windspeed) with 23.0 windspeed is readOnly",
@@ -102,7 +102,7 @@ public class WebthingTest {
         var webthing = createTestWebthing("http://example.org:8090/0", httpClientMock);
         try {
             webthing.writeProperty("target_position", 10);
-            Assert.fail();
+            fail();
         } catch (RuntimeException e) {
             assertEquals(
                     "could not write target_position (http://example.org:8090/0/properties/target_position) with 10 Got error response: ",
@@ -119,7 +119,7 @@ public class WebthingTest {
         var webthing = createTestWebthing("http://example.org:8090", httpClientMock);
         try {
             webthing.readProperty("windspeed");
-            Assert.fail();
+            fail();
         } catch (RuntimeException e) {
             assertEquals(
                     "could not read windspeed (http://example.org:8090/properties/windspeed). Got error response: ",

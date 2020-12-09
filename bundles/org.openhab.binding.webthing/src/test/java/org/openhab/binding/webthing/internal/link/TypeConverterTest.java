@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
@@ -29,7 +30,7 @@ public class TypeConverterTest {
     public void testStringType() throws Exception {
         var typeConverter = TypeConverters.create("String", "String");
         var state = typeConverter.toStateCommand("motion");
-        assertEquals(true, state instanceof StringType);
+        assumeTrue(state instanceof StringType);
         assertEquals("motion", typeConverter.toPropertyValue((State) state));
     }
 
@@ -37,7 +38,7 @@ public class TypeConverterTest {
     public void testNumberType() throws Exception {
         var typeConverter = TypeConverters.create("Number", "Number");
         var state = typeConverter.toStateCommand(45.6);
-        assertEquals(true, state instanceof DecimalType);
+        assumeTrue(state instanceof DecimalType);
         assertEquals(45.6, typeConverter.toPropertyValue((State) state));
     }
 
@@ -45,11 +46,11 @@ public class TypeConverterTest {
     public void testNumberIntegerType() throws Exception {
         var typeConverter = TypeConverters.create("Number", "Integer");
         var state = typeConverter.toStateCommand(45);
-        assertEquals(true, state instanceof DecimalType);
+        assumeTrue(state instanceof DecimalType);
         assertEquals(45, typeConverter.toPropertyValue((State) state));
 
         state = typeConverter.toStateCommand(45.2);
-        assertEquals(true, state instanceof DecimalType);
+        assumeTrue(state instanceof DecimalType);
         assertEquals(45, typeConverter.toPropertyValue((State) state));
     }
 }
