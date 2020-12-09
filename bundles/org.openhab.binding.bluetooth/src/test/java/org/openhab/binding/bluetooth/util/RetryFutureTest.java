@@ -28,12 +28,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.test.java.JavaTest;
 
 /**
  * @author Connor Petty - Initial contribution
  *
  */
-class RetryFutureTest {
+class RetryFutureTest extends JavaTest {
 
     private static final int TIMEOUT_MS = 1000;
     private ScheduledExecutorService scheduler;
@@ -115,7 +116,7 @@ class RetryFutureTest {
     }
 
     @Test
-    void composeWithRetry1() throws InterruptedException {
+    void composeWithRetry1() {
         AtomicInteger visitCount = new AtomicInteger();
         CompletableFuture<String> composedFuture = new CompletableFuture<>();
         Future<String> retryFuture = RetryFuture.composeWithRetry(() -> {
@@ -152,10 +153,9 @@ class RetryFutureTest {
             if (!latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
                 fail("Timeout while waiting for latch");
             }
-            Thread.sleep(1);
             retryFuture.cancel(false);
 
-            assertTrue(composedFuture.isCancelled());
+            waitForAssert(() -> assertTrue(composedFuture.isCancelled()));
         } catch (InterruptedException e) {
             fail(e);
         }
