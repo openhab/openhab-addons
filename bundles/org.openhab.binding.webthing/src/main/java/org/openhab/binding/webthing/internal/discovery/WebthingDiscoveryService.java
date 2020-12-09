@@ -172,7 +172,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                             discoveryResult.getProperties().get("webThingURI"));
                 }
             } catch (Exception e) {
-                logger.warn("error occurred by discovering " + serviceInfo.getNiceTextString(), e);
+                logger.warn("error occurred by discovering {}", serviceInfo.getNiceTextString(), e);
             }
             return results;
         }
@@ -185,7 +185,6 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
      * @return the associated discovery result
      */
     private Set<DiscoveryResult> discoverWebThing(ServiceInfo serviceInfo) {
-
         var discoveryResults = new HashSet<DiscoveryResult>();
 
         if (serviceInfo.getHostAddresses().length > 0) {
