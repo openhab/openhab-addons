@@ -160,7 +160,9 @@ Other devices support
 | brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`, `colortemperaturelight`        |                                 
 | switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                    |
 | color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`, `lightgroup`|
-| color_temperature | Number                   |     R/W     | Color temperature in kelvin. The value range is determined by each individual light     | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
+| color_temperature | Number                   |     R/W     | Color temperature in Kelvin. The value range is determined by each individual light     | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
+| effect            | String                   |     R/W     | Effect selection. Allowed commands are set dynamically                                  | `colorlight`                                    |
+| effectSpeed       | Number                   |     R/W     | Effect Speed                          | `colorlight`                                    |
 | lock              | Switch                   |     R/W     | Lock (ON) or unlock (OFF) the doorlock| `doorlock`                                      |                 
 | position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                                |
 | heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                    |
@@ -173,6 +175,7 @@ Other devices support
 
 **NOTE:** For groups `color` and `color_temperature`  are used for sending commands to the group.
 Their state represents the last command send to the group, not necessarily the actual state of the group.
+
 
 ### Trigger Channels
 
