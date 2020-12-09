@@ -25,7 +25,7 @@ import org.openhab.core.types.State;
 interface TypeConverter {
 
     /**
-     *  * maps a Property value to an Item state command
+     * * maps a Property value to an Item state command
      * 
      * @param propertyValue the Property value
      * @return the Item state command
