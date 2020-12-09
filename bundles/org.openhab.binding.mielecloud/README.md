@@ -107,6 +107,7 @@ Bridge mielecloud:account:home [ locale="en" ] {
 The following table lists all available channels.
 See the following chapters for detailed information about which appliance supports which channels.
 Depending on the exact appliance configuration not all channels might be supported, e.g. a hob with four plates will only fill the channels for plates 1-4.
+Channe ID and channel type ID match unless noted.
 
 | Channel Type ID               | Item Type            | Description                                                                                                                               | Read only |
 | ----------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- |
@@ -169,324 +170,286 @@ Depending on the exact appliance configuration not all channels might be support
 
 ### Coffee System
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_started | remote_control_can_be_started |
-| remote_control_can_be_stopped | remote_control_can_be_stopped |
-| remote_control_can_be_switched_on | remote_control_can_be_switched_on |
-| remote_control_can_be_switched_off | remote_control_can_be_switched_off |
-| program_active | program_active |
-| program_active_raw | program_active_raw |
-| program_phase | program_phase |
-| program_phase_raw | program_phase_raw |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| finish_state | finish_state |
-| power_state_on_off | power_state_on_off |
-| program_remaining_time | program_remaining_time |
-| program_elapsed_time | program_elapsed_time |
-| error_state | error_state |
-| info_state | info_state |
-| light_switch | light_switch |
-| light_can_be_controlled | light_can_be_controlled |
+- remote_control_can_be_started
+- remote_control_can_be_stopped
+- remote_control_can_be_switched_on
+- remote_control_can_be_switched_off
+- program_active
+- program_active_raw
+- program_phase
+- program_phase_raw
+- operation_state
+- operation_state_raw
+- finish_state
+- power_state_on_off
+- program_remaining_time
+- program_elapsed_time
+- error_state
+- info_state
+- light_switch
+- light_can_be_controlled
 
 ### Dish Warmer
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_switched_on | remote_control_can_be_switched_on |
-| remote_control_can_be_switched_off | remote_control_can_be_switched_off |
-| dish_warmer_program_active | dish_warmer_program_active |
-| program_active_raw | program_active_raw |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| power_state_on_off | power_state_on_off |
-| finish_state | finish_state |
-| program_remaining_time | program_remaining_time |
-| program_elapsed_time | program_elapsed_time |
-| program_progress | program_progress |
-| temperature_target | temperature_target |
-| temperature_current | temperature_current |
-| error_state | error_state |
-| info_state | info_state |
-| door_state | door_state |
+- remote_control_can_be_switched_on
+- remote_control_can_be_switched_off
+- dish_warmer_program_active
+- program_active_raw
+- operation_state
+- operation_state_raw
+- power_state_on_off
+- finish_state
+- program_remaining_time
+- program_elapsed_time
+- program_progress
+- temperature_target
+- temperature_current
+- error_state
+- info_state
+- door_state
 
 ### Dishwasher
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_started | remote_control_can_be_started |
-| remote_control_can_be_stopped | remote_control_can_be_stopped |
-| remote_control_can_be_switched_on | remote_control_can_be_switched_on |
-| remote_control_can_be_switched_off | remote_control_can_be_switched_off |
-| program_active | program_active |
-| program_active_raw | program_active_raw |
-| program_phase | program_phase |
-| program_phase_raw | program_phase_raw |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| program_start_stop | program_start_stop |
-| finish_state | finish_state |
-| power_state_on_off | power_state_on_off |
-| delayed_start_time | delayed_start_time |
-| program_remaining_time | program_remaining_time |
-| program_elapsed_time | program_elapsed_time |
-| program_progress | program_progress |
-| error_state | error_state |
-| info_state | info_state |
-| door_state | door_state |
+- remote_control_can_be_started
+- remote_control_can_be_stopped
+- remote_control_can_be_switched_on
+- remote_control_can_be_switched_off
+- program_active
+- program_active_raw
+- program_phase
+- program_phase_raw
+- operation_state
+- operation_state_raw
+- program_start_stop
+- finish_state
+- power_state_on_off
+- delayed_start_time
+- program_remaining_time
+- program_elapsed_time
+- program_progress
+- error_state
+- info_state
+- door_state
 
 ### Tumble Dryer
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_started | remote_control_can_be_started |
-| remote_control_can_be_stopped | remote_control_can_be_stopped |
-| remote_control_can_be_switched_on | remote_control_can_be_switched_on |
-| remote_control_can_be_switched_off | remote_control_can_be_switched_off |
-| program_active | program_active |
-| program_active_raw | program_active_raw |
-| program_phase | program_phase |
-| program_phase_raw | program_phase_raw |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| program_start_stop | program_start_stop |
-| finish_state | finish_state |
-| power_state_on_off | power_state_on_off |
-| delayed_start_time | delayed_start_time |
-| program_remaining_time | program_remaining_time |
-| program_elapsed_time | program_elapsed_time |
-| program_progress | program_progress |
-| drying_target | drying_target |
-| drying_target_raw | drying_target_raw |
-| error_state | error_state |
-| info_state | info_state |
-| light_switch | light_switch |
-| light_can_be_controlled | light_can_be_controlled |
-| door_state | door_state |
+- remote_control_can_be_started
+- remote_control_can_be_stopped
+- remote_control_can_be_switched_on
+- remote_control_can_be_switched_off
+- program_active
+- program_active_raw
+- program_phase
+- program_phase_raw
+- operation_state
+- operation_state_raw
+- program_start_stop
+- finish_state
+- power_state_on_off
+- delayed_start_time
+- program_remaining_time
+- program_elapsed_time
+- program_progress
+- drying_target
+- drying_target_raw
+- error_state
+- info_state
+- light_switch
+- light_can_be_controlled
+- door_state
 
 ### Freezer
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| error_state | error_state |
-| info_state | info_state |
-| freezer_super_freeze | freezer_super_freeze |
-| super_freeze_can_be_controlled | super_freeze_can_be_controlled |
-| freezer_temperature_target | freezer_temperature_target |
-| freezer_temperature_current | freezer_temperature_current |
-| door_state | door_state |
-| door_alarm | door_alarm |
+- operation_state
+- operation_state_raw
+- error_state
+- info_state
+- freezer_super_freeze
+- super_freeze_can_be_controlled
+- freezer_temperature_target
+- freezer_temperature_current
+- door_state
+- door_alarm
 
 ### Fridge
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| error_state | error_state |
-| info_state | info_state |
-| fridge_super_cool | fridge_super_cool |
-| super_cool_can_be_controlled | super_cool_can_be_controlled |
-| fridge_temperature_target | fridge_temperature_target |
-| fridge_temperature_current | fridge_temperature_current |
-| door_state | door_state |
-| door_alarm | door_alarm |
+- operation_state
+- operation_state_raw
+- error_state
+- info_state
+- fridge_super_cool
+- super_cool_can_be_controlled
+- fridge_temperature_target
+- fridge_temperature_current
+- door_state
+- door_alarm
 
 ### Fridge Freezer
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| error_state | error_state |
-| info_state | info_state |
-| fridge_super_cool | fridge_super_cool |
-| freezer_super_freeze | freezer_super_freeze |
-| super_cool_can_be_controlled | super_cool_can_be_controlled |
-| super_freeze_can_be_controlled | super_freeze_can_be_controlled |
-| fridge_temperature_target | fridge_temperature_target |
-| fridge_temperature_current | fridge_temperature_current |
-| freezer_temperature_target | freezer_temperature_target |
-| freezer_temperature_current | freezer_temperature_current |
-| door_state | door_state |
-| door_alarm | door_alarm |
+- operation_state
+- operation_state_raw
+- error_state
+- info_state
+- fridge_super_cool
+- freezer_super_freeze
+- super_cool_can_be_controlled
+- super_freeze_can_be_controlled
+- fridge_temperature_target
+- fridge_temperature_current
+- freezer_temperature_target
+- freezer_temperature_current
+- door_state
+- door_alarm
 
 ### Hob
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| error_state | error_state |
-| info_state | info_state |
-| plate_1_power_step | plate_power_step |
-| plate_1_power_step_raw | plate_power_step_raw |
-| plate_2_power_step | plate_power_step |
-| plate_2_power_step_raw | plate_power_step_raw |
-| plate_3_power_step | plate_power_step |
-| plate_3_power_step_raw | plate_power_step_raw |
-| plate_4_power_step | plate_power_step |
-| plate_4_power_step_raw | plate_power_step_raw |
-| plate_5_power_step | plate_power_step |
-| plate_5_power_step_raw | plate_power_step_raw |
-| plate_6_power_step | plate_power_step |
-| plate_6_power_step_raw | plate_power_step_raw |
+- operation_state
+- operation_state_raw
+- error_state
+- info_state
+- plate_1_power_step to plate_6_power_step with channel type ID plate_power_step
+- plate_1_power_step_raw to plate_6_power_step_raw with channel type ID plate_power_step_raw
 
 ### Hood
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_started | remote_control_can_be_started |
-| remote_control_can_be_stopped | remote_control_can_be_stopped |
-| remote_control_can_be_switched_on | remote_control_can_be_switched_on |
-| remote_control_can_be_switched_off | remote_control_can_be_switched_off |
-| program_phase | program_phase |
-| program_phase_raw | program_phase_raw |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| power_state_on_off | power_state_on_off |
-| ventilation_power | ventilation_power |
-| ventilation_power_raw | ventilation_power_raw |
-| error_state | error_state |
-| info_state | info_state |
-| light_switch | light_switch |
-| light_can_be_controlled | light_can_be_controlled |
+- remote_control_can_be_started
+- remote_control_can_be_stopped
+- remote_control_can_be_switched_on
+- remote_control_can_be_switched_off
+- program_phase
+- program_phase_raw
+- operation_state
+- operation_state_raw
+- power_state_on_off
+- ventilation_power
+- ventilation_power_raw
+- error_state
+- info_state
+- light_switch
+- light_can_be_controlled
 
 ### Oven
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_started | remote_control_can_be_started |
-| remote_control_can_be_stopped | remote_control_can_be_stopped |
-| remote_control_can_be_switched_on | remote_control_can_be_switched_on |
-| remote_control_can_be_switched_off | remote_control_can_be_switched_off |
-| program_active | program_active |
-| program_active_raw | program_active_raw |
-| program_phase | program_phase |
-| program_phase_raw | program_phase_raw |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| program_start_stop | program_start_stop |
-| finish_state | finish_state |
-| power_state_on_off | power_state_on_off |
-| delayed_start_time | delayed_start_time |
-| program_remaining_time | program_remaining_time |
-| program_elapsed_time | program_elapsed_time |
-| program_progress | program_progress |
-| pre_heat_finished | pre_heat_finished |
-| temperature_target | temperature_target |
-| temperature_current | temperature_current |
-| error_state | error_state |
-| info_state | info_state |
-| light_switch | light_switch |
-| light_can_be_controlled | light_can_be_controlled |
-| door_state | door_state |
+- remote_control_can_be_started
+- remote_control_can_be_stopped
+- remote_control_can_be_switched_on
+- remote_control_can_be_switched_off
+- program_active
+- program_active_raw
+- program_phase
+- program_phase_raw
+- operation_state
+- operation_state_raw
+- program_start_stop
+- finish_state
+- power_state_on_off
+- delayed_start_time
+- program_remaining_time
+- program_elapsed_time
+- program_progress
+- pre_heat_finished
+- temperature_target
+- temperature_current
+- error_state
+- info_state
+- light_switch
+- light_can_be_controlled
+- door_state
 
 ### Robotic Vacuum Cleaner
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_started | remote_control_can_be_started |
-| remote_control_can_be_stopped | remote_control_can_be_stopped |
-| remote_control_can_be_paused | remote_control_can_be_paused |
-| remote_control_can_set_program_active | remote_control_can_set_program_active |
-| vacuum_cleaner_program_active | vacuum_cleaner_program_active |
-| program_active_raw | program_active_raw |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| finish_state | finish_state |
-| program_start_stop_pause | program_start_stop_pause |
-| power_state_on_off | power_state_on_off |
-| error_state | error_state |
-| info_state | info_state |
-| battery_level | battery_level |
+- remote_control_can_be_started
+- remote_control_can_be_stopped
+- remote_control_can_be_paused
+- remote_control_can_set_program_active
+- vacuum_cleaner_program_active
+- program_active_raw
+- operation_state
+- operation_state_raw
+- finish_state
+- program_start_stop_pause
+- power_state_on_off
+- error_state
+- info_state
+- battery_level
 
 ### Washer Dryer
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_started | remote_control_can_be_started |
-| remote_control_can_be_stopped | remote_control_can_be_stopped |
-| remote_control_can_be_switched_on | remote_control_can_be_switched_on |
-| remote_control_can_be_switched_off | remote_control_can_be_switched_off |
-| spinning_speed | spinning_speed |
-| spinning_speed_raw | spinning_speed_raw |
-| program_active | program_active |
-| program_active_raw | program_active_raw |
-| program_phase | program_phase |
-| program_phase_raw | program_phase_raw |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| program_start_stop | program_start_stop |
-| finish_state | finish_state |
-| power_state_on_off | power_state_on_off |
-| delayed_start_time | delayed_start_time |
-| program_remaining_time | program_remaining_time |
-| program_elapsed_time | program_elapsed_time |
-| program_progress | program_progress |
-| drying_target | drying_target |
-| drying_target_raw | drying_target_raw |
-| error_state | error_state |
-| info_state | info_state |
-| temperature_target | temperature_target |
-| light_switch | light_switch |
-| light_can_be_controlled | light_can_be_controlled |
-| door_state | door_state |
+- remote_control_can_be_started
+- remote_control_can_be_stopped
+- remote_control_can_be_switched_on
+- remote_control_can_be_switched_off
+- spinning_speed
+- spinning_speed_raw
+- program_active
+- program_active_raw
+- program_phase
+- program_phase_raw
+- operation_state
+- operation_state_raw
+- program_start_stop
+- finish_state
+- power_state_on_off
+- delayed_start_time
+- program_remaining_time
+- program_elapsed_time
+- program_progress
+- drying_target
+- drying_target_raw
+- error_state
+- info_state
+- temperature_target
+- light_switch
+- light_can_be_controlled
+- door_state
 
 ### Washing Machine
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_started | remote_control_can_be_started |
-| remote_control_can_be_stopped | remote_control_can_be_stopped |
-| remote_control_can_be_switched_on | remote_control_can_be_switched_on |
-| remote_control_can_be_switched_off | remote_control_can_be_switched_off |
-| spinning_speed | spinning_speed |
-| spinning_speed_raw | spinning_speed_raw |
-| program_active | program_active |
-| program_active_raw | program_active_raw |
-| program_phase | program_phase |
-| program_phase_raw | program_phase_raw |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| program_start_stop | program_start_stop |
-| finish_state | finish_state |
-| power_state_on_off | power_state_on_off |
-| delayed_start_time | delayed_start_time |
-| program_remaining_time | program_remaining_time |
-| program_elapsed_time | program_elapsed_time |
-| program_progress | program_progress |
-| error_state | error_state |
-| info_state | info_state |
-| temperature_target | temperature_target |
-| light_switch | light_switch |
-| light_can_be_controlled | light_can_be_controlled |
-| door_state | door_state |
+- remote_control_can_be_started
+- remote_control_can_be_stopped
+- remote_control_can_be_switched_on
+- remote_control_can_be_switched_off
+- spinning_speed
+- spinning_speed_raw
+- program_active
+- program_active_raw
+- program_phase
+- program_phase_raw
+- operation_state
+- operation_state_raw
+- program_start_stop
+- finish_state
+- power_state_on_off
+- delayed_start_time
+- program_remaining_time
+- program_elapsed_time
+- program_progress
+- error_state
+- info_state
+- temperature_target
+- light_switch
+- light_can_be_controlled
+- door_state
 
 ### Wine Storage
 
-| Channel ID | Channel Type ID |
-| ---------- | --------------- |
-| remote_control_can_be_started | remote_control_can_be_started |
-| remote_control_can_be_stopped | remote_control_can_be_stopped |
-| remote_control_can_be_switched_on | remote_control_can_be_switched_on |
-| remote_control_can_be_switched_off | remote_control_can_be_switched_off |
-| operation_state | operation_state |
-| operation_state_raw | operation_state_raw |
-| power_state_on_off | power_state_on_off |
-| error_state | error_state |
-| info_state | info_state |
-| temperature_target | temperature_target |
-| temperature_current | temperature_current |
-| top_temperature_target | top_temperature_target |
-| top_temperature_current | top_temperature_current |
-| middle_temperature_target | middle_temperature_target |
-| middle_temperature_current | middle_temperature_current |
-| bottom_temperature_target | bottom_temperature_target |
-| bottom_temperature_current | bottom_temperature_current |
+- remote_control_can_be_started
+- remote_control_can_be_stopped
+- remote_control_can_be_switched_on
+- remote_control_can_be_switched_off
+- operation_state
+- operation_state_raw
+- power_state_on_off
+- error_state
+- info_state
+- temperature_target
+- temperature_current
+- top_temperature_target
+- top_temperature_current
+- middle_temperature_target
+- middle_temperature_current
+- bottom_temperature_target
+- bottom_temperature_current
 
 ### Note on plate_is_present and plate_power_step channels
 
