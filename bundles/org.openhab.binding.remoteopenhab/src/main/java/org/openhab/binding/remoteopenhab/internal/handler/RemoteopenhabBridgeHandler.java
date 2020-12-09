@@ -22,7 +22,9 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -112,6 +114,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> checkConnectionJob;
     private RemoteopenhabRestClient restClient;
 
+    private Map<ChannelUID, State> channelsLastStates = new HashMap<>();
+
     public RemoteopenhabBridgeHandler(Bridge bridge, HttpClient httpClient, HttpClient httpClientTrustingCert,
             ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
             RemoteopenhabChannelTypeProvider channelTypeProvider,
@@ -181,6 +185,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         logger.debug("Disposing remote openHAB handler for bridge {}", getThing().getUID());
         stopStreamingUpdates();
         stopCheckConnectionJob();
+        channelsLastStates.clear();
     }
 
     @Override
@@ -192,7 +197,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         try {
             if (command instanceof RefreshType) {
                 String state = restClient.getRemoteItemState(channelUID.getId());
-                updateChannelState(channelUID.getId(), null, state);
+                updateChannelState(channelUID.getId(), null, state, false);
             } else if (isLinked(channelUID)) {
                 restClient.sendCommandToRemoteItem(channelUID.getId(), command);
                 String commandStr = command.toFullString();
@@ -332,7 +337,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                 try {
                     items = restClient.getRemoteItems("name,state");
                     for (RemoteopenhabItem item : items) {
-                        updateChannelState(item.name, null, item.state);
+                        updateChannelState(item.name, null, item.state, false);
                     }
                 } catch (RemoteopenhabException e) {
                     logger.debug("{}", e.getMessage());
@@ -411,8 +416,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void onItemStateEvent(String itemName, String stateType, String state) {
-        updateChannelState(itemName, stateType, state);
+    public void onItemStateEvent(String itemName, String stateType, String state, boolean onlyIfStateChanged) {
+        updateChannelState(itemName, stateType, state, onlyIfStateChanged);
     }
 
     @Override
@@ -435,7 +440,8 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void updateChannelState(String itemName, @Nullable String stateType, String state) {
+    private void updateChannelState(String itemName, @Nullable String stateType, String state,
+            boolean onlyIfStateChanged) {
         Channel channel = getThing().getChannel(itemName);
         if (channel == null) {
             logger.trace("No channel for item {}", itemName);
@@ -555,6 +561,12 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             }
         }
         if (channelState != null) {
+            if (onlyIfStateChanged && channelState.equals(channelsLastStates.get(channel.getUID()))) {
+                logger.trace("ItemStateChangedEvent ignored for item {} as state is identical to the last state",
+                        itemName);
+                return;
+            }
+            channelsLastStates.put(channel.getUID(), channelState);
             updateState(channel.getUID(), channelState);
             String channelStateStr = channelState.toFullString();
             logger.debug("updateState {} with {}", channel.getUID(),
