@@ -37,7 +37,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Gregor Roth - Initial contribution
  */
 class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener {
-    private final static PropertyChangedListener EMPTY_PROPERTY_CHANGED_LISTENER = new PropertyChangedListener() {
+    private static final PropertyChangedListener EMPTY_PROPERTY_CHANGED_LISTENER = new PropertyChangedListener() {
     };
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnectionImpl.class);
     private final Consumer<String> errorHandler;

@@ -77,7 +77,6 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             // WebThing URI present?
             var optionalWebThingURI = getWebThingURI();
             if (optionalWebThingURI.isPresent()) {
-
                 logger.info("try to connect WebThing {}", optionalWebThingURI.get());
                 var connected = tryReconnect(optionalWebThingURI.get());
                 if (connected) {
