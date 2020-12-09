@@ -16,6 +16,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.pgs-soft</groupId>
       <artifactId>HttpClientMock</artifactId>
       <version>1.0.0</version>
