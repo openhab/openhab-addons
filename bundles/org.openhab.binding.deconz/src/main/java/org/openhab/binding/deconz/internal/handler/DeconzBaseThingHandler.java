@@ -129,6 +129,12 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         }
     }
 
+    /**
+     * parse the initial state response message
+     *
+     * @param r AsyncHttpClient.Result with the state response result
+     * @return a message of the correct type
+     */
     protected abstract @Nullable T parseStateResponse(AsyncHttpClient.Result r);
 
     /**
