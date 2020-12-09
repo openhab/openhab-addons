@@ -102,6 +102,7 @@ public class BindingConstants {
     public static final String CHANNEL_THERMOSTAT_MODE = "mode";
     public static final String CHANNEL_TEMPERATURE_OFFSET = "offset";
     public static final String CHANNEL_VALVE_POSITION = "valve";
+    public static final String CHANNEL_WINDOWOPEN = "windowopen";
 
     // group + light channel ids
     public static final String CHANNEL_SWITCH = "switch";
