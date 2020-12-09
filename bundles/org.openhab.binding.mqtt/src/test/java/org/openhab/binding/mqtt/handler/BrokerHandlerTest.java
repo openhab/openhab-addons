@@ -64,7 +64,7 @@ public class BrokerHandlerTest extends JavaTest {
     public void setUp() {
         scheduler = new ScheduledThreadPoolExecutor(1);
         connection = spy(new MqttBrokerConnectionEx("10.10.0.10", 80, false, "BrokerHandlerTest"));
-        connection.setTimeoutExecutor(scheduler, 10);
+        connection.setTimeoutExecutor(scheduler, 10000);
         connection.setConnectionCallback(connection);
 
         Configuration config = new Configuration();
