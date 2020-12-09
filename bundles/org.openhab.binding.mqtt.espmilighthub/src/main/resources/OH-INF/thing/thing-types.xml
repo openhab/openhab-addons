@@ -62,7 +62,7 @@
 			</parameter>
 
 			<parameter name="oneTriggersNightMode" type="boolean" required="true">
-				<label>1 Triggers Night Mode</label>
+				<label>1% Triggers Night Mode</label>
 				<description>Night Mode is a much lower level of light and this allows it to be auto selected when your fader/slider
 					moves to 1%. NOTE: Night mode locks out some controls of a physical remote.
 				</description>
