@@ -27,6 +27,8 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * Utility class to load the WebThing description (meta data). Refer https://iot.mozilla.org/wot/#web-thing-description
+ *
+ * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
 public class DescriptionLoader {
