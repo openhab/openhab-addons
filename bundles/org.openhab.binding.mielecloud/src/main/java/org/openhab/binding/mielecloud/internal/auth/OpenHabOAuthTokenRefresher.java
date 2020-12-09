@@ -124,7 +124,8 @@ public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
             } else {
                 return Optional.of(tokenResponse.getAccessToken());
             }
-        } catch (Exception e) {
+        } catch (OAuthException | org.openhab.core.auth.client.oauth2.OAuthException | IOException
+                | OAuthResponseException e) {
             logger.info("Cannot obtain access token from persistent storage.");
             logger.debug("Exception details:", e);
             return Optional.empty();
