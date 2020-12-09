@@ -53,6 +53,21 @@
 				<description>The token to use when the remote openHAB server is setup to require authorization to run its REST API.</description>
 				<advanced>true</advanced>
 			</parameter>
+
+			<parameter name="accessibilityInterval" type="integer" min="0" step="1" unit="min">
+				<label>Accessibility Interval</label>
+				<description>Minutes between checking the remote server accessibility. 0 to disable the check. Default is 3.</description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="aliveInterval" type="integer" min="0" step="1" unit="min">
+				<label>Alive Interval</label>
+				<description>Number of last minutes to take into account to determine whether the remote server is alive. 0 to
+					disable this feature. Default is 5.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
