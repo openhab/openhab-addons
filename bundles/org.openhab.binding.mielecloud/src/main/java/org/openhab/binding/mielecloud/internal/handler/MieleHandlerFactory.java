@@ -14,10 +14,7 @@ package org.openhab.binding.mielecloud.internal.handler;
 
 import static org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +30,6 @@ import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebserviceConfiguration;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebserviceFactory;
 import org.openhab.binding.mielecloud.internal.webservice.language.CombiningLanguageProvider;
-import org.openhab.binding.mielecloud.internal.webservice.language.JvmLanguageProvider;
 import org.openhab.binding.mielecloud.internal.webservice.language.OpenHabLanguageProvider;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
@@ -46,6 +42,7 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -62,49 +59,26 @@ import org.slf4j.LoggerFactory;
 public class MieleHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Nullable
-    private HttpClientFactory httpClientFactory;
-    @Nullable
-    private OAuthTokenRefresher tokenRefresher;
-    @Nullable
-    private LocaleProvider localeProvider;
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_WASHING_MACHINE,
+            THING_TYPE_WASHER_DRYER, THING_TYPE_COFFEE_SYSTEM, THING_TYPE_FRIDGE_FREEZER, THING_TYPE_FRIDGE,
+            THING_TYPE_FREEZER, THING_TYPE_OVEN, THING_TYPE_WINE_STORAGE, THING_TYPE_HOB, THING_TYPE_DRYER,
+            THING_TYPE_DISHWASHER, THING_TYPE_HOOD, THING_TYPE_DISH_WARMER, THING_TYPE_ROBOTIC_VACUUM_CLEANER);
+
+    private final HttpClientFactory httpClientFactory;
+    private final OAuthTokenRefresher tokenRefresher;
+    private final LocaleProvider localeProvider;
 
     private final MieleWebserviceFactory webserviceFactory = new DefaultMieleWebserviceFactory();
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+    @Activate
+    public MieleHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference OAuthTokenRefresher tokenRefresher, @Reference LocaleProvider localeProvider) {
         this.httpClientFactory = httpClientFactory;
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClientFactory = null;
-    }
-
-    @Reference
-    protected void setOAuthTokenRefresher(OAuthTokenRefresher tokenRefresher) {
         this.tokenRefresher = tokenRefresher;
-    }
-
-    protected void unsetOAuthTokenRefresher(OAuthTokenRefresher tokenRefresher) {
-        this.tokenRefresher = null;
-    }
-
-    @Reference
-    protected void setLocaleProvider(LocaleProvider localeProvider) {
         this.localeProvider = localeProvider;
     }
-
-    protected void unsetLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = null;
-    }
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_WASHING_MACHINE, THING_TYPE_WASHER_DRYER,
-                    THING_TYPE_COFFEE_SYSTEM, THING_TYPE_FRIDGE_FREEZER, THING_TYPE_FRIDGE, THING_TYPE_FREEZER,
-                    THING_TYPE_OVEN, THING_TYPE_WINE_STORAGE, THING_TYPE_HOB, THING_TYPE_DRYER, THING_TYPE_DISHWASHER,
-                    THING_TYPE_HOOD, THING_TYPE_DISH_WARMER, THING_TYPE_ROBOTIC_VACUUM_CLEANER)));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -149,25 +123,18 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     private ThingHandler createBridgeHandler(Thing thing) {
         CombiningLanguageProvider languageProvider = getLanguageProvider();
         Function<ScheduledExecutorService, MieleWebservice> webserviceFactoryFunction = scheduler -> webserviceFactory
-                .create(MieleWebserviceConfiguration.builder()
-                        .withHttpClientFactory(requireNonNull(httpClientFactory, "httpClientFactory"))
-                        .withLanguageProvider(languageProvider)
-                        .withTokenRefresher(requireNonNull(tokenRefresher, "tokenRefreseher"))
+                .create(MieleWebserviceConfiguration.builder().withHttpClientFactory(httpClientFactory)
+                        .withLanguageProvider(languageProvider).withTokenRefresher(tokenRefresher)
                         .withServiceHandle(thing.getUID().getAsString()).withScheduler(scheduler).build());
 
         MieleBridgeHandler bridgeHandler = new MieleBridgeHandler((Bridge) thing, webserviceFactoryFunction,
-                requireNonNull(tokenRefresher, "tokenRefresher"), languageProvider);
+                tokenRefresher, languageProvider);
         registerThingDiscoveryService(bridgeHandler);
         return bridgeHandler;
     }
 
     private CombiningLanguageProvider getLanguageProvider() {
-        final LocaleProvider localeProvider = this.localeProvider;
-        if (localeProvider == null) {
-            return new CombiningLanguageProvider(null, new JvmLanguageProvider());
-        } else {
-            return new CombiningLanguageProvider(null, new OpenHabLanguageProvider(localeProvider));
-        }
+        return new CombiningLanguageProvider(null, new OpenHabLanguageProvider(localeProvider));
     }
 
     private synchronized void registerThingDiscoveryService(MieleBridgeHandler bridgeHandler) {
