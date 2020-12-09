@@ -17,7 +17,9 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -59,5 +61,13 @@ public final class ChannelTypeUtil {
      */
     public static State longToState(Optional<Long> value) {
         return value.map(v -> (State) new DecimalType(v)).orElse(UnDefType.UNDEF);
+    }
+
+    /**
+     * Converts an {@link Optional} of {@link Integer} to {@link State} representing a temperature.
+     */
+    public static State intToTemperatureState(Optional<Integer> value) {
+        // The Miele 3rd Party API always provides temperatures in °C (even if the device uses another unit).
+        return value.map(v -> (State) new QuantityType<>(v, SIUnits.CELSIUS)).orElse(UnDefType.UNDEF);
     }
 }

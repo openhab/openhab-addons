@@ -114,19 +114,19 @@ public final class DeviceChannelState {
     }
 
     public State getFridgeTemperatureTarget() {
-        return ChannelTypeUtil.intToState(coolingTemperature.getFridgeTargetTemperature());
+        return ChannelTypeUtil.intToTemperatureState(coolingTemperature.getFridgeTargetTemperature());
     }
 
     public State getFreezerTemperatureTarget() {
-        return ChannelTypeUtil.intToState(coolingTemperature.getFreezerTargetTemperature());
+        return ChannelTypeUtil.intToTemperatureState(coolingTemperature.getFreezerTargetTemperature());
     }
 
     public State getFridgeTemperatureCurrent() {
-        return ChannelTypeUtil.intToState(coolingTemperature.getFridgeTemperature());
+        return ChannelTypeUtil.intToTemperatureState(coolingTemperature.getFridgeTemperature());
     }
 
     public State getFreezerTemperatureCurrent() {
-        return ChannelTypeUtil.intToState(coolingTemperature.getFreezerTemperature());
+        return ChannelTypeUtil.intToTemperatureState(coolingTemperature.getFreezerTemperature());
     }
 
     public State getProgramStartStop() {
@@ -154,7 +154,7 @@ public final class DeviceChannelState {
     }
 
     public State getTemperatureTarget() {
-        return ChannelTypeUtil.intToState(device.getTargetTemperature(0));
+        return ChannelTypeUtil.intToTemperatureState(device.getTargetTemperature(0));
     }
 
     public State getVentilationPower() {
@@ -174,7 +174,7 @@ public final class DeviceChannelState {
     }
 
     public State getTemperatureCurrent() {
-        return ChannelTypeUtil.intToState(device.getTemperature(0));
+        return ChannelTypeUtil.intToTemperatureState(device.getTemperature(0));
     }
 
     public State getSpinningSpeed() {
@@ -194,31 +194,31 @@ public final class DeviceChannelState {
     }
 
     public State getWineTemperatureCurrent() {
-        return ChannelTypeUtil.intToState(wineTemperature.getTemperature());
+        return ChannelTypeUtil.intToTemperatureState(wineTemperature.getTemperature());
     }
 
     public State getWineTopTemperatureTarget() {
-        return ChannelTypeUtil.intToState(wineTemperature.getTopTargetTemperature());
+        return ChannelTypeUtil.intToTemperatureState(wineTemperature.getTopTargetTemperature());
     }
 
     public State getWineTopTemperatureCurrent() {
-        return ChannelTypeUtil.intToState(wineTemperature.getTopTemperature());
+        return ChannelTypeUtil.intToTemperatureState(wineTemperature.getTopTemperature());
     }
 
     public State getWineMiddleTemperatureTarget() {
-        return ChannelTypeUtil.intToState(wineTemperature.getMiddleTargetTemperature());
+        return ChannelTypeUtil.intToTemperatureState(wineTemperature.getMiddleTargetTemperature());
     }
 
     public State getWineMiddleTemperatureCurrent() {
-        return ChannelTypeUtil.intToState(wineTemperature.getMiddleTemperature());
+        return ChannelTypeUtil.intToTemperatureState(wineTemperature.getMiddleTemperature());
     }
 
     public State getWineBottomTemperatureTarget() {
-        return ChannelTypeUtil.intToState(wineTemperature.getBottomTargetTemperature());
+        return ChannelTypeUtil.intToTemperatureState(wineTemperature.getBottomTargetTemperature());
     }
 
     public State getWineBottomTemperatureCurrent() {
-        return ChannelTypeUtil.intToState(wineTemperature.getBottomTemperature());
+        return ChannelTypeUtil.intToTemperatureState(wineTemperature.getBottomTemperature());
     }
 
     /**
