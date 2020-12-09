@@ -258,7 +258,7 @@ public class ComfoAirSerialConnector {
                                 if (startIndex > -1 && endIndex > -1) {
                                     byte[] subResponse = new byte[endIndex - startIndex + 3];
                                     System.arraycopy(responseBlock, 0, subResponse, 0, 2);
-                                    System.arraycopy(responseBlock, startIndex, subResponse, 3, subResponse.length - 2);
+                                    System.arraycopy(responseBlock, startIndex, subResponse, 2, subResponse.length - 2);
                                     responseBlock = subResponse;
                                     isValidData = true;
                                 }
