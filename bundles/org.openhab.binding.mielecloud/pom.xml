@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.mielecloud</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: mielecloud Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Miele Cloud Binding</name>
 
 </project>
