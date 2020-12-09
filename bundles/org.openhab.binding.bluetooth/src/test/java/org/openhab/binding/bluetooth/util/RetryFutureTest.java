@@ -28,13 +28,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.common.NamedThreadFactory;
-import org.openhab.core.test.java.JavaTest;
 
 /**
  * @author Connor Petty - Initial contribution
  *
  */
-class RetryFutureTest extends JavaTest {
+class RetryFutureTest {
 
     private static final int TIMEOUT_MS = 1000;
     private ScheduledExecutorService scheduler;
