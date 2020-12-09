@@ -14,7 +14,6 @@ package org.openhab.binding.webthing.internal.client;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.*;
 
 import java.io.IOException;
 import java.net.URI;
