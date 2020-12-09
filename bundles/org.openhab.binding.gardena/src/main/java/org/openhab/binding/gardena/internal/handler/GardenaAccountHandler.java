@@ -46,7 +46,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     private final Logger logger = LoggerFactory.getLogger(GardenaAccountHandler.class);
     private final static long REINITIALIZE_DELAY_SECONDS = 10;
 
-    private @NonNullByDefault({}) GardenaDeviceDiscoveryService discoveryService;
+    private @Nullable GardenaDeviceDiscoveryService discoveryService;
 
     private @Nullable GardenaSmart gardenaSmart;
     private HttpClientFactory httpClientFactory;
@@ -82,8 +82,11 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                 String id = getThing().getUID().getId();
                 gardenaSmart = new GardenaSmartImpl(id, gardenaConfig, instance, scheduler, httpClientFactory,
                         webSocketFactory);
-                discoveryService.startScan(null);
-                discoveryService.waitForScanFinishing();
+                final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
+                if (discoveryService != null) {
+                    discoveryService.startScan(null);
+                    discoveryService.waitForScanFinishing();
+                }
                 updateStatus(ThingStatus.ONLINE);
             } catch (GardenaException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
@@ -116,7 +119,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
      */
     private void disposeGardena() {
         logger.debug("Disposing Gardena account '{}'", getThing().getUID().getId());
-        discoveryService.stopScan();
+        final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.stopScan();
+        }
         final GardenaSmart gardenaSmart = this.gardenaSmart;
         if (gardenaSmart != null) {
             gardenaSmart.dispose();
@@ -158,9 +164,6 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
                     }
                     gardenaThingHandler.updateStatus(device);
                 } catch (GardenaException ex) {
-                    logger.error("There is something wrong with your thing '{}', please check or recreate it: {}",
-                            gardenaThing.getUID(), ex.getMessage());
-                    logger.debug("Gardena exception caught on device update.", ex);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
                 } catch (AccountHandlerNotAvailableException ignore) {
                 }
@@ -170,6 +173,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
 
     @Override
     public void onNewDevice(Device device) {
+        final GardenaDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.deviceDiscovered(device);
         }

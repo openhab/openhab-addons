@@ -53,7 +53,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
 
     private @NonNullByDefault({}) GardenaAccountHandler accountHandler;
-    private @NonNullByDefault({}) Future<?> scanFuture;
+    private @Nullable Future<?> scanFuture;
 
     public GardenaDeviceDiscoveryService() {
         super(Collections.unmodifiableSet(Stream.of(new ThingTypeUID(BINDING_ID, "-")).collect(Collectors.toSet())),
@@ -95,6 +95,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
     @Override
     public void stopScan() {
         logger.debug("Stopping Gardena discovery scan");
+        final Future<?> scanFuture = this.scanFuture;
         if (scanFuture != null) {
             scanFuture.cancel(true);
         }
@@ -135,6 +136,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
      * Waits for the discovery scan to finish and then returns.
      */
     public void waitForScanFinishing() {
+        final Future<?> scanFuture = this.scanFuture;
         if (scanFuture != null) {
             logger.debug("Waiting for finishing Gardena device discovery scan");
             try {
