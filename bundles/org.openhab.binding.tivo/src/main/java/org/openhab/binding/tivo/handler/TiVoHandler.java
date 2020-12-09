@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tivo.handler;
 
@@ -18,20 +22,20 @@ import java.util.TreeSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.tivo.internal.service.TivoConfigData;
 import org.openhab.binding.tivo.internal.service.TivoStatusData;
 import org.openhab.binding.tivo.internal.service.TivoStatusData.ConnectionStatus;
 import org.openhab.binding.tivo.internal.service.TivoStatusProvider;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - Updates / compilation corrections. Addition of channel scanning functionality.
+ * @author Michael Lobstein - Updated for OH3
  */
 
 public class TiVoHandler extends BaseThingHandler {
@@ -63,7 +68,6 @@ public class TiVoHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         // Handles the commands from the various TiVo channel objects
         logger.debug("handleCommand '{}', parameter: {}", channelUID, command);
 
@@ -73,7 +77,7 @@ public class TiVoHandler extends BaseThingHandler {
             return;
         }
 
-        if (command == null || tivoConnection == null) {
+        if (tivoConnection == null) {
             return;
         }
         TivoStatusData currentStatus = tivoConnection.getServiceStatus();
@@ -116,7 +120,6 @@ public class TiVoHandler extends BaseThingHandler {
                 break;
         }
         sendCommand(commandKeyword, commandParameters, currentStatus);
-
     }
 
     private void sendCommand(String commandKeyword, String commandParameters, TivoStatusData currentStatus) {
@@ -147,8 +150,6 @@ public class TiVoHandler extends BaseThingHandler {
         if (commandResult != null && commandResult.isCmdOk()) {
             updateTivoStatus(currentStatus, commandResult);
         }
-
-        // return commandResult;
     }
 
     int convertValueToInt(Object value) {
@@ -171,9 +172,6 @@ public class TiVoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing a TiVo '{}' with config options", getThing().getUID());
-
-        // tivoConfigData = getConfigAs(TivoConfigData.class);
-        // logger.info("Using configuration: {}", tivoConfigData);
 
         Configuration conf = this.getConfig();
         TivoConfigData tivoConfig = new TivoConfigData();
@@ -229,10 +227,7 @@ public class TiVoHandler extends BaseThingHandler {
             tivoConfig.setCfgIgnoreChannelScan(convertValueToBoolean(value));
         }
 
-        value = getThing().getUID();
-        if (value != null) {
-            tivoConfig.setCfgIdentifier(String.valueOf(value));
-        }
+        tivoConfig.setCfgIdentifier(String.valueOf(getThing().getUID()));
 
         value = conf.get(CONFIG_IGNORE_CHANNELS);
         if (value != null) {
@@ -247,24 +242,15 @@ public class TiVoHandler extends BaseThingHandler {
             tivoConnection = new TivoStatusProvider(tivoConfigData, this);
         }
 
-        // scheduler.execute(new Runnable() {
-        //
-        // @Override
-        // public void run() {
-        // logger.debug("Open connection to Onkyo Receiver @{}", getThing().getUID());
-
         if (tivoConfig.doChannelScan()) {
             startChannelScan();
         } else {
             startPollStatus();
-            // }
-            // };
         }
 
         updateStatus(ThingStatus.UNKNOWN);
         lastConnectionStatus = ConnectionStatus.UNKNOWN;
         logger.debug("Initializing a TiVo handler for thing '{}' - finished!", getThing().getUID());
-
     }
 
     @Override
@@ -499,7 +485,6 @@ public class TiVoHandler extends BaseThingHandler {
                 if (tmp.get(i).matches(".+-.+")) {
                     List<String> sTmp = Arrays.asList(tmp.get(i).split("-"));
                     if (sTmp != null && sTmp.size() == 2) {
-
                         Double ds = Double.valueOf(sTmp.get(0));
                         Integer is = Integer.valueOf(ds.intValue());
 
@@ -525,12 +510,11 @@ public class TiVoHandler extends BaseThingHandler {
                                 getThing().getUID());
                     }
                 } else {
-
                     Double de = Double.valueOf(tmp.get(i));
                     Integer se = Integer.valueOf(de.intValue());
 
                     if (result.contains(se)) {
-                        logger.debug(" chParseIgnored '{}' - element already in list - '{}'", se);
+                        logger.debug(" chParseIgnored '{}' - element already in list", se);
                     } else {
                         if (se > chMin && se < chMax) {
                             result.add(se);
@@ -543,7 +527,7 @@ public class TiVoHandler extends BaseThingHandler {
         } catch (NumberFormatException e) {
             logger.warn(
                     " chParseIgnored '{}' was unable to parse list of 'Channels to Ignore' from thing settings: {}, error '{}'",
-                    getThing().getUID(), pChannels, e);
+                    getThing().getUID(), pChannels, e.getMessage());
             return result;
 
         }
@@ -578,7 +562,6 @@ public class TiVoHandler extends BaseThingHandler {
      * @param Integer array of channel numbers
      * @return string list of channel numbers with consecutive numbers returned as ranges.
      */
-
     private String chParseRange(Integer[] nums) {
         StringBuilder sb = new StringBuilder();
         int rangeStart = nums[0];
@@ -679,7 +662,6 @@ public class TiVoHandler extends BaseThingHandler {
      * @param pChannel the channel number.
      */
     private void chAddIgnored(Integer pChannel) {
-
         // if we already see this channel as being ignored there is no reason to ignore it again.
         if (chCheckIgnored(pChannel)) {
             return;
@@ -696,7 +678,6 @@ public class TiVoHandler extends BaseThingHandler {
         Configuration conf = editConfiguration();
         conf.put(CONFIG_IGNORE_CHANNELS, uiResult);
         updateConfiguration(conf);
-
     }
 
     /**
@@ -737,7 +718,6 @@ public class TiVoHandler extends BaseThingHandler {
         }
         logger.debug("chGetNext '{}' next proposed channel '{}'", getThing().getUID(), pChannel);
         return pChannel;
-
     }
 
     /**

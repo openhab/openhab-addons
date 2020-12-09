@@ -1,16 +1,20 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.tivo.internal.service;
 
 import java.util.Date;
-import java.util.Observable;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * {@link TivoStatusData} class stores the data from the last status query from the TiVo and any other errors / status
@@ -28,9 +32,11 @@ import java.util.Observable;
  *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - minor updates, removal of unused functions.
+ * @author Michael Lobstein - Updated for OH3
  */
 
-public class TivoStatusData extends Observable {
+@NonNullByDefault
+public class TivoStatusData {
     private boolean cmdOk = false;
     private Date time = new Date();
     private int channelNum = -1;
@@ -47,7 +53,6 @@ public class TivoStatusData extends Observable {
         this.msg = msg;
         this.pubToUI = pubToUI;
         this.connectionStatus = connectionStatus;
-
     }
 
     public enum ConnectionStatus {
@@ -184,5 +189,4 @@ public class TivoStatusData extends Observable {
     public ConnectionStatus getConnectionStatus() {
         return connectionStatus;
     }
-
 }

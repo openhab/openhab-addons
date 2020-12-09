@@ -1,14 +1,19 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tivo;
 
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link TiVoBinding} class defines common constants that are
@@ -16,8 +21,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - Addition of Min / Max Channel and channel scanning properties
+ * @author Michael Lobstein - Updated for OH3
  */
 
+@NonNullByDefault
 public class TiVoBindingConstants {
     public static final String BINDING_ID = "tivo";
     public static final int CONFIG_SOCKET_TIMEOUT = 1000;
@@ -47,5 +54,4 @@ public class TiVoBindingConstants {
     public static final String CONFIG_CH_START = "minChannel";
     public static final String CONFIG_CH_END = "maxChannel";
     public static final String CONFIG_IGNORE_SCAN = "ignoreChannelScan";
-
 }

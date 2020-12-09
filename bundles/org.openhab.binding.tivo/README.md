@@ -1,20 +1,23 @@
+# TiVo Binding
+
 ![TiVo Logo](doc/TiVo_lockup_BLK.png)
 
-## TiVo Binding
-This binding integrates [TiVo](https://www.tivo.com/) Digital Video Recorders (DVR) that support the Tivo [TiVo TCP Control Protocol v1.1](https://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf).
+This binding controls [TiVo](https://www.tivo.com/) Digital Video Recorders (DVR) that support the TiVo TCP Control Protocol v1.1 (see TiVo_TCP_Network_Remote_Control_Protocol.pdf).
 
 ## Supported Things
-Most TiVo DVRs that support network remote control can be managed/supported by this binding.  Check the web site of your service provider for the precise specification of the TiVo box they have provided.
+
+Most TiVo DVRs that support network remote control can be managed/supported by this binding.
 
 All TiVo devices must:
 
- 1. be connected to a local area TCP/IP network that can be reached by the openHAB instance (this is not the WAN network interface used by cable service providers to provide the TV signals).    
- 2. have the Network Remote Control function enabled to support discovery and control of the device.  This setting can be found using the remote control at:
+ 1. Be connected to a local area TCP/IP network that can be reached by the openHAB instance (this is not the WAN network interface used by cable service providers to provide the TV signals).    
+ 2. Have the Network Remote Control function enabled to support discovery and control of the device.  This setting can be found using the remote control at:
 
     * Tivo branded boxes - using the remote go to TiVo Central > Messages & Settings > Settings > Remote, CableCARD & Devices > Network Remote Control.  Choose Enabled, press Select.
     * Virgin Media branded boxes - using the remote select Home > Help and Settings > Settings > Devices > Network Remote Control.  Select the option Allow network based remote controls.
 
 ## Binding Configuration
+
 The binding requires no manual configuration.  Tivo devices with the network remote control interface enabled, will be displayed within the Inbox.  
 
 You can also add these manually, you will need to specify the LAN IP address of your Tivo Device.
@@ -23,11 +26,12 @@ You can also add these manually, you will need to specify the LAN IP address of 
 
 Auto-discovery is recommended for the discovery and creation of TiVo things, however they can also be created using the .things file format.  The following minimum parameters should be used:
 
-```
-Thing tivo:sckt:test_device[deviceName = "Test Device", address="192.168.0.19"]
+```java
+tivo:sckt:test_device[deviceName = "Test Device", address="192.168.0.19"]
 ```
 
 Where:
+
 * **test_device** is the unique thing ID for the device (alpha numeric, no spaces)
 * **device name** is the name of the device (if omitted the name of the device will be specified as 'My Tivo') 
 * **address** the IP address or host name of the device
@@ -51,11 +55,12 @@ All devices support the following channels (non exhaustive):
 * Commands to each of the channels (except 'Custom Command') do not need to include the command keyword only the action/parameter.  For example, to change channel simply post/send the number of the channel **without** the keywords SETCH or  FORCECH.
 * Custom Command is provided to allow the testing of any commands not documented within the official documentation.  In this instance the COMMAND and any parameters must be sent as a single string.
 * Keyboard commands must currently be issued one character at a time to the item (this is how the TiVo natively supports these command).
-* To send multiple copies of the same Keyboard command, append a asterisk with the number of repeats required e.g. NUM2*4 would send the number 2 four times. This is useful for performing searches where the number characters can only be accessed by pressing the keys multiple times in rapid succession i.e. each key press cycles through characters A, B, C, 2. See the search script below for an example of this in action.
+* To send multiple copies of the same Keyboard command, append an asterisk with the number of repeats required e.g. NUM2*4 would send the number 2 four times. This is useful for performing searches where the number characters can only be accessed by pressing the keys multiple times in rapid succession i.e. each key press cycles through characters A, B, C, 2. See the search script below for an example of this in action.
 * Special characters must also be changed to the appropriate command e.g. the comma symbol( ,) must not be sent it should be replaced by 'COMMA'.
 
 
 ## Parameters
+
 | Parameter         | Display Name                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 |-------------------|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | deviceName        | Device Name                          | A friendly name to refer to this device. Default: Device name specified on the TiVo or 'My Tivo' if no connection can be made at initial device configuration.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -73,18 +78,21 @@ All devices support the following channels (non exhaustive):
 
 
 ## Configuration Parameters Notes
+
 The following notes may help to understand the correct configuration properties for your set-up:
 
 ### Connection Performance
+
 * If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your Tivo, enable the **Keep Connection Open** option.  This will connect and lock the port in-use preventing any other device from connecting it.  If you use some other application, disable this option. Performance is improved if the connection is kept open.
-* **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel.  If openHAB is your only method of control, you can disable this option.  Turning polling off, minimises the periodic polling overhead on your hardware.
+* **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel.  If openHAB is your only method of control, you can disable this option.  Turning polling off, minimizes the periodic polling overhead on your hardware.
  
 ### Channel Changing
+
 * You can set the current channel using the item bound to either the `tivoChannelForce` or the `tivoChannelSet` by simply posting/sending the channel number to the item.
 * Channel UP/DOWN commands work by increasing to decreasing the channel number stored within the `tivoChannelSet` channel.  This item must contain a value for this to work.  
-* The TiVo will learn channel numbers that are not available as part of your subscription as you navigate / change channel.  Channel changing  operations will be slower if there is a large gap between valid channels.  Any gap between valid channel number must not exceed 10.  If you have a gap larger than this any channel UP/DOWN operations will fail.  You must therefore add any of these gaps to the range of **Channels to Ignore** manually or use the **Perform Channel Scan** option to pre-populate the ignored channels (recommended).
+* The TiVo will learn channel numbers that are not available as part of your subscription as you navigate / change channel.  Channel changing operations will be slower if there is a large gap between valid channels.  Any gap between valid channel number must not exceed 10.  If you have a gap larger than this any channel UP/DOWN operations will fail.  You must therefore add any of these gaps to the range of **Channels to Ignore** manually or use the **Perform Channel Scan** option to pre-populate the ignored channels (recommended).
 * The **Channels to Ignore** section allows you to exclude any channels that you do not want to see or are not part of your subscription.  Both individual channel numbers and ranges of channels are supported e.g. 109, 106, 801-850, 999.
-* Set the correct Minimum and Maximum channel numbers BEFORE you run a full channel scan.  By default these are set at 100 and 999.   Consult your Tivo program guide to find these.
+* Set the correct Minimum and Maximum channel numbers BEFORE you run a full channel scan.  By default, these are set at 100 and 999.   Consult your Tivo program guide to find these.
 * **Perform Channel Scan** will systematically change the channels between the specified Minimum and Maximum, identifying which of these are valid.  At least one tuner must be available (not recording) while this operation completes.  If this process is interrupted e.g. by a configuration change or restart, the system will restart the scan at the beginning.  Any channels that are marked as being ignored will not be tested again.  
 * You can run a channel scan while the system is in Standby mode.  
 * The channels will change 'onscreen' while you run a channel scan while the TiVo is in normal operation (it will not however cancel any recordings in progress if all tuners are busy recording).  Therefore, you should avoid running a scan when someone is watching their favorite shows!  If all channels are in use or recordings start on all available tuners the channel scan will stop/fail.
@@ -93,13 +101,11 @@ The following notes may help to understand the correct configuration properties 
 * When restarting after a failed channel scan all valid channels will be re-tested, but any existing **Channels to Ignore** will be skipped.
 * If your provider adds new channels to your subscription line-up, these will have to be manually removed from the list of **Channels to Ignore**.  You can always remove all the entries and do a new full scan to re-populate the list.
 
-
 ## Full Example
 
-**demo.items:**
+**tivo.items:**
 
 ```
-/* TIVO */
 /* TIVO */
 String      TiVo_Status         "Status"        {channel="tivo:sckt:Living_Room:dvrStatus"}
 String      TiVo_MenuScreen     "Menu Screen"   {channel="tivo:sckt:Living_Room:menuTeleport", autoupdate="false"}
@@ -112,7 +118,8 @@ String      TiVo_KeyboardStr    "Search String"
 Switch      TiVo_Search         "Search"
 String      TiVo_CustomCmd      "Custom Cmd"    {channel="tivo:sckt:Living_Room:customCmd", autoupdate="false"}
 ```
-* The item `TiVo_SetChannelName` depends upon a valid `tivo.map` file to translate channel numbers to channel names.  **Hint:**  I sourced my channel listing from a very handy Wikipedia page for VirginMedia services.
+
+* The item `TiVo_SetChannelName` depends upon a valid `tivo.map` file to translate channel numbers to channel names.
 
 **tivoDemo.sitemap:**
 
@@ -125,7 +132,7 @@ sitemap tivoDemo label="Main Menu" {
                 Switch      item=TiVo_IRCmd           label="Media"        icon="television"   mappings=["REVERSE"="⏪", "PAUSE"="⏸", "PLAY"="⏵", "STOP"="⏹", "FORWARD"="⏩" ]
                 Switch      item=TiVo_SetChannel      label="Fav TV"       icon="television"   mappings=[101="BBC1", 104="CH 4", 110="SKY 1", 135="SyFy", 429="Film 4"]            
                 Switch      item=TiVo_SetChannel      label="Fav Radio"    icon="television"   mappings=[902="BBC R2", 904="BBC R4 FM", 905="BBC R5", 951="Abs 80s"]
-                Switch      item=TiVo_MenuScreen      label="Menus"        icon="television"   mappings=["TIVO"="Home", "LIVETV"="Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows", "INFO"="Info" ]
+                Switch      item=TiVo_MenuScreen      label="Menus"        icon="television"   mappings=["TIVO"="Home", "LIVETV"="Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows" ]
                 Switch      item=TiVo_IRCmd           label="Navigation"   icon="television"   mappings=["UP"="⏶", "DOWN"="⏷", "LEFT"="⏴", "RIGHT"="⏵", "SELECT"="Select", "EXIT"="Exit" ]
                 Switch      item=TiVo_IRCmd           label="Likes"        icon="television"   mappings=["THUMBSUP"="Thumbs Up", "THUMBSDOWN"="Thumbs Down"]
                 Switch      item=TiVo_IRCmd           label="Actions"      icon="television"   mappings=["ACTION_A"="Red","ACTION_B"="Green","ACTION_C"="Yellow","ACTION_D"="Blue"]
@@ -137,10 +144,11 @@ sitemap tivoDemo label="Main Menu" {
 ```
 
 * Amend the minValue / maxValue to reflect the minimum and maximum channel numbers of your device.
-* This example does not use the 'Current Channel - Forced (FORCECH)' channel.  This method will interrupt your recordings in progress when all you tuners are busy, so is obmitted for safety's sake.
-* The item 'TiVo_SetPointName' depends upon a valid tivo.map file to translate channel numbers to channel names.
+* This example does not use the 'Current Channel - Forced (FORCECH)' channel.  This method will interrupt your recordings in progress when all your tuners are busy, so it is omitted for safety's sake.
+* The item 'TiVo_SetChannelName' depends upon a valid tivo.map file to translate channel numbers to channel names.
 
 **tivo.map:**
+
 ```
 NULL=Unknown
 100=Virgin Media Previews
@@ -156,6 +164,7 @@ etc...
 
 **tivo.rules:**
 The following rule uses the `tivo.map` file to translate the channel number to channel names (populating the `TiVo_SetChannelName`).
+
 ```
 rule "MapChannel"
 when
@@ -171,10 +180,9 @@ end
 
 * This rule was used to overcome limitations within the HABpanel user interface at the moment when using transform/map functionality.
 
-
 The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the TiVo.  The method to send a keystroke multiple times is used to simulate rapid keystrokes required to achieve number based searched.  
 
-A simple custom template widget can be used within the HABpanel user interface for tablet based searches.  See [this discussion thread] (https://community.openhab.org/t/tivo-1-1-protocol-new-binding-contribution/5572/21?u=andymb).
+A simple custom template widget can be used within the HABpanel user interface for tablet-based searches.  See [this discussion thread] (https://community.openhab.org/t/tivo-1-1-protocol-new-binding-contribution/5572/21?u=andymb).
 
 
 ```
@@ -236,4 +244,5 @@ end
 
 ```
 
-* You many need to adjust the two `Thread::sleep(800)` lines, depending on the performance of your TiVo/response from your service providers systems.  <br><br>In testing, response times have varied considerably at different times of the day etc.  You may need to increase the delay until there is sufficient time added for the system to respond consistently to the 'remote control' menu commands.
+* You many need to adjust the two `Thread::sleep(800)` lines, depending on the performance of your TiVo
+* In testing, response times have varied considerably at different times of the day, etc.  You may need to increase the delay until there is sufficient time added for the system to respond consistently to the 'remote control' menu commands.

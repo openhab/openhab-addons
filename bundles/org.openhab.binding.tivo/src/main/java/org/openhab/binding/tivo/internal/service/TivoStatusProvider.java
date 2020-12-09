@@ -1,12 +1,15 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.tivo.internal.service;
 
 import static org.openhab.binding.tivo.TiVoBindingConstants.CONFIG_SOCKET_TIMEOUT;
@@ -24,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tivo.handler.TiVoHandler;
 import org.openhab.binding.tivo.internal.service.TivoStatusData.ConnectionStatus;
 import org.slf4j.Logger;
@@ -34,16 +39,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jayson Kubilis - Initial contribution
  * @author Andrew Black - Updates / compilation corrections
+ * @author Michael Lobstein - Updated for OH3
  */
 
+@NonNullByDefault
 public class TivoStatusProvider {
-
-    private Socket tivoSocket = null;
-    private PrintStream streamWriter = null;
-    public StreamReader streamReader = null;
-    private TivoStatusData tivoStatusData = null;
-    private TivoConfigData tivoConfigData = null;
-    private TiVoHandler tivoHandler = null;
+    private @Nullable Socket tivoSocket = null;
+    private @Nullable PrintStream streamWriter = null;
+    private @Nullable StreamReader streamReader = null;
+    private @Nullable TivoStatusData tivoStatusData = null;
+    private @Nullable TivoConfigData tivoConfigData = null;
+    private @Nullable TiVoHandler tivoHandler = null;
     private final Logger logger = LoggerFactory.getLogger(TivoStatusProvider.class);
 
     private static final Integer READ_TIMEOUT = 1000;
@@ -86,7 +92,7 @@ public class TivoStatusProvider {
      * @param tivoCommand the complete command string (KEYWORD + PARAMETERS e.g. SETCH 102) to send.
      * @return {@link TivoStatusData} status data object, contains the result of the command.
      */
-    public TivoStatusData cmdTivoSend(String tivoCommand) {
+    public @Nullable TivoStatusData cmdTivoSend(String tivoCommand) {
         if (!connTivoConnect()) {
             return new TivoStatusData(false, -1, "CONNECTION FAILED", false, ConnectionStatus.OFFLINE);
         }
@@ -104,7 +110,7 @@ public class TivoStatusProvider {
             streamWriter.println(tivoCommand.toString() + "\r");
             if (streamWriter.checkError()) {
                 logger.error("TiVo '{}' - called cmdTivoSend and encountered an IO error",
-                        tivoConfigData.getCfgIdentifier(), tivoSocket.isConnected(), tivoSocket.isClosed());
+                        tivoConfigData.getCfgIdentifier());
                 connTivoReconnect();
             }
         }
@@ -120,14 +126,10 @@ public class TivoStatusProvider {
      * @param rawStatus string representing the message text returned by the TiVo
      * @return TivoStatusData object conditionally populated based upon the raw status message
      */
-
     private TivoStatusData statusParse(String rawStatus) {
         logger.debug(" statusParse '{}' - running on string '{}'", tivoConfigData.getCfgIdentifier(), rawStatus);
 
-        if (rawStatus == null) {
-            return new TivoStatusData(false, -1, "NO_STATUS_DATA_RETURNED", false,
-                    tivoStatusData.getConnectionStatus());
-        } else if (rawStatus.contentEquals("COMMAND_TIMEOUT")) {
+        if (rawStatus.contentEquals("COMMAND_TIMEOUT")) {
             return new TivoStatusData(false, -1, "COMMAND_TIMEOUT", false, tivoStatusData.getConnectionStatus());
         } else {
             switch (rawStatus) {
@@ -164,7 +166,7 @@ public class TivoStatusProvider {
             logger.debug(" statusParse '{}' - groups '{}' with group count of '{}'", tivoConfigData.getCfgIdentifier(),
                     matcher.group(), matcher.groupCount());
             if (matcher.groupCount() == 1 | matcher.groupCount() == 2) {
-                chNum = new Integer(Integer.parseInt(matcher.group(1).trim()));
+                chNum = Integer.parseInt(matcher.group(1).trim());
             }
             logger.debug(" statusParse '{}' - parsed channel '{}'", tivoConfigData.getCfgIdentifier(), chNum);
             rawStatus = rawStatus.replace(" REMOTE", "");
@@ -183,7 +185,6 @@ public class TivoStatusProvider {
      *         occurred
      *
      */
-
     private boolean connIsConnected() {
         if (tivoSocket == null) {
             logger.debug(" connIsConnected '{}' - FALSE: tivoSocket=null", tivoConfigData.getCfgIdentifier());
@@ -214,7 +215,6 @@ public class TivoStatusProvider {
      *
      * @return true = connected, false = not connected
      */
-
     public boolean connTivoConnect() {
         for (int iL = 1; iL <= tivoConfigData.getCfgNumConnRetry(); iL++) {
             logger.debug(" connTivoConnect '{}' - starting connection process '{}' of '{}'.",
@@ -243,7 +243,6 @@ public class TivoStatusProvider {
      *
      * @param forceDisconnect true = forces a disconnection , false = disconnects in specific situations
      */
-
     public void connTivoDisconnect(boolean forceDisconnect) {
         if (forceDisconnect) {
             connSocketDisconnect();
@@ -260,7 +259,6 @@ public class TivoStatusProvider {
      *
      * @return boolean true = connection succeeded, false = connection failed
      */
-
     public boolean connTivoReconnect() {
         connSocketDisconnect();
         doNappTime();
@@ -278,7 +276,6 @@ public class TivoStatusProvider {
             if (streamReader != null) {
                 while (streamReader.isAlive()) {
                     streamReader.stopReader();
-                    // doNappTime();
                 }
                 streamReader = null;
             }
@@ -319,7 +316,6 @@ public class TivoStatusProvider {
         }
 
         try {
-
             tivoSocket = new Socket(tivoConfigData.getCfgHost(), tivoConfigData.getCfgTcpPort());
             tivoSocket.setKeepAlive(true);
             tivoSocket.setSoTimeout(CONFIG_SOCKET_TIMEOUT);
@@ -366,7 +362,7 @@ public class TivoStatusProvider {
         }
     }
 
-    public TivoStatusData getServiceStatus() {
+    public @Nullable TivoStatusData getServiceStatus() {
         return tivoStatusData;
     }
 
@@ -383,7 +379,7 @@ public class TivoStatusProvider {
      *
      */
     public class StreamReader extends Thread {
-        private BufferedReader bufferedReader = null;
+        private @Nullable BufferedReader bufferedReader = null;
         private volatile boolean stopReader;
 
         private CountDownLatch stopLatch;
@@ -407,7 +403,6 @@ public class TivoStatusProvider {
             try {
                 logger.debug("streamReader {} is running. ", tivoConfigData.getCfgIdentifier());
                 while (!stopReader && !Thread.currentThread().isInterrupted()) {
-
                     String receivedData = null;
                     try {
                         receivedData = bufferedReader.readLine();
@@ -420,7 +415,6 @@ public class TivoStatusProvider {
                         TivoStatusData commandResult = statusParse(receivedData);
                         tivoHandler.updateTivoStatus(tivoStatusData, commandResult);
                         tivoStatusData = commandResult;
-                        // }
                     }
                 }
 
@@ -435,7 +429,6 @@ public class TivoStatusProvider {
         /**
          * {@link stopReader} cleanly stops the {@link StreamReader} thread. Blocks until the reader is stopped.
          */
-
         public void stopReader() {
             this.stopReader = true;
             try {
@@ -445,6 +438,5 @@ public class TivoStatusProvider {
                 // block the caller indefinitely.
             }
         }
-
     }
 }

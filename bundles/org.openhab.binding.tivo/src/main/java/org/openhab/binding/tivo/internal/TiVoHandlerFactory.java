@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tivo.internal;
 
@@ -13,16 +17,15 @@ import static org.openhab.binding.tivo.TiVoBindingConstants.THING_TYPE_TIVO;
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.tivo.TiVoBindingConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tivo.handler.TiVoHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link TiVoHandlerFactory} is responsible for creating things and thing
@@ -30,12 +33,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - minor updates, removal of unused DiscoveryService functionality.
+ * @author Michael Lobstein - Updated for OH3
  */
 
+@NonNullByDefault
+@Component(configurationPid = "binding.tivo", service = ThingHandlerFactory.class)
 public class TiVoHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(TiVoHandlerFactory.class);
-
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TIVO);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TIVO);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,42 +47,12 @@ public class TiVoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
-
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+
         if (thingTypeUID.equals(THING_TYPE_TIVO)) {
             return new TiVoHandler(thing);
         }
         return null;
     }
-
-    @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
-        logger.debug("createThing({},{},{},{})", thingTypeUID, configuration, thingUID, bridgeUID);
-
-        if (TiVoBindingConstants.THING_TYPE_TIVO.equals(thingTypeUID)) {
-
-            ThingUID deviceUID = getTivoUID(thingTypeUID, thingUID, configuration);
-            logger.debug("creating thing {} from deviceUID: {}", thingTypeUID, deviceUID);
-            return super.createThing(thingTypeUID, configuration, deviceUID, null);
-        }
-
-        throw new IllegalArgumentException("The thing type {} " + thingTypeUID + " is not supported by the binding.");
-    }
-
-    @Override
-    public void unregisterHandler(Thing thing) {
-        logger.debug("TiVo handler - unregisterHandler was called");
-        super.unregisterHandler(thing);
-    }
-
-    private ThingUID getTivoUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
-        if (thingUID == null) {
-            String name = (String) configuration.get(TiVoBindingConstants.CONFIG_NAME);
-            thingUID = new ThingUID(thingTypeUID, name);
-        }
-        return thingUID;
-    }
-
 }

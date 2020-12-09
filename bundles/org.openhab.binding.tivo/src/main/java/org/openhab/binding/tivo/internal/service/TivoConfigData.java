@@ -1,14 +1,21 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tivo.internal.service;
 
 import java.util.SortedSet;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The Class {@link TivoConfigData} stores the dynamic configuration parameters used within the {@link TivoHandler } and
@@ -16,17 +23,19 @@ import java.util.SortedSet;
  *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - minor updates, removal of unused DiscoveryService functionality.
+ * @author Michael Lobstein - Updated for OH3
  */
-public class TivoConfigData {
 
-    private String cfgHost = null;
+@NonNullByDefault
+public class TivoConfigData {
+    private @Nullable String cfgHost = null;
     private int cfgTcpPort = -1;
     private int cfgNumConnRetry = 0;
     private int cfgPollInterval = 30;
     private boolean cfgPollChanges = false;
     private boolean cfgKeepConnOpen = false;
     private int cfgCmdWait = 0;
-    private SortedSet<Integer> cfgIgnoreChannels = null;
+    private @Nullable SortedSet<Integer> cfgIgnoreChannels = null;
     private String cfgIdentifier = "";
     private int cfgMinChannel = 1;
     private int cfgMaxChannel = 9999;
@@ -70,7 +79,7 @@ public class TivoConfigData {
      *
      * @return the cfgHost
      */
-    public String getCfgHost() {
+    public @Nullable String getCfgHost() {
         return cfgHost;
     }
 
@@ -204,7 +213,7 @@ public class TivoConfigData {
      *
      * @return the cfgIgnoreChannels
      */
-    public SortedSet<Integer> getCfgIgnoreChannels() {
+    public @Nullable SortedSet<Integer> getCfgIgnoreChannels() {
         return cfgIgnoreChannels;
     }
 
@@ -214,7 +223,7 @@ public class TivoConfigData {
      * @param pChannel the channel
      * @return the cfgIgnoreChannels
      */
-    public SortedSet<Integer> addCfgIgnoreChannels(Integer pChannel) {
+    public @Nullable SortedSet<Integer> addCfgIgnoreChannels(Integer pChannel) {
         cfgIgnoreChannels.add(pChannel);
         return cfgIgnoreChannels;
     }
@@ -281,5 +290,4 @@ public class TivoConfigData {
     public Boolean doChannelScan() {
         return cfgIgnoreChannelScan;
     }
-
 }

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2014-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tivo.internal.discovery;
 
@@ -16,12 +20,13 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant;
 import org.openhab.binding.tivo.TiVoBindingConstants;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +36,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - minor updates.
+ * @author Michael Lobstein - Updated for OH3
  */
+@Component(immediate = true, configurationPid = "discovery.tivo")
 public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private Logger logger = LoggerFactory.getLogger(TiVoDiscoveryParticipant.class);
 
@@ -77,18 +84,16 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     /**
-     * @see org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant#getThingUID(javax.jmdns.ServiceInfo)
+     * @see org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant#getThingUID(javax.jmdns.ServiceInfo)
      */
     @Override
     public ThingUID getThingUID(ServiceInfo service) {
         logger.debug("TiVo Discover getThingUID");
-        if (service != null) {
-            logger.trace("ServiceInfo: {}", service);
-            if (service.getType() != null) {
-                if (service.getType().equals(getServiceType())) {
-                    String uidName = getUIDName(service);
-                    return new ThingUID(TiVoBindingConstants.THING_TYPE_TIVO, uidName);
-                }
+        logger.trace("ServiceInfo: {}", service);
+        if (service.getType() != null) {
+            if (service.getType().equals(getServiceType())) {
+                String uidName = getUIDName(service);
+                return new ThingUID(TiVoBindingConstants.THING_TYPE_TIVO, uidName);
             }
         }
         return null;
@@ -122,5 +127,4 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
         }
         return address;
     }
-
 }
