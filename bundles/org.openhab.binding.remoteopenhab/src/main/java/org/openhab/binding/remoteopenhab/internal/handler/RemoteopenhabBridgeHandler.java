@@ -98,7 +98,6 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
     private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
 
-    private static final long CONNECTION_TIMEOUT_MILLIS = TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES);
     private static final int MAX_STATE_SIZE_FOR_LOGGING = 50;
 
     private final Logger logger = LoggerFactory.getLogger(RemoteopenhabBridgeHandler.class);
@@ -177,7 +176,10 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        startCheckConnectionJob();
+        scheduler.submit(this::checkConnection);
+        if (config.accessibilityInterval > 0) {
+            startCheckConnectionJob(config.accessibilityInterval, config.aliveInterval);
+        }
     }
 
     @Override
@@ -354,19 +356,25 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void startCheckConnectionJob() {
+    private void startCheckConnectionJob(int accessibilityInterval, int aliveInterval) {
         ScheduledFuture<?> localCheckConnectionJob = checkConnectionJob;
         if (localCheckConnectionJob == null || localCheckConnectionJob.isCancelled()) {
             checkConnectionJob = scheduler.scheduleWithFixedDelay(() -> {
                 long millisSinceLastEvent = System.currentTimeMillis() - restClient.getLastEventTimestamp();
-                if (millisSinceLastEvent > CONNECTION_TIMEOUT_MILLIS) {
-                    logger.debug("Check: Maybe disconnected from streaming events, millisSinceLastEvent={}",
+                if (aliveInterval == 0 || restClient.getLastEventTimestamp() == 0) {
+                    logger.debug("Time to check server accessibility");
+                    checkConnection();
+                } else if (millisSinceLastEvent > (aliveInterval * 60000)) {
+                    logger.debug(
+                            "Time to check server accessibility (maybe disconnected from streaming events, millisSinceLastEvent={})",
                             millisSinceLastEvent);
                     checkConnection();
                 } else {
-                    logger.debug("Check: Receiving streaming events, millisSinceLastEvent={}", millisSinceLastEvent);
+                    logger.debug(
+                            "Bypass server accessibility check (receiving streaming events, millisSinceLastEvent={})",
+                            millisSinceLastEvent);
                 }
-            }, 0, CONNECTION_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+            }, accessibilityInterval, accessibilityInterval, TimeUnit.MINUTES);
         }
     }
 
