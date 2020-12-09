@@ -52,7 +52,7 @@ public class WebSocketConnection {
     private final WebSocketConnectionListener connectionListener;
     private final Map<String, WebSocketMessageListener> sensorListener = new ConcurrentHashMap<>();
     private final Map<String, WebSocketMessageListener> lightListener = new ConcurrentHashMap<>();
-    private ConnectionState connected = ConnectionState.DISCONNECTED;
+    private ConnectionState connectionState = ConnectionState.DISCONNECTED;
 
     public WebSocketConnection(WebSocketConnectionListener listener, WebSocketClient client, Gson gson) {
         this.connectionListener = listener;
@@ -63,9 +63,9 @@ public class WebSocketConnection {
     }
 
     public void start(String ip) {
-        if (connected == ConnectionState.CONNECTED) {
+        if (connectionState == ConnectionState.CONNECTED) {
             return;
-        } else if (connected == ConnectionState.CONNECTING) {
+        } else if (connectionState == ConnectionState.CONNECTING) {
             logger.debug("{} already connecting", socketName);
             return;
         }
@@ -81,7 +81,7 @@ public class WebSocketConnection {
 
     public void close() {
         try {
-            connected = ConnectionState.DISCONNECTING;
+            connectionState = ConnectionState.DISCONNECTING;
             client.stop();
         } catch (Exception e) {
             logger.debug("{} encountered an error while closing connection", socketName, e);
@@ -108,7 +108,7 @@ public class WebSocketConnection {
     @SuppressWarnings("unused")
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        connected = ConnectionState.CONNECTED;
+        connectionState = ConnectionState.CONNECTED;
         logger.debug("{} successfully connected to {}", this, session.getRemoteAddress().getAddress());
         connectionListener.connectionEstablished();
     }
@@ -143,14 +143,14 @@ public class WebSocketConnection {
     @SuppressWarnings("unused")
     @OnWebSocketError
     public void onError(Throwable cause) {
-        connected = ConnectionState.DISCONNECTED;
+        connectionState = ConnectionState.DISCONNECTED;
         connectionListener.connectionError(cause);
     }
 
     @SuppressWarnings("unused")
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        connected = ConnectionState.DISCONNECTED;
+        connectionState = ConnectionState.DISCONNECTED;
         connectionListener.connectionLost(reason);
     }
 
@@ -160,7 +160,7 @@ public class WebSocketConnection {
      * @return true if connected, false if connecting, disconnecting or disconnected
      */
     public boolean isConnected() {
-        return connected == ConnectionState.CONNECTED;
+        return connectionState == ConnectionState.CONNECTED;
     }
 
     /**
