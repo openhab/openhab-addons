@@ -177,6 +177,23 @@
 		<state pattern="%d K" min="15" max="100000" step="100"/>
 	</channel-type>
 
+	<channel-type id="effect">
+		<item-type>String</item-type>
+		<label>Effect Channel</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="effectSpeed">
+		<item-type>Number</item-type>
+		<label>Effect Speed Channel</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+		<state min="0" max="10" step="1"/>
+	</channel-type>
+
 	<channel-type id="alert">
 		<item-type>Switch</item-type>
 		<label>Alert</label>
