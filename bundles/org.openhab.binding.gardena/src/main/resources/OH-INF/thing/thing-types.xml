@@ -10,7 +10,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Gardena smart SILENO Mower</label>
+		<label>Gardena Smart SILENO Mower</label>
 		<description>Represents any Gardena smart SILENO mower model</description>
 
 		<channel-groups>
@@ -32,7 +32,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Gardena smart Water Control</label>
+		<label>Gardena Smart Water Control</label>
 		<description>Represents a Gardena smart Water Control</description>
 
 		<channel-groups>
@@ -56,7 +56,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Gardena smart Sensor</label>
+		<label>Gardena Smart Sensor</label>
 		<description>Represents a Gardena smart Sensor</description>
 
 		<channel-groups>
@@ -77,7 +77,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Gardena smart Pressure Pump</label>
+		<label>Gardena Smart Pressure Pump</label>
 		<description>Represents a Gardena smart Pressure Pump</description>
 
 		<channel-groups>
@@ -99,7 +99,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Gardena smart Power Adapter</label>
+		<label>Gardena Smart Power Adapter</label>
 		<description>Represents a Gardena smart Power Adapter</description>
 
 		<channel-groups>
@@ -121,31 +121,31 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Gardena smart Irrigation Control</label>
+		<label>Gardena Smart Irrigation Control</label>
 		<description>Represents a Gardena smart Irrigation Control</description>
 
 		<channel-groups>
 			<channel-group id="common" typeId="commonProperties"/>
 			<channel-group id="valveOne" typeId="valveProperties">
-				<label>Valve 1 properties</label>
+				<label>Valve 1 Properties</label>
 			</channel-group>
 			<channel-group id="valveOne_commands" typeId="valveCommands">
-				<label>Valve 1 commands</label>
+				<label>Valve 1 Commands</label>
 			</channel-group>
 			<channel-group id="valveTwo" typeId="valveProperties">
-				<label>Valve 2 properties</label>
+				<label>Valve 2 Properties</label>
 			</channel-group>
 			<channel-group id="valveTwo_commands" typeId="valveCommands">
-				<label>Valve 2 commands</label>
+				<label>Valve 2 Commands</label>
 			</channel-group>
 			<channel-group id="valveThree" typeId="valveProperties">
-				<label>Valve 3 properties</label>
+				<label>Valve 3 Properties</label>
 			</channel-group>
 			<channel-group id="valveThree_commands" typeId="valveCommands">
-				<label>Valve 3 commands</label>
+				<label>Valve 3 Commands</label>
 			</channel-group>
 			<channel-group id="valveFour" typeId="valveProperties">
-				<label>Valve 4 properties</label>
+				<label>Valve 4 Properties</label>
 			</channel-group>
 			<channel-group id="valveFour_commands" typeId="valveCommands">
 				<label>Valve 4 Commands</label>
@@ -315,16 +315,20 @@
 				<label>Mowing Duration</label>
 			</channel>
 			<channel id="start_seconds_to_override" typeId="gardenaCommand">
-				<label>Start mowing with duration</label>
+				<label>Start Mowing with Duration</label>
+				<description>Manual operation, use Mowing Duration to define duration</description>
 			</channel>
 			<channel id="start_dont_override" typeId="gardenaCommand">
 				<label>Start Schedule</label>
+				<description>Automatic operation</description>
 			</channel>
 			<channel id="park_until_next_task" typeId="gardenaCommand">
 				<label>Park</label>
+				<description>Cancel the current operation and return to charging station</description>
 			</channel>
 			<channel id="park_until_further_notice" typeId="gardenaCommand">
-				<label>Pause schedule</label>
+				<label>Pause Schedule</label>
+				<description>Cancel the current operation, return to charging station, ignore schedule</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -337,16 +341,21 @@
 				<label>Irrigation Duration</label>
 			</channel>
 			<channel id="start_seconds_to_override" typeId="gardenaCommand">
-				<label>Open valve with duration</label>
+				<label>Open Valve with Duration</label>
+				<description>Manual operation, use Irrigation Duration to define duration</description>
 			</channel>
 			<channel id="stop_until_next_task" typeId="gardenaCommand">
-				<label>Close valve, continue with the schedule</label>
+				<label>Close Valve, Continue Schedule</label>
+				<description>Cancel the current watering, continue with the schedule</description>
 			</channel>
 			<channel id="pause" typeId="gardenaCommand">
-				<label>Pause until specified time</label>
+				<label>Pause Until Specified Time</label>
+				<description>Skip automatic operation until specified time. The currently active operation might or might not be
+					cancelled (depends on device model)</description>
 			</channel>
 			<channel id="unpause" typeId="gardenaCommand">
-				<label>Start schedule</label>
+				<label>Start Schedule</label>
+				<description>Restore automatic operation if it was paused</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -357,6 +366,7 @@
 		<channels>
 			<channel id="stop_until_next_task" typeId="gardenaCommand">
 				<label>Close all valves</label>
+				<description>Immediately close all valves</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -366,22 +376,27 @@
 		<description>Commands to control a power socket</description>
 		<channels>
 			<channel id="commandDuration" typeId="powerCommandDuration">
-				<label>Switch in duration</label>
+				<label>Switch on Duration</label>
 			</channel>
 			<channel id="start_seconds_to_override" typeId="gardenaCommand">
-				<label>Manual on with duration</label>
+				<label>Manual On with Duration</label>
+				<description>Manual operation, use Switch on Duration to define duration</description>
 			</channel>
 			<channel id="start_override" typeId="gardenaCommand">
-				<label>Manual on</label>
+				<label>Manual On</label>
+				<description>Manual on</description>
 			</channel>
 			<channel id="stop_until_next_task" typeId="gardenaCommand">
-				<label>Off, continue with the schedule</label>
+				<label>Off, Continue Schedule</label>
+				<description>Immediately switch off, continue with the schedule</description>
 			</channel>
 			<channel id="pause" typeId="gardenaCommand">
-				<label>Pause until specified time</label>
+				<label>Pause Until Specified Time</label>
+				<description>Skip automatic operation until specified time. The currently active operation will NOT be cancelled</description>
 			</channel>
 			<channel id="unpause" typeId="gardenaCommand">
-				<label>Start schedule</label>
+				<label>Start Schedule</label>
+				<description>Restore automatic operation if it was paused</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -598,7 +613,7 @@
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>The temperature in degrees Celsius</description>
+		<description>The temperature</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
