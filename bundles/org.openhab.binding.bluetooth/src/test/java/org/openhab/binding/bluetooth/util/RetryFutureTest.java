@@ -153,10 +153,12 @@ class RetryFutureTest extends JavaTest {
             if (!latch.await(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
                 fail("Timeout while waiting for latch");
             }
-            retryFuture.cancel(false);
-
-            waitForAssert(() -> assertTrue(composedFuture.isCancelled()));
-        } catch (InterruptedException e) {
+            Future<Boolean> future = scheduler.submit(() -> {
+                retryFuture.cancel(false);
+                return composedFuture.isCancelled();
+            });
+            assertTrue(future.get(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             fail(e);
         }
         assertEquals(2, visitCount.get());
