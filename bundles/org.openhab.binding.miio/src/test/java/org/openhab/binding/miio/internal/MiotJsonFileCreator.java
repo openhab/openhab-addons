@@ -45,7 +45,7 @@ public class MiotJsonFileCreator {
     @Disabled
     public static void main(String[] args) {
 
-        String model = "viomi.dishwasher.m02";
+        String model = "huayi.light.pisces";
         if (args.length > 0) {
             model = args[0];
         }
