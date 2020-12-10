@@ -80,7 +80,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
         @SuppressWarnings("null")
         String url = inverterConfig.url;
         @SuppressWarnings("null")
-        String username = inverterConfig.userName;
+        String username = inverterConfig.username;
         @SuppressWarnings("null")
         String password = inverterConfig.password;
         String valueConfiguration = "";
@@ -112,7 +112,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
                         valueConfiguration);
                 break;
             case SecondGenerationBindingConstants.CHANNEL_SMARTBATTERYCONTROL:
-                valueConfiguration = "";
                 if (command == OnOffType.ON) {
                     valueConfiguration = "True";
                 }

@@ -90,7 +90,7 @@ public class SecondGenerationConfigurationHandler {
 
             sessionId = extractSessionId(loginPostJsonObject);
 
-            // Part to sending data to Inverter
+            // Part for sending data to Inverter
             String postJsonData = "";
 
             if (dxsId.contentEquals("16777984")) {
@@ -107,25 +107,31 @@ public class SecondGenerationConfigurationHandler {
             postJsonDataRequest.content(new StringContentProvider(postJsonData));
 
             ContentResponse postJsonDataContentResponse = postJsonDataRequest.send();
+            @SuppressWarnings("unused")
             String postResponse = new String(postJsonDataContentResponse.getContent());
 
-            JsonObject postJsonObject = (JsonObject) new JsonParser().parse(transformJsonResponse(postResponse));
-            sessionId = extractSessionId(postJsonObject);
         } catch (JsonIOException getAuthenticateResponseException) {
             logger.debug("Could not read the response: {}", getAuthenticateResponseException.getMessage());
         }
     }
 
     static String transformJsonResponse(String jsonResponse) {
-        // Method transformJsonResponse converts response,due to missing [] in JSON getAuthenticateResponse.
+        // Method transformJsonResponse converts response,due to missing [] in ContentResponse
+        // postJsonDataContentResponse.
 
         int sessionStartPosition = jsonResponse.indexOf("session");
+        int statusStartPosition = jsonResponse.indexOf("status");
+
         StringBuilder transformStringBuilder = new StringBuilder();
 
         transformStringBuilder.append(jsonResponse);
 
         transformStringBuilder.insert(sessionStartPosition + 9, '[');
-        int codeStartPosition = jsonResponse.indexOf("roleId");
+        int roleIdStartPosition = jsonResponse.indexOf("roleId");
+        transformStringBuilder.insert(roleIdStartPosition + 11, ']');
+
+        transformStringBuilder.insert(statusStartPosition + 10, '[');
+        int codeStartPosition = jsonResponse.indexOf("code");
         transformStringBuilder.insert(codeStartPosition + 11, ']');
 
         String transformJsonObject = transformStringBuilder.toString();
@@ -133,15 +139,41 @@ public class SecondGenerationConfigurationHandler {
         return transformJsonObject;
     }
 
-    static String extractSessionId(JsonObject extractJsonObject) throws TimeoutException {
-        // Method extractSessionId extracts sessionId from JsonObject
-        String extractSessionId = "";
-        JsonArray extractJsonArray = extractJsonObject.getAsJsonArray("session");
+    // Method extractSessionId extracts sessionId from JsonObject
+    static String extractSessionId(JsonObject extractJsonObjectSessionId) throws TimeoutException {
 
-        int size = extractJsonArray.size();
+        Logger sessionIdLogger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
+
+        String extractSessionId = "";
+        JsonArray extractJsonArraySessionId = extractJsonObjectSessionId.getAsJsonArray("session");
+
+        int size = extractJsonArraySessionId.size();
         if (size > 0) {
-            extractSessionId = extractJsonArray.get(size - 1).getAsJsonObject().get("sessionId").getAsString();
+            extractSessionId = extractJsonArraySessionId.get(size - 1).getAsJsonObject().get("sessionId").getAsString();
+        }
+        if (extractSessionId == "0") {
+            sessionIdLogger.debug(" Login Post Json Reponse not OK! , inverter answered with sessionId like: {}",
+                    extractSessionId);
         }
         return extractSessionId;
+    }
+
+    // Method extractCode extracts code from JsonObject
+    static String extractCode(JsonObject extractJsonObjectCode) throws TimeoutException {
+
+        Logger codeLogger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
+
+        String extractCode = "";
+        JsonArray extractJsonArrayCode = extractJsonObjectCode.getAsJsonArray("status");
+
+        int size = extractJsonArrayCode.size();
+        if (size > 0) {
+            extractCode = extractJsonArrayCode.get(size - 1).getAsJsonObject().get("code").getAsString();
+        }
+        if (extractCode != "0") {
+            codeLogger.debug(" Login Post Json Reponse not OK! , inverter answered with status code like: {}",
+                    extractCode);
+        }
+        return extractCode;
     }
 }

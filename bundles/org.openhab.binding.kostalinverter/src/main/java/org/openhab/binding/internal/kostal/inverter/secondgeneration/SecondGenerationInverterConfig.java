@@ -28,7 +28,7 @@ public class SecondGenerationInverterConfig {
     public static final long REFRESHINTERVAL_SEC = 60;
 
     public String url = "";
-    public String userName = "";
+    public String username = "";
     public String password = "";
     public String dxsIdConf = "";
     public String valueConf = "";
