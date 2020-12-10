@@ -65,7 +65,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private static final Collection<ThingTypeHandlerMapping> supportedThingTypes = Arrays.asList(
+    private static final Collection<ThingTypeHandlerMapping> SUPPORTED_THING_TYPES = Arrays.asList(
             new ThingTypeHandlerMapping(THING_TYPE_SHC, thing -> new BoschSHCBridgeHandler((Bridge) thing)),
             new ThingTypeHandlerMapping(THING_TYPE_INWALL_SWITCH, BoschInWallSwitchHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_TWINGUARD, BoschTwinguardHandler::new),
@@ -77,7 +77,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return supportedThingTypes.stream().anyMatch(mapping -> mapping.thingTypeUID.equals(thingTypeUID));
+        return SUPPORTED_THING_TYPES.stream().anyMatch(mapping -> mapping.thingTypeUID.equals(thingTypeUID));
     }
 
     @Override
@@ -85,7 +85,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         // Search for mapping for thing type and return handler for it if found. Otherwise return null.
-        return supportedThingTypes.stream().filter(mapping -> mapping.thingTypeUID.equals(thingTypeUID)).findFirst()
+        return SUPPORTED_THING_TYPES.stream().filter(mapping -> mapping.thingTypeUID.equals(thingTypeUID)).findFirst()
                 .<@Nullable BaseThingHandler> map(mapping -> mapping.handlerSupplier.apply(thing)).orElse(null);
     }
 }
