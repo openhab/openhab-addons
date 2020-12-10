@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * HTTP client using own context with private & Bosch Certs
@@ -175,13 +176,17 @@ public class BoschHttpClient extends HttpClient {
         logger.debug("BoschHttpClient: response complete: {} - return code: {}", contentResponse.getContentAsString(),
                 contentResponse.getStatus());
 
-        @Nullable
-        TContent content = gson.fromJson(contentResponse.getContentAsString(), responseContentClass);
-        if (content == null) {
-            throw new ExecutionException(String.format("Received invalid content in response, expected type %s",
-                    responseContentClass.getName()), null);
+        try {
+            @Nullable
+            TContent content = gson.fromJson(contentResponse.getContentAsString(), responseContentClass);
+            if (content == null) {
+                throw new ExecutionException(String.format("Received no content in response, expected type %s",
+                        responseContentClass.getName()), null);
+            }
+            return content;
+        } catch (JsonSyntaxException e) {
+            throw new ExecutionException(String.format("Received invalid content in response, expected type %s: %s",
+                    responseContentClass.getName(), e.getMessage()), null);
         }
-
-        return content;
     }
 }
