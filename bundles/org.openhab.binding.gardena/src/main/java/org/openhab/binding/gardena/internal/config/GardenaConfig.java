@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.gardena.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The main Gardena config class.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GardenaConfig {
     private static final Integer DEFAULT_CONNECTION_TIMEOUT = 10;
 
-    private String email;
-    private String password;
-    private String apiKey;
+    private @Nullable String email;
+    private @Nullable String password;
+    private @Nullable String apiKey;
 
     private transient Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
 
@@ -37,7 +41,7 @@ public class GardenaConfig {
     /**
      * Returns the email to connect to Gardena smart system.
      */
-    public String getEmail() {
+    public @Nullable String getEmail() {
         return email;
     }
 
@@ -51,7 +55,7 @@ public class GardenaConfig {
     /**
      * Returns the password to connect to Gardena smart system.
      */
-    public String getPassword() {
+    public @Nullable String getPassword() {
         return password;
     }
 
@@ -79,7 +83,7 @@ public class GardenaConfig {
     /**
      * Returns the api key.
      */
-    public String getApiKey() {
+    public @Nullable String getApiKey() {
         return apiKey;
     }
 
@@ -94,6 +98,9 @@ public class GardenaConfig {
      * Validate the config if email, password and apiKey is specified.
      */
     public boolean isValid() {
+        final String email = this.email;
+        final String password = this.password;
+        final String apiKey = this.apiKey;
         return email != null && !email.isBlank() && password != null && !password.isBlank() && apiKey != null
                 && !apiKey.isBlank();
     }

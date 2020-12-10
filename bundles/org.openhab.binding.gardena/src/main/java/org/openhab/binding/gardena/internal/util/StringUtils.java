@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Some String operations from commons lang.
+ *
+ * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
 public class StringUtils {

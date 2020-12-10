@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.handler.GardenaAccountHandler;
-import org.openhab.binding.gardena.internal.model.Device;
+import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.util.PropertyUtils;
 import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;

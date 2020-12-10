@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gardena.internal.handler.GardenaDeviceConfig;
-import org.openhab.binding.gardena.internal.model.Device;
+import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;

@@ -24,7 +24,7 @@ import org.openhab.binding.gardena.internal.GardenaSmartImpl;
 import org.openhab.binding.gardena.internal.config.GardenaConfig;
 import org.openhab.binding.gardena.internal.discovery.GardenaDeviceDiscoveryService;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
-import org.openhab.binding.gardena.internal.model.Device;
+import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaSmartEventListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaAccountHandler.class);
-    private final static long REINITIALIZE_DELAY_SECONDS = 10;
+    private final long REINITIALIZE_DELAY_SECONDS = 10;
 
     private @Nullable GardenaDeviceDiscoveryService discoveryService;
 

@@ -13,7 +13,7 @@
 package org.openhab.binding.gardena.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.gardena.internal.model.Device;
+import org.openhab.binding.gardena.internal.model.dto.Device;
 
 /**
  * Listener with methods called from events within the {@link GardenaSmart} class.

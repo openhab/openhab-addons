@@ -17,9 +17,9 @@ import java.util.Collection;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
-import org.openhab.binding.gardena.internal.model.Device;
-import org.openhab.binding.gardena.internal.model.api.DataItem;
-import org.openhab.binding.gardena.internal.model.command.GardenaCommand;
+import org.openhab.binding.gardena.internal.model.dto.Device;
+import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
+import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
 
 /**
  * Describes the methods required for the communication with Gardena smart system.

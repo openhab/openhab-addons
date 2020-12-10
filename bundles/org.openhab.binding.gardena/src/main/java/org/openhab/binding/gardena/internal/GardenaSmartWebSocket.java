@@ -29,8 +29,8 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.eclipse.jetty.websocket.common.frames.PongFrame;
 import org.openhab.binding.gardena.internal.config.GardenaConfig;
-import org.openhab.binding.gardena.internal.model.api.PostOAuth2Response;
-import org.openhab.binding.gardena.internal.model.api.WebSocketCreatedResponse;
+import org.openhab.binding.gardena.internal.model.dto.api.PostOAuth2Response;
+import org.openhab.binding.gardena.internal.model.dto.api.WebSocketCreatedResponse;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class GardenaSmartWebSocket {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartWebSocket.class);
     private final GardenaSmartWebSocketListener socketEventListener;
-    private final static long WEBSOCKET_IDLE_TIMEOUT = 300;
+    private final long WEBSOCKET_IDLE_TIMEOUT = 300;
 
     private WebSocketSession session;
     private WebSocketClient webSocketClient;

@@ -13,10 +13,10 @@
 package org.openhab.binding.gardena.internal.handler;
 
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
-import static org.openhab.binding.gardena.internal.model.command.MowerCommand.MowerControl;
-import static org.openhab.binding.gardena.internal.model.command.PowerSocketCommand.PowerSocketControl;
-import static org.openhab.binding.gardena.internal.model.command.ValveCommand.ValveControl;
-import static org.openhab.binding.gardena.internal.model.command.ValveSetCommand.ValveSetControl;
+import static org.openhab.binding.gardena.internal.model.dto.command.MowerCommand.MowerControl;
+import static org.openhab.binding.gardena.internal.model.dto.command.PowerSocketCommand.PowerSocketControl;
+import static org.openhab.binding.gardena.internal.model.dto.command.ValveCommand.ValveControl;
+import static org.openhab.binding.gardena.internal.model.dto.command.ValveSetCommand.ValveSetControl;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -29,9 +29,9 @@ import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
-import org.openhab.binding.gardena.internal.model.Device;
-import org.openhab.binding.gardena.internal.model.api.DataItem;
-import org.openhab.binding.gardena.internal.model.command.*;
+import org.openhab.binding.gardena.internal.model.dto.Device;
+import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
+import org.openhab.binding.gardena.internal.model.dto.command.*;
 import org.openhab.binding.gardena.internal.util.PropertyUtils;
 import org.openhab.binding.gardena.internal.util.StringUtils;
 import org.openhab.binding.gardena.internal.util.UidUtils;

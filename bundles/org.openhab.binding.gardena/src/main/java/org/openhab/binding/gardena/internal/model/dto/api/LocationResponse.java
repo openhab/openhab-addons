@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gardena.internal.handler;
+package org.openhab.binding.gardena.internal.model.dto.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import java.util.List;
 
 /**
- * The {@link GardenaDeviceConfig} class represents the configuration for a device connected to an Gardena account.
+ * Represents a Gardena object that is sent via the Gardena API.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@NonNullByDefault
-public class GardenaDeviceConfig {
-    public @Nullable String deviceId;
+
+public class LocationResponse {
+    public LocationDataItem data;
+    public List<DataItem<?>> included;
 }

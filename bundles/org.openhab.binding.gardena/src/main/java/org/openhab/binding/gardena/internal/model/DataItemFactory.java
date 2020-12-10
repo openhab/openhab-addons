@@ -13,7 +13,8 @@
 package org.openhab.binding.gardena.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.gardena.internal.model.api.*;
+import org.openhab.binding.gardena.internal.exception.GardenaException;
+import org.openhab.binding.gardena.internal.model.dto.api.*;
 
 /**
  * Creates the dataItem object based on the device type.
@@ -22,7 +23,7 @@ import org.openhab.binding.gardena.internal.model.api.*;
  */
 @NonNullByDefault
 public class DataItemFactory {
-    public static Class<? extends DataItem<?>> create(String type) {
+    public static Class<? extends DataItem<?>> create(String type) throws GardenaException {
         switch (type) {
             case "LOCATION":
                 return LocationDataItem.class;
@@ -41,7 +42,7 @@ public class DataItemFactory {
             case "SENSOR":
                 return SensorServiceDataItem.class;
             default:
-                throw new RuntimeException("Unknown DataItem type: " + type);
+                throw new GardenaException("Unknown DataItem type: " + type);
         }
     }
 }
