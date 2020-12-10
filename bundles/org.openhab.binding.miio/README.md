@@ -87,7 +87,7 @@ or in case of unknown models include the model information of a similar device t
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 210 different models.
+Currently the miio binding supports more than 220 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -157,6 +157,18 @@ Currently the miio binding supports more than 210 different models.
 | Mi Smart Home Gateway v3     | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Humdifier                 | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
+| huayi.light.ari013           | miio:basic       | [huayi.light.ari013](#huayi-light-ari013) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.aries            | miio:basic       | [huayi.light.aries](#huayi-light-aries) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.peg091           | miio:basic       | [huayi.light.peg091](#huayi-light-peg091) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.peg093           | miio:basic       | [huayi.light.peg093](#huayi-light-peg093) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.pis123           | miio:basic       | [huayi.light.pis123](#huayi-light-pis123) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.pisces           | miio:basic       | [huayi.light.pisces](#huayi-light-pisces) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.tau023           | miio:basic       | [huayi.light.tau023](#huayi-light-tau023) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.taurus           | miio:basic       | [huayi.light.taurus](#huayi-light-taurus) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.vir063           | miio:basic       | [huayi.light.vir063](#huayi-light-vir063) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.virgo            | miio:basic       | [huayi.light.virgo](#huayi-light-virgo) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.wy               | miio:basic       | [huayi.light.wy](#huayi-light-wy) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| huayi.light.zw131            | miio:basic       | [huayi.light.zw131](#huayi-light-zw131) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral1.v1  | No        |            |
 | Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral2.v1  | No        |            |
 | Xiaomi youpin Curtain Controller (Wi-Fi) | miio:basic       | [lumi.curtain.hagl05](#lumi-curtain-hagl05) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -562,7 +574,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -583,7 +595,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -604,7 +616,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -625,7 +637,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -646,7 +658,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -668,7 +680,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | motorspeed2      | Number  | Motor Speed 2                       |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | childlock        | Switch  | Child Lock                          |            |
@@ -688,7 +700,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -709,7 +721,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -730,7 +742,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -751,7 +763,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -891,7 +903,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -912,7 +924,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -1060,7 +1072,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -1081,7 +1093,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -1102,7 +1114,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -1390,6 +1402,102 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | motorspeed       | Number  | Motor Speed                         |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | childlock        | Switch  | Child Lock                          |            |
+
+### huayi.light.ari013 (<a name="huayi-light-ari013">huayi.light.ari013</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.aries (<a name="huayi-light-aries">huayi.light.aries</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.peg091 (<a name="huayi-light-peg091">huayi.light.peg091</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.peg093 (<a name="huayi-light-peg093">huayi.light.peg093</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.pis123 (<a name="huayi-light-pis123">huayi.light.pis123</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.pisces (<a name="huayi-light-pisces">huayi.light.pisces</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.tau023 (<a name="huayi-light-tau023">huayi.light.tau023</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.taurus (<a name="huayi-light-taurus">huayi.light.taurus</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.vir063 (<a name="huayi-light-vir063">huayi.light.vir063</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.virgo (<a name="huayi-light-virgo">huayi.light.virgo</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.wy (<a name="huayi-light-wy">huayi.light.wy</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### huayi.light.zw131 (<a name="huayi-light-zw131">huayi.light.zw131</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
 
 ### Xiaomi youpin Curtain Controller (Wi-Fi) (<a name="lumi-curtain-hagl05">lumi.curtain.hagl05</a>) Channels
 
@@ -3550,7 +3658,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3574,7 +3682,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3598,7 +3706,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3622,7 +3730,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3646,7 +3754,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3671,7 +3779,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
 Number motorspeed2 "Motor Speed 2" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed2"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
@@ -3694,7 +3802,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3718,7 +3826,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3742,7 +3850,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3766,7 +3874,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3915,7 +4023,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3939,7 +4047,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -4105,7 +4213,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -4129,7 +4237,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -4153,7 +4261,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -4492,6 +4600,138 @@ Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:
 Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
 Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
 Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+```
+
+### huayi.light.ari013 (huayi.light.ari013) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.ari013" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.aries (huayi.light.aries) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.aries" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.peg091 (huayi.light.peg091) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.peg091" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.peg093 (huayi.light.peg093) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.peg093" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.pis123 (huayi.light.pis123) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.pis123" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.pisces (huayi.light.pisces) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.pisces" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.tau023 (huayi.light.tau023) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.tau023" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.taurus (huayi.light.taurus) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.taurus" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.vir063 (huayi.light.vir063) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.vir063" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.virgo (huayi.light.virgo) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.virgo" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.wy (huayi.light.wy) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.wy" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### huayi.light.zw131 (huayi.light.zw131) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "huayi.light.zw131" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
 ### Xiaomi youpin Curtain Controller (Wi-Fi) (lumi.curtain.hagl05) item file lines

@@ -140,7 +140,7 @@
 			},
 			{
 				"property": "filter1_life",
-				"friendlyName": "Filter  Life",
+				"friendlyName": "Filter Life",
 				"channel": "filterlife",
 				"type": "Number",
 				"refresh": true,
