@@ -367,18 +367,18 @@
 		<state>
 			<options>
 				<option value="next_mode">Next Mode</option>
-				<option value="previous_mode">previous_mode</option>
-				<option value="mode_speed_up">mode_speed_up</option>
-				<option value="mode_speed_down">mode_speed_down</option>
-				<option value="set_white">set_white</option>
-				<option value="pair">pair</option>
-				<option value="unpair">unpair</option>
-				<option value="level_down">level_down</option>
-				<option value="level_up">level_up</option>
-				<option value="temperature_down">temperature_down</option>
-				<option value="temperature_up">temperature_up</option>
-				<option value="night_mode">night_mode</option>
-				<option value="favourite_white">favourite_white</option>
+				<option value="previous_mode">Previous Mode</option>
+				<option value="mode_speed_up">Mode Speed Up</option>
+				<option value="mode_speed_down">Mode Speed Down</option>
+				<option value="set_white">Set White</option>
+				<option value="pair">Pair</option>
+				<option value="unpair">Unpair</option>
+				<option value="level_down">Level Down</option>
+				<option value="level_up">Level Up</option>
+				<option value="temperature_down">Temperature Down</option>
+				<option value="temperature_up">Temperature Up</option>
+				<option value="night_mode">Night Mode</option>
+				<option value="favourite_white">Favourite White</option>
 			</options>
 		</state>
 	</channel-type>
