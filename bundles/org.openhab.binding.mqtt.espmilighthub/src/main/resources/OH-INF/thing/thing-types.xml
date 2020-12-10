@@ -366,7 +366,7 @@
 			globes support all commands.</description>
 		<state>
 			<options>
-				<option value="next_mode">next_mode</option>
+				<option value="next_mode">Next Mode</option>
 				<option value="previous_mode">previous_mode</option>
 				<option value="mode_speed_up">mode_speed_up</option>
 				<option value="mode_speed_down">mode_speed_down</option>
