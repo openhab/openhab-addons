@@ -34,7 +34,7 @@
 			<parameter name="whiteHue" type="integer" required="true" min="-1" max="360">
 				<label>White Hue</label>
 				<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set
-					to -1 to disable, 0 for Alexa, or 36 for Google Home.
+					to -1 to disable, 0 for Alexa, or 35 for Google Home.
 				</description>
 				<default>35</default>
 			</parameter>
@@ -110,7 +110,7 @@
 			<parameter name="whiteHue" type="integer" required="true" min="-1" max="360">
 				<label>White Hue</label>
 				<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set
-					to -1 to disable, 0 for Alexa, or 36 for Google Home.
+					to -1 to disable, 0 for Alexa, or 35 for Google Home.
 				</description>
 				<default>35</default>
 			</parameter>
@@ -246,7 +246,7 @@
 			<parameter name="whiteHue" type="integer" required="true" min="-1" max="360">
 				<label>White Hue</label>
 				<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set
-					to -1 to disable, 0 for Alexa, or 36 for Google Home.
+					to -1 to disable, 0 for Alexa, or 35 for Google Home.
 				</description>
 				<default>35</default>
 			</parameter>

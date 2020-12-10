@@ -96,7 +96,7 @@ mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' 
 | Parameter | Description | Required | Default |
 |-|-|-|-|
 | `defaultCommand` | When the send command button is pressed, if no selection is made from the command channel then use this. | Y | night_mode |
-| `whiteHue` | When both the `whiteHue` and `whiteSat` values are seen by the binding it will trigger the white LEDS. Set to -1 to disable, 0 for Alexa, or 36 for Google Home. | Y | 35 |
+| `whiteHue` | When both the `whiteHue` and `whiteSat` values are seen by the binding it will trigger the white LEDS. Set to -1 to disable, 0 for Alexa, or 35 for Google Home. | Y | 35 |
 | `whiteSat` | When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set to -1 to disable, 100 for Alexa or 32 for Google Home. | Y | 32 |
 | `favouriteWhite` | When one of the shortcuts triggers white mode, use this for the colour white instead of the default colour. | Y |200 |
 | `dimmedCT` | Traditional globes grow warmer the more they are dimmed. Set this to 370, or leave blank to disable. | N | blank |
@@ -125,10 +125,10 @@ You can reduce the packet repeats to speed up the response of this binding and t
 
 Settings for the radio tab found in the esp control panel using your browser, mine are:
 
-Packet repeats = 12 (if you only turn 1 globe on or off it uses this value)
-Packet repeat throttle threshold= 200
-Packet repeat throttle sensitivity = 0
-Packet repeat minimum = 8 (When turning multiple globes on and off it will use this value as it throttles the repeats back to reduce latency/delay between each globe)
++ Packet repeats = 12 (if you only turn 1 globe on or off it uses this value)
++ Packet repeat throttle threshold = 200
++ Packet repeat throttle sensitivity = 0
++ Packet repeat minimum = 8 (When turning multiple globes on and off it will use this value as it throttles the repeats back to reduce latency/delay between each globe)
 
 ## Important for Textual Configuration
 
