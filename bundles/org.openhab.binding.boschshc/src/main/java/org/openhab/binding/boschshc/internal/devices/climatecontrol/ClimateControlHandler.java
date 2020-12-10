@@ -100,6 +100,7 @@ public final class ClimateControlHandler extends BoschSHCHandler {
         }
 
         double setpointTemperature = celsiusType.doubleValue();
-        this.roomClimateControlService.setState(new RoomClimateControlServiceState(setpointTemperature));
+        this.updateServiceState(this.roomClimateControlService,
+                new RoomClimateControlServiceState(setpointTemperature));
     }
 }

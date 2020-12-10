@@ -28,7 +28,7 @@ import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchSta
 import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -95,9 +95,8 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
         logger.debug("Parsed power meter state of {}: energy {} - power {}", this.getBoschID(), state.energyConsumption,
                 state.energyConsumption);
 
-        updateState(CHANNEL_POWER_CONSUMPTION, new QuantityType<Power>(state.powerConsumption, SmartHomeUnits.WATT));
-        updateState(CHANNEL_ENERGY_CONSUMPTION,
-                new QuantityType<Energy>(state.energyConsumption, SmartHomeUnits.WATT_HOUR));
+        updateState(CHANNEL_POWER_CONSUMPTION, new QuantityType<Power>(state.powerConsumption, Units.WATT));
+        updateState(CHANNEL_ENERGY_CONSUMPTION, new QuantityType<Energy>(state.energyConsumption, Units.WATT_HOUR));
     }
 
     /**
@@ -113,7 +112,7 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
     private void updatePowerSwitchState(OnOffType command) {
         PowerSwitchServiceState state = new PowerSwitchServiceState();
         state.switchState = PowerSwitchState.valueOf(command.toFullString());
-        this.powerSwitchService.setState(state);
+        this.updateServiceState(this.powerSwitchService, state);
     }
 
     @Override

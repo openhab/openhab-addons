@@ -153,8 +153,11 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * Sets the state of the device with the specified id.
      * 
      * @param state State to set.
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
      */
-    public void setState(TState state) {
+    public void setState(TState state) throws InterruptedException, TimeoutException, ExecutionException {
         String deviceId = this.deviceId;
         if (deviceId == null) {
             return;

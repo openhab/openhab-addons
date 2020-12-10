@@ -65,7 +65,7 @@ public class BoschHttpClient extends HttpClient {
         return Base64.getEncoder().encodeToString(cert.getEncoded());
     }
 
-    public boolean isAccessPossible() {
+    public boolean isAccessPossible() throws InterruptedException {
         try {
             String url = this.createSmartHomeUrl("devices");
             Request request = this.createRequest(url, GET);
@@ -73,7 +73,7 @@ public class BoschHttpClient extends HttpClient {
             String content = contentResponse.getContentAsString();
             logger.debug("Access check response complete: {} - return code: {}", content, contentResponse.getStatus());
             return true;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("Access check response failed because of {}!", e.getMessage());
             return false;
         }

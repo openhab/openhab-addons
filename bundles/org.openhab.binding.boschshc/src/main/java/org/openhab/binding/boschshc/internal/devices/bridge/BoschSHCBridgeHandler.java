@@ -167,44 +167,52 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private void initialAccess(BoschHttpClient httpClient) {
         logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05", this, httpClient);
 
-        // check access and pair if necessary
-        if (!httpClient.isAccessPossible()) {
-            // update status already if access is not possible
-            this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE, "@text/offline.conf-error-pairing");
-            if (!httpClient.doPairing()) {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+        try {
+            // check access and pair if necessary
+            if (!httpClient.isAccessPossible()) {
+                // update status already if access is not possible
+                this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
                         "@text/offline.conf-error-pairing");
-            }
-            // restart initial access - needed also in case of successful pairing to check access again
-            scheduleInitialAccess(httpClient);
-        } else {
-            // print rooms and devices if things are reachable
-            boolean thingReachable = true;
-            thingReachable &= this.getRooms();
-            thingReachable &= this.getDevices();
-
-            if (thingReachable) {
-                this.updateStatus(ThingStatus.ONLINE);
-
-                // Start long polling
-                try {
-                    this.longPolling.start(httpClient);
-                } catch (LongPollingFailedException e) {
-                    this.handleLongPollFailure(e);
+                if (!httpClient.doPairing()) {
+                    this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                            "@text/offline.conf-error-pairing");
                 }
-            } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        "@text/offline.not-reachable");
-                // restart initial access
+                // restart initial access - needed also in case of successful pairing to check access again
                 scheduleInitialAccess(httpClient);
+            } else {
+                // print rooms and devices if things are reachable
+                boolean thingReachable = true;
+                thingReachable &= this.getRooms();
+                thingReachable &= this.getDevices();
+
+                if (thingReachable) {
+                    this.updateStatus(ThingStatus.ONLINE);
+
+                    // Start long polling
+                    try {
+                        this.longPolling.start(httpClient);
+                    } catch (LongPollingFailedException e) {
+                        this.handleLongPollFailure(e);
+                    }
+                } else {
+                    this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "@text/offline.not-reachable");
+                    // restart initial access
+                    scheduleInitialAccess(httpClient);
+                }
             }
+        } catch (InterruptedException e) {
+            this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
+                    String.format("Pairing was interrupted: %s", e.getMessage()));
         }
     }
 
     /**
      * Get a list of connected devices from the Smart-Home Controller
+     * 
+     * @throws InterruptedException
      */
-    private boolean getDevices() {
+    private boolean getDevices() throws InterruptedException {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             return false;
@@ -233,7 +241,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("HTTP request failed with exception {}", e.getMessage());
             return false;
         }
@@ -282,8 +290,10 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Get a list of rooms from the Smart-Home controller
+     * 
+     * @throws InterruptedException
      */
-    private boolean getRooms() {
+    private boolean getRooms() throws InterruptedException {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient != null) {
             try {
@@ -306,7 +316,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 }
 
                 return true;
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            } catch (TimeoutException | ExecutionException e) {
                 logger.warn("HTTP request failed: {}", e.getMessage());
                 return false;
             }
@@ -374,8 +384,12 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * @param state New state data to set for service
      * 
      * @return Response of request
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
      */
-    public <T extends BoschSHCServiceState> @Nullable Response putState(String deviceId, String serviceName, T state) {
+    public <T extends BoschSHCServiceState> @Nullable Response putState(String deviceId, String serviceName, T state)
+            throws InterruptedException, TimeoutException, ExecutionException {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             logger.warn("HttpClient not initialized");
@@ -387,12 +401,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         Request request = httpClient.createRequest(url, PUT, state);
 
         // Send request
-        try {
-            Response response = request.send();
-            return response;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("HTTP request failed: {}", e.getMessage());
-            return null;
-        }
+        Response response = request.send();
+        return response;
     }
 }

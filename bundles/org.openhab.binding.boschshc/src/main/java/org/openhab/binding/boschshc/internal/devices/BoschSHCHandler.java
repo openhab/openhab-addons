@@ -267,6 +267,25 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     /**
+     * Updates the state of a device service.
+     * Sets the status of the device to offline if setting the state fails.
+     * 
+     * @param <TService> Type of service.
+     * @param <TState> Type of service state.
+     * @param service Service to set state for.
+     * @param state State to set.
+     */
+    protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void updateServiceState(
+            TService service, TState state) {
+        try {
+            service.setState(state);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
+                    "Error when trying to update state for service %s: %s", service.getServiceName(), e.getMessage()));
+        }
+    }
+
+    /**
      * Registers a service of this device.
      * 
      * @param service Service which belongs to this device
