@@ -365,7 +365,7 @@
 		<description>Commands to control a valve set</description>
 		<channels>
 			<channel id="stop_until_next_task" typeId="gardenaCommand">
-				<label>Close all valves</label>
+				<label>Close All Valves</label>
 				<description>Immediately close all valves</description>
 			</channel>
 		</channels>
