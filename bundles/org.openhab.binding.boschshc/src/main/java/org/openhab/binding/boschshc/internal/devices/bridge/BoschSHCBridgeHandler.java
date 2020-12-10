@@ -122,8 +122,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
-
         // Cancel scheduled pairing.
         ScheduledFuture<?> scheduledPairing = this.scheduledPairing;
         if (scheduledPairing != null) {
@@ -143,6 +141,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             }
             this.httpClient = null;
         }
+
+        super.dispose();
     }
 
     @Override
