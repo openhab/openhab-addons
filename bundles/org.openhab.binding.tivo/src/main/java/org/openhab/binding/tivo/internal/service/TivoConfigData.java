@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tivo.internal.service;
 
+import java.util.Collections;
 import java.util.SortedSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,7 +36,7 @@ public class TivoConfigData {
     private boolean cfgPollChanges = false;
     private boolean cfgKeepConnOpen = false;
     private int cfgCmdWait = 0;
-    private @Nullable SortedSet<Integer> cfgIgnoreChannels = null;
+    private SortedSet<Integer> cfgIgnoreChannels = Collections.emptySortedSet();
     private String cfgIdentifier = "";
     private int cfgMinChannel = 1;
     private int cfgMaxChannel = 9999;
@@ -213,7 +214,7 @@ public class TivoConfigData {
      *
      * @return the cfgIgnoreChannels
      */
-    public @Nullable SortedSet<Integer> getCfgIgnoreChannels() {
+    public SortedSet<Integer> getCfgIgnoreChannels() {
         return cfgIgnoreChannels;
     }
 
@@ -223,7 +224,7 @@ public class TivoConfigData {
      * @param pChannel the channel
      * @return the cfgIgnoreChannels
      */
-    public @Nullable SortedSet<Integer> addCfgIgnoreChannels(Integer pChannel) {
+    public SortedSet<Integer> addCfgIgnoreChannels(Integer pChannel) {
         cfgIgnoreChannels.add(pChannel);
         return cfgIgnoreChannels;
     }

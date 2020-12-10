@@ -17,11 +17,14 @@ import static org.openhab.binding.tivo.TiVoBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tivo.internal.service.TivoConfigData;
 import org.openhab.binding.tivo.internal.service.TivoStatusData;
 import org.openhab.binding.tivo.internal.service.TivoStatusData.ConnectionStatus;
@@ -48,13 +51,14 @@ import org.slf4j.LoggerFactory;
  * @author Michael Lobstein - Updated for OH3
  */
 
+@NonNullByDefault
 public class TiVoHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TiVoHandler.class);
-    private TivoConfigData tivoConfigData = null;
+    private TivoConfigData tivoConfigData = new TivoConfigData();
     private ConnectionStatus lastConnectionStatus = ConnectionStatus.UNKNOWN;
-    private TivoStatusProvider tivoConnection = null;
-    private ScheduledFuture<?> refreshJob = null;
-    private ScheduledFuture<?> chScanJob = null;
+    private Optional<TivoStatusProvider> tivoConnection = Optional.empty();
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> chScanJob;
 
     /**
      * Instantiates a new TiVo handler.
@@ -77,20 +81,20 @@ public class TiVoHandler extends BaseThingHandler {
             return;
         }
 
-        if (tivoConnection == null) {
+        if (!tivoConnection.isPresent()) {
             return;
         }
-        TivoStatusData currentStatus = tivoConnection.getServiceStatus();
+        TivoStatusData currentStatus = tivoConnection.get().getServiceStatus();
 
-        String commandKeyword = null;
+        String commandKeyword = "";
         // Check to see if we are running a channel scan, if so 'disable' UI commands, else chaos ensues...
-        if (currentStatus != null && currentStatus.isChannelScanInProgress()) {
+        if (currentStatus.getConnectionStatus() != ConnectionStatus.INIT && currentStatus.isChannelScanInProgress()) {
             logger.warn("TiVo '{}' channel scan is in progress, command '{}' will be ignored.", getThing().getUID(),
                     channelUID + " " + command);
             return;
         }
 
-        String commandParameters = command.toString().toUpperCase();
+        String commandParameter = command.toString().toUpperCase();
         if (command instanceof RefreshType) {
             // Future enhancement, if we can come up with a sensible set of actions when a REFRESH is issued
             logger.info("TiVo '{}' skipping REFRESH command for channel: '{}'.", getThing().getUID(),
@@ -119,29 +123,34 @@ public class TiVoHandler extends BaseThingHandler {
                 commandKeyword = "KEYBOARD";
                 break;
         }
-        sendCommand(commandKeyword, commandParameters, currentStatus);
+        sendCommand(commandKeyword, commandParameter, currentStatus);
     }
 
-    private void sendCommand(String commandKeyword, String commandParameters, TivoStatusData currentStatus) {
+    private void sendCommand(String commandKeyword, String commandParameter, TivoStatusData currentStatus) {
+        if (!tivoConnection.isPresent()) {
+            return;
+        }
+
+        TivoStatusData deviceStatus = tivoConnection.get().getServiceStatus();
         TivoStatusData commandResult = null;
         logger.debug("handleCommand '{}' - {} found!", getThing().getUID(), commandKeyword);
         // Re-write command keyword if we are in STANDBY, as only IRCODE TIVO will wake the unit from
         // standby mode
-        if (tivoConnection.getServiceStatus().getConnectionStatus() == ConnectionStatus.STANDBY
-                && commandKeyword.contentEquals("TELEPORT") && commandParameters.contentEquals("TIVO")) {
-            commandKeyword = "IRCODE " + commandParameters;
+        if (deviceStatus.getConnectionStatus() == ConnectionStatus.STANDBY && commandKeyword.contentEquals("TELEPORT")
+                && commandParameter.contentEquals("TIVO")) {
+            commandKeyword = "IRCODE " + commandParameter;
             logger.debug("TiVo '{}' TELEPORT re-mapped to IRCODE as we are in standby: '{}'", getThing().getUID(),
                     commandKeyword);
         }
         // Execute command
         if (commandKeyword.contentEquals("FORCECH") || commandKeyword.contentEquals("SETCH")) {
-            commandResult = chChannelChange(commandKeyword, commandParameters);
+            commandResult = chChannelChange(commandKeyword, commandParameter);
         } else {
-            commandResult = tivoConnection.cmdTivoSend(commandKeyword + " " + commandParameters);
+            commandResult = tivoConnection.get().cmdTivoSend(commandKeyword + " " + commandParameter);
         }
 
         // Post processing
-        if (commandParameters.contentEquals("STANDBY")) {
+        if (commandResult != null && commandParameter.contentEquals("STANDBY")) {
             // Force thing state into STANDBY as this command does not return a status when executed
             commandResult.setConnectionStatus(ConnectionStatus.STANDBY);
         }
@@ -174,75 +183,73 @@ public class TiVoHandler extends BaseThingHandler {
         logger.debug("Initializing a TiVo '{}' with config options", getThing().getUID());
 
         Configuration conf = this.getConfig();
-        TivoConfigData tivoConfig = new TivoConfigData();
 
         Object value;
         value = conf.get(CONFIG_ADDRESS);
         if (value != null) {
-            tivoConfig.setCfgHost(String.valueOf(value));
+            tivoConfigData.setCfgHost(String.valueOf(value));
         }
 
         value = conf.get(CONFIG_PORT);
         if (value != null) {
-            tivoConfig.setCfgTcpPort(convertValueToInt(value));
+            tivoConfigData.setCfgTcpPort(convertValueToInt(value));
         }
 
         value = conf.get(CONFIG_CONNECTION_RETRY);
         if (value != null) {
-            tivoConfig.setCfgNumConnRetry(convertValueToInt(value));
+            tivoConfigData.setCfgNumConnRetry(convertValueToInt(value));
         }
 
         value = conf.get(CONFIG_POLL_INTERVAL);
         if (value != null) {
-            tivoConfig.setCfgPollInterval(convertValueToInt(value));
+            tivoConfigData.setCfgPollInterval(convertValueToInt(value));
         }
 
         value = conf.get(CONFIG_POLL_FOR_CHANGES);
         if (value != null) {
-            tivoConfig.setCfgPollChanges(convertValueToBoolean(value));
+            tivoConfigData.setCfgPollChanges(convertValueToBoolean(value));
         }
 
         value = conf.get(CONFIG_KEEP_CONNECTION_OPEN);
         if (value != null) {
-            tivoConfig.setCfgKeepConnOpen(convertValueToBoolean(value));
+            tivoConfigData.setCfgKeepConnOpen(convertValueToBoolean(value));
         }
 
         value = conf.get(CONFIG_CMD_WAIT_INTERVAL);
         if (value != null) {
-            tivoConfig.setCfgCmdWait(convertValueToInt(value));
+            tivoConfigData.setCfgCmdWait(convertValueToInt(value));
         }
 
         value = conf.get(CONFIG_CH_START);
         if (value != null) {
-            tivoConfig.setCfgMinChannel(convertValueToInt(value));
+            tivoConfigData.setCfgMinChannel(convertValueToInt(value));
         }
 
         value = conf.get(CONFIG_CH_END);
         if (value != null) {
-            tivoConfig.setCfgMaxChannel(convertValueToInt(value));
+            tivoConfigData.setCfgMaxChannel(convertValueToInt(value));
         }
 
         value = conf.get(CONFIG_IGNORE_SCAN);
         if (value != null) {
-            tivoConfig.setCfgIgnoreChannelScan(convertValueToBoolean(value));
+            tivoConfigData.setCfgIgnoreChannelScan(convertValueToBoolean(value));
         }
 
-        tivoConfig.setCfgIdentifier(String.valueOf(getThing().getUID()));
+        tivoConfigData.setCfgIdentifier(String.valueOf(getThing().getUID()));
 
         value = conf.get(CONFIG_IGNORE_CHANNELS);
         if (value != null) {
-            tivoConfig.setCfgIgnoreChannels(chParseIgnored(String.valueOf(conf.get(CONFIG_IGNORE_CHANNELS)),
-                    tivoConfig.getCfgMinChannel(), tivoConfig.getCfgMaxChannel()));
+            tivoConfigData.setCfgIgnoreChannels(chParseIgnored(String.valueOf(conf.get(CONFIG_IGNORE_CHANNELS)),
+                    tivoConfigData.getCfgMinChannel(), tivoConfigData.getCfgMaxChannel()));
         }
 
-        tivoConfigData = tivoConfig;
         logger.debug("TivoConfigData Obj: '{}'", tivoConfigData);
 
-        if (tivoConnection == null) {
-            tivoConnection = new TivoStatusProvider(tivoConfigData, this);
+        if (!tivoConnection.isPresent()) {
+            tivoConnection = Optional.of(new TivoStatusProvider(tivoConfigData, this));
         }
 
-        if (tivoConfig.doChannelScan()) {
+        if (tivoConfigData.doChannelScan()) {
             startChannelScan();
         } else {
             startPollStatus();
@@ -257,16 +264,20 @@ public class TiVoHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing of a TiVo handler for thing '{}'", getThing().getUID());
 
-        if (tivoConnection != null) {
-            tivoConnection.connTivoDisconnect(true);
+        if (tivoConnection.isPresent()) {
+            tivoConnection.get().connTivoDisconnect(true);
         }
 
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
-            logger.warn("'{}' - Polling cancelled by dispose()", getThing().getUID());
+            logger.debug("'{}' - Polling cancelled by dispose()", getThing().getUID());
             refreshJob.cancel(false);
+            this.refreshJob = null;
         }
+
+        ScheduledFuture<?> chScanJob = this.chScanJob;
         if (chScanJob != null) {
-            logger.warn("'{}' - Channel Scan cancelled by dispose()", getThing().getUID());
+            logger.debug("'{}' - Channel Scan cancelled by dispose()", getThing().getUID());
             chScanJob.cancel(false);
         }
 
@@ -279,7 +290,8 @@ public class TiVoHandler extends BaseThingHandler {
             }
         }
 
-        tivoConnection = null;
+        this.chScanJob = null;
+        // this.tivoConnection = null;
     }
 
     /**
@@ -293,7 +305,8 @@ public class TiVoHandler extends BaseThingHandler {
             public void run() {
                 logger.debug("startPollStatus '{}' @ rate of '{}' seconds", getThing().getUID(),
                         tivoConfigData.getCfgPollInterval());
-                tivoConnection.statusRefresh();
+                if (tivoConnection.isPresent())
+                    tivoConnection.get().statusRefresh();
             }
         };
 
@@ -308,7 +321,8 @@ public class TiVoHandler extends BaseThingHandler {
             logger.info("Status polling '{}' will start in '{}' seconds.", getThing().getUID(), firstStartDelay);
         } else {
             // Just update the status now
-            tivoConnection.statusRefresh();
+            if (tivoConnection.isPresent())
+                tivoConnection.get().statusRefresh();
         }
     }
 
@@ -323,17 +337,18 @@ public class TiVoHandler extends BaseThingHandler {
             public void run() {
                 int minCh = tivoConfigData.getCfgMinChannel();
                 int maxCh = tivoConfigData.getCfgMaxChannel();
-                TivoStatusData commandResult = tivoConnection.getServiceStatus();
+                TivoStatusData commandResult = tivoConnection.get().getServiceStatus();
 
                 updateState(CHANNEL_TIVO_STATUS, new StringType("CHANNEL SCAN IN PROGRESS"));
-                if (tivoConnection.connTivoConnect()) {
-                    tivoConnection.setChScan(true);
+                if (tivoConnection.get().connTivoConnect()) {
+                    tivoConnection.get().setChScan(true);
                     // change to first channel number, this forces the channel scan to run from Min# to Max#
-                    tivoConnection.cmdTivoSend("TELEPORT LIVETV");
-                    tivoConnection.cmdTivoSend("SETCH " + minCh);
+                    tivoConnection.get().cmdTivoSend("TELEPORT LIVETV");
+                    tivoConnection.get().cmdTivoSend("SETCH " + minCh);
 
                     for (int i = minCh + 1; i <= maxCh;) {
-                        if (chScanJob.isCancelled()) {
+                        ScheduledFuture<?> job = chScanJob;
+                        if (job == null || job.isCancelled()) {
                             // job has been cancelled, so we need to exit
                             logger.warn("Channel Scan for '{}' has been cancelled by configuraition parameter change",
                                     getThing().getUID());
@@ -357,7 +372,7 @@ public class TiVoHandler extends BaseThingHandler {
 
                     }
 
-                    tivoConnection.cmdTivoSend("SETCH " + minCh);
+                    tivoConnection.get().cmdTivoSend("SETCH " + minCh);
 
                 } else {
                     logger.warn("Channel Scan for '{}' failed - unable to connect (offline)", getThing().getUID());
@@ -366,7 +381,7 @@ public class TiVoHandler extends BaseThingHandler {
                 Configuration conf = editConfiguration();
                 conf.put(CONFIG_IGNORE_SCAN, false);
                 updateConfiguration(conf);
-                tivoConnection.setChScan(false);
+                tivoConnection.get().setChScan(false);
                 thingUpdated(getThing());
             }
         };
@@ -385,8 +400,17 @@ public class TiVoHandler extends BaseThingHandler {
      * @return int channel number.
      */
     private TivoStatusData chChannelChange(String commandKeyword, String command) {
+        int subChannel = -1;
         int chnl = tivoConfigData.getCfgMinChannel();
-        TivoStatusData tmpStatus = tivoConnection.getServiceStatus();
+
+        TivoStatusData tmpStatus = tivoConnection.get().getServiceStatus();
+
+        // If desired channel has decimal (OTA sub channels), parse the sub channel number
+        if (command.contains(".")) {
+            String[] channel = command.split("\\.");
+            command = channel[0];
+            subChannel = Integer.valueOf(channel[1]).intValue();
+        }
 
         // compare this to the current channel and determine the "direction" (up or down)
         int numTries = 10;
@@ -401,25 +425,25 @@ public class TiVoHandler extends BaseThingHandler {
                     chnl = chGetNext(chnl, tmpStatus);
                 }
 
-                String tmpCommand = commandKeyword + " " + chnl;
+                String tmpCommand = commandKeyword + " " + chnl + ((subChannel != -1) ? (" " + subChannel) : "");
                 logger.debug("chChannelChange '{}' sending command to tivo: '{}'", getThing().getUID(), tmpCommand);
 
                 // Attempt to execute the command on the tivo
-                tivoConnection.cmdTivoSend(tmpCommand);
+                tivoConnection.get().cmdTivoSend(tmpCommand);
                 try {
                     TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCfgCmdWait() * 2);
                 } catch (Exception e) {
                 }
-                tmpStatus = tivoConnection.getServiceStatus();
+                tmpStatus = tivoConnection.get().getServiceStatus();
 
                 // Check to see if the command was successful
-                if (tmpStatus != null && tmpStatus.isCmdOk()) {
+                if (tmpStatus.getConnectionStatus() != ConnectionStatus.INIT && tmpStatus.isCmdOk()) {
                     numTries = 0;
                     if (tmpStatus.getMsg().contains("CH_STATUS")) {
                         return tmpStatus;
                     }
 
-                } else if (tmpStatus != null) {
+                } else if (tmpStatus.getConnectionStatus() != ConnectionStatus.INIT) {
                     logger.warn("TiVo'{}' set channel command failed '{}' with msg '{}'", getThing().getUID(),
                             tmpCommand, tmpStatus.getMsg());
                     switch (tmpStatus.getMsg()) {
@@ -484,7 +508,7 @@ public class TiVoHandler extends BaseThingHandler {
                 // Determine if we have a range with a '-' in it.
                 if (tmp.get(i).matches(".+-.+")) {
                     List<String> sTmp = Arrays.asList(tmp.get(i).split("-"));
-                    if (sTmp != null && sTmp.size() == 2) {
+                    if (sTmp.size() == 2) {
                         Double ds = Double.valueOf(sTmp.get(0));
                         Integer is = Integer.valueOf(ds.intValue());
 
@@ -608,17 +632,27 @@ public class TiVoHandler extends BaseThingHandler {
      * @param tivoStatusData the {@link TivoStatusData}
      */
     public void updateTivoStatus(TivoStatusData oldStatusData, TivoStatusData newStatusData) {
-        if (newStatusData != null && !tivoConfigData.doChannelScan()) {
+        if (newStatusData.getConnectionStatus() != ConnectionStatus.INIT && !tivoConfigData.doChannelScan()) {
             // Update Item Status
             if (newStatusData.getPubToUI()) {
-                if (oldStatusData == null || !(oldStatusData.getMsg().contentEquals(newStatusData.getMsg()))) {
+                if (oldStatusData.getConnectionStatus() == ConnectionStatus.INIT
+                        || !(oldStatusData.getMsg().contentEquals(newStatusData.getMsg()))) {
                     updateState(CHANNEL_TIVO_STATUS, new StringType(newStatusData.getMsg()));
                 }
                 // If the cmd was successful, publish the channel channel numbers
                 if (newStatusData.isCmdOk() && newStatusData.getChannelNum() != -1) {
-                    if (oldStatusData == null || oldStatusData.getChannelNum() != newStatusData.getChannelNum()) {
-                        updateState(CHANNEL_TIVO_CHANNEL_FORCE, new DecimalType(newStatusData.getChannelNum()));
-                        updateState(CHANNEL_TIVO_CHANNEL_SET, new DecimalType(newStatusData.getChannelNum()));
+                    if (oldStatusData.getConnectionStatus() == ConnectionStatus.INIT
+                            || oldStatusData.getChannelNum() != newStatusData.getChannelNum()
+                            || oldStatusData.getSubChannelNum() != newStatusData.getSubChannelNum()) {
+                        if (newStatusData.getSubChannelNum() == -1) {
+                            updateState(CHANNEL_TIVO_CHANNEL_FORCE, new DecimalType(newStatusData.getChannelNum()));
+                            updateState(CHANNEL_TIVO_CHANNEL_SET, new DecimalType(newStatusData.getChannelNum()));
+                        } else {
+                            updateState(CHANNEL_TIVO_CHANNEL_FORCE, new DecimalType(
+                                    newStatusData.getChannelNum() + "." + newStatusData.getSubChannelNum()));
+                            updateState(CHANNEL_TIVO_CHANNEL_SET, new DecimalType(
+                                    newStatusData.getChannelNum() + "." + newStatusData.getSubChannelNum()));
+                        }
                     }
                 }
 
@@ -626,11 +660,11 @@ public class TiVoHandler extends BaseThingHandler {
                 if (isLinked(CHANNEL_TIVO_STATUS) || isLinked(CHANNEL_TIVO_CHANNEL_FORCE)
                         || isLinked(CHANNEL_TIVO_CHANNEL_SET)) {
                     newStatusData.setPubToUI(false);
-                    tivoConnection.setServiceStatus(newStatusData);
+                    tivoConnection.get().setServiceStatus(newStatusData);
                 }
             } else {
                 if (newStatusData.getMsg().contentEquals("COMMAND_TIMEOUT")) {
-                    tivoConnection.connTivoDisconnect(false);
+                    tivoConnection.get().connTivoDisconnect(false);
                 }
             }
             // Update Thing status
@@ -649,6 +683,8 @@ public class TiVoHandler extends BaseThingHandler {
                         break;
                     case UNKNOWN:
                         updateStatus(ThingStatus.INITIALIZING);
+                        break;
+                    case INIT:
                         break;
                 }
                 lastConnectionStatus = newStatusData.getConnectionStatus();
@@ -689,7 +725,7 @@ public class TiVoHandler extends BaseThingHandler {
      */
     private int chGetNext(int pChannel, TivoStatusData tivoStatusData) {
         if (chCheckIgnored(pChannel)) {
-            if (tivoStatusData != null && tivoStatusData.isCmdOk()) {
+            if (tivoStatusData.getConnectionStatus() != ConnectionStatus.INIT && tivoStatusData.isCmdOk()) {
                 // retry logic is allowed otherwise we only do the logic below once.
 
                 if (tivoStatusData.getChannelNum() > pChannel) {
@@ -712,7 +748,7 @@ public class TiVoHandler extends BaseThingHandler {
                     return -1;
                 }
 
-            } else if (tivoStatusData != null) {
+            } else if (tivoStatusData.getConnectionStatus() != ConnectionStatus.INIT) {
                 pChannel++;
             }
         }
@@ -728,7 +764,7 @@ public class TiVoHandler extends BaseThingHandler {
      * @return true= channel is contained within the list, false= channel number is not contained within the list.
      */
     private boolean chCheckIgnored(int pChannel) {
-        if (tivoConfigData.getCfgIgnoreChannels() != null && tivoConfigData.getCfgIgnoreChannels().contains(pChannel)) {
+        if (tivoConfigData.getCfgIgnoreChannels().contains(pChannel)) {
             return true;
         } else {
             return false;

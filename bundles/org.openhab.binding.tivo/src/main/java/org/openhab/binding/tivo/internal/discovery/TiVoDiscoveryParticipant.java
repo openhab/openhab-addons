@@ -20,6 +20,8 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tivo.TiVoBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Black (AndyXMB) - minor updates.
  * @author Michael Lobstein - Updated for OH3
  */
+@NonNullByDefault
 @Component(immediate = true, configurationPid = "discovery.tivo")
 public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private Logger logger = LoggerFactory.getLogger(TiVoDiscoveryParticipant.class);
@@ -54,7 +57,7 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public DiscoveryResult createResult(ServiceInfo service) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         logger.debug("TiVo Discover createResult");
         DiscoveryResult result = null;
 
@@ -87,7 +90,7 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
      * @see org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant#getThingUID(javax.jmdns.ServiceInfo)
      */
     @Override
-    public ThingUID getThingUID(ServiceInfo service) {
+    public @Nullable ThingUID getThingUID(ServiceInfo service) {
         logger.debug("TiVo Discover getThingUID");
         logger.trace("ServiceInfo: {}", service);
         if (service.getType() != null) {
@@ -116,7 +119,7 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
      * @return InetAddress the IP address
      *
      */
-    private InetAddress getIpAddress(ServiceInfo service) {
+    private @Nullable InetAddress getIpAddress(ServiceInfo service) {
         InetAddress address = null;
         for (InetAddress addr : service.getInet4Addresses()) {
             return addr;

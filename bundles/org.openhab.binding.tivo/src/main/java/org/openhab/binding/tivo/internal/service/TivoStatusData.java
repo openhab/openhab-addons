@@ -40,22 +40,28 @@ public class TivoStatusData {
     private boolean cmdOk = false;
     private Date time = new Date();
     private int channelNum = -1;
+    private int subChannelNum = -1;
     private String msg = "NO STATUS QUERIED YET";
     private boolean pubToUI = true;
     private boolean chScan = false;
-    private ConnectionStatus connectionStatus = ConnectionStatus.UNKNOWN;
+    private ConnectionStatus connectionStatus = ConnectionStatus.INIT;
 
-    public TivoStatusData(boolean cmdOk, int channelNum, String msg, boolean pubToUI,
+    public TivoStatusData() {
+    }
+
+    public TivoStatusData(boolean cmdOk, int channelNum, int subChannelNum, String msg, boolean pubToUI,
             ConnectionStatus connectionStatus) {
         this.cmdOk = cmdOk;
         this.time = new Date();
         this.channelNum = channelNum;
+        this.subChannelNum = subChannelNum;
         this.msg = msg;
         this.pubToUI = pubToUI;
         this.connectionStatus = connectionStatus;
     }
 
     public enum ConnectionStatus {
+        INIT,
         UNKNOWN,
         OFFLINE,
         STANDBY,
@@ -77,8 +83,9 @@ public class TivoStatusData {
      */
     @Override
     public String toString() {
-        return "TivoStatusData [cmdOk=" + cmdOk + ", time=" + time + ", channelNum=" + channelNum + ", msg=" + msg
-                + ", pubToUI=" + pubToUI + ", chScan=" + chScan + ", connectionStatus=" + connectionStatus + "]";
+        return "TivoStatusData [cmdOk=" + cmdOk + ", time=" + time + ", channelNum=" + channelNum + ", subChannelNum="
+                + subChannelNum + ", msg=" + msg + ", pubToUI=" + pubToUI + ", chScan=" + chScan + ", connectionStatus="
+                + connectionStatus + "]";
     }
 
     /**
@@ -115,6 +122,26 @@ public class TivoStatusData {
      */
     public void setChannelNum(int channelNum) {
         this.channelNum = channelNum;
+    }
+
+    /**
+     * {@link getSubChannelNum} gets the sub channel number, -1 indicates no sub channel received. Valid channel range
+     * 1-9999.
+     *
+     * @return the sub channel number
+     */
+    public int getSubChannelNum() {
+        return subChannelNum;
+    }
+
+    /**
+     * {@link setSubChannelNum} sets the sub channel number, -1 indicates no sub channel received. Valid channel range
+     * 1-9999.
+     *
+     * @param subChannelNum the new sub channel number
+     */
+    public void setSubChannelNum(int subChannelNum) {
+        this.subChannelNum = subChannelNum;
     }
 
     /**
