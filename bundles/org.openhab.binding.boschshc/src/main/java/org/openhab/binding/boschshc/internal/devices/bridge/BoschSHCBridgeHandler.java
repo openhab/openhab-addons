@@ -111,7 +111,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             httpClient.start();
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not create http connection to controller");
+                    String.format("Could not create http connection to controller: %s", e.getMessage()));
             return;
         }
 
