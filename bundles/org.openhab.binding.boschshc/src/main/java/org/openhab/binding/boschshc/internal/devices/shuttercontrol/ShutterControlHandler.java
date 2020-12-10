@@ -14,7 +14,7 @@ package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_LEVEL;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
@@ -60,7 +60,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
     protected void initializeServices() throws BoschSHCException {
         super.initializeServices();
 
-        this.registerService(this.shutterControlService, this::updateChannels, Arrays.asList(CHANNEL_LEVEL));
+        this.registerService(this.shutterControlService, this::updateChannels, List.of(CHANNEL_LEVEL));
     }
 
     @Override

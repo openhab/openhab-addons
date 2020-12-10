@@ -14,7 +14,7 @@ package org.openhab.binding.boschshc.internal.devices.windowcontact;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_CONTACT;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
@@ -40,7 +40,7 @@ public class WindowContactHandler extends BoschSHCHandler {
 
     @Override
     protected void initializeServices() throws BoschSHCException {
-        this.createService(ShutterContactService::new, this::updateChannels, Arrays.asList(CHANNEL_CONTACT));
+        this.createService(ShutterContactService::new, this::updateChannels, List.of(CHANNEL_CONTACT));
     }
 
     private void updateChannels(ShutterContactServiceState state) {

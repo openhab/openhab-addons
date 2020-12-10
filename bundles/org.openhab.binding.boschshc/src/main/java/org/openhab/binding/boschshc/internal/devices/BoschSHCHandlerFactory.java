@@ -21,8 +21,8 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_TWINGUARD;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -65,7 +65,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private static final Collection<ThingTypeHandlerMapping> SUPPORTED_THING_TYPES = Arrays.asList(
+    private static final Collection<ThingTypeHandlerMapping> SUPPORTED_THING_TYPES = List.of(
             new ThingTypeHandlerMapping(THING_TYPE_SHC, thing -> new BoschSHCBridgeHandler((Bridge) thing)),
             new ThingTypeHandlerMapping(THING_TYPE_INWALL_SWITCH, BoschInWallSwitchHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_TWINGUARD, BoschTwinguardHandler::new),

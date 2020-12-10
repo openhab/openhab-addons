@@ -15,7 +15,7 @@ package org.openhab.binding.boschshc.internal.devices.thermostat;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_VALVE_TAPPET_POSITION;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
@@ -40,8 +40,8 @@ public final class ThermostatHandler extends BoschSHCHandler {
 
     @Override
     protected void initializeServices() throws BoschSHCException {
-        this.createService(TemperatureLevelService::new, this::updateChannels, Arrays.asList(CHANNEL_TEMPERATURE));
-        this.createService(ValveTappetService::new, this::updateChannels, Arrays.asList(CHANNEL_VALVE_TAPPET_POSITION));
+        this.createService(TemperatureLevelService::new, this::updateChannels, List.of(CHANNEL_TEMPERATURE));
+        this.createService(ValveTappetService::new, this::updateChannels, List.of(CHANNEL_VALVE_TAPPET_POSITION));
     }
 
     /**

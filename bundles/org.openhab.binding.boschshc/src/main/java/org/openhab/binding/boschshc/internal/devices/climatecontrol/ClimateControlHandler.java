@@ -15,7 +15,7 @@ package org.openhab.binding.boschshc.internal.devices.climatecontrol;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_SETPOINT_TEMPERATURE;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
@@ -52,9 +52,9 @@ public final class ClimateControlHandler extends BoschSHCHandler {
 
     @Override
     protected void initializeServices() throws BoschSHCException {
-        super.createService(TemperatureLevelService::new, this::updateChannels, Arrays.asList(CHANNEL_TEMPERATURE));
+        super.createService(TemperatureLevelService::new, this::updateChannels, List.of(CHANNEL_TEMPERATURE));
         super.registerService(this.roomClimateControlService, this::updateChannels,
-                Arrays.asList(CHANNEL_SETPOINT_TEMPERATURE));
+                List.of(CHANNEL_SETPOINT_TEMPERATURE));
     }
 
     @Override

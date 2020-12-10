@@ -14,7 +14,7 @@ package org.openhab.binding.boschshc.internal.devices.inwallswitch;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
-import java.util.Arrays;
+import java.util.List;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
@@ -56,7 +56,7 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
     protected void initializeServices() throws BoschSHCException {
         super.initializeServices();
 
-        this.registerService(this.powerSwitchService, this::updateChannels, Arrays.asList(CHANNEL_POWER_SWITCH));
+        this.registerService(this.powerSwitchService, this::updateChannels, List.of(CHANNEL_POWER_SWITCH));
     }
 
     @Override
