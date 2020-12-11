@@ -77,6 +77,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
 
     private Set<Device> devicesToNotify = Collections.synchronizedSet(new HashSet<>());
     private @Nullable ScheduledFuture<?> deviceToNotifyFuture;
+    private @Nullable ScheduledFuture<?> newDeviceFuture;
 
     public GardenaSmartImpl(String id, GardenaConfig config, GardenaSmartEventListener eventListener,
             ScheduledExecutorService scheduler, HttpClientFactory httpClientFactory, WebSocketFactory webSocketFactory)
@@ -264,6 +265,12 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
      */
     public void dispose() {
         logger.debug("Disposing GardenaSmart");
+
+        final ScheduledFuture<?> newDeviceFuture = this.newDeviceFuture;
+        if (newDeviceFuture != null) {
+            newDeviceFuture.cancel(true);
+        }
+
         final ScheduledFuture<?> deviceToNotifyFuture = this.deviceToNotifyFuture;
         if (deviceToNotifyFuture != null) {
             deviceToNotifyFuture.cancel(true);
@@ -306,7 +313,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             allDevicesById.put(device.id, device);
 
             if (initialized) {
-                scheduler.schedule(() -> {
+                newDeviceFuture = scheduler.schedule(() -> {
                     Device newDevice = allDevicesById.get(deviceId);
                     if (newDevice != null) {
                         newDevice.evaluateDeviceType();
