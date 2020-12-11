@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mielecloud.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -46,6 +48,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -348,5 +351,10 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         getThing().getThings().stream().filter(thing -> deviceIdentifier.equals(thing.getUID().getId()))
                 .map(Thing::getHandler).filter(handler -> handler instanceof AbstractMieleThingHandler)
                 .map(handler -> (AbstractMieleThingHandler) handler).forEach(action);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(ThingDiscoveryService.class);
     }
 }

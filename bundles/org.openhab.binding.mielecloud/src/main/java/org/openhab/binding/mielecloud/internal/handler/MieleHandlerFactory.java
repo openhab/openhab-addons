@@ -14,9 +14,6 @@ package org.openhab.binding.mielecloud.internal.handler;
 
 import static org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
@@ -24,24 +21,20 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
-import org.openhab.binding.mielecloud.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.mielecloud.internal.webservice.DefaultMieleWebserviceFactory;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebserviceConfiguration;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebserviceFactory;
 import org.openhab.binding.mielecloud.internal.webservice.language.CombiningLanguageProvider;
 import org.openhab.binding.mielecloud.internal.webservice.language.OpenHabLanguageProvider;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -69,8 +62,6 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     private final LocaleProvider localeProvider;
 
     private final MieleWebserviceFactory webserviceFactory = new DefaultMieleWebserviceFactory();
-
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
     public MieleHandlerFactory(@Reference HttpClientFactory httpClientFactory,
@@ -127,53 +118,10 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
                         .withLanguageProvider(languageProvider).withTokenRefresher(tokenRefresher)
                         .withServiceHandle(thing.getUID().getAsString()).withScheduler(scheduler).build());
 
-        MieleBridgeHandler bridgeHandler = new MieleBridgeHandler((Bridge) thing, webserviceFactoryFunction,
-                tokenRefresher, languageProvider);
-        registerThingDiscoveryService(bridgeHandler);
-        return bridgeHandler;
+        return new MieleBridgeHandler((Bridge) thing, webserviceFactoryFunction, tokenRefresher, languageProvider);
     }
 
     private CombiningLanguageProvider getLanguageProvider() {
         return new CombiningLanguageProvider(null, new OpenHabLanguageProvider(localeProvider));
-    }
-
-    private synchronized void registerThingDiscoveryService(MieleBridgeHandler bridgeHandler) {
-        ThingDiscoveryService discoveryService = new ThingDiscoveryService(bridgeHandler);
-        discoveryService.activate();
-
-        ServiceRegistration<?> registration = bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>());
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), registration);
-
-        logger.debug("OSGi service [{}] for {} registered.", discoveryService.getClass().getName(),
-                DiscoveryService.class.getName());
-    }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-        if (!(thingHandler instanceof MieleBridgeHandler)) {
-            return;
-        }
-
-        unregisterDiscoveryService(thingHandler.getThing().getUID());
-    }
-
-    private synchronized void unregisterDiscoveryService(ThingUID uid) {
-        ServiceRegistration<?> registration = discoveryServiceRegs.remove(uid);
-        if (registration != null) {
-            ThingDiscoveryService service = (ThingDiscoveryService) bundleContext
-                    .getService(registration.getReference());
-            registration.unregister();
-            if (service != null) {
-                service.deactivate();
-            }
-        }
-    }
-
-    private <T> T requireNonNull(@Nullable T obj, String objName) {
-        if (obj == null) {
-            throw new IllegalArgumentException(objName + " must not be null");
-        }
-        return obj;
     }
 }

@@ -27,13 +27,11 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.auth.OpenHabOAuthTokenRefresher;
-import org.openhab.binding.mielecloud.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
@@ -131,59 +129,6 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
 
         MieleBridgeHandler handler = (MieleBridgeHandler) bridge.getHandler();
         assertNotNull(handler);
-    }
-
-    @Test
-    public void whenTheBridgeHandlerIsCreatedThenTheThingDiscoveryServiceIsRegisteredAndActivated() throws Exception {
-        // when:
-        Bridge bridge = BridgeBuilder
-                .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
-                        MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
-                .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
-        assertNotNull(bridge);
-
-        getThingRegistry().add(bridge);
-
-        // then:
-        waitForAssert(() -> {
-            assertNotNull(bridge.getHandler());
-        });
-
-        ThingDiscoveryService service = getService(DiscoveryService.class, ThingDiscoveryService.class);
-        assertNotNull(service);
-        assertTrue(((Boolean) getPrivate(Objects.requireNonNull(service), "discoveringDevices")).booleanValue());
-    }
-
-    @Test
-    public void whenTheBridgeHandlerIsRemovedThenTheThingDiscoveryServiceIsUnregisteredAndDeactivated()
-            throws Exception {
-        Bridge bridge = BridgeBuilder
-                .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
-                        MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
-                .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
-        assertNotNull(bridge);
-
-        getThingRegistry().add(bridge);
-
-        waitForAssert(() -> {
-            assertNotNull(bridge.getHandler());
-        });
-
-        MieleHandlerFactory factory = getService(ThingHandlerFactory.class, MieleHandlerFactory.class);
-        assertNotNull(factory);
-
-        ThingHandler handler = bridge.getHandler();
-        assertNotNull(handler);
-
-        ThingDiscoveryService service = getService(DiscoveryService.class, ThingDiscoveryService.class);
-        assertNotNull(service);
-
-        // when:
-        factory.removeHandler(Objects.requireNonNull(handler));
-
-        // then:
-        assertNull(getService(DiscoveryService.class, ThingDiscoveryService.class));
-        assertFalse(((Boolean) getPrivate(Objects.requireNonNull(service), "discoveringDevices")).booleanValue());
     }
 
     @Test

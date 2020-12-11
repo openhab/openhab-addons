@@ -18,15 +18,19 @@ import static org.openhab.binding.mielecloud.internal.handler.MieleHandlerFactor
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mielecloud.internal.handler.MieleBridgeHandler;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +41,11 @@ import org.slf4j.LoggerFactory;
  * @author Björn Lange - Do not directly listen to webservice events
  */
 @NonNullByDefault
-public class ThingDiscoveryService extends AbstractDiscoveryService {
+public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
     private static final int BACKGROUND_DISCOVERY_TIMEOUT_IN_SECONDS = 5;
 
-    private final MieleBridgeHandler bridgeHandler;
+    @Nullable
+    private MieleBridgeHandler bridgeHandler;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -48,19 +53,26 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Creates a new {@link ThingDiscoveryService}.
-     *
-     * @param bridgeHandler {@link MieleBridgeHandler} of the bridge allowing access to the discovered devices.
      */
-    public ThingDiscoveryService(MieleBridgeHandler bridgeHandler) {
+    public ThingDiscoveryService() {
         super(SUPPORTED_THING_TYPES, BACKGROUND_DISCOVERY_TIMEOUT_IN_SECONDS);
-        this.bridgeHandler = bridgeHandler;
-        this.bridgeHandler.setDiscoveryService(this);
+    }
+
+    @Nullable
+    private ThingUID getBridgeUid() {
+        var bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler == null) {
+            return null;
+        } else {
+            return bridgeHandler.getThing().getUID();
+        }
     }
 
     @Override
     protected void startScan() {
     }
 
+    @Override
     public void activate() {
         startBackgroundDiscovery();
     }
@@ -68,7 +80,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
     @Override
     public void deactivate() {
         stopBackgroundDiscovery();
-        removeOlderResults(System.currentTimeMillis());
+        removeOlderResults(System.currentTimeMillis(), getBridgeUid());
     }
 
     /**
@@ -155,7 +167,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         logger.debug("Starting background discovery");
 
-        removeOlderResults(System.currentTimeMillis());
+        removeOlderResults(System.currentTimeMillis(), getBridgeUid());
         discoveringDevices = true;
     }
 
@@ -169,7 +181,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
      * Invoked when a device is removed from the Miele cloud.
      */
     public void onDeviceRemoved(String deviceIdentifier) {
-        removeOlderResults(System.currentTimeMillis());
+        removeOlderResults(System.currentTimeMillis(), getBridgeUid());
     }
 
     private String getLabel(DeviceState deviceState) {
@@ -179,5 +191,19 @@ public class ThingDiscoveryService extends AbstractDiscoveryService {
         }
 
         return ThingInformationExtractor.getDeviceAndTechType(deviceState).orElse("Miele Device");
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof MieleBridgeHandler) {
+            var bridgeHandler = (MieleBridgeHandler) handler;
+            bridgeHandler.setDiscoveryService(this);
+            this.bridgeHandler = bridgeHandler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 }
