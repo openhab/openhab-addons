@@ -49,7 +49,7 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
             byte logEvent = message[3 + 2 * i];
             int eventType = logEvent & 0x0000007F;
             String logEventStr = PowermaxMessageConstants.getSystemEventString(eventType);
-            String logUserStr = PowermaxMessageConstants.getZoneOrUserString(eventZone);
+            String logUserStr = PowermaxMessageConstants.getZoneOrUserString(eventZone & 0x000000FF);
             updatedState.setPanelStatus(logEventStr + " (" + logUserStr + ")");
 
             addDebugInfo("Event " + i + " zone code", eventZone, logUserStr);

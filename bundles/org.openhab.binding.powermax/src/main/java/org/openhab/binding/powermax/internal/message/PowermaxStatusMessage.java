@@ -78,7 +78,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
 
         byte[] message = getRawData();
         byte eventType = message[3];
-        String eventTypeStr = PowermaxMessageConstants.getMessageTypeString(eventType);
+        String eventTypeStr = PowermaxMessageConstants.getMessageTypeString(eventType & 0x000000FF);
 
         addDebugInfo("Event type", eventType, eventTypeStr);
 
@@ -106,8 +106,8 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             byte zoneEType = message[7];
             int x10Status = (message[10] & 0x000000FF) | ((message[11] << 8) & 0x0000FF00);
 
-            String eventZoneStr = PowermaxMessageConstants.getZoneOrUserString(eventZone);
-            String zoneETypeStr = PowermaxMessageConstants.getZoneEventString(zoneEType);
+            String eventZoneStr = PowermaxMessageConstants.getZoneOrUserString(eventZone & 0x000000FF);
+            String zoneETypeStr = PowermaxMessageConstants.getZoneEventString(zoneEType & 0x000000FF);
 
             if (zoneEType == 0x03) {
                 updatedState.setSensorTripped(eventZone, Boolean.TRUE);

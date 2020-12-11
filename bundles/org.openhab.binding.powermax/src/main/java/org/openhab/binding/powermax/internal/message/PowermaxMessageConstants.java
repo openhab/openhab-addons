@@ -23,7 +23,7 @@ public class PowermaxMessageConstants {
     }
 
     private static String getValue(String[] table, int index) {
-        return (index < table.length ? table[index] : "UNKNOWN");
+        return (((index >= 0) && (index < table.length)) ? table[index] : "UNKNOWN");
     }
 
     /**
