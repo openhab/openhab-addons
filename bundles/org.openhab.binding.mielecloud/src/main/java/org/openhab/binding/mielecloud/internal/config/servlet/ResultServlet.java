@@ -76,8 +76,7 @@ public final class ResultServlet extends AbstractRedirectionServlet {
                 authorizationHandler
                         .completeAuthorization(request.getRequestURL().toString() + "?" + request.getQueryString());
             } catch (OAuthException e) {
-                logger.warn("Failed to complete authorization");
-                logger.debug("Exception details:", e);
+                logger.warn("Failed to complete authorization.", e);
                 return "/mielecloud/failure?" + FailureServlet.FAILED_TO_COMPLETE_AUTHORIZATION_PARAMETER_NAME
                         + "=true";
             }

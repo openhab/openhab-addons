@@ -98,8 +98,7 @@ public final class ForwardToLoginServlet extends AbstractRedirectionServlet {
                     "Failed to create authorization URL: There was no ongoing authorization although we just started one.");
             return getErrorRedirectionUrl(PairAccountServlet.NO_ONGOING_AUTHORIZATION_IN_STEP2_PARAMETER_NAME);
         } catch (OAuthException e) {
-            logger.warn("Failed to create authorization URL: {}", e.getMessage());
-            logger.debug("Exception details:", e);
+            logger.warn("Failed to create authorization URL.", e);
             return getErrorRedirectionUrl(PairAccountServlet.FAILED_TO_DERIVE_REDIRECT_URL_PARAMETER_NAME);
         }
     }

@@ -182,31 +182,23 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
     }
 
     protected void triggerProcessAction(final ProcessAction processAction) {
-        performPutAction(() -> getWebservice().putProcessAction(getDeviceId(), processAction), t -> {
-            logger.warn("Failed to perform '{}' operation for device '{}'.", processAction, getDeviceId());
-            logger.debug("Exception details:", t);
-        });
+        performPutAction(() -> getWebservice().putProcessAction(getDeviceId(), processAction),
+                t -> logger.warn("Failed to perform '{}' operation for device '{}'.", processAction, getDeviceId(), t));
     }
 
     protected void triggerLight(final boolean on) {
-        performPutAction(() -> getWebservice().putLight(getDeviceId(), on), t -> {
-            logger.warn("Failed to set light state to '{}' for device '{}'.", on, getDeviceId());
-            logger.debug("Exception details:", t);
-        });
+        performPutAction(() -> getWebservice().putLight(getDeviceId(), on),
+                t -> logger.warn("Failed to set light state to '{}' for device '{}'.", on, getDeviceId(), t));
     }
 
     protected void triggerPowerState(final boolean on) {
-        performPutAction(() -> getWebservice().putPowerState(getDeviceId(), on), t -> {
-            logger.warn("Failed to set the power state to '{}' for device '{}'.", on, getDeviceId());
-            logger.debug("Exception details:", t);
-        });
+        performPutAction(() -> getWebservice().putPowerState(getDeviceId(), on),
+                t -> logger.warn("Failed to set the power state to '{}' for device '{}'.", on, getDeviceId(), t));
     }
 
     protected void triggerProgram(final long programId) {
-        performPutAction(() -> getWebservice().putProgram(getDeviceId(), programId), t -> {
-            logger.warn("Failed to activate program with ID '{}' for device '{}'.", programId, getDeviceId());
-            logger.debug("Exception details:", t);
-        });
+        performPutAction(() -> getWebservice().putProgram(getDeviceId(), programId), t -> logger
+                .warn("Failed to activate program with ID '{}' for device '{}'.", programId, getDeviceId(), t));
     }
 
     private void performPutAction(Runnable action, Consumer<Exception> onError) {

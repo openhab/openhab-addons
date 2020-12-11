@@ -122,8 +122,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         try {
             webService = webserviceFactory.get();
         } catch (MieleWebserviceInitializationException e) {
-            logger.warn("Failed to initialize webservice: {}", e.getMessage());
-            logger.debug("Exception details:", e);
+            logger.warn("Failed to initialize webservice.", e);
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
@@ -131,14 +130,13 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         try {
             tokenRefresher.setRefreshListener(this, getOAuthServiceHandle());
         } catch (OAuthException e) {
-            logger.warn("Could not initialize Miele Cloud bridge: {}", e.getMessage());
-            logger.debug("Exception details:", e);
+            logger.debug("Could not initialize Miele Cloud bridge.", e);
             logger.warn("The account has not been authorized. Please consult the documentation on how to do that.");
             logger.warn("If using things-files reload your thing configuration afterwards.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED);
-            // When the authorization takes place handleConfigurationUpdate() will be called which triggers a new
-            // initialization. Therefore we can leave the bridge in this state.
+            // When the authorization takes place a new initialization will be triggered. Therefore, we can leave the
+            // bridge in this state.
             return;
         }
         languageProvider.setPrioritizedLanguageProvider(this);
@@ -186,16 +184,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler
                 } catch (InterruptedException e) {
                     logger.warn("Interrupted while waiting for logout!");
                 } catch (ExecutionException e) {
-                    logger.warn("Failed to wait for logout: {}", e.getMessage());
-                    logger.debug("Exception details:", e);
+                    logger.warn("Failed to wait for logout.", e);
                 }
             }
 
             try {
                 webService.close();
             } catch (Exception e) {
-                logger.warn("Failed to close webservice: {}", e.getMessage());
-                logger.debug("Exception details:", e);
+                logger.warn("Failed to close webservice.", e);
             }
         });
     }
@@ -221,9 +217,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         scheduler.schedule(() -> {
             try {
                 getWebservice().logout();
-            } catch (Exception exception) {
-                logger.warn("Failed to logout from Miele cloud.");
-                logger.debug("Exception details:", exception);
+            } catch (Exception e) {
+                logger.warn("Failed to logout from Miele cloud.", e);
             }
             OptionalUtils.ofNullable(logoutFuture).map(future -> future.complete(null));
         }, 1, TimeUnit.NANOSECONDS);
@@ -302,8 +297,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
             tokenRefresher.refreshToken(getOAuthServiceHandle());
             getWebservice().connectSse();
         } catch (OAuthException e) {
-            logger.error("Failed to refresh OAuth token!");
-            logger.debug("Exception details:", e);
+            logger.debug("Failed to refresh OAuth token!", e);
             getWebservice().disconnectSse();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_REFRESH_FAILED);

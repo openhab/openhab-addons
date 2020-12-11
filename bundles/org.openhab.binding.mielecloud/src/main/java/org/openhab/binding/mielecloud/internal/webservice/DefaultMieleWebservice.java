@@ -162,10 +162,8 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
 
     @Override
     public void fetchActions(String deviceId) {
-        Actions actions = retryStrategy.performRetryableOperation(() -> getActions(deviceId), e -> {
-            logger.warn("Cannot poll action state. Retrying...");
-            logger.debug("Exception details:", e);
-        });
+        Actions actions = retryStrategy.performRetryableOperation(() -> getActions(deviceId),
+                e -> logger.warn("Cannot poll action state: {}. Retrying...", e.getMessage()));
         if (actions != null) {
             deviceStateDispatcher.dispatchActionStateUpdates(deviceId, actions);
         } else {
@@ -317,8 +315,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
             ContentResponse response = sendRequest(request);
             HttpUtil.checkHttpSuccess(response);
         }, e -> {
-            logger.warn("Failed to perform PUT request. {}. Retrying...", e.getMessage());
-            logger.debug("Exception details:", e);
+            logger.warn("Failed to perform PUT request: {}. Retrying...", e.getMessage());
         });
     }
 

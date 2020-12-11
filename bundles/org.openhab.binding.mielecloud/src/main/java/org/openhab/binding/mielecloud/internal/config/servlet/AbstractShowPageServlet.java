@@ -73,8 +73,7 @@ public abstract class AbstractShowPageServlet extends HttpServlet {
         } catch (MieleHttpException e) {
             response.sendError(e.getHttpErrorCode());
         } catch (IOException e) {
-            logger.warn("Failed to load resources.");
-            logger.debug("Exception details:", e);
+            logger.warn("Failed to load resources.", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

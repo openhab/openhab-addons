@@ -74,7 +74,6 @@ public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
                 clientService.removeAccessTokenRefreshListener(refreshListener);
             } catch (OAuthException e) {
                 logger.warn("Failed to remove refresh listener: OAuth client service is unavailable.");
-                logger.debug("Exception details:", e);
             }
         }
         listenerByServiceHandle.remove(serviceHandle);
@@ -126,8 +125,7 @@ public final class OpenHabOAuthTokenRefresher implements OAuthTokenRefresher {
             }
         } catch (OAuthException | org.openhab.core.auth.client.oauth2.OAuthException | IOException
                 | OAuthResponseException e) {
-            logger.info("Cannot obtain access token from persistent storage.");
-            logger.debug("Exception details:", e);
+            logger.debug("Cannot obtain access token from persistent storage.", e);
             return Optional.empty();
         }
     }

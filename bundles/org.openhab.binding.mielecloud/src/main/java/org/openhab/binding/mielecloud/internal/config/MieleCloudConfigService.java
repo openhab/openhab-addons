@@ -181,8 +181,8 @@ public final class MieleCloudConfigService {
             logger.info("Registered Miele Cloud binding website at /mielecloud");
         } catch (NamespaceException | ServletException e) {
             logger.warn(
-                    "Failed to register Miele Cloud binding website. Miele Cloud binding website will not be available.");
-            logger.debug("Exception details:", e);
+                    "Failed to register Miele Cloud binding website. Miele Cloud binding website will not be available.",
+                    e);
             unregisterWebsite();
         }
     }
@@ -216,8 +216,7 @@ public final class MieleCloudConfigService {
         try {
             httpService.unregister(alias);
         } catch (IllegalArgumentException e) {
-            logger.warn("Failed to unregister Miele Cloud binding website alias {}", alias);
-            logger.debug("Exception details:", e);
+            logger.warn("Failed to unregister Miele Cloud binding website alias {}", alias, e);
         }
     }
 }

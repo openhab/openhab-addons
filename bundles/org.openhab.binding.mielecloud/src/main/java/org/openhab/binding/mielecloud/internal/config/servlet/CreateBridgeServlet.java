@@ -98,8 +98,7 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
         try {
             accessToken = authorizationHandler.getAccessToken(bridgeUid);
         } catch (OAuthException e) {
-            logger.warn("Failed to obtain access token");
-            logger.debug("Exception details:", e);
+            logger.warn("Failed to obtain access token.", e);
             return "/mielecloud/success?" + SuccessServlet.MISSING_ACCESS_TOKEN_PARAMETER_NAME + "=true&"
                     + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeUidString;
         }

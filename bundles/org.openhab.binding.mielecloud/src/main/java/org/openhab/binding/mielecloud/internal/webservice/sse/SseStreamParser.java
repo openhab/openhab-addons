@@ -66,7 +66,6 @@ class SseStreamParser {
 
             if (!(exception.getCause() instanceof MieleWebserviceDisconnectSseException)) {
                 logger.warn("SSE connection failed unexpectedly: {}", exception.getMessage());
-                logger.debug("Exception details:", exception);
                 onStreamClosedCallback.accept(exception.getCause());
             }
         }
@@ -76,9 +75,8 @@ class SseStreamParser {
     private void silentlyCloseReader() {
         try {
             reader.close();
-        } catch (IOException innerException) {
-            logger.warn("Failed to clean up SSE connection resources!");
-            logger.debug("Exception details:", innerException);
+        } catch (IOException e) {
+            logger.warn("Failed to clean up SSE connection resources!", e);
         }
     }
 
