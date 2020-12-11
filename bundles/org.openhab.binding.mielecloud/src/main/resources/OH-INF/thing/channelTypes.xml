@@ -191,7 +191,7 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.delayed_start_time.label</label>
 		<description>@text/channel-type.mielecloud.delayed_start_time.description</description>
-		<category>Number:Time</category>
+		<category>Number</category>
 		<state pattern="%d sec" readOnly="true"/>
 	</channel-type>
 
@@ -199,7 +199,7 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.program_remaining_time.label</label>
 		<description>@text/channel-type.mielecloud.program_remaining_time.description</description>
-		<category>Number:Time</category>
+		<category>Number</category>
 		<state pattern="%d sec" readOnly="true"/>
 	</channel-type>
 
@@ -207,7 +207,7 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.mielecloud.program_elapsed_time.label</label>
 		<description>@text/channel-type.mielecloud.program_elapsed_time.description</description>
-		<category>Number:Time</category>
+		<category>Number</category>
 		<state pattern="%d sec" readOnly="true"/>
 	</channel-type>
 
