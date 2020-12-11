@@ -18,7 +18,6 @@ import static org.openhab.binding.mielecloud.internal.webservice.api.ProgramStat
 import static org.openhab.binding.mielecloud.internal.webservice.api.json.ProcessAction.*;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -202,18 +201,17 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
     }
 
     private void performPutAction(Runnable action, Consumer<Exception> onError) {
-        scheduler.schedule(() -> {
+        scheduler.execute(() -> {
             try {
                 action.run();
             } catch (TooManyRequestsException e) {
-                logger.warn("Rate limit is reached.");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         I18NKeys.THING_STATUS_DESCRIPTION_RATELIMIT);
                 onError.accept(e);
             } catch (Exception e) {
                 onError.accept(e);
             }
-        }, 1, TimeUnit.NANOSECONDS);
+        });
     }
 
     protected final String getDeviceId() {
