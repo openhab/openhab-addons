@@ -13,8 +13,6 @@
 package org.openhab.binding.mielecloud.internal.webservice.api;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,9 +28,9 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
  */
 @NonNullByDefault
 public class WineStorageDeviceTemperatureState {
-    private static final Set<DeviceType> ALL_WINE_STORAGES = Collections.unmodifiableSet(
-            new HashSet<>(Arrays.asList(DeviceType.WINE_CABINET, DeviceType.WINE_CABINET_FREEZER_COMBINATION,
-                    DeviceType.WINE_CONDITIONING_UNIT, DeviceType.WINE_STORAGE_CONDITIONING_UNIT)));
+    private static final Set<DeviceType> ALL_WINE_STORAGES = Set.of(DeviceType.WINE_CABINET,
+            DeviceType.WINE_CABINET_FREEZER_COMBINATION, DeviceType.WINE_CONDITIONING_UNIT,
+            DeviceType.WINE_STORAGE_CONDITIONING_UNIT);
 
     private final DeviceState deviceState;
     private final List<Integer> effectiveTemperatures;

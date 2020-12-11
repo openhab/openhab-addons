@@ -13,9 +13,6 @@
 package org.openhab.binding.mielecloud.internal.config.servlet;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -53,8 +50,7 @@ public class SuccessServlet extends AbstractShowPageServlet {
     private static final String LOCALE_OPTIONS_PLACEHOLDER = "<!-- LOCALE OPTIONS -->";
 
     private static final String DEFAULT_LANGUAGE = "en";
-    private static final Set<String> SUPPORTED_LANGUAGES = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList("da", "nl", "en", "fr", "de", "it", "nb", "es")));
+    private static final Set<String> SUPPORTED_LANGUAGES = Set.of("da", "nl", "en", "fr", "de", "it", "nb", "es");
 
     private final Logger logger = LoggerFactory.getLogger(SuccessServlet.class);
 
