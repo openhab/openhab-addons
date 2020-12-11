@@ -105,16 +105,11 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             logger.debug("Impacted modules for {} = {}", thing.getUID(), impactedModules);
         }
 
-        try {
-            for (Channel channel : thing.getChannels()) {
-                TriggerProcessor processor = createTriggerProcessor(channel);
-                if (processor != null) {
-                    triggerProcessors.add(processor);
-                }
+        for (Channel channel : thing.getChannels()) {
+            TriggerProcessor processor = createTriggerProcessor(channel);
+            if (processor != null) {
+                triggerProcessors.add(processor);
             }
-        } catch (RuntimeException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
         }
 
         logger.debug("Trigger channels for {} = {}", thing.getUID(), triggerProcessors);
