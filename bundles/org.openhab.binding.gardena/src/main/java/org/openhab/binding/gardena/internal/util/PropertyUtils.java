@@ -36,7 +36,7 @@ public class PropertyUtils {
     /**
      * Returns the property value from the object instance, nested properties are possible.
      */
-    public @Nullable static <T> T getPropertyValue(@Nullable Object instance, String propertyPath, Class<T> resultClass)
+    public static @Nullable <T> T getPropertyValue(@Nullable Object instance, String propertyPath, Class<T> resultClass)
             throws GardenaException {
         String[] properties = propertyPath.split("\\.");
         return getPropertyValue(instance, properties, resultClass, 0);
@@ -46,7 +46,7 @@ public class PropertyUtils {
      * Iterates through the nested properties and returns the field value.
      */
     @SuppressWarnings("unchecked")
-    private @Nullable static <T> T getPropertyValue(@Nullable Object instance, String[] properties,
+    private static @Nullable <T> T getPropertyValue(@Nullable Object instance, String[] properties,
             Class<T> resultClass, int nestedIndex) throws GardenaException {
         if (instance == null) {
             return null;

@@ -25,7 +25,7 @@ public class StringUtils {
     /**
      * Gets the substring before the first occurrence of a separator.
      */
-    public @Nullable static String substringBefore(@Nullable String str, String separator) {
+    public static @Nullable String substringBefore(@Nullable String str, String separator) {
         if (str != null && !str.isEmpty()) {
             int pos = str.indexOf(separator);
             return pos == -1 ? str : str.substring(0, pos);
@@ -37,7 +37,7 @@ public class StringUtils {
     /**
      * Gets the substring before the last occurrence of a separator.
      */
-    public @Nullable static String substringBeforeLast(@Nullable String str, String separator) {
+    public static @Nullable String substringBeforeLast(@Nullable String str, String separator) {
         if (str != null && !str.isEmpty()) {
             int pos = str.lastIndexOf(separator);
             return pos == -1 ? str : str.substring(0, pos);
@@ -49,7 +49,7 @@ public class StringUtils {
     /**
      * Gets the substring after the last occurrence of a separator.
      */
-    public @Nullable static String substringAfterLast(@Nullable String str, String separator) {
+    public static @Nullable String substringAfterLast(@Nullable String str, String separator) {
         if (str != null && !str.isEmpty()) {
             int pos = str.lastIndexOf(separator);
             return pos != -1 && pos != str.length() - separator.length() ? str.substring(pos + separator.length()) : "";
