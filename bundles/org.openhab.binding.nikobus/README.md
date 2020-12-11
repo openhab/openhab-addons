@@ -131,6 +131,24 @@ Defines a `rollershutter-module` with address `4C6C`.
 | output-5  | Rollershutter | Output 5     |
 | output-6  | Rollershutter | Output 6     |
 
+##### Estimating Position
+
+Nikobus rollershuter module does not provide information about rollershutter's position. In order to bridge this gap, an optional parameter `duration` can be set per channel, describing the amount of time needed by a rollershutter to get from open to closed state (or vice-versa).
+
+Binding uses this information to interpolate rollershutter’s position. On startup binding will assume completely open rollershutters but opening/closing a rollershutter once should bring it back in sync.
+
+After `duration` seconds elapsed, binding will set module's output back to neutral (OFF) state after additional number of seconds, as specified by the `delay` parameter. If not specified, it defaults to 5 seconds.
+
+Example:
+
+`duration = 30s`
+
+binding will automatically switch Nikobus rollershutter module’s output to OFF after
+
+`30s + 5s = 35s`
+
+**Note:** Please ensure all Nikobus Push Buttons manipulating rollershutters have `impactedModules` set so binding is notified about changes.
+
 ### Buttons
 
 Once an openHAB item has been configured as a Nikobus button, it will receive a status update to ON when the physical button is pressed.
