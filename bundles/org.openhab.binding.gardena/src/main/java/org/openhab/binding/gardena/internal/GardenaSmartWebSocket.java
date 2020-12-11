@@ -118,7 +118,9 @@ public class GardenaSmartWebSocket {
         closing = false;
         logger.debug("Connected to Gardena Webservice ({})", socketId);
 
-        connectionTracker = scheduler.scheduleWithFixedDelay(new ConnectionTrackerThread(), 2, 2, TimeUnit.MINUTES);
+        connectionTracker = scheduler.scheduleWithFixedDelay(() -> {
+            sendKeepAlivePing();
+        }, 2, 2, TimeUnit.MINUTES);
     }
 
     @OnWebSocketFrame
@@ -156,23 +158,19 @@ public class GardenaSmartWebSocket {
     }
 
     /**
-     * Sends a ping in regular interval to tell the Gardena smart system that the client is alive.
+     * Sends a ping to tell the Gardena smart system that the client is alive.
      */
-    private class ConnectionTrackerThread implements Runnable {
-
-        @Override
-        public void run() {
-            try {
-                logger.trace("Sending ping ({})", socketId);
-                session.getRemote().sendPing(pingPayload);
-                final PostOAuth2Response accessToken = token;
-                if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT)
-                        || accessToken == null || accessToken.isAccessTokenExpired()) {
-                    session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
-                }
-            } catch (IOException ex) {
-                logger.debug("{}", ex.getMessage());
+    private void sendKeepAlivePing() {
+        try {
+            logger.trace("Sending ping ({})", socketId);
+            session.getRemote().sendPing(pingPayload);
+            final PostOAuth2Response accessToken = token;
+            if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT)
+                    || accessToken == null || accessToken.isAccessTokenExpired()) {
+                session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
             }
+        } catch (IOException ex) {
+            logger.debug("{}", ex.getMessage());
         }
     }
 }
