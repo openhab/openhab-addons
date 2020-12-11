@@ -29,7 +29,9 @@ import org.openhab.binding.mielecloud.internal.webservice.api.PowerStatus;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 
 /**
  * @author Björn Lange - Initial contribution
@@ -104,8 +106,8 @@ public class DishWarmerDeviceThingHandlerTest extends AbstractMieleThingHandlerT
             assertEquals(new StringType("Running"), getChannelState(OPERATION_STATE));
             assertEquals(new StringType(PowerStatus.POWER_ON.getState()), getChannelState(POWER_ON_OFF));
             assertEquals(new DecimalType(98), getChannelState(PROGRAM_ELAPSED_TIME));
-            assertEquals(new DecimalType(30), getChannelState(TEMPERATURE_TARGET));
-            assertEquals(new DecimalType(29), getChannelState(TEMPERATURE_CURRENT));
+            assertEquals(new QuantityType<>(30, SIUnits.CELSIUS), getChannelState(TEMPERATURE_TARGET));
+            assertEquals(new QuantityType<>(29, SIUnits.CELSIUS), getChannelState(TEMPERATURE_CURRENT));
             assertEquals(OnOffType.ON, getChannelState(ERROR_STATE));
             assertEquals(OnOffType.ON, getChannelState(INFO_STATE));
             assertEquals(OnOffType.OFF, getChannelState(DOOR_STATE));

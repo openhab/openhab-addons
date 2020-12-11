@@ -30,7 +30,9 @@ import org.openhab.binding.mielecloud.internal.webservice.api.ProgramStatus;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 
 /**
  * @author Björn Lange - Initial contribution
@@ -130,8 +132,8 @@ public class OvenDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
             assertEquals(new DecimalType(3600), getChannelState(DELAYED_START_TIME));
             assertEquals(new DecimalType(62), getChannelState(PROGRAM_ELAPSED_TIME));
             assertEquals(OnOffType.ON, getChannelState(PRE_HEAT_FINISHED));
-            assertEquals(new DecimalType(180), getChannelState(TEMPERATURE_TARGET));
-            assertEquals(new DecimalType(181), getChannelState(TEMPERATURE_CURRENT));
+            assertEquals(new QuantityType<>(180, SIUnits.CELSIUS), getChannelState(TEMPERATURE_TARGET));
+            assertEquals(new QuantityType<>(181, SIUnits.CELSIUS), getChannelState(TEMPERATURE_CURRENT));
             assertEquals(OnOffType.OFF, getChannelState(ERROR_STATE));
             assertEquals(OnOffType.ON, getChannelState(INFO_STATE));
             assertEquals(OnOffType.OFF, getChannelState(LIGHT_SWITCH));

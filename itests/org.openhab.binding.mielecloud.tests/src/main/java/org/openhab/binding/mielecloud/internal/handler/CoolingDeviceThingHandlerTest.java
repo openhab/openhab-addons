@@ -30,7 +30,9 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.ProcessAction
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 
 /**
  * @author Björn Lange - Initial contribution
@@ -107,10 +109,10 @@ public class CoolingDeviceThingHandlerTest extends AbstractMieleThingHandlerTest
             assertEquals(new DecimalType(StateType.SUPERCOOLING.getCode()), getChannelState(OPERATION_STATE_RAW));
             assertEquals(OnOffType.ON, getChannelState(FRIDGE_SUPER_COOL));
             assertEquals(OnOffType.OFF, getChannelState(FREEZER_SUPER_FREEZE));
-            assertEquals(new DecimalType(6), getChannelState(FRIDGE_TEMPERATURE_TARGET));
-            assertEquals(new DecimalType(-18), getChannelState(FREEZER_TEMPERATURE_TARGET));
-            assertEquals(new DecimalType(8), getChannelState(FRIDGE_TEMPERATURE_CURRENT));
-            assertEquals(new DecimalType(-10), getChannelState(FREEZER_TEMPERATURE_CURRENT));
+            assertEquals(new QuantityType<>(6, SIUnits.CELSIUS), getChannelState(FRIDGE_TEMPERATURE_TARGET));
+            assertEquals(new QuantityType<>(-18, SIUnits.CELSIUS), getChannelState(FREEZER_TEMPERATURE_TARGET));
+            assertEquals(new QuantityType<>(8, SIUnits.CELSIUS), getChannelState(FRIDGE_TEMPERATURE_CURRENT));
+            assertEquals(new QuantityType<>(-10, SIUnits.CELSIUS), getChannelState(FREEZER_TEMPERATURE_CURRENT));
             assertEquals(OnOffType.OFF, getChannelState(ERROR_STATE));
             assertEquals(OnOffType.ON, getChannelState(DOOR_STATE));
             assertEquals(OnOffType.OFF, getChannelState(DOOR_ALARM));

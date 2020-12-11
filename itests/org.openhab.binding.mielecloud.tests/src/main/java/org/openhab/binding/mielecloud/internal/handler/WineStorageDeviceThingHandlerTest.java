@@ -29,7 +29,9 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.StateType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 
 /**
  * @author Björn Lange - Initial contribution
@@ -107,12 +109,12 @@ public class WineStorageDeviceThingHandlerTest extends AbstractMieleThingHandler
             assertEquals(new DecimalType(StateType.RUNNING.getCode()), getChannelState(OPERATION_STATE_RAW));
             assertEquals(NULL_VALUE_STATE, getChannelState(TEMPERATURE_TARGET));
             assertEquals(NULL_VALUE_STATE, getChannelState(TEMPERATURE_CURRENT));
-            assertEquals(new DecimalType(8), getChannelState(TOP_TEMPERATURE_TARGET));
-            assertEquals(new DecimalType(9), getChannelState(TOP_TEMPERATURE_CURRENT));
-            assertEquals(new DecimalType(10), getChannelState(MIDDLE_TEMPERATURE_TARGET));
-            assertEquals(new DecimalType(11), getChannelState(MIDDLE_TEMPERATURE_CURRENT));
-            assertEquals(new DecimalType(12), getChannelState(BOTTOM_TEMPERATURE_TARGET));
-            assertEquals(new DecimalType(14), getChannelState(BOTTOM_TEMPERATURE_CURRENT));
+            assertEquals(new QuantityType<>(8, SIUnits.CELSIUS), getChannelState(TOP_TEMPERATURE_TARGET));
+            assertEquals(new QuantityType<>(9, SIUnits.CELSIUS), getChannelState(TOP_TEMPERATURE_CURRENT));
+            assertEquals(new QuantityType<>(10, SIUnits.CELSIUS), getChannelState(MIDDLE_TEMPERATURE_TARGET));
+            assertEquals(new QuantityType<>(11, SIUnits.CELSIUS), getChannelState(MIDDLE_TEMPERATURE_CURRENT));
+            assertEquals(new QuantityType<>(12, SIUnits.CELSIUS), getChannelState(BOTTOM_TEMPERATURE_TARGET));
+            assertEquals(new QuantityType<>(14, SIUnits.CELSIUS), getChannelState(BOTTOM_TEMPERATURE_CURRENT));
             assertEquals(new StringType(PowerStatus.POWER_ON.getState()), getChannelState(POWER_ON_OFF));
             assertEquals(OnOffType.ON, getChannelState(ERROR_STATE));
             assertEquals(OnOffType.ON, getChannelState(INFO_STATE));
