@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author Björn Lange - Added language provider, added support for multiple bridges
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.mielecloud")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.mielecloud")
 public class MieleHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
