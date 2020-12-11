@@ -1359,7 +1359,7 @@ public class Connection {
 
     private void sendAnnouncement() {
         // we lock new announcements until we have dispatched everything
-        Lock lock = locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.ANNOUNCEMENT, k -> new ReentrantLock()));
         lock.lock();
         try {
             Iterator<AnnouncementWrapper> iterator = announcements.values().iterator();
@@ -1401,7 +1401,7 @@ public class Connection {
         }
 
         // we lock TTS until we have finished adding this one
-        Lock lock = locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock()));
         lock.lock();
         try {
             TextToSpeech textToSpeech = Objects
@@ -1419,7 +1419,7 @@ public class Connection {
 
     private void sendTextToSpeech() {
         // we lock new TTS until we have dispatched everything
-        Lock lock = locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.TTS, k -> new ReentrantLock()));
         lock.lock();
         try {
             Iterator<TextToSpeech> iterator = textToSpeeches.values().iterator();
@@ -1429,8 +1429,7 @@ public class Connection {
                     List<Device> devices = textToSpeech.devices;
                     if (!devices.isEmpty()) {
                         String text = textToSpeech.text;
-                        Map<String, Object> parameters = new HashMap<>();
-                        parameters.put("textToSpeak", text);
+                        Map<String, Object> parameters = Map.of("textToSpeak", text);
                         executeSequenceCommandWithVolume(devices, "Alexa.Speak", parameters, textToSpeech.ttsVolumes,
                                 textToSpeech.standardVolumes);
                     }
@@ -1452,7 +1451,7 @@ public class Connection {
         }
 
         // we lock TextCommands until we have finished adding this one
-        Lock lock = locks.computeIfAbsent(TimerType.TEXT_COMMAND, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.TEXT_COMMAND, k -> new ReentrantLock()));
         lock.lock();
         try {
             TextCommand textCommand = Objects
@@ -1470,7 +1469,7 @@ public class Connection {
 
     private synchronized void sendTextCommand() {
         // we lock new TTS until we have dispatched everything
-        Lock lock = locks.computeIfAbsent(TimerType.TEXT_COMMAND, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.TEXT_COMMAND, k -> new ReentrantLock()));
         lock.lock();
 
         try {
@@ -1481,16 +1480,15 @@ public class Connection {
                     List<Device> devices = textCommand.devices;
                     if (!devices.isEmpty()) {
                         String text = textCommand.text;
-                        Map<String, Object> parameters = new HashMap<>();
-                        parameters.put("text", text);
+                        Map<String, Object> parameters = Map.of("text", text);
                         executeSequenceCommandWithVolume(devices, "Alexa.TextCommand", parameters,
                                 textCommand.ttsVolumes, textCommand.standardVolumes);
                     }
                 } catch (Exception e) {
                     logger.warn("send textCommand fails with unexpected error", e);
                 }
+                iterator.remove();
             }
-            iterator.remove();
         } finally {
             // the timer is done anyway immediately after we unlock
             timers.remove(TimerType.TEXT_COMMAND);
@@ -1500,7 +1498,7 @@ public class Connection {
 
     public void volume(Device device, int vol) {
         // we lock volume until we have finished adding this one
-        Lock lock = locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock()));
         lock.lock();
         try {
             Volume volume = Objects.requireNonNull(volumes.computeIfAbsent(vol, k -> new Volume(vol)));
@@ -1516,7 +1514,7 @@ public class Connection {
 
     private void sendVolume() {
         // we lock new volume until we have dispatched everything
-        Lock lock = locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.VOLUME, k -> new ReentrantLock()));
         lock.lock();
         try {
             Iterator<Volume> iterator = volumes.values().iterator();
@@ -1622,7 +1620,7 @@ public class Connection {
     }
 
     private void handleExecuteSequenceNode() {
-        Lock lock = locks.computeIfAbsent(TimerType.DEVICES, k -> new ReentrantLock());
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.DEVICES, k -> new ReentrantLock()));
         if (lock.tryLock()) {
             try {
                 for (String serialNumber : devices.keySet()) {

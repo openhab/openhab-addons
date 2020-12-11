@@ -790,11 +790,11 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 String type = currentNotification.type;
                 if (type != null) {
                     if (type.equals("Reminder")) {
-                        updateState(CHANNEL_REMIND, new StringType(""));
+                        updateState(CHANNEL_REMIND, StringType.EMPTY);
                         updateRemind = false;
                     }
                     if (type.equals("Alarm")) {
-                        updateState(CHANNEL_PLAY_ALARM_SOUND, new StringType(""));
+                        updateState(CHANNEL_PLAY_ALARM_SOUND, StringType.EMPTY);
                         updateAlarm = false;
                     }
                 }
@@ -939,7 +939,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
             } catch (HttpException e) {
                 if (e.getCode() == 400) {
-                    updateState(CHANNEL_RADIO_STATION_ID, new StringType(""));
+                    updateState(CHANNEL_RADIO_STATION_ID, StringType.EMPTY);
                 } else {
                     logger.info("getMediaState fails", e);
                 }
@@ -1089,31 +1089,31 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // Update states
             if (updateRemind && currentNotifcationUpdateTimer == null) {
                 updateRemind = false;
-                updateState(CHANNEL_REMIND, new StringType(""));
+                updateState(CHANNEL_REMIND, StringType.EMPTY);
             }
             if (updateAlarm && currentNotifcationUpdateTimer == null) {
                 updateAlarm = false;
-                updateState(CHANNEL_PLAY_ALARM_SOUND, new StringType(""));
+                updateState(CHANNEL_PLAY_ALARM_SOUND, StringType.EMPTY);
             }
             if (updateRoutine) {
                 updateRoutine = false;
-                updateState(CHANNEL_START_ROUTINE, new StringType(""));
+                updateState(CHANNEL_START_ROUTINE, StringType.EMPTY);
             }
             if (updateTextToSpeech) {
                 updateTextToSpeech = false;
-                updateState(CHANNEL_TEXT_TO_SPEECH, new StringType(""));
+                updateState(CHANNEL_TEXT_TO_SPEECH, StringType.EMPTY);
             }
             if (updateTextCommand) {
                 updateTextCommand = false;
-                updateState(CHANNEL_TEXT_COMMAND, new StringType(""));
+                updateState(CHANNEL_TEXT_COMMAND, StringType.EMPTY);
             }
             if (updatePlayMusicVoiceCommand) {
                 updatePlayMusicVoiceCommand = false;
-                updateState(CHANNEL_PLAY_MUSIC_VOICE_COMMAND, new StringType(""));
+                updateState(CHANNEL_PLAY_MUSIC_VOICE_COMMAND, StringType.EMPTY);
             }
             if (updateStartCommand) {
                 updateStartCommand = false;
-                updateState(CHANNEL_START_COMMAND, new StringType(""));
+                updateState(CHANNEL_START_COMMAND, StringType.EMPTY);
             }
 
             updateState(CHANNEL_MUSIC_PROVIDER_ID, new StringType(musicProviderId));
@@ -1249,7 +1249,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
 
             if (lastSpokenText.isEmpty() || lastSpokenText.equals(spokenText)) {
-                updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(""));
+                updateState(CHANNEL_LAST_VOICE_COMMAND, StringType.EMPTY);
             }
             lastSpokenText = spokenText;
             updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(spokenText));
