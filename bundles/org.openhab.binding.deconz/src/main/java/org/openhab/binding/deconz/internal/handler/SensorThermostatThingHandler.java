@@ -198,7 +198,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
         }
 
         SensorMessage sensorMessage = (SensorMessage) stateResponse;
-        if (sensorMessage.state.windowopen != null) {
+        if (sensorMessage.state.windowopen != null && thing.getChannel(CHANNEL_WINDOWOPEN) == null) {
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withChannel(ChannelBuilder.create(new ChannelUID(thing.getUID(), CHANNEL_WINDOWOPEN), "String")
                     .withType(new ChannelTypeUID(BINDING_ID, "open")).build());
