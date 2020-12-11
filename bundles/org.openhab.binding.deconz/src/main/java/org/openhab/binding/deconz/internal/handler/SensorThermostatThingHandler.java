@@ -192,11 +192,13 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
     }
 
     @Override
-    protected void processStateResponse(@Nullable SensorMessage stateResponse) {
-        if (stateResponse == null) {
+    protected void processStateResponse(DeconzBaseMessage stateResponse) {
+        if (!(stateResponse instanceof SensorMessage)) {
             return;
         }
-        if (stateResponse.state.windowopen != null) {
+
+        SensorMessage sensorMessage = (SensorMessage) stateResponse;
+        if (sensorMessage.state.windowopen != null) {
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withChannel(ChannelBuilder.create(new ChannelUID(thing.getUID(), CHANNEL_WINDOWOPEN), "String")
                     .withType(new ChannelTypeUID(BINDING_ID, "open")).build());
