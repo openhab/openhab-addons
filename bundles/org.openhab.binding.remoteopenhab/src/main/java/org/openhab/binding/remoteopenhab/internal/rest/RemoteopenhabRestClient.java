@@ -500,15 +500,8 @@ public class RemoteopenhabRestClient {
                     throw new RemoteopenhabException("HTTP call failed: " + statusLine);
                 }
                 ByteArrayOutputStream responseContent = new ByteArrayOutputStream();
-                byte[] buffer = new byte[256];
                 try (InputStream input = listener.getInputStream()) {
-                    while (true) {
-                        int read = input.read(buffer);
-                        if (read < 0) {
-                            break;
-                        }
-                        responseContent.write(buffer, 0, read);
-                    }
+                    input.transferTo(responseContent);
                 }
                 return new String(responseContent.toByteArray(), StandardCharsets.UTF_8.name());
             } else {
@@ -522,6 +515,8 @@ public class RemoteopenhabRestClient {
                         : StandardCharsets.UTF_8.name();
                 return new String(response.getContent(), encoding);
             }
+        } catch (RemoteopenhabException e) {
+            throw e;
         } catch (Exception e) {
             throw new RemoteopenhabException(e);
         }
