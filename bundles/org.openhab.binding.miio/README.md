@@ -87,23 +87,23 @@ or in case of unknown models include the model information of a similar device t
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 210 different models.
+Currently the miio binding supports more than 220 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
-| AUX Air Conditioner          | miio:unsupported | aux.aircondition.v1    | No        |            |
-| Idelan Air Conditioner       | miio:unsupported | idelan.aircondition.v1 | No        |            |
-| Midea Air Conditioner v2     | miio:unsupported | midea.aircondition.v1  | No        |            |
+| AUX Smart Air Conditioner    | miio:unsupported | aux.aircondition.v1    | No        |            |
+| Jinxing Smart Air Conditioner | miio:unsupported | idelan.aircondition.v1 | No        |            |
+| Midea AC-i Youth             | miio:unsupported | midea.aircondition.v1  | No        |            |
 | Midea Air Conditioner v2     | miio:unsupported | midea.aircondition.v2  | No        |            |
-| Midea Air Conditioner xa1    | miio:unsupported | midea.aircondition.xa1 | No        |            |
-| Mi Air Monitor v1            | miio:basic       | [zhimi.airmonitor.v1](#zhimi-airmonitor-v1) | Yes       |            |
-| Mi Air Quality Monitor 2gen  | miio:basic       | [cgllc.airmonitor.b1](#cgllc-airmonitor-b1) | Yes       |            |
-| Mi Air Quality Monitor S1    | miio:basic       | [cgllc.airmonitor.s1](#cgllc-airmonitor-s1) | Yes       |            |
-| Mi Air Humidifier            | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
-| Mi Air Humidifier            | miio:basic       | [zhimi.humidifier.ca1](#zhimi-humidifier-ca1) | Yes       |            |
-| Mi Air Evaporative Humidifier 2 | miio:basic       | [zhimi.humidifier.ca4](#zhimi-humidifier-ca4) | Yes       |            |
-| Mi Air Humidifier 2          | miio:basic       | [zhimi.humidifier.cb1](#zhimi-humidifier-cb1) | Yes       |            |
-| Mija Smart humidifier        | miio:basic       | [deerma.humidifier.mjjsq](#deerma-humidifier-mjjsq) | Yes       |            |
+| Midea AC-Cool Golden         | miio:unsupported | midea.aircondition.xa1 | No        |            |
+| Mi PM2.5 Air Quality Monitor | miio:basic       | [zhimi.airmonitor.v1](#zhimi-airmonitor-v1) | Yes       |            |
+| Mi Multifunction Air Monitor | miio:basic       | [cgllc.airmonitor.b1](#cgllc-airmonitor-b1) | Yes       |            |
+| Qingping Air Monitor         | miio:basic       | [cgllc.airmonitor.s1](#cgllc-airmonitor-s1) | Yes       |            |
+| Smartmi Humidifier           | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
+| Smartmi Evaporative Humidifier | miio:basic       | [zhimi.humidifier.ca1](#zhimi-humidifier-ca1) | Yes       |            |
+| Smartmi Evaporative Humidifer 2 | miio:basic       | [zhimi.humidifier.ca4](#zhimi-humidifier-ca4) | Yes       |            |
+| Smartmi Evaporative Humidifier | miio:basic       | [zhimi.humidifier.cb1](#zhimi-humidifier-cb1) | Yes       |            |
+| Mi Smart Humidifier          | miio:basic       | [deerma.humidifier.mjjsq](#deerma-humidifier-mjjsq) | Yes       |            |
 | Mi Air Purifier v1           | miio:basic       | [zhimi.airpurifier.v1](#zhimi-airpurifier-v1) | Yes       |            |
 | Mi Air Purifier v2           | miio:basic       | [zhimi.airpurifier.v2](#zhimi-airpurifier-v2) | Yes       |            |
 | Mi Air Purifier v3           | miio:basic       | [zhimi.airpurifier.v3](#zhimi-airpurifier-v3) | Yes       |            |
@@ -111,124 +111,135 @@ Currently the miio binding supports more than 210 different models.
 | Mi Air Purifier Pro v6       | miio:basic       | [zhimi.airpurifier.v6](#zhimi-airpurifier-v6) | Yes       |            |
 | Mi Air Purifier Pro v7       | miio:basic       | [zhimi.airpurifier.v7](#zhimi-airpurifier-v7) | Yes       |            |
 | Mi Air Purifier 2 (mini)     | miio:basic       | [zhimi.airpurifier.m1](#zhimi-airpurifier-m1) | Yes       |            |
-| Mi Air Purifier (mini)       | miio:basic       | [zhimi.airpurifier.m2](#zhimi-airpurifier-m2) | Yes       |            |
-| Mi Air Purifier MS1          | miio:basic       | [zhimi.airpurifier.ma1](#zhimi-airpurifier-ma1) | Yes       |            |
-| Mi Air Purifier MS2          | miio:basic       | [zhimi.airpurifier.ma2](#zhimi-airpurifier-ma2) | Yes       |            |
+| Mi Air Purifier 2            | miio:basic       | [zhimi.airpurifier.m2](#zhimi-airpurifier-m2) | Yes       |            |
+| Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.ma1](#zhimi-airpurifier-ma1) | Yes       |            |
+| Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.ma2](#zhimi-airpurifier-ma2) | Yes       |            |
 | Mi Air Purifier 3            | miio:basic       | [zhimi.airpurifier.ma4](#zhimi-airpurifier-ma4) | Yes       |            |
-| Mi Air Purifier 3            | miio:basic       | [zhimi.airpurifier.mb3](#zhimi-airpurifier-mb3) | Yes       |            |
+| Mi Air Purifier 3/3H         | miio:basic       | [zhimi.airpurifier.mb3](#zhimi-airpurifier-mb3) | Yes       |            |
 | Mi Air Purifier Super        | miio:basic       | [zhimi.airpurifier.sa1](#zhimi-airpurifier-sa1) | Yes       |            |
-| Mi Air Purifier Super 2      | miio:basic       | [zhimi.airpurifier.sa2](#zhimi-airpurifier-sa2) | Yes       |            |
+| Mi Air Purifier MAX / MAX Pro | miio:basic       | [zhimi.airpurifier.sa2](#zhimi-airpurifier-sa2) | Yes       |            |
 | Mi Fresh Air Ventilator      | miio:basic       | [dmaker.airfresh.t2017](#dmaker-airfresh-t2017) | Yes       |            |
-| Mi Fresh Air Ventilator A1   | miio:basic       | [dmaker.airfresh.a1](#dmaker-airfresh-a1) | Yes       |            |
-| Xiao AI Smart Alarm Clock    | miio:unsupported | zimi.clock.myk01       | No        |            |
+| Mi Fresh Air Ventilator A1-150 | miio:basic       | [dmaker.airfresh.a1](#dmaker-airfresh-a1) | Yes       |            |
+| Mi AI Alarm                  | miio:unsupported | zimi.clock.myk01       | No        |            |
 | Yeelight Smart Bath Heater   | miio:unsupported | yeelight.bhf_light.v2  | No        |            |
-| Gosund Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes       |            |
-| XIAOMI MIJIA WIDETECH WDH318EFW1 Dehumidifier | miio:unsupported | nwt.derh.wdh318efw1    | No        |            |
-| Vacuum 1C STYTJ01ZHM         | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       | Identified manual actions for execution<br />`action{"did":"battery-start-charge","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-start-sweep","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":3,"aiid":2,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":26,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":27,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":28,"aiid":1,"in":[]}`<br />`action{"did":"clean-start-clean","siid":18,"aiid":1,"in":[]}`<br />`action{"did":"clean-stop-clean","siid":18,"aiid":2,"in":[]}`<br />`action{"did":"remote-start-remote","siid":21,"aiid":1,"in":[1.0, 2.0]}`<br />`action{"did":"remote-stop-remote","siid":21,"aiid":2,"in":[]}`<br />`action{"did":"remote-exit-remote","siid":21,"aiid":3,"in":[]}`<br />`action{"did":"map-map-req","siid":23,"aiid":1,"in":[2.0]}`<br />`action{"did":"audio-position","siid":24,"aiid":1,"in":[]}`<br />`action{"did":"audio-set-voice","siid":24,"aiid":2,"in":[]}`<br />`action{"did":"audio-play-sound","siid":24,"aiid":3,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| dreame.vacuum.p2008          | miio:basic       | [dreame.vacuum.p2008](#dreame-vacuum-p2008) | Yes       | Identified manual actions for execution<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"battery-start-charge","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":9,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":10,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Air Purifier mb1          | miio:basic       | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | Yes       |            |
+| Gosund Smart Plug            | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes       |            |
+| WIDETECH WDH318EFW1 Internet Dehumidifier | miio:unsupported | nwt.derh.wdh318efw1    | No        |            |
+| Mi Robot Vacuum Mop 1C STYTJ01ZHM | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       | Identified manual actions for execution<br />`action{"did":"battery-start-charge","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-start-sweep","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":3,"aiid":2,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":26,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":27,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":28,"aiid":1,"in":[]}`<br />`action{"did":"clean-start-clean","siid":18,"aiid":1,"in":[]}`<br />`action{"did":"clean-stop-clean","siid":18,"aiid":2,"in":[]}`<br />`action{"did":"remote-start-remote","siid":21,"aiid":1,"in":[1.0, 2.0]}`<br />`action{"did":"remote-stop-remote","siid":21,"aiid":2,"in":[]}`<br />`action{"did":"remote-exit-remote","siid":21,"aiid":3,"in":[]}`<br />`action{"did":"map-map-req","siid":23,"aiid":1,"in":[2.0]}`<br />`action{"did":"audio-position","siid":24,"aiid":1,"in":[]}`<br />`action{"did":"audio-set-voice","siid":24,"aiid":2,"in":[]}`<br />`action{"did":"audio-play-sound","siid":24,"aiid":3,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Dreame Robot Vacuum-Mop F9   | miio:basic       | [dreame.vacuum.p2008](#dreame-vacuum-p2008) | Yes       | Identified manual actions for execution<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"battery-start-charge","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":9,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":10,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | Yes       |            |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | Yes       |            |
-| Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mc2](#zhimi-airpurifier-mc2) | Yes       |            |
+| Mi Air Purifier 2H           | miio:basic       | [zhimi.airpurifier.mc2](#zhimi-airpurifier-mc2) | Yes       |            |
 | Mi Air Purifier virtual      | miio:unsupported | zhimi.airpurifier.virtual | No        |            |
-| Mi Air Purifier vtl m1       | miio:unsupported | zhimi.airpurifier.vtl_m1 | No        |            |
-| Mi Remote v2                 | miio:unsupported | chuangmi.ir.v2         | No        |            |
-| Xiaomi IR Remote             | miio:unsupported | chuangmi.remote.v2     | No        |            |
-| MiJia Rice Cooker            | miio:unsupported | chunmi.cooker.normal1  | No        |            |
-| MiJia Rice Cooker            | miio:unsupported | chunmi.cooker.normal2  | No        |            |
+| Mi Air Purifier 2(Virtual)   | miio:unsupported | zhimi.airpurifier.vtl_m1 | No        |            |
+| Mi Universal Remote          | miio:unsupported | chuangmi.ir.v2         | No        |            |
+| Mi Remote                    | miio:unsupported | chuangmi.remote.v2     | No        |            |
+| Mi IH Rice Cooker            | miio:unsupported | chunmi.cooker.normal1  | No        |            |
+| Mi IH Rice Cooker            | miio:unsupported | chunmi.cooker.normal2  | No        |            |
 | MiJia Rice Cooker            | miio:unsupported | hunmi.cooker.normal3   | No        |            |
-| MiJia Rice Cooker            | miio:unsupported | chunmi.cooker.normal4  | No        |            |
-| MiJia Heating Pressure Rice Cooker | miio:unsupported | chunmi.cooker.press1   | No        |            |
-| MiJia Heating Pressure Rice Cooker | miio:unsupported | chunmi.cooker.press2   | No        |            |
+| Mi IH Rice Cooker 4L         | miio:unsupported | chunmi.cooker.normal4  | No        |            |
+| Mi IH Pressure Rice Cooker   | miio:unsupported | chunmi.cooker.press1   | No        |            |
+| Mi IH Pressure Rice Cooker   | miio:unsupported | chunmi.cooker.press2   | No        |            |
 | Mi Smart Fan                 | miio:basic       | [zhimi.fan.v1](#zhimi-fan-v1) | Yes       |            |
-| Mi Smart Fan                 | miio:basic       | [zhimi.fan.v2](#zhimi-fan-v2) | Yes       |            |
-| Mi Smart Pedestal Fan        | miio:basic       | [zhimi.fan.v3](#zhimi-fan-v3) | Yes       |            |
-| Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |            |
-| Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
-| Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za3](#zhimi-fan-za3) | Yes       |            |
-| Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
-| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.1c](#dmaker-fan-1c) | Yes       |            |
-| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p5](#dmaker-fan-p5) | Yes       |            |
-| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p8](#dmaker-fan-p8) | Yes       |            |
-| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p9](#dmaker-fan-p9) | Yes       |            |
-| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p10](#dmaker-fan-p10) | Yes       |            |
-| Viomi Internet refrigerator iLive | miio:unsupported | viomi.fridge.v3        | No        |            |
-| Mi Smart Home Gateway v1     | miio:basic       | [lumi.gateway.v1](#lumi-gateway-v1) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Smart Home Gateway v2     | miio:basic       | [lumi.gateway.v2](#lumi-gateway-v2) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Smart Home Gateway v3     | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Humdifier                 | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes       |            |
-| Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral1.v1  | No        |            |
-| Light Control (Wall Switch)  | miio:unsupported | lumi.ctrl_neutral2.v1  | No        |            |
-| Xiaomi youpin Curtain Controller (Wi-Fi) | miio:basic       | [lumi.curtain.hagl05](#lumi-curtain-hagl05) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mr Bond M1 Pro Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mr Bond M1 Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mr Bond M1 Super Smart Clothes Dryer | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Mi Robot Vacuum MOP Essential | miio:basic       | [mijia.vacuum.v2](#mijia-vacuum-v2) | Yes       | This device may be overwhelmed if refresh is too frequent, slowing down the responses. Suggest to increase refresh time to 120 seconds |
-| Xiaomi Scishare smart capsule coffee machine | miio:basic       | [scishare.coffee.s1102](#scishare-coffee-s1102) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi DC Pedestal Fan      | miio:basic       | [zhimi.fan.v2](#zhimi-fan-v2) | Yes       |            |
+| Smartmi DC Pedestal Fan      | miio:basic       | [zhimi.fan.v3](#zhimi-fan-v3) | Yes       |            |
+| Mi Standing Fan              | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |            |
+| Smartmi Inverter Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
+| Smartmi Standing Fan 2       | miio:basic       | [zhimi.fan.za3](#zhimi-fan-za3) | Yes       |            |
+| Smartmi Standing Fan 2S      | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
+| Mi Smart Standing Fan 2 Lite | miio:basic       | [dmaker.fan.1c](#dmaker-fan-1c) | Yes       |            |
+| Mi Smart Standing Fan 1X     | miio:basic       | [dmaker.fan.p5](#dmaker-fan-p5) | Yes       |            |
+| Mi Smart Standing Fan 1C     | miio:basic       | [dmaker.fan.p8](#dmaker-fan-p8) | Yes       |            |
+| Mi Smart Tower Fan           | miio:basic       | [dmaker.fan.p9](#dmaker-fan-p9) | Yes       |            |
+| Mi Smart Standing Fan 2      | miio:basic       | [dmaker.fan.p10](#dmaker-fan-p10) | Yes       |            |
+| Viomi Internet refrigerator iLive(French style 462L) | miio:unsupported | viomi.fridge.v3        | No        |            |
+| Mi smart Home Gateway Hub v1 | miio:basic       | [lumi.gateway.v1](#lumi-gateway-v1) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi smart Home GatewayHub v2  | miio:basic       | [lumi.gateway.v2](#lumi-gateway-v2) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi mart Home Gateway Hub v3  | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Air Purifier virtual      | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO ARIES For Bedroom     | miio:basic       | [huayi.light.ari013](#huayi-light-ari013) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO ARIES For Living Room | miio:basic       | [huayi.light.aries](#huayi-light-aries) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO PEGASUS For Living Room | miio:basic       | [huayi.light.peg091](#huayi-light-peg091) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO PEGASUS For Bedroom   | miio:basic       | [huayi.light.peg093](#huayi-light-peg093) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO PISCES For Bedroom    | miio:basic       | [huayi.light.pis123](#huayi-light-pis123) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO PISCES For Living Room | miio:basic       | [huayi.light.pisces](#huayi-light-pisces) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO TAURUS For Bedroom    | miio:basic       | [huayi.light.tau023](#huayi-light-tau023) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO TAURUS For Living Room | miio:basic       | [huayi.light.taurus](#huayi-light-taurus) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO VIRGO For Bedroom     | miio:basic       | [huayi.light.vir063](#huayi-light-vir063) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO VIRGO For Living Room | miio:basic       | [huayi.light.virgo](#huayi-light-virgo) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO Ceiling Light         | miio:basic       | [huayi.light.wy](#huayi-light-wy) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO ZIWEI Ceiling Lamp    | miio:basic       | [huayi.light.zw131](#huayi-light-zw131) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Aqara Wall Switch(No Neutral, Single Rocker) | miio:unsupported | lumi.ctrl_neutral1.v1  | No        |            |
+| Aqara Wall Switch (No Neutral, Double Rocker) | miio:unsupported | lumi.ctrl_neutral2.v1  | No        |            |
+| Xiaomiyoupin Curtain Controller (Wi-Fi) | miio:basic       | [lumi.curtain.hagl05](#lumi-curtain-hagl05) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MR.BOND                      | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MR.BOND                      | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MR.BOND                      | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Robot Vacuum-Mop Essential | miio:basic       | [mijia.vacuum.v2](#mijia-vacuum-v2) | Yes       | This device may be overwhelmed if refresh is too frequent, slowing down the responses. Suggest to increase refresh time to 120 seconds |
+| SCISHARE Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1102](#scishare-coffee-s1102) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Scishare smart capsule coffee machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Philips Eyecare Smart Lamp 2 | miio:basic       | [philips.light.sread1](#philips-light-sread1) | Yes       |            |
-| Xiaomi Philips Eyecare Smart Lamp 2 | miio:basic       | [philips.light.sread2](#philips-light-sread2) | Yes       |            |
-| Xiaomi Philips LED Ceiling Lamp | miio:basic       | [philips.light.ceiling](#philips-light-ceiling) | Yes       |            |
-| Xiaomi Philips LED Ceiling Lamp | miio:basic       | [philips.light.zyceiling](#philips-light-zyceiling) | Yes       |            |
-| Xiaomi Philips Bulb          | miio:basic       | [philips.light.bulb](#philips-light-bulb) | Yes       |            |
-| Xiaomi Philips Wi-Fi Bulb E27 White | miio:basic       | [philips.light.hbulb](#philips-light-hbulb) | Yes       |            |
-| PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp | miio:basic       | [philips.light.candle](#philips-light-candle) | Yes       |            |
-| Xiaomi Philips Downlight     | miio:basic       | [philips.light.downlight](#philips-light-downlight) | Yes       |            |
-| Xiaomi Philips ZhiRui bedside lamp | miio:basic       | [philips.light.moonlight](#philips-light-moonlight) | Yes       |            |
-| Philips Ceiling Light        | miio:basic       | [philips.light.bceiling1](#philips-light-bceiling1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.bceiling2](#philips-light-bceiling2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Light                | miio:basic       | [philips.light.cbulb](#philips-light-cbulb) | Yes       |            |
+| Philips EyeCare connected desk lamp gen2. | miio:basic       | [philips.light.sread1](#philips-light-sread1) | Yes       |            |
+| Mijia Philips Desk Lamp 2S   | miio:basic       | [philips.light.sread2](#philips-light-sread2) | Yes       |            |
+| Philips connected ceiling    | miio:basic       | [philips.light.ceiling](#philips-light-ceiling) | Yes       |            |
+| Philips ZhiYi ceiling lamp   | miio:basic       | [philips.light.zyceiling](#philips-light-zyceiling) | Yes       |            |
+| Philips ZhiRui E27 bulb      | miio:basic       | [philips.light.bulb](#philips-light-bulb) | Yes       |            |
+| Philips Wi-Fi bulb E27 White | miio:basic       | [philips.light.hbulb](#philips-light-hbulb) | Yes       |            |
+| Philips ZhiRui E14 candle lamp Frosted version | miio:basic       | [philips.light.candle](#philips-light-candle) | Yes       |            |
+| Philips ZhiRui downlight     | miio:basic       | [philips.light.downlight](#philips-light-downlight) | Yes       |            |
+| Philips ZhiRui bedside lamp  | miio:basic       | [philips.light.moonlight](#philips-light-moonlight) | Yes       |            |
+| Philips Zhirui Ceiling Lamp Bedroom 40W | miio:basic       | [philips.light.bceiling1](#philips-light-bceiling1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Bedroom 28W | miio:basic       | [philips.light.bceiling2](#philips-light-bceiling2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Philips Color Bulb     | miio:basic       | [philips.light.cbulb](#philips-light-cbulb) | Yes       |            |
 | Philips Light                | miio:basic       | [philips.light.cbulbs](#philips-light-cbulbs) | Yes       |            |
 | Philips Light                | miio:basic       | [philips.light.dcolor](#philips-light-dcolor) | Yes       |            |
-| Philips Light                | miio:basic       | [philips.light.rwread](#philips-light-rwread) | Yes       |            |
-| Philips Light                | miio:basic       | [philips.light.lnblight1](#philips-light-lnblight1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Light                | miio:basic       | [philips.light.lnblight2](#philips-light-lnblight2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Light                | miio:basic       | [philips.light.lnlrlight](#philips-light-lnlrlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Light                | miio:basic       | [philips.light.lrceiling](#philips-light-lrceiling) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal | miio:basic       | [philips.light.candle2](#philips-light-candle2) | Yes       |            |
-| philips.light.mono1          | miio:basic       | [philips.light.mono1](#philips-light-mono1) | Yes       |            |
-| Philips Down Light           | miio:basic       | [philips.light.dlight](#philips-light-dlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.mceil](#philips-light-mceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.mceilm](#philips-light-mceilm) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.mceils](#philips-light-mceils) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.obceil](#philips-light-obceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.obceim](#philips-light-obceim) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.obceis](#philips-light-obceis) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.sceil](#philips-light-sceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.sceilm](#philips-light-sceilm) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.sceils](#philips-light-sceils) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.xzceil](#philips-light-xzceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.xzceim](#philips-light-xzceim) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips Ceiling Light        | miio:basic       | [philips.light.xzceis](#philips-light-xzceis) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| philips.light.virtual        | miio:basic       | [philips.light.virtual](#philips-light-virtual) | Yes       |            |
-| philips.light.zysread        | miio:basic       | [philips.light.zysread](#philips-light-zysread) | Yes       |            |
-| philips.light.zystrip        | miio:basic       | [philips.light.zystrip](#philips-light-zystrip) | Yes       |            |
-| Mi Power-plug                | miio:basic       | [chuangmi.plug.m1](#chuangmi-plug-m1) | Yes       |            |
-| Mi Power-plug v1             | miio:basic       | [chuangmi.plug.v1](#chuangmi-plug-v1) | Yes       |            |
-| Mi Power-plug v2             | miio:basic       | [chuangmi.plug.v2](#chuangmi-plug-v2) | Yes       |            |
-| Mi Power-plug v3             | miio:basic       | [chuangmi.plug.v3](#chuangmi-plug-v3) | Yes       |            |
-| Mi Power-plug                | miio:basic       | [chuangmi.plug.m3](#chuangmi-plug-m3) | Yes       |            |
-| Mi Smart Plug                | miio:basic       | [chuangmi.plug.hmi205](#chuangmi-plug-hmi205) | Yes       |            |
-| Mi Smart Plug                | miio:basic       | [chuangmi.plug.hmi206](#chuangmi-plug-hmi206) | Yes       |            |
-| Mi Smart Plug                | miio:basic       | [chuangmi.plug.hmi208](#chuangmi-plug-hmi208) | Yes       |            |
-| Qing Mi Smart Power Strip v1 | miio:basic       | [qmi.powerstrip.v1](#qmi-powerstrip-v1) | Yes       |            |
-| Mi Power-strip v2            | miio:basic       | [zimi.powerstrip.v2](#zimi-powerstrip-v2) | Yes       |            |
-| Mi Toothbrush                | miio:unsupported | soocare.toothbrush.x3  | No        |            |
+| Mijia Philips Study Desk Lamp | miio:basic       | [philips.light.rwread](#philips-light-rwread) | Yes       |            |
+| Philips ZhiYi Ceiling lamp FL 40W | miio:basic       | [philips.light.lnblight1](#philips-light-lnblight1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips ZhiYi Ceiling lamp FL 28W | miio:basic       | [philips.light.lnblight2](#philips-light-lnblight2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips ZhiYi Ceiling lamp FL 80W | miio:basic       | [philips.light.lnlrlight](#philips-light-lnlrlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips Zhirui Ceiling Lamp Living room 80W | miio:basic       | [philips.light.lrceiling](#philips-light-lrceiling) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips ZhiRui E14 candle lamp crystal version | miio:basic       | [philips.light.candle2](#philips-light-candle2) | Yes       |            |
+| Philips Smart Lamp           | miio:basic       | [philips.light.mono1](#philips-light-mono1) | Yes       |            |
+| ZhiRui dimmable downlight    | miio:basic       | [philips.light.dlight](#philips-light-dlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Nordic 80W | miio:basic       | [philips.light.mceil](#philips-light-mceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Nordic 40W | miio:basic       | [philips.light.mceilm](#philips-light-mceilm) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Nordic 28W | miio:basic       | [philips.light.mceils](#philips-light-mceils) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Black 80W | miio:basic       | [philips.light.obceil](#philips-light-obceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+|  Zhirui Ceiling Lamp Black 40W | miio:basic       | [philips.light.obceim](#philips-light-obceim) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Black 28W | miio:basic       | [philips.light.obceis](#philips-light-obceis) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Starry 80W | miio:basic       | [philips.light.sceil](#philips-light-sceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Starry 40W | miio:basic       | [philips.light.sceilm](#philips-light-sceilm) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Starry 28W | miio:basic       | [philips.light.sceils](#philips-light-sceils) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Gorgeous 80W | miio:basic       | [philips.light.xzceil](#philips-light-xzceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Gorgeous 40W | miio:basic       | [philips.light.xzceim](#philips-light-xzceim) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Zhirui Ceiling Lamp Gorgeous 28W | miio:basic       | [philips.light.xzceis](#philips-light-xzceis) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips connected lights     | miio:basic       | [philips.light.virtual](#philips-light-virtual) | Yes       |            |
+| Philips ZhiYi desk lamp      | miio:basic       | [philips.light.zysread](#philips-light-zysread) | Yes       |            |
+| Philips ZhiYi strip          | miio:basic       | [philips.light.zystrip](#philips-light-zystrip) | Yes       |            |
+| Mi Plug Mini                 | miio:basic       | [chuangmi.plug.m1](#chuangmi-plug-m1) | Yes       |            |
+| Mi Smart Power Plug          | miio:basic       | [chuangmi.plug.v1](#chuangmi-plug-v1) | Yes       |            |
+| Mi Smart Power Plug v2       | miio:basic       | [chuangmi.plug.v2](#chuangmi-plug-v2) | Yes       |            |
+| MIJIA Smart  Plug Enhanced   | miio:basic       | [chuangmi.plug.v3](#chuangmi-plug-v3) | Yes       |            |
+| Mi Smart Plug (Wi-Fi) Basic  | miio:basic       | [chuangmi.plug.m3](#chuangmi-plug-m3) | Yes       |            |
+| Mi Smart Plug WiFi           | miio:basic       | [chuangmi.plug.hmi205](#chuangmi-plug-hmi205) | Yes       |            |
+| Mi Smart Plug (WiFi)         | miio:basic       | [chuangmi.plug.hmi206](#chuangmi-plug-hmi206) | Yes       |            |
+| Mi Smart Wi-Fi Plug (Bluetooth Gateway) | miio:basic       | [chuangmi.plug.hmi208](#chuangmi-plug-hmi208) | Yes       |            |
+| CHINGMI Smart Power Strip v1 | miio:basic       | [qmi.powerstrip.v1](#qmi-powerstrip-v1) | Yes       |            |
+| Mi Smart Power Strip         | miio:basic       | [zimi.powerstrip.v2](#zimi-powerstrip-v2) | Yes       |            |
+| Soocare Electric Toothbrush  | miio:unsupported | soocare.toothbrush.x3  | No        |            |
 | Mi Robot Vacuum              | miio:vacuum      | [rockrobo.vacuum.v1](#rockrobo-vacuum-v1) | Yes       |            |
-| Mi Xiaowa Vacuum c1          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes       |            |
-| Roborock Vacuum S6 pure      | miio:vacuum      | [roborock.vacuum.a08](#roborock-vacuum-a08) | Yes       |            |
-| Roborock S6 MaxV / T7 Pro    | miio:vacuum      | [roborock.vacuum.a09](#roborock-vacuum-a09) | Yes       |            |
-| Roborock S6 MaxV / T7 Pro    | miio:vacuum      | [roborock.vacuum.a10](#roborock-vacuum-a10) | Yes       |            |
-| Roborock S6 MaxV / T7 Pro    | miio:vacuum      | [roborock.vacuum.a11](#roborock-vacuum-a11) | Yes       |            |
-| Roborock Vacuum S6 pure      | miio:vacuum      | [roborock.vacuum.p5](#roborock-vacuum-p5) | Yes       |            |
-| Mi Robot Vacuum v2           | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-s5) | Yes       |            |
+| Xiaowa C1                    | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes       |            |
+| Roborock S6 Pure             | miio:vacuum      | [roborock.vacuum.a08](#roborock-vacuum-a08) | Yes       |            |
+| Roborock T7 Pro              | miio:vacuum      | [roborock.vacuum.a09](#roborock-vacuum-a09) | Yes       |            |
+| Roborock S6 MaxV             | miio:vacuum      | [roborock.vacuum.a10](#roborock-vacuum-a10) | Yes       |            |
+| Roborock T7                  | miio:vacuum      | [roborock.vacuum.a11](#roborock-vacuum-a11) | Yes       |            |
+| Roborock P5                  | miio:vacuum      | [roborock.vacuum.p5](#roborock-vacuum-p5) | Yes       |            |
+| Roborock S5                  | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-s5) | Yes       |            |
 | Mi Robot Vacuum 1S           | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes       |            |
-| Mi Robot Vacuum S4           | miio:vacuum      | [roborock.vacuum.s4](#roborock-vacuum-s4) | Yes       |            |
+| Roborock S4                  | miio:vacuum      | [roborock.vacuum.s4](#roborock-vacuum-s4) | Yes       |            |
 | Roborock Vacuum S4v2         | miio:vacuum      | [roborock.vacuum.s4v2](#roborock-vacuum-s4v2) | Yes       |            |
-| Roborock Vacuum T6           | miio:vacuum      | [roborock.vacuum.t6](#roborock-vacuum-t6) | Yes       |            |
+| Roborock T6                  | miio:vacuum      | [roborock.vacuum.t6](#roborock-vacuum-t6) | Yes       |            |
 | Roborock Vacuum T6 v2        | miio:vacuum      | [roborock.vacuum.t6v2](#roborock-vacuum-t6v2) | Yes       |            |
 | Roborock Vacuum T6 v3        | miio:vacuum      | [roborock.vacuum.t6v3](#roborock-vacuum-t6v3) | Yes       |            |
-| Roborock Vacuum T4           | miio:vacuum      | [roborock.vacuum.t4](#roborock-vacuum-t4) | Yes       |            |
+| Roborock T4                  | miio:vacuum      | [roborock.vacuum.t4](#roborock-vacuum-t4) | Yes       |            |
 | Roborock Vacuum T4 v2        | miio:vacuum      | [roborock.vacuum.t4v2](#roborock-vacuum-t4v2) | Yes       |            |
 | Roborock Vacuum T4 v3        | miio:vacuum      | [roborock.vacuum.t4v3](#roborock-vacuum-t4v3) | Yes       |            |
 | Roborock Vacuum T7           | miio:vacuum      | [roborock.vacuum.t7](#roborock-vacuum-t7) | Yes       |            |
@@ -237,102 +248,100 @@ Currently the miio binding supports more than 210 different models.
 | Roborock Vacuum T7p          | miio:vacuum      | [roborock.vacuum.t7p](#roborock-vacuum-t7p) | Yes       |            |
 | Roborock Vacuum T7 v2        | miio:vacuum      | [roborock.vacuum.t7pv2](#roborock-vacuum-t7pv2) | Yes       |            |
 | Roborock Vacuum T7 v3        | miio:vacuum      | [roborock.vacuum.t7pv3](#roborock-vacuum-t7pv3) | Yes       |            |
-| Roborock Vacuum S5 Max       | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-s5e) | Yes       |            |
+| Roborock S5 Max              | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-s5e) | Yes       |            |
 | Roborock Vacuum S6           | miio:vacuum      | [rockrobo.vacuum.s6](#rockrobo-vacuum-s6) | Yes       |            |
-| Roborock Vacuum S6           | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |            |
-| Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |            |
-| Xiaomi Mijia vacuum V-RVCLM21B | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes       |            |
-| Xiaomi Mijia vacuum mop STYJ02YM | miio:basic       | [viomi.vacuum.v7](#viomi-vacuum-v7) | Yes       |            |
-| Xiaomi Mijia vacuum mop STYJ02YM v2 | miio:basic       | [viomi.vacuum.v8](#viomi-vacuum-v8) | Yes       |            |
-| roborock.vacuum.c1           | miio:unsupported | roborock.vacuum.c1     | No        |            |
+| Roborock S6                  | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |            |
+| Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No        |            |
+| Viomi Cleaning Robot V-RVCLM21B | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes       |            |
+| Mi Robot Vacuum-Mop P        | miio:basic       | [viomi.vacuum.v7](#viomi-vacuum-v7) | Yes       |            |
+| Mi Robot Vacuum-Mop P        | miio:basic       | [viomi.vacuum.v8](#viomi-vacuum-v8) | Yes       |            |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
 | Rockrobo Xiaowa Sweeper v3   | miio:unsupported | roborock.sweeper.e2v3  | No        |            |
-|  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes       |            |
-|  Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes       |            |
-|  Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes       |            |
+| PTX OneKey Switch (WIFI)     | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes       |            |
+| PTX Twokey switch(wifi)      | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes       |            |
+| PTX ThreeKey Switch (WIFI)   | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes       |            |
 | Mi Water Purifier v1         | miio:basic       | [yunmi.waterpurifier.v1](#yunmi-waterpurifier-v1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier v2         | miio:basic       | [yunmi.waterpurifier.v2](#yunmi-waterpurifier-v2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier v3         | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier (Under sink) v3 | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier v4         | miio:basic       | [yunmi.waterpurifier.v4](#yunmi-waterpurifier-v4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier lx2        | miio:basic       | [yunmi.waterpuri.lx2](#yunmi-waterpuri-lx2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier lx3        | miio:basic       | [yunmi.waterpuri.lx3](#yunmi-waterpuri-lx3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier (Under Counter) | miio:basic       | [yunmi.waterpuri.lx3](#yunmi-waterpuri-lx3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier lx4        | miio:basic       | [yunmi.waterpuri.lx4](#yunmi-waterpuri-lx4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier lx5        | miio:basic       | [yunmi.waterpuri.lx5](#yunmi-waterpuri-lx5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier lx6        | miio:basic       | [yunmi.waterpuri.lx6](#yunmi-waterpuri-lx6) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier lx7        | miio:basic       | [yunmi.waterpuri.lx7](#yunmi-waterpuri-lx7) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier lx8        | miio:basic       | [yunmi.waterpuri.lx8](#yunmi-waterpuri-lx8) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier lx9        | miio:basic       | [yunmi.waterpuri.lx9](#yunmi-waterpuri-lx9) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier 1A/400G Pro | miio:basic       | [yunmi.waterpuri.lx5](#yunmi-waterpuri-lx5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier (Under Counter) | miio:basic       | [yunmi.waterpuri.lx6](#yunmi-waterpuri-lx6) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier 500G/500G Pro | miio:basic       | [yunmi.waterpuri.lx7](#yunmi-waterpuri-lx7) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier 600G       | miio:basic       | [yunmi.waterpuri.lx8](#yunmi-waterpuri-lx8) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier D1         | miio:basic       | [yunmi.waterpuri.lx9](#yunmi-waterpuri-lx9) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier lx10       | miio:basic       | [yunmi.waterpuri.lx10](#yunmi-waterpuri-lx10) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier lx11       | miio:basic       | [yunmi.waterpuri.lx11](#yunmi-waterpuri-lx11) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi Water Purifier lx12       | miio:basic       | [yunmi.waterpuri.lx12](#yunmi-waterpuri-lx12) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Wifi Extender         | miio:unsupported | xiaomi.repeater.v2     | No        |            |
-| Mi Internet Speaker          | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
-| Xiaomi Mijia Whale Smart Toilet Cover | miio:basic       | [xjx.toilet.pro](#xjx-toilet-pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Mijia Smart Toilet Cover | miio:basic       | [xjx.toilet.relax](#xjx-toilet-relax) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Mijia Smart Toilet Cover | miio:basic       | [xjx.toilet.pure](#xjx-toilet-pure) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Mijia Smart Toilet Cover | miio:basic       | [xjx.toilet.zero](#xjx-toilet-zero) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp1](#yeelink-light-bslamp1) | Yes       |            |
-| Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp2](#yeelink-light-bslamp2) | Yes       |            |
-| Yeelight Lamp                | miio:basic       | [yeelink.light.bslamp3](#yeelink-light-bslamp3) | Yes       |            |
-| Yeelight BadHeater           | miio:basic       | [yeelink.bhf_light.v1](#yeelink-bhf_light-v1) | Yes       |            |
-| Yeelight BadHeater           | miio:basic       | [yeelink.bhf_light.v2](#yeelink-bhf_light-v2) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling1](#yeelink-light-ceiling1) | Yes       |            |
-| Yeelight LED Ceiling Lamp v2 | miio:basic       | [yeelink.light.ceiling2](#yeelink-light-ceiling2) | Yes       |            |
-| Yeelight LED Ceiling Lamp v3 | miio:basic       | [yeelink.light.ceiling3](#yeelink-light-ceiling3) | Yes       |            |
-| Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) | miio:basic       | [yeelink.light.ceiling4](#yeelink-light-ceiling4) | Yes       |            |
-| Yeelight LED Ceiling Lamp v4 | miio:basic       | [yeelink.light.ceiling4.ambi](#yeelink-light-ceiling4-ambi) | Yes       |            |
-| Yeelight LED Ceiling Lamp v5 | miio:basic       | [yeelink.light.ceiling5](#yeelink-light-ceiling5) | Yes       |            |
-| Yeelight LED Ceiling Lamp v6 | miio:basic       | [yeelink.light.ceiling6](#yeelink-light-ceiling6) | Yes       |            |
-| Yeelight LED Ceiling Lamp v7 | miio:basic       | [yeelink.light.ceiling7](#yeelink-light-ceiling7) | Yes       |            |
-| Yeelight LED Ceiling Lamp v8 | miio:basic       | [yeelink.light.ceiling8](#yeelink-light-ceiling8) | Yes       |            |
-| Yeelight LED Ceiling Lamp v9 | miio:basic       | [yeelink.light.ceiling9](#yeelink-light-ceiling9) | Yes       |            |
-| Yeelight LED Meteorite lamp  | miio:basic       | [yeelink.light.ceiling10](#yeelink-light-ceiling10) | Yes       |            |
-| Yeelight LED Ceiling Lamp v11 | miio:basic       | [yeelink.light.ceiling11](#yeelink-light-ceiling11) | Yes       |            |
-| Yeelight LED Ceiling Lamp v12 | miio:basic       | [yeelink.light.ceiling12](#yeelink-light-ceiling12) | Yes       |            |
-| Yeelight LED Ceiling Lamp v13 | miio:basic       | [yeelink.light.ceiling13](#yeelink-light-ceiling13) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling14](#yeelink-light-ceiling14) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling15](#yeelink-light-ceiling15) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling16](#yeelink-light-ceiling16) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling17](#yeelink-light-ceiling17) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling18](#yeelink-light-ceiling18) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling19](#yeelink-light-ceiling19) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling20](#yeelink-light-ceiling20) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling21](#yeelink-light-ceiling21) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling22](#yeelink-light-ceiling22) | Yes       |            |
-| Yeelight LED Ceiling Lamp    | miio:basic       | [yeelink.light.ceiling23](#yeelink-light-ceiling23) | Yes       |            |
+| Mi Water Purifier C1 (Triple Setting) | miio:basic       | [yunmi.waterpuri.lx11](#yunmi-waterpuri-lx11) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Water Purifier S1         | miio:basic       | [yunmi.waterpuri.lx12](#yunmi-waterpuri-lx12) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Wi-Fi Repeater 2          | miio:unsupported | xiaomi.repeater.v2     | No        |            |
+| Mi Network Speaker           | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
+| Uclean Smart Toilet Seat     | miio:basic       | [xjx.toilet.pro](#xjx-toilet-pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Uclean smart toilet relax    | miio:basic       | [xjx.toilet.relax](#xjx-toilet-relax) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Uclean smart toilet pure     | miio:basic       | [xjx.toilet.pure](#xjx-toilet-pure) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Whale Spout Smart Toilet Zero | miio:basic       | [xjx.toilet.zero](#xjx-toilet-zero) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Bedside Lamp              | miio:basic       | [yeelink.light.bslamp1](#yeelink-light-bslamp1) | Yes       |            |
+| Mi Bedside Lamp 2            | miio:basic       | [yeelink.light.bslamp2](#yeelink-light-bslamp2) | Yes       |            |
+| Yeelight Bedside Lamp II     | miio:basic       | [yeelink.light.bslamp3](#yeelink-light-bslamp3) | Yes       |            |
+| Yeelight Smart Bath Heater Pro | miio:basic       | [yeelink.bhf_light.v1](#yeelink-bhf_light-v1) | Yes       |            |
+| Yeelight Smart Bath Heater   | miio:basic       | [yeelink.bhf_light.v2](#yeelink-bhf_light-v2) | Yes       |            |
+| Yeelight Ceiling Light       | miio:basic       | [yeelink.light.ceiling1](#yeelink-light-ceiling1) | Yes       |            |
+| Yeelight Ceiling Light SE    | miio:basic       | [yeelink.light.ceiling2](#yeelink-light-ceiling2) | Yes       |            |
+| Yeelight LED Ceiling Light   | miio:basic       | [yeelink.light.ceiling3](#yeelink-light-ceiling3) | Yes       |            |
+| Yeelight LED Ceiling Light   | miio:basic       | [yeelink.light.ceiling4](#yeelink-light-ceiling4) | Yes       |            |
 | Yeelight LED Ceiling Ambi Lamp | miio:basic       | [yeelink.light.ceiling4.ambi](#yeelink-light-ceiling4-ambi) | Yes       |            |
+| Mi LED Ceiling Light         | miio:basic       | [yeelink.light.ceiling5](#yeelink-light-ceiling5) | Yes       |            |
+| Yeelight HaoShi LED Ceiling Lamp Pro | miio:basic       | [yeelink.light.ceiling6](#yeelink-light-ceiling6) | Yes       |            |
+| Yeelight Haoshi Ceiling Lamp | miio:basic       | [yeelink.light.ceiling7](#yeelink-light-ceiling7) | Yes       |            |
+| LED Ceiling Light Crystal Plus | miio:basic       | [yeelink.light.ceiling8](#yeelink-light-ceiling8) | Yes       |            |
+| Yeelight HaoShi LED Ceiling Lamp Pro | miio:basic       | [yeelink.light.ceiling9](#yeelink-light-ceiling9) | Yes       |            |
+| Yeelight Crystal Pendant Lamp | miio:basic       | [yeelink.light.ceiling10](#yeelink-light-ceiling10) | Yes       |            |
+| Yeelight Ceiling Light 320 1S | miio:basic       | [yeelink.light.ceiling11](#yeelink-light-ceiling11) | Yes       |            |
+| Yeelight stylized Ceiling Light  Pro | miio:basic       | [yeelink.light.ceiling12](#yeelink-light-ceiling12) | Yes       |            |
+| Yeelight Ceiling Light       | miio:basic       | [yeelink.light.ceiling13](#yeelink-light-ceiling13) | Yes       |            |
+| Yeelight Ceiling Light Mini  | miio:basic       | [yeelink.light.ceiling14](#yeelink-light-ceiling14) | Yes       |            |
+| Yeelight Ceiling Light 480 1S | miio:basic       | [yeelink.light.ceiling15](#yeelink-light-ceiling15) | Yes       |            |
+| Yeelight Xingyu Ceiling Light | miio:basic       | [yeelink.light.ceiling16](#yeelink-light-ceiling16) | Yes       |            |
+| Yeelight ShaoHua Celing Light | miio:basic       | [yeelink.light.ceiling17](#yeelink-light-ceiling17) | Yes       |            |
+| Yeelight Ceiling Light Pro   | miio:basic       | [yeelink.light.ceiling18](#yeelink-light-ceiling18) | Yes       |            |
+| Yeelight Ceiling Light Pro   | miio:basic       | [yeelink.light.ceiling19](#yeelink-light-ceiling19) | Yes       |            |
+| Yeelight Ceiling Light       | miio:basic       | [yeelink.light.ceiling20](#yeelink-light-ceiling20) | Yes       |            |
+| Mi Smart LED Living Room Ceiling Light | miio:basic       | [yeelink.light.ceiling21](#yeelink-light-ceiling21) | Yes       |            |
+| Mi Smart LED Ceiling Light   | miio:basic       | [yeelink.light.ceiling22](#yeelink-light-ceiling22) | Yes       |            |
+| Mi Smart LED Ceiling Light (350mm) | miio:basic       | [yeelink.light.ceiling23](#yeelink-light-ceiling23) | Yes       |            |
 | Yeelight LED Ceiling Ambi Lamp | miio:basic       | [yeelink.light.ceiling10.ambi](#yeelink-light-ceiling10-ambi) | Yes       |            |
 | Yeelight LED Ceiling Ambi Lamp | miio:basic       | [yeelink.light.ceiling19.ambi](#yeelink-light-ceiling19-ambi) | Yes       |            |
 | Yeelight LED Ceiling Ambi Lamp | miio:basic       | [yeelink.light.ceiling20.ambi](#yeelink-light-ceiling20-ambi) | Yes       |            |
-| Yeelight ct2                 | miio:basic       | [yeelink.light.ct2](#yeelink-light-ct2) | Yes       |            |
-| Yeelight White Bulb          | miio:basic       | [yeelink.light.mono1](#yeelink-light-mono1) | Yes       |            |
+| Yeelight LED Bulb (Tunable)  | miio:basic       | [yeelink.light.ct2](#yeelink-light-ct2) | Yes       |            |
+| Yeelight Bulb                | miio:basic       | [yeelink.light.mono1](#yeelink-light-mono1) | Yes       |            |
 | Yeelight White Bulb v2       | miio:basic       | [yeelink.light.mono2](#yeelink-light-mono2) | Yes       |            |
-| Yeelight White               | miio:basic       | [yeelink.light.mono5](#yeelink-light-mono5) | Yes       |            |
-| Yeelight Wifi Speaker        | miio:unsupported | yeelink.wifispeaker.v1 | No        |            |
-| Yeelight                     | miio:basic       | [yeelink.light.lamp1](#yeelink-light-lamp1) | Yes       |            |
-| Yeelight                     | miio:basic       | [yeelink.light.lamp2](#yeelink-light-lamp2) | Yes       |            |
-| Yeelight                     | miio:basic       | [yeelink.light.lamp3](#yeelink-light-lamp3) | Yes       |            |
-| Yeelight                     | miio:basic       | [yeelink.light.lamp4](#yeelink-light-lamp4) | Yes       |            |
-| Yeelight                     | miio:basic       | [yeelink.light.lamp5](#yeelink-light-lamp5) | Yes       |            |
+| Yeelight LED Filament Bulb   | miio:basic       | [yeelink.light.mono5](#yeelink-light-mono5) | Yes       |            |
+| Yeelight Smart Speaker       | miio:unsupported | yeelink.wifispeaker.v1 | No        |            |
+| Mi LED Desk Lamp             | miio:basic       | [yeelink.light.lamp1](#yeelink-light-lamp1) | Yes       |            |
+| Mi Smart LED Desk Lamp Pro   | miio:basic       | [yeelink.light.lamp2](#yeelink-light-lamp2) | Yes       |            |
+| Yeelight LED Lamp            | miio:basic       | [yeelink.light.lamp3](#yeelink-light-lamp3) | Yes       |            |
+| Mi LED Desk Lamp 1S          | miio:basic       | [yeelink.light.lamp4](#yeelink-light-lamp4) | Yes       |            |
+| Yeelight Smart Desk Lamp Prime | miio:basic       | [yeelink.light.lamp5](#yeelink-light-lamp5) | Yes       |            |
 | Yeelight                     | miio:basic       | [yeelink.light.lamp6](#yeelink-light-lamp6) | Yes       |            |
-| Yeelight                     | miio:basic       | [yeelink.light.lamp7](#yeelink-light-lamp7) | Yes       |            |
+| Yeelight LED Light Sensor Desk Lamp V1 | miio:basic       | [yeelink.light.lamp7](#yeelink-light-lamp7) | Yes       |            |
 | Yeelight                     | miio:basic       | [yeelink.light.lamp8](#yeelink-light-lamp8) | Yes       |            |
-| Yeelight Panel               | miio:basic       | [yeelink.light.panel1](#yeelink-light-panel1) | Yes       |            |
-| Yeelight Strip               | miio:basic       | [yeelink.light.strip1](#yeelink-light-strip1) | Yes       |            |
-| Yeelight Strip               | miio:basic       | [yeelink.light.strip2](#yeelink-light-strip2) | Yes       |            |
-| Yeelight Strip               | miio:basic       | [yeelink.light.strip4](#yeelink-light-strip4) | Yes       |            |
-| Yeelight                     | miio:basic       | [yeelink.light.virtual](#yeelink-light-virtual) | Yes       |            |
+| Yeelight Whiteglow Panel Light | miio:basic       | [yeelink.light.panel1](#yeelink-light-panel1) | Yes       |            |
+| Yeelight Lightstrip          | miio:basic       | [yeelink.light.strip1](#yeelink-light-strip1) | Yes       |            |
+| Yeelight Lightstrip Plus     | miio:basic       | [yeelink.light.strip2](#yeelink-light-strip2) | Yes       |            |
+| Yeelight Willow LED Lightstrip | miio:basic       | [yeelink.light.strip4](#yeelink-light-strip4) | Yes       |            |
+| Light Group (Mi & Yeelight)  | miio:basic       | [yeelink.light.virtual](#yeelink-light-virtual) | Yes       |            |
 | Yeelight Color Bulb          | miio:basic       | [yeelink.light.color1](#yeelink-light-color1) | Yes       |            |
-| Yeelight Color Bulb YLDP06YL 10W | miio:basic       | [yeelink.light.color2](#yeelink-light-color2) | Yes       |            |
-| Yeelight Color Bulb YLDP02YL 9W | miio:basic       | [yeelink.light.color3](#yeelink-light-color3) | Yes       |            |
-| Yeelight Bulb YLDP13YL (8,5W) | miio:basic       | [yeelink.light.color4](#yeelink-light-color4) | Yes       |            |
-| Yeelight Dual Control Module | miio:basic       | [yeelink.switch.sw1](#yeelink-switch-sw1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Yeelight yilai ceiling       | miio:basic       | [yilai.light.ceiling1](#yilai-light-ceiling1) | Yes       |            |
-| Yeelight yilai ceiling       | miio:basic       | [yilai.light.ceiling2](#yilai-light-ceiling2) | Yes       |            |
-| Yeelight yilai ceiling       | miio:basic       | [yilai.light.ceiling3](#yilai-light-ceiling3) | Yes       |            |
-| Zhimi Heater                 | miio:basic       | [zhimi.heater.za1](#zhimi-heater-za1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Zhimi Heater                 | miio:basic       | [zhimi.heater.za2](#zhimi-heater-za2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Zhimi Heater                 | miio:basic       | [zhimi.heater.zb1](#zhimi-heater-zb1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Yeelight LED Bulb (Color)    | miio:basic       | [yeelink.light.color2](#yeelink-light-color2) | Yes       |            |
+| Mi LED Smart Bulb (White and Color) | miio:basic       | [yeelink.light.color3](#yeelink-light-color3) | Yes       |            |
+| Yeelight LED Bulb 1S（Color）  | miio:basic       | [yeelink.light.color4](#yeelink-light-color4) | Yes       |            |
+| Yeelight Smart Dual Control Module | miio:basic       | [yeelink.switch.sw1](#yeelink-switch-sw1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Yilai Ceiling Light Aiyue 480 | miio:basic       | [yilai.light.ceiling1](#yilai-light-ceiling1) | Yes       |            |
+| Yilai Ceiling Lamp Hefeng 430 | miio:basic       | [yilai.light.ceiling2](#yilai-light-ceiling2) | Yes       |            |
+| Yilai Ceiling Lamp Hefeng Pro | miio:basic       | [yilai.light.ceiling3](#yilai-light-ceiling3) | Yes       |            |
+| Smartmi Radiant Heater Smart Version | miio:basic       | [zhimi.heater.za1](#zhimi-heater-za1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi Smart Convector Heater 1S | miio:basic       | [zhimi.heater.za2](#zhimi-heater-za2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi Smart Convector Heater 1S | miio:basic       | [zhimi.heater.zb1](#zhimi-heater-zb1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 
 
 # Advanced: Unsupported devices
@@ -434,7 +443,7 @@ note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to
 e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
 
 
-### Mi Air Monitor v1 (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels
+### Mi PM2.5 Air Quality Monitor (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -447,7 +456,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | night_begin      | Number  | Night Begin Time                    |            |
 | night_end        | Number  | Night End Time                      |            |
 
-### Mi Air Quality Monitor 2gen (<a name="cgllc-airmonitor-b1">cgllc.airmonitor.b1</a>) Channels
+### Mi Multifunction Air Monitor (<a name="cgllc-airmonitor-b1">cgllc.airmonitor.b1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -458,7 +467,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 
-### Mi Air Quality Monitor S1 (<a name="cgllc-airmonitor-s1">cgllc.airmonitor.s1</a>) Channels
+### Qingping Air Monitor (<a name="cgllc-airmonitor-s1">cgllc.airmonitor.s1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -469,7 +478,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 
-### Mi Air Humidifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
+### Smartmi Humidifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -488,7 +497,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | childlock        | Switch  | Child Lock                          |            |
 
-### Mi Air Humidifier (<a name="zhimi-humidifier-ca1">zhimi.humidifier.ca1</a>) Channels
+### Smartmi Evaporative Humidifier (<a name="zhimi-humidifier-ca1">zhimi.humidifier.ca1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -507,7 +516,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | childlock        | Switch  | Child Lock                          |            |
 
-### Mi Air Evaporative Humidifier 2 (<a name="zhimi-humidifier-ca4">zhimi.humidifier.ca4</a>) Channels
+### Smartmi Evaporative Humidifer 2 (<a name="zhimi-humidifier-ca4">zhimi.humidifier.ca4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -530,7 +539,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | clean            | Switch  | Clean Mode                          |            |
 | countryCode      | Number  | Country Code                        |            |
 
-### Mi Air Humidifier 2 (<a name="zhimi-humidifier-cb1">zhimi.humidifier.cb1</a>) Channels
+### Smartmi Evaporative Humidifier (<a name="zhimi-humidifier-cb1">zhimi.humidifier.cb1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -562,7 +571,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -583,7 +592,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -604,7 +613,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -625,7 +634,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -646,7 +655,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -668,7 +677,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | motorspeed       | Number  | Motor Speed                         |            |
 | motorspeed2      | Number  | Motor Speed 2                       |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | childlock        | Switch  | Child Lock                          |            |
@@ -688,13 +697,13 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
-### Mi Air Purifier (mini) (<a name="zhimi-airpurifier-m2">zhimi.airpurifier.m2</a>) Channels
+### Mi Air Purifier 2 (<a name="zhimi-airpurifier-m2">zhimi.airpurifier.m2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -709,13 +718,13 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
-### Mi Air Purifier MS1 (<a name="zhimi-airpurifier-ma1">zhimi.airpurifier.ma1</a>) Channels
+### Mi Air Purifier 2S (<a name="zhimi-airpurifier-ma1">zhimi.airpurifier.ma1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -730,13 +739,13 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
-### Mi Air Purifier MS2 (<a name="zhimi-airpurifier-ma2">zhimi.airpurifier.ma2</a>) Channels
+### Mi Air Purifier 2S (<a name="zhimi-airpurifier-ma2">zhimi.airpurifier.ma2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -751,7 +760,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -816,7 +825,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | I2cErrorCount    | Number  | others-i2c-error-count              |            |
 | ManualLevel      | Number  | others-manual-level                 |            |
 
-### Mi Air Purifier 3 (<a name="zhimi-airpurifier-mb3">zhimi.airpurifier.mb3</a>) Channels
+### Mi Air Purifier 3/3H (<a name="zhimi-airpurifier-mb3">zhimi.airpurifier.mb3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -891,13 +900,13 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
-### Mi Air Purifier Super 2 (<a name="zhimi-airpurifier-sa2">zhimi.airpurifier.sa2</a>) Channels
+### Mi Air Purifier MAX / MAX Pro (<a name="zhimi-airpurifier-sa2">zhimi.airpurifier.sa2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -912,7 +921,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -942,7 +951,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | airFreshFilterProDays | Number  | Filter Pro Days Remaining           |            |
 | airFreshResetFilter | String  | Reset Filter                        |            |
 
-### Mi Fresh Air Ventilator A1 (<a name="dmaker-airfresh-a1">dmaker.airfresh.a1</a>) Channels
+### Mi Fresh Air Ventilator A1-150 (<a name="dmaker-airfresh-a1">dmaker.airfresh.a1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -962,7 +971,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | airFreshFilterDays | Number  | Filter Days Remaining               |            |
 | airFreshResetFilterA1 | String  | Reset Filter                        |            |
 
-### Gosund Plug (<a name="cuco-plug-cp1">cuco.plug.cp1</a>) Channels
+### Gosund Smart Plug (<a name="cuco-plug-cp1">cuco.plug.cp1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -972,7 +981,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | SerialNumber     | String  | Device Information-Device Serial Number |            |
 | On               | Switch  | Switch-Switch Status                |            |
 
-### Vacuum 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
+### Mi Robot Vacuum Mop 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1008,7 +1017,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | VoicePackets     | String  | Audio - Voice Packets               |            |
 | TimeZone         | String  | Time - Time Zone                    |            |
 
-### dreame.vacuum.p2008 (<a name="dreame-vacuum-p2008">dreame.vacuum.p2008</a>) Channels
+### Dreame Robot Vacuum-Mop F9 (<a name="dreame-vacuum-p2008">dreame.vacuum.p2008</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1045,7 +1054,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | total-clean-area | Number  | Clean Logs - Total Clean Area       |            |
 | save-map-status  | Number  | Vslam Extend - Save Map Status      | Value mapping [0="Off",1="On",-1="Not Enabled"] |
 
-### Mi Air Purifier mb1 (<a name="zhimi-airpurifier-mb1">zhimi.airpurifier.mb1</a>) Channels
+### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mb1">zhimi.airpurifier.mb1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1060,7 +1069,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -1081,13 +1090,13 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
 | childlock        | Switch  | Child Lock                          |            |
 
-### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mc2">zhimi.airpurifier.mc2</a>) Channels
+### Mi Air Purifier 2H (<a name="zhimi-airpurifier-mc2">zhimi.airpurifier.mc2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1102,7 +1111,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
 | motorspeed       | Number  | Motor Speed                         |            |
-| filterlife       | Number  | Filter  Life                        |            |
+| filterlife       | Number  | Filter Life                         |            |
 | favoritelevel    | Number  | Favorite Level                      |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 | purifyvolume     | Number  | Purivied Volume                     |            |
@@ -1130,7 +1139,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | battery          | Number  | Battery                             |            |
 | move             | String  | Move Direction                      |            |
 
-### Mi Smart Fan (<a name="zhimi-fan-v2">zhimi.fan.v2</a>) Channels
+### Smartmi DC Pedestal Fan (<a name="zhimi-fan-v2">zhimi.fan.v2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1152,7 +1161,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | battery          | Number  | Battery                             |            |
 | move             | String  | Move Direction                      |            |
 
-### Mi Smart Pedestal Fan (<a name="zhimi-fan-v3">zhimi.fan.v3</a>) Channels
+### Smartmi DC Pedestal Fan (<a name="zhimi-fan-v3">zhimi.fan.v3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1174,7 +1183,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | battery          | Number  | Battery                             |            |
 | move             | String  | Move Direction                      |            |
 
-### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-sa1">zhimi.fan.sa1</a>) Channels
+### Mi Standing Fan (<a name="zhimi-fan-sa1">zhimi.fan.sa1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1192,7 +1201,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | acPower          | Switch  | AC Power                            |            |
 | move             | String  | Move Direction                      |            |
 
-### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za1">zhimi.fan.za1</a>) Channels
+### Smartmi Inverter Pedestal Fan (<a name="zhimi-fan-za1">zhimi.fan.za1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1210,7 +1219,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | acPower          | Switch  | AC Power                            |            |
 | move             | String  | Move Direction                      |            |
 
-### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za3">zhimi.fan.za3</a>) Channels
+### Smartmi Standing Fan 2 (<a name="zhimi-fan-za3">zhimi.fan.za3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1227,7 +1236,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | naturalLevel     | Number  | Natural Level                       |            |
 | move             | String  | Move Direction                      |            |
 
-### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za4">zhimi.fan.za4</a>) Channels
+### Smartmi Standing Fan 2S (<a name="zhimi-fan-za4">zhimi.fan.za4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1244,7 +1253,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | naturalLevel     | Number  | Natural Level                       |            |
 | move             | String  | Move Direction                      |            |
 
-### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-1c">dmaker.fan.1c</a>) Channels
+### Mi Smart Standing Fan 2 Lite (<a name="dmaker-fan-1c">dmaker.fan.1c</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1261,7 +1270,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Brightness       | Switch  | Fan-Brightness                      |            |
 | PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
 
-### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p5">dmaker.fan.p5</a>) Channels
+### Mi Smart Standing Fan 1X (<a name="dmaker-fan-p5">dmaker.fan.p5</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1275,7 +1284,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | child_lock       | Switch  | Child Lock                          |            |
 | speed            | Number  | Speed                               |            |
 
-### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p8">dmaker.fan.p8</a>) Channels
+### Mi Smart Standing Fan 1C (<a name="dmaker-fan-p8">dmaker.fan.p8</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1292,27 +1301,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | Brightness       | Switch  | Fan-Brightness                      |            |
 | PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
 
-### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p9">dmaker.fan.p9</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| Manufacturer     | String  | Device Information-Device Manufacturer |            |
-| Model            | String  | Device Information-Device Model     |            |
-| SerialNumber     | String  | Device Information-Device Serial Number |            |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
-| On               | Switch  | Fan-Switch Status                   |            |
-| FanLevel         | Number  | Fan-Fan Level                       |            |
-| Mode             | Number  | Fan-Mode                            |            |
-| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |            |
-| HorizontalAngle  | Number  | Fan-Horizontal Angle                |            |
-| Alarm            | Switch  | Fan-Alarm                           |            |
-| OffDelayTime     | Number  | Fan-Power Off Delay Time            |            |
-| Brightness       | Switch  | Fan-Brightness                      |            |
-| MotorControl     | Number  | Fan-Motor Control                   |            |
-| SpeedLevel       | Number  | Fan-Speed Level                     |            |
-| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
-
-### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p10">dmaker.fan.p10</a>) Channels
+### Mi Smart Tower Fan (<a name="dmaker-fan-p9">dmaker.fan.p9</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1332,7 +1321,27 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | SpeedLevel       | Number  | Fan-Speed Level                     |            |
 | PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
 
-### Mi Smart Home Gateway v1 (<a name="lumi-gateway-v1">lumi.gateway.v1</a>) Channels
+### Mi Smart Standing Fan 2 (<a name="dmaker-fan-p10">dmaker.fan.p10</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |            |
+| Model            | String  | Device Information-Device Model     |            |
+| SerialNumber     | String  | Device Information-Device Serial Number |            |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |            |
+| On               | Switch  | Fan-Switch Status                   |            |
+| FanLevel         | Number  | Fan-Fan Level                       |            |
+| Mode             | Number  | Fan-Mode                            |            |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |            |
+| HorizontalAngle  | Number  | Fan-Horizontal Angle                |            |
+| Alarm            | Switch  | Fan-Alarm                           |            |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |            |
+| Brightness       | Switch  | Fan-Brightness                      |            |
+| MotorControl     | Number  | Fan-Motor Control                   |            |
+| SpeedLevel       | Number  | Fan-Speed Level                     |            |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |            |
+
+### Mi smart Home Gateway Hub v1 (<a name="lumi-gateway-v1">lumi.gateway.v1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1342,7 +1351,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | alarmingVol      | Number  | Alarming Volume                     |            |
 | doorbellPush     | String  | Doorbell Push                       |            |
 
-### Mi Smart Home Gateway v2 (<a name="lumi-gateway-v2">lumi.gateway.v2</a>) Channels
+### Mi smart Home GatewayHub v2 (<a name="lumi-gateway-v2">lumi.gateway.v2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1352,7 +1361,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | alarmingVol      | Number  | Alarming Volume                     |            |
 | doorbellPush     | String  | Doorbell Push                       |            |
 
-### Mi Smart Home Gateway v3 (<a name="lumi-gateway-v3">lumi.gateway.v3</a>) Channels
+### Mi mart Home Gateway Hub v3 (<a name="lumi-gateway-v3">lumi.gateway.v3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1362,7 +1371,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | alarmingVol      | Number  | Alarming Volume                     |            |
 | doorbellPush     | String  | Doorbell Push                       |            |
 
-### Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM (<a name="lumi-gateway-mgl03">lumi.gateway.mgl03</a>) Channels
+### Mi Air Purifier virtual (<a name="lumi-gateway-mgl03">lumi.gateway.mgl03</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1372,26 +1381,103 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | alarmingVol      | Number  | Alarming Volume                     |            |
 | doorbellPush     | String  | Doorbell Push                       |            |
 
-### Mi Humdifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
+### HUIZUO ARIES For Bedroom (<a name="huayi-light-ari013">huayi.light.ari013</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
-| setHumidity      | Number  | Humidity Set                        |            |
-| aqi              | Number  | Air Quality Index                   |            |
-| translevel       | Number  | Trans_level                         |            |
-| bright           | Number  | LED Brightness                      |            |
-| buzzer           | Switch  | Buzzer Status                       |            |
-| depth            | Number  | Depth                               |            |
-| dry              | Switch  | Dry                                 |            |
-| usedhours        | Number:Time | Run Time                            |            |
-| motorspeed       | Number  | Motor Speed                         |            |
-| temperature      | Number:Temperature | Temperature                         |            |
-| childlock        | Switch  | Child Lock                          |            |
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
 
-### Xiaomi youpin Curtain Controller (Wi-Fi) (<a name="lumi-curtain-hagl05">lumi.curtain.hagl05</a>) Channels
+### HUIZUO ARIES For Living Room (<a name="huayi-light-aries">huayi.light.aries</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO PEGASUS For Living Room (<a name="huayi-light-peg091">huayi.light.peg091</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO PEGASUS For Bedroom (<a name="huayi-light-peg093">huayi.light.peg093</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO PISCES For Bedroom (<a name="huayi-light-pis123">huayi.light.pis123</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO PISCES For Living Room (<a name="huayi-light-pisces">huayi.light.pisces</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO TAURUS For Bedroom (<a name="huayi-light-tau023">huayi.light.tau023</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO TAURUS For Living Room (<a name="huayi-light-taurus">huayi.light.taurus</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO VIRGO For Bedroom (<a name="huayi-light-vir063">huayi.light.vir063</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO VIRGO For Living Room (<a name="huayi-light-virgo">huayi.light.virgo</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO Ceiling Light (<a name="huayi-light-wy">huayi.light.wy</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### HUIZUO ZIWEI Ceiling Lamp (<a name="huayi-light-zw131">huayi.light.zw131</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Light - Switch Status               |            |
+| brightness       | Number:Dimensionless | Light - Brightness                  |            |
+| color-temperature | Number:Temperature | Light - Color Temperature           |            |
+
+### Xiaomiyoupin Curtain Controller (Wi-Fi) (<a name="lumi-curtain-hagl05">lumi.curtain.hagl05</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1405,7 +1491,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | en-night-tip-light | Switch  | Set Night Tip Light                 | Value mapping [0="Disable",1="Enable"] |
 | run-time         | Number  | curtain_cfg - Run-time              |            |
 
-### Mr Bond M1 Pro Smart Clothes Dryer (<a name="mrbond-airer-m1pro">mrbond.airer.m1pro</a>) Channels
+### MR.BOND (<a name="mrbond-airer-m1pro">mrbond.airer.m1pro</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1417,7 +1503,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | disinfect        | Switch  | disinfect                           |            |
 | distime          | Number  | Disinfect Time                      |            |
 
-### Mr Bond M1 Smart Clothes Dryer (<a name="mrbond-airer-m1s">mrbond.airer.m1s</a>) Channels
+### MR.BOND (<a name="mrbond-airer-m1s">mrbond.airer.m1s</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1429,7 +1515,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | disinfect        | Switch  | disinfect                           |            |
 | distime          | Number  | Disinfect Time                      |            |
 
-### Mr Bond M1 Super Smart Clothes Dryer (<a name="mrbond-airer-m1super">mrbond.airer.m1super</a>) Channels
+### MR.BOND (<a name="mrbond-airer-m1super">mrbond.airer.m1super</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1441,7 +1527,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | disinfect        | Switch  | disinfect                           |            |
 | distime          | Number  | Disinfect Time                      |            |
 
-### Xiaomi Mi Robot Vacuum MOP Essential (<a name="mijia-vacuum-v2">mijia.vacuum.v2</a>) Channels
+### Mi Robot Vacuum-Mop Essential (<a name="mijia-vacuum-v2">mijia.vacuum.v2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1470,7 +1556,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | not-disturb-switch | Switch  | Language - Not Disturb Switch       |            |
 | mop-status       | Number  | Other Status - Mop Status           | Value mapping [0="MopUninstall",1="MopInstall"] |
 
-### Xiaomi Scishare smart capsule coffee machine (<a name="scishare-coffee-s1102">scishare.coffee.s1102</a>) Channels
+### SCISHARE Smart Capsule Coffee Machine (<a name="scishare-coffee-s1102">scishare.coffee.s1102</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1490,7 +1576,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | expresso         | Number  | Brew Americano                      | Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90 |
 | boil             | Number  | Boil water                          | Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature |
 
-### Xiaomi Philips Eyecare Smart Lamp 2 (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
+### Philips EyeCare connected desk lamp gen2. (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1502,7 +1588,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | eyecare          | Switch  | Eyecare                             |            |
 | bl               | Switch  | Night Light                         |            |
 
-### Xiaomi Philips Eyecare Smart Lamp 2 (<a name="philips-light-sread2">philips.light.sread2</a>) Channels
+### Mijia Philips Desk Lamp 2S (<a name="philips-light-sread2">philips.light.sread2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1514,7 +1600,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | eyecare          | Switch  | Eyecare                             |            |
 | bl               | Switch  | Night Light                         |            |
 
-### Xiaomi Philips LED Ceiling Lamp (<a name="philips-light-ceiling">philips.light.ceiling</a>) Channels
+### Philips connected ceiling (<a name="philips-light-ceiling">philips.light.ceiling</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1525,7 +1611,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switchscene      | Switch  | Switch Scene                        |            |
 | toggle           | Switch  | Toggle                              |            |
 
-### Xiaomi Philips LED Ceiling Lamp (<a name="philips-light-zyceiling">philips.light.zyceiling</a>) Channels
+### Philips ZhiYi ceiling lamp (<a name="philips-light-zyceiling">philips.light.zyceiling</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1536,7 +1622,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switchscene      | Switch  | Switch Scene                        |            |
 | toggle           | Switch  | Toggle                              |            |
 
-### Xiaomi Philips Bulb (<a name="philips-light-bulb">philips.light.bulb</a>) Channels
+### Philips ZhiRui E27 bulb (<a name="philips-light-bulb">philips.light.bulb</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1548,7 +1634,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switchscene      | Switch  | Switch Scene                        |            |
 | delayoff         | Switch  | Delay Off                           |            |
 
-### Xiaomi Philips Wi-Fi Bulb E27 White (<a name="philips-light-hbulb">philips.light.hbulb</a>) Channels
+### Philips Wi-Fi bulb E27 White (<a name="philips-light-hbulb">philips.light.hbulb</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1560,7 +1646,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switchscene      | Switch  | Switch Scene                        |            |
 | delayoff         | Switch  | Delay Off                           |            |
 
-### PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp (<a name="philips-light-candle">philips.light.candle</a>) Channels
+### Philips ZhiRui E14 candle lamp Frosted version (<a name="philips-light-candle">philips.light.candle</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1571,7 +1657,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | toggle           | Switch  | Toggle                              |            |
 
-### Xiaomi Philips Downlight (<a name="philips-light-downlight">philips.light.downlight</a>) Channels
+### Philips ZhiRui downlight (<a name="philips-light-downlight">philips.light.downlight</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1583,7 +1669,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switchscene      | Switch  | Switch Scene                        |            |
 | delayoff         | Switch  | Delay Off                           |            |
 
-### Xiaomi Philips ZhiRui bedside lamp (<a name="philips-light-moonlight">philips.light.moonlight</a>) Channels
+### Philips ZhiRui bedside lamp (<a name="philips-light-moonlight">philips.light.moonlight</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1596,7 +1682,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | toggle           | Switch  | Toggle                              |            |
 
-### Philips Ceiling Light (<a name="philips-light-bceiling1">philips.light.bceiling1</a>) Channels
+### Philips Zhirui Ceiling Lamp Bedroom 40W (<a name="philips-light-bceiling1">philips.light.bceiling1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1612,7 +1698,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | mb               | Switch  | MiBand                              |            |
 
-### Philips Ceiling Light (<a name="philips-light-bceiling2">philips.light.bceiling2</a>) Channels
+### Philips Zhirui Ceiling Lamp Bedroom 28W (<a name="philips-light-bceiling2">philips.light.bceiling2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1628,7 +1714,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | mb               | Switch  | MiBand                              |            |
 
-### Philips Light (<a name="philips-light-cbulb">philips.light.cbulb</a>) Channels
+### Mijia Philips Color Bulb (<a name="philips-light-cbulb">philips.light.cbulb</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1667,7 +1753,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switch_en        | Switch  | Switch Enabled                      |            |
 | delayoff         | Switch  | Delay Off                           |            |
 
-### Philips Light (<a name="philips-light-rwread">philips.light.rwread</a>) Channels
+### Mijia Philips Study Desk Lamp (<a name="philips-light-rwread">philips.light.rwread</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1677,7 +1763,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | flm              | Number  | Follow Me                           |            |
 | dv               | Number  | DV                                  |            |
 
-### Philips Light (<a name="philips-light-lnblight1">philips.light.lnblight1</a>) Channels
+### Philips ZhiYi Ceiling lamp FL 40W (<a name="philips-light-lnblight1">philips.light.lnblight1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1693,7 +1779,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | mb               | Switch  | MiBand                              |            |
 
-### Philips Light (<a name="philips-light-lnblight2">philips.light.lnblight2</a>) Channels
+### Philips ZhiYi Ceiling lamp FL 28W (<a name="philips-light-lnblight2">philips.light.lnblight2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1709,7 +1795,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | mb               | Switch  | MiBand                              |            |
 
-### Philips Light (<a name="philips-light-lnlrlight">philips.light.lnlrlight</a>) Channels
+### Philips ZhiYi Ceiling lamp FL 80W (<a name="philips-light-lnlrlight">philips.light.lnlrlight</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1725,7 +1811,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | mb               | Switch  | MiBand                              |            |
 
-### Philips Light (<a name="philips-light-lrceiling">philips.light.lrceiling</a>) Channels
+### Philips Zhirui Ceiling Lamp Living room 80W (<a name="philips-light-lrceiling">philips.light.lrceiling</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1741,7 +1827,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | mb               | Switch  | MiBand                              |            |
 
-### Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal (<a name="philips-light-candle2">philips.light.candle2</a>) Channels
+### Philips ZhiRui E14 candle lamp crystal version (<a name="philips-light-candle2">philips.light.candle2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1752,7 +1838,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | delayoff         | Switch  | Delay Off                           |            |
 | toggle           | Switch  | Toggle                              |            |
 
-### philips.light.mono1 (<a name="philips-light-mono1">philips.light.mono1</a>) Channels
+### Philips Smart Lamp (<a name="philips-light-mono1">philips.light.mono1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1760,7 +1846,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | brightness       | Dimmer  | Brightness                          |            |
 | scene            | Number  | Scene                               |            |
 
-### Philips Down Light (<a name="philips-light-dlight">philips.light.dlight</a>) Channels
+### ZhiRui dimmable downlight (<a name="philips-light-dlight">philips.light.dlight</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1775,7 +1861,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-mceil">philips.light.mceil</a>) Channels
+### Zhirui Ceiling Lamp Nordic 80W (<a name="philips-light-mceil">philips.light.mceil</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1790,7 +1876,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-mceilm">philips.light.mceilm</a>) Channels
+### Zhirui Ceiling Lamp Nordic 40W (<a name="philips-light-mceilm">philips.light.mceilm</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1805,7 +1891,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-mceils">philips.light.mceils</a>) Channels
+### Zhirui Ceiling Lamp Nordic 28W (<a name="philips-light-mceils">philips.light.mceils</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1820,7 +1906,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-obceil">philips.light.obceil</a>) Channels
+### Zhirui Ceiling Lamp Black 80W (<a name="philips-light-obceil">philips.light.obceil</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1835,7 +1921,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-obceim">philips.light.obceim</a>) Channels
+###  Zhirui Ceiling Lamp Black 40W (<a name="philips-light-obceim">philips.light.obceim</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1850,7 +1936,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-obceis">philips.light.obceis</a>) Channels
+### Zhirui Ceiling Lamp Black 28W (<a name="philips-light-obceis">philips.light.obceis</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1865,7 +1951,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-sceil">philips.light.sceil</a>) Channels
+### Zhirui Ceiling Lamp Starry 80W (<a name="philips-light-sceil">philips.light.sceil</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1880,7 +1966,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-sceilm">philips.light.sceilm</a>) Channels
+### Zhirui Ceiling Lamp Starry 40W (<a name="philips-light-sceilm">philips.light.sceilm</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1895,7 +1981,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-sceils">philips.light.sceils</a>) Channels
+### Zhirui Ceiling Lamp Starry 28W (<a name="philips-light-sceils">philips.light.sceils</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1910,7 +1996,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-xzceil">philips.light.xzceil</a>) Channels
+### Zhirui Ceiling Lamp Gorgeous 80W (<a name="philips-light-xzceil">philips.light.xzceil</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1925,7 +2011,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-xzceim">philips.light.xzceim</a>) Channels
+### Zhirui Ceiling Lamp Gorgeous 40W (<a name="philips-light-xzceim">philips.light.xzceim</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1940,7 +2026,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### Philips Ceiling Light (<a name="philips-light-xzceis">philips.light.xzceis</a>) Channels
+### Zhirui Ceiling Lamp Gorgeous 28W (<a name="philips-light-xzceis">philips.light.xzceis</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1955,19 +2041,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | dimmingPeriod    | Number  | Dimming Period                      |            |
 | MibandStatus     | String  | Mi Band Status                      |            |
 
-### philips.light.virtual (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| cct              | Dimmer  | Correlated Color Temperature        |            |
-| scene            | Number  | Scene                               |            |
-| dv               | Number  | DV                                  |            |
-| switchscene      | Switch  | Switch Scene                        |            |
-| delayoff         | Switch  | Delay Off                           |            |
-
-### philips.light.zysread (<a name="philips-light-zysread">philips.light.zysread</a>) Channels
+### Philips connected lights (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1979,7 +2053,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switchscene      | Switch  | Switch Scene                        |            |
 | delayoff         | Switch  | Delay Off                           |            |
 
-### philips.light.zystrip (<a name="philips-light-zystrip">philips.light.zystrip</a>) Channels
+### Philips ZhiYi desk lamp (<a name="philips-light-zysread">philips.light.zysread</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1991,7 +2065,19 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switchscene      | Switch  | Switch Scene                        |            |
 | delayoff         | Switch  | Delay Off                           |            |
 
-### Mi Power-plug (<a name="chuangmi-plug-m1">chuangmi.plug.m1</a>) Channels
+### Philips ZhiYi strip (<a name="philips-light-zystrip">philips.light.zystrip</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| cct              | Dimmer  | Correlated Color Temperature        |            |
+| scene            | Number  | Scene                               |            |
+| dv               | Number  | DV                                  |            |
+| switchscene      | Switch  | Switch Scene                        |            |
+| delayoff         | Switch  | Delay Off                           |            |
+
+### Mi Plug Mini (<a name="chuangmi-plug-m1">chuangmi.plug.m1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1999,7 +2085,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Indicator light                     |            |
 
-### Mi Power-plug v1 (<a name="chuangmi-plug-v1">chuangmi.plug.v1</a>) Channels
+### Mi Smart Power Plug (<a name="chuangmi-plug-v1">chuangmi.plug.v1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2007,14 +2093,14 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | usb              | Switch  | USB                                 |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 
-### Mi Power-plug v2 (<a name="chuangmi-plug-v2">chuangmi.plug.v2</a>) Channels
+### Mi Smart Power Plug v2 (<a name="chuangmi-plug-v2">chuangmi.plug.v2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | usb              | Switch  | USB                                 |            |
 
-### Mi Power-plug v3 (<a name="chuangmi-plug-v3">chuangmi.plug.v3</a>) Channels
+### MIJIA Smart  Plug Enhanced (<a name="chuangmi-plug-v3">chuangmi.plug.v3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2023,7 +2109,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
-### Mi Power-plug (<a name="chuangmi-plug-m3">chuangmi.plug.m3</a>) Channels
+### Mi Smart Plug (Wi-Fi) Basic (<a name="chuangmi-plug-m3">chuangmi.plug.m3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2031,7 +2117,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Indicator light                     |            |
 
-### Mi Smart Plug (<a name="chuangmi-plug-hmi205">chuangmi.plug.hmi205</a>) Channels
+### Mi Smart Plug WiFi (<a name="chuangmi-plug-hmi205">chuangmi.plug.hmi205</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2039,7 +2125,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Indicator light                     |            |
 
-### Mi Smart Plug (<a name="chuangmi-plug-hmi206">chuangmi.plug.hmi206</a>) Channels
+### Mi Smart Plug (WiFi) (<a name="chuangmi-plug-hmi206">chuangmi.plug.hmi206</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2048,7 +2134,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
-### Mi Smart Plug (<a name="chuangmi-plug-hmi208">chuangmi.plug.hmi208</a>) Channels
+### Mi Smart Wi-Fi Plug (Bluetooth Gateway) (<a name="chuangmi-plug-hmi208">chuangmi.plug.hmi208</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2057,7 +2143,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | led              | Switch  | Wifi LED                            |            |
 
-### Qing Mi Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
+### CHINGMI Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2071,7 +2157,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | lp_autooff_delay | Number  | Low Power Limit Time                |            |
 | lp_threshold     | Number  | Low Power Threshold                 |            |
 
-### Mi Power-strip v2 (<a name="zimi-powerstrip-v2">zimi.powerstrip.v2</a>) Channels
+### Mi Smart Power Strip (<a name="zimi-powerstrip-v2">zimi.powerstrip.v2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2085,7 +2171,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | lp_autooff_delay | Number  | Low Power Limit Time                |            |
 | lp_threshold     | Number  | Low Power Threshold                 |            |
 
-### Xiaomi Mijia vacuum V-RVCLM21B (<a name="viomi-vacuum-v6">viomi.vacuum.v6</a>) Channels
+### Viomi Cleaning Robot V-RVCLM21B (<a name="viomi-vacuum-v6">viomi.vacuum.v6</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2105,7 +2191,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | is_mop           | Number  | is_mop                              |            |
 | has_newmap       | Number  | has_newmap                          |            |
 
-### Xiaomi Mijia vacuum mop STYJ02YM (<a name="viomi-vacuum-v7">viomi.vacuum.v7</a>) Channels
+### Mi Robot Vacuum-Mop P (<a name="viomi-vacuum-v7">viomi.vacuum.v7</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2125,7 +2211,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | is_mop           | Number  | is_mop                              |            |
 | has_newmap       | Number  | has_newmap                          |            |
 
-### Xiaomi Mijia vacuum mop STYJ02YM v2 (<a name="viomi-vacuum-v8">viomi.vacuum.v8</a>) Channels
+### Mi Robot Vacuum-Mop P (<a name="viomi-vacuum-v8">viomi.vacuum.v8</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2145,14 +2231,14 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | is_mop           | Number  | is_mop                              |            |
 | has_newmap       | Number  | has_newmap                          |            |
 
-###  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
+### PTX OneKey Switch (WIFI) (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | switch1state     | Number  | Switch 1                            |            |
 | switch1name      | String  | Switch Name 1                       |            |
 
-###  Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch (<a name="090615-switch-xswitch02">090615.switch.xswitch02</a>) Channels
+### PTX Twokey switch(wifi) (<a name="090615-switch-xswitch02">090615.switch.xswitch02</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2161,7 +2247,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | switch1name      | String  | Switch Name 1                       |            |
 | switch2name      | String  | Switch Name 2                       |            |
 
-###  Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch (<a name="090615-switch-xswitch03">090615.switch.xswitch03</a>) Channels
+### PTX ThreeKey Switch (WIFI) (<a name="090615-switch-xswitch03">090615.switch.xswitch03</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2218,7 +2304,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Mi Water Purifier v3 (<a name="yunmi-waterpurifier-v3">yunmi.waterpurifier.v3</a>) Channels
+### Mi Water Purifier (Under sink) v3 (<a name="yunmi-waterpurifier-v3">yunmi.waterpurifier.v3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2287,7 +2373,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Mi Water Purifier lx3 (<a name="yunmi-waterpuri-lx3">yunmi.waterpuri.lx3</a>) Channels
+### Mi Water Purifier (Under Counter) (<a name="yunmi-waterpuri-lx3">yunmi.waterpuri.lx3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2333,7 +2419,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Mi Water Purifier lx5 (<a name="yunmi-waterpuri-lx5">yunmi.waterpuri.lx5</a>) Channels
+### Mi Water Purifier 1A/400G Pro (<a name="yunmi-waterpuri-lx5">yunmi.waterpuri.lx5</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2356,7 +2442,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Mi Water Purifier lx6 (<a name="yunmi-waterpuri-lx6">yunmi.waterpuri.lx6</a>) Channels
+### Mi Water Purifier (Under Counter) (<a name="yunmi-waterpuri-lx6">yunmi.waterpuri.lx6</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2379,7 +2465,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Mi Water Purifier lx7 (<a name="yunmi-waterpuri-lx7">yunmi.waterpuri.lx7</a>) Channels
+### Mi Water Purifier 500G/500G Pro (<a name="yunmi-waterpuri-lx7">yunmi.waterpuri.lx7</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2402,7 +2488,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Mi Water Purifier lx8 (<a name="yunmi-waterpuri-lx8">yunmi.waterpuri.lx8</a>) Channels
+### Mi Water Purifier 600G (<a name="yunmi-waterpuri-lx8">yunmi.waterpuri.lx8</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2425,7 +2511,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Mi Water Purifier lx9 (<a name="yunmi-waterpuri-lx9">yunmi.waterpuri.lx9</a>) Channels
+### Mi Water Purifier D1 (<a name="yunmi-waterpuri-lx9">yunmi.waterpuri.lx9</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2471,7 +2557,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Mi Water Purifier lx11 (<a name="yunmi-waterpuri-lx11">yunmi.waterpuri.lx11</a>) Channels
+### Mi Water Purifier C1 (Triple Setting) (<a name="yunmi-waterpuri-lx11">yunmi.waterpuri.lx11</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2494,7 +2580,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Mi Water Purifier lx12 (<a name="yunmi-waterpuri-lx12">yunmi.waterpuri.lx12</a>) Channels
+### Mi Water Purifier S1 (<a name="yunmi-waterpuri-lx12">yunmi.waterpuri.lx12</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2517,7 +2603,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
 
-### Xiaomi Mijia Whale Smart Toilet Cover (<a name="xjx-toilet-pro">xjx.toilet.pro</a>) Channels
+### Uclean Smart Toilet Seat (<a name="xjx-toilet-pro">xjx.toilet.pro</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2527,7 +2613,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | fan_temp         | Number  | Fan Temperature                     |            |
 | status_led       | Number  | Night Light                         |            |
 
-### Xiaomi Mijia Smart Toilet Cover (<a name="xjx-toilet-relax">xjx.toilet.relax</a>) Channels
+### Uclean smart toilet relax (<a name="xjx-toilet-relax">xjx.toilet.relax</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2537,7 +2623,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | fan_temp         | Number  | Fan Temperature                     |            |
 | status_led       | Number  | Night Light                         |            |
 
-### Xiaomi Mijia Smart Toilet Cover (<a name="xjx-toilet-pure">xjx.toilet.pure</a>) Channels
+### Uclean smart toilet pure (<a name="xjx-toilet-pure">xjx.toilet.pure</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2547,7 +2633,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | fan_temp         | Number  | Fan Temperature                     |            |
 | status_led       | Number  | Night Light                         |            |
 
-### Xiaomi Mijia Smart Toilet Cover (<a name="xjx-toilet-zero">xjx.toilet.zero</a>) Channels
+### Whale Spout Smart Toilet Zero (<a name="xjx-toilet-zero">xjx.toilet.zero</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2557,7 +2643,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | fan_temp         | Number  | Fan Temperature                     |            |
 | status_led       | Number  | Night Light                         |            |
 
-### Yeelight Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
+### Mi Bedside Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2570,7 +2656,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
 
-### Yeelight Lamp (<a name="yeelink-light-bslamp2">yeelink.light.bslamp2</a>) Channels
+### Mi Bedside Lamp 2 (<a name="yeelink-light-bslamp2">yeelink.light.bslamp2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2583,7 +2669,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
 
-### Yeelight Lamp (<a name="yeelink-light-bslamp3">yeelink.light.bslamp3</a>) Channels
+### Yeelight Bedside Lamp II (<a name="yeelink-light-bslamp3">yeelink.light.bslamp3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2596,7 +2682,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
 
-### Yeelight BadHeater (<a name="yeelink-bhf_light-v1">yeelink.bhf_light.v1</a>) Channels
+### Yeelight Smart Bath Heater Pro (<a name="yeelink-bhf_light-v1">yeelink.bhf_light.v1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2607,7 +2693,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Yeelight BadHeater (<a name="yeelink-bhf_light-v2">yeelink.bhf_light.v2</a>) Channels
+### Yeelight Smart Bath Heater (<a name="yeelink-bhf_light-v2">yeelink.bhf_light.v2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2618,7 +2704,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling1">yeelink.light.ceiling1</a>) Channels
+### Yeelight Ceiling Light (<a name="yeelink-light-ceiling1">yeelink.light.ceiling1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2631,7 +2717,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | customScene      | String  | Set Scene                           |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Yeelight LED Ceiling Lamp v2 (<a name="yeelink-light-ceiling2">yeelink.light.ceiling2</a>) Channels
+### Yeelight Ceiling Light SE (<a name="yeelink-light-ceiling2">yeelink.light.ceiling2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2644,7 +2730,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | customScene      | String  | Set Scene                           |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Yeelight LED Ceiling Lamp v3 (<a name="yeelink-light-ceiling3">yeelink.light.ceiling3</a>) Channels
+### Yeelight LED Ceiling Light (<a name="yeelink-light-ceiling3">yeelink.light.ceiling3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2657,7 +2743,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | customScene      | String  | Set Scene                           |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) (<a name="yeelink-light-ceiling4">yeelink.light.ceiling4</a>) Channels
+### Yeelight LED Ceiling Light (<a name="yeelink-light-ceiling4">yeelink.light.ceiling4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2673,274 +2759,261 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | ambientColorTemperature | Number  | Ambient Color Temperature           |            |
 | customScene      | String  | Set Scene                           |            |
 | ambientColorMode | Number  | Ambient Color Mode                  |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp v4 (<a name="yeelink-light-ceiling4-ambi">yeelink.light.ceiling4.ambi</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp v5 (<a name="yeelink-light-ceiling5">yeelink.light.ceiling5</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp v6 (<a name="yeelink-light-ceiling6">yeelink.light.ceiling6</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp v7 (<a name="yeelink-light-ceiling7">yeelink.light.ceiling7</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp v8 (<a name="yeelink-light-ceiling8">yeelink.light.ceiling8</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp v9 (<a name="yeelink-light-ceiling9">yeelink.light.ceiling9</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Meteorite lamp (<a name="yeelink-light-ceiling10">yeelink.light.ceiling10</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| ambientBrightness | Number  | Ambient Brightness                  |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| ambientPower     | Switch  | Ambient Power                       |            |
-| ambientColor     | Color   | Ambient Color                       |            |
-| ambientColorTemperature | Number  | Ambient Color Temperature           |            |
-| customScene      | String  | Set Scene                           |            |
-| ambientColorMode | Number  | Ambient Color Mode                  |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp v11 (<a name="yeelink-light-ceiling11">yeelink.light.ceiling11</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp v12 (<a name="yeelink-light-ceiling12">yeelink.light.ceiling12</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp v13 (<a name="yeelink-light-ceiling13">yeelink.light.ceiling13</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling14">yeelink.light.ceiling14</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling15">yeelink.light.ceiling15</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling16">yeelink.light.ceiling16</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling17">yeelink.light.ceiling17</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling18">yeelink.light.ceiling18</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling19">yeelink.light.ceiling19</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling20">yeelink.light.ceiling20</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling21">yeelink.light.ceiling21</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling22">yeelink.light.ceiling22</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
-| nightlightBrightness | Number  | Nightlight Brightness               |            |
-
-### Yeelight LED Ceiling Lamp (<a name="yeelink-light-ceiling23">yeelink.light.ceiling23</a>) Channels
-
-| Channel          | Type    | Description                         | Comment    |
-|------------------|---------|-------------------------------------|------------|
-| power            | Switch  | Power                               |            |
-| brightness       | Dimmer  | Brightness                          |            |
-| delayoff         | Number  | Shutdown Timer                      |            |
-| colorTemperature | Number  | Color Temperature                   |            |
-| colorMode        | Number  | Color Mode                          |            |
-| name             | String  | Name                                |            |
-| customScene      | String  | Set Scene                           |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
 ### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling4-ambi">yeelink.light.ceiling4.ambi</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Mi LED Ceiling Light (<a name="yeelink-light-ceiling5">yeelink.light.ceiling5</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight HaoShi LED Ceiling Lamp Pro (<a name="yeelink-light-ceiling6">yeelink.light.ceiling6</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Haoshi Ceiling Lamp (<a name="yeelink-light-ceiling7">yeelink.light.ceiling7</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### LED Ceiling Light Crystal Plus (<a name="yeelink-light-ceiling8">yeelink.light.ceiling8</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight HaoShi LED Ceiling Lamp Pro (<a name="yeelink-light-ceiling9">yeelink.light.ceiling9</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Crystal Pendant Lamp (<a name="yeelink-light-ceiling10">yeelink.light.ceiling10</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| ambientBrightness | Number  | Ambient Brightness                  |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| ambientPower     | Switch  | Ambient Power                       |            |
+| ambientColor     | Color   | Ambient Color                       |            |
+| ambientColorTemperature | Number  | Ambient Color Temperature           |            |
+| customScene      | String  | Set Scene                           |            |
+| ambientColorMode | Number  | Ambient Color Mode                  |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Ceiling Light 320 1S (<a name="yeelink-light-ceiling11">yeelink.light.ceiling11</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight stylized Ceiling Light  Pro (<a name="yeelink-light-ceiling12">yeelink.light.ceiling12</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Ceiling Light (<a name="yeelink-light-ceiling13">yeelink.light.ceiling13</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Ceiling Light Mini (<a name="yeelink-light-ceiling14">yeelink.light.ceiling14</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Ceiling Light 480 1S (<a name="yeelink-light-ceiling15">yeelink.light.ceiling15</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Xingyu Ceiling Light (<a name="yeelink-light-ceiling16">yeelink.light.ceiling16</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight ShaoHua Celing Light (<a name="yeelink-light-ceiling17">yeelink.light.ceiling17</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Ceiling Light Pro (<a name="yeelink-light-ceiling18">yeelink.light.ceiling18</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Ceiling Light Pro (<a name="yeelink-light-ceiling19">yeelink.light.ceiling19</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Yeelight Ceiling Light (<a name="yeelink-light-ceiling20">yeelink.light.ceiling20</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Mi Smart LED Living Room Ceiling Light (<a name="yeelink-light-ceiling21">yeelink.light.ceiling21</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Mi Smart LED Ceiling Light (<a name="yeelink-light-ceiling22">yeelink.light.ceiling22</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| power            | Switch  | Power                               |            |
+| brightness       | Dimmer  | Brightness                          |            |
+| delayoff         | Number  | Shutdown Timer                      |            |
+| colorTemperature | Number  | Color Temperature                   |            |
+| colorMode        | Number  | Color Mode                          |            |
+| name             | String  | Name                                |            |
+| customScene      | String  | Set Scene                           |            |
+| nightlightBrightness | Number  | Nightlight Brightness               |            |
+
+### Mi Smart LED Ceiling Light (350mm) (<a name="yeelink-light-ceiling23">yeelink.light.ceiling23</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -2992,7 +3065,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | customScene      | String  | Set Scene                           |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Yeelight ct2 (<a name="yeelink-light-ct2">yeelink.light.ct2</a>) Channels
+### Yeelight LED Bulb (Tunable) (<a name="yeelink-light-ct2">yeelink.light.ct2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3003,7 +3076,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight White Bulb (<a name="yeelink-light-mono1">yeelink.light.mono1</a>) Channels
+### Yeelight Bulb (<a name="yeelink-light-mono1">yeelink.light.mono1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3025,7 +3098,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight White (<a name="yeelink-light-mono5">yeelink.light.mono5</a>) Channels
+### Yeelight LED Filament Bulb (<a name="yeelink-light-mono5">yeelink.light.mono5</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3036,7 +3109,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight (<a name="yeelink-light-lamp1">yeelink.light.lamp1</a>) Channels
+### Mi LED Desk Lamp (<a name="yeelink-light-lamp1">yeelink.light.lamp1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3047,7 +3120,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight (<a name="yeelink-light-lamp2">yeelink.light.lamp2</a>) Channels
+### Mi Smart LED Desk Lamp Pro (<a name="yeelink-light-lamp2">yeelink.light.lamp2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3058,7 +3131,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight (<a name="yeelink-light-lamp3">yeelink.light.lamp3</a>) Channels
+### Yeelight LED Lamp (<a name="yeelink-light-lamp3">yeelink.light.lamp3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3069,7 +3142,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight (<a name="yeelink-light-lamp4">yeelink.light.lamp4</a>) Channels
+### Mi LED Desk Lamp 1S (<a name="yeelink-light-lamp4">yeelink.light.lamp4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3080,7 +3153,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight (<a name="yeelink-light-lamp5">yeelink.light.lamp5</a>) Channels
+### Yeelight Smart Desk Lamp Prime (<a name="yeelink-light-lamp5">yeelink.light.lamp5</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3102,7 +3175,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight (<a name="yeelink-light-lamp7">yeelink.light.lamp7</a>) Channels
+### Yeelight LED Light Sensor Desk Lamp V1 (<a name="yeelink-light-lamp7">yeelink.light.lamp7</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3124,7 +3197,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight Panel (<a name="yeelink-light-panel1">yeelink.light.panel1</a>) Channels
+### Yeelight Whiteglow Panel Light (<a name="yeelink-light-panel1">yeelink.light.panel1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3137,7 +3210,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | customScene      | String  | Set Scene                           |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Yeelight Strip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
+### Yeelight Lightstrip (<a name="yeelink-light-strip1">yeelink.light.strip1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3150,7 +3223,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
 
-### Yeelight Strip (<a name="yeelink-light-strip2">yeelink.light.strip2</a>) Channels
+### Yeelight Lightstrip Plus (<a name="yeelink-light-strip2">yeelink.light.strip2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3163,7 +3236,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
 
-### Yeelight Strip (<a name="yeelink-light-strip4">yeelink.light.strip4</a>) Channels
+### Yeelight Willow LED Lightstrip (<a name="yeelink-light-strip4">yeelink.light.strip4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3174,7 +3247,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | colorMode        | Number  | Color Mode                          |            |
 | name             | String  | Name                                |            |
 
-### Yeelight (<a name="yeelink-light-virtual">yeelink.light.virtual</a>) Channels
+### Light Group (Mi & Yeelight) (<a name="yeelink-light-virtual">yeelink.light.virtual</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3198,7 +3271,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
 
-### Yeelight Color Bulb YLDP06YL 10W (<a name="yeelink-light-color2">yeelink.light.color2</a>) Channels
+### Yeelight LED Bulb (Color) (<a name="yeelink-light-color2">yeelink.light.color2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3211,7 +3284,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
 
-### Yeelight Color Bulb YLDP02YL 9W (<a name="yeelink-light-color3">yeelink.light.color3</a>) Channels
+### Mi LED Smart Bulb (White and Color) (<a name="yeelink-light-color3">yeelink.light.color3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3224,7 +3297,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
 
-### Yeelight Bulb YLDP13YL (8,5W) (<a name="yeelink-light-color4">yeelink.light.color4</a>) Channels
+### Yeelight LED Bulb 1S（Color） (<a name="yeelink-light-color4">yeelink.light.color4</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3237,7 +3310,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | rgbColor         | Color   | RGB Color                           |            |
 | name             | String  | Name                                |            |
 
-### Yeelight Dual Control Module (<a name="yeelink-switch-sw1">yeelink.switch.sw1</a>) Channels
+### Yeelight Smart Dual Control Module (<a name="yeelink-switch-sw1">yeelink.switch.sw1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3251,7 +3324,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | flash            | Number  | Extension - Flash                   |            |
 | rc-list          | String  | Extension - Rc List                 |            |
 
-### Yeelight yilai ceiling (<a name="yilai-light-ceiling1">yilai.light.ceiling1</a>) Channels
+### Yilai Ceiling Light Aiyue 480 (<a name="yilai-light-ceiling1">yilai.light.ceiling1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3264,7 +3337,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | customScene      | String  | Set Scene                           |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Yeelight yilai ceiling (<a name="yilai-light-ceiling2">yilai.light.ceiling2</a>) Channels
+### Yilai Ceiling Lamp Hefeng 430 (<a name="yilai-light-ceiling2">yilai.light.ceiling2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3277,7 +3350,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | customScene      | String  | Set Scene                           |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Yeelight yilai ceiling (<a name="yilai-light-ceiling3">yilai.light.ceiling3</a>) Channels
+### Yilai Ceiling Lamp Hefeng Pro (<a name="yilai-light-ceiling3">yilai.light.ceiling3</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3290,7 +3363,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | customScene      | String  | Set Scene                           |            |
 | nightlightBrightness | Number  | Nightlight Brightness               |            |
 
-### Zhimi Heater (<a name="zhimi-heater-za1">zhimi.heater.za1</a>) Channels
+### Smartmi Radiant Heater Smart Version (<a name="zhimi-heater-za1">zhimi.heater.za1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3304,7 +3377,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | temperature      | Number:Temperature | Temperature                         |            |
 | usedhours        | Number:Time | Run Time                            |            |
 
-### Zhimi Heater (<a name="zhimi-heater-za2">zhimi.heater.za2</a>) Channels
+### Smartmi Smart Convector Heater 1S (<a name="zhimi-heater-za2">zhimi.heater.za2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3319,7 +3392,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | physical-controls-locked | Switch  | Physical Control Locked - Physical Controls Locked |            |
 | use-time         | Number:Time | Private-Service - Use Time          |            |
 
-### Zhimi Heater (<a name="zhimi-heater-zb1">zhimi.heater.zb1</a>) Channels
+### Smartmi Smart Convector Heater 1S (<a name="zhimi-heater-zb1">zhimi.heater.zb1</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -3399,12 +3472,12 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 
 
 
-### Mi Air Monitor v1 (zhimi.airmonitor.v1) item file lines
+### Mi PM2.5 Air Quality Monitor (zhimi.airmonitor.v1) item file lines
 
 note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airmonitor "Mi Air Monitor v1" <status>
+Group G_airmonitor "Mi PM2.5 Air Quality Monitor" <status>
 Switch power "Power" (G_airmonitor) {channel="miio:basic:airmonitor:power"}
 Number aqi "Air Quality Index" (G_airmonitor) {channel="miio:basic:airmonitor:aqi"}
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
@@ -3415,12 +3488,12 @@ Number night_begin "Night Begin Time" (G_airmonitor) {channel="miio:basic:airmon
 Number night_end "Night End Time" (G_airmonitor) {channel="miio:basic:airmonitor:night_end"}
 ```
 
-### Mi Air Quality Monitor 2gen (cgllc.airmonitor.b1) item file lines
+### Mi Multifunction Air Monitor (cgllc.airmonitor.b1) item file lines
 
 note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airmonitor "Mi Air Quality Monitor 2gen" <status>
+Group G_airmonitor "Mi Multifunction Air Monitor" <status>
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
 Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
 Number co2 "CO2e" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
@@ -3429,12 +3502,12 @@ Number humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidi
 Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic:airmonitor:temperature"}
 ```
 
-### Mi Air Quality Monitor S1 (cgllc.airmonitor.s1) item file lines
+### Qingping Air Monitor (cgllc.airmonitor.s1) item file lines
 
 note: Autogenerated example. Replace the id (airmonitor) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airmonitor "Mi Air Quality Monitor S1" <status>
+Group G_airmonitor "Qingping Air Monitor" <status>
 Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"}
 Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
 Number co2 "CO2" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
@@ -3443,12 +3516,12 @@ Number humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidi
 Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic:airmonitor:temperature"}
 ```
 
-### Mi Air Humidifier (zhimi.humidifier.v1) item file lines
+### Smartmi Humidifier (zhimi.humidifier.v1) item file lines
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_humidifier "Mi Air Humidifier" <status>
+Group G_humidifier "Smartmi Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
@@ -3465,12 +3538,12 @@ Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic
 Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
 ```
 
-### Mi Air Humidifier (zhimi.humidifier.ca1) item file lines
+### Smartmi Evaporative Humidifier (zhimi.humidifier.ca1) item file lines
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_humidifier "Mi Air Humidifier" <status>
+Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
@@ -3487,12 +3560,12 @@ Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic
 Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
 ```
 
-### Mi Air Evaporative Humidifier 2 (zhimi.humidifier.ca4) item file lines
+### Smartmi Evaporative Humidifer 2 (zhimi.humidifier.ca4) item file lines
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_humidifier "Mi Air Evaporative Humidifier 2" <status>
+Group G_humidifier "Smartmi Evaporative Humidifer 2" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number Fault "Humidifier Device Fault" (G_humidifier) {channel="miio:basic:humidifier:Fault"}
@@ -3513,12 +3586,12 @@ Switch clean "Clean Mode" (G_humidifier) {channel="miio:basic:humidifier:clean"}
 Number countryCode "Country Code" (G_humidifier) {channel="miio:basic:humidifier:countryCode"}
 ```
 
-### Mi Air Humidifier 2 (zhimi.humidifier.cb1) item file lines
+### Smartmi Evaporative Humidifier (zhimi.humidifier.cb1) item file lines
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_humidifier "Mi Air Humidifier 2" <status>
+Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
 Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
@@ -3550,7 +3623,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3574,7 +3647,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3598,7 +3671,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3622,7 +3695,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3646,7 +3719,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3671,7 +3744,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
 Number motorspeed2 "Motor Speed 2" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed2"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
@@ -3694,19 +3767,19 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
-### Mi Air Purifier (mini) (zhimi.airpurifier.m2) item file lines
+### Mi Air Purifier 2 (zhimi.airpurifier.m2) item file lines
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airpurifier "Mi Air Purifier (mini)" <status>
+Group G_airpurifier "Mi Air Purifier 2" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
@@ -3718,19 +3791,19 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
-### Mi Air Purifier MS1 (zhimi.airpurifier.ma1) item file lines
+### Mi Air Purifier 2S (zhimi.airpurifier.ma1) item file lines
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airpurifier "Mi Air Purifier MS1" <status>
+Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
@@ -3742,19 +3815,19 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
-### Mi Air Purifier MS2 (zhimi.airpurifier.ma2) item file lines
+### Mi Air Purifier 2S (zhimi.airpurifier.ma2) item file lines
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airpurifier "Mi Air Purifier MS2" <status>
+Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
@@ -3766,7 +3839,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3835,12 +3908,12 @@ Number I2cErrorCount "others-i2c-error-count" (G_airpurifier) {channel="miio:bas
 Number ManualLevel "others-manual-level" (G_airpurifier) {channel="miio:basic:airpurifier:ManualLevel"}
 ```
 
-### Mi Air Purifier 3 (zhimi.airpurifier.mb3) item file lines
+### Mi Air Purifier 3/3H (zhimi.airpurifier.mb3) item file lines
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airpurifier "Mi Air Purifier 3" <status>
+Group G_airpurifier "Mi Air Purifier 3/3H" <status>
 Number Fault "Air Purifier-fault" (G_airpurifier) {channel="miio:basic:airpurifier:Fault"}
 Switch On "Air Purifier-Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:On"}
 Number FanLevel "Air Purifier-Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:FanLevel"}
@@ -3915,19 +3988,19 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
-### Mi Air Purifier Super 2 (zhimi.airpurifier.sa2) item file lines
+### Mi Air Purifier MAX / MAX Pro (zhimi.airpurifier.sa2) item file lines
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airpurifier "Mi Air Purifier Super 2" <status>
+Group G_airpurifier "Mi Air Purifier MAX / MAX Pro" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
@@ -3939,7 +4012,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -3973,12 +4046,12 @@ Number airFreshFilterProDays "Filter Pro Days Remaining" (G_airfresh) {channel="
 String airFreshResetFilter "Reset Filter" (G_airfresh) {channel="miio:basic:airfresh:airFreshResetFilter"}
 ```
 
-### Mi Fresh Air Ventilator A1 (dmaker.airfresh.a1) item file lines
+### Mi Fresh Air Ventilator A1-150 (dmaker.airfresh.a1) item file lines
 
 note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airfresh "Mi Fresh Air Ventilator A1" <status>
+Group G_airfresh "Mi Fresh Air Ventilator A1-150" <status>
 Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
 String airFreshMode "Mode" (G_airfresh) {channel="miio:basic:airfresh:airFreshMode"}
 Switch airFreshPTCPower "PTC" (G_airfresh) {channel="miio:basic:airfresh:airFreshPTCPower"}
@@ -3996,12 +4069,12 @@ Number airFreshFilterDays "Filter Days Remaining" (G_airfresh) {channel="miio:ba
 String airFreshResetFilterA1 "Reset Filter" (G_airfresh) {channel="miio:basic:airfresh:airFreshResetFilterA1"}
 ```
 
-### Gosund Plug (cuco.plug.cp1) item file lines
+### Gosund Smart Plug (cuco.plug.cp1) item file lines
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_plug "Gosund Plug" <status>
+Group G_plug "Gosund Smart Plug" <status>
 String FirmwareRevision "Device Information-CurrentFirmware Version" (G_plug) {channel="miio:basic:plug:FirmwareRevision"}
 String Manufacturer "Device Information-Device Manufacturer" (G_plug) {channel="miio:basic:plug:Manufacturer"}
 String Model "Device Information-Device Model" (G_plug) {channel="miio:basic:plug:Model"}
@@ -4009,12 +4082,12 @@ String SerialNumber "Device Information-Device Serial Number" (G_plug) {channel=
 Switch On "Switch-Switch Status" (G_plug) {channel="miio:basic:plug:On"}
 ```
 
-### Vacuum 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines
+### Mi Robot Vacuum Mop 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_vacuum "Vacuum 1C STYTJ01ZHM" <status>
+Group G_vacuum "Mi Robot Vacuum Mop 1C STYTJ01ZHM" <status>
 String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number BatteryLevel "Battery-Battery Level" (G_vacuum) {channel="miio:basic:vacuum:BatteryLevel"}
 Number ChargingState "Battery-Charging State" (G_vacuum) {channel="miio:basic:vacuum:ChargingState"}
@@ -4048,12 +4121,12 @@ String VoicePackets "Audio - Voice Packets" (G_vacuum) {channel="miio:basic:vacu
 String TimeZone "Time - Time Zone" (G_vacuum) {channel="miio:basic:vacuum:TimeZone"}
 ```
 
-### dreame.vacuum.p2008 (dreame.vacuum.p2008) item file lines
+### Dreame Robot Vacuum-Mop F9 (dreame.vacuum.p2008) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_vacuum "dreame.vacuum.p2008" <status>
+Group G_vacuum "Dreame Robot Vacuum-Mop F9" <status>
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
 Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
 Number battery-level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
@@ -4088,12 +4161,12 @@ Number total-clean-area "Clean Logs - Total Clean Area" (G_vacuum) {channel="mii
 Number save-map-status "Vslam Extend - Save Map Status" (G_vacuum) {channel="miio:basic:vacuum:save-map-status"}
 ```
 
-### Mi Air Purifier mb1 (zhimi.airpurifier.mb1) item file lines
+### Mi Air Purifier 2S (zhimi.airpurifier.mb1) item file lines
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airpurifier "Mi Air Purifier mb1" <status>
+Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
@@ -4105,7 +4178,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -4129,19 +4202,19 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
-### Mi Air Purifier 2S (zhimi.airpurifier.mc2) item file lines
+### Mi Air Purifier 2H (zhimi.airpurifier.mc2) item file lines
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airpurifier "Mi Air Purifier 2S" <status>
+Group G_airpurifier "Mi Air Purifier 2H" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
@@ -4153,7 +4226,7 @@ Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airp
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
 Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
-Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number filterlife "Filter Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
 Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
@@ -4185,12 +4258,12 @@ Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
-### Mi Smart Fan (zhimi.fan.v2) item file lines
+### Smartmi DC Pedestal Fan (zhimi.fan.v2) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Mi Smart Fan" <status>
+Group G_fan "Smartmi DC Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
@@ -4210,12 +4283,12 @@ Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
-### Mi Smart Pedestal Fan (zhimi.fan.v3) item file lines
+### Smartmi DC Pedestal Fan (zhimi.fan.v3) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Mi Smart Pedestal Fan" <status>
+Group G_fan "Smartmi DC Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
@@ -4235,12 +4308,12 @@ Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
-### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.sa1) item file lines
+### Mi Standing Fan (zhimi.fan.sa1) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Xiaomi Mi Smart Pedestal Fan" <status>
+Group G_fan "Mi Standing Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
@@ -4256,12 +4329,12 @@ Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
-### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.za1) item file lines
+### Smartmi Inverter Pedestal Fan (zhimi.fan.za1) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Xiaomi Mi Smart Pedestal Fan" <status>
+Group G_fan "Smartmi Inverter Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
@@ -4277,12 +4350,12 @@ Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
-### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.za3) item file lines
+### Smartmi Standing Fan 2 (zhimi.fan.za3) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Xiaomi Mi Smart Pedestal Fan" <status>
+Group G_fan "Smartmi Standing Fan 2" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
@@ -4297,12 +4370,12 @@ Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLeve
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
-### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.za4) item file lines
+### Smartmi Standing Fan 2S (zhimi.fan.za4) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Xiaomi Mi Smart Pedestal Fan" <status>
+Group G_fan "Smartmi Standing Fan 2S" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
@@ -4317,12 +4390,12 @@ Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLeve
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
-### Xiaomi Mijia Smart Tower Fan (dmaker.fan.1c) item file lines
+### Mi Smart Standing Fan 2 Lite (dmaker.fan.1c) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+Group G_fan "Mi Smart Standing Fan 2 Lite" <status>
 String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
 String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
 String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
@@ -4337,12 +4410,12 @@ Switch Brightness "Fan-Brightness" (G_fan) {channel="miio:basic:fan:Brightness"}
 Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
 ```
 
-### Xiaomi Mijia Smart Tower Fan (dmaker.fan.p5) item file lines
+### Mi Smart Standing Fan 1X (dmaker.fan.p5) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+Group G_fan "Mi Smart Standing Fan 1X" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch roll "Rotation" (G_fan) {channel="miio:basic:fan:roll"}
 Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
@@ -4354,12 +4427,12 @@ Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
 ```
 
-### Xiaomi Mijia Smart Tower Fan (dmaker.fan.p8) item file lines
+### Mi Smart Standing Fan 1C (dmaker.fan.p8) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+Group G_fan "Mi Smart Standing Fan 1C" <status>
 String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
 String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
 String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
@@ -4374,35 +4447,12 @@ Switch Brightness "Fan-Brightness" (G_fan) {channel="miio:basic:fan:Brightness"}
 Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
 ```
 
-### Xiaomi Mijia Smart Tower Fan (dmaker.fan.p9) item file lines
+### Mi Smart Tower Fan (dmaker.fan.p9) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
-String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
-String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
-String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
-String FirmwareRevision "Device Information-Current Firmware Version" (G_fan) {channel="miio:basic:fan:FirmwareRevision"}
-Switch On "Fan-Switch Status" (G_fan) {channel="miio:basic:fan:On"}
-Number FanLevel "Fan-Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
-Number Mode "Fan-Mode" (G_fan) {channel="miio:basic:fan:Mode"}
-Switch HorizontalSwing "Fan-Horizontal Swing" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
-Number HorizontalAngle "Fan-Horizontal Angle" (G_fan) {channel="miio:basic:fan:HorizontalAngle"}
-Switch Alarm "Fan-Alarm" (G_fan) {channel="miio:basic:fan:Alarm"}
-Number OffDelayTime "Fan-Power Off Delay Time" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
-Switch Brightness "Fan-Brightness" (G_fan) {channel="miio:basic:fan:Brightness"}
-Number MotorControl "Fan-Motor Control" (G_fan) {channel="miio:basic:fan:MotorControl"}
-Number SpeedLevel "Fan-Speed Level" (G_fan) {channel="miio:basic:fan:SpeedLevel"}
-Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
-```
-
-### Xiaomi Mijia Smart Tower Fan (dmaker.fan.p10) item file lines
-
-note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+Group G_fan "Mi Smart Tower Fan" <status>
 String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
 String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
 String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
@@ -4420,12 +4470,35 @@ Number SpeedLevel "Fan-Speed Level" (G_fan) {channel="miio:basic:fan:SpeedLevel"
 Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
 ```
 
-### Mi Smart Home Gateway v1 (lumi.gateway.v1) item file lines
+### Mi Smart Standing Fan 2 (dmaker.fan.p10) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Mi Smart Standing Fan 2" <status>
+String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
+String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
+String FirmwareRevision "Device Information-Current Firmware Version" (G_fan) {channel="miio:basic:fan:FirmwareRevision"}
+Switch On "Fan-Switch Status" (G_fan) {channel="miio:basic:fan:On"}
+Number FanLevel "Fan-Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Number Mode "Fan-Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Switch HorizontalSwing "Fan-Horizontal Swing" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number HorizontalAngle "Fan-Horizontal Angle" (G_fan) {channel="miio:basic:fan:HorizontalAngle"}
+Switch Alarm "Fan-Alarm" (G_fan) {channel="miio:basic:fan:Alarm"}
+Number OffDelayTime "Fan-Power Off Delay Time" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Brightness "Fan-Brightness" (G_fan) {channel="miio:basic:fan:Brightness"}
+Number MotorControl "Fan-Motor Control" (G_fan) {channel="miio:basic:fan:MotorControl"}
+Number SpeedLevel "Fan-Speed Level" (G_fan) {channel="miio:basic:fan:SpeedLevel"}
+Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
+```
+
+### Mi smart Home Gateway Hub v1 (lumi.gateway.v1) item file lines
 
 note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_gateway "Mi Smart Home Gateway v1" <status>
+Group G_gateway "Mi smart Home Gateway Hub v1" <status>
 Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
 Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
@@ -4433,12 +4506,12 @@ Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:al
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
 ```
 
-### Mi Smart Home Gateway v2 (lumi.gateway.v2) item file lines
+### Mi smart Home GatewayHub v2 (lumi.gateway.v2) item file lines
 
 note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_gateway "Mi Smart Home Gateway v2" <status>
+Group G_gateway "Mi smart Home GatewayHub v2" <status>
 Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
 Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
@@ -4446,12 +4519,12 @@ Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:al
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
 ```
 
-### Mi Smart Home Gateway v3 (lumi.gateway.v3) item file lines
+### Mi mart Home Gateway Hub v3 (lumi.gateway.v3) item file lines
 
 note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_gateway "Mi Smart Home Gateway v3" <status>
+Group G_gateway "Mi mart Home Gateway Hub v3" <status>
 Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
 Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
@@ -4459,12 +4532,12 @@ Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:al
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
 ```
 
-### Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM (lumi.gateway.mgl03) item file lines
+### Mi Air Purifier virtual (lumi.gateway.mgl03) item file lines
 
 note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_gateway "Xiaomi Mi Mijia Gateway V3 ZNDMWG03LM" <status>
+Group G_gateway "Mi Air Purifier virtual" <status>
 Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
 Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
@@ -4472,34 +4545,144 @@ Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:al
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
 ```
 
-### Mi Humdifier (zhimi.humidifier.v1) item file lines
+### HUIZUO ARIES For Bedroom (huayi.light.ari013) item file lines
 
-note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_humidifier "Mi Humdifier" <status>
-Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
-Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
-Number aqi "Air Quality Index" (G_humidifier) {channel="miio:basic:humidifier:aqi"}
-Number translevel "Trans_level" (G_humidifier) {channel="miio:basic:humidifier:translevel"}
-Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
-Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
-Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
-Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
-Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
-Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
-Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
-Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+Group G_light "HUIZUO ARIES For Bedroom" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
-### Xiaomi youpin Curtain Controller (Wi-Fi) (lumi.curtain.hagl05) item file lines
+### HUIZUO ARIES For Living Room (huayi.light.aries) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO ARIES For Living Room" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO PEGASUS For Living Room (huayi.light.peg091) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO PEGASUS For Living Room" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO PEGASUS For Bedroom (huayi.light.peg093) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO PEGASUS For Bedroom" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO PISCES For Bedroom (huayi.light.pis123) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO PISCES For Bedroom" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO PISCES For Living Room (huayi.light.pisces) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO PISCES For Living Room" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO TAURUS For Bedroom (huayi.light.tau023) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO TAURUS For Bedroom" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO TAURUS For Living Room (huayi.light.taurus) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO TAURUS For Living Room" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO VIRGO For Bedroom (huayi.light.vir063) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO VIRGO For Bedroom" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO VIRGO For Living Room (huayi.light.virgo) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO VIRGO For Living Room" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO Ceiling Light (huayi.light.wy) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO Ceiling Light" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### HUIZUO ZIWEI Ceiling Lamp (huayi.light.zw131) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "HUIZUO ZIWEI Ceiling Lamp" <status>
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+```
+
+### Xiaomiyoupin Curtain Controller (Wi-Fi) (lumi.curtain.hagl05) item file lines
 
 note: Autogenerated example. Replace the id (curtain) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_curtain "Xiaomi youpin Curtain Controller (Wi-Fi)" <status>
+Group G_curtain "Xiaomiyoupin Curtain Controller (Wi-Fi)" <status>
 Number fault "Curtain - Device Fault" (G_curtain) {channel="miio:basic:curtain:fault"}
 Number current-position "Curtain - Current Position" (G_curtain) {channel="miio:basic:curtain:current-position"}
 Number status "Curtain - Status" (G_curtain) {channel="miio:basic:curtain:status"}
@@ -4511,12 +4694,12 @@ Switch en-night-tip-light "Set Night Tip Light" (G_curtain) {channel="miio:basic
 Number run-time "curtain_cfg - Run-time" (G_curtain) {channel="miio:basic:curtain:run-time"}
 ```
 
-### Mr Bond M1 Pro Smart Clothes Dryer (mrbond.airer.m1pro) item file lines
+### MR.BOND (mrbond.airer.m1pro) item file lines
 
 note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airer "Mr Bond M1 Pro Smart Clothes Dryer" <status>
+Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
 Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
@@ -4526,12 +4709,12 @@ Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
 Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 ```
 
-### Mr Bond M1 Smart Clothes Dryer (mrbond.airer.m1s) item file lines
+### MR.BOND (mrbond.airer.m1s) item file lines
 
 note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airer "Mr Bond M1 Smart Clothes Dryer" <status>
+Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
 Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
@@ -4541,12 +4724,12 @@ Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
 Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 ```
 
-### Mr Bond M1 Super Smart Clothes Dryer (mrbond.airer.m1super) item file lines
+### MR.BOND (mrbond.airer.m1super) item file lines
 
 note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_airer "Mr Bond M1 Super Smart Clothes Dryer" <status>
+Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
 Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
@@ -4556,12 +4739,12 @@ Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
 Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 ```
 
-### Xiaomi Mi Robot Vacuum MOP Essential (mijia.vacuum.v2) item file lines
+### Mi Robot Vacuum-Mop Essential (mijia.vacuum.v2) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_vacuum "Xiaomi Mi Robot Vacuum MOP Essential" <status>
+Group G_vacuum "Mi Robot Vacuum-Mop Essential" <status>
 String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
 Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
@@ -4588,12 +4771,12 @@ Switch not-disturb-switch "Language - Not Disturb Switch" (G_vacuum) {channel="m
 Number mop-status "Other Status - Mop Status" (G_vacuum) {channel="miio:basic:vacuum:mop-status"}
 ```
 
-### Xiaomi Scishare smart capsule coffee machine (scishare.coffee.s1102) item file lines
+### SCISHARE Smart Capsule Coffee Machine (scishare.coffee.s1102) item file lines
 
 note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_coffee "Xiaomi Scishare smart capsule coffee machine" <status>
+Group G_coffee "SCISHARE Smart Capsule Coffee Machine" <status>
 Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
 String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
 Number expresso "Brew Expresso" (G_coffee) {channel="miio:basic:coffee:expresso"}
@@ -4614,12 +4797,12 @@ Number expresso "Brew Americano" (G_coffee) {channel="miio:basic:coffee:expresso
 Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
 ```
 
-### Xiaomi Philips Eyecare Smart Lamp 2 (philips.light.sread1) item file lines
+### Philips EyeCare connected desk lamp gen2. (philips.light.sread1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Xiaomi Philips Eyecare Smart Lamp 2" <status>
+Group G_light "Philips EyeCare connected desk lamp gen2." <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
@@ -4629,12 +4812,12 @@ Switch eyecare "Eyecare" (G_light) {channel="miio:basic:light:eyecare"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 ```
 
-### Xiaomi Philips Eyecare Smart Lamp 2 (philips.light.sread2) item file lines
+### Mijia Philips Desk Lamp 2S (philips.light.sread2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Xiaomi Philips Eyecare Smart Lamp 2" <status>
+Group G_light "Mijia Philips Desk Lamp 2S" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
@@ -4644,12 +4827,12 @@ Switch eyecare "Eyecare" (G_light) {channel="miio:basic:light:eyecare"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 ```
 
-### Xiaomi Philips LED Ceiling Lamp (philips.light.ceiling) item file lines
+### Philips connected ceiling (philips.light.ceiling) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Xiaomi Philips LED Ceiling Lamp" <status>
+Group G_light "Philips connected ceiling" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4658,12 +4841,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
-### Xiaomi Philips LED Ceiling Lamp (philips.light.zyceiling) item file lines
+### Philips ZhiYi ceiling lamp (philips.light.zyceiling) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Xiaomi Philips LED Ceiling Lamp" <status>
+Group G_light "Philips ZhiYi ceiling lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4672,12 +4855,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
-### Xiaomi Philips Bulb (philips.light.bulb) item file lines
+### Philips ZhiRui E27 bulb (philips.light.bulb) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Xiaomi Philips Bulb" <status>
+Group G_light "Philips ZhiRui E27 bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4687,12 +4870,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### Xiaomi Philips Wi-Fi Bulb E27 White (philips.light.hbulb) item file lines
+### Philips Wi-Fi bulb E27 White (philips.light.hbulb) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Xiaomi Philips Wi-Fi Bulb E27 White" <status>
+Group G_light "Philips Wi-Fi bulb E27 White" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4702,12 +4885,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp (philips.light.candle) item file lines
+### Philips ZhiRui E14 candle lamp Frosted version (philips.light.candle) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp" <status>
+Group G_light "Philips ZhiRui E14 candle lamp Frosted version" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4716,12 +4899,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
-### Xiaomi Philips Downlight (philips.light.downlight) item file lines
+### Philips ZhiRui downlight (philips.light.downlight) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Xiaomi Philips Downlight" <status>
+Group G_light "Philips ZhiRui downlight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4731,12 +4914,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### Xiaomi Philips ZhiRui bedside lamp (philips.light.moonlight) item file lines
+### Philips ZhiRui bedside lamp (philips.light.moonlight) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Xiaomi Philips ZhiRui bedside lamp" <status>
+Group G_light "Philips ZhiRui bedside lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4747,12 +4930,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
-### Philips Ceiling Light (philips.light.bceiling1) item file lines
+### Philips Zhirui Ceiling Lamp Bedroom 40W (philips.light.bceiling1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Philips Zhirui Ceiling Lamp Bedroom 40W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4766,12 +4949,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 ```
 
-### Philips Ceiling Light (philips.light.bceiling2) item file lines
+### Philips Zhirui Ceiling Lamp Bedroom 28W (philips.light.bceiling2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Philips Zhirui Ceiling Lamp Bedroom 28W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4785,12 +4968,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 ```
 
-### Philips Light (philips.light.cbulb) item file lines
+### Mijia Philips Color Bulb (philips.light.cbulb) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Light" <status>
+Group G_light "Mijia Philips Color Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4833,12 +5016,12 @@ Switch switch_en "Switch Enabled" (G_light) {channel="miio:basic:light:switch_en
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### Philips Light (philips.light.rwread) item file lines
+### Mijia Philips Study Desk Lamp (philips.light.rwread) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Light" <status>
+Group G_light "Mijia Philips Study Desk Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
@@ -4846,12 +5029,12 @@ Number flm "Follow Me" (G_light) {channel="miio:basic:light:flm"}
 Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
 ```
 
-### Philips Light (philips.light.lnblight1) item file lines
+### Philips ZhiYi Ceiling lamp FL 40W (philips.light.lnblight1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Light" <status>
+Group G_light "Philips ZhiYi Ceiling lamp FL 40W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4865,12 +5048,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 ```
 
-### Philips Light (philips.light.lnblight2) item file lines
+### Philips ZhiYi Ceiling lamp FL 28W (philips.light.lnblight2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Light" <status>
+Group G_light "Philips ZhiYi Ceiling lamp FL 28W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4884,12 +5067,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 ```
 
-### Philips Light (philips.light.lnlrlight) item file lines
+### Philips ZhiYi Ceiling lamp FL 80W (philips.light.lnlrlight) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Light" <status>
+Group G_light "Philips ZhiYi Ceiling lamp FL 80W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4903,12 +5086,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 ```
 
-### Philips Light (philips.light.lrceiling) item file lines
+### Philips Zhirui Ceiling Lamp Living room 80W (philips.light.lrceiling) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Light" <status>
+Group G_light "Philips Zhirui Ceiling Lamp Living room 80W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4922,12 +5105,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 ```
 
-### Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal (philips.light.candle2) item file lines
+### Philips ZhiRui E14 candle lamp crystal version (philips.light.candle2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Xiaomi PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp White Crystal" <status>
+Group G_light "Philips ZhiRui E14 candle lamp crystal version" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -4936,23 +5119,23 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
-### philips.light.mono1 (philips.light.mono1) item file lines
+### Philips Smart Lamp (philips.light.mono1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "philips.light.mono1" <status>
+Group G_light "Philips Smart Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 ```
 
-### Philips Down Light (philips.light.dlight) item file lines
+### ZhiRui dimmable downlight (philips.light.dlight) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Down Light" <status>
+Group G_light "ZhiRui dimmable downlight" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4965,12 +5148,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.mceil) item file lines
+### Zhirui Ceiling Lamp Nordic 80W (philips.light.mceil) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Nordic 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -4983,12 +5166,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.mceilm) item file lines
+### Zhirui Ceiling Lamp Nordic 40W (philips.light.mceilm) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Nordic 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5001,12 +5184,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.mceils) item file lines
+### Zhirui Ceiling Lamp Nordic 28W (philips.light.mceils) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Nordic 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5019,12 +5202,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.obceil) item file lines
+### Zhirui Ceiling Lamp Black 80W (philips.light.obceil) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Black 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5037,12 +5220,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.obceim) item file lines
+###  Zhirui Ceiling Lamp Black 40W (philips.light.obceim) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light " Zhirui Ceiling Lamp Black 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5055,12 +5238,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.obceis) item file lines
+### Zhirui Ceiling Lamp Black 28W (philips.light.obceis) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Black 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5073,12 +5256,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.sceil) item file lines
+### Zhirui Ceiling Lamp Starry 80W (philips.light.sceil) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Starry 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5091,12 +5274,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.sceilm) item file lines
+### Zhirui Ceiling Lamp Starry 40W (philips.light.sceilm) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Starry 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5109,12 +5292,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.sceils) item file lines
+### Zhirui Ceiling Lamp Starry 28W (philips.light.sceils) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Starry 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5127,12 +5310,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.xzceil) item file lines
+### Zhirui Ceiling Lamp Gorgeous 80W (philips.light.xzceil) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Gorgeous 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5145,12 +5328,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.xzceim) item file lines
+### Zhirui Ceiling Lamp Gorgeous 40W (philips.light.xzceim) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Gorgeous 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5163,12 +5346,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips Ceiling Light (philips.light.xzceis) item file lines
+### Zhirui Ceiling Lamp Gorgeous 28W (philips.light.xzceis) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Philips Ceiling Light" <status>
+Group G_light "Zhirui Ceiling Lamp Gorgeous 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -5181,27 +5364,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### philips.light.virtual (philips.light.virtual) item file lines
+### Philips connected lights (philips.light.virtual) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "philips.light.virtual" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
-Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
-```
-
-### philips.light.zysread (philips.light.zysread) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "philips.light.zysread" <status>
+Group G_light "Philips connected lights" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -5211,12 +5379,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### philips.light.zystrip (philips.light.zystrip) item file lines
+### Philips ZhiYi desk lamp (philips.light.zysread) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "philips.light.zystrip" <status>
+Group G_light "Philips ZhiYi desk lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -5226,102 +5394,117 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### Mi Power-plug (chuangmi.plug.m1) item file lines
+### Philips ZhiYi strip (philips.light.zystrip) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Philips ZhiYi strip" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+```
+
+### Mi Plug Mini (chuangmi.plug.m1) item file lines
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_plug "Mi Power-plug" <status>
+Group G_plug "Mi Plug Mini" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
-### Mi Power-plug v1 (chuangmi.plug.v1) item file lines
+### Mi Smart Power Plug (chuangmi.plug.v1) item file lines
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_plug "Mi Power-plug v1" <status>
+Group G_plug "Mi Smart Power Plug" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 ```
 
-### Mi Power-plug v2 (chuangmi.plug.v2) item file lines
+### Mi Smart Power Plug v2 (chuangmi.plug.v2) item file lines
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_plug "Mi Power-plug v2" <status>
+Group G_plug "Mi Smart Power Plug v2" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 ```
 
-### Mi Power-plug v3 (chuangmi.plug.v3) item file lines
+### MIJIA Smart  Plug Enhanced (chuangmi.plug.v3) item file lines
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_plug "Mi Power-plug v3" <status>
+Group G_plug "MIJIA Smart  Plug Enhanced" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
-### Mi Power-plug (chuangmi.plug.m3) item file lines
+### Mi Smart Plug (Wi-Fi) Basic (chuangmi.plug.m3) item file lines
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_plug "Mi Power-plug" <status>
+Group G_plug "Mi Smart Plug (Wi-Fi) Basic" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
-### Mi Smart Plug (chuangmi.plug.hmi205) item file lines
+### Mi Smart Plug WiFi (chuangmi.plug.hmi205) item file lines
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_plug "Mi Smart Plug" <status>
+Group G_plug "Mi Smart Plug WiFi" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Indicator light" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
-### Mi Smart Plug (chuangmi.plug.hmi206) item file lines
+### Mi Smart Plug (WiFi) (chuangmi.plug.hmi206) item file lines
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_plug "Mi Smart Plug" <status>
+Group G_plug "Mi Smart Plug (WiFi)" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
-### Mi Smart Plug (chuangmi.plug.hmi208) item file lines
+### Mi Smart Wi-Fi Plug (Bluetooth Gateway) (chuangmi.plug.hmi208) item file lines
 
 note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_plug "Mi Smart Plug" <status>
+Group G_plug "Mi Smart Wi-Fi Plug (Bluetooth Gateway)" <status>
 Switch power "Power" (G_plug) {channel="miio:basic:plug:power"}
 Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Wifi LED" (G_plug) {channel="miio:basic:plug:led"}
 ```
 
-### Qing Mi Smart Power Strip v1 (qmi.powerstrip.v1) item file lines
+### CHINGMI Smart Power Strip v1 (qmi.powerstrip.v1) item file lines
 
 note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_powerstrip "Qing Mi Smart Power Strip v1" <status>
+Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
 Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
 Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
@@ -5333,12 +5516,12 @@ Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:bas
 Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
-### Mi Power-strip v2 (zimi.powerstrip.v2) item file lines
+### Mi Smart Power Strip (zimi.powerstrip.v2) item file lines
 
 note: Autogenerated example. Replace the id (powerstrip) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_powerstrip "Mi Power-strip v2" <status>
+Group G_powerstrip "Mi Smart Power Strip" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
 Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
 Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
@@ -5350,12 +5533,12 @@ Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:bas
 Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
-### Xiaomi Mijia vacuum V-RVCLM21B (viomi.vacuum.v6) item file lines
+### Viomi Cleaning Robot V-RVCLM21B (viomi.vacuum.v6) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_vacuum "Xiaomi Mijia vacuum V-RVCLM21B" <status>
+Group G_vacuum "Viomi Cleaning Robot V-RVCLM21B" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
 Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
@@ -5373,12 +5556,12 @@ Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
 Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
 ```
 
-### Xiaomi Mijia vacuum mop STYJ02YM (viomi.vacuum.v7) item file lines
+### Mi Robot Vacuum-Mop P (viomi.vacuum.v7) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_vacuum "Xiaomi Mijia vacuum mop STYJ02YM" <status>
+Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
 Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
@@ -5396,12 +5579,12 @@ Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
 Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
 ```
 
-### Xiaomi Mijia vacuum mop STYJ02YM v2 (viomi.vacuum.v8) item file lines
+### Mi Robot Vacuum-Mop P (viomi.vacuum.v8) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_vacuum "Xiaomi Mijia vacuum mop STYJ02YM v2" <status>
+Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
 Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
@@ -5419,34 +5602,34 @@ Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
 Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
 ```
 
-###  Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch (090615.switch.xswitch01) item file lines
+### PTX OneKey Switch (WIFI) (090615.switch.xswitch01) item file lines
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_switch " Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch" <status>
+Group G_switch "PTX OneKey Switch (WIFI)" <status>
 Number switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
 String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch1name"}
 ```
 
-###  Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch (090615.switch.xswitch02) item file lines
+### PTX Twokey switch(wifi) (090615.switch.xswitch02) item file lines
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_switch " Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch" <status>
+Group G_switch "PTX Twokey switch(wifi)" <status>
 Number switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
 Number switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
 String switch1name "Switch Name 1" (G_switch) {channel="miio:basic:switch:switch1name"}
 String switch2name "Switch Name 2" (G_switch) {channel="miio:basic:switch:switch2name"}
 ```
 
-###  Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch (090615.switch.xswitch03) item file lines
+### PTX ThreeKey Switch (WIFI) (090615.switch.xswitch03) item file lines
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_switch " Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch" <status>
+Group G_switch "PTX ThreeKey Switch (WIFI)" <status>
 Number switch1state "Switch 1" (G_switch) {channel="miio:basic:switch:switch1state"}
 Number switch2state "Switch 2" (G_switch) {channel="miio:basic:switch:switch2state"}
 Number switch3state "Switch 3" (G_switch) {channel="miio:basic:switch:switch3state"}
@@ -5507,12 +5690,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpurifier) {channel="miio:basic:w
 Number f3_usedtime "Filter 3 Used Time" (G_waterpurifier) {channel="miio:basic:waterpurifier:f3_usedtime"}
 ```
 
-### Mi Water Purifier v3 (yunmi.waterpurifier.v3) item file lines
+### Mi Water Purifier (Under sink) v3 (yunmi.waterpurifier.v3) item file lines
 
 note: Autogenerated example. Replace the id (waterpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpurifier "Mi Water Purifier v3" <status>
+Group G_waterpurifier "Mi Water Purifier (Under sink) v3" <status>
 Switch power "Power" (G_waterpurifier) {channel="miio:basic:waterpurifier:power"}
 Number run_status "Run Status" (G_waterpurifier) {channel="miio:basic:waterpurifier:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpurifier) {channel="miio:basic:waterpurifier:temperature"}
@@ -5585,12 +5768,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:water
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
-### Mi Water Purifier lx3 (yunmi.waterpuri.lx3) item file lines
+### Mi Water Purifier (Under Counter) (yunmi.waterpuri.lx3) item file lines
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpuri "Mi Water Purifier lx3" <status>
+Group G_waterpuri "Mi Water Purifier (Under Counter)" <status>
 Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -5637,12 +5820,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:water
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
-### Mi Water Purifier lx5 (yunmi.waterpuri.lx5) item file lines
+### Mi Water Purifier 1A/400G Pro (yunmi.waterpuri.lx5) item file lines
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpuri "Mi Water Purifier lx5" <status>
+Group G_waterpuri "Mi Water Purifier 1A/400G Pro" <status>
 Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -5663,12 +5846,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:water
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
-### Mi Water Purifier lx6 (yunmi.waterpuri.lx6) item file lines
+### Mi Water Purifier (Under Counter) (yunmi.waterpuri.lx6) item file lines
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpuri "Mi Water Purifier lx6" <status>
+Group G_waterpuri "Mi Water Purifier (Under Counter)" <status>
 Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -5689,12 +5872,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:water
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
-### Mi Water Purifier lx7 (yunmi.waterpuri.lx7) item file lines
+### Mi Water Purifier 500G/500G Pro (yunmi.waterpuri.lx7) item file lines
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpuri "Mi Water Purifier lx7" <status>
+Group G_waterpuri "Mi Water Purifier 500G/500G Pro" <status>
 Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -5715,12 +5898,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:water
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
-### Mi Water Purifier lx8 (yunmi.waterpuri.lx8) item file lines
+### Mi Water Purifier 600G (yunmi.waterpuri.lx8) item file lines
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpuri "Mi Water Purifier lx8" <status>
+Group G_waterpuri "Mi Water Purifier 600G" <status>
 Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -5741,12 +5924,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:water
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
-### Mi Water Purifier lx9 (yunmi.waterpuri.lx9) item file lines
+### Mi Water Purifier D1 (yunmi.waterpuri.lx9) item file lines
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpuri "Mi Water Purifier lx9" <status>
+Group G_waterpuri "Mi Water Purifier D1" <status>
 Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -5793,12 +5976,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:water
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
-### Mi Water Purifier lx11 (yunmi.waterpuri.lx11) item file lines
+### Mi Water Purifier C1 (Triple Setting) (yunmi.waterpuri.lx11) item file lines
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpuri "Mi Water Purifier lx11" <status>
+Group G_waterpuri "Mi Water Purifier C1 (Triple Setting)" <status>
 Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -5819,12 +6002,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:water
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
-### Mi Water Purifier lx12 (yunmi.waterpuri.lx12) item file lines
+### Mi Water Purifier S1 (yunmi.waterpuri.lx12) item file lines
 
 note: Autogenerated example. Replace the id (waterpuri) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_waterpuri "Mi Water Purifier lx12" <status>
+Group G_waterpuri "Mi Water Purifier S1" <status>
 Switch power "Power" (G_waterpuri) {channel="miio:basic:waterpuri:power"}
 Number run_status "Run Status" (G_waterpuri) {channel="miio:basic:waterpuri:run_status"}
 Number:Temperature temperature "Temperature" (G_waterpuri) {channel="miio:basic:waterpuri:temperature"}
@@ -5845,12 +6028,12 @@ Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:water
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
 ```
 
-### Xiaomi Mijia Whale Smart Toilet Cover (xjx.toilet.pro) item file lines
+### Uclean Smart Toilet Seat (xjx.toilet.pro) item file lines
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_toilet "Xiaomi Mijia Whale Smart Toilet Cover" <status>
+Group G_toilet "Uclean Smart Toilet Seat" <status>
 Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
 Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
@@ -5858,12 +6041,12 @@ Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_tem
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
-### Xiaomi Mijia Smart Toilet Cover (xjx.toilet.relax) item file lines
+### Uclean smart toilet relax (xjx.toilet.relax) item file lines
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_toilet "Xiaomi Mijia Smart Toilet Cover" <status>
+Group G_toilet "Uclean smart toilet relax" <status>
 Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
 Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
@@ -5871,12 +6054,12 @@ Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_tem
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
-### Xiaomi Mijia Smart Toilet Cover (xjx.toilet.pure) item file lines
+### Uclean smart toilet pure (xjx.toilet.pure) item file lines
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_toilet "Xiaomi Mijia Smart Toilet Cover" <status>
+Group G_toilet "Uclean smart toilet pure" <status>
 Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
 Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
@@ -5884,12 +6067,12 @@ Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_tem
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
-### Xiaomi Mijia Smart Toilet Cover (xjx.toilet.zero) item file lines
+### Whale Spout Smart Toilet Zero (xjx.toilet.zero) item file lines
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_toilet "Xiaomi Mijia Smart Toilet Cover" <status>
+Group G_toilet "Whale Spout Smart Toilet Zero" <status>
 Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
 Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
@@ -5897,12 +6080,12 @@ Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_tem
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
-### Yeelight Lamp (yeelink.light.bslamp1) item file lines
+### Mi Bedside Lamp (yeelink.light.bslamp1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Lamp" <status>
+Group G_light "Mi Bedside Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -5913,12 +6096,12 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight Lamp (yeelink.light.bslamp2) item file lines
+### Mi Bedside Lamp 2 (yeelink.light.bslamp2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Lamp" <status>
+Group G_light "Mi Bedside Lamp 2" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -5929,12 +6112,12 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight Lamp (yeelink.light.bslamp3) item file lines
+### Yeelight Bedside Lamp II (yeelink.light.bslamp3) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Lamp" <status>
+Group G_light "Yeelight Bedside Lamp II" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -5945,12 +6128,12 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight BadHeater (yeelink.bhf_light.v1) item file lines
+### Yeelight Smart Bath Heater Pro (yeelink.bhf_light.v1) item file lines
 
 note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_bhf_light "Yeelight BadHeater" <status>
+Group G_bhf_light "Yeelight Smart Bath Heater Pro" <status>
 Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
 String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
 Dimmer brightness "Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:brightness"}
@@ -5959,12 +6142,12 @@ Number:Temperature temperature "Temperature" (G_bhf_light) {channel="miio:basic:
 Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlightBrightness"}
 ```
 
-### Yeelight BadHeater (yeelink.bhf_light.v2) item file lines
+### Yeelight Smart Bath Heater (yeelink.bhf_light.v2) item file lines
 
 note: Autogenerated example. Replace the id (bhf_light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_bhf_light "Yeelight BadHeater" <status>
+Group G_bhf_light "Yeelight Smart Bath Heater" <status>
 Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
 String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
 Dimmer brightness "Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:brightness"}
@@ -5973,12 +6156,12 @@ Number:Temperature temperature "Temperature" (G_bhf_light) {channel="miio:basic:
 Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlightBrightness"}
 ```
 
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling1) item file lines
+### Yeelight Ceiling Light (yeelink.light.ceiling1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
+Group G_light "Yeelight Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -5989,12 +6172,12 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
-### Yeelight LED Ceiling Lamp v2 (yeelink.light.ceiling2) item file lines
+### Yeelight Ceiling Light SE (yeelink.light.ceiling2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight LED Ceiling Lamp v2" <status>
+Group G_light "Yeelight Ceiling Light SE" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6005,12 +6188,12 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
-### Yeelight LED Ceiling Lamp v3 (yeelink.light.ceiling3) item file lines
+### Yeelight LED Ceiling Light (yeelink.light.ceiling3) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight LED Ceiling Lamp v3" <status>
+Group G_light "Yeelight LED Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6021,12 +6204,12 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
-### Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB) (yeelink.light.ceiling4) item file lines
+### Yeelight LED Ceiling Light (yeelink.light.ceiling4) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight LED Ceiling Lamp v4 (JIAOYUE 650 RGB)" <status>
+Group G_light "Yeelight LED Ceiling Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
@@ -6039,331 +6222,6 @@ Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientC
 Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
 Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp v4 (yeelink.light.ceiling4.ambi) item file lines
-
-note: Autogenerated example. Replace the id (ceiling4) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_ceiling4 "Yeelight LED Ceiling Lamp v4" <status>
-Switch power "Power" (G_ceiling4) {channel="miio:basic:ceiling4:power"}
-Dimmer brightness "Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:brightness"}
-Number delayoff "Shutdown Timer" (G_ceiling4) {channel="miio:basic:ceiling4:delayoff"}
-Number colorTemperature "Color Temperature" (G_ceiling4) {channel="miio:basic:ceiling4:colorTemperature"}
-Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMode"}
-String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
-String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp v5 (yeelink.light.ceiling5) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp v5" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp v6 (yeelink.light.ceiling6) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp v6" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp v7 (yeelink.light.ceiling7) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp v7" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp v8 (yeelink.light.ceiling8) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp v8" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp v9 (yeelink.light.ceiling9) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp v9" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Meteorite lamp (yeelink.light.ceiling10) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Meteorite lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
-Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
-Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp v11 (yeelink.light.ceiling11) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp v11" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp v12 (yeelink.light.ceiling12) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp v12" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp v13 (yeelink.light.ceiling13) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp v13" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling14) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling15) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling16) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling17) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling18) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling19) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling20) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling21) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling22) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
-Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
-```
-
-### Yeelight LED Ceiling Lamp (yeelink.light.ceiling23) item file lines
-
-note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```java
-Group G_light "Yeelight LED Ceiling Lamp" <status>
-Switch power "Power" (G_light) {channel="miio:basic:light:power"}
-Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
-Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
-String name "Name" (G_light) {channel="miio:basic:light:name"}
-String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
@@ -6381,6 +6239,315 @@ Number colorMode "Color Mode" (G_ceiling4) {channel="miio:basic:ceiling4:colorMo
 String name "Name" (G_ceiling4) {channel="miio:basic:ceiling4:name"}
 String customScene "Set Scene" (G_ceiling4) {channel="miio:basic:ceiling4:customScene"}
 Number nightlightBrightness "Nightlight Brightness" (G_ceiling4) {channel="miio:basic:ceiling4:nightlightBrightness"}
+```
+
+### Mi LED Ceiling Light (yeelink.light.ceiling5) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Mi LED Ceiling Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight HaoShi LED Ceiling Lamp Pro (yeelink.light.ceiling6) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight HaoShi LED Ceiling Lamp Pro" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Haoshi Ceiling Lamp (yeelink.light.ceiling7) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Haoshi Ceiling Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### LED Ceiling Light Crystal Plus (yeelink.light.ceiling8) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "LED Ceiling Light Crystal Plus" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight HaoShi LED Ceiling Lamp Pro (yeelink.light.ceiling9) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight HaoShi LED Ceiling Lamp Pro" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Crystal Pendant Lamp (yeelink.light.ceiling10) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Crystal Pendant Lamp" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
+Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Ceiling Light 320 1S (yeelink.light.ceiling11) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Ceiling Light 320 1S" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight stylized Ceiling Light  Pro (yeelink.light.ceiling12) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight stylized Ceiling Light  Pro" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Ceiling Light (yeelink.light.ceiling13) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Ceiling Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Ceiling Light Mini (yeelink.light.ceiling14) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Ceiling Light Mini" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Ceiling Light 480 1S (yeelink.light.ceiling15) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Ceiling Light 480 1S" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Xingyu Ceiling Light (yeelink.light.ceiling16) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Xingyu Ceiling Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight ShaoHua Celing Light (yeelink.light.ceiling17) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight ShaoHua Celing Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Ceiling Light Pro (yeelink.light.ceiling18) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Ceiling Light Pro" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Ceiling Light Pro (yeelink.light.ceiling19) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Ceiling Light Pro" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Yeelight Ceiling Light (yeelink.light.ceiling20) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Ceiling Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Mi Smart LED Living Room Ceiling Light (yeelink.light.ceiling21) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Mi Smart LED Living Room Ceiling Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Mi Smart LED Ceiling Light (yeelink.light.ceiling22) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Mi Smart LED Ceiling Light" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
+### Mi Smart LED Ceiling Light (350mm) (yeelink.light.ceiling23) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Mi Smart LED Ceiling Light (350mm)" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling10.ambi) item file lines
@@ -6431,12 +6598,12 @@ String customScene "Set Scene" (G_ceiling20) {channel="miio:basic:ceiling20:cust
 Number nightlightBrightness "Nightlight Brightness" (G_ceiling20) {channel="miio:basic:ceiling20:nightlightBrightness"}
 ```
 
-### Yeelight ct2 (yeelink.light.ct2) item file lines
+### Yeelight LED Bulb (Tunable) (yeelink.light.ct2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight ct2" <status>
+Group G_light "Yeelight LED Bulb (Tunable)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6445,12 +6612,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight White Bulb (yeelink.light.mono1) item file lines
+### Yeelight Bulb (yeelink.light.mono1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight White Bulb" <status>
+Group G_light "Yeelight Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6473,12 +6640,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight White (yeelink.light.mono5) item file lines
+### Yeelight LED Filament Bulb (yeelink.light.mono5) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight White" <status>
+Group G_light "Yeelight LED Filament Bulb" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6487,12 +6654,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight (yeelink.light.lamp1) item file lines
+### Mi LED Desk Lamp (yeelink.light.lamp1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight" <status>
+Group G_light "Mi LED Desk Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6501,12 +6668,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight (yeelink.light.lamp2) item file lines
+### Mi Smart LED Desk Lamp Pro (yeelink.light.lamp2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight" <status>
+Group G_light "Mi Smart LED Desk Lamp Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6515,12 +6682,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight (yeelink.light.lamp3) item file lines
+### Yeelight LED Lamp (yeelink.light.lamp3) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight" <status>
+Group G_light "Yeelight LED Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6529,12 +6696,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight (yeelink.light.lamp4) item file lines
+### Mi LED Desk Lamp 1S (yeelink.light.lamp4) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight" <status>
+Group G_light "Mi LED Desk Lamp 1S" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6543,12 +6710,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight (yeelink.light.lamp5) item file lines
+### Yeelight Smart Desk Lamp Prime (yeelink.light.lamp5) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight" <status>
+Group G_light "Yeelight Smart Desk Lamp Prime" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6571,12 +6738,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight (yeelink.light.lamp7) item file lines
+### Yeelight LED Light Sensor Desk Lamp V1 (yeelink.light.lamp7) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight" <status>
+Group G_light "Yeelight LED Light Sensor Desk Lamp V1" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6599,12 +6766,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight Panel (yeelink.light.panel1) item file lines
+### Yeelight Whiteglow Panel Light (yeelink.light.panel1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Panel" <status>
+Group G_light "Yeelight Whiteglow Panel Light" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6615,12 +6782,12 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
-### Yeelight Strip (yeelink.light.strip1) item file lines
+### Yeelight Lightstrip (yeelink.light.strip1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Strip" <status>
+Group G_light "Yeelight Lightstrip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6631,12 +6798,12 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight Strip (yeelink.light.strip2) item file lines
+### Yeelight Lightstrip Plus (yeelink.light.strip2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Strip" <status>
+Group G_light "Yeelight Lightstrip Plus" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6647,12 +6814,12 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight Strip (yeelink.light.strip4) item file lines
+### Yeelight Willow LED Lightstrip (yeelink.light.strip4) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Strip" <status>
+Group G_light "Yeelight Willow LED Lightstrip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6661,12 +6828,12 @@ Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight (yeelink.light.virtual) item file lines
+### Light Group (Mi & Yeelight) (yeelink.light.virtual) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight" <status>
+Group G_light "Light Group (Mi & Yeelight)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6691,12 +6858,12 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight Color Bulb YLDP06YL 10W (yeelink.light.color2) item file lines
+### Yeelight LED Bulb (Color) (yeelink.light.color2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Color Bulb YLDP06YL 10W" <status>
+Group G_light "Yeelight LED Bulb (Color)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6707,12 +6874,12 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight Color Bulb YLDP02YL 9W (yeelink.light.color3) item file lines
+### Mi LED Smart Bulb (White and Color) (yeelink.light.color3) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Color Bulb YLDP02YL 9W" <status>
+Group G_light "Mi LED Smart Bulb (White and Color)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6723,12 +6890,12 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight Bulb YLDP13YL (8,5W) (yeelink.light.color4) item file lines
+### Yeelight LED Bulb 1S（Color） (yeelink.light.color4) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight Bulb YLDP13YL (8,5W)" <status>
+Group G_light "Yeelight LED Bulb 1S（Color）" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6739,12 +6906,12 @@ Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
-### Yeelight Dual Control Module (yeelink.switch.sw1) item file lines
+### Yeelight Smart Dual Control Module (yeelink.switch.sw1) item file lines
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_switch "Yeelight Dual Control Module" <status>
+Group G_switch "Yeelight Smart Dual Control Module" <status>
 Switch on "First Switch - Switch Status" (G_switch) {channel="miio:basic:switch:on"}
 Number mode "First Switch Default - Mode" (G_switch) {channel="miio:basic:switch:mode"}
 Number mode1 "First Switch - Delay" (G_switch) {channel="miio:basic:switch:mode1"}
@@ -6756,12 +6923,12 @@ Number flash "Extension - Flash" (G_switch) {channel="miio:basic:switch:flash"}
 String rc-list "Extension - Rc List" (G_switch) {channel="miio:basic:switch:rc-list"}
 ```
 
-### Yeelight yilai ceiling (yilai.light.ceiling1) item file lines
+### Yilai Ceiling Light Aiyue 480 (yilai.light.ceiling1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight yilai ceiling" <status>
+Group G_light "Yilai Ceiling Light Aiyue 480" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6772,12 +6939,12 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
-### Yeelight yilai ceiling (yilai.light.ceiling2) item file lines
+### Yilai Ceiling Lamp Hefeng 430 (yilai.light.ceiling2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight yilai ceiling" <status>
+Group G_light "Yilai Ceiling Lamp Hefeng 430" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6788,12 +6955,12 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
-### Yeelight yilai ceiling (yilai.light.ceiling3) item file lines
+### Yilai Ceiling Lamp Hefeng Pro (yilai.light.ceiling3) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "Yeelight yilai ceiling" <status>
+Group G_light "Yilai Ceiling Lamp Hefeng Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
@@ -6804,12 +6971,12 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
-### Zhimi Heater (zhimi.heater.za1) item file lines
+### Smartmi Radiant Heater Smart Version (zhimi.heater.za1) item file lines
 
 note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_heater "Zhimi Heater" <status>
+Group G_heater "Smartmi Radiant Heater Smart Version" <status>
 Switch power "Power" (G_heater) {channel="miio:basic:heater:power"}
 Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
 Number brightness "Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
@@ -6821,12 +6988,12 @@ Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:hea
 Number:Time usedhours "Run Time" (G_heater) {channel="miio:basic:heater:usedhours"}
 ```
 
-### Zhimi Heater (zhimi.heater.za2) item file lines
+### Smartmi Smart Convector Heater 1S (zhimi.heater.za2) item file lines
 
 note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_heater "Zhimi Heater" <status>
+Group G_heater "Smartmi Smart Convector Heater 1S" <status>
 Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
 Number:Temperature target-temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
@@ -6839,12 +7006,12 @@ Switch physical-controls-locked "Physical Control Locked - Physical Controls Loc
 Number:Time use-time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
 ```
 
-### Zhimi Heater (zhimi.heater.zb1) item file lines
+### Smartmi Smart Convector Heater 1S (zhimi.heater.zb1) item file lines
 
 note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_heater "Zhimi Heater" <status>
+Group G_heater "Smartmi Smart Convector Heater 1S" <status>
 Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
 Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
 Number:Temperature target-temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
