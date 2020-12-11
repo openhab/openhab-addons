@@ -43,8 +43,6 @@
 		<properties>
 			<property name="vendor">Miele</property>
 		</properties>
-
-		<config-description-ref uri="thing-type:mielecloud:device"/>
 	</thing-type>
 
 </thing:thing-descriptions>
