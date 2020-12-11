@@ -114,6 +114,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
     private boolean updateTextToSpeech = true;
+    private boolean updateTextCommand = true;
     private boolean updateAlarm = true;
     private boolean updateRoutine = true;
     private boolean updatePlayMusicVoiceCommand = true;
@@ -589,6 +590,16 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
                 this.updateState(channelId, new PercentType(textToSpeechVolume));
             }
+            if (channelId.equals(CHANNEL_TEXT_COMMAND)) {
+                if (command instanceof StringType) {
+                    String text = command.toFullString();
+                    if (!text.isEmpty()) {
+                        waitForUpdate = 1000;
+                        updateTextCommand = true;
+                        startTextCommand(connection, device, text);
+                    }
+                }
+            }
             if (channelId.equals(CHANNEL_LAST_VOICE_COMMAND)) {
                 if (command instanceof StringType) {
                     String text = command.toFullString();
@@ -711,6 +722,15 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             volume = textToSpeechVolume;
         }
         connection.textToSpeech(device, text, volume, lastKnownVolume);
+    }
+
+    private void startTextCommand(Connection connection, Device device, String text)
+            throws IOException, URISyntaxException {
+        Integer volume = null;
+        if (textToSpeechVolume != 0) {
+            volume = textToSpeechVolume;
+        }
+        connection.textCommand(device, text, volume, lastKnownVolume);
     }
 
     @Override
@@ -1082,6 +1102,10 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (updateTextToSpeech) {
                 updateTextToSpeech = false;
                 updateState(CHANNEL_TEXT_TO_SPEECH, new StringType(""));
+            }
+            if (updateTextCommand) {
+                updateTextCommand = false;
+                updateState(CHANNEL_TEXT_COMMAND, new StringType(""));
             }
             if (updatePlayMusicVoiceCommand) {
                 updatePlayMusicVoiceCommand = false;
