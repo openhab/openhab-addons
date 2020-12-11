@@ -18,10 +18,9 @@
 		</properties>
 
 		<config-description>
-			<parameter name="locale" type="text">
+			<parameter name="locale" type="text" required="true">
 				<label>@text/thing-type.config.mielecloud.account.locale.label</label>
 				<description>@text/thing-type.config.mielecloud.account.locale.description</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</bridge-type>
