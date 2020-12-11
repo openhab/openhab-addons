@@ -14,6 +14,7 @@ package org.openhab.binding.mielecloud.internal.config.servlet;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,7 +55,8 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
     private static final String DEFAULT_LOCALE = "en";
 
     private static final long ONLINE_WAIT_TIMEOUT_IN_MILLISECONDS = 5000;
-    private static final long ONLINE_CHECK_INTERVAL_IN_MILLISECONDS = 100;
+    private static final long DISCOVERY_COMPLETION_TIMEOUT_IN_MILLISECONDS = 5000;
+    private static final long CHECK_INTERVAL_IN_MILLISECONDS = 100;
 
     private final Logger logger = LoggerFactory.getLogger(CreateBridgeServlet.class);
 
@@ -175,19 +177,39 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
     }
 
     private void waitForBridgeToComeOnline(Thing bridge) {
-        long remainingWaitTime = ONLINE_WAIT_TIMEOUT_IN_MILLISECONDS;
-        while (bridge.getStatus() != ThingStatus.ONLINE && remainingWaitTime > 0) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(ONLINE_CHECK_INTERVAL_IN_MILLISECONDS);
-                remainingWaitTime -= ONLINE_CHECK_INTERVAL_IN_MILLISECONDS;
-            } catch (InterruptedException e) {
-                return;
-            }
+        try {
+            waitForConditionWithTimeout(() -> bridge.getStatus() == ThingStatus.ONLINE,
+                    ONLINE_WAIT_TIMEOUT_IN_MILLISECONDS);
+            waitForConditionWithTimeout(new DiscoveryResultCountDoesNotChangeCondition(),
+                    DISCOVERY_COMPLETION_TIMEOUT_IN_MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void waitForConditionWithTimeout(BooleanSupplier condition, long timeoutInMilliseconds)
+            throws InterruptedException {
+        long remainingWaitTime = timeoutInMilliseconds;
+        while (!condition.getAsBoolean() && remainingWaitTime > 0) {
+            TimeUnit.MILLISECONDS.sleep(CHECK_INTERVAL_IN_MILLISECONDS);
+            remainingWaitTime -= CHECK_INTERVAL_IN_MILLISECONDS;
+        }
+    }
+
+    private class DiscoveryResultCountDoesNotChangeCondition implements BooleanSupplier {
+        private long previousDiscoveryResultCount = 0;
+
+        @Override
+        public boolean getAsBoolean() {
+            var discoveryResultCount = countOwnDiscoveryResults();
+            var discoveryResultCountUnchanged = previousDiscoveryResultCount == discoveryResultCount;
+            previousDiscoveryResultCount = discoveryResultCount;
+            return discoveryResultCountUnchanged;
         }
 
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
+        private long countOwnDiscoveryResults() {
+            return inbox.stream().map(DiscoveryResult::getBindingId)
+                    .filter(MieleCloudBindingConstants.BINDING_ID::equals).count();
         }
     }
 }
