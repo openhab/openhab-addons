@@ -129,18 +129,17 @@ The following channels are available:
 ## Console Commands
 
 The binding provides few specific commands you can use in the console.
-Enter the command `smarthome:powermax` to get the usage of each available command.
+Enter the command `openhab:powermax` to get the usage of each available command.
 
 ```
-openhab> smarthome:powermax
-Usage: smarthome:powermax <bridgeUID> info_setup - information on setup
-Usage: smarthome:powermax <bridgeUID> download_setup - download setup
+Usage: openhab:powermax <bridgeUID> info_setup - information on setup
+Usage: openhab:powermax <bridgeUID> download_setup - download setup
 ```
 
 The command `info_setup` displays in the console informations about your current panel setup.
 The command `download_setup` will trigger a new download of the panel setup.
 
-Here is an example of command you can run: `smarthome:powermax powermax:serial:home info_setup`.
+Here is an example of command you can run: `openhab:powermax powermax:serial:home info_setup`.
 
 ## Notes & Limitations
 

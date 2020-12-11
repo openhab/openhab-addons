@@ -41,7 +41,7 @@ Instructions given for Firefox :
 5. In the login page, prefilled with your mail address, enter your Enedis account password and click on "Connexion à Espace Client Enedis".
 6. You will be directed to your Enedis account environment. Get back to previous page in you browser.
 7. Disconnect from your Enedis account
-8. Repeat steps 1, 2. You should arrive directly on step 5, then open the developer tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You'll find an entry named "internalAuthId", copy this value in your Openhab configuration.
+8. Repeat steps 1, 2. You should arrive directly on step 5, then open the developer tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You'll find an entry named "internalAuthId", copy this value in your openHAB configuration.
 
 ## Channels
 
@@ -62,18 +62,17 @@ The information that is retrieved is available as these channels:
 ## Console Commands
 
 The binding provides one specific command you can use in the console.
-Enter the command `smarthome:linky` to get the usage.
+Enter the command `openhab:linky` to get the usage.
 
 ```
-openhab> smarthome:linky
-Usage: smarthome:linky <thingUID> report <start day> <end day> [<separator>] - report daily consumptions between two dates
+Usage: openhab:linky <thingUID> report <start day> <end day> [<separator>] - report daily consumptions between two dates
 ```
 
 The command `report` reports in the console the daily consumptions between two dates.
 If no dates are provided, the last 7 are considered by default.
 Start and end day are formatted yyyy-mm-dd.
 
-Here is an example of command you can run: `smarthome:linky linky:linky:local report 2020-11-15 2020-12-15`.
+Here is an example of command you can run: `openhab:linky linky:linky:local report 2020-11-15 2020-12-15`.
 
 ## Full Example
 
