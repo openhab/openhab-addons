@@ -681,4 +681,6 @@ openhab> log:tail io.github.hapjava
 `smarthome:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.  
 
 `smarthome:homekit show <accessory_id | name>` - print additional details of the accessories which partially match provided ID or name.
+
+`config:list "(service.pid=org.openhab.homekit)"` - print the current applied config of the active homekit service, like name, pin, port...
  
