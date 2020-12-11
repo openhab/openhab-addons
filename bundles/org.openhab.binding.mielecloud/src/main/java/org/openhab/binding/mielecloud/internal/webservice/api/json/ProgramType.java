@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -39,15 +38,15 @@ public class ProgramType {
     private String keyLocalized;
 
     public Optional<Integer> getValueRaw() {
-        return OptionalUtils.ofNullable(valueRaw);
+        return Optional.ofNullable(valueRaw);
     }
 
     public Optional<String> getValueLocalized() {
-        return OptionalUtils.ofNullable(valueLocalized);
+        return Optional.ofNullable(valueLocalized);
     }
 
     public Optional<String> getKeyLocalized() {
-        return OptionalUtils.ofNullable(keyLocalized);
+        return Optional.ofNullable(keyLocalized);
     }
 
     @Override

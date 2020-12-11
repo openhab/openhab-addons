@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -95,15 +94,15 @@ public class Actions {
     }
 
     public Optional<String> getDeviceName() {
-        return OptionalUtils.ofNullable(deviceName);
+        return Optional.ofNullable(deviceName);
     }
 
     public Optional<Boolean> getPowerOn() {
-        return OptionalUtils.ofNullable(powerOn);
+        return Optional.ofNullable(powerOn);
     }
 
     public Optional<Boolean> getPowerOff() {
-        return OptionalUtils.ofNullable(powerOff);
+        return Optional.ofNullable(powerOff);
     }
 
     @Override

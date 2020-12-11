@@ -31,7 +31,6 @@ import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefreshListener;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.mielecloud.internal.util.LocaleValidator;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 import org.openhab.binding.mielecloud.internal.webservice.ConnectionError;
 import org.openhab.binding.mielecloud.internal.webservice.ConnectionStatusListener;
 import org.openhab.binding.mielecloud.internal.webservice.DeviceStateListener;
@@ -222,7 +221,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
             } catch (Exception e) {
                 logger.warn("Failed to logout from Miele cloud.", e);
             }
-            OptionalUtils.ofNullable(logoutFuture).map(future -> future.complete(null));
+            Optional.ofNullable(logoutFuture).map(future -> future.complete(null));
         });
     }
 

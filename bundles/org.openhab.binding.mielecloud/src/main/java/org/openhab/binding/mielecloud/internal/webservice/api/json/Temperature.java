@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -39,15 +38,15 @@ public class Temperature {
     private String unit;
 
     public Optional<Integer> getValueRaw() {
-        return OptionalUtils.ofNullable(valueRaw);
+        return Optional.ofNullable(valueRaw);
     }
 
     public Optional<Integer> getValueLocalized() {
-        return OptionalUtils.ofNullable(valueLocalized).map(Double::intValue);
+        return Optional.ofNullable(valueLocalized).map(Double::intValue);
     }
 
     public Optional<String> getUnit() {
-        return OptionalUtils.ofNullable(unit);
+        return Optional.ofNullable(unit);
     }
 
     @Override

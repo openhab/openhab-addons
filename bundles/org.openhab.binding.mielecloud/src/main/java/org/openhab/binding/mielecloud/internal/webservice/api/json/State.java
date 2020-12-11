@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 /**
  * Immutable POJO representing the state of a device. Queried from the Miele REST API.
@@ -78,21 +77,21 @@ public class State {
     private Integer batteryLevel;
 
     public Optional<Status> getStatus() {
-        return OptionalUtils.ofNullable(status);
+        return Optional.ofNullable(status);
     }
 
     public Optional<ProgramId> getProgramId() {
         // There is a typo for the program ID in the Miele Cloud API, which will be corrected in the future.
         // For the sake of robustness, we currently support both upper and lower case.
-        return OptionalUtils.ofNullable(programId != null ? programId : ProgramID);
+        return Optional.ofNullable(programId != null ? programId : ProgramID);
     }
 
     public Optional<ProgramType> getProgramType() {
-        return OptionalUtils.ofNullable(programType);
+        return Optional.ofNullable(programType);
     }
 
     public Optional<ProgramPhase> getProgramPhase() {
-        return OptionalUtils.ofNullable(programPhase);
+        return Optional.ofNullable(programPhase);
     }
 
     /**
@@ -105,7 +104,7 @@ public class State {
             return Optional.empty();
         }
 
-        return OptionalUtils.ofNullable(Collections.unmodifiableList(remainingTime));
+        return Optional.ofNullable(Collections.unmodifiableList(remainingTime));
     }
 
     /**
@@ -118,7 +117,7 @@ public class State {
             return Optional.empty();
         }
 
-        return OptionalUtils.ofNullable(Collections.unmodifiableList(startTime));
+        return Optional.ofNullable(Collections.unmodifiableList(startTime));
     }
 
     public List<Temperature> getTargetTemperature() {
@@ -138,19 +137,19 @@ public class State {
     }
 
     public Optional<Boolean> getSignalInfo() {
-        return OptionalUtils.ofNullable(signalInfo);
+        return Optional.ofNullable(signalInfo);
     }
 
     public Optional<Boolean> getSignalFailure() {
-        return OptionalUtils.ofNullable(signalFailure);
+        return Optional.ofNullable(signalFailure);
     }
 
     public Optional<Boolean> getSignalDoor() {
-        return OptionalUtils.ofNullable(signalDoor);
+        return Optional.ofNullable(signalDoor);
     }
 
     public Optional<RemoteEnable> getRemoteEnable() {
-        return OptionalUtils.ofNullable(remoteEnable);
+        return Optional.ofNullable(remoteEnable);
     }
 
     public Light getLight() {
@@ -167,19 +166,19 @@ public class State {
             return Optional.empty();
         }
 
-        return OptionalUtils.ofNullable(Collections.unmodifiableList(elapsedTime));
+        return Optional.ofNullable(Collections.unmodifiableList(elapsedTime));
     }
 
     public Optional<SpinningSpeed> getSpinningSpeed() {
-        return OptionalUtils.ofNullable(spinningSpeed);
+        return Optional.ofNullable(spinningSpeed);
     }
 
     public Optional<DryingStep> getDryingStep() {
-        return OptionalUtils.ofNullable(dryingStep);
+        return Optional.ofNullable(dryingStep);
     }
 
     public Optional<VentilationStep> getVentilationStep() {
-        return OptionalUtils.ofNullable(ventilationStep);
+        return Optional.ofNullable(ventilationStep);
     }
 
     public List<PlateStep> getPlateStep() {
@@ -191,7 +190,7 @@ public class State {
     }
 
     public Optional<Integer> getBatteryLevel() {
-        return OptionalUtils.ofNullable(batteryLevel);
+        return Optional.ofNullable(batteryLevel);
     }
 
     @Override

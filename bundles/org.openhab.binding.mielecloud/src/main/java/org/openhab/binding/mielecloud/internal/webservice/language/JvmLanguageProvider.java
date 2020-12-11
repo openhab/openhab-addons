@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 /**
  * {@link LanguageProvider} returning the default JVM language.
@@ -27,6 +26,6 @@ import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 public class JvmLanguageProvider implements LanguageProvider {
     @Override
     public Optional<String> getLanguage() {
-        return OptionalUtils.ofNullable(Locale.getDefault()).map(Locale::getLanguage).filter(l -> !l.isEmpty());
+        return Optional.ofNullable(Locale.getDefault()).map(Locale::getLanguage).filter(l -> !l.isEmpty());
     }
 }

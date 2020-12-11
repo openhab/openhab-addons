@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 /**
  * Immutable POJO representing a device queried from the Miele REST API.
@@ -32,11 +31,11 @@ public class Device {
     private State state;
 
     public Optional<Ident> getIdent() {
-        return OptionalUtils.ofNullable(ident);
+        return Optional.ofNullable(ident);
     }
 
     public Optional<State> getState() {
-        return OptionalUtils.ofNullable(state);
+        return Optional.ofNullable(state);
     }
 
     @Override

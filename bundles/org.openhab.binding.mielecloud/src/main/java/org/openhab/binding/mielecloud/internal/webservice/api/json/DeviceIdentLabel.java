@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 /**
  * Immutable POJO representing the full device identification queried from the Miele REST API.
@@ -40,19 +39,19 @@ public class DeviceIdentLabel {
     private final List<String> swids = null;
 
     public Optional<String> getFabNumber() {
-        return OptionalUtils.ofNullable(fabNumber);
+        return Optional.ofNullable(fabNumber);
     }
 
     public Optional<String> getFabIndex() {
-        return OptionalUtils.ofNullable(fabIndex);
+        return Optional.ofNullable(fabIndex);
     }
 
     public Optional<String> getTechType() {
-        return OptionalUtils.ofNullable(techType);
+        return Optional.ofNullable(techType);
     }
 
     public Optional<String> getMatNumber() {
-        return OptionalUtils.ofNullable(matNumber);
+        return Optional.ofNullable(matNumber);
     }
 
     public List<String> getSwids() {

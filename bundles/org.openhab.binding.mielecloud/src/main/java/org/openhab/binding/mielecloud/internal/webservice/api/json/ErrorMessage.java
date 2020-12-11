@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -52,7 +51,7 @@ public class ErrorMessage {
     }
 
     public Optional<String> getMessage() {
-        return OptionalUtils.ofNullable(message);
+        return Optional.ofNullable(message);
     }
 
     @Override

@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 /**
  * Immutable POJO representing the remote control capabilities of a device. Queried from the Miele REST API.
@@ -32,11 +31,11 @@ public class RemoteEnable {
     private Boolean smartGrid;
 
     public Optional<Boolean> getFullRemoteControl() {
-        return OptionalUtils.ofNullable(fullRemoteControl);
+        return Optional.ofNullable(fullRemoteControl);
     }
 
     public Optional<Boolean> getSmartGrid() {
-        return OptionalUtils.ofNullable(smartGrid);
+        return Optional.ofNullable(smartGrid);
     }
 
     @Override

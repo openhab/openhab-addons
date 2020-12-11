@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 /**
  * Immutable POJO representing the XKM (Miele communication module) identification. Queried from the Miele REST API.
@@ -32,11 +31,11 @@ public class XkmIdentLabel {
     private String releaseVersion;
 
     public Optional<String> getTechType() {
-        return OptionalUtils.ofNullable(techType);
+        return Optional.ofNullable(techType);
     }
 
     public Optional<String> getReleaseVersion() {
-        return OptionalUtils.ofNullable(releaseVersion);
+        return Optional.ofNullable(releaseVersion);
     }
 
     @Override

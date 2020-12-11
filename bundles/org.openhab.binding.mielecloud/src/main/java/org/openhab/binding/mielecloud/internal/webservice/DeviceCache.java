@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Device;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceCollection;
 
@@ -45,6 +44,6 @@ class DeviceCache {
     }
 
     public Optional<Device> getDevice(String deviceIdentifier) {
-        return OptionalUtils.ofNullable(entries.get(deviceIdentifier));
+        return Optional.ofNullable(entries.get(deviceIdentifier));
     }
 }

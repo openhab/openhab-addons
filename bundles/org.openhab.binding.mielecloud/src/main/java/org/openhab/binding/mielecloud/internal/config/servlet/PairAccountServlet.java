@@ -13,12 +13,12 @@
 package org.openhab.binding.mielecloud.internal.config.servlet;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 /**
  * Servlet showing the pair account page.
@@ -49,7 +49,7 @@ public final class PairAccountServlet extends AbstractShowPageServlet {
 
     /**
      * Creates a new {@link PairAccountServlet}.
-     * 
+     *
      * @param resourceLoader Loader for resources.
      */
     public PairAccountServlet(ResourceLoader resourceLoader) {
@@ -66,8 +66,8 @@ public final class PairAccountServlet extends AbstractShowPageServlet {
     }
 
     private String renderClientIdAndClientSecret(HttpServletRequest request, String skeleton) {
-        String prefilledClientId = OptionalUtils.ofNullable(request.getParameter(CLIENT_ID_PARAMETER_NAME)).orElse("");
-        String prefilledClientSecret = OptionalUtils.ofNullable(request.getParameter(CLIENT_SECRET_PARAMETER_NAME))
+        String prefilledClientId = Optional.ofNullable(request.getParameter(CLIENT_ID_PARAMETER_NAME)).orElse("");
+        String prefilledClientSecret = Optional.ofNullable(request.getParameter(CLIENT_SECRET_PARAMETER_NAME))
                 .orElse("");
         return skeleton.replace(CLIENT_ID_PLACEHOLDER, prefilledClientId).replace(CLIENT_SECRET_PLACEHOLDER,
                 prefilledClientSecret);

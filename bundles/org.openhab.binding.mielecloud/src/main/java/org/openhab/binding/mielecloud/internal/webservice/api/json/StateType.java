@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 /**
  * Represents the Miele device state.
@@ -66,6 +65,6 @@ public enum StateType {
     }
 
     public static Optional<StateType> fromCode(int code) {
-        return OptionalUtils.ofNullable(STATE_TYPE_BY_CODE.get(code));
+        return Optional.ofNullable(STATE_TYPE_BY_CODE.get(code));
     }
 }

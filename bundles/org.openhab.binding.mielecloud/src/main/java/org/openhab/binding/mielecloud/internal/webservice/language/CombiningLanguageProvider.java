@@ -16,7 +16,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 
 /**
  * {@link LanguageProvider} combining two {@link LanguageProvider}s, a prioritized and a fallback provider.
@@ -63,12 +62,12 @@ public class CombiningLanguageProvider implements LanguageProvider {
 
     @Override
     public Optional<String> getLanguage() {
-        Optional<String> prioritizedLanguage = OptionalUtils.ofNullable(prioritizedLanguageProvider)
+        Optional<String> prioritizedLanguage = Optional.ofNullable(prioritizedLanguageProvider)
                 .flatMap(LanguageProvider::getLanguage);
         if (prioritizedLanguage.isPresent()) {
             return prioritizedLanguage;
         } else {
-            return OptionalUtils.ofNullable(fallbackLanguageProvider).flatMap(LanguageProvider::getLanguage);
+            return Optional.ofNullable(fallbackLanguageProvider).flatMap(LanguageProvider::getLanguage);
         }
     }
 }

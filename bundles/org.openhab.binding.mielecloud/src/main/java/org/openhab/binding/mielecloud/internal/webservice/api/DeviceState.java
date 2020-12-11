@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Device;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceIdentLabel;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
@@ -55,7 +54,7 @@ public class DeviceState {
 
     public DeviceState(String deviceIdentifier, @Nullable Device device) {
         this.deviceIdentifier = deviceIdentifier;
-        this.device = OptionalUtils.ofNullable(device);
+        this.device = Optional.ofNullable(device);
     }
 
     /**

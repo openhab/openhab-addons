@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.mielecloud.internal.webservice.api;
 
-import static org.openhab.binding.mielecloud.internal.webservice.api.json.Light.*;
-import static org.openhab.binding.mielecloud.internal.webservice.api.json.ProcessAction.*;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mielecloud.internal.util.OptionalUtils;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Actions;
+import org.openhab.binding.mielecloud.internal.webservice.api.json.Light;
+import org.openhab.binding.mielecloud.internal.webservice.api.json.ProcessAction;
 
 /**
  * Provides convenient access to the list of actions that can be performed with a device.
@@ -37,7 +35,7 @@ public class ActionsState {
 
     public ActionsState(String deviceIdentifier, @Nullable Actions actions) {
         this.deviceIdentifier = deviceIdentifier;
-        this.actions = OptionalUtils.ofNullable(actions);
+        this.actions = Optional.ofNullable(actions);
     }
 
     /**
@@ -51,21 +49,21 @@ public class ActionsState {
      * Gets whether the device can be started.
      */
     public boolean canBeStarted() {
-        return actions.map(Actions::getProcessAction).map(a -> a.contains(START)).orElse(false);
+        return actions.map(Actions::getProcessAction).map(a -> a.contains(ProcessAction.START)).orElse(false);
     }
 
     /**
      * Gets whether the device can be stopped.
      */
     public boolean canBeStopped() {
-        return actions.map(Actions::getProcessAction).map(a -> a.contains(STOP)).orElse(false);
+        return actions.map(Actions::getProcessAction).map(a -> a.contains(ProcessAction.STOP)).orElse(false);
     }
 
     /**
      * Gets whether the device can be paused.
      */
     public boolean canBePaused() {
-        return actions.map(Actions::getProcessAction).map(a -> a.contains(PAUSE)).orElse(false);
+        return actions.map(Actions::getProcessAction).map(a -> a.contains(ProcessAction.PAUSE)).orElse(false);
     }
 
     /**
@@ -79,14 +77,16 @@ public class ActionsState {
      * Gets whether supercooling can be started.
      */
     public boolean canStartSupercooling() {
-        return actions.map(Actions::getProcessAction).map(a -> a.contains(START_SUPERCOOLING)).orElse(false);
+        return actions.map(Actions::getProcessAction).map(a -> a.contains(ProcessAction.START_SUPERCOOLING))
+                .orElse(false);
     }
 
     /**
      * Gets whether supercooling can be stopped.
      */
     public boolean canStopSupercooling() {
-        return actions.map(Actions::getProcessAction).map(a -> a.contains(STOP_SUPERCOOLING)).orElse(false);
+        return actions.map(Actions::getProcessAction).map(a -> a.contains(ProcessAction.STOP_SUPERCOOLING))
+                .orElse(false);
     }
 
     /**
@@ -100,28 +100,30 @@ public class ActionsState {
      * Gets whether superfreezing can be started.
      */
     public boolean canStartSuperfreezing() {
-        return actions.map(Actions::getProcessAction).map(a -> a.contains(START_SUPERFREEZING)).orElse(false);
+        return actions.map(Actions::getProcessAction).map(a -> a.contains(ProcessAction.START_SUPERFREEZING))
+                .orElse(false);
     }
 
     /**
      * Gets whether superfreezing can be stopped.
      */
     public boolean canStopSuperfreezing() {
-        return actions.map(Actions::getProcessAction).map(a -> a.contains(STOP_SUPERFREEZING)).orElse(false);
+        return actions.map(Actions::getProcessAction).map(a -> a.contains(ProcessAction.STOP_SUPERFREEZING))
+                .orElse(false);
     }
 
     /**
      * Gets whether light can be enabled.
      */
     public boolean canEnableLight() {
-        return actions.map(Actions::getLight).map(a -> a.contains(ENABLE)).orElse(false);
+        return actions.map(Actions::getLight).map(a -> a.contains(Light.ENABLE)).orElse(false);
     }
 
     /**
      * Gets whether light can be disabled.
      */
     public boolean canDisableLight() {
-        return actions.map(Actions::getLight).map(a -> a.contains(DISABLE)).orElse(false);
+        return actions.map(Actions::getLight).map(a -> a.contains(Light.DISABLE)).orElse(false);
     }
 
     /**
