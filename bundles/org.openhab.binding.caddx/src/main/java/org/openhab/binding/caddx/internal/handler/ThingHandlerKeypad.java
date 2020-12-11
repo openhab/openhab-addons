@@ -59,14 +59,13 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
         if (getThing().equals(thing)) {
             CaddxMessage message = event.getCaddxMessage();
             CaddxMessageType mt = message.getCaddxMessageType();
-            ChannelUID channelUID = null;
 
             // Log event messages have special handling
             if (CaddxMessageType.KEYPAD_MESSAGE_RECEIVED.equals(mt)) {
                 for (CaddxProperty p : mt.properties) {
                     if (!("".equals(p.getId()))) {
                         String value = message.getPropertyById(p.getId());
-                        channelUID = new ChannelUID(getThing().getUID(), p.getId());
+                        ChannelUID channelUID = new ChannelUID(getThing().getUID(), p.getId());
                         updateChannel(channelUID, value);
                     }
                 }
