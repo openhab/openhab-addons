@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -214,14 +213,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler
 
     private void performLogout() {
         logoutFuture = new CompletableFuture<>();
-        scheduler.schedule(() -> {
+        scheduler.execute(() -> {
             try {
                 getWebservice().logout();
             } catch (Exception e) {
                 logger.warn("Failed to logout from Miele cloud.", e);
             }
             OptionalUtils.ofNullable(logoutFuture).map(future -> future.complete(null));
-        }, 1, TimeUnit.NANOSECONDS);
+        });
     }
 
     private void tryInitializeWebservice() {
