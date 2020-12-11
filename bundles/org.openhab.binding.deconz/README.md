@@ -146,6 +146,7 @@ The sensor devices support some of the following channels:
 | battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
 | carbonmonoxide  | Switch                   |      R      | `ON` = carbon monoxide detected                                                           | carbonmonoxide                               |
 | color           | Color                    |      R      | Color set by remote                                                                       | colorcontrol                                 |
+| windowopen      | Contact                  |      R      | `windowopen` status is reported by some thermostats                                       | thermostat                                   |
 
 **NOTE:** Beside other non mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
 The specification of your sensor depends on the deCONZ capabilities.
