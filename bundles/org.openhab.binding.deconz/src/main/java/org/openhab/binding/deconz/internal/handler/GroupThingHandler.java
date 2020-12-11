@@ -17,13 +17,11 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.GroupAction;
 import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.GroupState;
-import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -55,7 +53,7 @@ import com.google.gson.Gson;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
+public class GroupThingHandler extends DeconzBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_LIGHTGROUP);
     private final Logger logger = LoggerFactory.getLogger(GroupThingHandler.class);
 
@@ -128,21 +126,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler<GroupMessage> {
     }
 
     @Override
-    protected @Nullable GroupMessage parseStateResponse(AsyncHttpClient.Result r) {
-        if (r.getResponseCode() == 403) {
-            return null;
-        } else if (r.getResponseCode() == 200) {
-            return gson.fromJson(r.getBody(), GroupMessage.class);
-        } else {
-            throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
-        }
-    }
-
-    @Override
-    protected void processStateResponse(@Nullable GroupMessage stateResponse) {
-        if (stateResponse == null) {
-            return;
-        }
+    protected void processStateResponse(DeconzBaseMessage stateResponse) {
         messageReceived(config.id, stateResponse);
     }
 

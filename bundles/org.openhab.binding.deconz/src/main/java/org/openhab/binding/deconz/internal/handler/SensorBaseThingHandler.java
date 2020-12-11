@@ -28,7 +28,6 @@ import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.dto.SensorState;
-import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -63,7 +62,7 @@ import com.google.gson.Gson;
  * @author Lukas Agethen - Refactored to provide better extensibility
  */
 @NonNullByDefault
-public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<SensorMessage> {
+public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SensorBaseThingHandler.class);
     /**
      * The sensor state. Contains all possible fields for all supported sensors and switches
@@ -106,25 +105,15 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
     }
 
     @Override
-    protected @Nullable SensorMessage parseStateResponse(AsyncHttpClient.Result r) {
-        if (r.getResponseCode() == 403) {
-            return null;
-        } else if (r.getResponseCode() == 200) {
-            return gson.fromJson(r.getBody(), SensorMessage.class);
-        } else {
-            throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
-        }
-    }
-
-    @Override
-    protected void processStateResponse(@Nullable SensorMessage stateResponse) {
-        logger.trace("{} received {}", thing.getUID(), stateResponse);
-        if (stateResponse == null) {
+    protected void processStateResponse(DeconzBaseMessage stateResponse) {
+        if (!(stateResponse instanceof SensorMessage)) {
             return;
         }
-        SensorConfig newSensorConfig = stateResponse.config;
+
+        SensorMessage sensorMessage = (SensorMessage) stateResponse;
+        SensorConfig newSensorConfig = sensorMessage.config;
         sensorConfig = newSensorConfig != null ? newSensorConfig : new SensorConfig();
-        SensorState newSensorState = stateResponse.state;
+        SensorState newSensorState = sensorMessage.state;
         sensorState = newSensorState != null ? newSensorState : new SensorState();
 
         // Add some information about the sensor
@@ -139,9 +128,9 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         }
 
         Map<String, String> editProperties = editProperties();
-        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, stateResponse.swversion);
-        editProperties.put(Thing.PROPERTY_MODEL_ID, stateResponse.modelid);
-        editProperties.put(UNIQUE_ID, stateResponse.uniqueid);
+        editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensorMessage.swversion);
+        editProperties.put(Thing.PROPERTY_MODEL_ID, sensorMessage.modelid);
+        editProperties.put(UNIQUE_ID, sensorMessage.uniqueid);
         ignoreConfigurationUpdate = true;
         updateProperties(editProperties);
 
@@ -166,7 +155,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         // So to monitor a sensor is still alive, the "last seen" is necessary.
         // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
         // manually poll it after the defined time
-        String lastSeen = stateResponse.lastseen;
+        String lastSeen = sensorMessage.lastseen;
         if (lastSeen != null && config.lastSeenPolling > 0) {
             createChannel(CHANNEL_LAST_SEEN, ChannelKind.STATE);
             updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
@@ -179,10 +168,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         updateStatus(ThingStatus.ONLINE);
     }
 
-    private void processLastSeen(@Nullable SensorMessage stateResponse) {
-        if (stateResponse == null) {
-            return;
-        }
+    private void processLastSeen(DeconzBaseMessage stateResponse) {
         String lastSeen = stateResponse.lastseen;
         if (lastSeen != null) {
             updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));

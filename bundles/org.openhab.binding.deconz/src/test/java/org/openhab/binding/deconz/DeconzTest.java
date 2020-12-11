@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,11 +80,12 @@ public class DeconzTest {
         assertEquals(6, bridgeFullState.lights.size());
         assertEquals(9, bridgeFullState.sensors.size());
 
+        Mockito.doAnswer(answer -> CompletableFuture.completedFuture(Optional.of(bridgeFullState))).when(bridgeHandler)
+                .getBridgeFullState();
         ThingDiscoveryService discoveryService = new ThingDiscoveryService();
         discoveryService.setThingHandler(bridgeHandler);
         discoveryService.addDiscoveryListener(discoveryListener);
-
-        discoveryService.stateRequestFinished(bridgeFullState);
+        discoveryService.startScan();
         Mockito.verify(discoveryListener, times(20)).thingDiscovered(any(), any());
     }
 

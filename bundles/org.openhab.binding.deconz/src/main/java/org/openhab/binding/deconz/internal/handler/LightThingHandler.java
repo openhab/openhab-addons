@@ -27,7 +27,6 @@ import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
-import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.ChannelUID;
@@ -58,7 +57,7 @@ import com.google.gson.Gson;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
+public class LightThingHandler extends DeconzBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
             THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT,
             THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE, THING_TYPE_DOORLOCK);
@@ -263,41 +262,31 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     }
 
     @Override
-    protected @Nullable LightMessage parseStateResponse(AsyncHttpClient.Result r) {
-        if (r.getResponseCode() == 403) {
-            return null;
-        } else if (r.getResponseCode() == 200) {
-            LightMessage lightMessage = Objects.requireNonNull(gson.fromJson(r.getBody(), LightMessage.class));
-            if (needsPropertyUpdate) {
-                // if we did not receive an ctmin/ctmax, then we probably don't need it
-                needsPropertyUpdate = false;
-
-                Integer ctmax = lightMessage.ctmax;
-                Integer ctmin = lightMessage.ctmin;
-                if (ctmin != null && ctmax != null) {
-                    Map<String, String> properties = new HashMap<>(thing.getProperties());
-                    properties.put(PROPERTY_CT_MAX,
-                            Integer.toString(Util.constrainToRange(ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
-                    properties.put(PROPERTY_CT_MIN,
-                            Integer.toString(Util.constrainToRange(ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
-                    updateProperties(properties);
-                }
-            }
-            return lightMessage;
-        } else {
-            throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
-        }
-    }
-
-    @Override
-    protected void processStateResponse(@Nullable LightMessage stateResponse) {
-        if (stateResponse == null) {
+    protected void processStateResponse(DeconzBaseMessage stateResponse) {
+        if (!(stateResponse instanceof LightMessage)) {
             return;
         }
-        if (stateResponse.state.effect != null) {
-            checkAndUpdateEffectChannels(stateResponse);
+
+        LightMessage lightMessage = (LightMessage) stateResponse;
+        if (needsPropertyUpdate) {
+            // if we did not receive an ctmin/ctmax, then we probably don't need it
+            needsPropertyUpdate = false;
+
+            Integer ctmax = lightMessage.ctmax;
+            Integer ctmin = lightMessage.ctmin;
+            if (ctmin != null && ctmax != null) {
+                Map<String, String> properties = new HashMap<>(thing.getProperties());
+                properties.put(PROPERTY_CT_MAX, Integer.toString(Util.constrainToRange(ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
+                properties.put(PROPERTY_CT_MIN, Integer.toString(Util.constrainToRange(ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
+                updateProperties(properties);
+            }
         }
-        messageReceived(config.id, stateResponse);
+
+        if (lightMessage.state.effect != null) {
+            checkAndUpdateEffectChannels(lightMessage);
+        }
+
+        messageReceived(config.id, lightMessage);
     }
 
     private enum EffectLightModel {

@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.Util;
-import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
@@ -70,10 +69,19 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     }
 
     @Override
-    protected void startScan() {
+    public void startScan() {
         final DeconzBridgeHandler handler = this.handler;
         if (handler != null) {
-            handler.requestFullState(false);
+            handler.getBridgeFullState().thenAccept(fullState -> {
+                stopScan();
+                removeOlderResults(getTimestampOfLastScan());
+                fullState.ifPresent(state -> {
+                    state.sensors.forEach(this::addSensor);
+                    state.lights.forEach(this::addLight);
+                    state.groups.forEach(this::addGroup);
+                });
+
+            });
         }
     }
 
@@ -282,7 +290,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof DeconzBridgeHandler) {
             this.handler = (DeconzBridgeHandler) handler;
-            ((DeconzBridgeHandler) handler).setDiscoveryService(this);
             this.bridgeUID = handler.getThing().getUID();
         }
     }
@@ -300,21 +307,5 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     @Override
     public void deactivate() {
         super.deactivate();
-    }
-
-    /**
-     * Call this method when a full bridge state request has been performed and either the fullState
-     * are known or a failure happened.
-     *
-     * @param fullState The fullState or null.
-     */
-    public void stateRequestFinished(final @Nullable BridgeFullState fullState) {
-        stopScan();
-        removeOlderResults(getTimestampOfLastScan());
-        if (fullState != null) {
-            fullState.sensors.forEach(this::addSensor);
-            fullState.lights.forEach(this::addLight);
-            fullState.groups.forEach(this::addGroup);
-        }
     }
 }

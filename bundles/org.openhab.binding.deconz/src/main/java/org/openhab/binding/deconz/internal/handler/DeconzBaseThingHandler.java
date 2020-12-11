@@ -14,11 +14,8 @@ package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.Util.buildUrl;
 
-import java.net.SocketTimeoutException;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,8 +43,7 @@ import com.google.gson.Gson;
  * @author Jan N. Klug - Refactored to abstract class
  */
 @NonNullByDefault
-public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extends BaseThingHandler
-        implements WebSocketMessageListener {
+public abstract class DeconzBaseThingHandler extends BaseThingHandler implements WebSocketMessageListener {
     private final Logger logger = LoggerFactory.getLogger(DeconzBaseThingHandler.class);
     protected final ResourceType resourceType;
     protected ThingConfig config = new ThingConfig();
@@ -88,6 +84,15 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         }
     }
 
+    private @Nullable DeconzBridgeHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return null;
+        }
+        return (DeconzBridgeHandler) bridge.getHandler();
+    }
+
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (config.id.isEmpty()) {
@@ -98,12 +103,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             // the bridge is ONLINE, we can communicate with the gateway, so we update the connection parameters and
             // register the listener
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                return;
-            }
-            DeconzBridgeHandler bridgeHandler = (DeconzBridgeHandler) bridge.getHandler();
+            DeconzBridgeHandler bridgeHandler = getBridgeHandler();
             if (bridgeHandler == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
@@ -130,50 +130,32 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     }
 
     /**
-     * parse the initial state response message
-     *
-     * @param r AsyncHttpClient.Result with the state response result
-     * @return a message of the correct type
-     */
-    protected abstract @Nullable T parseStateResponse(AsyncHttpClient.Result r);
-
-    /**
      * processes a newly received (initial) state response
      *
      * MUST set the thing status!
      *
      * @param stateResponse
      */
-    protected abstract void processStateResponse(@Nullable T stateResponse);
+    protected abstract void processStateResponse(DeconzBaseMessage stateResponse);
 
     /**
      * Perform a request to the REST API for retrieving the full light state with all data and configuration.
      */
-    protected void requestState(Consumer<@Nullable T> processor) {
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
-            return;
+    protected void requestState(Consumer<DeconzBaseMessage> processor) {
+        DeconzBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler != null) {
+            bridgeHandler.getBridgeFullState()
+                    .thenAccept(f -> f.map(s -> s.getMessage(resourceType, config.id)).ifPresentOrElse(message -> {
+                        logger.trace("{} processing {}", thing.getUID(), message);
+                        processor.accept(message);
+                    }, () -> {
+                        if (initializationJob != null) {
+                            stopInitializationJob();
+                            initializationJob = scheduler.schedule(() -> requestState(this::processStateResponse), 10,
+                                    TimeUnit.SECONDS);
+                        }
+                    }));
         }
-
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey,
-                resourceType.getIdentifier(), config.id);
-        logger.trace("Requesting URL for initial data: {}", url);
-
-        // Get initial data
-        asyncHttpClient.get(url, bridgeConfig.timeout).thenApply(this::parseStateResponse).exceptionally(e -> {
-            if (e instanceof SocketTimeoutException || e instanceof TimeoutException
-                    || e instanceof CompletionException) {
-                logger.debug("Get new state failed: ", e);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-
-            stopInitializationJob();
-            initializationJob = scheduler.schedule(() -> requestState(this::processStateResponse), 10,
-                    TimeUnit.SECONDS);
-
-            return null;
-        }).thenAccept(processor);
     }
 
     /**
