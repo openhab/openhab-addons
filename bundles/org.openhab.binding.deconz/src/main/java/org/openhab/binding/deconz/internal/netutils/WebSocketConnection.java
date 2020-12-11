@@ -26,9 +26,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
-import org.openhab.binding.deconz.internal.dto.GroupMessage;
-import org.openhab.binding.deconz.internal.dto.LightMessage;
-import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +42,6 @@ import com.google.gson.Gson;
 @WebSocket
 @NonNullByDefault
 public class WebSocketConnection {
-    private static final Map<ResourceType, Class<? extends DeconzBaseMessage>> EXPECTED_MESSAGE_TYPES = Map.of(
-            ResourceType.GROUPS, GroupMessage.class, ResourceType.LIGHTS, LightMessage.class, ResourceType.SENSORS,
-            SensorMessage.class);
-
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
 
     private final WebSocketClient client;
@@ -130,7 +123,7 @@ public class WebSocketConnection {
             return;
         }
 
-        Class<? extends DeconzBaseMessage> expectedMessageType = EXPECTED_MESSAGE_TYPES.get(changedMessage.r);
+        Class<? extends DeconzBaseMessage> expectedMessageType = changedMessage.r.getExpectedMessageType();
         if (expectedMessageType == null) {
             logger.warn("BUG! Could not get expected message type for resource type {}. Please report this incident.",
                     changedMessage.r);
