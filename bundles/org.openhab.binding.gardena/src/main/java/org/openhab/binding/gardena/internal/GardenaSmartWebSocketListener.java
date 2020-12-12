@@ -13,28 +13,30 @@
 package org.openhab.binding.gardena.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.gardena.internal.model.dto.Device;
 
 /**
- * Listener with methods called from events within the {@link GardenaSmart} class.
+ * The {@link GardenaSmartWebSocketListener} is called by the {@link GardenaSmartWebSocket} on new Events and if the
+ * {@link GardenaSmartWebSocket}
+ * closed the connection.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-public interface GardenaSmartEventListener {
+public interface GardenaSmartWebSocketListener {
+    /**
+     * This method is called, when the evenRunner stops abnormally (statuscode <> 1000).
+     */
+    void onWebSocketClose();
 
     /**
-     * Called when a device has been updated.
+     * This method is called when the Gardena websocket services throws an onError.
      */
-    public void onDeviceUpdated(Device device);
+    void onWebSocketError();
 
     /**
-     * Called when a new device has been detected.
+     * This method is called, whenever a new event comes from the Gardena service.
+     *
+     * @param msg
      */
-    public void onNewDevice(Device device);
-
-    /**
-     * Called when an unrecoverable error occurs.
-     */
-    public void onError();
+    void onWebSocketMessage(String msg);
 }
