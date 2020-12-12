@@ -154,3 +154,41 @@ For example:
 | 0xB4CA    | 4        | 0xB4CA4  | 
 | 0xB4CA    | 8        | 0xB4CA8  |
 | 0xB4CA    | 0        | 0xB4CA0  |
+
+## Full Example
+
+To use these examples for textual configuration, you must have already configured a MQTT broker thing and know its unique ID.
+This UID will be used in the things file and will replace the text `brokerUID`.
+
+*.things
+
+```
+Thing mqtt:rgb_cct:0xC2101 "Hallway" (mqtt:broker:brokerUID) @ "MQTT"
+```
+
+*.items
+
+```
+Dimmer Hallway_Level "Front Hall" {channel="mqtt:rgb_cct:0xC2101:Level"}
+Dimmer Hallway_ColourTemperature "White Color Temp" {channel="mqtt:rgb_cct:0xC2101:colourTemperature"}
+Color  Hallway_Colour "Front Hall" ["Lighting"] {channel="mqtt:rgb_cct:0xC2101:colour"}
+String Hallway_DiscoMode "Disco Mode" {channel="mqtt:rgb_cct:0xC2101:discoMode"}
+String Hallway_Command "Command to Send" {channel="mqtt:rgb_cct:0xC2101:command"}
+Switch Hallway_SendCommand "Send Command" {channel="mqtt:rgb_cct:0xC2101:sendCommand"}
+
+```
+
+*.sitemap
+
+```
+        Text label="Hallway" icon="light" 
+        {
+            Switch      item=Hallway_Level
+            Slider      item=Hallway_Level
+            Slider      item=Hallway_ColourTemperature
+            Colorpicker item=Hallway_Colour
+            Selection   item=Hallway_DiscoMode
+            Selection   item=Hallway_Command
+            Switch      item=Hallway_SendCommand mappings=[ON="Send"]        
+        }
+```
