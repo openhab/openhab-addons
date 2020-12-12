@@ -24,10 +24,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -49,18 +47,6 @@ public class EspMilightHubHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES.contains(thingTypeUID);
-    }
-
-    @Activate
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-    }
-
-    @Deactivate
-    @Override
-    protected void deactivate(ComponentContext componentContext) {
-        super.deactivate(componentContext);
     }
 
     @Override

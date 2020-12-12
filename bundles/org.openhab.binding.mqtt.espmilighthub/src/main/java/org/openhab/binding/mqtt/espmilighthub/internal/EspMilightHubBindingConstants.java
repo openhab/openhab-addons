@@ -13,8 +13,6 @@
 
 package org.openhab.binding.mqtt.espmilighthub.internal;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,8 +38,8 @@ public class EspMilightHubBindingConstants {
     public static final ThingTypeUID THING_TYPE_FUT089 = new ThingTypeUID(BINDING_ID, "fut089");
     public static final ThingTypeUID THING_TYPE_FUT091 = new ThingTypeUID(BINDING_ID, "fut091");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(
-            THING_TYPE_RGBW, THING_TYPE_RGB_CCT, THING_TYPE_FUT089, THING_TYPE_FUT091, THING_TYPE_CCT, THING_TYPE_RGB);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_RGBW, THING_TYPE_RGB_CCT,
+            THING_TYPE_FUT089, THING_TYPE_FUT091, THING_TYPE_CCT, THING_TYPE_RGB);
 
     // Channels
     public static final String CHANNEL_LEVEL = "level";
