@@ -89,6 +89,10 @@ The transition time is the time to move between two states and is configured in 
 The resolution provided is 1/10s.
 If no value is provided, the default value of the device is used.
 
+`extendedcolorlight` and `colorlight` have different modes for setting the color.
+Some devices accept only XY, others HSB, others both modes and the binding tries to autodetect the correct mode.
+If this fails, the advanced `colormode` parameter can be set to `xy` or `hs`.
+
 ### Textual Thing Configuration - Retrieving an API Key
 
 If you use the textual configuration, the thing file without an API key will look like this, for example:
