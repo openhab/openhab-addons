@@ -159,23 +159,37 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
     }
 
     /**
-     * sends a command to the bridge
+     * sends a command to the bridge with the default command URL
      *
      * @param object must be serializable and contain the command
      * @param originalCommand the original openHAB command (used for logging purposes)
      * @param channelUID the channel that this command was send to (used for logging purposes)
      * @param acceptProcessing additional processing after the command was successfully send (might be null)
      */
-    protected void sendCommand(Object object, Command originalCommand, ChannelUID channelUID,
+    protected void sendCommand(@Nullable Object object, Command originalCommand, ChannelUID channelUID,
             @Nullable Runnable acceptProcessing) {
+        sendCommand(object, originalCommand, channelUID, resourceType.getCommandUrl(), acceptProcessing);
+    }
+
+    /**
+     * sends a command to the bridge with a caller-defined command URL
+     *
+     * @param object must be serializable and contain the command
+     * @param originalCommand the original openHAB command (used for logging purposes)
+     * @param channelUID the channel that this command was send to (used for logging purposes)
+     * @param commandUrl the command URL
+     * @param acceptProcessing additional processing after the command was successfully send (might be null)
+     */
+    protected void sendCommand(@Nullable Object object, Command originalCommand, ChannelUID channelUID,
+            String commandUrl, @Nullable Runnable acceptProcessing) {
         AsyncHttpClient asyncHttpClient = http;
         if (asyncHttpClient == null) {
             return;
         }
         String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey,
-                resourceType.getIdentifier(), config.id, resourceType.getCommandUrl());
+                resourceType.getIdentifier(), config.id, commandUrl);
 
-        String json = gson.toJson(object);
+        String json = object == null ? null : gson.toJson(object);
         logger.trace("Sending {} to {} {} via {}", json, resourceType, config.id, url);
 
         asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {
