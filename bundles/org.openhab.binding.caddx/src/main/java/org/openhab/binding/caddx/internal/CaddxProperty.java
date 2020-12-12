@@ -38,7 +38,6 @@ public class CaddxProperty {
     private final boolean external;
     private final String id;
 
-    // Constructor
     public CaddxProperty(String id, int byteFrom, int byteLength, int bitFrom, int bitLength, CaddxPropertyType type,
             String name, boolean external) {
         this.id = id;
