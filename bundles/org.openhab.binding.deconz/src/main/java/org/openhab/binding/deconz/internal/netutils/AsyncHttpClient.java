@@ -60,7 +60,7 @@ public class AsyncHttpClient {
      * @param timeout A timeout
      * @return The result
      */
-    public CompletableFuture<Result> put(String address, String jsonString, int timeout) {
+    public CompletableFuture<Result> put(String address, @Nullable String jsonString, int timeout) {
         return doNetwork(HttpMethod.PUT, address, jsonString, timeout);
     }
 

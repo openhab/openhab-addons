@@ -178,7 +178,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             } else if (t instanceof SocketTimeoutException || t instanceof TimeoutException
                     || t instanceof CompletionException) {
                 logger.debug("Get full state failed", t);
-            } else if (t != null) {
+            } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, t.getMessage());
             }
             return Optional.empty();

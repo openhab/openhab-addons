@@ -14,6 +14,7 @@ package org.openhab.binding.deconz.internal.netutils;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -104,12 +105,12 @@ public class WebSocketConnection {
         connectionListener.connectionEstablished();
     }
 
-    @SuppressWarnings("null, unused")
+    @SuppressWarnings({ "null", "unused" })
     @OnWebSocketMessage
     public void onMessage(String message) {
         logger.trace("Raw data received by websocket {}: {}", socketName, message);
 
-        DeconzBaseMessage changedMessage = gson.fromJson(message, DeconzBaseMessage.class);
+        DeconzBaseMessage changedMessage = Objects.requireNonNull(gson.fromJson(message, DeconzBaseMessage.class));
         if (changedMessage.r == ResourceType.UNKNOWN) {
             logger.trace("Received message has unknown resource type. Skipping message.");
             return;
