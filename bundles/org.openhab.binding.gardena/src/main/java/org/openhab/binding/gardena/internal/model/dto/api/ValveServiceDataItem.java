@@ -10,21 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gardena.internal.handler;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.gardena.internal.model.dto.api;
 
 /**
- * Exception if the AccountHandler is not available.
+ * Represents a Gardena object that is sent via the Gardena API.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@NonNullByDefault
-public class AccountHandlerNotAvailableException extends Exception {
-
-    private static final long serialVersionUID = -1895774551653276530L;
-
-    public AccountHandlerNotAvailableException(String message) {
-        super(message);
-    }
+public class ValveServiceDataItem extends DataItem<ValveService> {
 }

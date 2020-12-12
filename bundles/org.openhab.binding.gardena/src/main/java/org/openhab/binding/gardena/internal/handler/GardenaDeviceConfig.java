@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.gardena.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link GardenaDeviceConfig} class represents the configuration for a device connected to an Gardena account.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public class GardenaDeviceConfig {
-    public String deviceId;
+    public @Nullable String deviceId;
 }

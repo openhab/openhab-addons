@@ -10,21 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gardena.internal.handler;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.gardena.internal.model.dto;
 
 /**
- * Exception if the AccountHandler is not available.
+ * A local service exists only in openHAB and the state is not saved on restarts.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@NonNullByDefault
-public class AccountHandlerNotAvailableException extends Exception {
 
-    private static final long serialVersionUID = -1895774551653276530L;
-
-    public AccountHandlerNotAvailableException(String message) {
-        super(message);
-    }
+public class LocalService {
+    public Integer commandDuration;
 }
