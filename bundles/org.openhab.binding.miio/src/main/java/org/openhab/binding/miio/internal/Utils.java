@@ -14,6 +14,7 @@ package org.openhab.binding.miio.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -99,7 +100,7 @@ public final class Utils {
         JsonObject jsonObject = new JsonObject();
         JsonParser parser = new JsonParser();
         try (InputStream inputStream = fileName.openStream();
-               InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+                InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
             JsonElement jsonElement = parser.parse(reader);
             jsonObject = jsonElement.getAsJsonObject();
             return jsonObject;

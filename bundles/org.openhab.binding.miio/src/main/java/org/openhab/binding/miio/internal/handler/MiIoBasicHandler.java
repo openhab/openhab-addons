@@ -648,9 +648,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                 JsonArray cmdResponse = response.getResult().getAsJsonArray();
                                 final String transformation = ch.getTransfortmation();
                                 if (transformation == null || transformation.isBlank()) {
-                                    updateChannel(ch, ch.getChannel(),
-                                            cmdResponse.get(0).isJsonPrimitive() ? cmdResponse.get(0)
-                                                    : new JsonPrimitive(cmdResponse.get(0).toString()));
+                                    JsonElement response0 = cmdResponse.get(0);
+                                    updateChannel(ch, ch.getChannel(), response0.isJsonPrimitive() ? response0
+                                            : new JsonPrimitive(response0.toString()));
                                 } else {
                                     updateChannel(ch, ch.getChannel(), cmdResponse);
                                 }
