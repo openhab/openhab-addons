@@ -94,7 +94,7 @@ public class DeconzHandlerFactory extends BaseThingHandlerFactory {
         } else if (SensorThermostatThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SensorThermostatThingHandler(thing, gson);
         } else if (GroupThingHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
-            return new GroupThingHandler(thing, gson);
+            return new GroupThingHandler(thing, gson, commandDescriptionProvider);
         }
 
         return null;

@@ -17,9 +17,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -90,8 +92,17 @@ public class DeconzTest {
     }
 
     public static <T> T getObjectFromJson(String filename, Class<T> clazz, Gson gson) throws IOException {
-        String json = new String(DeconzTest.class.getResourceAsStream(filename).readAllBytes(), StandardCharsets.UTF_8);
-        return gson.fromJson(json, clazz);
+        try (InputStream inputStream = DeconzTest.class.getResourceAsStream(filename)) {
+            if (inputStream == null) {
+                throw new IOException("inputstream is null");
+            }
+            byte[] bytes = inputStream.readAllBytes();
+            if (bytes == null) {
+                throw new IOException("Resulting byte-array empty");
+            }
+            String json = new String(bytes, StandardCharsets.UTF_8);
+            return Objects.requireNonNull(gson.fromJson(json, clazz));
+        }
     }
 
     @Test
