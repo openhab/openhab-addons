@@ -13,14 +13,19 @@
 package org.openhab.binding.miio.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.NoSuchFileException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
@@ -90,12 +95,16 @@ public final class Utils {
         }
     }
 
-    public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException, IOException {
+    public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException,
+            JsonParseException, IOException, URISyntaxException, NoSuchFileException {
         JsonObject jsonObject = new JsonObject();
         JsonParser parser = new JsonParser();
-        JsonElement jsonElement = parser.parse(IOUtils.toString(fileName));
-        jsonObject = jsonElement.getAsJsonObject();
-        return jsonObject;
+        try (InputStream inputStream = fileName.openStream();
+                InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+            JsonElement jsonElement = parser.parse(reader);
+            jsonObject = jsonElement.getAsJsonObject();
+            return jsonObject;
+        }
     }
 
     public static String minLengthString(String string, int length) {
