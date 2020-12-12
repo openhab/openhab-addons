@@ -1810,6 +1810,9 @@ public class Connection {
                     if (operationPayload.has("textToSpeak")) {
                         executionNodeObject.text = operationPayload.get("textToSpeak").getAsString();
                         return true;
+                    } else if (operationPayload.has("text")) {
+                        executionNodeObject.text = operationPayload.get("text").getAsString();
+                        return true;
                     } else if (operationPayload.has("content")) {
                         JsonArray content = operationPayload.getAsJsonArray("content");
                         if (content != null && content.size() > 0) {
