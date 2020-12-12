@@ -282,7 +282,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
             }
         }
 
-        if (lightMessage.state.effect != null) {
+        LightState lightState = lightMessage.state;
+        if (lightState != null && lightState.effect != null) {
             checkAndUpdateEffectChannels(lightMessage);
         }
 
