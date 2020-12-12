@@ -1,18 +1,11 @@
 {
 	"deviceMapping": {
 		"id": [
-			"huayi.light.ari013",
-			"huayi.light.aries",
-			"huayi.light.peg091",
-			"huayi.light.peg093",
-			"huayi.light.pis123",
-			"huayi.light.pisces",
-			"huayi.light.tau023",
-			"huayi.light.taurus",
-			"huayi.light.vir063",
-			"huayi.light.virgo",
-			"huayi.light.wy",
-			"huayi.light.zw131"
+			"huayi.light.wy200",
+			"huayi.light.wy201",
+			"huayi.light.wy202",
+			"huayi.light.wy203",
+			"huayi.light.wy204"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
