@@ -92,16 +92,17 @@ public class DeconzTest {
     }
 
     public static <T> T getObjectFromJson(String filename, Class<T> clazz, Gson gson) throws IOException {
-        InputStream inputStream = DeconzTest.class.getResourceAsStream(filename);
-        if (inputStream == null) {
-            throw new IOException("inputstream is null");
+        try (InputStream inputStream = DeconzTest.class.getResourceAsStream(filename)) {
+            if (inputStream == null) {
+                throw new IOException("inputstream is null");
+            }
+            byte[] bytes = inputStream.readAllBytes();
+            if (bytes == null) {
+                throw new IOException("Resulting byte-array empty");
+            }
+            String json = new String(bytes, StandardCharsets.UTF_8);
+            return Objects.requireNonNull(gson.fromJson(json, clazz));
         }
-        byte[] bytes = inputStream.readAllBytes();
-        if (bytes == null) {
-            throw new IOException("Resulting byte-array empty");
-        }
-        String json = new String(bytes, StandardCharsets.UTF_8);
-        return Objects.requireNonNull(gson.fromJson(json, clazz));
     }
 
     @Test
