@@ -77,7 +77,6 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        updateStatus(ThingStatus.ONLINE);
         // Keypad follows the status of the bridge
         updateStatus(bridgeStatusInfo.getStatus());
 
