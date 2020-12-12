@@ -124,7 +124,7 @@ Here is a sample configuration for a RGB bulb, such as a Sengled model E11-N1EA 
 
 ## References
 
-1. [openHAB configuration documentation](http://docs.openhab.org/configuration/index.html)
-2. [Smartthings Capabilities Reference](http://docs.smartthings.com/en/latest/capabilities-reference.html)
-3. [Smartthings Developers Documentation](http://docs.smartthings.com/en/latest/index.html)
+1. [openHAB configuration documentation](https://openhab.org/docs/configuration/index.html)
+2. [Smartthings Capabilities Reference](https://docs.smartthings.com/en/latest/capabilities-reference.html)
+3. [Smartthings Developers Documentation](https://docs.smartthings.com/en/latest/index.html)
 4. [Smartthings Development Environment](https://graph.api.smartthings.com/)
