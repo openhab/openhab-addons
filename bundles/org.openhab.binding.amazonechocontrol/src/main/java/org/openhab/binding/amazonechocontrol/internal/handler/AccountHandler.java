@@ -743,11 +743,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             switch (command) {
                 case "PUSH_ACTIVITY":
                     handlePushActivity(pushCommand.payload);
-                    if (refreshDataDelayed != null) {
-                        refreshDataDelayed.cancel(false);
-                    }
-                    this.refreshAfterCommandJob = scheduler.schedule(this::refreshAfterCommand, 700,
-                            TimeUnit.MILLISECONDS);
                     break;
                 case "PUSH_DOPPLER_CONNECTION_CHANGE":
                 case "PUSH_BLUETOOTH_STATE_CHANGE":
