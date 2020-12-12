@@ -116,6 +116,7 @@ public class BindingConstants {
     public static final String CHANNEL_LOCK = "lock";
     public static final String CHANNEL_EFFECT = "effect";
     public static final String CHANNEL_EFFECT_SPEED = "effectSpeed";
+    public static final String CHANNEL_SCENE = "scene";
 
     // channel uids
     public static final ChannelTypeUID CHANNEL_EFFECT_TYPE_UID = new ChannelTypeUID(BINDING_ID, CHANNEL_EFFECT);

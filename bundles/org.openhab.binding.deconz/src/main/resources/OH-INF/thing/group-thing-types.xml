@@ -16,6 +16,7 @@
 			<channel typeId="alert" id="alert"/>
 			<channel typeId="color" id="color"/>
 			<channel typeId="ct" id="color_temperature"/>
+			<channel typeId="scene" id="scene"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -66,5 +67,14 @@
 		</tags>
 		<state pattern="%d K" min="15" max="100000" step="100"/>
 	</channel-type>
+
+	<channel-type id="scene">
+		<item-type>String</item-type>
+		<label>Recall Scene</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
 
 </thing:thing-descriptions>

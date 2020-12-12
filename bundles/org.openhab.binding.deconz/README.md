@@ -163,7 +163,7 @@ Other devices support
 | color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`, `lightgroup`|
 | color_temperature | Number                   |     R/W     | Color temperature in Kelvin. The value range is determined by each individual light     | `colortemperaturelight`, `extendedcolorlight`, `lightgroup` |
 | effect            | String                   |     R/W     | Effect selection. Allowed commands are set dynamically                                  | `colorlight`                                    |
-| effectSpeed       | Number                   |     R/W     | Effect Speed                          | `colorlight`                                    |
+| effectSpeed       | Number                   |     W       | Effect Speed                          | `colorlight`                                    |
 | lock              | Switch                   |     R/W     | Lock (ON) or unlock (OFF) the doorlock| `doorlock`                                      |                 
 | position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                                |
 | heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                    |
@@ -173,10 +173,10 @@ Other devices support
 | alert             | Switch                   |     R/W     | Turn alerts on/off                    | `warningdevice`, `lightgroup`                   |
 | all_on            | Switch                   |     R       | All lights in group are on            | `lightgroup`                                    |
 | any_on            | Switch                   |     R       | Any light in group is on              | `lightgroup`                                    |
+| scene             | String                   |     W       | Recall a scene. Allowed commands are set dynamically                                    | `lightgroup`                                    |                  
 
 **NOTE:** For groups `color` and `color_temperature`  are used for sending commands to the group.
 Their state represents the last command send to the group, not necessarily the actual state of the group.
-
 
 ### Trigger Channels
 
