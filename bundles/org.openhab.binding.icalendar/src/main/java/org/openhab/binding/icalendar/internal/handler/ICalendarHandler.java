@@ -393,9 +393,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * Updates all children of this handler.
      */
     private void updateChildren() {
-        for (Thing childThing : getThing().getThings()) {
-            updateChild(childThing.getHandler());
-        }
+        getThing().getThings().forEach(childThing -> updateChild(childThing.getHandler()));
     }
 
     /**
