@@ -63,6 +63,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     private void initSqlTypes() {
         sqlTypes.put("DATETIMEITEM", "TIMESTAMP");
         sqlTypes.put("DIMMERITEM", "SMALLINT");
+        sqlTypes.put("IMAGEITEM", "VARCHAR(32000)");
         sqlTypes.put("ROLLERSHUTTERITEM", "SMALLINT");
         sqlTypes.put("STRINGITEM", "VARCHAR(32000)");
         sqlTypes.put("tablePrimaryValue", "CURRENT_TIMESTAMP");

@@ -73,8 +73,10 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlTypes.put("CONTACTITEM", "VARCHAR");
         sqlTypes.put("DATETIMEITEM", "TIMESTAMP");
         sqlTypes.put("DIMMERITEM", "SMALLINT");
+        sqlTypes.put("IMAGEITEM", "VARCHAR");
         sqlTypes.put("LOCATIONITEM", "VARCHAR");
         sqlTypes.put("NUMBERITEM", "DOUBLE PRECISION");
+        sqlTypes.put("PLAYERITEM", "VARCHAR");
         sqlTypes.put("ROLLERSHUTTERITEM", "SMALLINT");
         sqlTypes.put("STRINGITEM", "VARCHAR");
         sqlTypes.put("SWITCHITEM", "VARCHAR");
