@@ -132,8 +132,8 @@
 				"piid": 1,
 				"friendlyName": "Battery-Battery Level",
 				"channel": "BatteryLevel",
-				"type": "Number",
 				"channelType": "system:battery-level",
+				"type": "Number",
 				"refresh": true,
 				"actions": []
 			},
