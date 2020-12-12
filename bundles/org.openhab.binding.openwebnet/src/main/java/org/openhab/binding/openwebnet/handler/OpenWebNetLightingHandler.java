@@ -35,6 +35,7 @@ import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Lighting;
 import org.openwebnet4j.message.What;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereLightAutom;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
@@ -214,8 +215,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleMessage(BaseOpenMessage msg) {
+        logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         super.handleMessage(msg);
-        logger.debug("handleMessage() for thing: {}", thing.getUID());
         ThingTypeUID thingType = thing.getThingTypeUID();
         if (THING_TYPE_ZB_DIMMER.equals(thingType) || THING_TYPE_BUS_DIMMER.equals(thingType)) {
             updateBrightness((Lighting) msg);
@@ -342,6 +343,11 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 return;
             }
         }
+    }
+
+    @Override
+    protected Where buildBusWhere(String wStr) throws IllegalArgumentException {
+        return new WhereLightAutom(wStr);
     }
 
     /**
