@@ -144,6 +144,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
                 @Override
                 public void onError(Throwable cause) {
+					disposeWebsocketPollingJob();
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Communication lost no ping from YIO DOCK");
