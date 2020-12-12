@@ -75,7 +75,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private boolean initialized = false;
     private WebSocketFactory webSocketFactory;
 
-    private Set<Device> devicesToNotify = Collections.synchronizedSet(new HashSet<>());
+    private Set<Device> devicesToNotify = ConcurrentHashMap.newKeySet();
     private @Nullable ScheduledFuture<?> deviceToNotifyFuture;
     private @Nullable ScheduledFuture<?> newDeviceFuture;
 

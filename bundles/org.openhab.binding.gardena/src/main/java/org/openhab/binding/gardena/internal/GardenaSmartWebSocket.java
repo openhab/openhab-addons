@@ -15,6 +15,7 @@ package org.openhab.binding.gardena.internal;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -54,7 +55,7 @@ public class GardenaSmartWebSocket {
     private Instant lastPong = Instant.now();
     private ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> connectionTracker;
-    private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes());
+    private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes(StandardCharsets.UTF_8));
     private @Nullable PostOAuth2Response token;
     private String socketId;
 
@@ -69,7 +70,7 @@ public class GardenaSmartWebSocket {
         this.token = token;
         this.socketId = socketId;
 
-        webSocketClient = webSocketFactory.createWebSocketClient(String.valueOf(this.getClass().hashCode()));
+        webSocketClient = webSocketFactory.createWebSocketClient(socketId);
         webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
         webSocketClient.setStopTimeout(3000);
         webSocketClient.setMaxIdleTimeout(150000);
@@ -118,9 +119,7 @@ public class GardenaSmartWebSocket {
         closing = false;
         logger.debug("Connected to Gardena Webservice ({})", socketId);
 
-        connectionTracker = scheduler.scheduleWithFixedDelay(() -> {
-            sendKeepAlivePing();
-        }, 2, 2, TimeUnit.MINUTES);
+        connectionTracker = scheduler.scheduleWithFixedDelay(this::sendKeepAlivePing, 2, 2, TimeUnit.MINUTES);
     }
 
     @OnWebSocketFrame

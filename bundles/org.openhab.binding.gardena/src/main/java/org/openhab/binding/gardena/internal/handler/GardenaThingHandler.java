@@ -21,6 +21,7 @@ import static org.openhab.binding.gardena.internal.model.dto.command.ValveSetCom
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,6 +57,7 @@ import org.slf4j.LoggerFactory;
 public class GardenaThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GardenaThingHandler.class);
     private TimeZoneProvider timeZoneProvider;
+    private @Nullable ScheduledFuture<?> commandResetFuture;
 
     public GardenaThingHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -73,6 +75,15 @@ public class GardenaThingHandler extends BaseThingHandler {
         } catch (AccountHandlerNotAvailableException ex) {
             // ignore
         }
+    }
+
+    @Override
+    public void dispose() {
+        final ScheduledFuture<?> commandResetFuture = this.commandResetFuture;
+        if (commandResetFuture != null) {
+            commandResetFuture.cancel(true);
+        }
+        super.dispose();
     }
 
     /**
@@ -211,7 +222,7 @@ public class GardenaThingHandler extends BaseThingHandler {
                 } else {
                     getGardenaSmart().sendCommand(dataItem, gardenaCommand);
 
-                    scheduler.schedule(() -> {
+                    commandResetFuture = scheduler.schedule(() -> {
                         updateState(channelUID, OnOffType.OFF);
                     }, 3, TimeUnit.SECONDS);
                 }
