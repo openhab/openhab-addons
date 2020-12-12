@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(immediate = true, configurationPid = "discovery.tivo")
 public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
-    private Logger logger = LoggerFactory.getLogger(TiVoDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(TiVoDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -70,14 +70,11 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 return null;
             }
             String inetAddress = ip.toString().substring(1); // trim leading slash
-
             String label = service.getName();
-
             int port = service.getPort();
 
             properties.put(TiVoBindingConstants.CONFIG_ADDRESS, inetAddress);
             properties.put(TiVoBindingConstants.CONFIG_PORT, port);
-            properties.put(TiVoBindingConstants.CONFIG_NAME, label);
 
             result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("Tivo: " + label).build();
             logger.debug("Created {} for TiVo host '{}' name '{}'", result,

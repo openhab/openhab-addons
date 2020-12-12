@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.tivo.internal.service;
 
-import java.util.Collections;
-import java.util.SortedSet;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -30,17 +27,13 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class TivoConfigData {
     private @Nullable String cfgHost = null;
-    private int cfgTcpPort = -1;
+    private int cfgTcpPort = 31339;
     private int cfgNumConnRetry = 0;
     private int cfgPollInterval = 30;
     private boolean cfgPollChanges = false;
     private boolean cfgKeepConnOpen = false;
     private int cfgCmdWait = 0;
-    private SortedSet<Integer> cfgIgnoreChannels = Collections.emptySortedSet();
     private String cfgIdentifier = "";
-    private int cfgMinChannel = 1;
-    private int cfgMaxChannel = 9999;
-    private boolean cfgIgnoreChannelScan = false;
 
     /**
      * {@link toString} returns each of the configuration items as a single concatenated string.
@@ -52,9 +45,8 @@ public class TivoConfigData {
     public String toString() {
         return "TivoConfigData [cfgHost=" + cfgHost + ", cfgTcpPort=" + cfgTcpPort + ", cfgNumConnRetry="
                 + cfgNumConnRetry + ", cfgPollInterval=" + cfgPollInterval + ", cfgPollChanges=" + cfgPollChanges
-                + ", cfgKeepConnOpen=" + cfgKeepConnOpen + ", cfgCmdWait=" + cfgCmdWait + ", cfgIgnoreChannels="
-                + cfgIgnoreChannels + ", cfgIdentifier=" + cfgIdentifier + ", cfgMinChannel=" + cfgMinChannel
-                + ", cfgMaxChannel=" + cfgMaxChannel + ", cfgIgnoreChannelScan=" + cfgIgnoreChannelScan + "]";
+                + ", cfgKeepConnOpen=" + cfgKeepConnOpen + ", cfgCmdWait=" + cfgCmdWait + ", cfgIdentifier="
+                + cfgIdentifier + "]";
     }
 
     /**
@@ -207,88 +199,5 @@ public class TivoConfigData {
      */
     public void setCfgCmdWait(int cfgCmdWait) {
         this.cfgCmdWait = cfgCmdWait;
-    }
-
-    /**
-     * Gets the cfg ignore channels.
-     *
-     * @return the cfgIgnoreChannels
-     */
-    public SortedSet<Integer> getCfgIgnoreChannels() {
-        return cfgIgnoreChannels;
-    }
-
-    /**
-     * Adds the cfg ignore channels.
-     *
-     * @param pChannel the channel
-     * @return the cfgIgnoreChannels
-     */
-    public SortedSet<Integer> addCfgIgnoreChannels(Integer pChannel) {
-        cfgIgnoreChannels.add(pChannel);
-        return cfgIgnoreChannels;
-    }
-
-    /**
-     * Sets the cfg ignore channels.
-     *
-     * @param cfgIgnoreChannels the cfgIgnoreChannels to set
-     */
-    public void setCfgIgnoreChannels(SortedSet<Integer> cfgIgnoreChannels) {
-        this.cfgIgnoreChannels = cfgIgnoreChannels;
-    }
-
-    /**
-     * Sets the cfg min channel.
-     *
-     * @param cfgMinChannel the new cfg min channel
-     */
-    public void setCfgMinChannel(Integer cfgMinChannel) {
-        this.cfgMinChannel = cfgMinChannel;
-    }
-
-    /**
-     * Gets the cfg min channel.
-     *
-     * @return the cfg min channel
-     */
-    public Integer getCfgMinChannel() {
-        return cfgMinChannel;
-    }
-
-    /**
-     * Sets the cfg max channel.
-     *
-     * @param cfgMaxChannel the new cfg max channel
-     */
-    public void setCfgMaxChannel(Integer cfgMaxChannel) {
-        this.cfgMaxChannel = cfgMaxChannel;
-    }
-
-    /**
-     * Gets the cfg max channel.
-     *
-     * @return the cfg max channel
-     */
-    public Integer getCfgMaxChannel() {
-        return cfgMaxChannel;
-    }
-
-    /**
-     * Sets the value of cfgIgnoreChannelScan.
-     *
-     * @param cfgIgnoreChannelScan the new cfg ignore channel scan
-     */
-    public void setCfgIgnoreChannelScan(Boolean cfgIgnoreChannelScan) {
-        this.cfgIgnoreChannelScan = cfgIgnoreChannelScan;
-    }
-
-    /**
-     * {@link doChannelScan} Gets the cfg ignore channel scan.
-     *
-     * @return boolean value of cfgIgnoreChannelScan.
-     */
-    public Boolean doChannelScan() {
-        return cfgIgnoreChannelScan;
     }
 }

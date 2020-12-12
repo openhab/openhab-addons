@@ -27,7 +27,8 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class TiVoBindingConstants {
     public static final String BINDING_ID = "tivo";
-    public static final int CONFIG_SOCKET_TIMEOUT = 1000;
+    public static final int CONFIG_SOCKET_TIMEOUT_MS = 1000;
+    public static final int INIT_POLLING_DELAY_S = 5;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_TIVO = new ThingTypeUID(BINDING_ID, "sckt");
@@ -39,10 +40,8 @@ public class TiVoBindingConstants {
     public static final String CHANNEL_TIVO_IRCMD = "irCommand";
     public static final String CHANNEL_TIVO_KBDCMD = "kbdCommand";
     public static final String CHANNEL_TIVO_STATUS = "dvrStatus";
-    public static final String CHANNEL_TIVO_COMMAND = "customCmd";
 
     // List of all configuration Properties
-    public static final String CONFIG_NAME = "deviceName";
     public static final String CONFIG_ADDRESS = "address";
     public static final String CONFIG_PORT = "tcpPort";
     public static final String CONFIG_CONNECTION_RETRY = "numRetry";
@@ -50,8 +49,4 @@ public class TiVoBindingConstants {
     public static final String CONFIG_POLL_FOR_CHANGES = "pollForChanges";
     public static final String CONFIG_POLL_INTERVAL = "pollInterval";
     public static final String CONFIG_CMD_WAIT_INTERVAL = "cmdWaitInterval";
-    public static final String CONFIG_IGNORE_CHANNELS = "ignoreChannels";
-    public static final String CONFIG_CH_START = "minChannel";
-    public static final String CONFIG_CH_END = "maxChannel";
-    public static final String CONFIG_IGNORE_SCAN = "ignoreChannelScan";
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tivo.internal.service;
 
-import static org.openhab.binding.tivo.TiVoBindingConstants.CONFIG_SOCKET_TIMEOUT;
+import static org.openhab.binding.tivo.TiVoBindingConstants.CONFIG_SOCKET_TIMEOUT_MS;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
@@ -44,13 +45,13 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class TivoStatusProvider {
+    private final Logger logger = LoggerFactory.getLogger(TivoStatusProvider.class);
     private @Nullable Socket tivoSocket = null;
     private @Nullable PrintStream streamWriter = null;
     private @Nullable StreamReader streamReader = null;
+    private @Nullable TiVoHandler tivoHandler = null;
     private TivoStatusData tivoStatusData = new TivoStatusData();
     private TivoConfigData tivoConfigData = new TivoConfigData();
-    private @Nullable TiVoHandler tivoHandler = null;
-    private final Logger logger = LoggerFactory.getLogger(TivoStatusProvider.class);
 
     private static final Integer READ_TIMEOUT = 1000;
 
@@ -93,26 +94,29 @@ public class TivoStatusProvider {
      * @return {@link TivoStatusData} status data object, contains the result of the command.
      */
     public @Nullable TivoStatusData cmdTivoSend(String tivoCommand) {
+        boolean connected = connTivoConnect();
         PrintStream streamWriter = this.streamWriter;
 
-        if (!connTivoConnect() || streamWriter == null) {
+        if (!connected || streamWriter == null) {
             return new TivoStatusData(false, -1, -1, "CONNECTION FAILED", false, ConnectionStatus.OFFLINE);
         }
-        logger.info("TiVo '{}' - sending command: '{}'", tivoConfigData.getCfgIdentifier(), tivoCommand);
+        logger.debug("TiVo '{}' - sending command: '{}'", tivoConfigData.getCfgIdentifier(), tivoCommand);
         int repeatCount = 1;
         // Handle special keyboard "repeat" commands
         if (tivoCommand.contains("*")) {
             repeatCount = Integer.parseInt(tivoCommand.substring(tivoCommand.indexOf("*") + 1));
             tivoCommand = tivoCommand.substring(0, tivoCommand.indexOf("*"));
-            logger.info("TiVo '{}' - repeating command: '{}' for '{}' times", tivoConfigData.getCfgIdentifier(),
+            logger.debug("TiVo '{}' - repeating command: '{}' for '{}' times", tivoConfigData.getCfgIdentifier(),
                     tivoCommand, repeatCount);
         }
         for (int i = 1; i <= repeatCount; i++) {
             // Send the command
             streamWriter.println(tivoCommand.toString() + "\r");
             if (streamWriter.checkError()) {
-                logger.error("TiVo '{}' - called cmdTivoSend and encountered an IO error",
+                logger.debug("TiVo '{}' - called cmdTivoSend and encountered an IO error",
                         tivoConfigData.getCfgIdentifier());
+                tivoStatusData = new TivoStatusData(false, -1, -1, "CONNECTION FAILED", false,
+                        ConnectionStatus.OFFLINE);
                 connTivoReconnect();
             }
         }
@@ -132,7 +136,9 @@ public class TivoStatusProvider {
         logger.debug(" statusParse '{}' - running on string '{}'", tivoConfigData.getCfgIdentifier(), rawStatus);
 
         if (rawStatus.contentEquals("COMMAND_TIMEOUT")) {
-            return new TivoStatusData(false, -1, -1, "COMMAND_TIMEOUT", false, tivoStatusData.getConnectionStatus());
+            // Ignore COMMAND_TIMEOUT, they occur a few seconds after each successful command, just return existing
+            // status again
+            return this.tivoStatusData;
         } else {
             switch (rawStatus) {
                 case "":
@@ -173,12 +179,14 @@ public class TivoStatusProvider {
                     matcher.group(), matcher.groupCount());
             if (matcher.groupCount() == 1 || matcher.groupCount() == 2) {
                 chNum = Integer.parseInt(matcher.group(1).trim());
+                logger.debug(" statusParse '{}' - parsed channel '{}'", tivoConfigData.getCfgIdentifier(), chNum);
             }
             if (matcher.groupCount() == 2) {
                 subChNum = Integer.parseInt(matcher.group(2).trim());
+                logger.debug(" statusParse '{}' - parsed sub-channel '{}'", tivoConfigData.getCfgIdentifier(),
+                        subChNum);
             }
-            logger.debug(" statusParse '{}' - parsed channel '{}'", tivoConfigData.getCfgIdentifier(), chNum);
-            logger.debug(" statusParse '{}' - parsed sub-channel '{}'", tivoConfigData.getCfgIdentifier(), subChNum);
+
             rawStatus = rawStatus.replace(" REMOTE", "");
             rawStatus = rawStatus.replace(" LOCAL", "");
             return new TivoStatusData(true, chNum, subChNum, rawStatus, true, ConnectionStatus.ONLINE);
@@ -229,8 +237,6 @@ public class TivoStatusProvider {
      * @return true = connected, false = not connected
      */
     public boolean connTivoConnect() {
-        StreamReader streamReader = this.streamReader;
-
         for (int iL = 1; iL <= tivoConfigData.getCfgNumConnRetry(); iL++) {
             logger.debug(" connTivoConnect '{}' - starting connection process '{}' of '{}'.",
                     tivoConfigData.getCfgIdentifier(), iL, tivoConfigData.getCfgNumConnRetry());
@@ -239,11 +245,16 @@ public class TivoStatusProvider {
             if (connSocketConnect()) {
                 logger.debug(" connTivoConnect '{}' - Socket created / connection made.",
                         tivoConfigData.getCfgIdentifier());
+                StreamReader streamReader = this.streamReader;
                 if (streamReader != null && streamReader.isAlive()) {
                     return true;
                 }
             } else {
                 logger.debug(" connTivoConnect '{}' - Socket creation failed.", tivoConfigData.getCfgIdentifier());
+                TiVoHandler tivoHandler = this.tivoHandler;
+                if (tivoHandler != null) {
+                    tivoHandler.setStatusOffline();
+                }
             }
             // Sleep and retry
             doNappTime();
@@ -262,7 +273,7 @@ public class TivoStatusProvider {
         if (forceDisconnect) {
             connSocketDisconnect();
         } else {
-            if (!tivoConfigData.isCfgKeepConnOpen() && !tivoConfigData.doChannelScan()) {
+            if (!tivoConfigData.isCfgKeepConnOpen()) {
                 doNappTime();
                 connSocketDisconnect();
             }
@@ -285,12 +296,19 @@ public class TivoStatusProvider {
      *
      */
     private void connSocketDisconnect() {
+        TiVoHandler tivoHandler = this.tivoHandler;
         StreamReader streamReader = this.streamReader;
         PrintStream streamWriter = this.streamWriter;
         Socket tivoSocket = this.tivoSocket;
 
         logger.debug(" connTivoSocket '{}' - requested to disconnect/cleanup connection objects",
                 tivoConfigData.getCfgIdentifier());
+
+        // if isCfgKeepConnOpen = false, don't set status to OFFLINE since the socket is closed after each command
+        if (tivoHandler != null && tivoConfigData.isCfgKeepConnOpen()) {
+            tivoHandler.setStatusOffline();
+        }
+
         try {
             if (streamReader != null) {
                 while (streamReader.isAlive()) {
@@ -308,7 +326,7 @@ public class TivoStatusProvider {
             }
 
         } catch (IOException e) {
-            logger.error(" TiVo '{}' - I/O exception while disconnecting: '{}'.  Connection closed.",
+            logger.debug(" TiVo '{}' - I/O exception while disconnecting: '{}'.  Connection closed.",
                     tivoConfigData.getCfgIdentifier(), e.getMessage());
         }
     }
@@ -337,7 +355,7 @@ public class TivoStatusProvider {
         try {
             Socket tivoSocket = new Socket(tivoConfigData.getCfgHost(), tivoConfigData.getCfgTcpPort());
             tivoSocket.setKeepAlive(true);
-            tivoSocket.setSoTimeout(CONFIG_SOCKET_TIMEOUT);
+            tivoSocket.setSoTimeout(CONFIG_SOCKET_TIMEOUT_MS);
             tivoSocket.setReuseAddress(true);
 
             if (tivoSocket.isConnected() && !tivoSocket.isClosed()) {
@@ -351,7 +369,7 @@ public class TivoStatusProvider {
                 }
                 this.tivoSocket = tivoSocket;
             } else {
-                logger.error(" connSocketConnect '{}' - socket creation failed to host '{}', port '{}'",
+                logger.debug(" connSocketConnect '{}' - socket creation failed to host '{}', port '{}'",
                         tivoConfigData.getCfgIdentifier(), tivoConfigData.getCfgHost(), tivoConfigData.getCfgTcpPort());
                 return false;
             }
@@ -359,11 +377,11 @@ public class TivoStatusProvider {
             return true;
 
         } catch (UnknownHostException e) {
-            logger.error(" TiVo '{}' - while connecting, unexpected host error: '{}'",
+            logger.debug(" TiVo '{}' - while connecting, unexpected host error: '{}'",
                     tivoConfigData.getCfgIdentifier(), e.getMessage());
         } catch (IOException e) {
             if (tivoStatusData.getConnectionStatus() != ConnectionStatus.OFFLINE) {
-                logger.error(" TiVo '{}' - I/O exception while connecting: '{}'", tivoConfigData.getCfgIdentifier(),
+                logger.debug(" TiVo '{}' - I/O exception while connecting: '{}'", tivoConfigData.getCfgIdentifier(),
                         e.getMessage());
             }
         }
@@ -391,10 +409,6 @@ public class TivoStatusProvider {
         this.tivoStatusData = tivoStatusData;
     }
 
-    public void setChScan(boolean chScan) {
-        this.tivoStatusData.setChScan(chScan);
-    }
-
     /**
      * {@link StreamReader} data stream reader that reads the status data returned from the TiVo.
      *
@@ -413,7 +427,8 @@ public class TivoStatusProvider {
          * @throws IOException
          */
         public StreamReader(InputStream inputStream) {
-            this.setName("tivoStreamReader-" + tivoConfigData.getCfgIdentifier());
+            this.setName("OH-binding-" + tivoConfigData.getCfgIdentifier() + "-" + tivoConfigData.getCfgHost() + "."
+                    + tivoConfigData.getCfgTcpPort());
             this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             this.stopLatch = new CountDownLatch(1);
             this.setDaemon(true);
@@ -430,7 +445,7 @@ public class TivoStatusProvider {
                         if (reader != null) {
                             receivedData = reader.readLine();
                         }
-                    } catch (SocketTimeoutException e) {
+                    } catch (SocketTimeoutException | SocketException e) {
                         // Do nothing. Just allow the thread to check if it has to stop.
                     }
 
@@ -446,7 +461,7 @@ public class TivoStatusProvider {
                 }
 
             } catch (IOException e) {
-                logger.warn("TiVo {} is disconnected. ", tivoConfigData.getCfgIdentifier(), e);
+                logger.debug("TiVo {} is disconnected. ", tivoConfigData.getCfgIdentifier(), e);
             }
             // Notify the stopReader method caller that the reader is stopped.
             this.stopLatch.countDown();

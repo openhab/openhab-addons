@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param msg string status message from the TiVo socket
  * @param pubToUI boolean true = this status needs to be published to the UI / Thing, false = do not publish (or it
  *            already has been)
- * @param chScan boolean true = channel scan is in progress
  * @param connectionStatus ConnectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, STANDBY = TiVo is in
  *            standby,
  *            ONLINE = Online
@@ -43,7 +42,6 @@ public class TivoStatusData {
     private int subChannelNum = -1;
     private String msg = "NO STATUS QUERIED YET";
     private boolean pubToUI = true;
-    private boolean chScan = false;
     private ConnectionStatus connectionStatus = ConnectionStatus.INIT;
 
     public TivoStatusData() {
@@ -77,15 +75,14 @@ public class TivoStatusData {
      * @param msg string status message from the TiVo socket
      * @param pubToUI boolean true = this status needs to be published to the UI, false = do not publish (or it
      *            already has been)
-     * @param chScan boolean true = channel scan is in progress
      * @param connectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, STANDBY = TiVo is in standby
      *            , ONLINE = Online
      */
     @Override
     public String toString() {
         return "TivoStatusData [cmdOk=" + cmdOk + ", time=" + time + ", channelNum=" + channelNum + ", subChannelNum="
-                + subChannelNum + ", msg=" + msg + ", pubToUI=" + pubToUI + ", chScan=" + chScan + ", connectionStatus="
-                + connectionStatus + "]";
+                + subChannelNum + ", msg=" + msg + ", pubToUI=" + pubToUI + ", connectionStatus=" + connectionStatus
+                + "]";
     }
 
     /**
@@ -171,26 +168,6 @@ public class TivoStatusData {
      */
     public boolean getPubToUI() {
         return pubToUI;
-    }
-
-    /**
-     * {@link setChScan} set to true if a Channel Scan is in progress. Used to prevent any user inputs breaking this
-     * process.
-     *
-     * @param chScan boolean true = channel scanning is in progress, false = normal operation
-     */
-    public void setChScan(boolean chScan) {
-        this.chScan = chScan;
-    }
-
-    /**
-     * {@link isChannelScanInProgress} get status indicating that a Channel Scan is in progress. Used to prevent any
-     * user inputs breaking this process.
-     *
-     * @return chScan boolean true = channel scanning is in progress, false = normal operation
-     */
-    public boolean isChannelScanInProgress() {
-        return chScan;
     }
 
     /**
