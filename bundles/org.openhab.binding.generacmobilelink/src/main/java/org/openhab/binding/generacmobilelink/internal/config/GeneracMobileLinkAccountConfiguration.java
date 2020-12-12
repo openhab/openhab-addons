@@ -18,7 +18,7 @@ package org.openhab.binding.generacmobilelink.internal.config;
  * @author Dan Cunningham - Initial contribution
  */
 public class GeneracMobileLinkAccountConfiguration {
-    public String userName;
+    public String username;
     public String password;
     public Integer refreshInterval;
 }

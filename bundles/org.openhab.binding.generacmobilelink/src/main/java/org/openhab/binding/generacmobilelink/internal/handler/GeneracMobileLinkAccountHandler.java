@@ -141,7 +141,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             ContentResponse contentResponse = httpClient.newRequest(BASE_URL + "/Users/login").method(HttpMethod.POST)
                     .content(
                             new StringContentProvider(
-                                    gson.toJson(new LoginRequest(SHARED_KEY, config.userName, config.password))),
+                                    gson.toJson(new LoginRequest(SHARED_KEY, config.username, config.password))),
                             "application/json")
                     .timeout(10, TimeUnit.SECONDS).send();
             int statusCode = contentResponse.getStatus();

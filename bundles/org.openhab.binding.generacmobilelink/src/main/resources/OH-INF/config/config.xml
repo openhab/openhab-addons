@@ -4,12 +4,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:generacmobilelink:account">
-		<parameter name="userName" type="text" required="true">
-			<label>User Name</label>
-			<description>Account user name</description>
+		<parameter name="username" type="text" required="true">
+			<label>Username</label>
+			<description>Account username</description>
 		</parameter>
 		<parameter name="password" type="text" required="true">
-			<label>password</label>
+			<label>Password</label>
 			<description>Account password</description>
 			<context>password</context>
 		</parameter>
