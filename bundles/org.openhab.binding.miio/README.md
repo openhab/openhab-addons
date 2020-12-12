@@ -158,8 +158,8 @@ Currently the miio binding supports more than 230 different models.
 | Mi Air Purifier virtual      | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO ARIES For Bedroom     | miio:basic       | [huayi.light.ari013](#huayi-light-ari013) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO ARIES For Living Room | miio:basic       | [huayi.light.aries](#huayi-light-aries) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| huayi.light.fanwy            | miio:basic       | [huayi.light.fanwy](#huayi-light-fanwy) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| huayi.light.fanwy2           | miio:basic       | [huayi.light.fanwy2](#huayi-light-fanwy2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO Fan Light             | miio:basic       | [huayi.light.fanwy](#huayi-light-fanwy) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO Fan Light(2020)       | miio:basic       | [huayi.light.fanwy2](#huayi-light-fanwy2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO PEGASUS For Living Room | miio:basic       | [huayi.light.peg091](#huayi-light-peg091) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO PEGASUS For Bedroom   | miio:basic       | [huayi.light.peg093](#huayi-light-peg093) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO PISCES For Bedroom    | miio:basic       | [huayi.light.pis123](#huayi-light-pis123) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -169,12 +169,12 @@ Currently the miio binding supports more than 230 different models.
 | HUIZUO VIRGO For Bedroom     | miio:basic       | [huayi.light.vir063](#huayi-light-vir063) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO VIRGO For Living Room | miio:basic       | [huayi.light.virgo](#huayi-light-virgo) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO Ceiling Light         | miio:basic       | [huayi.light.wy](#huayi-light-wy) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| huayi.light.wy200            | miio:basic       | [huayi.light.wy200](#huayi-light-wy200) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| huayi.light.wy201            | miio:basic       | [huayi.light.wy201](#huayi-light-wy201) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| huayi.light.wy202            | miio:basic       | [huayi.light.wy202](#huayi-light-wy202) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| huayi.light.wy203            | miio:basic       | [huayi.light.wy203](#huayi-light-wy203) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO LIANGCHEN(BLE Mesh)   | miio:basic       | [huayi.light.wy200](#huayi-light-wy200) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO SAG Downlight (BLE Mesh) | miio:basic       | [huayi.light.wy201](#huayi-light-wy201) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO Bulb (BLE Mesh)       | miio:basic       | [huayi.light.wy202](#huayi-light-wy202) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO YONG Downlight (BLE Mesh) | miio:basic       | [huayi.light.wy203](#huayi-light-wy203) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | huayi.light.wy204            | miio:basic       | [huayi.light.wy204](#huayi-light-wy204) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| huayi.light.wyheat           | miio:basic       | [huayi.light.wyheat](#huayi-light-wyheat) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO Heating Lamp          | miio:basic       | [huayi.light.wyheat](#huayi-light-wyheat) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO ZIWEI Ceiling Lamp    | miio:basic       | [huayi.light.zw131](#huayi-light-zw131) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Aqara Wall Switch(No Neutral, Single Rocker) | miio:unsupported | lumi.ctrl_neutral1.v1  | No        |            |
 | Aqara Wall Switch (No Neutral, Double Rocker) | miio:unsupported | lumi.ctrl_neutral2.v1  | No        |            |
@@ -1405,7 +1405,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | brightness       | Dimmer  | Light - Brightness                  |            |
 | color-temperature | Number:Temperature | Light - Color Temperature           |            |
 
-### huayi.light.fanwy (<a name="huayi-light-fanwy">huayi.light.fanwy</a>) Channels
+### HUIZUO Fan Light (<a name="huayi-light-fanwy">huayi.light.fanwy</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1417,7 +1417,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | motor-reverse    | Switch  | Fan - Motor Reverse                 |            |
 | mode             | Number  | Fan - Mode                          | Value mapping [1="Normal Wind",2="Natural Wind"] |
 
-### huayi.light.fanwy2 (<a name="huayi-light-fanwy2">huayi.light.fanwy2</a>) Channels
+### HUIZUO Fan Light(2020) (<a name="huayi-light-fanwy2">huayi.light.fanwy2</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1507,7 +1507,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | brightness       | Dimmer  | Light - Brightness                  |            |
 | color-temperature | Number:Temperature | Light - Color Temperature           |            |
 
-### huayi.light.wy200 (<a name="huayi-light-wy200">huayi.light.wy200</a>) Channels
+### HUIZUO LIANGCHEN(BLE Mesh) (<a name="huayi-light-wy200">huayi.light.wy200</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1515,7 +1515,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | brightness       | Dimmer  | Light - Brightness                  |            |
 | color-temperature | Number:Temperature | Light - Color Temperature           |            |
 
-### huayi.light.wy201 (<a name="huayi-light-wy201">huayi.light.wy201</a>) Channels
+### HUIZUO SAG Downlight (BLE Mesh) (<a name="huayi-light-wy201">huayi.light.wy201</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1523,7 +1523,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | brightness       | Dimmer  | Light - Brightness                  |            |
 | color-temperature | Number:Temperature | Light - Color Temperature           |            |
 
-### huayi.light.wy202 (<a name="huayi-light-wy202">huayi.light.wy202</a>) Channels
+### HUIZUO Bulb (BLE Mesh) (<a name="huayi-light-wy202">huayi.light.wy202</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1531,7 +1531,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | brightness       | Dimmer  | Light - Brightness                  |            |
 | color-temperature | Number:Temperature | Light - Color Temperature           |            |
 
-### huayi.light.wy203 (<a name="huayi-light-wy203">huayi.light.wy203</a>) Channels
+### HUIZUO YONG Downlight (BLE Mesh) (<a name="huayi-light-wy203">huayi.light.wy203</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -1547,7 +1547,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | brightness       | Dimmer  | Light - Brightness                  |            |
 | color-temperature | Number:Temperature | Light - Color Temperature           |            |
 
-### huayi.light.wyheat (<a name="huayi-light-wyheat">huayi.light.wyheat</a>) Channels
+### HUIZUO Heating Lamp (<a name="huayi-light-wyheat">huayi.light.wyheat</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
@@ -4657,12 +4657,12 @@ Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brig
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
-### huayi.light.fanwy (huayi.light.fanwy) item file lines
+### HUIZUO Fan Light (huayi.light.fanwy) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "huayi.light.fanwy" <status>
+Group G_light "HUIZUO Fan Light" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
@@ -4672,12 +4672,12 @@ Switch motor-reverse "Fan - Motor Reverse" (G_light) {channel="miio:basic:light:
 Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
 ```
 
-### huayi.light.fanwy2 (huayi.light.fanwy2) item file lines
+### HUIZUO Fan Light(2020) (huayi.light.fanwy2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "huayi.light.fanwy2" <status>
+Group G_light "HUIZUO Fan Light(2020)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
@@ -4792,45 +4792,45 @@ Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brig
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
-### huayi.light.wy200 (huayi.light.wy200) item file lines
+### HUIZUO LIANGCHEN(BLE Mesh) (huayi.light.wy200) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "huayi.light.wy200" <status>
+Group G_light "HUIZUO LIANGCHEN(BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
-### huayi.light.wy201 (huayi.light.wy201) item file lines
+### HUIZUO SAG Downlight (BLE Mesh) (huayi.light.wy201) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "huayi.light.wy201" <status>
+Group G_light "HUIZUO SAG Downlight (BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
-### huayi.light.wy202 (huayi.light.wy202) item file lines
+### HUIZUO Bulb (BLE Mesh) (huayi.light.wy202) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "huayi.light.wy202" <status>
+Group G_light "HUIZUO Bulb (BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
-### huayi.light.wy203 (huayi.light.wy203) item file lines
+### HUIZUO YONG Downlight (BLE Mesh) (huayi.light.wy203) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "huayi.light.wy203" <status>
+Group G_light "HUIZUO YONG Downlight (BLE Mesh)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
@@ -4847,12 +4847,12 @@ Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brig
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
-### huayi.light.wyheat (huayi.light.wyheat) item file lines
+### HUIZUO Heating Lamp (huayi.light.wyheat) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
-Group G_light "huayi.light.wyheat" <status>
+Group G_light "HUIZUO Heating Lamp" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color-temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
