@@ -98,8 +98,9 @@ public final class Utils {
             JsonParseException, IOException, URISyntaxException, NoSuchFileException {
         JsonObject jsonObject = new JsonObject();
         JsonParser parser = new JsonParser();
-        try (InputStream reader = fileName.openStream()) {
-            JsonElement jsonElement = parser.parse(new String(reader.readAllBytes(), StandardCharsets.UTF_8));
+        try (InputStream inputStream = fileName.openStream();
+               InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+            JsonElement jsonElement = parser.parse(reader);
             jsonObject = jsonElement.getAsJsonObject();
             return jsonObject;
         }

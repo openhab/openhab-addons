@@ -135,7 +135,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
         logger.debug("Locating action for {} channel '{}': '{}'", getThing().getUID(), channelUID.getId(), command);
         if (!actions.isEmpty()) {
-            final @Nullable MiIoBasicChannel miIoBasicChannel = actions.get(channelUID);
+            final MiIoBasicChannel miIoBasicChannel = actions.get(channelUID);
             if (miIoBasicChannel != null) {
                 int valuePos = 0;
                 for (MiIoDeviceAction action : miIoBasicChannel.getActions()) {
