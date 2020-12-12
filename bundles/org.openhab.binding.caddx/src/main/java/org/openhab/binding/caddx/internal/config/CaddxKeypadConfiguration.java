@@ -25,10 +25,16 @@ public class CaddxKeypadConfiguration {
 
     // Keypad Thing constants
     public static final String KEYPAD_ADDRESS = "keypadAddress";
+    public static final String TERMINAL_MODE_SECONDS = "terminalModeSeconds";
 
     private int keypadAddress;
+    private int terminalModeSeconds;
 
     public int getKeypadAddress() {
         return keypadAddress;
+    }
+
+    public int getTerminalModeSeconds() {
+        return terminalModeSeconds;
     }
 }

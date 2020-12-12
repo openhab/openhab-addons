@@ -30,11 +30,6 @@ public class CaddxEvent extends EventObject {
     private final @Nullable Integer zone;
     private final @Nullable Integer keypad;
 
-    /**
-     * Constructor.
-     *
-     * @param source
-     */
     public CaddxEvent(CaddxMessage caddxMessage, @Nullable Integer partition, @Nullable Integer zone,
             @Nullable Integer keypad) {
         super(caddxMessage);
