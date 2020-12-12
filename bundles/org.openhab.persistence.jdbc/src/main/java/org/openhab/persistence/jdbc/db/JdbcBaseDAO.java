@@ -150,8 +150,10 @@ public class JdbcBaseDAO {
         sqlTypes.put("CONTACTITEM", "VARCHAR(6)");
         sqlTypes.put("DATETIMEITEM", "TIMESTAMP");
         sqlTypes.put("DIMMERITEM", "TINYINT");
+        sqlTypes.put("IMAGEITEM", "VARCHAR(65500)");// jdbc max 21845
         sqlTypes.put("LOCATIONITEM", "VARCHAR(30)");
         sqlTypes.put("NUMBERITEM", "DOUBLE");
+        sqlTypes.put("PLAYERITEM", "VARCHAR(20)");
         sqlTypes.put("ROLLERSHUTTERITEM", "TINYINT");
         sqlTypes.put("STRINGITEM", "VARCHAR(65500)");// jdbc max 21845
         sqlTypes.put("SWITCHITEM", "VARCHAR(6)");
@@ -486,7 +488,7 @@ public class JdbcBaseDAO {
                     ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsLong(v)), ZoneId.systemDefault()));
         } else if (item instanceof StringItem) {
             return StringType.valueOf(((String) v).toString());
-        } else {// Call, Location, String
+        } else {// Call, Image, Location, Player, String
             return StringType.valueOf(((String) v).toString());
         }
     }
