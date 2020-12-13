@@ -83,16 +83,14 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
             stateDescriptionBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID, obisChannelId), obis,
                             CoreItemFactory.NUMBER + ":" + dimension)
-                    .withStateDescription(StateDescriptionFragmentBuilder.create().withReadOnly(true)
-                            .withPattern("%.2f %unit%").build().toStateDescription())
+                    .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true)
+                            .withPattern("%.2f %unit%").build())
                     .withConfigDescriptionURI(URI.create(SmartMeterBindingConstants.CHANNEL_TYPE_METERREADER_OBIS));
         } else {
             stateDescriptionBuilder = ChannelTypeBuilder
                     .state(new ChannelTypeUID(SmartMeterBindingConstants.BINDING_ID, obisChannelId), obis,
                             CoreItemFactory.STRING)
-                    .withStateDescription(
-                            StateDescriptionFragmentBuilder.create().withReadOnly(true).build().toStateDescription());
-
+                    .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true).build());
         }
         return stateDescriptionBuilder.build();
     }

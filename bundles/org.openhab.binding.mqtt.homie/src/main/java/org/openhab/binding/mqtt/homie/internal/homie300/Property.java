@@ -142,8 +142,8 @@ public class Property implements AttributeChanged {
         if (attributes.retained) {
             return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
                     .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
-                    .withStateDescription(channelState.getCache().createStateDescription(!attributes.settable).build()
-                            .toStateDescription())
+                    .withStateDescriptionFragment(
+                            channelState.getCache().createStateDescription(!attributes.settable).build())
                     .build();
         } else {
             // Non-retained and settable property -> State channel

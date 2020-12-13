@@ -38,7 +38,7 @@ import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragment;
 
 /**
  * An {@link AbstractComponent}s derived class consists of one or multiple channels.
@@ -208,11 +208,10 @@ public class CChannel {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL)).build();
             } else {
-                StateDescription description = valueState.createStateDescription(command_topic == null).build()
-                        .toStateDescription();
+                StateDescriptionFragment description = valueState.createStateDescription(command_topic == null).build();
                 type = ChannelTypeBuilder.state(channelTypeUID, label, channelState.getItemType())
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .withStateDescription(description).build();
+                        .withStateDescriptionFragment(description).build();
             }
 
             Configuration configuration = new Configuration();
