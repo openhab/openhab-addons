@@ -163,6 +163,18 @@
 		<label>Instant Power</label>
 		<description>Instant power consumption in Watts</description>
 		<state pattern="%d %unit%" readOnly="true"/>
+		<config-description>
+			<parameter name="tariff" type="integer" min="0" max="15">
+				<label>Tariff info</label>
+				<description>Number of tariff this channel listens to</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="validateValue" type="boolean">
+				<label>Validate Value</label>
+				<description>Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="totalusage">
@@ -171,6 +183,11 @@
 		<description>Used energy in Kilowatt hours</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 		<config-description>
+			<parameter name="tariff" type="integer" min="0" max="15">
+				<label>Tariff info</label>
+				<description>Number of tariff this channel listens to</description>
+				<default>0</default>
+			</parameter>
 			<parameter name="validateValue" type="boolean">
 				<label>Validate Value</label>
 				<description>Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh</description>
@@ -324,12 +341,26 @@
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Current Flow</label>
 		<state pattern="%d %unit%" readOnly="true"/>
+		<config-description>
+			<parameter name="tariff" type="integer" min="0" max="15">
+				<label>Tariff info</label>
+				<description>Number of tariff this channel listens to</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="cumulativeValue">
 		<item-type>Number:Volume</item-type>
 		<label>Cumulative Value</label>
 		<state pattern="%d %unit%" readOnly="true"/>
+		<config-description>
+			<parameter name="tariff" type="integer" min="0" max="15">
+				<label>Tariff info</label>
+				<description>Number of tariff this channel listens to</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="counter">
@@ -337,6 +368,13 @@
 		<label>Counter</label>
 		<description>Counter</description>
 		<state readOnly="true"/>
+		<config-description>
+			<parameter name="tariff" type="integer" min="0" max="15">
+				<label>Tariff info</label>
+				<description>Number of tariff this channel listens to</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="currentNumber">
@@ -344,6 +382,13 @@
 		<label>Current</label>
 		<description>Current</description>
 		<state readOnly="true"/>
+		<config-description>
+			<parameter name="tariff" type="integer" min="0" max="15">
+				<label>Tariff info</label>
+				<description>Number of tariff this channel listens to</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="rainStatus">
