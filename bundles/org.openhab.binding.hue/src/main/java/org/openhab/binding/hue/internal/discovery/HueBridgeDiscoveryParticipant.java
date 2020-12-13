@@ -57,7 +57,7 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
             properties.put(HOST, device.getDetails().getBaseURL().getHost());
             properties.put(PORT, device.getDetails().getBaseURL().getPort());
             properties.put(PROTOCOL, device.getDetails().getBaseURL().getProtocol());
-            properties.put(PROPERTY_SERIAL_NUMBER, device.getDetails().getSerialNumber());
+            properties.put(PROPERTY_SERIAL_NUMBER, device.getDetails().getSerialNumber().toLowerCase());
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(PROPERTY_SERIAL_NUMBER)
@@ -77,7 +77,7 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 String modelName = modelDetails.getModelName();
                 if (modelName != null) {
                     if (modelName.startsWith("Philips hue bridge")) {
-                        return new ThingUID(THING_TYPE_BRIDGE, details.getSerialNumber());
+                        return new ThingUID(THING_TYPE_BRIDGE, details.getSerialNumber().toLowerCase());
                     }
                 }
             }
