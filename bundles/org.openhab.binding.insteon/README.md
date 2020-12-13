@@ -242,22 +242,23 @@ Dimmer dimmer  { channel="insteon:device:home:238D93:dimmer" }
 ## Console Commands
 
 The binding provides commands you can use to help with troubleshooting.
-Enter `smarthome:insteon` in the console and you will get a list of available commands.
+Enter `openhab:insteon` or `insteon` in the console and you will get a list of available commands.
+The `openhab:` prefix is optional:
 
 ```
-openhab> smarthome:insteon
-Usage: smarthome:insteon display_devices - display devices that are online, along with available channels
-Usage: smarthome:insteon display_channels - display channels that are linked, along with configuration information
-Usage: smarthome:insteon display_local_database - display Insteon PLM or hub database details
-Usage: smarthome:insteon display_monitored - display monitored device(s)
-Usage: smarthome:insteon start_monitoring all|address - start displaying messages received from device(s)
-Usage: smarthome:insteon stop_monitoring all|address - stop displaying messages received from device(s)
-Usage: smarthome:insteon send_standard_message address flags cmd1 cmd2 - send standard message to a device
-Usage: smarthome:insteon send_extended_message address flags cmd1 cmd2 [up to 13 bytes] - send extended message to a device
-Usage: smarthome:insteon send_extended_message_2 address flags cmd1 cmd2 [up to 12 bytes] - send extended message with a two byte crc to a device
+openhab> openhab:insteon
+Usage: openhab:insteon display_devices - display devices that are online, along with available channels
+Usage: openhab:insteon display_channels - display channels that are linked, along with configuration information
+Usage: openhab:insteon display_local_database - display Insteon PLM or hub database details
+Usage: openhab:insteon display_monitored - display monitored device(s)
+Usage: openhab:insteon start_monitoring all|address - start displaying messages received from device(s)
+Usage: openhab:insteon stop_monitoring all|address - stop displaying messages received from device(s)
+Usage: openhab:insteon send_standard_message address flags cmd1 cmd2 - send standard message to a device
+Usage: openhab:insteon send_extended_message address flags cmd1 cmd2 [up to 13 bytes] - send extended message to a device
+Usage: openhab:insteon send_extended_message_2 address flags cmd1 cmd2 [up to 12 bytes] - send extended message with a two byte crc to a device
 ```
 
-Here is an example of command: `smarthome:insteon display_local_database`.
+Here is an example of command: `insteon display_local_database`.
 
 When monitoring devices, the output will be displayed where openHAB was started.
 You may need to redirect the output to a log file to see the messages.
