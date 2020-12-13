@@ -139,6 +139,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
                 @Override
                 public void onClose() {
+                    disposeWebsocketPollingJob();
                     reconnectWebsocket();
                 }
 
@@ -148,6 +149,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Communication lost no ping from YIO DOCK");
+                    reconnectWebsocket();
                 }
             });
 
