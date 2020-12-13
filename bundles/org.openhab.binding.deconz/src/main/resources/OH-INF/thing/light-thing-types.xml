@@ -97,7 +97,7 @@
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:light"/>
+		<config-description-ref uri="thing-type:deconz:colorlight"/>
 	</thing-type>
 
 	<thing-type id="extendedcolorlight">
@@ -114,7 +114,7 @@
 
 		<representation-property>uid</representation-property>
 
-		<config-description-ref uri="thing-type:deconz:light"/>
+		<config-description-ref uri="thing-type:deconz:colorlight"/>
 	</thing-type>
 
 	<thing-type id="doorlock">
