@@ -20,29 +20,29 @@ The bridge will need to be manually added in the discovery inbox. After a bridge
 
 ## Thing Configuration
 
-##### Stack
+### Stack
 
-Serial Port - The serial port name for the Stack. Valid values are e.g. `COM1` for Windows and `/dev/ttyS0` or `/dev/ttyUSB0` for Linux.
+**Serial Port** - The serial port name for the Stack. Valid values are e.g. `COM1` for Windows and `/dev/ttyS0` or `/dev/ttyUSB0` for Linux, or an RFC2217 port `rfc2217://192.168.1.5:3333`
 
-Baud Rate - The baud rate of the serial connection. Valid values are 9600, 19200, 38400 (default) and 57600.
+**Baud Rate** - The baud rate of the serial connection. Valid values are 9600, 19200, 38400 (default) and 57600.
 
-Poll Period - How often will the binding poll - useful to set to a short period during setup to more quickly detect changes, and can be changed to a longer period once configured. This also determines how quickly the Binding will attempt to reconnect if disconnected.
+**Poll Period** - How often will the binding poll - useful to set to a short period during setup to more quickly detect changes, and can be changed to a longer period once configured. This also determines how quickly the Binding will attempt to reconnect if disconnected.
 
-##### Unit
+### Unit
 
-Bridge - Which Stack does this Unit belong to.
+**Bridge** - Which Stack does this Unit belong to.
 
-Type ID - Supported currently are XAP400 and XAP800 units.
+**Type ID** - Supported currently are XAP400 and XAP800 units.
 
-Device ID - Unique ID assigned to the Unit within the Stack. Range 0-7
+**Device ID** - Unique ID assigned to the Unit within the Stack. Range 0-7
 
-##### Zone
+### Zone
 
-Bridge - Which Unit does this Zone belong to.
+**Bridge** - Which Unit does this Zone belong to.
 
-Zone ID - XAP400: 1-8; XAP800: 1-12
+**Zone ID** - XAP400: 1-8; XAP800: 1-12
 
-Selectable inputs - A list of Inputs that can be used as Source selection. This allows some inputs to be persistently mapped (by excluding them from this list), such as those used for system-wide announcements, and will not be affected when the input is modified. 
+**Selectable inputs** - A list of Inputs that can be used as Source selection. This allows some inputs to be persistently mapped (by excluding them from this list), such as those used for system-wide announcements, and will not be affected when the input is modified. 
 
 |Input ID|Input Name|
 |-|-|
@@ -80,27 +80,27 @@ Selectable inputs - A list of Inputs that can be used as Source selection. This 
 |G P|Processing G|
 |H P|Processing H|
 
-Channels - Link one or more sequential output Zones together. Any modifications applied to this Zone will also be applied to n>1 Zones. For example - with 2 outputs, if this is Zone 4, Zone 5 will also get the same volume/mute settings. If Input 3 is selected for Zone 4, Zone 5 will be mapped to Input 4. You could use Processing Groups (configured within G-Ware) to map stereo inputs to a single output channel.
+**Channels** - Link one or more sequential output Zones together. Any modifications applied to this Zone will also be applied to n>1 Zones. For example - with 2 outputs, if this is Zone 4, Zone 5 will also get the same volume/mute settings. If Input 3 is selected for Zone 4, Zone 5 will be mapped to Input 4. You could use Processing Groups (configured within G-Ware) to map stereo inputs to a single output channel.
 
 ## Channels
 
-##### Stack
+### Stack
 
 No channels are available for a Stack
 
-##### Unit
+### Unit
 
-Macro _[1-32]_ - Run a Macro
+**Macro** _[1-32]_ - Run a Macro
 
-Preset _[1-255]_ - Select a Preset
+**Preset** _[1-255]_ - Select a Preset
 
-##### Zone
+### Zone
 
-Volume _[0-100]_ - Output volume
+**Volume** _[0-100]_ - Output volume
 
-Mute - Whether the output is muted
+**Mute** - Whether the output is muted
 
-Source - Active source input
+**Source** - Active source input
 
 ## Full Example
 
@@ -131,6 +131,6 @@ clearone.sitemap
 
 ## Known Limitations
 
-This binding represents only a small fraction of the possible features of the ClearOne XAP units, but the feature-set implemented has been chosen to represent basic usage as a multi-room audio hub, where a single source is selected for playback.
+This binding represents only a small fraction of the possible features of the ClearOne XAP units, but the feature-set implemented has been chosen to represent basic usage as a multi-room audio hub, where a single source is selected for playback on a per-zone basis, along with one or more fixed one-to-many mappings (for example, your openHAB server (as mono input) could be mapped to all outputs, for playing notifications).
 
 It is required to use the G-Ware software for initial configuration and advanced settings. This does not appear to be available on ClearOne's website any more ([original link](https://www.clearone.com/g-ware-506)). I have hosted it [here](https://my105e.com/confused/openhab/clearone/G_Ware5_0_67.zip).

@@ -228,15 +228,12 @@ public class ClearOneZoneHandler extends BaseThingHandler {
                             bridgeHandler.sendCommand(XAP_CMD_MUTE, String.format("%d O", zone));
                             break;
                     }
-
                 }
             }
             return;
         }
 
-        if (bridgeHandler != null && bridgeHandler.isConnected())
-
-        {
+        if (bridgeHandler != null && bridgeHandler.isConnected()) {
             String ampCommand = "";
             String params = "";
             int value = 0;
