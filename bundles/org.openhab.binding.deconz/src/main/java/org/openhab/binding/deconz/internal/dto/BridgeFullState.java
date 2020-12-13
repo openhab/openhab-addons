@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.types.ResourceType;
 
 /**
  * http://dresden-elektronik.github.io/deconz-rest-doc/configuration/
@@ -41,4 +43,18 @@ public class BridgeFullState {
 
     public Map<String, SensorMessage> sensors = Collections.emptyMap();
     public Map<String, LightMessage> lights = Collections.emptyMap();
+    public Map<String, GroupMessage> groups = Collections.emptyMap();
+
+    public @Nullable DeconzBaseMessage getMessage(ResourceType resourceType, String id) {
+        switch (resourceType) {
+            case LIGHTS:
+                return lights.get(id);
+            case SENSORS:
+                return sensors.get(id);
+            case GROUPS:
+                return groups.get(id);
+            default:
+                return null;
+        }
+    }
 }

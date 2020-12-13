@@ -20,13 +20,15 @@
 /bundles/org.openhab.binding.automower/ @maxpg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
-/bundles/org.openhab.binding.bluetooth/ @cdjackson @kaikreuzer
+/bundles/org.openhab.binding.bluetooth/ @cdjackson @cpmeister
 /bundles/org.openhab.binding.bluetooth.airthings/ @paulianttila
 /bundles/org.openhab.binding.bluetooth.am43/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.bluegiga/ @cdjackson @kaikreuzer
-/bundles/org.openhab.binding.bluetooth.bluez/ @cdjackson @kaikreuzer
+/bundles/org.openhab.binding.bluetooth.bluez/ @blafois @cpmeister
 /bundles/org.openhab.binding.bluetooth.blukii/ @kaikreuzer
 /bundles/org.openhab.binding.bluetooth.daikinmadoka/ @blafois
+/bundles/org.openhab.binding.bluetooth.enoceanble/ @pfink
+/bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
 /bundles/org.openhab.binding.boschindego/ @jofleck
@@ -44,7 +46,7 @@
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.danfossairunit/ @pravussum
 /bundles/org.openhab.binding.darksky/ @cweitkamp
-/bundles/org.openhab.binding.deconz/ @davidgraeff
+/bundles/org.openhab.binding.deconz/ @J-N-K
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
 /bundles/org.openhab.binding.digiplex/ @rmichalak
 /bundles/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
@@ -62,6 +64,7 @@
 /bundles/org.openhab.binding.enigma2/ @gdolfen
 /bundles/org.openhab.binding.enocean/ @fruggy83
 /bundles/org.openhab.binding.enturno/ @klocsson
+/bundles/org.openhab.binding.epsonprojector/ @mlobstein
 /bundles/org.openhab.binding.etherrain/ @dfad1469
 /bundles/org.openhab.binding.evohome/ @Nebula83
 /bundles/org.openhab.binding.exec/ @kgoderis
@@ -89,6 +92,7 @@
 /bundles/org.openhab.binding.heos/ @Wire82
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.hpprinter/ @cossey
+/bundles/org.openhab.binding.http/ @J-N-K
 /bundles/org.openhab.binding.hue/ @cweitkamp
 /bundles/org.openhab.binding.hydrawise/ @digitaldan
 /bundles/org.openhab.binding.hyperion/ @tavalin
@@ -102,6 +106,7 @@
 /bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.ipcamera/ @Skinah
 /bundles/org.openhab.binding.ipp/ @peuter
+/bundles/org.openhab.binding.irobot/ @Sonic-Amiga
 /bundles/org.openhab.binding.irtrans/ @kgoderis
 /bundles/org.openhab.binding.ism8/ @hans-reiner
 /bundles/org.openhab.binding.jablotron/ @octa22
@@ -193,13 +198,16 @@
 /bundles/org.openhab.binding.pioneeravr/ @Stratehm
 /bundles/org.openhab.binding.pixometer/ @Confectrician
 /bundles/org.openhab.binding.pjlinkdevice/ @nils
+/bundles/org.openhab.binding.playstation/ @FluBBaOfWard
 /bundles/org.openhab.binding.plclogo/ @falkena
 /bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.powermax/ @lolodomo
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.pushbullet/ @hakan42
+/bundles/org.openhab.binding.pushover/ @cweitkamp
 /bundles/org.openhab.binding.radiothermostat/ @mlobstein
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
+/bundles/org.openhab.binding.revogi/ @andibraeu
 /bundles/org.openhab.binding.remoteopenhab/ @lolodomo
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.rme/ @kgoderis
@@ -209,10 +217,11 @@
 /bundles/org.openhab.binding.sagercaster/ @clinique
 /bundles/org.openhab.binding.samsungtv/ @paulianttila
 /bundles/org.openhab.binding.satel/ @druciak
-/bundles/org.openhab.binding.senechome/ @vctender
+/bundles/org.openhab.binding.senechome/ @vctender @KorbinianP
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.sensibo/ @seime
+/bundles/org.openhab.binding.serial/ @MikeJMajor
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.shelly/ @markus7017
 /bundles/org.openhab.binding.siemensrds/ @andrewfg
@@ -243,8 +252,9 @@
 /bundles/org.openhab.binding.tellstick/ @jarlebh
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.tibber/ @kjoglum
-/bundles/org.openhab.binding.touchwand /@roieg
+/bundles/org.openhab.binding.touchwand/ @roieg
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
+/bundles/org.openhab.binding.tr064/ @J-N-K
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.binding.unifiedremote/ @GiviMAD
@@ -266,6 +276,7 @@
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
 /bundles/org.openhab.binding.wlanthermo/ @CSchlipp
+/bundles/org.openhab.binding.wled/ @Skinah
 /bundles/org.openhab.binding.xmltv/ @clinique
 /bundles/org.openhab.binding.xmppclient/ @pavel-gololobov
 /bundles/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz

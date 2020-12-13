@@ -5,6 +5,5 @@
 
 	<name>HarmonyHub Binding</name>
 	<description>The HarmonyHub Binding integrates Logitech Harmony hubs and remotes.</description>
-	<author>Dan Cunningham</author>
 
 </binding:binding>

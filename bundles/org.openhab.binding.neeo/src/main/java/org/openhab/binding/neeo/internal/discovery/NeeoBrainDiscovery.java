@@ -24,7 +24,6 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neeo.internal.NeeoConstants;
@@ -100,7 +99,7 @@ public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
         }
 
         logger.debug("getThingUID is evaluating: {}", service);
-        if (!StringUtils.equals("neeo", service.getApplication())) {
+        if (!"neeo".equals(service.getApplication())) {
             logger.debug("Application not 'neeo' in MDNS serviceinfo: {}", service);
             return null;
         }

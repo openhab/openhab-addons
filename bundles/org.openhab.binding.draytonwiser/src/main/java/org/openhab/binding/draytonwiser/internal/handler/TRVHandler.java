@@ -28,7 +28,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -93,7 +93,7 @@ public class TRVHandler extends DraytonWiserThingHandler<SmartValveData> {
     }
 
     private State getDemand() {
-        return new QuantityType<>(getData().smartValve.getPercentageDemand(), SmartHomeUnits.PERCENT);
+        return new QuantityType<>(getData().smartValve.getPercentageDemand(), Units.PERCENT);
     }
 
     private State getTemperature() {
@@ -120,7 +120,7 @@ public class TRVHandler extends DraytonWiserThingHandler<SmartValveData> {
     }
 
     private State getBatteryVoltage() {
-        return new QuantityType<>(getData().device.getBatteryVoltage() / 10.0, SmartHomeUnits.VOLT);
+        return new QuantityType<>(getData().device.getBatteryVoltage() / 10.0, Units.VOLT);
     }
 
     private State getWiserBatteryLevel() {

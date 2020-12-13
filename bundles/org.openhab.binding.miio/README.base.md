@@ -30,7 +30,8 @@ The binding needs a token from the Xiaomi Mi Device in order to be able to contr
 The binding can retrieve the needed tokens from the Xiaomi cloud. 
 Go to the binding config page and enter your cloud username and password. 
 The server(s) to which your devices are connected need to be entered as well. 
-Use the one of the regional servers: ru,us,tw,sg,cn,de. Multiple servers can be separated with comma, or leave blank to test all known servers.
+Use the one of the regional servers: cn,de,i2,tw,ru,sg,us.
+Multiple servers can be separated with comma, or leave blank to test all known servers.
 
 ## Tokens without cloud access
 
@@ -50,7 +51,8 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 ## Binding Configuration
 
 No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
-The list of the known countries and related severs is [here](#Country-Servers)
+The list of the known countries and related severs is [here](#Country-Servers).
+
 After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud. 
 For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
 
@@ -63,22 +65,25 @@ Optional configuration is the refresh interval and the deviceID. Note that the d
 The configuration for model is automatically retrieved from the device in normal operation. 
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
 
-| Parameter       | Type    | Required | Description                                                       |
-|-----------------|---------|----------|-------------------------------------------------------------------|
-| host            | text    | true     | Device IP address                                                 |
-| token           | text    | true     | Token for communication (in Hex)                                  |
-| deviceId        | text    | true     | Device ID number for communication (in Hex)                       |
-| model           | text    | false    | Device model string, used to determine the subtype                |
-| refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled) |
-| timeout         | integer | false    | Timeout time in milliseconds                                      |
+| Parameter       | Type    | Required | Description                                                         |
+|-----------------|---------|----------|---------------------------------------------------------------------|
+| host            | text    | true     | Device IP address                                                   |
+| token           | text    | true     | Token for communication (in Hex)                                    |
+| deviceId        | text    | true     | Device ID number for communication (in Hex)                         |
+| model           | text    | false    | Device model string, used to determine the subtype                  |
+| refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled)   |
+| timeout         | integer | false    | Timeout time in milliseconds                                        |
+| communication   | test    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
+
+Note: Suggest to use the cloud communication only for devices that require it. It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 
 ### Example Thing file
 
-`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx", model="philips.light.bulb" ]` 
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx", model="philips.light.bulb", communication="direct"  ]` 
 
 or in case of unknown models include the model information of a similar device that is supported:
 
-`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4" ]`
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4", communication="cloud"]`
 
 # Mi IO Devices
 
@@ -100,10 +105,10 @@ Besides the regular configuration (like ip address, token) the modelId needs to 
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
 Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
 
-## Supported property test
+## Supported property test for unsupported devices
 
 The unsupported device has a test channel with switch. When switching on, all known properties are tested, this may take few minutes.
-A test report will be shown in the log and is saved in the userdata/miio folder.
+A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
 If supported properties are found, an experimental database file is saved to the conf/misc/miio folder (see below chapter).
 The thing will go offline and will come back online as basic device, supporting the found channels.
 The database file may need to be modified to display the right channel names.
@@ -114,6 +119,9 @@ After validation, please share the logfile and json files on the openHAB forum o
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
 The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
+During the start of the binding the exact path used in your system will be printed in the debug log. 
+Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …`
+If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
 For format, please check the current database files in openHAB GitHub.
 
@@ -147,11 +155,18 @@ Alternatively as described above, double check for multiple connections for sing
 _Your device is on a different subnet?_
 This is in most cases not working. 
 Firmware of the device don't accept commands coming from other subnets.
+Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
 The most common problem is a wrong userId/password. Try to fix your userId/password.
 If it still fails, you're bit out of luck. You may try to restart OpenHAB (not just the binding) to clean the cookies. 
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
+
+_My Roborock vacuum is not found or not reacting_
+Did you link the vacuum with the Roborock app? 
+This won't work, the Roborock app is using a different communication method. 
+Reset your vacuum and connect it to the Xiaomi MiHome app. 
+This will change the communication method and the Mi IO binding can communicate with the vacuum.
 
 
 # Channels
@@ -166,10 +181,11 @@ All devices have available the following channels (marked as advanced) besides t
 | network#bssid    | String  | Network BSSID                       |
 | network#rssi     | Number  | Network RSSI                        |
 | network#life     | Number  | Network Life                        |
-| actions#commands | String  | send commands. see below            |
+| actions#commands | String  | send commands direct. see below     |
+| actions#rpc      | String  | send commands via cloud. see below  |
 
-note: the ADVANCED  `actions#commands` channel can be used to send commands that are not automated via the binding. This is available for all devices
-e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
+note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
+e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
 
 
 !!!channelList
@@ -241,6 +257,7 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 ### <a name="Country-Servers">Country Servers</a>
 
 Known country Servers: cn, de, i2, ru, sg, us
+
 Mapping of countries in mihome app to server:
 
 | Country                  | Country Code | Server |

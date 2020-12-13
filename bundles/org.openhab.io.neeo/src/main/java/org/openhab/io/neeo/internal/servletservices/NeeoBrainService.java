@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
@@ -90,7 +91,7 @@ public class NeeoBrainService extends DefaultServletService {
     private final ServiceContext context;
 
     /** The HTTP request */
-    private final HttpRequest request = new HttpRequest();
+    private final HttpRequest request;
 
     /** The scheduler to use to schedule recipe execution */
     private final ScheduledExecutorService scheduler = ThreadPoolManager
@@ -114,7 +115,7 @@ public class NeeoBrainService extends DefaultServletService {
      * @param api the non-null api
      * @param context the non-null context
      */
-    public NeeoBrainService(NeeoApi api, ServiceContext context) {
+    public NeeoBrainService(NeeoApi api, ServiceContext context, ClientBuilder clientBuilder) {
         Objects.requireNonNull(api, "api cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
 
@@ -125,6 +126,7 @@ public class NeeoBrainService extends DefaultServletService {
         scheduler.execute(() -> {
             resendState();
         });
+        request = new HttpRequest(clientBuilder);
     }
 
     /**

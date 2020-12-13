@@ -28,7 +28,7 @@ import io.github.hapjava.server.impl.HomekitServer;
 
 /**
  * Provides a mechanism to store authenticated HomeKit client details inside the
- * ESH StorageService, by implementing HomekitAuthInfo.
+ * StorageService, by implementing HomekitAuthInfo.
  *
  * @author Andy Lintner - Initial contribution
  */

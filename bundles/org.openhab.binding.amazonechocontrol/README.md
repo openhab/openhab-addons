@@ -5,6 +5,7 @@ This binding can control Amazon Echo devices (Alexa).
 It provides features to control and view the current state of echo devices:
 
 - use echo device as text to speech from a rule
+- execute a text command
 - volume
 - pause/continue/next track/previous track
 - connect/disconnect bluetooth devices
@@ -76,6 +77,7 @@ The configuration of your amazon account must be done in the 'Amazon Account' de
 1) Create an 'Amazon Account' thing
 2) open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and login.
 3) You should see now a message that the login was successful
+4) If you encounter redirect/page refresh issues, enable two-factor authentication (2FA) on your Amazon account.
 
 ## Discovery
 
@@ -178,6 +180,7 @@ It will be configured at runtime by using the save channel to store the current 
 | announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
 | textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
+| textCommand           | String      | W           | echo, echoshow, echospot      | Write Only! Execute a text command (like a spoken text)                    
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
 | mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent 
 | mediaProgressTime     | Number:Time | R/W         | echo, echoshow, echospot      | Media play time 
@@ -197,7 +200,6 @@ This can be used to call Alexa API from rules.
 E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
 http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
-
 
 ### Example
 
@@ -584,7 +586,7 @@ Expert:
 You can use a json formatted string to control title, sound and volume:
 
 ```php
-{ "sound": true, "speak":"<Speak>" "title": "<Title>", "body": "<Body Text>", "volume": 20}
+{ "sound": true, "speak":"<Speak>", "title": "<Title>", "body": "<Body Text>", "volume": 20}
 ```
 
 The combination of `sound=true` and `speak` in SSML syntax is not allowed.

@@ -14,21 +14,16 @@ package org.openhab.binding.openuv.internal.discovery;
 
 import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.openuv.internal.config.ReportConfiguration;
 import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Modified;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,83 +33,54 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial Contribution
  */
 @NonNullByDefault
-public class OpenUVDiscoveryService extends AbstractDiscoveryService {
+public class OpenUVDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(OpenUVDiscoveryService.class);
 
-    private static final int DISCOVER_TIMEOUT_SECONDS = 10;
-    private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
+    private static final int DISCOVER_TIMEOUT_SECONDS = 2;
 
-    private final LocationProvider locationProvider;
-    private final OpenUVBridgeHandler bridgeHandler;
-    private @Nullable ScheduledFuture<?> discoveryJob;
-    private @Nullable PointType previousLocation;
+    private @Nullable OpenUVBridgeHandler bridgeHandler;
 
     /**
      * Creates a OpenUVDiscoveryService with enabled autostart.
      */
-    public OpenUVDiscoveryService(OpenUVBridgeHandler bridgeHandler, LocationProvider locationProvider) {
-        super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, true);
-        this.locationProvider = locationProvider;
-        this.bridgeHandler = bridgeHandler;
+    public OpenUVDiscoveryService() {
+        super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
     }
 
     @Override
-    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
-        super.activate(configProperties);
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof OpenUVBridgeHandler) {
+            this.bridgeHandler = (OpenUVBridgeHandler) handler;
+        }
     }
 
     @Override
-    @Modified
-    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
-        super.modified(configProperties);
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     @Override
     protected void startScan() {
         logger.debug("Starting OpenUV discovery scan");
-        PointType location = locationProvider.getLocation();
-        if (location == null) {
-            logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
-            return;
-        }
-        createResults(location);
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        if (discoveryJob == null) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
-                PointType currentLocation = locationProvider.getLocation();
-                if (currentLocation != null && !Objects.equals(currentLocation, previousLocation)) {
-                    logger.debug("Location has been changed from {} to {}: Creating new discovery results",
-                            previousLocation, currentLocation);
-                    createResults(currentLocation);
-                    previousLocation = currentLocation;
-                }
-            }, 0, LOCATION_CHANGED_CHECK_INTERVAL, TimeUnit.SECONDS);
-            logger.debug("Scheduled OpenUV-changed job every {} seconds", LOCATION_CHANGED_CHECK_INTERVAL);
-        }
-    }
-
-    public void createResults(PointType location) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        ThingUID localOpenUVThing = new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(LOCATION, location.toString());
-        thingDiscovered(DiscoveryResultBuilder.create(localOpenUVThing).withLabel("Local UV Information")
-                .withProperties(properties).withRepresentationProperty(location.toString()).withBridge(bridgeUID)
-                .build());
-    }
-
-    @SuppressWarnings("null")
-    @Override
-    protected void stopBackgroundDiscovery() {
-        logger.debug("Stopping OpenUV background discovery");
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
-            if (discoveryJob.cancel(true)) {
-                discoveryJob = null;
-                logger.debug("Stopped OpenUV background discovery");
+        OpenUVBridgeHandler bridge = bridgeHandler;
+        if (bridge != null) {
+            PointType location = bridge.getLocation();
+            if (location != null) {
+                ThingUID bridgeUID = bridge.getThing().getUID();
+                thingDiscovered(DiscoveryResultBuilder
+                        .create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL)).withLabel("Local UV Report")
+                        .withProperty(ReportConfiguration.LOCATION, location.toString())
+                        .withRepresentationProperty(ReportConfiguration.LOCATION).withBridge(bridgeUID).build());
+            } else {
+                logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
             }
+        } else {
+            logger.debug("OpenUV Bridge Handler is not set -> Will not provide any discovery results");
         }
     }
 }

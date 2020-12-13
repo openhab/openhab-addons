@@ -13,6 +13,7 @@
 package org.openhab.binding.hydrawise.internal.api;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -95,7 +96,7 @@ public class HydrawiseLocalApiClient {
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
         String json = doGet(localGetURL);
         LocalScheduleResponse response = gson.fromJson(json, LocalScheduleResponse.class);
-        return response;
+        return Objects.requireNonNull(response);
     }
 
     /**

@@ -36,7 +36,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -104,7 +104,7 @@ public class SensorsTest {
 
         sensorThingHandler.messageReceived("", sensorMessage);
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelValveUID),
-                eq(new QuantityType<>(100.0, SmartHomeUnits.PERCENT)));
+                eq(new QuantityType<>(100.0, Units.PERCENT)));
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelHeatSetPointUID),
                 eq(new QuantityType<>(25, SIUnits.CELSIUS)));
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelModeUID),

@@ -14,6 +14,7 @@ package org.openhab.binding.tado.internal.builder;
 
 import java.io.IOException;
 
+import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
@@ -30,7 +31,11 @@ import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
  */
 public abstract class ZoneSettingsBuilder {
     public static ZoneSettingsBuilder of(TadoZoneHandler zoneHandler) {
-        switch (zoneHandler.getZoneType()) {
+        TadoBindingConstants.ZoneType zoneType = zoneHandler.getZoneType();
+        if (zoneType == null) {
+            throw new IllegalArgumentException("Zone type is null");
+        }
+        switch (zoneType) {
             case HEATING:
                 return new HeatingZoneSettingsBuilder();
             case AIR_CONDITIONING:

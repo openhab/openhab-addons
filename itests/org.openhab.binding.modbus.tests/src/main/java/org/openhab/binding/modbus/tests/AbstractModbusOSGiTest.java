@@ -42,6 +42,8 @@ import org.openhab.binding.modbus.internal.ModbusHandlerFactory;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventSubscriber;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.core.io.transport.modbus.ModbusManager;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemProvider;
 import org.openhab.core.items.ItemRegistry;
@@ -60,8 +62,6 @@ import org.openhab.core.thing.link.ItemChannelLinkProvider;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.State;
-import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -211,13 +211,13 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         addedLinks.add(link);
     }
 
-    protected List<State> getStateUpdates(String itemName) {
+    protected @Nullable List<State> getStateUpdates(String itemName) {
         return stateSubscriber.stateUpdates.get(itemName);
     }
 
     protected void mockTransformation(String name, TransformationService service) {
         Dictionary<String, Object> params = new Hashtable<>();
-        params.put("smarthome.transform", name);
+        params.put("openhab.transform", name);
         registerService(service, params);
     }
 

@@ -164,6 +164,7 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
     }
 
     protected boolean recentlySendConfigurationUpdate() {
+        LocalDateTime lastConfigurationUpdateSend = this.lastConfigurationUpdateSend;
         return lastConfigurationUpdateSend != null
                 && LocalDateTime.now().minus(Duration.ofMillis(500)).isBefore(lastConfigurationUpdateSend);
     }

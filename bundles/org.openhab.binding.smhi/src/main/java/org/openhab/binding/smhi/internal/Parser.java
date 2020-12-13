@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -80,7 +79,7 @@ public class Parser {
      */
     private static Forecast parseForecast(JsonObject object) {
         ZonedDateTime validTime = ZonedDateTime.parse(object.get("validTime").getAsString());
-        Map<String, @Nullable BigDecimal> parameters = new HashMap<>();
+        Map<String, BigDecimal> parameters = new HashMap<>();
 
         JsonArray parameterArray = object.get("parameters").getAsJsonArray();
 

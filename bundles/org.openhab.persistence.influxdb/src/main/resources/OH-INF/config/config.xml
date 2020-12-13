@@ -69,7 +69,7 @@
 			<label>Retention Policy / Bucket</label>
 			<description>The name of the retention policy (Influx DB 1.0) or bucket (InfluxDB 2.0) to write data
 			</description>
-			<default>openhab</default>
+			<default>autogen</default>
 		</parameter>
 
 		<parameter name="replaceUnderscore" type="boolean" required="true" groupName="misc">

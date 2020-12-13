@@ -43,11 +43,11 @@
 			<!-- Velux Bridge factory default -->
 			<default>velux123</default>
 		</parameter>
-		<parameter name="timeoutMsecs" type="integer" min="1" step="1" max="60000">
+		<parameter name="timeoutMsecs" type="integer" min="500" step="1" max="5000">
 			<label>@text/config.velux.bridge.timeoutMsecs.label</label>
 			<description>@text/config.velux.bridge.timeoutMsecs.description</description>
 			<required>false</required>
-			<default>500</default>
+			<default>2000</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="retries" type="integer" min="0" step="1" max="10">
@@ -57,7 +57,7 @@
 			<default>5</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="refreshMsecs" type="integer" min="1" step="1" max="60000">
+		<parameter name="refreshMsecs" type="integer" min="5000" step="1" max="60000">
 			<label>@text/config.velux.bridge.refreshMsecs.label</label>
 			<description>@text/config.velux.bridge.refreshMsecs.description</description>
 			<required>false</required>
@@ -138,6 +138,7 @@
 			<label>@text/config.velux.thing.rollershutter.serial.label</label>
 			<description>@text/config.velux.thing.rollershutter.serial.description</description>
 			<required>true</required>
+			<default>00:00:00:00:00:00:00:00</default>
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="name" type="text">

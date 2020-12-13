@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miio.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -49,5 +49,21 @@ public class UtilsTest {
         tokenString = "6614798643fe781563c1eebeda22479a6614798643fe781563c1eebeda22479a";
         assertEquals("66147986XXXXXXXXXXXXXXXXda22479a6614798643fe781563c1eebeda22479a",
                 Utils.obfuscateToken(tokenString));
+    }
+
+    @Test
+    public void fromToDiD() {
+        String did = "03BD3CE5";
+        assertEquals("62733541", Utils.fromHEX(did));
+
+        did = "0ABD3CE5";
+        assertEquals("180174053", Utils.fromHEX(did));
+
+        did = "62733541";
+        assertEquals("03BD3CE5", Utils.toHEX(did));
+
+        did = "cant parse";
+        assertEquals("cant parse", Utils.toHEX(did));
+        assertEquals("cant parse", Utils.fromHEX(did));
     }
 }

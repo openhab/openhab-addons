@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -94,10 +93,9 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         } else {
             // try and use ID from saved property
             String controllerId = getThing().getProperties().get(PROPERTY_CONTROLLER_ID);
-            if (StringUtils.isNotBlank(controllerId)) {
+            if (controllerId != null && !controllerId.isBlank()) {
                 try {
                     controller = getController(Integer.parseInt(controllerId), controllers);
-
                 } catch (NumberFormatException e) {
                     logger.debug("Can not parse property vaue {}", controllerId);
                 }

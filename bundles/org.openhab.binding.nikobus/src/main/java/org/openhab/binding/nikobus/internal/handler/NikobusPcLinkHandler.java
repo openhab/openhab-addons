@@ -16,6 +16,7 @@ import static org.openhab.binding.nikobus.internal.NikobusBindingConstants.CONFI
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,12 +25,14 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikobus.internal.NikobusBindingConstants;
+import org.openhab.binding.nikobus.internal.discovery.NikobusDiscoveryService;
 import org.openhab.binding.nikobus.internal.protocol.NikobusCommand;
 import org.openhab.binding.nikobus.internal.protocol.NikobusConnection;
 import org.openhab.binding.nikobus.internal.utils.Utils;
@@ -41,6 +44,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +67,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> scheduledRefreshFuture;
     private @Nullable ScheduledFuture<?> scheduledSendCommandWatchdogFuture;
     private @Nullable String ack;
+    private @Nullable Consumer<String> unhandledCommandsProcessor;
     private int refreshThingIndex = 0;
 
     public NikobusPcLinkHandler(Bridge bridge, SerialPortManager serialPortManager) {
@@ -113,7 +118,11 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         // Noop.
     }
 
-    @SuppressWarnings("null")
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(NikobusDiscoveryService.class);
+    }
+
     private void processReceivedValue(byte value) {
         logger.trace("Received {}", value);
 
@@ -133,6 +142,11 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
                     Runnable listener = commandListeners.get(command);
                     if (listener != null) {
                         listener.run();
+                    } else {
+                        Consumer<String> processor = unhandledCommandsProcessor;
+                        if (processor != null) {
+                            processor.accept(command);
+                        }
                     }
                 }
             } catch (RuntimeException e) {
@@ -157,7 +171,6 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         }
     }
 
-    @SuppressWarnings("null")
     public void addListener(String command, Runnable listener) {
         if (commandListeners.put(command, listener) != null) {
             logger.warn("Multiple registrations for '{}'", command);
@@ -166,6 +179,17 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
 
     public void removeListener(String command) {
         commandListeners.remove(command);
+    }
+
+    public void setUnhandledCommandProcessor(Consumer<String> processor) {
+        if (unhandledCommandsProcessor != null) {
+            logger.debug("Unexpected override of unhandledCommandsProcessor");
+        }
+        unhandledCommandsProcessor = processor;
+    }
+
+    public void resetUnhandledCommandProcessor() {
+        unhandledCommandsProcessor = null;
     }
 
     private void processResponse(String commandPayload, @Nullable String ack) {
@@ -229,7 +253,6 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         scheduler.submit(this::processCommand);
     }
 
-    @SuppressWarnings({ "unused", "null" })
     private void processCommand() {
         NikobusCommand command;
         synchronized (pendingCommands) {

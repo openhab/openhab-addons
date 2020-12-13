@@ -208,7 +208,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             }
         }
 
-        if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA) {
+        if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA
+                || msg.getID() == 0 || msg.getID() == 1) {
             receiveMessage(msg);
         }
     }

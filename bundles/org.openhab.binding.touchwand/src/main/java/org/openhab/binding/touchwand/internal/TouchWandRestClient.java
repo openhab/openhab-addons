@@ -117,16 +117,21 @@ public class TouchWandRestClient {
     }
 
     public String cmdListUnits() {
-        String command = buildUrl(CMD_LIST_UNITS);
-        String response = sendCommand(command, METHOD_GET, "");
-
+        String response = "";
+        if (isConnected) {
+            String command = buildUrl(CMD_LIST_UNITS);
+            response = sendCommand(command, METHOD_GET, "");
+        }
         return response;
     }
 
     public String cmdGetUnitById(String id) {
-        String command = buildUrl(CMD_GET_UNIT_BY_ID) + "id=" + id;
-        String response = sendCommand(command, METHOD_GET, "");
+        String response = "";
 
+        if (isConnected) {
+            String command = buildUrl(CMD_GET_UNIT_BY_ID) + "id=" + id;
+            response = sendCommand(command, METHOD_GET, "");
+        }
         return response;
     }
 
@@ -167,9 +172,11 @@ public class TouchWandRestClient {
     }
 
     private String cmdUnitAction(String action) {
-        String command = buildUrl(CMD_UNIT_ACTION);
-        String response = sendCommand(command, METHOD_POST, action);
-
+        String response = "";
+        if (isConnected) {
+            String command = buildUrl(CMD_UNIT_ACTION);
+            response = sendCommand(command, METHOD_POST, action);
+        }
         return response;
     }
 

@@ -26,7 +26,7 @@ import org.openhab.binding.jeelink.internal.ReadingPublisher;
 import org.openhab.binding.jeelink.internal.config.Pca301SensorConfig;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -105,8 +105,8 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
                     BigDecimal current = new BigDecimal(reading.getCurrent()).setScale(1, RoundingMode.HALF_UP);
                     state = reading.isOn() ? OnOffType.ON : OnOffType.OFF;
 
-                    updateState(CURRENT_POWER_CHANNEL, new QuantityType<>(current, SmartHomeUnits.WATT));
-                    updateState(CONSUMPTION_CHANNEL, new QuantityType<>(reading.getTotal(), SmartHomeUnits.WATT_HOUR));
+                    updateState(CURRENT_POWER_CHANNEL, new QuantityType<>(current, Units.WATT));
+                    updateState(CONSUMPTION_CHANNEL, new QuantityType<>(reading.getTotal(), Units.WATT_HOUR));
                     updateState(SWITCHING_STATE_CHANNEL, state);
 
                     logger.debug("updated states for thing {} ({}): state={}, current={}, total={}",

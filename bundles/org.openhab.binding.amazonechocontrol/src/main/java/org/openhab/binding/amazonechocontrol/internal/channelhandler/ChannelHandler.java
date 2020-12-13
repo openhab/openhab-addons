@@ -35,7 +35,7 @@ import com.google.gson.JsonSyntaxException;
 public abstract class ChannelHandler {
 
     public abstract boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
-            throws IOException, URISyntaxException;
+            throws IOException, URISyntaxException, InterruptedException;
 
     protected final IAmazonThingHandler thingHandler;
     protected final Gson gson;

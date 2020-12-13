@@ -7,6 +7,9 @@
 	<thing-type id="dwdwarnings">
 		<label>Weather Warnings</label>
 		<description>Weather Warnings for an area</description>
+		<channels>
+			<channel typeId="lastUpdated" id="lastUpdated"></channel>
+		</channels>
 		<config-description>
 			<parameter name="cellId" type="text" required="true">
 				<label>Cell-ID</label>

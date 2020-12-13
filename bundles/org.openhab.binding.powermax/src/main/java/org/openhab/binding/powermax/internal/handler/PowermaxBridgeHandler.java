@@ -14,6 +14,8 @@ package org.openhab.binding.powermax.internal.handler;
 
 import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.powermax.internal.config.PowermaxIpConfiguration;
 import org.openhab.binding.powermax.internal.config.PowermaxSerialConfiguration;
+import org.openhab.binding.powermax.internal.discovery.PowermaxDiscoveryService;
 import org.openhab.binding.powermax.internal.message.PowermaxCommManager;
 import org.openhab.binding.powermax.internal.state.PowermaxArmMode;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
@@ -40,6 +43,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -93,6 +97,11 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     public PowermaxBridgeHandler(Bridge thing, SerialPortManager serialPortManager) {
         super(thing);
         this.serialPortManager = serialPortManager;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(PowermaxDiscoveryService.class);
     }
 
     public PowermaxState getCurrentState() {
@@ -549,20 +558,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 PowermaxThingHandler handler = (PowermaxThingHandler) thing.getHandler();
                 if (handler != null) {
                     if (thing.getThingTypeUID().equals(THING_TYPE_ZONE)) {
-                        if ((channel == null) || channel.equals(TRIPPED)) {
-                            handler.updateChannelFromAlarmState(TRIPPED, state);
-                        }
-                        if ((channel == null) || channel.equals(LAST_TRIP)) {
-                            handler.updateChannelFromAlarmState(LAST_TRIP, state);
-                        }
-                        if ((channel == null) || channel.equals(BYPASSED)) {
-                            handler.updateChannelFromAlarmState(BYPASSED, state);
-                        }
-                        if ((channel == null) || channel.equals(ARMED)) {
-                            handler.updateChannelFromAlarmState(ARMED, state);
-                        }
-                        if ((channel == null) || channel.equals(LOW_BATTERY)) {
-                            handler.updateChannelFromAlarmState(LOW_BATTERY, state);
+                        for (String channelId : List.of(TRIPPED, LAST_TRIP, BYPASSED, ARMED, LOCKED, LOW_BATTERY)) {
+                            if ((channel == null) || channel.equals(channelId)) {
+                                handler.updateChannelFromAlarmState(channelId, state);
+                            }
                         }
                     } else if (thing.getThingTypeUID().equals(THING_TYPE_X10)) {
                         if ((channel == null) || channel.equals(X10_STATUS)) {

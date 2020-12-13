@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Status} is responsible for storing
  * Door Status informations returned by vehicule status rest answer
@@ -29,6 +31,16 @@ import org.openhab.core.library.types.OnOffType;
  */
 @NonNullByDefault
 public class Status extends VocAnswer {
+    public enum FluidLevel {
+        @SerializedName("Normal")
+        NORMAL,
+        @SerializedName("Low")
+        LOW,
+        @SerializedName("VeryLow")
+        VERY_LOW,
+        UNKNOWN;
+    }
+
     public double averageFuelConsumption = UNDEFINED;
     public int averageSpeed = UNDEFINED;
     public int fuelAmount = UNDEFINED;
@@ -40,8 +52,9 @@ public class Status extends VocAnswer {
 
     private @Nullable OnOffType carLocked;
     private @Nullable OnOffType engineRunning;
-    public String brakeFluid = "";
-    public String washerFluidLevel = "";
+    @SerializedName("brakeFluid")
+    public FluidLevel brakeFluidLevel = FluidLevel.UNKNOWN;
+    public FluidLevel washerFluidLevel = FluidLevel.UNKNOWN;
     private @Nullable WindowsStatus windows;
     private @Nullable DoorsStatus doors;
     private @Nullable TyrePressure tyrePressure;
@@ -51,59 +64,31 @@ public class Status extends VocAnswer {
     private @NonNullByDefault({}) List<Object> bulbFailures;
 
     public Optional<WindowsStatus> getWindows() {
-        WindowsStatus windows = this.windows;
-        if (windows != null) {
-            return Optional.of(windows);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(windows);
     }
 
     public Optional<DoorsStatus> getDoors() {
-        DoorsStatus doors = this.doors;
-        if (doors != null) {
-            return Optional.of(doors);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(doors);
     }
 
     public Optional<TyrePressure> getTyrePressure() {
-        TyrePressure tyrePressure = this.tyrePressure;
-        if (tyrePressure != null) {
-            return Optional.of(tyrePressure);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(tyrePressure);
     }
 
     public Optional<HvBattery> getHvBattery() {
-        HvBattery hvBattery = this.hvBattery;
-        if (hvBattery != null) {
-            return Optional.of(hvBattery);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(hvBattery);
     }
 
     public Optional<Heater> getHeater() {
-        Heater heater = this.heater;
-        if (heater != null) {
-            return Optional.of(heater);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(heater);
     }
 
     public Optional<OnOffType> getCarLocked() {
-        OnOffType carLocked = this.carLocked;
-        if (carLocked != null) {
-            return Optional.of(carLocked);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(carLocked);
     }
 
     public Optional<OnOffType> getEngineRunning() {
-        OnOffType engineRunning = this.engineRunning;
-        if (engineRunning != null) {
-            return Optional.of(engineRunning);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(engineRunning);
     }
 
     public boolean aFailedBulb() {

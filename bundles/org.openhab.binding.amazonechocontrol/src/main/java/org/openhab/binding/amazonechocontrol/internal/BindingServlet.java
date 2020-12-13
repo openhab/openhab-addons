@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BindingServlet extends HttpServlet {
-
     private static final long serialVersionUID = -1453738923337413163L;
 
     private final Logger logger = LoggerFactory.getLogger(BindingServlet.class);
@@ -87,7 +86,11 @@ public class BindingServlet extends HttpServlet {
         if (resp == null) {
             return;
         }
-        String uri = req.getRequestURI().substring(servletUrl.length());
+        String requestUri = req.getRequestURI();
+        if (requestUri == null) {
+            return;
+        }
+        String uri = requestUri.substring(servletUrl.length());
         String queryString = req.getQueryString();
         if (queryString != null && queryString.length() > 0) {
             uri += "?" + queryString;

@@ -124,7 +124,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         if (selector != null) {
             if (getConfig().get(IP_ADDRESS) != null && getConfig().get(PORT_NUMBER) != null) {
                 if (pollingThread == null) {
-                    pollingThread = new Thread(pollingRunnable, "ESH-IRtrans-Polling " + getThing().getUID());
+                    pollingThread = new Thread(pollingRunnable, "OH-binding-" + getThing().getUID() + "-polling");
                     pollingThread.start();
                 }
             } else {

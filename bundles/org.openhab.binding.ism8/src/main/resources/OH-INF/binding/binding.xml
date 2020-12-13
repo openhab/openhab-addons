@@ -5,6 +5,5 @@
 
 	<name>ISM8 Binding</name>
 	<description>This is the binding for the ISM8 card used for Wolf heating systems or other Wolf eBus devices.</description>
-	<author>Hans-Reiner Hoffmann</author>
 
 </binding:binding>

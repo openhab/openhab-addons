@@ -23,6 +23,7 @@
 		<label>Actions</label>
 		<channels>
 			<channel id="commands" typeId="commands"/>
+			<channel id="rpc" typeId="rpc"/>
 		</channels>
 	</channel-group-type>
 

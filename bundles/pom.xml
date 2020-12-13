@@ -35,9 +35,6 @@
     <module>org.openhab.io.neeo</module>
         
     <module>org.openhab.io.openhabcloud</module>
-        
-    <module>org.openhab.io.transport.modbus</module>
-        
     <!-- transformations -->
         
     <module>org.openhab.transform.bin2json</module>
@@ -103,7 +100,8 @@
     <module>org.openhab.binding.bluetooth.blukii</module>
         
     <module>org.openhab.binding.bluetooth.daikinmadoka</module>
-        
+    <module>org.openhab.binding.bluetooth.enoceanble</module>
+    <module>org.openhab.binding.bluetooth.generic</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
         
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
@@ -173,7 +171,7 @@
     <module>org.openhab.binding.enocean</module>
         
     <module>org.openhab.binding.enturno</module>
-        
+    <module>org.openhab.binding.epsonprojector</module>
     <module>org.openhab.binding.etherrain</module>
         
     <module>org.openhab.binding.evohome</module>
@@ -227,7 +225,7 @@
     <module>org.openhab.binding.homematic</module>
         
     <module>org.openhab.binding.hpprinter</module>
-        
+    <module>org.openhab.binding.http</module>
     <module>org.openhab.binding.hue</module>
         
     <module>org.openhab.binding.hydrawise</module>
@@ -253,7 +251,7 @@
     <module>org.openhab.binding.intesis</module>
         
     <module>org.openhab.binding.ipp</module>
-        
+    <module>org.openhab.binding.irobot</module>
     <module>org.openhab.binding.irtrans</module>
         
     <module>org.openhab.binding.ism8</module>
@@ -435,7 +433,7 @@
     <module>org.openhab.binding.pixometer</module>
         
     <module>org.openhab.binding.pjlinkdevice</module>
-        
+    <module>org.openhab.binding.playstation</module>
     <module>org.openhab.binding.plclogo</module>
         
     <module>org.openhab.binding.plugwise</module>
@@ -445,10 +443,11 @@
     <module>org.openhab.binding.pulseaudio</module>
         
     <module>org.openhab.binding.pushbullet</module>
-        
+    <module>org.openhab.binding.pushover</module>
     <module>org.openhab.binding.radiothermostat</module>
         
     <module>org.openhab.binding.regoheatpump</module>
+    <module>org.openhab.binding.revogi</module>
     <module>org.openhab.binding.remoteopenhab</module>
     <module>org.openhab.binding.rfxcom</module>
         
@@ -473,7 +472,7 @@
     <module>org.openhab.binding.sensebox</module>
         
     <module>org.openhab.binding.sensibo</module>
-        
+    <module>org.openhab.binding.serial</module>
     <module>org.openhab.binding.serialbutton</module>
         
     <module>org.openhab.binding.shelly</module>
@@ -535,7 +534,7 @@
     <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.touchwand</module>
     <module>org.openhab.binding.tplinksmarthome</module>
-        
+    <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
         
     <module>org.openhab.binding.unifi</module>
@@ -575,7 +574,7 @@
     <module>org.openhab.binding.windcentrale</module>
         
     <module>org.openhab.binding.wlanthermo</module>
-        
+    <module>org.openhab.binding.wled</module>
     <module>org.openhab.binding.xmltv</module>
         
     <module>org.openhab.binding.xmppclient</module>
@@ -622,9 +621,18 @@
         
       
   </modules>
-    
+
+  <properties>
+    <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
+    <dep.noembedding/>
+  </properties>
+
   <dependencies>
-        
+    <dependency>
+      <groupId>org.lastnpe.eea</groupId>
+      <artifactId>eea-all</artifactId>
+      <version>${eea.version}</version>
+    </dependency>
     <!-- openHAB core -->
         
     <dependency>
@@ -710,13 +718,6 @@
     </dependency>
       
   </dependencies>
-    
-  <properties>
-        
-    <dep.noembedding/>
-      
-  </properties>
-    
   <build>
         
     <pluginManagement>
@@ -922,9 +923,7 @@
               <includeScope>runtime</includeScope>
                             
               <includeTypes>jar</includeTypes>
-                            
-              <excludeGroupIds>javax.activation,org.apache.karaf.features</excludeGroupIds>
-                            
+              <excludeGroupIds>javax.activation,org.apache.karaf.features,org.lastnpe.eea</excludeGroupIds>
               <excludeArtifactIds>${dep.noembedding}</excludeArtifactIds>
                             
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
@@ -940,7 +939,22 @@
             </configuration>
                       
           </execution>
-                  
+          <execution>
+            <id>unpack-eea</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.lastnpe.eea</groupId>
+                  <artifactId>eea-all</artifactId>
+                  <version>${eea.version}</version>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
         </executions>
               
       </plugin>

@@ -262,14 +262,14 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     .withType(channelTypeUID).withKind(ChannelKind.STATE).build();
             thingBuilder.withChannel(channel);
             updateThing(thingBuilder.build());
-
-            if (options != null) {
-                final List<StateOption> stateOptions = options.stream()
-                        .map(e -> new StateOption(e, e.substring(0, 1) + e.substring(1).toLowerCase()))
-                        .collect(Collectors.toList());
-                logger.trace("StateOptions : '{}'", stateOptions);
-                intesisStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions);
-            }
+        }
+        if (options != null) {
+            final List<StateOption> stateOptions = options.stream()
+                    .map(e -> new StateOption(e, e.substring(0, 1) + e.substring(1).toLowerCase()))
+                    .collect(Collectors.toList());
+            logger.trace("StateOptions : '{}'", stateOptions);
+            intesisStateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId),
+                    stateOptions);
         }
     }
 
@@ -392,6 +392,16 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         itemType = "Number:Temperature";
                         addChannel(channelId, itemType, null);
                         break;
+                    case 14:
+                        channelId = CHANNEL_TYPE_ERRORSTATUS;
+                        itemType = "Switch";
+                        addChannel(channelId, itemType, null);
+                        break;
+                    case 15:
+                        channelId = CHANNEL_TYPE_ERRORCODE;
+                        itemType = "String";
+                        addChannel(channelId, itemType, null);
+                        break;
                     case 37:
                         channelId = CHANNEL_TYPE_OUTDOORTEMP;
                         itemType = "Number:Temperature";
@@ -484,6 +494,13 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         unit = Math.round((element.value) / 10);
                         stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
                         updateState(CHANNEL_TYPE_AMBIENTTEMP, stateValue);
+                        break;
+                    case 14:
+                        updateState(CHANNEL_TYPE_ERRORSTATUS,
+                                String.valueOf(element.value).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                        break;
+                    case 15:
+                        updateState(CHANNEL_TYPE_ERRORCODE, StringType.valueOf(String.valueOf(element.value)));
                         break;
                     case 37:
                         unit = Math.round((element.value) / 10);

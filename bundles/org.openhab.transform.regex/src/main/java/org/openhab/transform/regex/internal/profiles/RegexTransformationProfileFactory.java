@@ -60,7 +60,7 @@ public class RegexTransformationProfileFactory implements ProfileFactory, Profil
         return Arrays.asList(RegexTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=REGEX)")
+    @Reference(target = "(openhab.transform=REGEX)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

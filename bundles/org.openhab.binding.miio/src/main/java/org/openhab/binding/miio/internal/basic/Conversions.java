@@ -59,6 +59,16 @@ public class Conversions {
         return new JsonPrimitive(value);
     }
 
+    public static JsonElement tankLevel(JsonElement value12) {
+        // 127 without water tank. 120 = 100% water
+        if (value12.getAsInt() == 127) {
+            return new JsonPrimitive(-1);
+        } else {
+            double value = value12.getAsDouble();
+            return new JsonPrimitive(value / 1.2);
+        }
+    }
+
     public static JsonElement execute(String transfortmation, JsonElement value) {
         switch (transfortmation.toUpperCase()) {
             case "YEELIGHTSCENEID":
@@ -67,6 +77,8 @@ public class Conversions {
                 return secondsToHours(value);
             case "/10":
                 return divideTen(value);
+            case "TANKLEVEL":
+                return tankLevel(value);
             default:
                 LOGGER.debug("Transformation {} not found. Returning '{}'", transfortmation, value.toString());
                 return value;

@@ -60,7 +60,7 @@ public class XSLTTransformationProfileFactory implements ProfileFactory, Profile
         return Arrays.asList(XSLTTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=XSLT)")
+    @Reference(target = "(openhab.transform=XSLT)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

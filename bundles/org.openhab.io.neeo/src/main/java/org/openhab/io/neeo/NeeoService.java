@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.ServletException;
+import javax.ws.rs.client.ClientBuilder;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -82,19 +83,20 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
      * This is the context created in the activate method (and nulled in the deactivate method) that will provide the
      * context to all services for all servlets
      */
-    private @Nullable ServiceContext context;
+    private final ServiceContext context;
 
     // The following services are set by openHAB via the getter/setters
-    private @Nullable HttpService httpService;
-    private @Nullable ItemRegistry itemRegistry;
-    private @Nullable BindingInfoRegistry bindingInfoRegistry;
-    private @Nullable ThingRegistry thingRegistry;
-    private @Nullable ThingTypeRegistry thingTypeRegistry;
-    private @Nullable ItemChannelLinkRegistry itemChannelLinkRegistry;
-    private @Nullable ChannelTypeRegistry channelTypeRegistry;
-    private @Nullable MDNSClient mdnsClient;
-    private @Nullable EventPublisher eventPublisher;
-    private @Nullable NetworkAddressService networkAddressService;
+    private final HttpService httpService;
+    private final ItemRegistry itemRegistry;
+    private final BindingInfoRegistry bindingInfoRegistry;
+    private final ThingRegistry thingRegistry;
+    private final ThingTypeRegistry thingTypeRegistry;
+    private final ItemChannelLinkRegistry itemChannelLinkRegistry;
+    private final ChannelTypeRegistry channelTypeRegistry;
+    private final MDNSClient mdnsClient;
+    private final EventPublisher eventPublisher;
+    private final NetworkAddressService networkAddressService;
+    private final ClientBuilder clientBuilder;
 
     /** The main dashboard servlet. Only created in the activate method (and disposed of in the deactivate method) */
     private @Nullable NeeoDashboardServlet dashboardServlet;
@@ -136,238 +138,24 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
         }
     };
 
-    /**
-     * The event filter to apply to this service
-     */
-    private final EventFilter eventFilter = event -> {
-        logger.trace("apply: {}", event);
-
-        for (NeeoBrainServlet ns : servlets) {
-            final List<EventFilter> efs = ns.getEventFilters();
-            if (efs != null) {
-                for (EventFilter ef : efs) {
-                    if (ef.apply(event)) {
-                        logger.trace("apply (true): {}", event);
-                        return true;
-                    }
-                }
-            }
-        }
-
-        logger.trace("apply (false): {}", event);
-        return false;
-    };
-
-    /**
-     * Sets the http service.
-     *
-     * @param httpService the non-null http service
-     */
-    @Reference
-    public void setHttpService(HttpService httpService) {
-        Objects.requireNonNull(httpService, "httpService cannot be null");
-        this.httpService = httpService;
-    }
-
-    /**
-     * Unset http service.
-     *
-     * @param httpService the http service (ignored)
-     */
-    public void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
-    }
-
-    /**
-     * Sets the item registry.
-     *
-     * @param itemRegistry the non-null item registry
-     */
-    @Reference
-    public void setItemRegistry(ItemRegistry itemRegistry) {
-        Objects.requireNonNull(itemRegistry, "itemRegistry cannot be null");
-        this.itemRegistry = itemRegistry;
-    }
-
-    /**
-     * Unset item registry.
-     *
-     * @param itemRegistry the item registry (ignored)
-     */
-    public void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
-    }
-
-    /**
-     * Sets the binding info registry.
-     *
-     * @param bindingInfoRegistry the non-null binding info registry
-     */
-    @Reference
-    public void setBindingInfoRegistry(BindingInfoRegistry bindingInfoRegistry) {
-        Objects.requireNonNull(bindingInfoRegistry, "bindingInfoRegistry cannot be null");
-        this.bindingInfoRegistry = bindingInfoRegistry;
-    }
-
-    /**
-     * Unset binding info registry.
-     *
-     * @param bindingInfoRegistry the binding info registry (ignored)
-     */
-    public void unsetBindingInfoRegistry(BindingInfoRegistry bindingInfoRegistry) {
-        this.bindingInfoRegistry = null;
-    }
-
-    /**
-     * Sets the thing registry.
-     *
-     * @param thingRegistry the non-null thing registry
-     */
-    @Reference
-    public void setThingRegistry(ThingRegistry thingRegistry) {
-        Objects.requireNonNull(thingRegistry, "thingRegistry cannot be null");
-        this.thingRegistry = thingRegistry;
-    }
-
-    /**
-     * Unset thing registry.
-     *
-     * @param thingRegistry the thing registry (ignored)
-     */
-    public void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = null;
-    }
-
-    /**
-     * Sets the thing type registry.
-     *
-     * @param thingTypeRegistry the non-null thing type registry
-     */
-    @Reference
-    public void setThingTypeRegistry(ThingTypeRegistry thingTypeRegistry) {
-        Objects.requireNonNull(thingTypeRegistry, "thingTypeRegistry cannot be null");
-        this.thingTypeRegistry = thingTypeRegistry;
-    }
-
-    /**
-     * Unset thing type registry.
-     *
-     * @param thingTypeRegistry the thing type registry (ignored)
-     */
-    public void unsetThingTypeRegistry(ThingTypeRegistry thingTypeRegistry) {
-        this.thingTypeRegistry = null;
-    }
-
-    /**
-     * Sets the item channel link registry.
-     *
-     * @param itemChannelLinkRegistry the non-null item channel link registry
-     */
-    @Reference
-    public void setItemChannelLinkRegistry(ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        Objects.requireNonNull(itemChannelLinkRegistry, "itemChannelLinkRegistry cannot be null");
-        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
-    }
-
-    /**
-     * Unset item channel link registry.
-     *
-     * @param itemChannelLinkRegistry the item channel link registry (ignored)
-     */
-    public void unsetItemChannelLinkRegistry(ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        this.itemChannelLinkRegistry = null;
-    }
-
-    /**
-     * Sets the channel type registry.
-     *
-     * @param channelTypeRegistry the non-null channel type registry
-     */
-    @Reference
-    public void setChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
-        Objects.requireNonNull(channelTypeRegistry, "channelTypeRegistry cannot be null");
-        this.channelTypeRegistry = channelTypeRegistry;
-    }
-
-    /**
-     * Unset channel type registry.
-     *
-     * @param channelTypeRegistry the channel type registry (ignored)
-     */
-    public void unsetChannelTypeRegistry(ChannelTypeRegistry channelTypeRegistry) {
-        this.channelTypeRegistry = null;
-    }
-
-    /**
-     * Sets the MDNS client.
-     *
-     * @param mdnsClient the non-null MDNS client
-     */
-    @Reference
-    public void setMDNSClient(MDNSClient mdnsClient) {
-        Objects.requireNonNull(mdnsClient, "mdnsClient cannot be null");
-        this.mdnsClient = mdnsClient;
-    }
-
-    /**
-     * Unset MDNS client.
-     *
-     * @param mdnsClient the mdns client (ignored)
-     */
-    public void unsetMDNSClient(MDNSClient mdnsClient) {
-        this.mdnsClient = null;
-    }
-
-    /**
-     * Sets the event publisher.
-     *
-     * @param eventPublisher the new event publisher
-     */
-    @Reference
-    public void setEventPublisher(EventPublisher eventPublisher) {
-        Objects.requireNonNull(eventPublisher, "eventPublisher cannot be null");
-        this.eventPublisher = eventPublisher;
-    }
-
-    /**
-     * Unset event publisher.
-     *
-     * @param eventPublisher the event publisher (ignored)
-     */
-    public void unsetEventPublisher(EventPublisher eventPublisher) {
-        this.eventPublisher = null;
-    }
-
-    /**
-     * Sets the network address service
-     *
-     * @param networkAddressService the network address service
-     */
-    @Reference
-    public void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        Objects.requireNonNull(networkAddressService, "networkAddressService cannot be null");
-        this.networkAddressService = networkAddressService;
-        networkAddressService.addNetworkAddressChangeListener(this);
-    }
-
-    /**
-     * Unsets network address service
-     *
-     * @param networkAddressService address service
-     */
-    public void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        networkAddressService.removeNetworkAddressChangeListener(this);
-        this.networkAddressService = null;
-    }
-
-    /**
-     * Activates this service. The activation will start up the brain discovery service and register the dashboard tile
-     *
-     * @param componentContext the non-null component context
-     */
     @Activate
-    public void activate(final ComponentContext componentContext) {
-        Objects.requireNonNull(componentContext, "componentContext cannot be null");
+    public NeeoService(ComponentContext componentContext, @Reference HttpService httpService,
+            @Reference ItemRegistry itemRegistry, @Reference ThingRegistry thingRegistry,
+            @Reference BindingInfoRegistry bindingInfoRegistry, @Reference ChannelTypeRegistry channelTypeRegistry,
+            @Reference ThingTypeRegistry thingTypeRegistry, @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
+            @Reference MDNSClient mdnsClient, @Reference EventPublisher eventPublisher,
+            @Reference NetworkAddressService networkAddressService, @Reference ClientBuilder clientBuilder) {
+        this.httpService = httpService;
+        this.itemRegistry = itemRegistry;
+        this.bindingInfoRegistry = bindingInfoRegistry;
+        this.channelTypeRegistry = channelTypeRegistry;
+        this.thingRegistry = thingRegistry;
+        this.thingTypeRegistry = thingTypeRegistry;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.mdnsClient = mdnsClient;
+        this.eventPublisher = eventPublisher;
+        this.networkAddressService = networkAddressService;
+        this.clientBuilder = clientBuilder;
 
         logger.debug("Neeo Service activated");
         final ServiceContext localContext = new ServiceContext(componentContext, validate(httpService, "httpService"),
@@ -378,7 +166,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                 validate(eventPublisher, "eventPublisher"), validate(networkAddressService, "networkAddressService"));
 
         context = localContext;
-        discovery = new MdnsBrainDiscovery(localContext);
+        discovery = new MdnsBrainDiscovery(localContext, clientBuilder);
         discovery.addListener(discoveryListener);
 
         try {
@@ -401,6 +189,28 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
             localDiscovery.startDiscovery();
         }
     }
+
+    /**
+     * The event filter to apply to this service
+     */
+    private final EventFilter eventFilter = event -> {
+        logger.trace("apply: {}", event);
+
+        for (NeeoBrainServlet ns : servlets) {
+            final List<EventFilter> efs = ns.getEventFilters();
+            if (efs != null) {
+                for (EventFilter ef : efs) {
+                    if (ef.apply(event)) {
+                        logger.trace("apply (true): {}", event);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        logger.trace("apply (false): {}", event);
+        return false;
+    };
 
     /**
      * Helper method to validate that the specific item wasn't null and convert it's type to a non-nullable type
@@ -441,8 +251,6 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                 NeeoUtil.close(servlet);
             }
             servlets.clear();
-
-            context = null;
         }
 
         if (dashboardServlet != null) {
@@ -472,7 +280,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                         servletUrl);
                 try {
                     final NeeoBrainServlet newServlet = NeeoBrainServlet.create(localContext, servletUrl,
-                            sysInfo.getHostname(), ipAddress);
+                            sysInfo.getHostname(), ipAddress, clientBuilder);
                     servlets.add(newServlet);
 
                     localContext.getHttpService().registerServlet(servletUrl, newServlet, new Hashtable<>(),

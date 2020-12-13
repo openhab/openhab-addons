@@ -20,7 +20,7 @@
 			<channel id="limitMinimum" typeId="limitMinimum"/>
 			<channel id="limitMaximum" typeId="limitMaximum"/>
 		</channels>
-		<representation-property>unique</representation-property>
+		<representation-property>serial</representation-property>
 		<config-description-ref uri="thing-type:velux:rollershutter"/>
 	</thing-type>
 </thing:thing-descriptions>

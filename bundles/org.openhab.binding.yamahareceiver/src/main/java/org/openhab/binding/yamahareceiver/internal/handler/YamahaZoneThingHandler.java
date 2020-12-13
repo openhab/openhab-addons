@@ -727,7 +727,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                 logger.debug("State update error. Changing thing to offline", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (ReceivedMessageParseException e) {
-                updateProperty(PROPERTY_LAST_PARSE_ERROR, e.getMessage());
+                String message = e.getMessage();
+                updateProperty(PROPERTY_LAST_PARSE_ERROR, message != null ? message : "");
                 // Some AVRs send unexpected responses. We log parser exceptions therefore.
                 logger.debug("Parse error!", e);
             }
