@@ -77,7 +77,10 @@ Only basic groups (with no state) from the remote server are ignored.
 The channel ID of the created channel corresponds to the name of the item on the remote server.
 For example, if your remote item is named `MyDate`, the channel UID of the channel created by the binding will be `remoteopenhab:server:xxx:MyDate`.
 
-On the `thing` thing, if the `buildTriggerChannels` parameter is set to true, a channel is created automatically for each trigger channel defined in the remote thing.
+On the `thing` thing, you will not find all channels from your remote thing.
+Only trigger channels from your remote thing will be created.
+**All state channels from your remote thing will be ignored** (use the `server` thing to link a local item to a remote (item).
+if the `buildTriggerChannels` parameter is set to true, a channel is created automatically for each trigger channel defined in the remote thing.
 For example, if your remote thing provides a trigger channel with this UID `astro:sun:local:night#event`, the channel UID of the channel created by the binding will be `remoteopenhab:thing:xxx:astro_sun_local_night_event`.
 
 ## Limitations
