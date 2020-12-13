@@ -574,7 +574,7 @@ If you register an IP address that isn't reachable from your phone (such as `loc
 HomeKit allows only a single pairing to be established with the bridge.
 This pairing is normally shared across devices via iCloud.
 If you need to establish a new pairing, you will need to clear the existing pairings.
-To do this, you can issue the command `smarthome:homekit clearPairings` from the [OSGi console](https://www.openhab.org/docs/administration/console.html).
+To do this, you can issue the command `openhab:homekit clearPairings` from the [OSGi console](https://www.openhab.org/docs/administration/console.html).
 After doing this, you may need to remove the file `$OPENHAB_USERDATA/jsondb/homekit.json` and restart openHAB.
 
 HomeKit requires a unique identifier for each accessory advertised by the bridge.
@@ -597,7 +597,7 @@ openhab> log:tail io.github.hapjava
 
 ## Console commands
 
-`smarthome:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.  
+`openhab:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.  
 
-`smarthome:homekit show <accessory_id | name>` - print additional details of the accessories which partially match provided ID or name.
+`openhab:homekit show <accessory_id | name>` - print additional details of the accessories which partially match provided ID or name.
  

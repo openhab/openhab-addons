@@ -95,16 +95,16 @@ Number  WC_Valve_cmd_Duration             "Command Duration [%d min]" { channel=
 Switch  WC_Valve_cmd_OpenWithDuration     "Watering Timer [%d min]" { channel="gardena:water_control:home:myWateringComputer:valve_commands#start_seconds_to_override" }
 Switch  WC_Valve_cmd_CloseValve           "Stop Switch" { channel="gardena:water_control:home:myWateringComputer:valve_commands#stop_until_next_task" }
 
-smarthome:status WC_Valve_Duration // returns the duration of the last watering request if still active, or 0
-smarthome:status WC_Valve_Activity // returns the current valve activity  (CLOSED|MANUAL_WATERING|SCHEDULED_WATERING)
+openhab:status WC_Valve_Duration // returns the duration of the last watering request if still active, or 0
+openhab:status WC_Valve_Activity // returns the current valve activity  (CLOSED|MANUAL_WATERING|SCHEDULED_WATERING)
 ```
 
 All channels are read-only, except the command group and the lastUpdate timestamp
 
 ```
-smarthome:send WC_Valve_cmd_Duration.sendCommand(10) // set the duration for the command to 10min
-smarthome:send WC_Valve_cmd_OpenWithDuration.sendCommand(ON) // start watering
-smarthome:send WC_Valve_cmd_CloseValve.sendCommand(ON) // stop any active watering
+openhab:send WC_Valve_cmd_Duration.sendCommand(10) // set the duration for the command to 10min
+openhab:send WC_Valve_cmd_OpenWithDuration.sendCommand(ON) // start watering
+openhabsend WC_Valve_cmd_CloseValve.sendCommand(ON) // stop any active watering
 ```
 
 If you send a REFRESH command to the last update timestamp (no matter which thing), **ALL** items from **ALL** things are updated
@@ -112,7 +112,7 @@ If you send a REFRESH command to the last update timestamp (no matter which thin
 DateTime LastUpdate "LastUpdate [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" { channel="gardena:water_control:home:myWateringComputer:common#lastUpdate_timestamp" }
 
 // refresh ALL items
-smarthome:send LastUpdate REFRESH
+openhab:send LastUpdate REFRESH
 ```
 
 ### Debugging and Tracing

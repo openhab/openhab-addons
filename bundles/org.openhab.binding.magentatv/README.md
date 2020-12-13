@@ -85,7 +85,7 @@ There are different ways to setup the User ID:
 Run the following command on the console and provide your Telekom account credentials:
 
 ```
-openhab> smarthome:magentatv login
+openhab> openhab:magentatv login
 Username (email): mail@example.com
 Password: topsecret
 

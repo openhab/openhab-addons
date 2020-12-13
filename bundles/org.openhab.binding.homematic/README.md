@@ -521,7 +521,7 @@ Display_CombinedParam.sendCommand("{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=J
 If you want to use the combined parameter in the console, you have to use ' instead of ", to prevent evaluation of curly braces:
 
 ```shell
-smarthome:send Display_CombinedParam '{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=Just a test,DDID=3,DDC=true}'
+openhab:send Display_CombinedParam '{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=Just a test,DDID=3,DDC=true}'
 ```
 
 **Key translation:**
@@ -662,7 +662,7 @@ E.g you have an item linked to a variable with the name `Var_1`.
 In the console:
 
 ```shell
-smarthome:send Var_1 REFRESH
+openhab:send Var_1 REFRESH
 ```
 
 In scripts:
