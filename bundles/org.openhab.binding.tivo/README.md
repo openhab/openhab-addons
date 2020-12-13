@@ -83,7 +83,8 @@ String      TiVo_Status         "Status"          {channel="tivo:sckt:Living_Roo
 String      TiVo_MenuScreen     "Menu Screen"     {channel="tivo:sckt:Living_Room:menuTeleport", autoupdate="false"}
 Number      TiVo_SetChannel     "Current Channel" {channel="tivo:sckt:Living_Room:channelSet"}
 Number      TiVo_SetChannelName "Channel Name     [MAP(tivo.map):%s]" {channel="tivo:sckt:Living_Room:channelSet"}
-Number      TiVo_ForceChannel   "Force Channel"   {channel="tivo:sckt:Living_Room:channelForce"}                                                      
+Number      TiVo_ForceChannel   "Force Channel"   {channel="tivo:sckt:Living_Room:channelForce"}
+Number      TiVo_Recording      "Recording        [MAP(tivo.map):rec-%s]" {channel="tivo:sckt:Living_Room:isRecording"}
 String      TiVo_IRCmd          "Ir Cmd"          {channel="tivo:sckt:Living_Room:irCommand", autoupdate="false"}
 String      TiVo_KbdCmd         "Keyboard Cmd"    {channel="tivo:sckt:Living_Room:kbdCommand", autoupdate="false"}
 String      TiVo_KeyboardStr    "Search String"
@@ -99,6 +100,7 @@ sitemap tivo label="Tivo Central" {
     Frame label="Tivo" {
         Text    item=TiVo_SetChannel          label="Current Channel [%s]"  icon="screen"
         Text        item=TiVo_SetChannelName  label="Channel Name" icon="screen"
+        Text        item=TiVo_Recording       label="Recording"    icon="screen"
         Switch      item=TiVo_IRCmd           label="Channel"      icon="screen"   mappings=["CHANNELDOWN"="CH -","CHANNELUP"="CH +"]
         Switch      item=TiVo_IRCmd           label="Media"        icon="screen"   mappings=["REVERSE"="⏪", "PAUSE"="⏸", "PLAY"="▶", /*(DVD TiVo only!) "STOP"="⏹",*/ "FORWARD"="⏩", "RECORD"="⏺" ]
         Switch      item=TiVo_MenuScreen      label="Menus"        icon="screen"   mappings=["TIVO"="Home", "LIVETV"="Live Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows", "NETFLIX"="Netflix" ]
@@ -121,6 +123,8 @@ sitemap tivo label="Tivo Central" {
 ```
 NULL=Unknown
 -=Unknown
+rec-0=Not Recording
+rec-1=Recording
 100=HBO
 101=TNT
 102=BBC America

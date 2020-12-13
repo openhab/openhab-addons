@@ -36,6 +36,7 @@ public class TiVoBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_TIVO_CHANNEL_FORCE = "channelForce";
     public static final String CHANNEL_TIVO_CHANNEL_SET = "channelSet";
+    public static final String CHANNEL_TIVO_IS_RECORDING = "isRecording";
     public static final String CHANNEL_TIVO_TELEPORT = "menuTeleport";
     public static final String CHANNEL_TIVO_IRCMD = "irCommand";
     public static final String CHANNEL_TIVO_KBDCMD = "kbdCommand";

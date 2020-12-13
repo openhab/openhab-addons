@@ -65,7 +65,7 @@ public class TivoStatusProvider {
      */
 
     public TivoStatusProvider(TivoConfigData tivoConfigData, TiVoHandler tivoHandler) {
-        this.tivoStatusData = new TivoStatusData(false, -1, -1, "INITIALISING", false, ConnectionStatus.UNKNOWN);
+        this.tivoStatusData = new TivoStatusData(false, -1, -1, false, "INITIALISING", false, ConnectionStatus.UNKNOWN);
         this.tivoConfigData = tivoConfigData;
         this.tivoHandler = tivoHandler;
     }
@@ -98,7 +98,7 @@ public class TivoStatusProvider {
         PrintStream streamWriter = this.streamWriter;
 
         if (!connected || streamWriter == null) {
-            return new TivoStatusData(false, -1, -1, "CONNECTION FAILED", false, ConnectionStatus.OFFLINE);
+            return new TivoStatusData(false, -1, -1, false, "CONNECTION FAILED", false, ConnectionStatus.OFFLINE);
         }
         logger.debug("TiVo '{}' - sending command: '{}'", tivoConfigData.getCfgIdentifier(), tivoCommand);
         int repeatCount = 1;
@@ -115,7 +115,7 @@ public class TivoStatusProvider {
             if (streamWriter.checkError()) {
                 logger.debug("TiVo '{}' - called cmdTivoSend and encountered an IO error",
                         tivoConfigData.getCfgIdentifier());
-                tivoStatusData = new TivoStatusData(false, -1, -1, "CONNECTION FAILED", false,
+                tivoStatusData = new TivoStatusData(false, -1, -1, false, "CONNECTION FAILED", false,
                         ConnectionStatus.OFFLINE);
                 connTivoReconnect();
             }
@@ -142,27 +142,29 @@ public class TivoStatusProvider {
         } else {
             switch (rawStatus) {
                 case "":
-                    return new TivoStatusData(false, -1, -1, "NO_STATUS_DATA_RETURNED", false,
+                    return new TivoStatusData(false, -1, -1, false, "NO_STATUS_DATA_RETURNED", false,
                             tivoStatusData.getConnectionStatus());
                 case "LIVETV_READY":
-                    return new TivoStatusData(true, -1, -1, "LIVETV_READY", true, ConnectionStatus.ONLINE);
+                    return new TivoStatusData(true, -1, -1, false, "LIVETV_READY", true, ConnectionStatus.ONLINE);
                 case "CH_FAILED NO_LIVE":
-                    return new TivoStatusData(false, -1, -1, "CH_FAILED NO_LIVE", true, ConnectionStatus.STANDBY);
+                    return new TivoStatusData(false, -1, -1, false, "CH_FAILED NO_LIVE", true,
+                            ConnectionStatus.STANDBY);
                 case "CH_FAILED RECORDING":
-                    return new TivoStatusData(false, -1, -1, "CH_FAILED RECORDING", true, ConnectionStatus.ONLINE);
+                    return new TivoStatusData(false, -1, -1, false, "CH_FAILED RECORDING", true,
+                            ConnectionStatus.ONLINE);
                 case "CH_FAILED MISSING_CHANNEL":
-                    return new TivoStatusData(false, -1, -1, "CH_FAILED MISSING_CHANNEL", true,
+                    return new TivoStatusData(false, -1, -1, false, "CH_FAILED MISSING_CHANNEL", true,
                             ConnectionStatus.ONLINE);
                 case "CH_FAILED MALFORMED_CHANNEL":
-                    return new TivoStatusData(false, -1, -1, "CH_FAILED MALFORMED_CHANNEL", true,
+                    return new TivoStatusData(false, -1, -1, false, "CH_FAILED MALFORMED_CHANNEL", true,
                             ConnectionStatus.ONLINE);
                 case "CH_FAILED INVALID_CHANNEL":
-                    return new TivoStatusData(false, -1, -1, "CH_FAILED INVALID_CHANNEL", true,
+                    return new TivoStatusData(false, -1, -1, false, "CH_FAILED INVALID_CHANNEL", true,
                             ConnectionStatus.ONLINE);
                 case "INVALID_COMMAND":
-                    return new TivoStatusData(false, -1, -1, "INVALID_COMMAND", false, ConnectionStatus.ONLINE);
+                    return new TivoStatusData(false, -1, -1, false, "INVALID_COMMAND", false, ConnectionStatus.ONLINE);
                 case "CONNECTION_RETRIES_EXHAUSTED":
-                    return new TivoStatusData(false, -1, -1, "CONNECTION_RETRIES_EXHAUSTED", true,
+                    return new TivoStatusData(false, -1, -1, false, "CONNECTION_RETRIES_EXHAUSTED", true,
                             ConnectionStatus.OFFLINE);
             }
         }
@@ -173,6 +175,7 @@ public class TivoStatusProvider {
         Matcher matcher = tivoStatusPattern.matcher(rawStatus);
         Integer chNum = -1; // -1 used globally to indicate channel number error
         Integer subChNum = -1;
+        boolean isRecording = false;
 
         if (matcher.find()) {
             logger.debug(" statusParse '{}' - groups '{}' with group count of '{}'", tivoConfigData.getCfgIdentifier(),
@@ -187,13 +190,17 @@ public class TivoStatusProvider {
                         subChNum);
             }
 
+            if (rawStatus.contains("RECORDING")) {
+                isRecording = true;
+            }
+
             rawStatus = rawStatus.replace(" REMOTE", "");
             rawStatus = rawStatus.replace(" LOCAL", "");
-            return new TivoStatusData(true, chNum, subChNum, rawStatus, true, ConnectionStatus.ONLINE);
+            return new TivoStatusData(true, chNum, subChNum, isRecording, rawStatus, true, ConnectionStatus.ONLINE);
         }
         logger.warn(" TiVo '{}' - Unhandled/unexpected status message: '{}'", tivoConfigData.getCfgIdentifier(),
                 rawStatus);
-        return new TivoStatusData(false, -1, -1, rawStatus, false, tivoStatusData.getConnectionStatus());
+        return new TivoStatusData(false, -1, -1, false, rawStatus, false, tivoStatusData.getConnectionStatus());
     }
 
     /**

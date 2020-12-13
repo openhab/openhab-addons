@@ -40,6 +40,7 @@ public class TivoStatusData {
     private Date time = new Date();
     private int channelNum = -1;
     private int subChannelNum = -1;
+    private boolean isRecording = false;
     private String msg = "NO STATUS QUERIED YET";
     private boolean pubToUI = true;
     private ConnectionStatus connectionStatus = ConnectionStatus.INIT;
@@ -47,12 +48,13 @@ public class TivoStatusData {
     public TivoStatusData() {
     }
 
-    public TivoStatusData(boolean cmdOk, int channelNum, int subChannelNum, String msg, boolean pubToUI,
-            ConnectionStatus connectionStatus) {
+    public TivoStatusData(boolean cmdOk, int channelNum, int subChannelNum, boolean isRecording, String msg,
+            boolean pubToUI, ConnectionStatus connectionStatus) {
         this.cmdOk = cmdOk;
         this.time = new Date();
         this.channelNum = channelNum;
         this.subChannelNum = subChannelNum;
+        this.isRecording = isRecording;
         this.msg = msg;
         this.pubToUI = pubToUI;
         this.connectionStatus = connectionStatus;
@@ -139,6 +141,24 @@ public class TivoStatusData {
      */
     public void setSubChannelNum(int subChannelNum) {
         this.subChannelNum = subChannelNum;
+    }
+
+    /**
+     * {@link setRecording} set to true if current channel is recording
+     *
+     * @param isRecording true = current channel is recording
+     */
+    public void setRecording(boolean isRecording) {
+        this.isRecording = isRecording;
+    }
+
+    /**
+     * {@link getPubToUI} get status indicating if current channel is recording
+     *
+     * @return isRecording true = current channel is recording
+     */
+    public boolean isRecording() {
+        return isRecording;
     }
 
     /**

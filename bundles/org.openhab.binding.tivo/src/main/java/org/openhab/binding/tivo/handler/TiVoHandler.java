@@ -27,6 +27,7 @@ import org.openhab.binding.tivo.internal.service.TivoStatusData.ConnectionStatus
 import org.openhab.binding.tivo.internal.service.TivoStatusProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -326,6 +327,7 @@ public class TiVoHandler extends BaseThingHandler {
                     case "NO_STATUS_DATA_RETURNED":
                         tmpStatus.setChannelNum(-1);
                         tmpStatus.setSubChannelNum(-1);
+                        tmpStatus.setRecording(false);
                         return tmpStatus;
                 }
             }
@@ -365,6 +367,7 @@ public class TiVoHandler extends BaseThingHandler {
                                     newStatusData.getChannelNum() + "." + newStatusData.getSubChannelNum()));
                         }
                     }
+                    updateState(CHANNEL_TIVO_IS_RECORDING, newStatusData.isRecording() ? OnOffType.ON : OnOffType.OFF);
                 }
 
                 // Now set the pubToUI flag to false, as we have already published this status
