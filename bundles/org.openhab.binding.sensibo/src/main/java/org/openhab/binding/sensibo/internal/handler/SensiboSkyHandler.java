@@ -389,7 +389,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             stateDescription = stateDescription.withPattern(pattern);
         }
         final StateChannelTypeBuilder builder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
-                .withStateDescription(stateDescription.build().toStateDescription());
+                .withStateDescriptionFragment(stateDescription.build());
         if (tag != null) {
             builder.withTag(tag);
         }
