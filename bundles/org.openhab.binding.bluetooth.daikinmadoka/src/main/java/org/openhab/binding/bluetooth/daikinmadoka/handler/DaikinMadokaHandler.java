@@ -36,7 +36,9 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaPropertie
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaSettings;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.BRC1HCommand;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.DisableCleanFilterIndicatorCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.EnterPrivilegedModeCommand;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetCleanFilterIndicatorCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetEyeBrightnessCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetFanspeedCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetIndoorOutoorTemperatures;
@@ -45,6 +47,7 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetOpe
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetPowerstateCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetSetpointCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetVersionCommand;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.ResetCleanFilterTimerCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.ResponseListener;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetEyeBrightnessCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetFanspeedCommand;
@@ -99,7 +102,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         super.initialize();
 
         logger.debug("[{}] Start initializing!", super.thing.getUID().getId());
-        logger.debug("-- DEBUG VERSION -- 004");
 
         // Load Configuration
         config = getConfigAs(DaikinMadokaConfiguration.class);
@@ -127,6 +129,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             submitCommand(new GetPowerstateCommand()); // always keep the "GetPowerState" aftern the "GetOperationMode"
             submitCommand(new GetSetpointCommand());
             submitCommand(new GetFanspeedCommand());
+            submitCommand(new GetCleanFilterIndicatorCommand());
 
             // As it is a complex operation - it has been extracted to a method.
             retrieveOperationHours();
@@ -146,7 +149,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {
-            // TEMP
             logger.error("Error in retrieveOperationHours()", e);
             Thread.currentThread().interrupt();
         }
@@ -208,6 +210,12 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
         switch (channelUID.getId()) {
+            case DaikinMadokaBindingConstants.CHANNEL_ID_CLEAN_FILTER_INDICATOR:
+                OnOffType cleanFilterOrder = (OnOffType) command;
+                if (cleanFilterOrder == OnOffType.OFF) {
+                    resetCleanFilterIndicator();
+                }
+                break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT:
                 try {
                     QuantityType<?> setpoint = (QuantityType<?>) command;
@@ -325,6 +333,15 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             default:
                 break;
         }
+    }
+
+    /**
+     * 2 actions need to be done: disable the notification AND reset the filter timer
+     */
+    private void resetCleanFilterIndicator() {
+        logger.debug("[{}] resetCleanFilterIndicator()", super.thing.getUID().getId());
+        submitCommand(new DisableCleanFilterIndicatorCommand());
+        submitCommand(new ResetCleanFilterTimerCommand());
     }
 
     @Override
@@ -820,6 +837,16 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         DecimalType dt = madokaSettings.getSetpoint();
         if (dt != null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT, dt);
+        }
+    }
+
+    @Override
+    public void receivedResponse(GetCleanFilterIndicatorCommand command) {
+        Boolean indicatorStatus = command.getCleanFilterIndicator();
+        if (indicatorStatus != null) {
+            this.madokaSettings.setCleanFilterIndicator(indicatorStatus);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_CLEAN_FILTER_INDICATOR,
+                    indicatorStatus == true ? OnOffType.ON : OnOffType.OFF);
         }
     }
 

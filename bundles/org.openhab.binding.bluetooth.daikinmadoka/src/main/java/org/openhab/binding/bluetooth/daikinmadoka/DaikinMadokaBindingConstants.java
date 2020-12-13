@@ -52,6 +52,8 @@ public class DaikinMadokaBindingConstants {
     public static final String CHANNEL_ID_INDOOR_POWER_HOURS = "indoorPowerHours";
     public static final String CHANNEL_ID_INDOOR_FAN_HOURS = "indoorFanHours";
 
+    public static final String CHANNEL_ID_CLEAN_FILTER_INDICATOR = "cleanFilterIndicator";
+
     /**
      * BLUETOOTH UUID (service + chars)
      */

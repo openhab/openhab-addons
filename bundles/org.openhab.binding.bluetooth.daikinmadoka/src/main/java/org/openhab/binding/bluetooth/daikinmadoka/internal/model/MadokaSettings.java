@@ -50,6 +50,16 @@ public class MadokaSettings {
     private @Nullable DecimalType indoorOperationHours;
     private @Nullable DecimalType indoorFanHours;
 
+    private @Nullable Boolean cleanFilterIndicator;
+
+    public @Nullable Boolean getCleanFilterIndicator() {
+        return cleanFilterIndicator;
+    }
+
+    public void setCleanFilterIndicator(Boolean cleanFilterIndicator) {
+        this.cleanFilterIndicator = cleanFilterIndicator;
+    }
+
     public @Nullable OnOffType getOnOffState() {
         return onOffState;
     }

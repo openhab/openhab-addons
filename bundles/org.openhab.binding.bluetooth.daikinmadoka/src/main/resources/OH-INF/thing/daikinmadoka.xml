@@ -28,6 +28,7 @@
 			<channel id="indoorPowerHours" typeId="brc1h_indoorPowerHours"/>
 			<channel id="indoorOperationHours" typeId="brc1h_indoorOperationHours"/>
 			<channel id="indoorFanHours" typeId="brc1h_indoorFanHours"/>
+			<channel id="cleanFilterIndicator" typeId="brc1h_cleanFilter"/>
 		</channels>
 
 		<config-description>
@@ -54,6 +55,11 @@
 	<channel-type id="brc1h_onOffStatus">
 		<item-type>Switch</item-type>
 		<label>Unit Power Status</label>
+	</channel-type>
+
+	<channel-type id="brc1h_cleanFilter">
+		<item-type>Switch</item-type>
+		<label>Clean Filter Indicator</label>
 	</channel-type>
 
 	<channel-type id="brc1h_indoorTemperature">

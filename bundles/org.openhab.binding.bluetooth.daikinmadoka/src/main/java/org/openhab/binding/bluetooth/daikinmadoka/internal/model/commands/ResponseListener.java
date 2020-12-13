@@ -50,4 +50,6 @@ public interface ResponseListener {
     public void receivedResponse(GetEyeBrightnessCommand command);
 
     public void receivedResponse(SetEyeBrightnessCommand command);
+
+    public void receivedResponse(GetCleanFilterIndicatorCommand command);
 }

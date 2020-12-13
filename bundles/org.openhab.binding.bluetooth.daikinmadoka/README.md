@@ -53,6 +53,12 @@ _Note that it is planned to generate some part of this based on the XML files wi
 | setpoint  | Number:Temperature | R/W | This is a "virtual channel" : its value is calculated depending on current operation mode. It is the channel to be used to change the setpoint, whatever the current mode is.
 | homekitCurrentHeatingCoolingMode  | String | R | This channel is a "virtual channel" to be used with the HomeKit add-on to implement Thermostat thing. Values supported are the HomeKit addon ones: Off, CoolOn, HeatOn, Auto.
 | homekitTargetHeatingCoolingMode  | String | R/W | This channel is a "virtual channel" to be used with the HomeKit add-on to implement Thermostat thing. Values supported are the HomeKit addon ones: Off, CoolOn, HeatOn, Auto.
+| homebridgeMode | String | R/W | This channel is a "virtual channel" to be used with external HomeBridge. Values are: Off, Heating, Cooling, Auto.
+| eyeBrightness | Number | R/W | This channel allows to manipulate the Blue "Eye" indicator Brightness. Values are between 0 and 19.
+| indoorPowerHours | Number | R | This channel indicates the number of hours the indoor unit has been powered (operating or not).
+| indoorOperationHours | Number | R | This channel indicates the number of hours the indoor unit has been operating.
+| indoorFanHours | Number | R | This channel indicates the number of hours the fan has been blowing.
+| cleanFilterIndicator | Switch | R/W | This channel indicates if the filter needs cleaning. The indicator can be reset by writing "OFF" to the channel.
 
 ## Full Example
 

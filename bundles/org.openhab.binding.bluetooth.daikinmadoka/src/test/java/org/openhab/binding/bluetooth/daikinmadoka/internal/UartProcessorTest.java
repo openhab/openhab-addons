@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetCleanFilterIndicatorCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetEyeBrightnessCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetFanspeedCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetIndoorOutoorTemperatures;
@@ -119,6 +120,10 @@ public class UartProcessorTest implements ResponseListener {
 
     @Override
     public void receivedResponse(@NonNull GetEyeBrightnessCommand command) {
+    }
+
+    @Override
+    public void receivedResponse(@NonNull GetCleanFilterIndicatorCommand command) {
     }
 
     @Override
