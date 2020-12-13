@@ -149,7 +149,8 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
             sb.append(response.getResponse());
             sb.append("\r\n");
             String res = response.getResult().toString();
-            if (!response.isError() && !res.contentEquals("[null]") && !res.contentEquals("[]")) {
+            if (!response.isError() && !res.contentEquals("[null]") && !res.contentEquals("[]")
+                    && !res.contentEquals("[\"\"]")) {
                 if (testChannelList.containsKey(response.getId())) {
                     supportedChannelList.put(testChannelList.get(response.getId()), res);
                 }
@@ -214,12 +215,12 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
                 // Add all (unique) properties
                 if (!ch.isMiOt() && !ch.getProperty().isBlank() && ch.getChannelCustomRefreshCommand().isBlank()
                         && !testChannelsList.containsKey(ch.getProperty())) {
-                    testChannelsList.put(ch.getProperty(), ch);
+                    testChannelsList.putIfAbsent(ch.getProperty(), ch);
                 }
                 // Add all (unique) custom refresh commands
                 if (!ch.isMiOt() && !ch.getChannelCustomRefreshCommand().isBlank()
                         && !testChannelsList.containsKey(ch.getChannelCustomRefreshCommand())) {
-                    testChannelsList.put(ch.getChannelCustomRefreshCommand(), ch);
+                    testChannelsList.putIfAbsent(ch.getChannelCustomRefreshCommand(), ch);
                 }
             }
         }
@@ -265,17 +266,19 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         }
         if (supportedChannelList.size() > 0) {
             MiIoBasicDevice mbd = createBasicDeviceDb(model, new ArrayList<>(supportedChannelList.keySet()));
-            writeDevice(mbd);
             sb.append("Created experimental database for your device:\r\n");
             sb.append(GSONP.toJson(mbd));
+            sb.append("\r\nDatabase file saved to: ");
+            sb.append(writeDevice(mbd));
             isIdentified = false;
         } else {
             sb.append("No supported channels found.\r\n");
         }
+        sb.append("\r\nDevice testing file saved to: ");
+        sb.append(writeLog());
         sb.append(
-                "\r\nPlease share your this output on the community forum or github to get this device supported.\r\n");
+                "\r\nPlease share your these files on the community forum or github to get this device supported.\r\n");
         logger.info("{}", sb.toString());
-        writeLog();
     }
 
     private MiIoBasicDevice createBasicDeviceDb(String model, List<MiIoBasicChannel> miIoBasicChannels) {
@@ -300,7 +303,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         return device;
     }
 
-    private void writeDevice(MiIoBasicDevice device) {
+    private String writeDevice(MiIoBasicDevice device) {
         File folder = new File(BINDING_DATABASE_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -308,13 +311,15 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         File dataFile = new File(folder, model + "-experimental.json");
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(GSONP.toJson(device));
-            logger.info("Database file created: {}", dataFile.getAbsolutePath());
+            logger.debug("Experimental database file created: {}", dataFile.getAbsolutePath());
+            return dataFile.getAbsolutePath().toString();
         } catch (IOException e) {
             logger.info("Error writing database file {}: {}", dataFile.getAbsolutePath(), e.getMessage());
         }
+        return "Failed creating database file";
     }
 
-    private void writeLog() {
+    private String writeLog() {
         File folder = new File(BINDING_USERDATA_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -322,9 +327,11 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         File dataFile = new File(folder, "test-" + model + "-" + LocalDateTime.now().format(DATEFORMATTER) + ".txt");
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(sb.toString());
-            logger.info("Saved device testing file to {}", dataFile.getAbsolutePath());
+            logger.debug("Saved device testing file to {}", dataFile.getAbsolutePath());
+            return dataFile.getAbsolutePath().toString();
         } catch (IOException e) {
             logger.info("Error writing file {}: {}", dataFile.getAbsolutePath(), e.getMessage());
         }
+        return "Failed creating testlog file";
     }
 }
