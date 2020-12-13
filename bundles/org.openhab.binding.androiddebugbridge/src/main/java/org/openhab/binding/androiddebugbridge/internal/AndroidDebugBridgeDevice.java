@@ -88,7 +88,7 @@ public class AndroidDebugBridgeDevice {
 
     public void startPackage(String packageName) throws IOException, AndroidDebugBridgeDeviceNotConnectedException,
             InterruptedException, AndroidDebugBridgeDeviceException {
-        var out = runAdbShell("monkey", "-p", packageName, "-v", "1", "&&", "sleep", "0.3");
+        var out = runAdbShell("monkey", "--pct-syskeys", "0", "-p", packageName, "-v", "1", "&&", "sleep", "0.3");
         if (out.contains("monkey aborted"))
             throw new AndroidDebugBridgeDeviceException("Unable to open package");
     }
@@ -227,8 +227,10 @@ public class AndroidDebugBridgeDevice {
         }
         synchronized (adb) {
             var byteArrayOutputStream = new ByteArrayOutputStream();
+            var cmd = String.join(" ", args);
+            logger.debug("{} - shell:{}", ip, cmd);
             try {
-                var stream = adb.open("shell:" + String.join(" ", args));
+                var stream = adb.open("shell:" + cmd);
                 do {
                     byteArrayOutputStream.writeBytes(stream.read());
                 } while (!stream.isClosed());
