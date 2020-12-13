@@ -6,7 +6,7 @@
 
 	<bridge-type id="server">
 		<label>Remote openHAB Server</label>
-		<description>A remote openHAB server.</description>
+		<description>A remote openHAB server. You will find one channel for each item defined in the remote server.</description>
 
 		<representation-property>host</representation-property>
 
@@ -77,7 +77,8 @@
 		</supported-bridge-type-refs>
 
 		<label>Remote Thing</label>
-		<description>A thing from the remote openHAB server.</description>
+		<description>A thing from the remote openHAB server. You will find one channel for each trigger channel from the
+			remote thing (state channels from the remote thing will be ignored).</description>
 
 		<representation-property>thingUID</representation-property>
 
