@@ -88,7 +88,8 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
             ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
             if (manufacturerDetails != null) {
                 URI manufacturerUri = manufacturerDetails.getManufacturerURI();
-                if (manufacturerUri != null && manufacturerUri.toString().contains("dresden")) {
+                if ((manufacturerUri != null && manufacturerUri.toString().contains("dresden"))
+                        || "dresden elektronik".equals(manufacturerDetails.getManufacturer())) {
                     return new ThingUID(BRIDGE_TYPE, details.getSerialNumber());
                 }
             }
