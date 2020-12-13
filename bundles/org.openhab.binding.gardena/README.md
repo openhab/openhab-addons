@@ -104,7 +104,7 @@ All channels are read-only, except the command group and the lastUpdate timestam
 ```
 openhab:send WC_Valve_cmd_Duration.sendCommand(10) // set the duration for the command to 10min
 openhab:send WC_Valve_cmd_OpenWithDuration.sendCommand(ON) // start watering
-openhabsend WC_Valve_cmd_CloseValve.sendCommand(ON) // stop any active watering
+openhab:send WC_Valve_cmd_CloseValve.sendCommand(ON) // stop any active watering
 ```
 
 If you send a REFRESH command to the last update timestamp (no matter which thing), **ALL** items from **ALL** things are updated
