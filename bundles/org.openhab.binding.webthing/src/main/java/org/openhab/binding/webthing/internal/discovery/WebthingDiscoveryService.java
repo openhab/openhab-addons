@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = DiscoveryService.class, configurationPid = "webthingdiscovery.mdns")
+@Component(service = DiscoveryService.class, configurationPid = "webthingdiscovery.mdns")
 public class WebthingDiscoveryService extends AbstractDiscoveryService implements ServiceListener {
     private static final Duration FOREGROUND_SCAN_TIMEOUT = Duration.ofMillis(200);
     private final Logger logger = LoggerFactory.getLogger(WebthingDiscoveryService.class);
