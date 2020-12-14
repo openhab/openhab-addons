@@ -54,6 +54,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             Optional.empty());
     private final AtomicReference<Instant> lastReconnect = new AtomicReference<>(Instant.now());
     private final AtomicReference<Optional<AliveWatchdog>> aliveWatchdogRef = new AtomicReference<>(Optional.empty());
+    private @Nullable URI webThingURI = null;
 
     public WebThingHandler(Thing thing) {
         super(thing);
@@ -76,14 +77,15 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         // perform connect in background
         scheduler.execute(() -> {
             // WebThing URI present?
-            var optionalWebThingURI = getWebThingURI();
-            if (optionalWebThingURI.isPresent()) {
-                logger.debug("try to connect WebThing {}", optionalWebThingURI.get());
-                var connected = tryReconnect(optionalWebThingURI.get());
+            this.webThingURI = readWebThingURI();
+            if (webThingURI != null) {
+                logger.debug("try to connect WebThing {}", webThingURI);
+                var connected = tryReconnect(webThingURI);
                 if (connected) {
                     logger.info("WebThing {} connected", getWebThingLabel());
                 } else {
-                    var msg = "could not connect WebThing " + getWebThingLabel() + ". Try it later (each " + HEALTH_CHECK_PERIOD.getSeconds() + " sec)";
+                    var msg = "could not connect WebThing " + getWebThingLabel() + ". Try it later (each "
+                            + HEALTH_CHECK_PERIOD.getSeconds() + " sec)";
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 }
 
@@ -111,22 +113,24 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         }
     }
 
-    private boolean tryReconnect(URI webThingURI) {
+    private boolean tryReconnect(@Nullable URI uri) {
         if (isActivated.get()) { // will try reconnect only, if activated
             try {
                 // create the client-side WebThing representation
-                var webThing = ConsumedThingFactory.instance().create(webThingURI, this::onError);
-                this.webThingConnectionRef.getAndSet(Optional.of(webThing)).ifPresent(ConsumedThing::close);
+                if (uri != null) {
+                    var webThing = ConsumedThingFactory.instance().create(uri, this::onError);
+                    this.webThingConnectionRef.getAndSet(Optional.of(webThing)).ifPresent(ConsumedThing::close);
 
-                // update the Thing structure based on the WebThing description
-                thingStructureChanged(webThing);
+                    // update the Thing structure based on the WebThing description
+                    thingStructureChanged(webThing);
 
-                // link the Thing's channels with the WebThing properties to forward properties/item updates
-                establishWebThingChannelLinks(webThing);
+                    // link the Thing's channels with the WebThing properties to forward properties/item updates
+                    establishWebThingChannelLinks(webThing);
 
-                lastReconnect.set(Instant.now());
-                updateStatus(ThingStatus.ONLINE);
-                return true;
+                    lastReconnect.set(Instant.now());
+                    updateStatus(ThingStatus.ONLINE);
+                    return true;
+                }
             } catch (Exception e) {
                 var msg = e.getMessage();
                 if (msg == null) {
@@ -153,30 +157,27 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         }
     }
 
-    private Optional<URI> getWebThingURI() {
+    private @Nullable URI readWebThingURI() {
         var webThingConfiguration = getConfigAs(WebThingConfiguration.class);
         var webThingUriString = webThingConfiguration.webThingURI;
         if (webThingUriString == null) {
-            logger.warn("webThing uri has not been set");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "webThing uri has not been set");
         } else {
             try {
-                return Optional.of(URI.create(webThingUriString));
+                return URI.create(webThingUriString);
             } catch (Exception illegalURIException) {
-                logger.warn("webThing uri {} is invalid {}", webThingUriString, illegalURIException.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "invalid uri " + webThingUriString);
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     private String getWebThingLabel() {
-        var uri = getWebThingURI().map(Object::toString).orElse("");
         if (getThing().getLabel() == null) {
-            return uri;
+            return "" + webThingURI;
         } else {
-            return "'" + getThing().getLabel() + "' (" + uri + ")";
+            return "'" + getThing().getLabel() + "' (" + webThingURI + ")";
         }
     }
 
@@ -305,16 +306,14 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
 
                     // try reconnect, if necessary
                     if (isDisconnected()) {
-                        var reconnected = getWebThingURI().map(WebThingHandler.this::tryReconnect).orElse(false);
-                        if (reconnected) {
+                        if (tryReconnect(webThingURI)) {
                             logger.info("WebThing {} reconnected", getWebThingLabel());
                         }
                     } else {
                         // force reconnecting periodically, to fix erroneous states that occurs for unknown reasons
                         var elapsedSinceLastReconnect = Duration.between(lastReconnect.get(), Instant.now());
                         if (isConnected() && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds())) {
-                            var reconnected = getWebThingURI().map(WebThingHandler.this::tryReconnect).orElse(false);
-                            if (reconnected) {
+                            if (tryReconnect(webThingURI)) {
                                 logger.info("WebThing {} reconnected. (periodical reconnect each {} h)",
                                         getWebThingLabel(), RECONNECT_PERIOD.toHours());
                             } else {
