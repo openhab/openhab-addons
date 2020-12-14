@@ -12,20 +12,13 @@
 
   <artifactId>org.openhab.binding.androiddebugbridge</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: AndroidDebugBridge Binding</name>
-
-  <repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-  </repositories>
+  <name>openHAB Add-ons :: Bundles :: Android Debug Bridge Binding</name>
 
   <dependencies>
     <dependency>
-      <groupId>com.github.cgutman</groupId>
+      <groupId>com.tananaev</groupId>
       <artifactId>adblib</artifactId>
-      <version>d6937951eb98557c76ee2081e383d50886ce109a</version>
+      <version>1.2</version>
     </dependency>
   </dependencies>
 

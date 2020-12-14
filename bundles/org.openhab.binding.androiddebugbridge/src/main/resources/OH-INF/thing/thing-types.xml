@@ -27,7 +27,7 @@
 				<label>ADB Port</label>
 				<description>Device port listening to adb connections.</description>
 			</parameter>
-			<parameter name="refreshTimeSec" type="integer" min="10" max="120" required="true">
+			<parameter name="refreshTime" type="integer" min="10" max="120" unit="s" required="true">
 				<label>Refresh Time</label>
 				<description>Seconds between device status refreshes.</description>
 				<default>30</default>

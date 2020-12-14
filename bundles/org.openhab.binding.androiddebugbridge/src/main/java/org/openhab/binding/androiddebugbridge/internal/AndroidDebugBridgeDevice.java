@@ -25,12 +25,13 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cgutman.adblib.AdbBase64;
-import com.cgutman.adblib.AdbConnection;
-import com.cgutman.adblib.AdbCrypto;
+import com.tananaev.adblib.AdbBase64;
+import com.tananaev.adblib.AdbConnection;
+import com.tananaev.adblib.AdbCrypto;
 
 /**
  * The {@link AndroidDebugBridgeConfiguration} class encapsulates adb device connection logic.
@@ -40,22 +41,23 @@ import com.cgutman.adblib.AdbCrypto;
 @NonNullByDefault
 public class AndroidDebugBridgeDevice {
     public static final int ANDROID_MEDIA_STREAM = 3;
+    private static final String ADB_FOLDER = OpenHAB.getUserDataFolder() + File.pathSeparator + ".adb";
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
-
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("volume is (?<current>\\d.*) in range \\[(?<min>\\d.*)\\.\\.(?<max>\\d.*)]");
 
-    @Nullable
-    static AdbCrypto adbCrypto;
+    private static @Nullable AdbCrypto ADB_CRYPTO;
 
     static {
         var logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
         try {
-            File directory = new File(".adb");
+
+            File directory = new File(ADB_FOLDER);
             if (!directory.exists()) {
                 directory.mkdir();
             }
-            adbCrypto = loadKeyPair(".adb/adb_pub.key", ".adb/adb.key");
+            ADB_CRYPTO = loadKeyPair(ADB_FOLDER + File.pathSeparator + "adb_pub.key",
+                    ADB_FOLDER + File.pathSeparator + "adb.key");
         } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
             logger.warn("Unable to setup adb keys: {}", e.getMessage());
         }
@@ -68,25 +70,21 @@ public class AndroidDebugBridgeDevice {
     @Nullable
     private AdbConnection connection;
 
-    public AndroidDebugBridgeDevice() {
-    }
-
     public void configure(String ip, int port) {
         this.ip = ip;
         this.port = port;
     }
 
     public void sendKeyEvent(String eventCode)
-            throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException {
+            throws IOException, InterruptedException, AndroidDebugBridgeDeviceException {
         runAdbShell("input", "keyevent", eventCode);
     }
 
-    public void sendText(String text)
-            throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException {
+    public void sendText(String text) throws IOException, AndroidDebugBridgeDeviceException, InterruptedException {
         runAdbShell("input", "text", URLEncoder.encode(text, StandardCharsets.UTF_8));
     }
 
-    public void startPackage(String packageName) throws IOException, AndroidDebugBridgeDeviceNotConnectedException,
+    public void startPackage(String packageName) throws IOException, AndroidDebugBridgeDeviceException,
             InterruptedException, AndroidDebugBridgeDeviceException {
         var out = runAdbShell("monkey", "--pct-syskeys", "0", "-p", packageName, "-v", "1", "&&", "sleep", "0.3");
         if (out.contains("monkey aborted"))
@@ -94,12 +92,12 @@ public class AndroidDebugBridgeDevice {
     }
 
     public void stopPackage(String packageName)
-            throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException {
+            throws IOException, AndroidDebugBridgeDeviceException, InterruptedException {
         runAdbShell("am", "force-stop", packageName);
     }
 
-    public String getCurrentPackage() throws IOException, AndroidDebugBridgeDeviceNotConnectedException,
-            InterruptedException, AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException {
+    public String getCurrentPackage() throws IOException, AndroidDebugBridgeDeviceException, InterruptedException,
+            AndroidDebugBridgeDeviceReadException {
         var out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp", "&&", "sleep", "0.3");
         var targetLine = Arrays.stream(out.split("\n")).findFirst().orElse("");
         var lineParts = targetLine.split(" ");
@@ -111,62 +109,52 @@ public class AndroidDebugBridgeDevice {
         throw new AndroidDebugBridgeDeviceReadException("can read package name");
     }
 
-    // public String[] getPackages(String packageName)
-    // throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException {
-    // var out = runAdbShell("cmd", "package", "list", "packages");
-    // return Arrays.asList(out.split("\n")).stream().filter(line -> line.contains("package:"))
-    // .map(line -> line.substring("package:".length())).toArray(String[]::new);
-    // }
-
-    public boolean isPlayingMedia()
-            throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException {
+    public boolean isPlayingMedia() throws IOException, AndroidDebugBridgeDeviceException, InterruptedException {
         // Try to get players info from audio dump
         String audioDump = runAdbShell("dumpsys", "audio", "|", "grep", "ID:", "&&", "sleep", "0.3");
         if (audioDump.length() == 0) {
             // Fallback to media session dump
-            String devicesResp = runAdbShell("dumpsys", "media_session", "|", "grep", "PlaybackState", "&&", "sleep",
-                    "0.3");
+            String devicesResp = runAdbShell("dumpsys", "media_session", "|", "grep", "PlaybackState");
             return devicesResp.contains("PlaybackState {state=3");
         }
         return audioDump.contains("state:started");
     }
 
-    public VolumeInfo getMediaVolume() throws IOException, AndroidDebugBridgeDeviceNotConnectedException,
-            InterruptedException, AndroidDebugBridgeDeviceReadException {
+    public VolumeInfo getMediaVolume() throws IOException, AndroidDebugBridgeDeviceException, InterruptedException,
+            AndroidDebugBridgeDeviceReadException {
         return getVolume(ANDROID_MEDIA_STREAM);
     }
 
-    public void setMediaVolume(int volume)
-            throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException {
+    public void setMediaVolume(int volume) throws IOException, AndroidDebugBridgeDeviceException, InterruptedException {
         setVolume(ANDROID_MEDIA_STREAM, volume);
     }
 
     private void setVolume(int stream, int volume)
-            throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException {
+            throws IOException, AndroidDebugBridgeDeviceException, InterruptedException {
         runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--set", String.valueOf(volume));
     }
 
-    public String getModel() throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException,
+    public String getModel() throws IOException, AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException {
         return getDeviceProp("ro.product.model");
     }
 
-    public String getAndroidVersion() throws IOException, AndroidDebugBridgeDeviceNotConnectedException,
-            InterruptedException, AndroidDebugBridgeDeviceReadException {
+    public String getAndroidVersion() throws IOException, AndroidDebugBridgeDeviceException, InterruptedException,
+            AndroidDebugBridgeDeviceReadException {
         return getDeviceProp("ro.build.version.release");
     }
 
-    public String getBrand() throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException,
+    public String getBrand() throws IOException, AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException {
         return getDeviceProp("ro.product.brand");
     }
 
-    public String getSerialNo() throws IOException, AndroidDebugBridgeDeviceNotConnectedException, InterruptedException,
+    public String getSerialNo() throws IOException, AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException {
         return getDeviceProp("ro.serialno");
     }
 
-    private String getDeviceProp(String name) throws IOException, AndroidDebugBridgeDeviceNotConnectedException,
+    private String getDeviceProp(String name) throws IOException, AndroidDebugBridgeDeviceException,
             InterruptedException, AndroidDebugBridgeDeviceReadException {
         var propValue = runAdbShell("getprop", name, "&&", "sleep", "0.3").replace("\n", "").replace("\r", "");
         if (propValue.length() == 0) {
@@ -175,7 +163,7 @@ public class AndroidDebugBridgeDevice {
         return propValue;
     }
 
-    private VolumeInfo getVolume(int stream) throws IOException, AndroidDebugBridgeDeviceNotConnectedException,
+    private VolumeInfo getVolume(int stream) throws IOException, AndroidDebugBridgeDeviceException,
             InterruptedException, AndroidDebugBridgeDeviceReadException {
         String volumeResp = runAdbShell("media", "volume", "--show", "--stream", String.valueOf(stream), "--get", "|",
                 "grep", "volume", "&&", "sleep", "0.3");
@@ -194,18 +182,17 @@ public class AndroidDebugBridgeDevice {
         return currentSocket != null && currentSocket.isConnected();
     }
 
-    public void connect() throws AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceCryptographyException {
+    public void connect() throws AndroidDebugBridgeDeviceException {
         this.disconnect();
         AdbConnection adbConnection;
         Socket sock;
-        AdbCrypto crypto = adbCrypto;
+        AdbCrypto crypto = ADB_CRYPTO;
         if (crypto == null) {
-            throw new AndroidDebugBridgeDeviceCryptographyException();
+            throw new AndroidDebugBridgeDeviceException("Device not connected");
         }
         try {
             sock = new Socket(ip, port);
             sock.setTcpNoDelay(true);
-            // sock.setSoTimeout(5000);
         } catch (IOException e) {
             throw new AndroidDebugBridgeDeviceException("Can not open socket " + ip + ":" + port);
         }
@@ -220,10 +207,10 @@ public class AndroidDebugBridgeDevice {
     }
 
     private String runAdbShell(String... args)
-            throws IOException, InterruptedException, AndroidDebugBridgeDeviceNotConnectedException {
+            throws IOException, InterruptedException, AndroidDebugBridgeDeviceException {
         var adb = connection;
         if (adb == null) {
-            throw new AndroidDebugBridgeDeviceNotConnectedException();
+            throw new AndroidDebugBridgeDeviceException("Device not connected");
         }
         synchronized (adb) {
             var byteArrayOutputStream = new ByteArrayOutputStream();
@@ -288,28 +275,12 @@ public class AndroidDebugBridgeDevice {
     }
 
     static class AndroidDebugBridgeDeviceException extends Exception {
-
         public AndroidDebugBridgeDeviceException(String message) {
             super(message);
         }
     }
 
-    static class AndroidDebugBridgeDeviceNotConnectedException extends Exception {
-
-        public AndroidDebugBridgeDeviceNotConnectedException() {
-            super("Device not connected");
-        }
-    }
-
-    static class AndroidDebugBridgeDeviceCryptographyException extends Exception {
-
-        public AndroidDebugBridgeDeviceCryptographyException() {
-            super("Device not connected");
-        }
-    }
-
     static class AndroidDebugBridgeDeviceReadException extends Exception {
-
         public AndroidDebugBridgeDeviceReadException(String message) {
             super(message);
         }

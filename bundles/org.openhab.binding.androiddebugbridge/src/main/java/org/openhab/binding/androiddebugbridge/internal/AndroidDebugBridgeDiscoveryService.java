@@ -27,6 +27,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     protected void startScan() {
         logger.debug("scan started: searching android devices");
         discoveryRunning = true;
-        Enumeration<NetworkInterface> nets = null;
+        Enumeration<NetworkInterface> nets;
         try {
             nets = NetworkInterface.getNetworkInterfaces();
             for (NetworkInterface netint : Collections.list(nets)) {
@@ -114,8 +115,6 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                                 }
                             }
                         } catch (IOException | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException
-                                | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceCryptographyException
-                                | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceNotConnectedException
                                 | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException e) {
                             logger.warn("Error connecting to device at {}: {}", currentIp, e.getMessage());
                         }
@@ -128,9 +127,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     }
 
     private void discoverWithADB(String ip)
-            throws AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceCryptographyException, InterruptedException,
-            IOException, AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceNotConnectedException,
-            AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException,
+            throws InterruptedException, IOException, AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException,
             AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException {
         var device = new AndroidDebugBridgeDevice();
         device.configure(ip, discoveryPort);
@@ -158,14 +155,15 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     private void onDiscoverResult(String serialNo, String ip, int port, String model, String androidVersion,
             String brand) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put(PARAMETER_SERIAL, serialNo);
+
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNo);
         properties.put(PARAMETER_IP, ip);
         properties.put(PARAMETER_PORT, port);
-        properties.put(PARAMETER_MODEL, model);
-        properties.put(PARAMETER_BRAND, brand);
-        properties.put(PARAMETER_ANDROID_VERSION, androidVersion);
+        properties.put(Thing.PROPERTY_MODEL_ID, model);
+        properties.put(Thing.PROPERTY_VENDOR, brand);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, androidVersion);
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ANDROID_DEVICE, serialNo))
-                .withTTL(DISCOVERY_RESULT_TTL_SEC).withRepresentationProperty(PARAMETER_SERIAL)
-                .withProperties(properties).withLabel(String.format("%s(%s)", model, serialNo)).build());
+                .withTTL(DISCOVERY_RESULT_TTL_SEC).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
+                .withProperties(properties).withLabel(String.format("%s (%s)", model, serialNo)).build());
     }
 }

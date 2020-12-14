@@ -41,10 +41,6 @@ public class AndroidDebugBridgeBindingConstants {
     public static final String STOP_PACKAGE_CHANNEL = "stop-package";
     public static final String CURRENT_PACKAGE_CHANNEL = "current-package";
     // List of all Parameters
-    public static final String PARAMETER_SERIAL = "serial";
     public static final String PARAMETER_IP = "ip";
     public static final String PARAMETER_PORT = "port";
-    public static final String PARAMETER_MODEL = "model";
-    public static final String PARAMETER_BRAND = "brand";
-    public static final String PARAMETER_ANDROID_VERSION = "version";
 }

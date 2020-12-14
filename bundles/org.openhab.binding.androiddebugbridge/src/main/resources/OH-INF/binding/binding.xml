@@ -3,9 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>AndroidDebugBridge Binding</name>
+	<name>Android Debug Bridge Binding</name>
 	<description>This is the binding for connect to Android devices using the Android Debug Bridge protocol.</description>
-	<author>Miguel Álvarez</author>
 
 	<config-description>
 		<parameter name="discoveryPort" type="integer" required="true">
@@ -13,7 +12,7 @@
 			<description>Port used on discovery to connect to the device through adb.</description>
 			<default>5555</default>
 		</parameter>
-		<parameter name="discoveryReachableMs" type="integer" required="true">
+		<parameter name="discoveryReachableMs" type="integer" required="true" unit="ms">
 			<label>Discovery Reachable ms</label>
 			<description>Milliseconds to wait while discovering to determine if the ip is reachable.</description>
 			<default>3000</default>

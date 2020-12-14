@@ -33,5 +33,5 @@ public class AndroidDebugBridgeConfiguration {
     /**
      * Time for scheduled state check.
      */
-    public int refreshTimeSec = 30;
+    public int refreshTime = 30;
 }
