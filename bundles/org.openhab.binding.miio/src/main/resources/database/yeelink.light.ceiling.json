@@ -52,6 +52,7 @@
 				"friendlyName": "Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
+				"unit": "PERCENT",
 				"refresh": true,
 				"actions": [
 					{
@@ -165,7 +166,6 @@
 					]
 				},
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": []
 			},
 			{

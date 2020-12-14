@@ -472,7 +472,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | pm25             | Number  | PM2.5                               |            |
 | co2              | Number  | CO2e                                |            |
 | tvoc             | Number  | tVOC                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 
 ### Qingping Air Monitor (<a name="cgllc-airmonitor-s1">cgllc.airmonitor.s1</a>) Channels
@@ -483,7 +483,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | pm25             | Number  | PM2.5                               |            |
 | co2              | Number  | CO2                                 |            |
 | tvoc             | Number  | tVOC                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | temperature      | Number:Temperature | Temperature                         |            |
 
 ### Smartmi Humidifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
@@ -492,11 +492,11 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | setHumidity      | Number  | Humidity Set                        |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | translevel       | Number  | Trans_level                         |            |
-| bright           | Number  | LED Brightness                      |            |
+| bright           | Dimmer  | LED Brightness                      |            |
 | buzzer           | Switch  | Buzzer Status                       |            |
 | depth            | Number  | Depth                               |            |
 | dry              | Switch  | Dry                                 |            |
@@ -511,11 +511,11 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | setHumidity      | Number  | Humidity Set                        |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | translevel       | Number  | Trans_level                         |            |
-| bright           | Number  | LED Brightness                      |            |
+| bright           | Dimmer  | LED Brightness                      |            |
 | buzzer           | Switch  | Buzzer Status                       |            |
 | depth            | Number  | Depth                               |            |
 | dry              | Switch  | Dry                                 |            |
@@ -531,10 +531,10 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power            | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
 | Fault            | Number  | Humidifier Device Fault             |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | targetHumidity   | Number  | Target Humidity                     |            |
 | waterlevel       | Number  | Water Level                         |            |
-| bright           | Number  | LED Brightness                      |            |
+| bright           | Dimmer  | LED Brightness                      |            |
 | buzzer           | Switch  | Buzzer Status                       |            |
 | dry              | Switch  | Dry                                 |            |
 | usedhours        | Number:Time | Run Time                            |            |
@@ -552,10 +552,10 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| humidifierMode   | String  | Humidifier Mode                     |            |
-| humidity         | Number  | Humidity                            |            |
+| humidifierMode   | Number:Dimensionless | Humidifier Mode                     |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | setHumidity      | Number  | Humidity Set                        |            |
-| bright           | Number  | LED Brightness                      |            |
+| bright           | Dimmer  | LED Brightness                      |            |
 | buzzer           | Switch  | Buzzer Status                       |            |
 | depth            | Number  | Depth                               |            |
 | dry              | Switch  | Dry                                 |            |
@@ -570,7 +570,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -591,7 +591,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -612,7 +612,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -633,7 +633,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -654,11 +654,11 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
-| bright           | Number  | LED Brightness                      |            |
+| bright           | Dimmer  | LED Brightness                      |            |
 | filtermaxlife    | Number  | Filter Max Life                     |            |
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
@@ -675,7 +675,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | volume           | Number  | Volume                              |            |
@@ -696,7 +696,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -717,7 +717,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -738,7 +738,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -759,11 +759,11 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
-| bright           | Number  | LED Brightness                      |            |
+| bright           | Dimmer  | LED Brightness                      |            |
 | filtermaxlife    | Number  | Filter Max Life                     |            |
 | filterhours      | Number:Time | Filter Hours used                   |            |
 | usedhours        | Number:Time | Run Time                            |            |
@@ -899,7 +899,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -920,7 +920,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -1068,7 +1068,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -1089,7 +1089,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -1110,7 +1110,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | mode             | String  | Mode                                |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | aqi              | Number  | Air Quality Index                   |            |
 | averageaqi       | Number  | Average Air Quality Index           |            |
 | led              | Switch  | LED Status                          |            |
@@ -1141,7 +1141,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | speed            | Number  | Speed                               |            |
 | naturalLevel     | Number  | Natural Level                       |            |
 | temp_dec         | Number  | Temperature                         |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | acPower          | String  | AC Power                            |            |
 | mode             | String  | Battery Charge                      |            |
 | battery          | Number  | Battery                             |            |
@@ -1163,7 +1163,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | speed            | Number  | Speed                               |            |
 | naturalLevel     | Number  | Natural Level                       |            |
 | temp_dec         | Number  | Temperature                         |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | acPower          | String  | AC Power                            |            |
 | mode             | String  | Battery Charge                      |            |
 | battery          | Number  | Battery                             |            |
@@ -1185,7 +1185,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | speed            | Number  | Speed                               |            |
 | naturalLevel     | Number  | Natural Level                       |            |
 | temp_dec         | Number  | Temperature                         |            |
-| humidity         | Number  | Humidity                            |            |
+| humidity         | Number:Dimensionless | Humidity                            |            |
 | acPower          | String  | AC Power                            |            |
 | mode             | String  | Battery Charge                      |            |
 | battery          | Number  | Battery                             |            |
@@ -1429,7 +1429,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | mode             | Number  | Fan - Mode                          | Value mapping [0="Basic",1="Natural Wind"] |
 | time-off         | Number:Time | Presets - Time Off                  |            |
 | pre-colortemp    | Number:Temperature | Presets - Pre Colortemp             |            |
-| pre-brightness   | Number:Dimensionless | Presets - Pre Brightness            |            |
+| pre-brightness   | Dimmer  | Presets - Pre Brightness            |            |
 | pre-speed        | Number:Dimensionless | Presets - Pre Speed                 |            |
 | reversal         | Number  | Presets - Reversal                  | Value mapping [0="Positive",1="Reverse"] |
 | pre-custom       | Number  | Presets - Pre Custom                | Value mapping [0="Switch Off",1="Open"] |
@@ -1942,7 +1942,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -1957,7 +1957,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -1972,7 +1972,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -1987,7 +1987,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2002,7 +2002,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2017,7 +2017,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2032,7 +2032,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2047,7 +2047,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2062,7 +2062,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2077,7 +2077,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2092,7 +2092,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2107,7 +2107,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2122,7 +2122,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
 | mode             | Number  | Mode                                |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | cct              | Number  | Color Temperature                   |            |
 | dv               | Number  | Delayed Turn-off                    |            |
 | WallSceneEn      | Switch  | Wall Scene Enable                   |            |
@@ -2697,40 +2697,40 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| seat_temp        | Number  | Seat Temperature                    |            |
+| seat_temp        | Number:Temperature | Seat Temperature                    |            |
 | status_seatheat  | Number  | Seat Status                         |            |
-| water_temp_t     | Number  | Water Temperature                   |            |
-| fan_temp         | Number  | Fan Temperature                     |            |
+| water_temp_t     | Number:Temperature | Water Temperature                   |            |
+| fan_temp         | Number:Temperature | Fan Temperature                     |            |
 | status_led       | Number  | Night Light                         |            |
 
 ### Uclean smart toilet relax (<a name="xjx-toilet-relax">xjx.toilet.relax</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| seat_temp        | Number  | Seat Temperature                    |            |
+| seat_temp        | Number:Temperature | Seat Temperature                    |            |
 | status_seatheat  | Number  | Seat Status                         |            |
-| water_temp_t     | Number  | Water Temperature                   |            |
-| fan_temp         | Number  | Fan Temperature                     |            |
+| water_temp_t     | Number:Temperature | Water Temperature                   |            |
+| fan_temp         | Number:Temperature | Fan Temperature                     |            |
 | status_led       | Number  | Night Light                         |            |
 
 ### Uclean smart toilet pure (<a name="xjx-toilet-pure">xjx.toilet.pure</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| seat_temp        | Number  | Seat Temperature                    |            |
+| seat_temp        | Number:Temperature | Seat Temperature                    |            |
 | status_seatheat  | Number  | Seat Status                         |            |
-| water_temp_t     | Number  | Water Temperature                   |            |
-| fan_temp         | Number  | Fan Temperature                     |            |
+| water_temp_t     | Number:Temperature | Water Temperature                   |            |
+| fan_temp         | Number:Temperature | Fan Temperature                     |            |
 | status_led       | Number  | Night Light                         |            |
 
 ### Whale Spout Smart Toilet Zero (<a name="xjx-toilet-zero">xjx.toilet.zero</a>) Channels
 
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
-| seat_temp        | Number  | Seat Temperature                    |            |
+| seat_temp        | Number:Temperature | Seat Temperature                    |            |
 | status_seatheat  | Number  | Seat Status                         |            |
-| water_temp_t     | Number  | Water Temperature                   |            |
-| fan_temp         | Number  | Fan Temperature                     |            |
+| water_temp_t     | Number:Temperature | Water Temperature                   |            |
+| fan_temp         | Number:Temperature | Fan Temperature                     |            |
 | status_led       | Number  | Night Light                         |            |
 
 ### Mi Bedside Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
@@ -3450,9 +3450,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
 | target_temperature | Number:Temperature | Target Temperature                  |            |
-| brightness       | Number  | Brightness                          |            |
+| brightness       | Dimmer  | Brightness                          |            |
 | buzzer           | Switch  | Buzzer Status                       |            |
-| relative_humidity | Number  | Relative Humidity                   |            |
+| relative_humidity | Number:Dimensionless | Relative Humidity                   |            |
 | childlock        | Switch  | Child Lock                          |            |
 | HWSwitch         | Switch  | HW Switch                           |            |
 | temperature      | Number:Temperature | Temperature                         |            |
@@ -3467,7 +3467,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | target-temperature | Number:Temperature | Heater - Target Temperature         |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
 | countdown-time   | Number:Time | Countdown - Countdown Time          |            |
-| relative-humidity | Number  | Environment - Relative Humidity     |            |
+| relative-humidity | Number:Dimensionless | Environment - Relative Humidity     |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | brightness       | Dimmer  | Indicator Light - Brightness        |            |
 | physical-controls-locked | Switch  | Physical Control Locked - Physical Controls Locked |            |
@@ -3482,7 +3482,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | target-temperature | Number:Temperature | Heater - Target Temperature         |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
 | countdown-time   | Number:Time | Countdown - Countdown Time          |            |
-| relative-humidity | Number  | Environment - Relative Humidity     |            |
+| relative-humidity | Number:Dimensionless | Environment - Relative Humidity     |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | brightness       | Dimmer  | Indicator Light - Brightness        |            |
 | physical-controls-locked | Switch  | Physical Control Locked - Physical Controls Locked |            |
@@ -3579,7 +3579,7 @@ Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"
 Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
 Number co2 "CO2e" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
 Number tvoc "tVOC" (G_airmonitor) {channel="miio:basic:airmonitor:tvoc"}
-Number humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidity"}
 Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic:airmonitor:temperature"}
 ```
 
@@ -3593,7 +3593,7 @@ Number battery "Battery" (G_airmonitor) {channel="miio:basic:airmonitor:battery"
 Number pm25 "PM2.5" (G_airmonitor) {channel="miio:basic:airmonitor:pm25"}
 Number co2 "CO2" (G_airmonitor) {channel="miio:basic:airmonitor:co2"}
 Number tvoc "tVOC" (G_airmonitor) {channel="miio:basic:airmonitor:tvoc"}
-Number humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airmonitor) {channel="miio:basic:airmonitor:humidity"}
 Number:Temperature temperature "Temperature" (G_airmonitor) {channel="miio:basic:airmonitor:temperature"}
 ```
 
@@ -3605,11 +3605,11 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 Group G_humidifier "Smartmi Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
-Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
 Number aqi "Air Quality Index" (G_humidifier) {channel="miio:basic:humidifier:aqi"}
 Number translevel "Trans_level" (G_humidifier) {channel="miio:basic:humidifier:translevel"}
-Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
+Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
 Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
 Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
 Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
@@ -3627,11 +3627,11 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
-Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
 Number aqi "Air Quality Index" (G_humidifier) {channel="miio:basic:humidifier:aqi"}
 Number translevel "Trans_level" (G_humidifier) {channel="miio:basic:humidifier:translevel"}
-Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
+Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
 Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
 Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
 Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
@@ -3650,10 +3650,10 @@ Group G_humidifier "Smartmi Evaporative Humidifer 2" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number Fault "Humidifier Device Fault" (G_humidifier) {channel="miio:basic:humidifier:Fault"}
-Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number targetHumidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:targetHumidity"}
 Number waterlevel "Water Level" (G_humidifier) {channel="miio:basic:humidifier:waterlevel"}
-Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
+Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
 Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
 Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
 Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
@@ -3674,10 +3674,10 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 ```java
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-String humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
-Number humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
-Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
+Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
 Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
 Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
 Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
@@ -3695,7 +3695,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier v1" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -3719,7 +3719,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier v2" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -3743,7 +3743,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier v3" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -3767,7 +3767,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier v5" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -3791,11 +3791,11 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier Pro v6" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
-Number bright "LED Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:bright"}
+Dimmer bright "LED Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:bright"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
@@ -3815,7 +3815,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier Pro v7" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Number volume "Volume" (G_airpurifier) {channel="miio:basic:airpurifier:volume"}
@@ -3839,7 +3839,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier 2 (mini)" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -3863,7 +3863,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier 2" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -3887,7 +3887,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -3911,11 +3911,11 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
-Number bright "LED Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:bright"}
+Dimmer bright "LED Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:bright"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number:Time filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
 Number:Time usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
@@ -4060,7 +4060,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier Super" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -4084,7 +4084,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier MAX / MAX Pro" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -4250,7 +4250,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -4274,7 +4274,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier 2S" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -4298,7 +4298,7 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 Group G_airpurifier "Mi Air Purifier 2H" <status>
 Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
 String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number:Dimensionless humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
 Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
@@ -4332,7 +4332,7 @@ Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
 Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 Number temp_dec "Temperature" (G_fan) {channel="miio:basic:fan:temp_dec"}
-Number humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
+Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
 String acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String mode "Battery Charge" (G_fan) {channel="miio:basic:fan:mode"}
 Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
@@ -4357,7 +4357,7 @@ Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
 Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 Number temp_dec "Temperature" (G_fan) {channel="miio:basic:fan:temp_dec"}
-Number humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
+Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
 String acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String mode "Battery Charge" (G_fan) {channel="miio:basic:fan:mode"}
 Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
@@ -4382,7 +4382,7 @@ Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
 Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 Number temp_dec "Temperature" (G_fan) {channel="miio:basic:fan:temp_dec"}
-Number humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
+Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
 String acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String mode "Battery Charge" (G_fan) {channel="miio:basic:fan:mode"}
 Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
@@ -4677,7 +4677,7 @@ Number:Dimensionless fan-level "Fan - Fan Level" (G_light) {channel="miio:basic:
 Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
 Number:Time time-off "Presets - Time Off" (G_light) {channel="miio:basic:light:time-off"}
 Number:Temperature pre-colortemp "Presets - Pre Colortemp" (G_light) {channel="miio:basic:light:pre-colortemp"}
-Number:Dimensionless pre-brightness "Presets - Pre Brightness" (G_light) {channel="miio:basic:light:pre-brightness"}
+Dimmer pre-brightness "Presets - Pre Brightness" (G_light) {channel="miio:basic:light:pre-brightness"}
 Number:Dimensionless pre-speed "Presets - Pre Speed" (G_light) {channel="miio:basic:light:pre-speed"}
 Number reversal "Presets - Reversal" (G_light) {channel="miio:basic:light:reversal"}
 Number pre-custom "Presets - Pre Custom" (G_light) {channel="miio:basic:light:pre-custom"}
@@ -5325,7 +5325,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "ZhiRui dimmable downlight" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5343,7 +5343,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Nordic 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5361,7 +5361,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Nordic 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5379,7 +5379,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Nordic 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5397,7 +5397,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Black 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5415,7 +5415,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light " Zhirui Ceiling Lamp Black 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5433,7 +5433,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Black 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5451,7 +5451,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Starry 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5469,7 +5469,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Starry 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5487,7 +5487,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Starry 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5505,7 +5505,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Gorgeous 80W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5523,7 +5523,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Gorgeous 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -5541,7 +5541,7 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Zhirui Ceiling Lamp Gorgeous 28W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
-Number brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number cct "Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number dv "Delayed Turn-off" (G_light) {channel="miio:basic:light:dv"}
 Switch WallSceneEn "Wall Scene Enable" (G_light) {channel="miio:basic:light:WallSceneEn"}
@@ -6221,10 +6221,10 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Uclean Smart Toilet Seat" <status>
-Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
+Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
+Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
+Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
@@ -6234,10 +6234,10 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Uclean smart toilet relax" <status>
-Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
+Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
+Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
+Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
@@ -6247,10 +6247,10 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Uclean smart toilet pure" <status>
-Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
+Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
+Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
+Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
@@ -6260,10 +6260,10 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Whale Spout Smart Toilet Zero" <status>
-Number seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
+Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
+Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
+Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
@@ -7157,9 +7157,9 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 Group G_heater "Smartmi Radiant Heater Smart Version" <status>
 Switch power "Power" (G_heater) {channel="miio:basic:heater:power"}
 Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
-Number brightness "Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Dimmer brightness "Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch buzzer "Buzzer Status" (G_heater) {channel="miio:basic:heater:buzzer"}
-Number relative_humidity "Relative Humidity" (G_heater) {channel="miio:basic:heater:relative_humidity"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_heater) {channel="miio:basic:heater:relative_humidity"}
 Switch childlock "Child Lock" (G_heater) {channel="miio:basic:heater:childlock"}
 Switch HWSwitch "HW Switch" (G_heater) {channel="miio:basic:heater:HWSwitch"}
 Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
@@ -7177,7 +7177,7 @@ Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
 Number:Temperature target-temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
 Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
 Number:Time countdown-time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
-Number relative-humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
+Number:Dimensionless relative-humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
 Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch physical-controls-locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
@@ -7195,7 +7195,7 @@ Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
 Number:Temperature target-temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
 Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
 Number:Time countdown-time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
-Number relative-humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
+Number:Dimensionless relative-humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
 Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
 Dimmer brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
 Switch physical-controls-locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
