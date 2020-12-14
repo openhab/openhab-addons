@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.webthing.internal.channel.Channels;
 import org.openhab.binding.webthing.internal.client.*;
 import org.openhab.binding.webthing.internal.link.ChannelToPropertyLink;
@@ -77,13 +78,13 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             // WebThing URI present?
             var optionalWebThingURI = getWebThingURI();
             if (optionalWebThingURI.isPresent()) {
-                logger.info("try to connect WebThing {}", optionalWebThingURI.get());
+                logger.debug("try to connect WebThing {}", optionalWebThingURI.get());
                 var connected = tryReconnect(optionalWebThingURI.get());
                 if (connected) {
                     logger.info("WebThing {} connected", getWebThingLabel());
                 } else {
-                    logger.warn("could not connect WebThing {}. Try it later (each {} sec)", getWebThingLabel(),
-                            HEALTH_CHECK_PERIOD.getSeconds());
+                    var msg = "could not connect WebThing " + getWebThingLabel() + ". Try it later (each " + HEALTH_CHECK_PERIOD.getSeconds() + " sec)";
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 }
 
                 // starting alive watchdog that checks the healthiness of the WebThing connection, periodically
@@ -131,7 +132,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                 if (msg == null) {
                     msg = "";
                 }
-                logger.info("connecting {} failed ({})", webThingURI, msg);
+                logger.debug("connecting {} failed ({})", webThingURI, msg);
                 onError(msg);
             }
         }
