@@ -59,11 +59,7 @@ public class Channels {
         var channelBuilder = ChannelBuilder.create(channelUID, itemType.getType());
         channelBuilder.withType(new ChannelTypeUID(BINDING_ID, itemType.getType()));
         channelBuilder.withDescription(property.description);
-        if (property.unit == null) {
-            channelBuilder.withLabel(property.title);
-        } else {
-            channelBuilder.withLabel(property.title + " [" + property.unit + "]");
-        }
+        channelBuilder.withLabel(property.title);
         var defaultTag = itemType.getTag();
         if (defaultTag != null) {
             channelBuilder.withDefaultTags(Set.of(defaultTag));
