@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -171,6 +172,36 @@ public class WebthingTest {
         assertEquals("websocket closed by peer. ", errorHandler.errorRef.get());
     }
 
+    @Test
+    public void testWebSocketReceiveTimout() throws Exception {
+        HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://example.org:8090/0").doReturn(load("/awning_response.json"));
+        httpClientMock.onGet("http://example.org:8090/0/properties/target_position")
+                .doReturn(load("/awning_property.json"));
+
+        var errorHandler = new ErrorHandler();
+        var webSocketFactory = new TestWebsocketConnectionFactory();
+        var pingPeriod = Duration.ofMillis(300);
+        var webthing = createTestWebthing("http://example.org:8090/0", httpClientMock, errorHandler, webSocketFactory,
+                pingPeriod);
+
+        var propertyChangedListenerImpl = new PropertyChangedListenerImpl();
+        webthing.observeProperty("target_position", propertyChangedListenerImpl);
+        webSocketFactory.webSocketRef.get().ignorePing.set(true);
+
+        try {
+            Thread.sleep(pingPeriod.dividedBy(2).toMillis());
+        } catch (InterruptedException ignore) {
+        }
+        assertNull(errorHandler.errorRef.get());
+
+        try {
+            Thread.sleep(pingPeriod.multipliedBy(2).toMillis());
+        } catch (InterruptedException ignore) {
+        }
+        assertTrue(errorHandler.errorRef.get().startsWith("connection seems to be broken (last message received at"));
+    }
+
     public static String load(String name) throws Exception {
         return new String(Files.readAllBytes(Paths.get(WebthingTest.class.getResource(name).toURI())));
     }
@@ -181,9 +212,13 @@ public class WebthingTest {
     }
 
     public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient, Consumer<String> errorHandler,
+            WebSocketConnectionFactory websocketConnectionFactory, Duration pingPeriod) throws IOException {
+        return new ConsumedThingImpl(URI.create(uri), errorHandler, httpClient, websocketConnectionFactory, pingPeriod);
+    }
+
+    public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient, Consumer<String> errorHandler,
             WebSocketConnectionFactory websocketConnectionFactory) throws IOException {
-        return new ConsumedThingImpl(URI.create(uri), errorHandler, httpClient, websocketConnectionFactory,
-                Duration.ofMillis(100));
+        return createTestWebthing(uri, httpClient, errorHandler, websocketConnectionFactory, Duration.ofSeconds(100));
     }
 
     public static class TestWebsocketConnectionFactory implements WebSocketConnectionFactory {
@@ -202,6 +237,7 @@ public class WebthingTest {
 
     public static final class WebSocketImpl implements WebSocket {
         private final WebSocket.Listener listener;
+        public AtomicBoolean ignorePing = new AtomicBoolean(false);
 
         WebSocketImpl(WebSocket.Listener listener) {
             this.listener = listener;
@@ -233,7 +269,9 @@ public class WebthingTest {
         }
 
         public CompletableFuture<WebSocket> sendPing(ByteBuffer message) {
-            listener.onPong(this, message);
+            if (!ignorePing.get()) {
+                listener.onPong(this, message);
+            }
             return null;
         }
 
