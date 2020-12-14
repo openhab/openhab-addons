@@ -44,7 +44,7 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     private final Map<String, PropertyChangedListener> propertyChangedListeners = new HashMap<>();
     private final AtomicReference<Instant> lastTimeReceived = new AtomicReference<>(Instant.now());
     private final AtomicReference<String> receivedTextbufferRef = new AtomicReference<>("");
-    private final AtomicReference<WebSocket> webSocketRef = new AtomicReference<>();
+    private final AtomicReference<WebSocket> webSocketRef = new AtomicReference<>(null);
 
     /**
      * constructor
@@ -59,13 +59,9 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
 
     @Override
     public void close() {
-        try {
-            var webSocket = webSocketRef.getAndSet(null);
-            if (webSocket != null) {
-                webSocket.abort();
-            }
-        } catch (Exception e) {
-            logger.warn("error occurred by closing the WebSocket", e);
+        var webSocket = webSocketRef.getAndSet(null);
+        if (webSocket != null) {
+            webSocket.abort();
         }
     }
 
@@ -147,7 +143,8 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
             while (webSocketRef.get() != null) {
                 // check if connection is alive (message has been received recently)
                 var elapsedSinceLast = Duration.between(lastTimeReceived.get(), Instant.now());
-                if (elapsedSinceLast.getSeconds() > pingPeriod.getSeconds()) {
+                var remainingTime = elapsedSinceLast.minus(pingPeriod);
+                if (remainingTime.toMillis() > 0) {
                     onError("connection seems to be broken (last message received at " + lastTimeReceived.get() + ", "
                             + elapsedSinceLast.getSeconds() + " sec ago)");
                     return;
@@ -166,8 +163,6 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
                 }
                 pause(pingPeriod.dividedBy(2));
             }
-
-            logger.debug("websocket has been closed. terminating watchdog");
         }
 
         private void pause(Duration delay) {
