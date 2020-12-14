@@ -14,14 +14,11 @@ package org.openhab.binding.webthing.internal.client.dto;
 
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * Web Thing WebSocket API property status message. Refer https://iot.mozilla.org/wot/#propertystatus-message
  *
  * @author Gregor Roth - Initial contribution
  */
-@NonNullByDefault
 public class PropertyStatusMessage {
 
     public String messageType = "<undefined>";

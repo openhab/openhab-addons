@@ -130,7 +130,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                     updateStatus(ThingStatus.ONLINE);
                     return true;
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 var msg = e.getMessage();
                 if (msg == null) {
                     msg = "";
