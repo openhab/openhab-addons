@@ -245,8 +245,10 @@ public class MiotParser {
                                             .setMinimum(BigDecimal.valueOf(property.valueRange.get(0).doubleValue()));
                                     stateDescription
                                             .setMaximum(BigDecimal.valueOf(property.valueRange.get(1).doubleValue()));
-                                    stateDescription
-                                            .setStep(BigDecimal.valueOf(property.valueRange.get(2).doubleValue()));
+                                    if (property.valueRange.get(2).doubleValue() != 0) {
+                                        stateDescription
+                                                .setStep(BigDecimal.valueOf(property.valueRange.get(2).doubleValue()));
+                                    }
                                 }
                                 miIoBasicChannel.setStateDescription(stateDescription);
                                 break;
@@ -288,7 +290,7 @@ public class MiotParser {
                             mapping.append("Value mapping [");
 
                             for (OptionsValueDescriptionsListDTO valueMap : property.valueList) {
-                                mapping.append(String.format("%d=\"%s\",", valueMap.value, valueMap.description));
+                                mapping.append(String.format("\"%d\"=\"%s\",", valueMap.value, valueMap.description));
                             }
                             mapping.deleteCharAt(mapping.length() - 1);
                             mapping.append("]");
@@ -326,8 +328,8 @@ public class MiotParser {
                             miIoBasicChannel.setStateDescription(stateDescription);
                         }
                         miIoBasicChannels.add(miIoBasicChannel);
-                        channelConfigText = printChannelDefinitions(channelConfigText, miIoBasicChannel, model,
-                                property);
+                        // channelConfigText = printChannelDefinitions(channelConfigText, miIoBasicChannel, model,
+                        // property);
                     } else {
                         logger.info("No reading siid: {}, description: {}, piid: {},description: {}", service.siid,
                                 service.description, property.piid, property.description);

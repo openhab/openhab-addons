@@ -14,7 +14,11 @@
 package org.openhab.binding.miio.internal;
 
 import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Disabled;
@@ -23,6 +27,9 @@ import org.openhab.binding.miio.internal.miot.MiotParseException;
 import org.openhab.binding.miio.internal.miot.MiotParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Support creation of the miio readme doc
@@ -38,16 +45,19 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MiotJsonFileCreator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MiotJsonFileCreator.class);
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static final String BASEDIR = "./src/main/resources/database/";
+    private static final String BASEDIR = "./src/main/resources/db/";
     private static final String FILENAME_EXTENSION = "-miot.json";
     private static final boolean overwriteFile = false;
 
     @Disabled
     public static void main(String[] args) {
 
+        LinkedHashMap<String, String> checksums = new LinkedHashMap<>();
+
         LinkedHashSet<String> models = new LinkedHashSet<>();
-        for (int i = 1; i <= 1; i++) {
+        for (int i = 1; i <= 12; i++) {
             models.add("xiaomi.aircondition.mc" + String.valueOf(i));
         }
 
@@ -73,6 +83,8 @@ public class MiotJsonFileCreator {
                         }
                     }
                     miotParser.writeDevice(fileName, device);
+                    String channelsJson = GSON.toJson(device.getDevice().getChannels()).toString();
+                    checksums.put(model, checksumMD5(channelsJson));
                 }
                 LOGGER.info("finished");
             } catch (MiotParseException e) {
@@ -81,5 +93,24 @@ public class MiotJsonFileCreator {
                 LOGGER.info("Failed to initiate http Client: {}", e.getMessage());
             }
         }
+        StringBuilder sb = new StringBuilder();
+        for (Entry<String, String> ch : checksums.entrySet()) {
+            sb.append(ch.getValue());
+            sb.append(" -->");
+            sb.append(ch.getKey());
+            sb.append("\r\n");
+        }
+        LOGGER.info("Checksums\r\n{}", sb.toString());
     }
+
+    public static String checksumMD5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(input.getBytes());
+            return Utils.getHex(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            return "No MD5";
+        }
+    }
+
 }
