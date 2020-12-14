@@ -33,7 +33,7 @@ public enum MiIoQuantiyTypesConversion {
     ELECTRIC_POTENTIAL("ElectricPotential", "volt"),
     ILLUMINANCE("Illuminance", "lux"),
     PRESSURE("Pressure", "pascal"),
-    TEMPERATURE("Temperature", "c", "celcius", "f", "farenheith", "kelvin", "K"),
+    TEMPERATURE("Temperature", "c", "celcius", "celsius", "f", "farenheith", "kelvin", "K"),
     TIME("Time", "seconds", "minutes", "minute", "hour", "hours", "days", "Months"),
     VOLUME("Volume", "litre", "liter");
     /*

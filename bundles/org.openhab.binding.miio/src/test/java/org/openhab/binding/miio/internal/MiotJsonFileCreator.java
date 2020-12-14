@@ -14,6 +14,7 @@
 package org.openhab.binding.miio.internal;
 
 import java.io.File;
+import java.util.LinkedHashSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Disabled;
@@ -45,35 +46,41 @@ public class MiotJsonFileCreator {
     @Disabled
     public static void main(String[] args) {
 
-        String model = "huayi.light.pisces";
-        if (args.length > 0) {
-            model = args[0];
+        LinkedHashSet<String> models = new LinkedHashSet<>();
+        for (int i = 1; i < 11; i++) {
+            models.add("xiaomi.aircondition.mc" + String.valueOf(i));
         }
-        LOGGER.info("Processing: {}", model);
-        try {
-            MiotParser miotParser = MiotParser.parse(model);
-            LOGGER.info("urn: ", miotParser.getUrn());
-            LOGGER.info("{}", miotParser.getUrnData());
-            MiIoBasicDevice device = miotParser.getDevice();
-            if (device != null) {
-                LOGGER.info("Device: {}", device);
 
-                String fileName = String.format("%s%s%s", BASEDIR, model, FILENAME_EXTENSION);
-                if (!overwriteFile) {
-                    int counter = 0;
-                    while (new File(fileName).isFile()) {
-                        fileName = String.format("%s%s-%d%s", BASEDIR, model, counter, FILENAME_EXTENSION);
-                        counter++;
+        if (args.length > 0) {
+            models.add(args[0]);
+        }
+
+        for (String model : models) {
+            LOGGER.info("Processing: {}", model);
+            try {
+                MiotParser miotParser = MiotParser.parse(model);
+                LOGGER.info("urn: ", miotParser.getUrn());
+                LOGGER.info("{}", miotParser.getUrnData());
+                MiIoBasicDevice device = miotParser.getDevice();
+                if (device != null) {
+                    LOGGER.info("Device: {}", device);
+
+                    String fileName = String.format("%s%s%s", BASEDIR, model, FILENAME_EXTENSION);
+                    if (!overwriteFile) {
+                        int counter = 0;
+                        while (new File(fileName).isFile()) {
+                            fileName = String.format("%s%s-%d%s", BASEDIR, model, counter, FILENAME_EXTENSION);
+                            counter++;
+                        }
                     }
+                    miotParser.writeDevice(fileName, device);
                 }
-                miotParser.writeDevice(fileName, device);
+                LOGGER.info("finished");
+            } catch (MiotParseException e) {
+                LOGGER.info("Error processing model {}: {}", model, e.getMessage());
+            } catch (Exception e) {
+                LOGGER.info("Failed to initiate http Client: {}", e.getMessage());
             }
-            LOGGER.info("finished");
-        } catch (MiotParseException e) {
-            LOGGER.info("Error processing model {}: {}", model, e.getMessage());
-        } catch (Exception e) {
-            LOGGER.info("Failed to initiate http Client: {}", e.getMessage());
         }
     }
-
 }

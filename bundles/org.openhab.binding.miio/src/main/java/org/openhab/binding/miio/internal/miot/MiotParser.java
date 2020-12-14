@@ -151,6 +151,7 @@ public class MiotParser {
     public MiIoBasicDevice getDevice(JsonElement urnData) {
         Set<String> unknownUnits = new HashSet<>();
         StringBuilder channelConfigText = new StringBuilder("Suggested additional channelType \r\n");
+
         StringBuilder actionText = new StringBuilder("Manual actions for execution\r\n");
 
         MiIoBasicDevice device = new MiIoBasicDevice();
@@ -358,8 +359,11 @@ public class MiotParser {
                             + "Please test and feedback if they are working to they can be linked to a channel.");
         }
         logger.info(channelConfigText.toString());
-        logger.info(actionText.toString());
-
+        if (actionText.length() > 30) {
+            logger.info(actionText.toString());
+        } else {
+            logger.info("No actions defined for device");
+        }
         unknownUnits.remove("none");
         if (unknownUnits.size() > 0) {
             logger.info("New units identified (inform developer): {}", String.join(", ", unknownUnits));
