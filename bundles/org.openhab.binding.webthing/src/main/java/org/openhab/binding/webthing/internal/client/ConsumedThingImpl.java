@@ -40,7 +40,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ConsumedThingImpl implements ConsumedThing {
-    private static final Duration DEFAULT_PING_PERIOD = Duration.ofSeconds(90);
+    private static final Duration DEFAULT_PING_PERIOD = Duration.ofSeconds(80);
     private final Logger logger = LoggerFactory.getLogger(ConsumedThingImpl.class);
     private final URI webThingURI;
     private final Consumer<String> errorHandler;
@@ -108,8 +108,8 @@ public class ConsumedThingImpl implements ConsumedThing {
                 }
             }
         }
-        throw new RuntimeException("WebThing resource " + webThingURI
-                + " does not support a property uri. WebThing description: " + description);
+        throw new RuntimeException(
+                "WebThing " + webThingURI + " does not support a property uri. WebThing description: " + description);
     }
 
     private URI getEventStreamUri() {
@@ -128,11 +128,13 @@ public class ConsumedThingImpl implements ConsumedThing {
 
     @Override
     public void close() {
+        logger.debug("WebThing {} closed called", webThingURI);
         isOpen.set(false);
         this.websocketDownstream.close();
     }
 
     void onError(String reason) {
+        logger.debug("WebThing {} error occurred. {}", webThingURI, reason);
         if (isOpen.get()) {
             errorHandler.accept(reason);
         }
