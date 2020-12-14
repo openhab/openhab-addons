@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,6 +39,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 /**
  * Support creation of the miio readme doc
@@ -55,6 +57,7 @@ public class ReadmeHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadmeHelper.class);
     private static final String BASEFILE = "./README.base.md";
     private static final String OUTPUTFILE = "./README.md";
+    private static final String DEVICE_NAMES_FILE = "./src/main/resources/misc/device_names.json";
 
     @Disabled
     public static void main(String[] args) {
@@ -180,14 +183,38 @@ public class ReadmeHelper {
     }
 
     private void checkDatabaseEntrys() {
+        StringBuilder sb = new StringBuilder();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        HashMap<String, String> names = new HashMap<String, String>();
+        try {
+            JsonReader reader = new JsonReader(new FileReader(DEVICE_NAMES_FILE));
+            names = gson.fromJson(reader, names.getClass());
+        } catch (IOException e) {
+            LOGGER.info("Error reading name list {}: ", DEVICE_NAMES_FILE, e.getMessage());
+        }
+
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
                 if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
-                    LOGGER.info("id : {} " + id
-                            + " not found. Suggested line to add to MiIoDevices.java: {}(\"{}\", \"{}\", THING_TYPE_BASIC),",
-                            id, id.toUpperCase().replace(".", "_"), id, id);
+                    sb.append(id.toUpperCase().replace(".", "_"));
+                    sb.append("(\"");
+                    sb.append(id);
+                    sb.append("\",\"");
+                    if (names.containsKey(id)) {
+                        sb.append(names.get(id));
+                        LOGGER.info("id: {} not found in MiIoDevices.java.", id);
+                    } else {
+                        sb.append(id);
+                        LOGGER.info(
+                                "id: {} not found in MiIoDevices.java and name unavilable in the device names list.",
+                                id);
+                    }
+                    sb.append("\", THING_TYPE_BASIC),\r\n");
                 }
             }
+        }
+        if (sb.length() > 0) {
+            LOGGER.info("Model(s) not found. Suggested lines to add to MiIoDevices.java\r\n{}", sb.toString());
         }
     }
 
