@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.datatypes.ComfoAirDataType;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -55,6 +56,8 @@ public class ComfoAirHandler extends BaseThingHandler {
     private @Nullable ComfoAirSerialConnector comfoAirConnector;
 
     public static final int BAUDRATE = 9600;
+    public static final String ACTIVATE_CHANNEL_ID = ComfoAirBindingConstants.CG_CONTROL_PREFIX
+            + ComfoAirBindingConstants.CHANNEL_ACTIVATE;
 
     public ComfoAirHandler(Thing thing, final SerialPortManager serialPortManager) {
         super(thing);
@@ -66,10 +69,8 @@ public class ComfoAirHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
         if (comfoAirConnector != null) {
             boolean isActive = !comfoAirConnector.getIsSuspended();
-            String channelActivate = ComfoAirBindingConstants.CG_CONTROL_PREFIX
-                    + ComfoAirBindingConstants.CHANNEL_ACTIVATE;
 
-            if (isActive || channelId == channelActivate) {
+            if (isActive || channelId.equals(ACTIVATE_CHANNEL_ID)) {
                 if (command instanceof RefreshType) {
                     Channel channel = this.thing.getChannel(channelUID);
                     if (channel != null) {
@@ -124,6 +125,8 @@ public class ComfoAirHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     pullDeviceProperties();
 
+                    updateState(ACTIVATE_CHANNEL_ID, OnOffType.ON);
+
                     List<Channel> channels = this.thing.getChannels();
 
                     poller = scheduler.scheduleWithFixedDelay(() -> {
@@ -149,6 +152,8 @@ public class ComfoAirHandler extends BaseThingHandler {
             comfoAirConnector.close();
         }
 
+        updateState(ACTIVATE_CHANNEL_ID, OnOffType.OFF);
+
         final ScheduledFuture<?> localPoller = poller;
 
         if (localPoller != null) {
@@ -168,10 +173,16 @@ public class ComfoAirHandler extends BaseThingHandler {
         if (!isLinked(channel.getUID())) {
             return;
         }
+
+        if (comfoAirConnector != null && comfoAirConnector.getIsSuspended()) {
+            logger.debug("Binding control is currently not active.");
+            return;
+        }
+
         String commandKey = channel.getUID().getId();
 
         ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
-        if (readCommand != null) {
+        if (readCommand != null && readCommand.getRequestCmd() != null) {
             scheduler.submit(() -> {
                 State state = sendCommand(readCommand, commandKey);
                 updateState(channel.getUID(), state);

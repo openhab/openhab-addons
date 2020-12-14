@@ -408,6 +408,10 @@ public class ComfoAirSerialConnector {
             }
             cleanedBuffer[pos] = processBuffer[i];
             pos++;
+            // Trim unrequested data in response
+            if (END[0] == processBuffer[i + 1] && END[1] == processBuffer[i + 2]) {
+                break;
+            }
         }
         return Arrays.copyOf(cleanedBuffer, pos);
     }
