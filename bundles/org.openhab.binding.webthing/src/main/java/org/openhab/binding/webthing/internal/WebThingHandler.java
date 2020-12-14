@@ -60,7 +60,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     }
 
     private boolean isConnected() {
-        return (getThing().getStatus() == ThingStatus.ONLINE);
+        return getThing().getStatus() == ThingStatus.ONLINE;
     }
 
     private boolean isDisconnected() {
