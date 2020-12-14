@@ -13,7 +13,7 @@
 			<default>5555</default>
 		</parameter>
 		<parameter name="discoveryReachableMs" type="integer" required="true" unit="ms">
-			<label>Discovery Reachable ms</label>
+			<label>Discovery Reachable</label>
 			<description>Milliseconds to wait while discovering to determine if the ip is reachable.</description>
 			<default>3000</default>
 		</parameter>
