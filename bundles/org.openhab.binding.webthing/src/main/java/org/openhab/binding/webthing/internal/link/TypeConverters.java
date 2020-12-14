@@ -75,10 +75,7 @@ class TypeConverters {
                 value = "#" + value;
             }
             Color rgb = Color.decode(value);
-            float[] hsb = new float[3];
-            hsb = Color.RGBtoHSB(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), hsb);
-            String hsbString = (hsb[0] * 360) + "," + (hsb[1] * 100) + "," + (hsb[2] * 100);
-            return HSBType.valueOf(hsbString);
+            return HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
         }
 
         @Override
