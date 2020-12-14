@@ -14,9 +14,6 @@ package org.openhab.binding.webthing.internal.client.dto;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -24,7 +21,6 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Gregor Roth - Initial contribution
  */
-@NonNullByDefault
 public class Property {
 
     public String title = "";
@@ -34,7 +30,7 @@ public class Property {
 
     public String type = "string";
 
-    public @Nullable String unit;
+    public String unit = null;
 
     public boolean readOnly = false;
 
