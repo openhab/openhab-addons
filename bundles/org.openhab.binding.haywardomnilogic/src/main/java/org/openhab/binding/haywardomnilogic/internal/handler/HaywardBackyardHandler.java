@@ -95,22 +95,17 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
             return false;
         }
 
-        if (status.equals("0")) {
-            bowID = bridgehandler.evaluateXPath("//Property[@name='BowID']/text()", xmlResponse);
-            parameter1 = bridgehandler.evaluateXPath("//Property[@name='Parameter1']/text()", xmlResponse);
-            message = bridgehandler.evaluateXPath("//Property[@name='Message']/text()", xmlResponse);
+        bowID = bridgehandler.evaluateXPath("//Property[@name='BowID']/text()", xmlResponse);
+        parameter1 = bridgehandler.evaluateXPath("//Property[@name='Parameter1']/text()", xmlResponse);
+        message = bridgehandler.evaluateXPath("//Property[@name='Message']/text()", xmlResponse);
 
-            for (int i = 0; i < 5; i++) {
-                if (i < bowID.size()) {
-                    alarmStr = parameter1.get(i) + ": " + message.get(i);
-                } else {
-                    alarmStr = "";
-                }
-                updateData("backyardAlarm" + String.format("%01d", i + 1), alarmStr);
+        for (int i = 0; i < 5; i++) {
+            if (i < bowID.size()) {
+                alarmStr = parameter1.get(i) + ": " + message.get(i);
+            } else {
+                alarmStr = "";
             }
-        } else {
-            logger.trace("Hayward getAlarms XML response: {}", xmlResponse);
-            return false;
+            updateData("backyardAlarm" + String.format("%01d", i + 1), alarmStr);
         }
         return true;
     }

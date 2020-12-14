@@ -21,7 +21,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -71,10 +71,10 @@ public class HaywardThingHandler extends BaseThingHandler {
                     case "chlorTimedPercent":
                     case "filterSpeed":
                     case "pumpSpeed":
-                        return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.PERCENT);
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
                     case "chlorAvgSaltLevel":
                     case "chlorInstantSaltLevel":
-                        return new QuantityType<>(Integer.parseInt(value), SmartHomeUnits.PARTS_PER_MILLION);
+                        return new QuantityType<>(Integer.parseInt(value), Units.PARTS_PER_MILLION);
                 }
             case "Number:Temperature":
                 if (bridgehandler.account.units.equals("Standard")) {

@@ -133,7 +133,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                 }
             } catch (Exception e) {
                 logger.debug("Unable to send command to Hayward's server {}:{}", bridgehandler.config.endpointUrl,
-                        bridgehandler.config.username);
+                        bridgehandler.config.username, e);
             }
         }
     }

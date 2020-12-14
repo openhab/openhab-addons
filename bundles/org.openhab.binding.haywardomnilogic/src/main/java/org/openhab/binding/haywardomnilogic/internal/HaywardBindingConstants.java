@@ -13,9 +13,6 @@
 
 package org.openhab.binding.haywardomnilogic.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,15 +42,14 @@ public class HaywardBindingConstants {
     public static final ThingTypeUID THING_TYPE_SENSOR = new ThingTypeUID(BINDING_ID, "sensor");
     public static final ThingTypeUID THING_TYPE_VIRTUALHEATER = new ThingTypeUID(BINDING_ID, "virtualHeater");
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE);
 
-    public static final Set<ThingTypeUID> THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
-            Arrays.asList(HaywardBindingConstants.THING_TYPE_BACKYARD, HaywardBindingConstants.THING_TYPE_BOW,
-                    HaywardBindingConstants.THING_TYPE_BRIDGE, HaywardBindingConstants.THING_TYPE_CHLORINATOR,
-                    HaywardBindingConstants.THING_TYPE_COLORLOGIC, HaywardBindingConstants.THING_TYPE_FILTER,
-                    HaywardBindingConstants.THING_TYPE_HEATER, HaywardBindingConstants.THING_TYPE_PUMP,
-                    HaywardBindingConstants.THING_TYPE_RELAY, HaywardBindingConstants.THING_TYPE_SENSOR,
-                    HaywardBindingConstants.THING_TYPE_VIRTUALHEATER));
+    public static final Set<ThingTypeUID> THING_TYPES_UIDS = Set.of(HaywardBindingConstants.THING_TYPE_BACKYARD,
+            HaywardBindingConstants.THING_TYPE_BOW, HaywardBindingConstants.THING_TYPE_BRIDGE,
+            HaywardBindingConstants.THING_TYPE_CHLORINATOR, HaywardBindingConstants.THING_TYPE_COLORLOGIC,
+            HaywardBindingConstants.THING_TYPE_FILTER, HaywardBindingConstants.THING_TYPE_HEATER,
+            HaywardBindingConstants.THING_TYPE_PUMP, HaywardBindingConstants.THING_TYPE_RELAY,
+            HaywardBindingConstants.THING_TYPE_SENSOR, HaywardBindingConstants.THING_TYPE_VIRTUALHEATER);
 
     // List of all Channel ids (bridge)
     // No Channels
@@ -62,11 +58,6 @@ public class HaywardBindingConstants {
     public static final String CHANNEL_BACKYARD_AIRTEMP = "backyardAirTemp";
     public static final String CHANNEL_BACKYARD_STATUS = "backyardStatus";
     public static final String CHANNEL_BACKYARD_STATE = "backyardState";
-    public static final String CHANNEL_BACKYARD_ALARM1 = "backyardAlarm1";
-    public static final String CHANNEL_BACKYARD_ALARM2 = "backyardAlarm2";
-    public static final String CHANNEL_BACKYARD_ALARM3 = "backyardAlarm3";
-    public static final String CHANNEL_BACKYARD_ALARM4 = "backyardAlarm4";
-    public static final String CHANNEL_BACKYARD_ALARM5 = "backyardAlarm5";
 
     // List of all Channel ids (bow)
     public static final String CHANNEL_BOW_WATERTEMP = "bowWaterTemp";
