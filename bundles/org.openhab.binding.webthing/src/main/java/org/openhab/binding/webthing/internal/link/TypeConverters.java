@@ -171,7 +171,7 @@ class TypeConverters {
                 textValue = ((Collection) propertyValue).stream()
                         .reduce("", (entry1, entry2) -> entry1.toString() + "\n" + entry2.toString()).toString();
             }
-            return StringType.valueOf(textValue.toString());
+            return StringType.valueOf(textValue);
         }
 
         @Override
