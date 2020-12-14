@@ -4,15 +4,17 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="generic">
-		<label>WebThing Binding Thing</label>
-		<description>Sample thing for WebThing Binding</description>
+		<label>WebThing</label>
+		<description>The WebThing to be connected</description>
 
 		<config-description>
 			<parameter name="webThingURI" type="text" required="true">
-				<label>webThingURI</label>
-				<description>This is the url of the WebThing </description>
+				<context>url</context>
+				<label>The URI of the WebThing</label>
+				<description>The URI of the WebThing to be connected. E.g. the URI of a web-connected MotionSensor
+					or a URI of a
+					web-connected Display</description>
 			</parameter>
 		</config-description>
 

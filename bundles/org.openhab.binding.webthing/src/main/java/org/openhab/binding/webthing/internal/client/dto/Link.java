@@ -12,18 +12,14 @@
  */
 package org.openhab.binding.webthing.internal.client.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * The Web Thing Description Link object. Refer https://iot.mozilla.org/wot/#link-object
  *
  * @author Gregor Roth - Initial contribution
  */
-@NonNullByDefault
 public class Link {
 
-    public @Nullable String rel;
+    public String rel = null;
 
-    public @Nullable String href;
+    public String href = null;
 }

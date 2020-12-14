@@ -16,18 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * The Web Thing Description. Refer https://iot.mozilla.org/wot/#web-thing-description
  *
  * @author Gregor Roth - Initial contribution
  */
-@NonNullByDefault
 public class WebThingDescription {
 
-    public @Nullable String id;
+    public String id = null;
 
     public String title = "";
 
