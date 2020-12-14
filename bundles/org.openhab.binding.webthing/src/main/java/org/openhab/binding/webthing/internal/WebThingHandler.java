@@ -199,30 +199,6 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
 
         // and update the thing
         updateThing(thing);
-        logger.debug("thing updated: {}", print(thing));
-    }
-
-    private String print(Thing thing) {
-        var desc = thing.getLabel();
-        desc = desc + "\n - " + thing.getUID().getAsString();
-        for (var channel : thing.getChannels()) {
-            desc = desc + print(channel);
-        }
-        return desc;
-    }
-
-    private String print(Channel channel) {
-        var desc = "\n - " + channel.getLabel();
-        desc = desc + "\n    * uid            " + channel.getUID();
-        desc = desc + "\n    * type uid       " + channel.getChannelTypeUID();
-        desc = desc + "\n    * accepted type: " + channel.getAcceptedItemType();
-        for (var entry : channel.getConfiguration().getProperties().entrySet()) {
-            desc = desc + "\n    * config:   " + entry.getKey() + "=" + entry.getValue();
-        }
-        for (var entry : channel.getProperties().entrySet()) {
-            desc = desc + "\n    * config:   " + entry.getKey() + "=" + entry.getValue();
-        }
-        return desc;
     }
 
     /**
