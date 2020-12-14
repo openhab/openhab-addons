@@ -47,14 +47,13 @@ public class MiotJsonFileCreator {
     public static void main(String[] args) {
 
         LinkedHashSet<String> models = new LinkedHashSet<>();
-        for (int i = 1; i < 11; i++) {
+        for (int i = 1; i <= 1; i++) {
             models.add("xiaomi.aircondition.mc" + String.valueOf(i));
         }
 
         if (args.length > 0) {
             models.add(args[0]);
         }
-
         for (String model : models) {
             LOGGER.info("Processing: {}", model);
             try {
