@@ -6,15 +6,14 @@
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:broadlinkthermostat:floureonandhysenthermostat">
-		<parameter name="host" type="text">
+		<parameter name="host" type="text" required="false">
 			<label>Hostname</label>
 			<description>The hostname/IP address the device is bound to, e.g. 192.168.0.2</description>
-			<required>false</required>
+			<context>network-address</context>
 		</parameter>
-		<parameter name="mac" type="text">
+		<parameter name="mac" type="text" required="false">
 			<label>MAC Address</label>
 			<description>The unique MAC address of the device, e.g. 00:10:FA:6E:38:4A</description>
-			<required>false</required>
 		</parameter>
 	</config-description>
 

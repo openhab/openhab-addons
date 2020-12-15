@@ -15,15 +15,12 @@ package org.openhab.binding.broadlinkthermostat.internal;
 import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatBindingConstants.*;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlinkthermostat.internal.handler.BroadlinkThermostatHandler;
 import org.openhab.binding.broadlinkthermostat.internal.handler.FloureonThermostatHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -48,7 +45,6 @@ public class BroadlinkThermostatHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
             .of(FLOUREON_THERMOSTAT_THING_TYPE, HYSEN_THERMOSTAT_THING_TYPE, UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE)
             .collect(Collectors.toSet()));
-    private static final Map<String, BroadlinkThermostatHandler> BROADLINK_THERMOSTAT_THING_HANDLERS = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -64,11 +60,5 @@ public class BroadlinkThermostatHandlerFactory extends BaseThingHandlerFactory {
         }
         logger.warn("No handler for {} available", thingTypeUID);
         return null;
-    }
-
-    @Override
-    public void unregisterHandler(Thing thing) {
-        super.unregisterHandler(thing);
-        BROADLINK_THERMOSTAT_THING_HANDLERS.remove(thing.getUID().toString());
     }
 }

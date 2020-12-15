@@ -19,8 +19,8 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.core.library.types.*;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -66,7 +66,6 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Command class: {}", command.getClass());
         logger.debug("Command: {}", command.toFullString());
 
         if (command == RefreshType.REFRESH) {
@@ -127,9 +126,10 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleSetpointCommand(ChannelUID channelUID, Command command) {
+
         if (command instanceof QuantityType) {
             try {
-                floureonDevice.setThermostatTemp(((QuantityType) command).doubleValue());
+                floureonDevice.setThermostatTemp(((QuantityType) command).toUnit(SIUnits.CELSIUS).doubleValue());
             } catch (Exception e) {
                 logger.error("Error while setting setpoint of {} to {}", thing.getUID(), command, e);
             }
@@ -223,9 +223,9 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
         }
     }
 
-    @NotNull
     private String getTimestamp(AdvancedStatusInfo advancedStatusInfo) {
         ZonedDateTime now = ZonedDateTime.now();
+        // TODO: Replace with DateTimeFormatter
         return (String.valueOf(now.getYear()) + "-" + String.format("%02d", now.getMonthValue()) + "-"
                 + String.format("%02d", now.getDayOfMonth()) + "T" + String.format("%02d", advancedStatusInfo.getHour())
                 + ":" + String.format("%02d", advancedStatusInfo.getMin()) + ":"

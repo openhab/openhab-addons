@@ -31,6 +31,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -50,23 +51,15 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkThermostatDiscoveryService.class);
 
-    private @Nullable NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
 
     private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(FLOUREON_THERMOSTAT_THING_TYPE, UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE).collect(Collectors.toSet()));
     private static final int DISCOVERY_TIMEOUT = 30;
 
-    public BroadlinkThermostatDiscoveryService(@Nullable Set<ThingTypeUID> supportedThingTypes, int timeout)
-            throws IllegalArgumentException {
-        super(supportedThingTypes, timeout);
-    }
-
-    public BroadlinkThermostatDiscoveryService() {
+    @Activate
+    public BroadlinkThermostatDiscoveryService(@Reference NetworkAddressService networkAddressService) {
         super(DISCOVERABLE_THING_TYPES_UIDS, DISCOVERY_TIMEOUT);
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = networkAddressService;
     }
 
@@ -84,9 +77,9 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
             }
 
         } catch (IOException e) {
-            logger.error("Error while trying to discover broadlinkthermostat devices: ", e);
+            logger.debug("Error while trying to discover broadlinkthermostat devices: ", e);
         }
-        logger.info("Discovery service found {} broadlinkthermostat devices.", blDevices.length);
+        logger.debug("Discovery service found {} broadlinkthermostat devices.", blDevices.length);
 
         for (BLDevice dev : blDevices) {
             logger.debug("Broadlinkthermostat device {} of type {} with Host {} and MAC {}", dev.getDeviceDescription(),
@@ -99,7 +92,7 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
                 id = getHostnameWithoutDomain(InetAddress.getByName(dev.getHost()).getHostName());
                 logger.debug("Device ID with DNS name: {}", id);
             } catch (UnknownHostException e) {
-                logger.warn("Discovered device with IP {} does not have a DNS name, using IP as thing UID.",
+                logger.debug("Discovered device with IP {} does not have a DNS name, using IP as thing UID.",
                         dev.getHost());
             }
 
@@ -152,13 +145,8 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
      * @return local ip or <code>empty</code> if configured primary IP is not set or could not be parsed.
      */
     private Optional<InetAddress> getIpFromNetworkAddressService() {
-        NetworkAddressService service = networkAddressService;
-        if (service == null) {
-            throw new IllegalStateException(
-                    "NetworkAddressService must be bound before getIpFromNetworkAddressService can be called.");
-        }
 
-        String ipAddress = service.getPrimaryIpv4HostAddress();
+        String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
             logger.warn("No network interface could be found.");
             return Optional.empty();

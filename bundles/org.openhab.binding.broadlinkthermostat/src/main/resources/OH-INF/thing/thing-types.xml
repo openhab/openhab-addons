@@ -74,7 +74,7 @@
 			<options>
 				<option value="internal">internal</option>
 				<option value="external">external</option>
-				<option value="internal_temp_external_limit">internal_temp_external_limit</option>
+				<option value="internal_temp_external_limit">internal control temperature; external limit temperature</option>
 			</options>
 		</state>
 	</channel-type>
@@ -87,14 +87,14 @@
 	</channel-type>
 	<channel-type id="roomtemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature</label>
+		<label>Temperature</label>
 		<description>Room temperature, measured directly at the device</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="roomtemperatureexternalsensor">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature external sensor</label>
+		<label>Temperature Ext. Sensor</label>
 		<description>Room temperature, measured by the external sensor</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -108,7 +108,7 @@
 	</channel-type>
 	<channel-type id="temperatureoffset">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature offset</label>
+		<label>Temperature Offset</label>
 		<description>Manual temperature adjustment</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" step="0.5" min="-2.5" max="2.5"/>

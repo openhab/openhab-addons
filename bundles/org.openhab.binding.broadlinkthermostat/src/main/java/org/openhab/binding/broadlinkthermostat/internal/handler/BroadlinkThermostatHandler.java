@@ -20,9 +20,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatBindingConstants;
+import org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatConfig;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +44,8 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
     protected @Nullable BLDevice blDevice;
     protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("thingHandler");
     protected @Nullable ScheduledFuture<?> scanJob;
-    protected String host;
-    protected String mac;
+    protected @Nullable String host;
+    protected @Nullable String mac;
     protected String deviceDescription;
 
     /**
@@ -55,10 +57,6 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
         super(thing);
         String deviceDescription = thing.getProperties().get(BroadlinkThermostatBindingConstants.DESCRIPTION);
         this.deviceDescription = deviceDescription == null ? "" : deviceDescription;
-        host = (String) thing.getConfiguration().get(BroadlinkThermostatBindingConstants.HOST);
-        mac = (String) thing.getConfiguration().get(BroadlinkThermostatBindingConstants.MAC);
-        logger.debug("Config properties: {}", thing.getConfiguration());
-        logger.debug("host: {}, mac: {}, deviceDescription: {}", host, mac, deviceDescription);
     }
 
     protected void authenticate() {
@@ -69,28 +67,27 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
-            logger.error("Error while authenticating broadlinkthermostat device {}", thing.getLabel(), e);
-            updateStatus(ThingStatus.INITIALIZING);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error while authenticating broadlinkthermostat device " + thing.getLabel() + ":" + e.getMessage());
         }
     }
 
     @Override
     public void initialize() {
         authenticate();
+        host = getConfigAs(BroadlinkThermostatConfig.class).getHost();
+        mac = getConfigAs(BroadlinkThermostatConfig.class).getMac();
 
         // schedule a new scan every minute
         scanJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, 1, TimeUnit.MINUTES);
     }
 
-    protected void refreshData() {
-    }
+    protected abstract void refreshData();
 
     @Override
     public void dispose() {
-        logger.debug("Disposing thing {}", getThing().getUID());
         if (scanJob != null) {
             scanJob.cancel(true);
         }
-        logger.debug("Thing {} disposed", getThing().getUID());
     }
 }
