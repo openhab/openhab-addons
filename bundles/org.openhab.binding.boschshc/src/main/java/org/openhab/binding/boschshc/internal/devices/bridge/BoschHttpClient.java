@@ -47,12 +47,12 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class BoschHttpClient extends HttpClient {
+    private static final Gson gson = new Gson();
+
     private final Logger logger = LoggerFactory.getLogger(BoschHttpClient.class);
 
     private String ipAddress;
     private String systempassword;
-
-    private Gson gson = new Gson();
 
     public BoschHttpClient(String ipAddress, String systempassword, SslContextFactory sslContextFactory) {
         super(sslContextFactory);
