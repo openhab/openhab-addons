@@ -46,17 +46,16 @@ public class AndroidDebugBridgeDevice {
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("volume is (?<current>\\d.*) in range \\[(?<min>\\d.*)\\.\\.(?<max>\\d.*)]");
 
-    private static @Nullable AdbCrypto ADB_CRYPTO;
+    private static @Nullable AdbCrypto adbCrypto;
 
     static {
         var logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
         try {
-
             File directory = new File(ADB_FOLDER);
             if (!directory.exists()) {
                 directory.mkdir();
             }
-            ADB_CRYPTO = loadKeyPair(ADB_FOLDER + File.pathSeparator + "adb_pub.key",
+            adbCrypto = loadKeyPair(ADB_FOLDER + File.pathSeparator + "adb_pub.key",
                     ADB_FOLDER + File.pathSeparator + "adb.key");
         } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
             logger.warn("Unable to setup adb keys: {}", e.getMessage());
@@ -186,7 +185,7 @@ public class AndroidDebugBridgeDevice {
         this.disconnect();
         AdbConnection adbConnection;
         Socket sock;
-        AdbCrypto crypto = ADB_CRYPTO;
+        AdbCrypto crypto = adbCrypto;
         if (crypto == null) {
             throw new AndroidDebugBridgeDeviceException("Device not connected");
         }

@@ -19,16 +19,19 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,29 +41,18 @@ import org.slf4j.LoggerFactory;
  * @author Miguel Alvarez - Initial contribution
  */
 @NonNullByDefault
+@Component(service = DiscoveryService.class, configurationPid = "discovery.androiddebugbridge")
 public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService {
     static final int TIMEOUT_MS = 60000;
     private static final long DISCOVERY_RESULT_TTL_SEC = 300;
     public static final String LOCAL_INTERFACE_IP = "127.0.0.1";
     public static final int MAX_RETRIES = 2;
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDiscoveryService.class);
-    private int discoveryPort = 5555;
-    private int reachableTimeoutMs = 3000;
     private boolean discoveryRunning = false;
-    private int discoveryIpRangeMin = 0;
-    private int discoveryIpRangeMax = 255;
+    private @Nullable ConfigurationAdmin admin;
 
     public AndroidDebugBridgeDiscoveryService() {
         super(SUPPORTED_THING_TYPES, TIMEOUT_MS, false);
-    }
-
-    public void updateConfig(AndroidDebugBridgeBindingConfiguration bindingConfiguration) {
-        this.discoveryPort = bindingConfiguration.discoveryPort;
-        this.reachableTimeoutMs = bindingConfiguration.discoveryReachableMs;
-        this.discoveryIpRangeMin = bindingConfiguration.discoveryIpRangeMin;
-        this.discoveryIpRangeMax = bindingConfiguration.discoveryIpRangeMax;
-        logger.debug("config updated: { 'port': {}, 'reachable ms': {}, 'min ip': {}, 'max ip': {} }",
-                this.discoveryPort, this.reachableTimeoutMs, this.discoveryIpRangeMin, this.discoveryIpRangeMax);
     }
 
     @Override
@@ -68,6 +60,14 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         logger.debug("scan started: searching android devices");
         discoveryRunning = true;
         Enumeration<NetworkInterface> nets;
+        Dictionary<String, Object> props = getConfig();
+        if (props == null) {
+            return;
+        }
+        var discoveryPort = Integer.parseInt((String) props.get("discoveryPort"));
+        var discoveryReachableMs = Integer.parseInt((String) props.get("discoveryReachableMs"));
+        var discoveryIpRangeMin = Integer.parseInt((String) props.get("discoveryIpRangeMin"));
+        var discoveryIpRangeMax = Integer.parseInt((String) props.get("discoveryIpRangeMax"));
         try {
             nets = NetworkInterface.getNetworkInterfaces();
             for (NetworkInterface netint : Collections.list(nets)) {
@@ -80,7 +80,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                     if (inetAddress.getHostAddress().equals(LOCAL_INTERFACE_IP))
                         continue;
                     String[] ipParts = inetAddress.getHostAddress().split("\\.");
-                    for (var i = this.discoveryIpRangeMin; i <= this.discoveryIpRangeMax; i++) {
+                    for (var i = discoveryIpRangeMin; i <= discoveryIpRangeMax; i++) {
                         if (!discoveryRunning)
                             break;
                         ipParts[3] = Integer.toString(i);
@@ -88,12 +88,12 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                         try {
                             var currentAddress = InetAddress.getByName(currentIp);
                             logger.debug("address: {}", currentIp);
-                            if (currentAddress.isReachable(reachableTimeoutMs)) {
+                            if (currentAddress.isReachable(discoveryReachableMs)) {
                                 logger.debug("Reachable ip: {}", currentIp);
                                 var retries = 0;
                                 while (retries < MAX_RETRIES) {
                                     try {
-                                        discoverWithADB(currentIp);
+                                        discoverWithADB(currentIp, discoveryPort);
                                     } catch (IOException e) {
                                         var message = e.getMessage();
                                         if (message != null && message.contains("rejected by remote peer")) {
@@ -126,20 +126,20 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverWithADB(String ip)
+    private void discoverWithADB(String ip, int port)
             throws InterruptedException, IOException, AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException,
             AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException {
         var device = new AndroidDebugBridgeDevice();
-        device.configure(ip, discoveryPort);
+        device.configure(ip, port);
         try {
             device.connect();
-            logger.debug("connected adb at {}:{}", ip, discoveryPort);
+            logger.debug("connected adb at {}:{}", ip, port);
             String serialNo = device.getSerialNo();
             String model = device.getModel();
             String androidVersion = device.getAndroidVersion();
             String brand = device.getBrand();
             logger.debug("discovered: {} - {} - {} - {}", model, serialNo, androidVersion, brand);
-            onDiscoverResult(serialNo, ip, discoveryPort, model, androidVersion, brand);
+            onDiscoverResult(serialNo, ip, port, model, androidVersion, brand);
         } finally {
             device.disconnect();
         }
@@ -155,7 +155,6 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     private void onDiscoverResult(String serialNo, String ip, int port, String model, String androidVersion,
             String brand) {
         Map<String, Object> properties = new HashMap<>();
-
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNo);
         properties.put(PARAMETER_IP, ip);
         properties.put(PARAMETER_PORT, port);
@@ -165,5 +164,29 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ANDROID_DEVICE, serialNo))
                 .withTTL(DISCOVERY_RESULT_TTL_SEC).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                 .withProperties(properties).withLabel(String.format("%s (%s)", model, serialNo)).build());
+    }
+
+    @Reference
+    void setConfigurationAdmin(ConfigurationAdmin admin) {
+        this.admin = admin;
+    }
+
+    private @Nullable Dictionary<String, Object> getConfig() {
+        var currentAdmin = admin;
+        if (currentAdmin == null) {
+            logger.warn("Configuration admin not ready");
+            return null;
+        }
+        try {
+            Configuration configOnline = currentAdmin.getConfiguration("binding.androiddebugbridge", null);
+            Dictionary<String, Object> propsOnline = null;
+            if (configOnline != null && configOnline.getProperties() != null) {
+                propsOnline = configOnline.getProperties();
+            }
+            return propsOnline;
+        } catch (IOException e) {
+            logger.warn("Unable to read configuration: {}", e.getMessage());
+            return null;
+        }
     }
 }

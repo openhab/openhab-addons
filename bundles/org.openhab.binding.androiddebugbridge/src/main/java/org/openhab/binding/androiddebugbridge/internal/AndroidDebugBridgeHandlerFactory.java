@@ -14,22 +14,14 @@ package org.openhab.binding.androiddebugbridge.internal;
 
 import static org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeBindingConstants.*;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 
 /**
  * The {@link AndroidDebugBridgeHandlerFactory} is responsible for creating things and thing
@@ -40,10 +32,6 @@ import org.osgi.service.component.annotations.Modified;
 @NonNullByDefault
 @Component(configurationPid = "binding.androiddebugbridge", service = ThingHandlerFactory.class)
 public class AndroidDebugBridgeHandlerFactory extends BaseThingHandlerFactory {
-    @Nullable
-    private AndroidDebugBridgeDiscoveryService discoveryService;
-    @Nullable
-    private ServiceRegistration<?> discoveryServiceRegistration;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -57,51 +45,5 @@ public class AndroidDebugBridgeHandlerFactory extends BaseThingHandlerFactory {
             return new AndroidDebugBridgeHandler(thing, new AndroidDebugBridgeDevice());
         }
         return null;
-    }
-
-    private synchronized void registerDiscoveryService(AndroidDebugBridgeBindingConfiguration config) {
-        AndroidDebugBridgeDiscoveryService androidADBDiscoveryService = discoveryService;
-        if (androidADBDiscoveryService != null) {
-            androidADBDiscoveryService.updateConfig(config);
-        } else {
-            androidADBDiscoveryService = new AndroidDebugBridgeDiscoveryService();
-            androidADBDiscoveryService.updateConfig(config);
-            discoveryService = androidADBDiscoveryService;
-            discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                    androidADBDiscoveryService, null);
-        }
-    }
-
-    private void unregisterDiscoveryService() {
-        var adbDiscoveryServiceRegistration = discoveryServiceRegistration;
-        if (adbDiscoveryServiceRegistration != null) {
-            adbDiscoveryServiceRegistration.unregister();
-            discoveryServiceRegistration = null;
-        }
-    }
-
-    @Activate
-    protected void activate(ComponentContext componentContext, Map<String, Object> config) {
-        super.activate(componentContext);
-        modified(config);
-    }
-
-    @Modified
-    protected void modified(Map<String, Object> config) {
-        AndroidDebugBridgeBindingConfiguration bindingConfiguration = new Configuration(config)
-                .as(AndroidDebugBridgeBindingConfiguration.class);
-        if (bindingConfiguration != null) {
-            if (discoveryService == null) {
-                registerDiscoveryService(bindingConfiguration);
-            } else {
-                discoveryService.updateConfig(bindingConfiguration);
-            }
-        }
-    }
-
-    @Override
-    protected void deactivate(ComponentContext componentContext) {
-        unregisterDiscoveryService();
-        super.deactivate(componentContext);
     }
 }
