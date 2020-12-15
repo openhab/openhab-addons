@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.client.ConsumedThing;
@@ -34,11 +32,6 @@ public class PropertyToChannelLink implements PropertyChangedListener {
     private final Channel channel;
     private final TypeConverter typeConverter;
 
-    public static void establish(ConsumedThing webThing, String propertyName, ChannelHandler thingHandler,
-            Channel channel) throws IOException {
-        new PropertyToChannelLink(webThing, propertyName, thingHandler, channel);
-    }
-
     /**
      * establish downstream link from a WebTHing property to a Channel
      *
@@ -46,9 +39,15 @@ public class PropertyToChannelLink implements PropertyChangedListener {
      * @param propertyName the property name
      * @param channelHandler the channel handler that provides updating the Item state of a channel
      * @param channel the channel to be linked
+     * @throws UnknownPropertyException if the a WebThing property should be link that does not exist
      */
+    public static void establish(ConsumedThing webThing, String propertyName, ChannelHandler channelHandler,
+            Channel channel) throws UnknownPropertyException {
+        new PropertyToChannelLink(webThing, propertyName, channelHandler, channel);
+    }
+
     private PropertyToChannelLink(ConsumedThing webThing, String propertyName, ChannelHandler channelHandler,
-            Channel channel) {
+            Channel channel) throws UnknownPropertyException {
         this.channel = channel;
         var optionalProperty = webThing.getThingDescription().getProperty(propertyName);
         if (optionalProperty.isPresent()) {
@@ -62,7 +61,7 @@ public class PropertyToChannelLink implements PropertyChangedListener {
             this.channelHandler = channelHandler;
             webThing.observeProperty(propertyName, this);
         } else {
-            throw new RuntimeException("property " + propertyName + " does not exits");
+            throw new UnknownPropertyException("property " + propertyName + " does not exits");
         }
     }
 

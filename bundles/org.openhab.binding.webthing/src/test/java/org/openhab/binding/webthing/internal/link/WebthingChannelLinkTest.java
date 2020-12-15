@@ -70,11 +70,7 @@ public class WebthingChannelLinkTest {
 
         testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, new DecimalType(10));
 
-        try {
-            testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, new DecimalType(130));
-            fail("should not been successful (server returns an error on this value)");
-        } catch (Exception expected) {
-        }
+        testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, new DecimalType(130));
     }
 
     @Test

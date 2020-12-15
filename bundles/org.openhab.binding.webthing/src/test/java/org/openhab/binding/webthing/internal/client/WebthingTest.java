@@ -68,9 +68,9 @@ public class WebthingTest {
         try {
             webthing.writeProperty("windspeed", 23.0);
             fail();
-        } catch (RuntimeException e) {
+        } catch (PropertyAccessException e) {
             assertEquals(
-                    "could not write windspeed (http://example.org:8090/properties/windspeed) with 23.0 windspeed is readOnly",
+                    "could not write windspeed (http://example.org:8090/properties/windspeed) with 23.0. Property is readOnly",
                     e.getMessage());
         }
     }
@@ -103,9 +103,9 @@ public class WebthingTest {
         try {
             webthing.writeProperty("target_position", 10);
             fail();
-        } catch (RuntimeException e) {
+        } catch (PropertyAccessException e) {
             assertEquals(
-                    "could not write target_position (http://example.org:8090/0/properties/target_position) with 10 Got error response: ",
+                    "could not write target_position (http://example.org:8090/0/properties/target_position) with 10. Got error response ",
                     e.getMessage());
         }
     }
@@ -120,9 +120,8 @@ public class WebthingTest {
         try {
             webthing.readProperty("windspeed");
             fail();
-        } catch (RuntimeException e) {
-            assertEquals(
-                    "could not read windspeed (http://example.org:8090/properties/windspeed). Got error response: ",
+        } catch (PropertyAccessException e) {
+            assertEquals("could not read windspeed (http://example.org:8090/properties/windspeed). Got error response ",
                     e.getMessage());
         }
     }
