@@ -331,7 +331,7 @@ public class HttpThingHandler extends BaseThingHandler {
                 }
                 return null;
             });
-            request.send(new HttpResponseListener(f));
+            request.send(new HttpResponseListener(f, null, config.bufferSize));
         } catch (IllegalArgumentException | URISyntaxException e) {
             logger.warn("Creating request for '{}' failed: {}", commandUrl, e.getMessage());
         }

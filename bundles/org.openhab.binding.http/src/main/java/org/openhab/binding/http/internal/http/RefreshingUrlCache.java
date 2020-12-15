@@ -49,6 +49,7 @@ public class RefreshingUrlCache {
     private final String url;
     private final HttpClient httpClient;
     private final int timeout;
+    private final int bufferSize;
     private final @Nullable String fallbackEncoding;
     private final Set<Consumer<Content>> consumers = ConcurrentHashMap.newKeySet();
     private final List<String> headers;
@@ -61,6 +62,7 @@ public class RefreshingUrlCache {
         this.httpClient = httpClient;
         this.url = url;
         this.timeout = thingConfig.timeout;
+        this.bufferSize = thingConfig.bufferSize;
         this.headers = thingConfig.headers;
         fallbackEncoding = thingConfig.encoding;
 
@@ -119,7 +121,7 @@ public class RefreshingUrlCache {
                 logger.trace("Sending to '{}': {}", finalUrl, Util.requestToLogString(request));
             }
 
-            request.send(new HttpResponseListener(response, fallbackEncoding));
+            request.send(new HttpResponseListener(response, fallbackEncoding, bufferSize));
         } catch (IllegalArgumentException | URISyntaxException e) {
             logger.warn("Creating request for '{}' failed: {}", url, e.getMessage());
         }

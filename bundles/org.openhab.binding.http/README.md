@@ -14,6 +14,7 @@ It can be extended with different channels.
 | `baseURL`         | no       |    -    | The base URL for this thing. Can be extended in channel-configuration. |
 | `refresh`         | no       |   30    | Time in seconds between two refresh calls for the channels of this thing. |
 | `timeout`         | no       |  3000   | Timeout for HTTP requests in ms. |
+| `bufferSize`      | no       |  2048   | The buffer size for the response data (in kB). |
 | `username`        | yes      |    -    | Username for authentication (advanced parameter). |
 | `password`        | yes      |    -    | Password for authentication (advanced parameter). |
 | `authMode`        | no       |  BASIC  | Authentication mode, `BASIC` or `DIGEST` (advanced parameter). |
