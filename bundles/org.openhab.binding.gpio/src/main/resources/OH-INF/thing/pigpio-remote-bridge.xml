@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gpio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- PiGPIO Bridge -->
+	<bridge-type id="pigpio-remote-bridge">
+		<label>PiGPIO remote Bridge</label>
+		<description>The remote pigpio bridge represents a remote raspberry pi with pigpio installed.</description>
+
+		<properties>
+			<property name="vendor">Raspberry Pi Foundation</property>
+		</properties>
+
+		<config-description>
+			<parameter-group name="remote-settings">
+				<advanced>true</advanced>
+				<description>Settings for remote pi</description>
+				<label>Remote settings</label>
+			</parameter-group>
+			<parameter name="ipAddress" type="text" groupName="remote-settings">
+				<context>network_address</context>
+				<label>Network Address</label>
+				<description>Network address of the raspberry pi.</description>
+				<required>false</required>
+			</parameter>
+			<parameter name="port" type="integer" groupName="remote-settings" min="0" max="65535">
+				<context>port</context>
+				<label>Port</label>
+				<description>Port of pigpio on the remote raspberry pi.</description>
+				<required>false</required>
+				<default>8888</default>
+
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

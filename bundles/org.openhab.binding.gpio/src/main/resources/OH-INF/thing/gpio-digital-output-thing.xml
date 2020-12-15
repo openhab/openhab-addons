@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gpio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="gpio-digital-output">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pigpio-remote-bridge"/>
+		</supported-bridge-type-refs>
+		<label>GPIO Digital Output Thing</label>
+		<description>Set digital state of a GPIO Pin</description>
+
+		<channels>
+			<channel id="gpio-digital-output" typeId="gpio-digital-output"/>
+		</channels>
+		<config-description>
+			<parameter-group name="pin-settings">
+				<advanced>true</advanced>
+				<description>Settings for the GPIO Pin</description>
+				<label>Pin Settings</label>
+			</parameter-group>
+			<parameter name="gpioId" type="integer" required="true" groupName="pin-settings">
+				<label>GPIO Pin</label>
+				<description>GPIO pin to use as output
+				</description>
+			</parameter>
+			<parameter name="invert" type="boolean" required="true" groupName="pin-settings">
+				<default>false</default>
+				<label>Invert</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="gpio-digital-output">
+		<item-type>Switch</item-type>
+		<label>GPIO switch</label>
+		<description>GPIO output switch</description>
+		<state readOnly="false"></state>
+	</channel-type>
+</thing:thing-descriptions>
