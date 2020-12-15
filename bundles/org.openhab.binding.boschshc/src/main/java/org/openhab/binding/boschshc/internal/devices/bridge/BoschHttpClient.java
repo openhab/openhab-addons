@@ -185,7 +185,7 @@ public class BoschHttpClient extends HttpClient {
             return content;
         } catch (JsonSyntaxException e) {
             throw new ExecutionException(String.format("Received invalid content in response, expected type %s: %s",
-                    responseContentClass.getName(), e.getMessage()), null);
+                    responseContentClass.getName(), e.getMessage()), e);
         }
     }
 }
