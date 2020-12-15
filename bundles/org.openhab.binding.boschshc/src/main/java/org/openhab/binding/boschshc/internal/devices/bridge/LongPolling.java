@@ -183,7 +183,7 @@ public class LongPolling {
             LongPollError longPollError = gson.fromJson(content, LongPollError.class);
 
             if (longPollError != null) {
-                logger.warn("Got error from SHC: {}", longPollError.error.hashCode());
+                logger.warn("Got error from SHC: {} (code: {})", longPollError.error.message, longPollError.error.code);
 
                 if (longPollError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
                     logger.warn("Subscription {} became invalid, subscribing again", subscriptionId);
