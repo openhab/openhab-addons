@@ -250,8 +250,12 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
 
             var id = (uri.getHost() + uri.getPort() + uri.getPath()).replaceAll("\\W", "");
             var thingUID = new ThingUID(THING_TYPE_UID, id);
+
+            Map<String, Object> properties = new HashMap<>(1);
+            properties.put("id", id);
             return Optional.of(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_UID)
-                    .withProperty("webThingURI", uri).withLabel(description.title).build());
+                    .withProperty("webThingURI", uri).withLabel(description.title).withProperties(properties)
+                    .withRepresentationProperty("id").build());
         } catch (IOException ioe) {
             return Optional.empty();
         }
