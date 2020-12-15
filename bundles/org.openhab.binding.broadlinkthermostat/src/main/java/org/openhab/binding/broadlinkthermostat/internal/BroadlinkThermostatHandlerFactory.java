@@ -42,9 +42,9 @@ public class BroadlinkThermostatHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkThermostatHandlerFactory.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
-            .of(FLOUREON_THERMOSTAT_THING_TYPE, HYSEN_THERMOSTAT_THING_TYPE, UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE)
-            .collect(Collectors.toSet()));
+
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set
+            .of(FLOUREON_THERMOSTAT_THING_TYPE, HYSEN_THERMOSTAT_THING_TYPE, UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
