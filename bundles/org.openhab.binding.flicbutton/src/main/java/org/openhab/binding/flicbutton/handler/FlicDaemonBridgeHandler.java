@@ -125,7 +125,6 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         super.dispose();
         for (Future<?> startedTask : startedTasks) {
-            if (!startedTask.isDone()) {
                 startedTask.cancel(true);
             }
         }
@@ -134,12 +133,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     }
 
     private void scheduleReinitialize() {
-        startedTasks.add(scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                initialize();
-            }
-        }, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS));
+        startedTasks.add(scheduler.schedule(this::initialize, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS));
     }
 
     @Override

@@ -22,7 +22,7 @@ is not required anymore.
 * There is no automatic discovery for flicd-bridge available.
   
 * After flicd-bridge is (manually) configured, buttons will be automatically discovered via background discovery as soon
-  as they're addded with [simpleclient](https://github.com/50ButtonsEach/fliclib-linux-hci) . If they're already
+  as they're addded with [simpleclient](https://github.com/50ButtonsEach/fliclib-linux-hci). If they're already
   attached to the flicd-bridge before configuring this binding, they can be discovered by triggering an active scan.
 
 ## Thing Configuration

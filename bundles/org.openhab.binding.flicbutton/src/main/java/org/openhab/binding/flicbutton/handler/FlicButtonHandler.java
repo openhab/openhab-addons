@@ -127,7 +127,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
 
     private void scheduleStatusChangeToOffline() {
         if (delayedDisconnectTask == null) {
-            delayedDisconnectTask = scheduler.schedule(() -> setOffline(), BUTTON_OFFLINE_GRACE_PERIOD_SECONDS,
+            delayedDisconnectTask = scheduler.schedule(this::setOffline, BUTTON_OFFLINE_GRACE_PERIOD_SECONDS,
                     TimeUnit.SECONDS);
         }
     }

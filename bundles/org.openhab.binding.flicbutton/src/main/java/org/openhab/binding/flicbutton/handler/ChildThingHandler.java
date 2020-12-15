@@ -36,6 +36,7 @@ public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler>
         super(thing);
     }
 
+    @Override
     public void initialize() {
         setStatusBasedOnBridge();
         if (bridgeValid) {

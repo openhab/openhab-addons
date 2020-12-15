@@ -11,7 +11,7 @@
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Flic daemon (flicd) hostname</label>
-				<description>IP or Host name of the Flic daemon (flicd). Defaults to localhost.</description>
+				<description>IP or Host name of the Flic daemon (flicd).</description>
 				<default>localhost</default>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
