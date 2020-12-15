@@ -35,6 +35,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.mdns.MDNSClient;
+import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -56,6 +57,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
     private final Logger logger = LoggerFactory.getLogger(WebthingDiscoveryService.class);
     private final DescriptionLoader descriptionLoader = new DescriptionLoader();
     private final MDNSClient mdnsClient;
+    private final Scheduler executor;
 
     /**
      * constructor
@@ -64,9 +66,11 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
      * @param mdnsClient the underlying mDNS client
      */
     @Activate
-    public WebthingDiscoveryService(@Nullable Map<String, Object> configProperties, @Reference MDNSClient mdnsClient) {
+    public WebthingDiscoveryService(@Nullable Map<String, Object> configProperties, @Reference MDNSClient mdnsClient,
+            @Reference Scheduler executor) {
         super(30);
         this.mdnsClient = mdnsClient;
+        this.executor = executor;
 
         super.activate(configProperties);
         if (isBackgroundDiscoveryEnabled()) {
@@ -142,15 +146,12 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
         // create discovery task for each detected service and process these in parallel to increase total discovery
         // speed
         var discoveryTasks = Arrays.stream(serviceInfos).map(DiscoveryTask::new).collect(Collectors.toList());
-        ExecutorService exec = Executors.newCachedThreadPool();
         try {
-            for (var future : exec.invokeAll(discoveryTasks, 5, TimeUnit.MINUTES)) {
+            for (var future : scheduler.invokeAll(discoveryTasks, 5, TimeUnit.MINUTES)) {
                 future.get(5, TimeUnit.MINUTES);
             }
         } catch (Exception e) {
             logger.warn("error occurred by discovering", e);
-        } finally {
-            exec.shutdown();
         }
     }
 
@@ -168,8 +169,9 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                 for (var discoveryResult : discoverWebThing(serviceInfo)) {
                     results.add(discoveryResult);
                     thingDiscovered(discoveryResult);
-                    logger.debug("WebThing '{}' ({}) discovered", discoveryResult.getLabel(),
-                            discoveryResult.getProperties().get("webThingURI"));
+                    logger.debug("WebThing '{}' ({}) discovered (id: {})", discoveryResult.getLabel(),
+                            discoveryResult.getProperties().get("webThingURI"),
+                            discoveryResult.getProperties().get("id"));
                 }
             } catch (Exception e) {
                 logger.warn("error occurred by discovering {}", serviceInfo.getNiceTextString(), e);
@@ -248,9 +250,12 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
         try {
             var description = descriptionLoader.loadWebthingDescription(uri, Duration.ofSeconds(5));
 
-            var id = (uri.getHost() + uri.getPort() + uri.getPath()).replaceAll("\\W", "");
-            var thingUID = new ThingUID(THING_TYPE_UID, id);
+            var id = uri.getHost().replaceAll("\\W", "_") + "_" + uri.getPort();
+            if (uri.getPath().length() > 1) {
+                id = id + "_" + uri.getPath().replaceAll("\\W", "");
+            }
 
+            var thingUID = new ThingUID(THING_TYPE_UID, id);
             Map<String, Object> properties = new HashMap<>(1);
             properties.put("id", id);
             return Optional.of(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_UID)
