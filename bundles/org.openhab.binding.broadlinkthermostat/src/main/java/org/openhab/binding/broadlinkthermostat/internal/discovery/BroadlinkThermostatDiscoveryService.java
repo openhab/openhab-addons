@@ -147,7 +147,7 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
     }
 
     /**
-     * Uses OpenHAB's NetworkAddressService to determine the local primary network interface.
+     * Uses openHAB's NetworkAddressService to determine the local primary network interface.
      *
      * @return local ip or <code>empty</code> if configured primary IP is not set or could not be parsed.
      */
