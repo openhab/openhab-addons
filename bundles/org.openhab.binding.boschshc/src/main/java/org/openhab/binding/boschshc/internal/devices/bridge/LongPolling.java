@@ -42,10 +42,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class LongPolling {
-    @SuppressWarnings("serial")
-    private class AbortLongPolling extends BoschSHCException {
-    }
-
     private final Logger logger = LoggerFactory.getLogger(LongPolling.class);
 
     private final Gson gson = new Gson();
@@ -199,5 +195,9 @@ public class LongPolling {
 
         // Execute next run.
         this.executeLongPoll(httpClient, nextSubscriptionId);
+    }
+
+    @SuppressWarnings("serial")
+    private class AbortLongPolling extends BoschSHCException {
     }
 }
