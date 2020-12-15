@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class GetEyeBrightnessCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(GetEyeBrightnessCommand.class);
 
-    private @Nullable DecimalType eyeBrightness;
+    private @Nullable PercentType eyeBrightness;
 
     @Override
     public void handleResponse(Executor executor, ResponseListener listener, MadokaMessage mm)
@@ -49,7 +49,8 @@ public class GetEyeBrightnessCommand extends BRC1HCommand {
         Integer iEyeBrightness = Integer.valueOf(bEyeBrightness[0]);
 
         if (iEyeBrightness != null) {
-            eyeBrightness = new DecimalType(iEyeBrightness);
+            // The values accepted by the device are from 0 to 19 - integers so conversion needed for Dimmer channel
+            eyeBrightness = new PercentType((int) Math.round(iEyeBrightness / 0.19));
         }
 
         logger.debug("Eye Brightness: {}", eyeBrightness);
@@ -71,7 +72,7 @@ public class GetEyeBrightnessCommand extends BRC1HCommand {
         return 770;
     }
 
-    public @Nullable DecimalType getEyeBrightness() {
+    public @Nullable PercentType getEyeBrightness() {
         return eyeBrightness;
     }
 }

@@ -26,21 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class MadokaValue {
 
-    public enum Endianness {
-        LITTLE_ENDIAN(ByteOrder.LITTLE_ENDIAN),
-        BIG_ENDIAN(ByteOrder.BIG_ENDIAN);
-
-        private ByteOrder order;
-
-        private Endianness(ByteOrder order) {
-            this.order = order;
-        }
-
-        public ByteOrder getOrder() {
-            return this.order;
-        }
-    }
-
     private int id;
     private int size;
     private byte @Nullable [] rawValue;
@@ -84,10 +69,10 @@ public class MadokaValue {
      * @return
      */
     public long getComputedValue() {
-        return getComputedValue(Endianness.BIG_ENDIAN);
+        return getComputedValue(ByteOrder.BIG_ENDIAN);
     }
 
-    public long getComputedValue(Endianness e) {
+    public long getComputedValue(ByteOrder e) {
         byte[] v = rawValue;
         if (v != null) {
             ByteBuffer bb;
@@ -96,11 +81,11 @@ public class MadokaValue {
                     return v[0];
                 case 2:
                     bb = ByteBuffer.wrap(v, 0, 2);
-                    bb.order(e.getOrder());
+                    bb.order(e);
                     return bb.getShort();
                 case 4:
                     bb = ByteBuffer.wrap(v, 0, 4);
-                    bb.order(e.getOrder());
+                    bb.order(e);
                     return bb.getInt();
                 default:
                     // unsupported

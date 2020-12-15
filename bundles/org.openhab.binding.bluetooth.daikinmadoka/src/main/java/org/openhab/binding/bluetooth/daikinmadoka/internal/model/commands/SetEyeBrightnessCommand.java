@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +34,9 @@ public class SetEyeBrightnessCommand extends BRC1HCommand {
 
     private final Logger logger = LoggerFactory.getLogger(SetEyeBrightnessCommand.class);
 
-    private DecimalType eyeBrightness;
+    private PercentType eyeBrightness;
 
-    public SetEyeBrightnessCommand(DecimalType eyeBrightness) {
+    public SetEyeBrightnessCommand(PercentType eyeBrightness) {
         this.eyeBrightness = eyeBrightness;
     }
 
@@ -54,7 +54,10 @@ public class SetEyeBrightnessCommand extends BRC1HCommand {
 
     @Override
     public byte[][] getRequest() {
-        MadokaValue mv = new MadokaValue(0x33, 1, new byte[] { eyeBrightness.byteValue() });
+        // The values accepted by the device are from 0 to 19 - integers
+        byte val = (byte) Math.round(eyeBrightness.intValue() * 0.19);
+
+        MadokaValue mv = new MadokaValue(0x33, 1, new byte[] { val });
         return MadokaMessage.createRequest(this, mv);
     }
 
@@ -63,11 +66,15 @@ public class SetEyeBrightnessCommand extends BRC1HCommand {
         return 17154;
     }
 
-    public DecimalType getEyeBrightness() {
+    public PercentType getEyeBrightness() {
         return eyeBrightness;
     }
 
-    public void setEyeBrightness(DecimalType eyeBrightness) {
+    /**
+     *
+     * @param eyeBrightness a percentage - between 0 and 100
+     */
+    public void setEyeBrightness(PercentType eyeBrightness) {
         this.eyeBrightness = eyeBrightness;
     }
 }

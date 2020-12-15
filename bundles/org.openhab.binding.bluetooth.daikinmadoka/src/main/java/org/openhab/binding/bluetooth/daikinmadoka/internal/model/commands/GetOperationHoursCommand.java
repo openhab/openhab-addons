@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 
+import java.nio.ByteOrder;
 import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -19,7 +20,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue.Endianness;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -73,9 +73,9 @@ public class GetOperationHoursCommand extends BRC1HCommand {
                 return;
             }
 
-            Integer iIndoorOperationHours = (int) (mm.getValues().get(0x40).getComputedValue(Endianness.LITTLE_ENDIAN));
-            Integer iIndoorFanHours = (int) (mm.getValues().get(0x41).getComputedValue(Endianness.LITTLE_ENDIAN));
-            Integer iIndoorPowerHours = (int) (mm.getValues().get(0x42).getComputedValue(Endianness.LITTLE_ENDIAN));
+            Integer iIndoorOperationHours = (int) (mm.getValues().get(0x40).getComputedValue(ByteOrder.LITTLE_ENDIAN));
+            Integer iIndoorFanHours = (int) (mm.getValues().get(0x41).getComputedValue(ByteOrder.LITTLE_ENDIAN));
+            Integer iIndoorPowerHours = (int) (mm.getValues().get(0x42).getComputedValue(ByteOrder.LITTLE_ENDIAN));
 
             this.indoorOperationHours = new DecimalType(iIndoorOperationHours);
             this.indoorFanHours = new DecimalType(iIndoorFanHours);

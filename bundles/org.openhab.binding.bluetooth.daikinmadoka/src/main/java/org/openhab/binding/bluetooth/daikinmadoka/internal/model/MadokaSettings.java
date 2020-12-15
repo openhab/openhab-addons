@@ -18,6 +18,7 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaPropertie
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 
 /**
  * This class contains the current state of the controllerw
@@ -45,7 +46,7 @@ public class MadokaSettings {
     private @Nullable String communicationControllerVersion;
     private @Nullable String remoteControllerVersion;
 
-    private @Nullable DecimalType eyeBrightness;
+    private @Nullable PercentType eyeBrightness;
     private @Nullable DecimalType indoorPowerHours;
     private @Nullable DecimalType indoorOperationHours;
     private @Nullable DecimalType indoorFanHours;
@@ -140,11 +141,11 @@ public class MadokaSettings {
         this.remoteControllerVersion = remoteControllerVersion;
     }
 
-    public @Nullable DecimalType getEyeBrightness() {
+    public @Nullable PercentType getEyeBrightness() {
         return eyeBrightness;
     }
 
-    public void setEyeBrightness(DecimalType eyeBrightness) {
+    public void setEyeBrightness(PercentType eyeBrightness) {
         this.eyeBrightness = eyeBrightness;
     }
 

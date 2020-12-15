@@ -14,10 +14,11 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.ByteOrder;
+
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue;
-import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaValue.Endianness;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetIndoorOutoorTemperatures;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetOperationHoursCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetPowerstateCommand;
@@ -68,7 +69,7 @@ public class MadokaMessageTest {
         MadokaValue mv = new MadokaValue(0, 4, new byte[] { (byte) 0xF4, 0x03, 0x00, 0x00 });
         // MadokaValue mv = new MadokaValue(0, 4, new byte[] { 0x00, 0x00, 0x03, (byte) 0xF4 });
 
-        Long v = mv.getComputedValue(Endianness.LITTLE_ENDIAN);
+        Long v = mv.getComputedValue(ByteOrder.LITTLE_ENDIAN);
         assertEquals(1012, v);
     }
 }

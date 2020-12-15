@@ -57,6 +57,7 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetSet
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -131,8 +132,13 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             submitCommand(new GetFanspeedCommand());
             submitCommand(new GetCleanFilterIndicatorCommand());
 
-            // As it is a complex operation - it has been extracted to a method.
-            retrieveOperationHours();
+            try {
+                // As it is a complex operation - it has been extracted to a method.
+                retrieveOperationHours();
+            } catch (InterruptedException e) {
+                // The thread wants to exit!
+                return;
+            }
 
             submitCommand(new GetEyeBrightnessCommand());
         }, new Random().nextInt(30), c.refreshInterval, TimeUnit.SECONDS); // We introduce a random start time, it
@@ -140,18 +146,14 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                                                                            // have the commands sent simultaneously.
     }
 
-    private void retrieveOperationHours() {
+    private void retrieveOperationHours() throws InterruptedException {
         // This one is special - and MUST be ran twice, after being in priv mode
         // run it once an hour is sufficient... TODO
         submitCommand(new EnterPrivilegedModeCommand());
         submitCommand(new GetOperationHoursCommand());
         // a 1second+ delay is necessary
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            logger.error("Error in retrieveOperationHours()", e);
-            Thread.currentThread().interrupt();
-        }
+        Thread.sleep(1500);
+
         submitCommand(new GetOperationHoursCommand());
     }
 
@@ -227,8 +229,9 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_EYE_BRIGHTNESS:
                 try {
-                    DecimalType dt = (DecimalType) command;
-                    submitCommand(new SetEyeBrightnessCommand(dt));
+                    logger.debug("Set eye brightness with value {}, {}", command.getClass().getName(), command);
+                    PercentType p = (PercentType) command;
+                    submitCommand(new SetEyeBrightnessCommand(p));
                 } catch (Exception e) {
                     logger.warn("Data received is not a valid Eye Brightness status", e);
                 }
@@ -346,8 +349,10 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        logger.debug("[{}] onCharacteristicUpdate({})", super.thing.getUID().getId(),
-                HexUtils.bytesToHex(characteristic.getByteValue()));
+        if (logger.isDebugEnabled()) {
+            logger.debug("[{}] onCharacteristicUpdate({})", super.thing.getUID().getId(),
+                    HexUtils.bytesToHex(characteristic.getByteValue()));
+        }
         super.onCharacteristicUpdate(characteristic);
 
         // Check that arguments are valid.
@@ -726,7 +731,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     @Override
     public void receivedResponse(GetEyeBrightnessCommand command) {
-        DecimalType eyeBrightnessTemp = command.getEyeBrightness();
+        PercentType eyeBrightnessTemp = command.getEyeBrightness();
         if (eyeBrightnessTemp != null) {
             this.madokaSettings.setEyeBrightness(eyeBrightnessTemp);
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_EYE_BRIGHTNESS, eyeBrightnessTemp);
