@@ -43,16 +43,18 @@ public interface ConsumedThing {
      *
      * @param propertyName the propertyName
      * @return the current propertyValue
+     * @throws PropertyAccessException if the property can not be read
      */
-    Object readProperty(String propertyName);
+    Object readProperty(String propertyName) throws PropertyAccessException;
 
     /**
      * Writes a single Property.
      *
      * @param propertyName the propertyName
      * @param newValue the new propertyValue
+     * @throws PropertyAccessException if the property can not be written
      */
-    void writeProperty(String propertyName, Object newValue);
+    void writeProperty(String propertyName, Object newValue) throws PropertyAccessException;
 
     /**
      * closes the connection

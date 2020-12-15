@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.webthing.internal.ChannelHandler;
 import org.openhab.binding.webthing.internal.WebThingHandler;
 import org.openhab.binding.webthing.internal.client.ConsumedThing;
+import org.openhab.binding.webthing.internal.client.PropertyAccessException;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
@@ -43,14 +44,15 @@ public class ChannelToPropertyLink implements WebThingHandler.ItemChangedListene
      * @param channel the channel to be linked
      * @param webthing the WebThing to be linked
      * @param propertyName the property name
+     * @throws UnknownPropertyException if the a WebThing property should be link that does not exist
      */
     public static void establish(ChannelHandler channelHandler, Channel channel, ConsumedThing webthing,
-            String propertyName) {
+            String propertyName) throws UnknownPropertyException {
         new ChannelToPropertyLink(channelHandler, channel, webthing, propertyName);
     }
 
     private ChannelToPropertyLink(ChannelHandler channelHandler, Channel channel, ConsumedThing webThing,
-            String propertyName) {
+            String propertyName) throws UnknownPropertyException {
         this.webThing = webThing;
         var optionalProperty = webThing.getThingDescription().getProperty(propertyName);
         if (optionalProperty.isPresent()) {
@@ -64,14 +66,18 @@ public class ChannelToPropertyLink implements WebThingHandler.ItemChangedListene
             this.propertyName = propertyName;
             channelHandler.observeChannel(channel.getUID(), this);
         } else {
-            throw new RuntimeException("property " + propertyName + " does not exits");
+            throw new UnknownPropertyException("property " + propertyName + " does not exits");
         }
     }
 
     @Override
     public void onItemStateChanged(ChannelUID channelUID, State stateCommand) {
-        var propertyValue = typeConverter.toPropertyValue(stateCommand);
-        webThing.writeProperty(propertyName, typeConverter.toPropertyValue((State) stateCommand));
-        logger.debug("property {} updated with {} ({}) ", propertyName, propertyValue, this.propertyType);
+        try {
+            var propertyValue = typeConverter.toPropertyValue(stateCommand);
+            webThing.writeProperty(propertyName, typeConverter.toPropertyValue((State) stateCommand));
+            logger.debug("property {} updated with {} ({}) ", propertyName, propertyValue, this.propertyType);
+        } catch (PropertyAccessException pae) {
+            logger.warn("could not write WebThing property {} with new channel value", propertyName, pae);
+        }
     }
 }
