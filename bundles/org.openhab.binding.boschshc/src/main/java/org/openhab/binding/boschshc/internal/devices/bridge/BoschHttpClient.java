@@ -79,7 +79,7 @@ public class BoschHttpClient extends HttpClient {
         }
     }
 
-    public boolean doPairing() {
+    public boolean doPairing() throws InterruptedException {
         logger.trace("Starting pairing openHAB Client with Bosch SmartHomeController!");
         logger.trace("Please press the Bosch SHC button until LED starts blinking");
 
@@ -112,7 +112,7 @@ public class BoschHttpClient extends HttpClient {
                 logger.info("Pairing failed with response status {}.", contentResponse.getStatus());
                 return false;
             }
-        } catch (InterruptedException | TimeoutException | CertificateEncodingException | KeyStoreException e) {
+        } catch (TimeoutException | CertificateEncodingException | KeyStoreException e) {
             logger.warn("Pairing failed with exception {}", e.getMessage());
             return false;
         } catch (ExecutionException e) {
