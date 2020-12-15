@@ -32,9 +32,10 @@ public class HttpThingConfig {
 
     public String username = "";
     public String password = "";
-    public HttpAuthMode authMode = HttpAuthMode.BASIC;
 
+    public HttpAuthMode authMode = HttpAuthMode.BASIC;
     public HttpMethod commandMethod = HttpMethod.GET;
+    public int bufferSize = 2048;
 
     public @Nullable String encoding = null;
     public @Nullable String contentType = null;
