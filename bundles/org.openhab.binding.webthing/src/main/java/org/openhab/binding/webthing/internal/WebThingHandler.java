@@ -33,6 +33,7 @@ import org.openhab.binding.webthing.internal.link.UnknownPropertyException;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,6 +244,8 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         if (command instanceof State) {
             itemChangedListenerMap.getOrDefault(channelUID, EMPTY_ITEM_CHANGED_LISTENER).onItemStateChanged(channelUID,
                     (State) command);
+        } else if (command instanceof RefreshType) {
+            tryReconnect(webThingURI);
         }
     }
 
