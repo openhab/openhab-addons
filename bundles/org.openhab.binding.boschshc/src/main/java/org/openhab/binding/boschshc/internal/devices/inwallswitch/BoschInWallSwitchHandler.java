@@ -122,7 +122,7 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
         logger.debug("in-wall switch: received update: ID {} state {}", id, state);
 
         if (id.equals("PowerMeter")) {
-            PowerMeterState powerMeterState = gson.fromJson(state, PowerMeterState.class);
+            PowerMeterState powerMeterState = GSON.fromJson(state, PowerMeterState.class);
             if (powerMeterState == null) {
                 logger.warn("Received unknown update in in-wall switch: {}", state);
             } else {

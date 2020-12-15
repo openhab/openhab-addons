@@ -62,7 +62,7 @@ public class MotionDetectorHandler extends BoschSHCHandler {
         logger.debug("Motion detector: received update: {} {}", id, state);
 
         @Nullable
-        LatestMotionState latestMotionState = gson.fromJson(state, LatestMotionState.class);
+        LatestMotionState latestMotionState = GSON.fromJson(state, LatestMotionState.class);
         if (latestMotionState == null) {
             logger.warn("Received unknown update in in-wall switch: {}", state);
             return;

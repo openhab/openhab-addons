@@ -18,7 +18,6 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.dto.AirQualityLevelState;
 import org.openhab.core.library.types.QuantityType;
@@ -80,8 +79,7 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
     public void processUpdate(String id, JsonElement state) {
         logger.debug("Twinguard: received update: {} {}", id, state);
 
-        @Nullable
-        AirQualityLevelState parsed = gson.fromJson(state, AirQualityLevelState.class);
+        AirQualityLevelState parsed = GSON.fromJson(state, AirQualityLevelState.class);
         if (parsed == null) {
             logger.warn("Received unknown update in in-wall switch: {}", state);
             return;

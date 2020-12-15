@@ -47,7 +47,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class BoschHttpClient extends HttpClient {
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
 
     private final Logger logger = LoggerFactory.getLogger(BoschHttpClient.class);
 
@@ -147,7 +147,7 @@ public class BoschHttpClient extends HttpClient {
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json");
         if (content != null) {
-            String body = gson.toJson(content);
+            String body = GSON.toJson(content);
             logger.trace("create request for {} and content {}", url, body);
             request = request.content(new StringContentProvider(body));
         } else {
@@ -178,7 +178,7 @@ public class BoschHttpClient extends HttpClient {
 
         try {
             @Nullable
-            TContent content = gson.fromJson(contentResponse.getContentAsString(), responseContentClass);
+            TContent content = GSON.fromJson(contentResponse.getContentAsString(), responseContentClass);
             if (content == null) {
                 throw new ExecutionException(String.format("Received no content in response, expected type %s",
                         responseContentClass.getName()), null);

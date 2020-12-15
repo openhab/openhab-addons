@@ -76,12 +76,12 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         public final Collection<String> affectedChannels;
     }
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-
     /**
      * Reusable gson instance to convert a class to json string and back in derived classes.
      */
-    protected Gson gson = new Gson();
+    protected static final Gson GSON = new Gson();
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Bosch SHC configuration loaded from openHAB configuration.
