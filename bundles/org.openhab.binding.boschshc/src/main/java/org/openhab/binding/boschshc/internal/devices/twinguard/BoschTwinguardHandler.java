@@ -33,6 +33,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link BoschSHCHandler} is responsible for handling commands for the TwinGuard handler.
@@ -76,7 +77,7 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void processUpdate(String id, JsonElement state) {
+    public void processUpdate(String id, JsonElement state) throws JsonSyntaxException {
         logger.debug("Twinguard: received update: {} {}", id, state);
 
         AirQualityLevelState parsed = GSON.fromJson(state, AirQualityLevelState.class);
