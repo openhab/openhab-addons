@@ -20,6 +20,9 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -40,7 +43,10 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     private static final PropertyChangedListener EMPTY_PROPERTY_CHANGED_LISTENER = new PropertyChangedListener() {
     };
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnectionImpl.class);
+    private final Duration pingPeriod;
     private final Consumer<String> errorHandler;
+    private final ScheduledFuture<?> watchDogHandle;
+    private final ScheduledFuture<?> pingHandle;
     private final Map<String, PropertyChangedListener> propertyChangedListeners = new HashMap<>();
     private final AtomicReference<Instant> lastTimeReceived = new AtomicReference<>(Instant.now());
     private final AtomicReference<String> receivedTextbufferRef = new AtomicReference<>("");
@@ -49,12 +55,17 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
     /**
      * constructor
      *
+     * @param executor the executor to use
      * @param errorHandler the errorHandler
      * @param pingPeriod the period pings should be sent
      */
-    WebSocketConnectionImpl(Consumer<String> errorHandler, Duration pingPeriod) {
+    WebSocketConnectionImpl(ScheduledExecutorService executor, Consumer<String> errorHandler, Duration pingPeriod) {
         this.errorHandler = errorHandler;
-        new ConnectionWatchDog(pingPeriod).start();
+        this.pingPeriod = pingPeriod;
+        this.pingHandle = executor.scheduleAtFixedRate(this::sendPing, pingPeriod.dividedBy(2).toMillis(),
+                pingPeriod.toMillis(), TimeUnit.MILLISECONDS);
+        this.watchDogHandle = executor.scheduleAtFixedRate(this::checkConnection, pingPeriod.toMillis(),
+                pingPeriod.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -63,6 +74,8 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
         if (webSocket != null) {
             webSocket.abort();
         }
+        watchDogHandle.cancel(true);
+        pingHandle.cancel(true);
     }
 
     @Override
@@ -127,51 +140,24 @@ class WebSocketConnectionImpl implements WebSocketConnection, WebSocket.Listener
         }
     }
 
-    private final class ConnectionWatchDog extends Thread {
-        private final Duration pingPeriod;
-
-        ConnectionWatchDog(Duration pingPeriod) {
-            this.pingPeriod = pingPeriod;
-            setDaemon(true);
-        }
-
-        @Override
-        public void run() {
-            // initial pause
-            pause(pingPeriod.dividedBy(2));
-
-            while (webSocketRef.get() != null) {
-                // check if connection is alive (message has been received recently)
-                var elapsedSinceLast = Duration.between(lastTimeReceived.get(), Instant.now());
-                var remainingTime = elapsedSinceLast.minus(pingPeriod);
-                if (remainingTime.toMillis() > 0) {
-                    onError("connection seems to be broken (last message received at " + lastTimeReceived.get() + ", "
-                            + elapsedSinceLast.getSeconds() + " sec ago)");
-                    return;
-                }
-                pause(pingPeriod.dividedBy(2));
-
-                // send ping
-                var webSocket = webSocketRef.get();
-                if (webSocket != null) {
-                    try {
-                        webSocket.sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
-                    } catch (Exception e) {
-                        onError("could not send ping " + e.getMessage());
-                        return;
-                    }
-                }
-                pause(pingPeriod.dividedBy(2));
+    private void sendPing() {
+        var webSocket = webSocketRef.get();
+        if (webSocket != null) {
+            try {
+                webSocket.sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
+            } catch (Exception e) {
+                onError("could not send ping " + e.getMessage());
             }
         }
+    }
 
-        private void pause(Duration delay) {
-            if (webSocketRef.get() != null) {
-                try {
-                    Thread.sleep(delay.toMillis());
-                } catch (InterruptedException ignore) {
-                }
-            }
+    private void checkConnection() {
+        // check if connection is alive (message has been received recently)
+        var elapsedSinceLast = Duration.between(lastTimeReceived.get(), Instant.now());
+        var remainingTime = elapsedSinceLast.minus(pingPeriod.multipliedBy(2));
+        if (remainingTime.toMillis() > 0) {
+            onError("connection seems to be broken (last message received at " + lastTimeReceived.get() + ", "
+                    + elapsedSinceLast.getSeconds() + " sec ago)");
         }
     }
 }

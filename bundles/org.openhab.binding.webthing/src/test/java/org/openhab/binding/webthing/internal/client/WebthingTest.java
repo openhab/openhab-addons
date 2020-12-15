@@ -25,6 +25,8 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -212,7 +214,8 @@ public class WebthingTest {
 
     public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient, Consumer<String> errorHandler,
             WebSocketConnectionFactory websocketConnectionFactory, Duration pingPeriod) throws IOException {
-        return new ConsumedThingImpl(URI.create(uri), errorHandler, httpClient, websocketConnectionFactory, pingPeriod);
+        return new ConsumedThingImpl(URI.create(uri), Executors.newSingleThreadScheduledExecutor(), errorHandler,
+                httpClient, websocketConnectionFactory, pingPeriod);
     }
 
     public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient, Consumer<String> errorHandler,
@@ -224,9 +227,9 @@ public class WebthingTest {
         public final AtomicReference<WebSocketImpl> webSocketRef = new AtomicReference<>();
 
         @Override
-        public WebSocketConnection create(@NotNull URI webSocketURI, @NotNull Consumer<String> errorHandler,
-                @NotNull Duration pingPeriod) {
-            var webSocketConnection = new WebSocketConnectionImpl(errorHandler, pingPeriod);
+        public WebSocketConnection create(@NotNull URI webSocketURI, @NotNull ScheduledExecutorService executor,
+                @NotNull Consumer<String> errorHandler, @NotNull Duration pingPeriod) {
+            var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
             var webSocket = new WebSocketImpl(webSocketConnection);
             webSocketRef.set(webSocket);
             webSocketConnection.onOpen(webSocket);

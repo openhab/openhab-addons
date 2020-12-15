@@ -15,6 +15,7 @@ package org.openhab.binding.webthing.internal.client;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,11 +32,13 @@ interface WebSocketConnectionFactory {
      * create (and opens) a new WebSocket connection
      *
      * @param webSocketURI the websocket uri
+     * @param executor the executor to use
      * @param errorHandler the error handler
      * @param pingPeriod the ping period to check the healthiness of the connection
      * @return the newly opened WebSocket connection
      */
-    WebSocketConnection create(URI webSocketURI, Consumer<String> errorHandler, Duration pingPeriod);
+    WebSocketConnection create(URI webSocketURI, ScheduledExecutorService executor, Consumer<String> errorHandler,
+            Duration pingPeriod);
 
     /**
      * @return the default instance of the factory
@@ -43,8 +46,9 @@ interface WebSocketConnectionFactory {
     static WebSocketConnectionFactory instance() {
         return new WebSocketConnectionFactory() {
             @Override
-            public WebSocketConnection create(URI webSocketURI, Consumer<String> errorHandler, Duration pingPeriod) {
-                var webSocketConnection = new WebSocketConnectionImpl(errorHandler, pingPeriod);
+            public WebSocketConnection create(URI webSocketURI, ScheduledExecutorService executor,
+                    Consumer<String> errorHandler, Duration pingPeriod) {
+                var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
                 HttpClient.newHttpClient().newWebSocketBuilder().buildAsync(webSocketURI, webSocketConnection).join();
                 return webSocketConnection;
             }
