@@ -152,41 +152,47 @@ public class ConsumedThingImpl implements ConsumedThing {
 
         // it may take a long time before the observed property value will be changed. For this reason
         // read and notify the current property value (as starting point)
-        var value = readProperty(propertyName);
-        listener.onPropertyValueChanged(propertyName, value);
+        try {
+            var value = readProperty(propertyName);
+            listener.onPropertyValueChanged(propertyName, value);
+        } catch (PropertyAccessException pae) {
+            logger.warn("could not read WebThing {} property {}", webThingURI, propertyName, pae);
+        }
     }
 
     @Override
-    public Object readProperty(String propertyName) {
+    public Object readProperty(String propertyName) throws PropertyAccessException {
         var propertyUri = getPropertyUri(propertyName);
         try {
             var request = HttpRequest.newBuilder().timeout(Duration.ofSeconds(30)).GET().uri(propertyUri).build();
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                onError("WebThing resource " + webThingURI + " disconnected");
-                throw new IOException("Got error response: " + response.body());
+                onError("WebThing " + webThingURI + " disconnected");
+                throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri
+                        + "). Got error response " + response.body());
             }
             var properties = new Gson().fromJson(response.body(), Map.class);
             var value = properties.get(propertyName);
             if (value != null) {
                 return value;
             } else {
-                throw new IOException(
-                        "response does not include " + propertyName + "(" + propertyUri + "): " + response.body());
+                throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri
+                        + "). Response does not include " + propertyName + "(" + propertyUri + "): " + response.body());
             }
         } catch (InterruptedException | IOException e) {
             onError("WebThing resource " + webThingURI + " disconnected");
-            throw new RuntimeException("could not read " + propertyName + " (" + propertyUri + "). " + e.getMessage());
+            throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri + ").", e);
         }
     }
 
     @Override
-    public void writeProperty(String propertyName, Object newValue) {
+    public void writeProperty(String propertyName, Object newValue) throws PropertyAccessException {
         var property = description.properties.get(propertyName);
         var propertyUri = getPropertyUri(propertyName);
         try {
             if (property.readOnly) {
-                throw new IOException(propertyName + " is readOnly");
+                throw new PropertyAccessException("could not write " + propertyName + " (" + propertyUri + ") with "
+                        + newValue + ". Property is readOnly");
             } else {
                 logger.debug("updating {} with {}", propertyName, newValue);
                 Map<String, Object> payload = Map.of(propertyName, newValue);
@@ -195,13 +201,14 @@ public class ConsumedThingImpl implements ConsumedThing {
                         .PUT(HttpRequest.BodyPublishers.ofString(json)).uri(propertyUri).build();
                 var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                    throw new IOException("Got error response: " + response.body());
+                    throw new PropertyAccessException("could not write " + propertyName + " (" + propertyUri + ") with "
+                            + newValue + ". Got error response " + response.body());
                 }
             }
         } catch (InterruptedException | IOException e) {
             onError("WebThing resource " + webThingURI + " disconnected");
-            throw new RuntimeException("could not write " + propertyName + " (" + propertyUri + ") with " + newValue
-                    + " " + e.getMessage());
+            throw new PropertyAccessException(
+                    "could not write " + propertyName + " (" + propertyUri + ") with " + newValue, e);
         }
     }
 

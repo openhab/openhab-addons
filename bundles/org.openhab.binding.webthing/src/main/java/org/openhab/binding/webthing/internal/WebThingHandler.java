@@ -29,6 +29,7 @@ import org.openhab.binding.webthing.internal.channel.Channels;
 import org.openhab.binding.webthing.internal.client.*;
 import org.openhab.binding.webthing.internal.link.ChannelToPropertyLink;
 import org.openhab.binding.webthing.internal.link.PropertyToChannelLink;
+import org.openhab.binding.webthing.internal.link.UnknownPropertyException;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
@@ -215,19 +216,24 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
 
         // create new links (listeners will be registered, implicitly)
         for (var namePropertyPair : webThing.getThingDescription().properties.entrySet()) {
-            // determine the name of the associated channel
-            var channelUID = Channels.createChannelUID(getThing().getUID(), namePropertyPair.getKey());
+            try {
+                // determine the name of the associated channel
+                var channelUID = Channels.createChannelUID(getThing().getUID(), namePropertyPair.getKey());
 
-            // will try to establish a link, if channel is present
-            var channel = getThing().getChannel(channelUID);
-            if (channel != null) {
-                // establish downstream link
-                PropertyToChannelLink.establish(webThing, namePropertyPair.getKey(), this, channel);
+                // will try to establish a link, if channel is present
+                var channel = getThing().getChannel(channelUID);
+                if (channel != null) {
+                    // establish downstream link
+                    PropertyToChannelLink.establish(webThing, namePropertyPair.getKey(), this, channel);
 
-                // establish upstream link
-                if (!namePropertyPair.getValue().readOnly) {
-                    ChannelToPropertyLink.establish(this, channel, webThing, namePropertyPair.getKey());
+                    // establish upstream link
+                    if (!namePropertyPair.getValue().readOnly) {
+                        ChannelToPropertyLink.establish(this, channel, webThing, namePropertyPair.getKey());
+                    }
                 }
+            } catch (UnknownPropertyException upe) {
+                logger.warn("WebThing {} property {} could not be linked with a channel", getWebThingLabel(),
+                        namePropertyPair.getKey(), upe);
             }
         }
     }
