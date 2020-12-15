@@ -46,8 +46,7 @@ import com.github.mob41.blapi.pkt.cmd.hysen.SetTimeCommand;
 public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FloureonThermostatHandler.class);
-    @Nullable
-    private FloureonDevice floureonDevice;
+    private @Nullable FloureonDevice floureonDevice;
 
     /**
      * Creates a new instance of this class for the {@link FloureonThermostatHandler}.
