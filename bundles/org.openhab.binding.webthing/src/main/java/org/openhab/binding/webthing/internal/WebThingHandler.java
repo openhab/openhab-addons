@@ -119,7 +119,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             try {
                 // create the client-side WebThing representation
                 if (uri != null) {
-                    var webThing = ConsumedThingFactory.instance().create(uri, this::onError);
+                    var webThing = ConsumedThingFactory.instance().create(uri, scheduler, this::onError);
                     this.webThingConnectionRef.getAndSet(Optional.of(webThing)).ifPresent(ConsumedThing::close);
 
                     // update the Thing structure based on the WebThing description

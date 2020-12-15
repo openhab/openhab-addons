@@ -20,6 +20,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -53,11 +54,14 @@ public class ConsumedThingImpl implements ConsumedThing {
      * constructor
      *
      * @param webThingURI the identifier of a WebThing resource
+     * @param executor executor to use
      * @param errorHandler the error handler
      * @throws IOException it the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webThingURI, Consumer<String> errorHandler) throws IOException {
-        this(webThingURI, errorHandler, HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build(),
+    ConsumedThingImpl(URI webThingURI, ScheduledExecutorService executor, Consumer<String> errorHandler)
+            throws IOException {
+        this(webThingURI, executor, errorHandler,
+                HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build(),
                 WebSocketConnectionFactory.instance());
     }
 
@@ -65,28 +69,31 @@ public class ConsumedThingImpl implements ConsumedThing {
      * constructor
      *
      * @param webthingUrl the identifier of a WebThing resource
+     * @param executor executor to use
      * @param errorHandler the error handler
      * @param httpClient the http client to use
      * @param webSocketConnectionFactory the Websocket connectino fctory to be used
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webthingUrl, Consumer<String> errorHandler, HttpClient httpClient,
-            WebSocketConnectionFactory webSocketConnectionFactory) throws IOException {
-        this(webthingUrl, errorHandler, httpClient, webSocketConnectionFactory, DEFAULT_PING_PERIOD);
+    ConsumedThingImpl(URI webthingUrl, ScheduledExecutorService executor, Consumer<String> errorHandler,
+            HttpClient httpClient, WebSocketConnectionFactory webSocketConnectionFactory) throws IOException {
+        this(webthingUrl, executor, errorHandler, httpClient, webSocketConnectionFactory, DEFAULT_PING_PERIOD);
     }
 
     /**
      * constructor
      *
      * @param webthingUrl the identifier of a WebThing resource
+     * @param executor executor to use
      * @param errorHandler the error handler
      * @param httpClient the http client to use
      * @param webSocketConnectionFactory the Websocket connectino fctory to be used
      * @param pingPeriod the ping period tothe the healthiness of the connection
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webthingUrl, Consumer<String> errorHandler, HttpClient httpClient,
-            WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod) throws IOException {
+    ConsumedThingImpl(URI webthingUrl, ScheduledExecutorService executor, Consumer<String> errorHandler,
+            HttpClient httpClient, WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod)
+            throws IOException {
         this.webThingURI = webthingUrl;
         this.httpClient = httpClient;
         this.errorHandler = errorHandler;
@@ -94,7 +101,7 @@ public class ConsumedThingImpl implements ConsumedThing {
                 Duration.ofSeconds(20));
 
         // opens a websocket downstream to be notified if a property value will be changed
-        this.websocketDownstream = webSocketConnectionFactory.create(this.getEventStreamUri(), this::onError,
+        this.websocketDownstream = webSocketConnectionFactory.create(this.getEventStreamUri(), executor, this::onError,
                 pingPeriod);
     }
 
