@@ -356,7 +356,6 @@ public class LinkyHandler extends BaseThingHandler {
             try {
                 return api.getEnergyData(userId, prmId, from, to);
             } catch (LinkyException e) {
-                logger.debug("getConsumptionData failed: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -371,7 +370,6 @@ public class LinkyHandler extends BaseThingHandler {
             try {
                 return api.getPowerData(userId, prmId, from, to);
             } catch (LinkyException e) {
-                logger.debug("getPowerData failed: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
