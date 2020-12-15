@@ -38,6 +38,7 @@ Some notes:
 * The following channels _aspectratio_, _colormode_, _luminance_, _gamma_ and _background_ are pre-populated with a full set of options and not every option will be useable on all projectors.
 * If your projector has an option in one of the above mentioned channels that is not recognized by the binding, the channel will display 'UNKNOWN' if that un-recognized option is selected by the remote control.
 * If the projector power is switched to off in the middle of a polling operation, some of the channel values may become undefined until the projector is switched on again.
+* If the binding fails to connect to the projector using the direct IP connection, ensure that no password is configured on the projctor.
 
 * On Linux, you may get an error stating the serial port cannot be opened when the epsonprojector binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
@@ -86,10 +87,10 @@ Some notes:
 things/epson.things:
 
 ```java
-//serial port connection
+// serial port connection
 epsonprojector:projector-serial:hometheater "Projector" [ serialPort="COM5", pollingInterval=10 ]
 
-// serial over IP connection
+// direct IP or serial over IP connection
 epsonprojector:projector-tcp:hometheater "Projector"  [ host="192.168.0.10", port=3629, pollingInterval=10 ]
 
 ```
