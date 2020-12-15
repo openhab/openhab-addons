@@ -14,10 +14,7 @@ package org.openhab.binding.broadlinkthermostat.internal;
 
 import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,9 +39,8 @@ public class BroadlinkThermostatHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkThermostatHandlerFactory.class);
 
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set
-            .of(FLOUREON_THERMOSTAT_THING_TYPE, HYSEN_THERMOSTAT_THING_TYPE, UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(FLOUREON_THERMOSTAT_THING_TYPE,
+            HYSEN_THERMOSTAT_THING_TYPE, UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
