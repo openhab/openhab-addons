@@ -1,7 +1,7 @@
 # Broadlink Thermostat Binding
 
 The binding integrates devices based on Broadlinkthermostat controllers.
-As the binding uses the [broadlinkt-java-api](https://github.com/mob41/broadlinkt-java-api), theoretically all devices supported by the api can be integrated with this binding.
+As the binding uses the [broadlink-java-api](https://github.com/mob41/broadlink-java-api), theoretically all devices supported by the api can be integrated with this binding.
 
 ## Supported Things
 
