@@ -220,7 +220,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [0\u003d\"Unknown\",1\u003d\"US\",82\u003d\"KR\",44\u003d\"EU\",81\u003d\"JP\",7\u003d\"RU\",86\u003d\"CN\",852\u003d\"HK\",886\u003d\"TW\",33\u003d\"FR\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Unknown\",\"1\"\u003d\"US\",\"1\"\u003d\"KR\",\"1\"\u003d\"EU\",\"1\"\u003d\"JP\",\"1\"\u003d\"RU\",\"1\"\u003d\"CN\",\"1\"\u003d\"HK\",\"1\"\u003d\"TW\",\"1\"\u003d\"FR\"]"
 			}
 		],
 		"experimental": true
