@@ -19,6 +19,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class MulticastListener {
     private static final int EPSON_MULTICAST_PORT = 9131;
 
     // How long to wait in milliseconds for a discovery beacon
-    public static final int DEFAULT_SOCKET_TIMEOUT = 3000;
+    public static final int DEFAULT_SOCKET_TIMEOUT_SEC = 3000;
 
     /*
      * Constructor joins the multicast group, throws IOException on failure.
@@ -57,7 +58,7 @@ public class MulticastListener {
                 NetworkInterface.getByInetAddress(ifAddress).getName());
         socket = new MulticastSocket(EPSON_MULTICAST_PORT);
         socket.setInterface(ifAddress);
-        socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT);
+        socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_SEC);
         InetAddress mcastAddress = InetAddress.getByName(EPSON_MULTICAST_GROUP);
         socket.joinGroup(mcastAddress);
         logger.debug("Multicast listener joined multicast group {}:{}", EPSON_MULTICAST_GROUP, EPSON_MULTICAST_PORT);
@@ -103,7 +104,7 @@ public class MulticastListener {
      * AMXB<-UUID=000048746B33><-SDKClass=VideoProjector><-GUID=EPSON_EMP001><-Revision=1.0.0>
      */
     private void parseAnnouncementBeacon(DatagramPacket packet) {
-        String beacon = (new String(packet.getData())).trim();
+        String beacon = (new String(packet.getData(), StandardCharsets.UTF_8)).trim();
 
         logger.trace("Multicast listener parsing announcement packet: {}", beacon);
 

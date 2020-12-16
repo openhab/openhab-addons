@@ -90,6 +90,8 @@
 			<channel id="errmessage" typeId="errmessage"/>
 		</channels>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>

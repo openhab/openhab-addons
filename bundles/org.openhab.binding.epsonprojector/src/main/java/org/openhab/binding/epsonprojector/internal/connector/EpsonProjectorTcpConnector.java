@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.epsonprojector.internal.connector;
 
+import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.DEFAULT_PORT;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -61,7 +63,7 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
         }
 
         // Projectors with built in Ethernet listen on 3629, we must send the handshake to initialize the connection
-        if (port == 3629) {
+        if (port == DEFAULT_PORT) {
             try {
                 String response = sendMessage(ESC_VP_HANDSHAKE, 5000);
                 logger.debug("Response to initialisation of ESC/VP.net is: {}", response);
