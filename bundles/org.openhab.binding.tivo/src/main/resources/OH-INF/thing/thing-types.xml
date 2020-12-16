@@ -20,7 +20,7 @@
 			<channel id="dvrStatus" typeId="dvrStatus"/>
 		</channels>
 
-		<representation-property>name</representation-property>
+		<representation-property>host</representation-property>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -78,21 +78,22 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="channelForce">
-		<item-type>Number</item-type>
-		<label>Current Channel - Forced (FORCECH)</label>
-		<description>Displays the current channel number. When changed, tunes the DVR to the specified channel, cancelling any
-			recordings in progress if necessary i.e. all tuners are already in use / recording. The TiVo must be in Live TV mode
-			for this command to work. Type: Number (1-9999) [Decimals allowed for OTA sub-channels], DisplayFormat: %d</description>
-		<state min="1" max="9999" step="0.1" pattern="%d"></state>
-	</channel-type>
 	<channel-type id="channelSet">
 		<item-type>Number</item-type>
-		<label>Current Channel - Request (SETCH)</label>
-		<description>Displays the current channel number. When changed, tunes the DVR to the specified channel (unless a
-			recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work. Type:
+		<label>Current Channel - Request</label>
+		<description>Displays the current channel number. When changed (SETCH), tunes the DVR to the specified channel (unless
+			a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work. Type:
 			Number (1-9999) [Decimals allowed for OTA sub-channels], DisplayFormat: %d</description>
 		<state min="1" max="9999" step="0.1" pattern="%d"/>
+	</channel-type>
+	<channel-type id="channelForce">
+		<item-type>Number</item-type>
+		<label>Current Channel - Forced</label>
+		<description>Displays the current channel number. When changed (FORCECH), tunes the DVR to the specified channel,
+			cancelling any recordings in progress if necessary i.e. all tuners are already in use / recording. The TiVo must be
+			in Live TV mode for this command to work. Type: Number (1-9999) [Decimals allowed for OTA sub-channels],
+			DisplayFormat: %d</description>
+		<state min="1" max="9999" step="0.1" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="isRecording">
 		<item-type>Switch</item-type>
@@ -102,10 +103,9 @@
 	</channel-type>
 	<channel-type id="menuTeleport">
 		<item-type>String</item-type>
-		<label>Change Special/Menu Screen (TELEPORT)</label>
-		<description>Change to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My Shows),
-			NETFLIX.
-			Type: String</description>
+		<label>Change Menu Screen</label>
+		<description>Change(TELEPORT) to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My
+			Shows), NETFLIX. Type: String</description>
 		<state readOnly="false">
 			<options>
 				<option value="TIVO">TIVO</option>
@@ -118,16 +118,16 @@
 	</channel-type>
 	<channel-type id="irCommand">
 		<item-type>String</item-type>
-		<label>Remote Control Button (IRCODE)</label>
-		<description>Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote
-			Protocol 1.1 for supported codes. Type: String</description>
+		<label>Remote Control Button</label>
+		<description>Send a simulated button push (IRCODE) from the remote control to the TiVo. See Appendix A in document TCP
+			Remote Protocol 1.1 for supported codes. Type: String</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="kbdCommand">
 		<item-type>String</item-type>
-		<label>Keyboard Command (KEYBOARD)</label>
-		<description>Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP
-			Remote Protocol 1.1 for supported characters and special character codes. Type: String</description>
+		<label>Keyboard Command</label>
+		<description>Sends a code (KEYBOARD) corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in
+			document TCP Remote Protocol 1.1 for supported characters and special character codes. Type: String</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="dvrStatus">

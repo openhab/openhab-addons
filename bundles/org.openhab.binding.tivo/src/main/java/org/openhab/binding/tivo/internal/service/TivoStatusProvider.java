@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tivo.internal.service;
 
-import static org.openhab.binding.tivo.TiVoBindingConstants.CONFIG_SOCKET_TIMEOUT_MS;
+import static org.openhab.binding.tivo.internal.TiVoBindingConstants.CONFIG_SOCKET_TIMEOUT_MS;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tivo.handler.TiVoHandler;
+import org.openhab.binding.tivo.internal.handler.TiVoHandler;
 import org.openhab.binding.tivo.internal.service.TivoStatusData.ConnectionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +44,9 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class TivoStatusProvider {
+    private static final Pattern TIVO_STATUS_PATTERN = Pattern.compile("^CH_STATUS (\\d{4}) (?:(\\d{4}))?");
+    private static final Integer READ_TIMEOUT = 3000;
+
     private final Logger logger = LoggerFactory.getLogger(TivoStatusProvider.class);
     private @Nullable Socket tivoSocket = null;
     private @Nullable PrintStream streamWriter = null;
@@ -52,8 +55,6 @@ public class TivoStatusProvider {
     private TivoStatusData tivoStatusData = new TivoStatusData();
     private TivoConfigData tivoConfigData = new TivoConfigData();
     private final String thingUid;
-
-    private static final Integer READ_TIMEOUT = 3000;
 
     /**
      * Instantiates a new TivoConfigStatusProvider.
@@ -172,8 +173,7 @@ public class TivoStatusProvider {
 
         // Only other documented status is in the form 'CH_STATUS channel reason' or
         // 'CH_STATUS channel sub-channel reason'
-        Pattern tivoStatusPattern = Pattern.compile("^CH_STATUS (\\d{4}) (?:(\\d{4}))?");
-        Matcher matcher = tivoStatusPattern.matcher(rawStatus);
+        Matcher matcher = TIVO_STATUS_PATTERN.matcher(rawStatus);
         Integer chNum = -1; // -1 used globally to indicate channel number error
         Integer subChNum = -1;
         boolean isRecording = false;
@@ -323,7 +323,7 @@ public class TivoStatusProvider {
                 try {
                     streamReader.join(READ_TIMEOUT);
                 } catch (InterruptedException e) {
-                    logger.warn("Error joining streamReader: {}", e.getMessage());
+                    logger.debug("Error joining streamReader: {}", e.getMessage());
                 }
                 this.streamReader = null;
             }
@@ -405,8 +405,6 @@ public class TivoStatusProvider {
      */
     public void doNappTime() {
         try {
-            logger.debug(" doNappTime '{}' - I feel like napping for '{}' milliseconds",
-                    tivoConfigData.getCfgIdentifier(), tivoConfigData.getCmdWaitInterval());
             TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval());
         } catch (InterruptedException e) {
         }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tivo.internal.discovery;
 
-import static org.openhab.binding.tivo.TiVoBindingConstants.*;
+import static org.openhab.binding.tivo.internal.TiVoBindingConstants.*;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -76,7 +76,7 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             properties.put(CONFIG_PORT, port);
 
             result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("Tivo: " + label)
-                    .withProperty(CONFIG_NAME, label).withRepresentationProperty(CONFIG_NAME).build();
+                    .withProperty(CONFIG_HOST, inetAddress).withRepresentationProperty(CONFIG_HOST).build();
             logger.debug("Created {} for TiVo host '{}' name '{}'", result, inetAddress, label);
         }
         return result;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tivo;
+package org.openhab.binding.tivo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -45,5 +45,4 @@ public class TiVoBindingConstants {
     // List of all configuration Properties
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_PORT = "tcpPort";
-    public static final String CONFIG_NAME = "name";
 }

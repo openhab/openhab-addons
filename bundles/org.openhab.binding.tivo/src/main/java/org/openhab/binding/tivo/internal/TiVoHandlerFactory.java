@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.tivo.internal;
 
-import static org.openhab.binding.tivo.TiVoBindingConstants.THING_TYPE_TIVO;
+import static org.openhab.binding.tivo.internal.TiVoBindingConstants.THING_TYPE_TIVO;
 
 import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tivo.handler.TiVoHandler;
+import org.openhab.binding.tivo.internal.handler.TiVoHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;

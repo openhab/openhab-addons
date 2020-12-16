@@ -10,14 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tivo.handler;
+package org.openhab.binding.tivo.internal.handler;
 
-import static org.openhab.binding.tivo.TiVoBindingConstants.*;
+import static org.openhab.binding.tivo.internal.TiVoBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,6 +50,8 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class TiVoHandler extends BaseThingHandler {
+    private static final Pattern NUMERIC_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
+
     private final Logger logger = LoggerFactory.getLogger(TiVoHandler.class);
     private TivoConfigData tivoConfigData = new TivoConfigData();
     private ConnectionStatus lastConnectionStatus = ConnectionStatus.UNKNOWN;
@@ -71,7 +74,7 @@ public class TiVoHandler extends BaseThingHandler {
         logger.debug("handleCommand '{}', parameter: {}", channelUID, command);
 
         if (!isInitialized() || !tivoConnection.isPresent()) {
-            logger.debug("handleCommand '{}' device is not intialised yet, command '{}' will be ignored.",
+            logger.debug("handleCommand '{}' device is not initialized yet, command '{}' will be ignored.",
                     getThing().getUID(), channelUID + " " + command);
             return;
         }
@@ -124,9 +127,9 @@ public class TiVoHandler extends BaseThingHandler {
         // standby mode
         if (deviceStatus.getConnectionStatus() == ConnectionStatus.STANDBY && commandKeyword.contentEquals("TELEPORT")
                 && commandParameter.contentEquals("TIVO")) {
-            commandKeyword = "IRCODE " + commandParameter;
+            String command = "IRCODE " + commandParameter;
             logger.debug("TiVo '{}' TELEPORT re-mapped to IRCODE as we are in standby: '{}'", getThing().getUID(),
-                    commandKeyword);
+                    command);
         }
         // Execute command
         if (commandKeyword.contentEquals("FORCECH") || commandKeyword.contentEquals("SETCH")) {
@@ -150,23 +153,6 @@ public class TiVoHandler extends BaseThingHandler {
         tivoConnection.get().connTivoDisconnect(false);
     }
 
-    int convertValueToInt(Object value) {
-        if (value instanceof BigDecimal) {
-            return ((BigDecimal) value).intValue();
-        }
-        if (value instanceof String) {
-            return Integer.valueOf((String) value);
-        }
-        if (value instanceof Double) {
-            return ((Double) value).intValue();
-        }
-        return (Integer) value;
-    }
-
-    boolean convertValueToBoolean(Object value) {
-        return value instanceof Boolean ? ((Boolean) value) : Boolean.valueOf((String) value);
-    }
-
     @Override
     public void initialize() {
         logger.debug("Initializing a TiVo '{}' with config options", getThing().getUID());
@@ -174,7 +160,6 @@ public class TiVoHandler extends BaseThingHandler {
         tivoConfigData = getConfigAs(TivoConfigData.class);
 
         tivoConfigData.setCfgIdentifier(getThing().getUID().getAsString());
-        logger.debug("TivoConfigData Obj: '{}'", tivoConfigData);
         tivoConnection = Optional.of(new TivoStatusProvider(tivoConfigData, this));
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -204,13 +189,10 @@ public class TiVoHandler extends BaseThingHandler {
      * {@link startPollStatus} scheduled job to poll for changes in state.
      */
     private void startPollStatus() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.debug("startPollStatus '{}' @ rate of '{}' seconds", getThing().getUID(),
-                        tivoConfigData.getPollInterval());
-                tivoConnection.ifPresent(TivoStatusProvider::statusRefresh);
-            }
+        Runnable runnable = () -> {
+            logger.debug("startPollStatus '{}' @ rate of '{}' seconds", getThing().getUID(),
+                    tivoConfigData.getPollInterval());
+            tivoConnection.ifPresent(TivoStatusProvider::statusRefresh);
         };
 
         if (tivoConfigData.isKeepConnActive()) {
@@ -242,13 +224,18 @@ public class TiVoHandler extends BaseThingHandler {
 
         TivoStatusData tmpStatus = tivoConnection.get().getServiceStatus();
         try {
-            // If desired channel has decimal (OTA channels), parse the sub channel number
-            if (command.contains(".")) {
-                String[] channelArray = command.split("\\.");
-                channel = Integer.valueOf(channelArray[0]).intValue();
-                subChannel = Integer.valueOf(channelArray[1]).intValue();
+            // Parse the channel number and if there is a decimal, the sub-channel number (OTA channels)
+            Matcher matcher = NUMERIC_PATTERN.matcher(command);
+            if (matcher.find()) {
+                if (matcher.groupCount() == 1 || matcher.groupCount() == 2) {
+                    channel = Integer.parseInt(matcher.group(1).trim());
+                }
+                if (matcher.groupCount() == 2) {
+                    subChannel = Integer.parseInt(matcher.group(2).trim());
+                }
             } else {
-                channel = Integer.valueOf(command.toString()).intValue();
+                // The command string was not a number, throw exception to catch & log below
+                throw new NumberFormatException();
             }
 
             String tmpCommand = commandKeyword + " " + channel + ((subChannel != -1) ? (" " + subChannel) : "");
@@ -292,8 +279,8 @@ public class TiVoHandler extends BaseThingHandler {
                 }
             }
 
-        } catch (NumberFormatException | IndexOutOfBoundsException e) {
-            logger.warn("TiVo'{}' unable to parse channel integer from CHANNEL_TIVO_CHANNEL: '{}'", getThing().getUID(),
+        } catch (NumberFormatException e) {
+            logger.warn("TiVo'{}' unable to parse channel integer, value sent was: '{}'", getThing().getUID(),
                     command.toString());
         }
         return tmpStatus;
@@ -312,7 +299,7 @@ public class TiVoHandler extends BaseThingHandler {
                         || !(oldStatusData.getMsg().contentEquals(newStatusData.getMsg()))) {
                     updateState(CHANNEL_TIVO_STATUS, new StringType(newStatusData.getMsg()));
                 }
-                // If the cmd was successful, publish the channel channel numbers
+                // If the cmd was successful, publish the channel numbers
                 if (newStatusData.isCmdOk() && newStatusData.getChannelNum() != -1) {
                     if (oldStatusData.getConnectionStatus() == ConnectionStatus.INIT
                             || oldStatusData.getChannelNum() != newStatusData.getChannelNum()
