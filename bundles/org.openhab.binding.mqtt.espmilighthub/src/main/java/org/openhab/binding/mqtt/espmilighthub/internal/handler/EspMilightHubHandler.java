@@ -60,7 +60,6 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
     private @Nullable MqttBrokerConnection connection;
     private ThingRegistry thingRegistry;
     private String globeType = "";
-    private String lastCommand = "";
     private String bulbMode = "";
     private String remotesGroupID = "";
     private String channelPrefix = "";
@@ -262,26 +261,29 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 int scaledCommand = (int) Math.round((370 - (2.17 * Float.valueOf(command.toString()))));
                 sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel + ",\"color_temp\":" + scaledCommand + "}");
                 break;
-            case CHANNEL_COMMAND:
-                if (command instanceof StringType) {
-                    lastCommand = command.toString();
-                    if (lastCommand.equals("favourite_white")) {
-                        sendMQTT("{\"state\":\"ON\",\"color_temp\":" + config.favouriteWhite + "}");
-                        break;
-                    }
-                    sendMQTT("{\"command\":\"" + command + "\"}");
+            case CHANNEL_NIGHT_MODE:
+                if (command.equals(OnOffType.ON)) {
+                    sendMQTT("{\"command\":\"night_mode\"}");
                 }
                 break;
-            case CHANNEL_SEND_COMMAND:
-                if (lastCommand.isEmpty()) {
-                    lastCommand = config.defaultCommand;
-                    updateState(CHANNEL_COMMAND, new StringType(lastCommand));
+            case CHANNEL_SPEED_UP:
+                if (command.equals(OnOffType.ON)) {
+                    sendMQTT("{\"command\":\"mode_speed_up\"}");
                 }
-                if (lastCommand.equals("favourite_white")) {
+                break;
+            case CHANNEL_SLOW_DOWN:
+                if (command.equals(OnOffType.ON)) {
+                    sendMQTT("{\"command\":\"mode_speed_down\"}");
+                }
+                break;
+            case CHANNEL_SET_WHITE:
+                if (command.equals(OnOffType.ON)) {
+                    if (globeType.equals("rgbw") || globeType.equals("rgb")) {
+                        sendMQTT("{\"command\":\"set_white\"}");
+                        return;
+                    }
                     sendMQTT("{\"state\":\"ON\",\"color_temp\":" + config.favouriteWhite + "}");
-                    break;
                 }
-                sendMQTT("{\"command\":\"" + lastCommand + "\"}");
                 break;
             case CHANNEL_DISCO_MODE:
                 sendMQTT("{\"mode\":\"" + command + "\"}");

@@ -25,7 +25,6 @@ public class ConfigOptions {
     public int whiteSat = 32;
     public int whiteHue = 35;
     public int favouriteWhite = 200;
-    public String defaultCommand = "night_mode";
     public boolean oneTriggersNightMode = false;
     public boolean powerFailsToMinimum = false;
     public int dimmedCT = -1;

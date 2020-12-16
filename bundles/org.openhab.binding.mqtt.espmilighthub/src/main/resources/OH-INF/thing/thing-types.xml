@@ -18,8 +18,10 @@
 			<channel id="colour" typeId="colour"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
-			<channel id="command" typeId="command"/>
-			<channel id="sendCommand" typeId="sendCommand"/>
+			<channel id="nightMode" typeId="nightMode"/>
+			<channel id="setWhite" typeId="setWhite"/>
+			<channel id="speedUp" typeId="speedUp"/>
+			<channel id="slowDown" typeId="slowDown"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:rgbandcct"/>
 	</thing-type>
@@ -38,8 +40,10 @@
 			<channel id="colour" typeId="colour"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
-			<channel id="command" typeId="command"/>
-			<channel id="sendCommand" typeId="sendCommand"/>
+			<channel id="nightMode" typeId="nightMode"/>
+			<channel id="setWhite" typeId="setWhite"/>
+			<channel id="speedUp" typeId="speedUp"/>
+			<channel id="slowDown" typeId="slowDown"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:rgbandcct"/>
 	</thing-type>
@@ -87,8 +91,10 @@
 			<channel id="colour" typeId="colour"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
-			<channel id="command" typeId="command"/>
-			<channel id="sendCommand" typeId="sendCommand"/>
+			<channel id="nightMode" typeId="nightMode"/>
+			<channel id="setWhite" typeId="setWhite"/>
+			<channel id="speedUp" typeId="speedUp"/>
+			<channel id="slowDown" typeId="slowDown"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:rgbw"/>
 	</thing-type>
@@ -106,8 +112,9 @@
 			<channel id="colour" typeId="colour"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
-			<channel id="command" typeId="command"/>
-			<channel id="sendCommand" typeId="sendCommand"/>
+			<channel id="nightMode" typeId="nightMode"/>
+			<channel id="speedUp" typeId="speedUp"/>
+			<channel id="slowDown" typeId="slowDown"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:rgb"/>
 	</thing-type>
@@ -136,34 +143,28 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="command" advanced="true">
-		<item-type>String</item-type>
-		<label>Bulb Command</label>
-		<description>Choose the command to send to the globe then press the button to send it multiple times. Note: Not all
-			globes support all commands.</description>
-		<state>
-			<options>
-				<option value="next_mode">Next Mode</option>
-				<option value="previous_mode">Previous Mode</option>
-				<option value="mode_speed_up">Mode Speed Up</option>
-				<option value="mode_speed_down">Mode Speed Down</option>
-				<option value="set_white">Set White</option>
-				<option value="pair">Pair</option>
-				<option value="unpair">Unpair</option>
-				<option value="level_down">Level Down</option>
-				<option value="level_up">Level Up</option>
-				<option value="temperature_down">Temperature Down</option>
-				<option value="temperature_up">Temperature Up</option>
-				<option value="night_mode">Night Mode</option>
-				<option value="favourite_white">Favourite White</option>
-			</options>
-		</state>
+	<channel-type id="nightMode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Night Mode</label>
+		<description>Send the command to use night mode. </description>
 	</channel-type>
 
-	<channel-type id="sendCommand" advanced="true">
+	<channel-type id="speedUp" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Send Bulb Command</label>
-		<description>Send the command selected in the list.</description>
+		<label>Mode Speed Up</label>
+		<description>Send the command to speed up the disco mode</description>
+	</channel-type>
+
+	<channel-type id="slowDown" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Mode Slow Down</label>
+		<description>Send the command to slow down the disco mode</description>
+	</channel-type>
+
+	<channel-type id="setWhite" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Set White</label>
+		<description>Change the light to use white LEDs.</description>
 	</channel-type>
 
 	<channel-type id="bulbMode" advanced="true">

@@ -113,8 +113,10 @@ mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' 
 | colour | Color | Allows you to change the colour, brightness and saturation of the globe. |
 | discoMode | String | Switch to a Disco mode directly from a drop down list. |
 | bulbMode | String (read only) | Displays the mode the bulb is currently in so that rules can determine if the globe is white, a color, disco modes or night mode are selected. |
-| command | String | Choose the command from this list to send to the globe, then press the `sendCommand` button to send it as many times as you wish. |
-| sendCommand | Switch | Sends the selected command. |
+| speedUp | Switch | Send the command to speed up the disco mode. |
+| slowDown | Switch | Send the command to slow down the disco mode. |
+| setWhite | Switch | Change the light to use white LEDs. |
+| nightMode | Switch | Send the command to use night mode which uses a very dim level of light and locks out some features of the remote controls. |
 
 ## Note Regarding Transmission Delays
 

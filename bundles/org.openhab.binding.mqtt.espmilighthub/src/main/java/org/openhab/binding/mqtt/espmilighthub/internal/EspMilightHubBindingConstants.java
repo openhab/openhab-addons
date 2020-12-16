@@ -47,6 +47,8 @@ public class EspMilightHubBindingConstants {
     public static final String CHANNEL_COLOURTEMP = "colourTemperature";
     public static final String CHANNEL_DISCO_MODE = "discoMode";
     public static final String CHANNEL_BULB_MODE = "bulbMode";
-    public static final String CHANNEL_COMMAND = "command";
-    public static final String CHANNEL_SEND_COMMAND = "sendCommand";
+    public static final String CHANNEL_NIGHT_MODE = "nightMode";
+    public static final String CHANNEL_SET_WHITE = "setWhite";
+    public static final String CHANNEL_SPEED_UP = "speedUp";
+    public static final String CHANNEL_SLOW_DOWN = "slowDown";
 }
