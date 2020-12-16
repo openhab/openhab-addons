@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.webthing.internal.channel.Channels;
 import org.openhab.binding.webthing.internal.client.*;
 import org.openhab.binding.webthing.internal.link.ChannelToPropertyLink;
@@ -52,6 +53,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     };
 
     private final Logger logger = LoggerFactory.getLogger(WebThingHandler.class);
+    private final HttpClient httpClient;
     private final AtomicBoolean isActivated = new AtomicBoolean(true);
     private final Map<ChannelUID, ItemChangedListener> itemChangedListenerMap = new ConcurrentHashMap<>();
     private final AtomicReference<Optional<ConsumedThing>> webThingConnectionRef = new AtomicReference<>(
@@ -61,8 +63,9 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             Optional.empty());
     private @Nullable URI webThingURI = null;
 
-    public WebThingHandler(Thing thing) {
+    public WebThingHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     private boolean isConnected() {
@@ -119,7 +122,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             try {
                 // create the client-side WebThing representation
                 if (uri != null) {
-                    var webThing = ConsumedThingFactory.instance().create(uri, scheduler, this::onError);
+                    var webThing = ConsumedThingFactory.instance().create(httpClient, uri, scheduler, this::onError);
                     this.webThingConnectionRef.getAndSet(Optional.of(webThing)).ifPresent(ConsumedThing::close);
 
                     // update the Thing structure based on the WebThing description

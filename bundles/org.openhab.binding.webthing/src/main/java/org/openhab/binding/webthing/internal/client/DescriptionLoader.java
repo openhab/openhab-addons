@@ -14,12 +14,13 @@ package org.openhab.binding.webthing.internal.client;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
 
 import com.google.gson.Gson;
@@ -36,17 +37,10 @@ public class DescriptionLoader {
 
     /**
      * constructor
-     */
-    public DescriptionLoader() {
-        this(HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build());
-    }
-
-    /**
-     * constructor
      *
      * @param httpClient the http client to use
      */
-    DescriptionLoader(HttpClient httpClient) {
+    public DescriptionLoader(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
@@ -60,18 +54,20 @@ public class DescriptionLoader {
      */
     public WebThingDescription loadWebthingDescription(URI webthingURI, Duration timeout) throws IOException {
         try {
-            var request = HttpRequest.newBuilder().timeout(timeout).GET().uri(webthingURI).build();
-            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            var response = httpClient.newRequest(webthingURI).timeout(30, TimeUnit.SECONDS).send();
+            if (response.getStatus() < 200 || response.getStatus() >= 300) {
                 throw new IOException(
-                        "could not read resource description " + webthingURI + ". Got " + response.statusCode());
+                        "could not read resource description " + webthingURI + ". Got " + response.getStatus());
             }
-            var description = new Gson().fromJson(response.body(), WebThingDescription.class);
-            if (description.properties.size() > 0) {
+            var body = response.getContentAsString();
+            var description = new Gson().fromJson(body, WebThingDescription.class);
+            if ((description.properties != null) && (description.properties.size() > 0)) {
                 return description;
             } else {
                 throw new IOException("description does not include properties");
             }
+        } catch (ExecutionException | TimeoutException e) {
+            throw new IOException("error occurred by querying WebThing", e);
         } catch (JsonSyntaxException se) {
             throw new IOException("resource seems not to be a WebThing. Typo?");
         } catch (InterruptedException ie) {

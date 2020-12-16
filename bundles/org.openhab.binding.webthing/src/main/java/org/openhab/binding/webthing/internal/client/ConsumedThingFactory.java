@@ -18,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 
 /**
  * Factory to create new instances of the WebThing client-side proxy
@@ -28,15 +29,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface ConsumedThingFactory {
 
     /**
-     *
+     * @param httpClient the http cleint to use
      * @param webThingURI the identifier of a WebThing resource
      * @param executor executor
      * @param errorHandler the error handler
      * @return the newly created WebThing
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThing create(URI webThingURI, ScheduledExecutorService executor, Consumer<String> errorHandler)
-            throws IOException;
+    ConsumedThing create(HttpClient httpClient, URI webThingURI, ScheduledExecutorService executor,
+            Consumer<String> errorHandler) throws IOException;
 
     /**
      * @return the default instance of the factory

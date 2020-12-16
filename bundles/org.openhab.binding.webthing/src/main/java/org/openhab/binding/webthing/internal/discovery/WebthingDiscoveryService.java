@@ -29,11 +29,13 @@ import javax.jmdns.ServiceListener;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.webthing.internal.client.DescriptionLoader;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.thing.ThingTypeUID;
@@ -55,8 +57,9 @@ import org.slf4j.LoggerFactory;
 public class WebthingDiscoveryService extends AbstractDiscoveryService implements ServiceListener {
     private static final Duration FOREGROUND_SCAN_TIMEOUT = Duration.ofMillis(200);
     private final Logger logger = LoggerFactory.getLogger(WebthingDiscoveryService.class);
-    private final DescriptionLoader descriptionLoader = new DescriptionLoader();
+    private final DescriptionLoader descriptionLoader;
     private final MDNSClient mdnsClient;
+    private final HttpClient httpClient;
     private final Scheduler executor;
 
     /**
@@ -67,9 +70,11 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
      */
     @Activate
     public WebthingDiscoveryService(@Nullable Map<String, Object> configProperties, @Reference MDNSClient mdnsClient,
-            @Reference Scheduler executor) {
+            @Reference Scheduler executor, @Reference HttpClientFactory httpClientFactory) {
         super(30);
         this.mdnsClient = mdnsClient;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.descriptionLoader = new DescriptionLoader(httpClient);
         this.executor = executor;
 
         super.activate(configProperties);
@@ -221,14 +226,14 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                     // check multiple WebThing path via https (e.g. https://192.168.0.23:8433/0,
                     // https://192.168.0.23:8433/1,...)
                     outer: for (int i = 0; i < 50; i++) { // search 50 entries at maximum
-                        optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + i, true));
+                        optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + i + "/", true));
                         if (optionalDiscoveryResult.isPresent()) {
                             discoveryResults.add(optionalDiscoveryResult.get());
                         } else if (i == 0) {
                             // check multiple WebThing path via plain http (e.g. http://192.168.0.23:8433/0,
                             // http://192.168.0.23:8433/1,...)
                             for (int j = 0; j < 50; j++) { // search 50 entries at maximum
-                                optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + j, false));
+                                optionalDiscoveryResult = discoverWebThing(toURI(host, port, path + j + "/", false));
                                 if (optionalDiscoveryResult.isPresent()) {
                                     discoveryResults.add(optionalDiscoveryResult.get());
                                 } else {

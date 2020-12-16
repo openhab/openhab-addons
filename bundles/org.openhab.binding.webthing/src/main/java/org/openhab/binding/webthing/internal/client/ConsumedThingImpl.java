@@ -14,18 +14,20 @@ package org.openhab.binding.webthing.internal.client;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
 import org.slf4j.Logger;
@@ -44,55 +46,54 @@ public class ConsumedThingImpl implements ConsumedThing {
     private static final Duration DEFAULT_PING_PERIOD = Duration.ofSeconds(80);
     private final Logger logger = LoggerFactory.getLogger(ConsumedThingImpl.class);
     private final URI webThingURI;
+    private final HttpClient httpClient;
     private final Consumer<String> errorHandler;
     private final WebThingDescription description;
-    private final HttpClient httpClient;
     private final WebSocketConnection websocketDownstream;
     private final AtomicBoolean isOpen = new AtomicBoolean(true);
 
     /**
      * constructor
      *
+     * @param httpClient the http client to use
      * @param webThingURI the identifier of a WebThing resource
      * @param executor executor to use
      * @param errorHandler the error handler
      * @throws IOException it the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webThingURI, ScheduledExecutorService executor, Consumer<String> errorHandler)
-            throws IOException {
-        this(webThingURI, executor, errorHandler,
-                HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build(),
-                WebSocketConnectionFactory.instance());
+    ConsumedThingImpl(HttpClient httpClient, URI webThingURI, ScheduledExecutorService executor,
+            Consumer<String> errorHandler) throws IOException {
+        this(httpClient, webThingURI, executor, errorHandler, WebSocketConnectionFactory.instance());
     }
 
     /**
      * constructor
      *
+     * @param httpClient the http client to use
      * @param webthingUrl the identifier of a WebThing resource
      * @param executor executor to use
      * @param errorHandler the error handler
-     * @param httpClient the http client to use
      * @param webSocketConnectionFactory the Websocket connectino fctory to be used
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webthingUrl, ScheduledExecutorService executor, Consumer<String> errorHandler,
-            HttpClient httpClient, WebSocketConnectionFactory webSocketConnectionFactory) throws IOException {
-        this(webthingUrl, executor, errorHandler, httpClient, webSocketConnectionFactory, DEFAULT_PING_PERIOD);
+    ConsumedThingImpl(HttpClient httpClient, URI webthingUrl, ScheduledExecutorService executor,
+            Consumer<String> errorHandler, WebSocketConnectionFactory webSocketConnectionFactory) throws IOException {
+        this(httpClient, webthingUrl, executor, errorHandler, webSocketConnectionFactory, DEFAULT_PING_PERIOD);
     }
 
     /**
      * constructor
      *
+     * @param httpClient the http client to use
      * @param webthingUrl the identifier of a WebThing resource
      * @param executor executor to use
      * @param errorHandler the error handler
-     * @param httpClient the http client to use
      * @param webSocketConnectionFactory the Websocket connectino fctory to be used
      * @param pingPeriod the ping period tothe the healthiness of the connection
      * @throws IOException if the WebThing can not be connected
      */
-    ConsumedThingImpl(URI webthingUrl, ScheduledExecutorService executor, Consumer<String> errorHandler,
-            HttpClient httpClient, WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod)
+    ConsumedThingImpl(HttpClient httpClient, URI webthingUrl, ScheduledExecutorService executor,
+            Consumer<String> errorHandler, WebSocketConnectionFactory webSocketConnectionFactory, Duration pingPeriod)
             throws IOException {
         this.webThingURI = webthingUrl;
         this.httpClient = httpClient;
@@ -171,22 +172,21 @@ public class ConsumedThingImpl implements ConsumedThing {
     public Object readProperty(String propertyName) throws PropertyAccessException {
         var propertyUri = getPropertyUri(propertyName);
         try {
-            var request = HttpRequest.newBuilder().timeout(Duration.ofSeconds(30)).GET().uri(propertyUri).build();
-            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            var response = httpClient.newRequest(propertyUri).timeout(30, TimeUnit.SECONDS).send();
+            if (response.getStatus() < 200 || response.getStatus() >= 300) {
                 onError("WebThing " + webThingURI + " disconnected");
-                throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri
-                        + "). Got error response " + response.body());
+                throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri + ")");
             }
-            var properties = new Gson().fromJson(response.body(), Map.class);
+            var body = response.getContentAsString();
+            var properties = new Gson().fromJson(body, Map.class);
             var value = properties.get(propertyName);
             if (value != null) {
                 return value;
             } else {
                 throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri
-                        + "). Response does not include " + propertyName + "(" + propertyUri + "): " + response.body());
+                        + "). Response does not include " + propertyName + "(" + propertyUri + "): " + body);
             }
-        } catch (InterruptedException | IOException e) {
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
             onError("WebThing resource " + webThingURI + " disconnected");
             throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri + ").", e);
         }
@@ -204,15 +204,14 @@ public class ConsumedThingImpl implements ConsumedThing {
                 logger.debug("updating {} with {}", propertyName, newValue);
                 Map<String, Object> payload = Map.of(propertyName, newValue);
                 var json = new Gson().toJson(payload);
-                var request = HttpRequest.newBuilder().timeout(Duration.ofSeconds(30))
-                        .PUT(HttpRequest.BodyPublishers.ofString(json)).uri(propertyUri).build();
-                var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                    throw new PropertyAccessException("could not write " + propertyName + " (" + propertyUri + ") with "
-                            + newValue + ". Got error response " + response.body());
+                var response = httpClient.newRequest(propertyUri).method("PUT").content(new StringContentProvider(json))
+                        .timeout(30, TimeUnit.SECONDS).send();
+                if (response.getStatus() < 200 || response.getStatus() >= 300) {
+                    throw new PropertyAccessException(
+                            "could not write " + propertyName + " (" + propertyUri + ") with " + newValue);
                 }
             }
-        } catch (InterruptedException | IOException e) {
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
             onError("WebThing resource " + webThingURI + " disconnected");
             throw new PropertyAccessException(
                     "could not write " + propertyName + " (" + propertyUri + ") with " + newValue, e);
