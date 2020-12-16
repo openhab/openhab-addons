@@ -15,7 +15,10 @@ package org.openhab.binding.broadlinkthermostat.internal.handler;
 import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatBindingConstants.*;
 
 import java.io.IOException;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
+
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,6 +58,14 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
      */
     public FloureonThermostatHandler(Thing thing) {
         super(thing);
+    }
+
+    /**
+     * Initializes a new instance of a {@link FloureonThermostatHandler}.
+     */
+    @Override
+    public void initialize() {
+        super.initialize();
         try {
             blDevice = new FloureonDevice(host, new Mac(mac));
             this.floureonDevice = (FloureonDevice) blDevice;
@@ -62,6 +73,7 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
             logger.error("Could not find broadlinkthermostat device at Host {} with MAC {} ", host, mac, e);
             updateStatus(ThingStatus.OFFLINE);
         }
+        authenticate();
     }
 
     @Override
@@ -126,10 +138,14 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleSetpointCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof QuantityType) {
             try {
-                floureonDevice.setThermostatTemp(((QuantityType) command).toUnit(SIUnits.CELSIUS).doubleValue());
+                QuantityType<Temperature> temperatureQuantityType = ((QuantityType) command).toUnit(SIUnits.CELSIUS);
+                if (temperatureQuantityType != null) {
+                    floureonDevice.setThermostatTemp(temperatureQuantityType.doubleValue());
+                } else {
+                    logger.warn("Could not convert {} to °C", command);
+                }
             } catch (Exception e) {
                 logger.error("Error while setting setpoint of {} to {}", thing.getUID(), command, e);
             }
@@ -187,6 +203,9 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
 
     @Override
     protected void refreshData() {
+        if (ThingStatus.ONLINE != thing.getStatus()) {
+            return;
+        }
         try {
             AdvancedStatusInfo advancedStatusInfo = floureonDevice.getAdvancedStatus();
             if (advancedStatusInfo == null) {
@@ -215,21 +234,16 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
             updateState(TEMPERATURE_OFFSET, new DecimalType(advancedStatusInfo.getDif()));
             updateState(ACTIVE, OnOffType.from(advancedStatusInfo.getActive()));
             updateState(REMOTE_LOCK, OnOffType.from(advancedStatusInfo.getRemoteLock()));
-            String timestamp = getTimestamp(advancedStatusInfo);
-            logger.debug("Composed timestamp: {}", timestamp);
-            updateState(TIME, DateTimeType.valueOf(timestamp));
+            updateState(TIME, new DateTimeType(getTimestamp(advancedStatusInfo)));
         } catch (Exception e) {
             logger.error("Error while retrieving data for {}", thing.getUID(), e);
         }
     }
 
-    private String getTimestamp(AdvancedStatusInfo advancedStatusInfo) {
+    private ZonedDateTime getTimestamp(AdvancedStatusInfo advancedStatusInfo) {
         ZonedDateTime now = ZonedDateTime.now();
-        // TODO: Replace with DateTimeFormatter
-        return (String.valueOf(now.getYear()) + "-" + String.format("%02d", now.getMonthValue()) + "-"
-                + String.format("%02d", now.getDayOfMonth()) + "T" + String.format("%02d", advancedStatusInfo.getHour())
-                + ":" + String.format("%02d", advancedStatusInfo.getMin()) + ":"
-                + String.format("%02d", advancedStatusInfo.getSec()));
+        return now.with(
+                LocalTime.of(advancedStatusInfo.getHour(), advancedStatusInfo.getMin(), advancedStatusInfo.getSec()));
     }
 
     private static byte tob(int in) {

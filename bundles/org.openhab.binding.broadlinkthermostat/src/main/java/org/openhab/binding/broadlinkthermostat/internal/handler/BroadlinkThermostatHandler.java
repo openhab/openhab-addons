@@ -41,25 +41,27 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkThermostatHandler.class);
 
-    protected @Nullable BLDevice blDevice;
-    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("thingHandler");
-    protected @Nullable ScheduledFuture<?> scanJob;
+    @Nullable
+    BLDevice blDevice;
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("thingHandler");
+    private @Nullable ScheduledFuture<?> scanJob;
     protected @Nullable String host;
-    protected @Nullable String mac;
-    protected String deviceDescription;
+    @Nullable
+    String mac;
+    private String deviceDescription;
 
     /**
      * Creates a new instance of this class for the {@link Thing}.
      *
      * @param thing the thing that should be handled, not null
      */
-    public BroadlinkThermostatHandler(Thing thing) {
+    BroadlinkThermostatHandler(Thing thing) {
         super(thing);
         String deviceDescription = thing.getProperties().get(BroadlinkThermostatBindingConstants.DESCRIPTION);
         this.deviceDescription = deviceDescription == null ? "" : deviceDescription;
     }
 
-    protected void authenticate() {
+    void authenticate() {
         logger.debug("Authenticating with broadlinkthermostat device {}...", thing.getLabel());
         try {
             if (blDevice.auth()) {
@@ -74,7 +76,6 @@ public abstract class BroadlinkThermostatHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        authenticate();
         host = getConfigAs(BroadlinkThermostatConfig.class).getHost();
         mac = getConfigAs(BroadlinkThermostatConfig.class).getMac();
 

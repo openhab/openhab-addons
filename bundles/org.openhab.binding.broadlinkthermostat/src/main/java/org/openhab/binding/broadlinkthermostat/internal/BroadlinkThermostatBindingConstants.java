@@ -24,12 +24,12 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class BroadlinkThermostatBindingConstants {
 
-    public static final String BINDING_ID = "broadlinkthermostat";
+    private static final String BINDING_ID = "broadlinkthermostat";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID FLOUREON_THERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID,
             "floureonthermostat");
-    public static final ThingTypeUID HYSEN_THERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID, "hysenthermostat");;
+    public static final ThingTypeUID HYSEN_THERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID, "hysenthermostat");
     public static final ThingTypeUID UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE = new ThingTypeUID(BINDING_ID,
             "unknownbroadlinkthermostatdevice");
 

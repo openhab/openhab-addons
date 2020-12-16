@@ -17,9 +17,10 @@ import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermost
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,8 +54,8 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
 
     private final NetworkAddressService networkAddressService;
 
-    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(FLOUREON_THERMOSTAT_THING_TYPE, UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(FLOUREON_THERMOSTAT_THING_TYPE,
+            UNKNOWN_BROADLINKTHERMOSTAT_THING_TYPE);
     private static final int DISCOVERY_TIMEOUT = 30;
 
     @Activate
@@ -65,7 +66,6 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
 
     @Override
     protected void startScan() {
-
         BLDevice[] blDevices = new BLDevice[0];
         try {
             InetAddress sourceAddress = getIpAddress();
@@ -145,7 +145,6 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
      * @return local ip or <code>empty</code> if configured primary IP is not set or could not be parsed.
      */
     private Optional<InetAddress> getIpFromNetworkAddressService() {
-
         String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
             logger.warn("No network interface could be found.");
@@ -160,7 +159,7 @@ public class BroadlinkThermostatDiscoveryService extends AbstractDiscoveryServic
     }
 
     private String getHostnameWithoutDomain(String hostname) {
-        String broadlinkthermostatRegex = "Broadlink-OEM(-[A-Z,a-z,0-9]{2}){4}.*";
+        String broadlinkthermostatRegex = "Broadlink-OEM(-[A-Za-z0-9]{2}){4}.*";
         if (hostname.matches(broadlinkthermostatRegex)) {
             String[] dotSeparatedString = hostname.split("\\.");
             logger.debug("Found original broadlink DNS name {}, removing domain", hostname);
