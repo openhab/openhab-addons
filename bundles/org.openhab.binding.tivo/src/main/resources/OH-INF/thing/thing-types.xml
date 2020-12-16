@@ -6,16 +6,10 @@
 
 	<thing-type id="sckt">
 		<label>TiVo DVR</label>
-		<description>Monitor
-			and control your TiVo via DIRECT SOCKET commands leveraging the TIVO protocol 1.1 specification.
-			The TiVo TCP Control Protocol is an ASCII-based command protocol for remote control of a TiVo DVR
-			over a TCP local
-			network connection. The commands allow control of channel changes,
-			user interface navigation and allow the client to
-			send simulated remote control button presses to the Digital Video
-			Recorder.
-		</description>
-
+		<description>Monitor and control your TiVo via DIRECT SOCKET commands leveraging the TIVO protocol 1.1 specification.
+			The TiVo TCP Control Protocol is an ASCII-based command protocol for remote control of a TiVo DVR over a TCP local
+			network connection. The commands allow control of channel changes, user interface navigation and allow the client to
+			send simulated remote control button presses to the Digital Video Recorder.</description>
 		<channels>
 			<channel id="channelSet" typeId="channelSet"/>
 			<channel id="channelForce" typeId="channelForce"/>
@@ -27,60 +21,52 @@
 		</channels>
 
 		<config-description>
-			<parameter name="address" type="text" required="true">
-				<default></default>
-				<required>true</required>
+			<parameter name="host" type="text" required="true">
 				<label>Address</label>
 				<description>The IP address or host name of your TiVo DVR</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="tcpPort" type="integer" max="65535" min="1">
+			<parameter name="tcpPort" type="integer" max="65535" min="1" required="true">
 				<default>31339</default>
-				<required>true</required>
 				<label>TCP Port</label>
 				<description>The
-					TCP port number used to connect to the TiVo.<![CDATA[ <b> ]]>Default:
+					TCP port number used to connect to the TiVo. <![CDATA[ <b> ]]>Default:
 					31339<![CDATA[ </b> ]]></description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="numRetry" type="integer" max="20" min="0">
+			<parameter name="numRetry" type="integer" max="20" min="0" required="true">
 				<default>5</default>
-				<required>true</required>
 				<label>Connection Retries</label>
 				<description>The
 					number of times to attempt reconnection to the TiVo box, if there is a connection failure.<![CDATA[ <b> ]]>Default:
 					5<![CDATA[ </b> ]]></description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="keepConActive" type="boolean">
+			<parameter name="keepConActive" type="boolean" required="true">
 				<default>true</default>
-				<required>true</required>
 				<label>Keep Connection Open</label>
 				<description>Keep
 					connection to the TiVo open. Recommended for monitoring the TiVo for changes in TV channels. Disable if other
 					applications that use the Remote Control Protocol port will also be used e.g. mobile remote control applications.<![CDATA[ <b> ]]>Default:
 					True (Enabled)<![CDATA[ </b> ]]></description>
 			</parameter>
-			<parameter name="pollForChanges" type="boolean">
+			<parameter name="pollForChanges" type="boolean" required="true">
 				<default>true</default>
-				<required>true</required>
 				<label>Poll for Channel Changes</label>
 				<description>Check
 					TiVo for channel changes. Enable if openHAB and a physical remote control (or other services use the Remote Control
 					Protocol) will be used. <![CDATA[ <b> ]]>Default:
 					True (Enabled)<![CDATA[ </b> ]]></description>
 			</parameter>
-			<parameter name="pollInterval" type="integer" max="65535" min="3">
+			<parameter name="pollInterval" type="integer" max="65535" min="3" required="true">
 				<default>10</default>
-				<required>true</required>
 				<label>Polling Interval (Seconds)</label>
 				<description>Number
 					of seconds between polling jobs to update status information from the TiVo. <![CDATA[ <b> ]]>Default:
 					10<![CDATA[ </b> ]]></description>
 			</parameter>
-			<parameter name="cmdWaitInterval" type="integer" max="500" min="0">
+			<parameter name="cmdWaitInterval" type="integer" max="500" min="0" required="true">
 				<default>200</default>
-				<required>true</required>
 				<label>Command Wait Interval (Milliseconds)</label>
 				<description>Period
 					to wait AFTER a command is sent to the TiVo in milliseconds, before checking that the command has completed. <![CDATA[ <b> ]]>Default:
@@ -95,18 +81,16 @@
 		<label>Current Channel - Forced (FORCECH)</label>
 		<description>Displays the current channel number. When changed, tunes the DVR to the specified channel, cancelling any
 			recordings in progress if necessary i.e. all tuners are already in use / recording. The TiVo must be in Live TV mode
-			for this command to work. Type: Number (1-9999) [Decimals allowed for OTA sub-channels], DisplayFormat: %n</description>
-		<category>ChannelChange</category>
-		<state min="1" max="9999" step="0.1" pattern="%n"></state>
+			for this command to work. Type: Number (1-9999) [Decimals allowed for OTA sub-channels], DisplayFormat: %d</description>
+		<state min="1" max="9999" step="0.1" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="channelSet">
 		<item-type>Number</item-type>
 		<label>Current Channel - Request (SETCH)</label>
 		<description>Displays the current channel number. When changed, tunes the DVR to the specified channel (unless a
 			recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work. Type:
-			Number (1-9999) [Decimals allowed for OTA sub-channels], DisplayFormat: %n</description>
-		<category>ChannelChange</category>
-		<state min="1" max="9999" step="0.1" pattern="%n"/>
+			Number (1-9999) [Decimals allowed for OTA sub-channels], DisplayFormat: %d</description>
+		<state min="1" max="9999" step="0.1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="isRecording">
 		<item-type>Switch</item-type>

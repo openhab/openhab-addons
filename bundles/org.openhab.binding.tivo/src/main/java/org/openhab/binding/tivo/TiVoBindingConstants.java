@@ -43,11 +43,6 @@ public class TiVoBindingConstants {
     public static final String CHANNEL_TIVO_STATUS = "dvrStatus";
 
     // List of all configuration Properties
-    public static final String CONFIG_ADDRESS = "address";
+    public static final String CONFIG_HOST = "host";
     public static final String CONFIG_PORT = "tcpPort";
-    public static final String CONFIG_CONNECTION_RETRY = "numRetry";
-    public static final String CONFIG_KEEP_CONNECTION_OPEN = "keepConActive";
-    public static final String CONFIG_POLL_FOR_CHANGES = "pollForChanges";
-    public static final String CONFIG_POLL_INTERVAL = "pollInterval";
-    public static final String CONFIG_CMD_WAIT_INTERVAL = "cmdWaitInterval";
 }

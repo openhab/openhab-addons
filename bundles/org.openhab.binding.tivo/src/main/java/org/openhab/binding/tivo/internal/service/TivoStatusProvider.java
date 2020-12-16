@@ -244,9 +244,9 @@ public class TivoStatusProvider {
      * @return true = connected, false = not connected
      */
     public boolean connTivoConnect() {
-        for (int iL = 1; iL <= tivoConfigData.getCfgNumConnRetry(); iL++) {
+        for (int iL = 1; iL <= tivoConfigData.getNumRetry(); iL++) {
             logger.debug(" connTivoConnect '{}' - starting connection process '{}' of '{}'.",
-                    tivoConfigData.getCfgIdentifier(), iL, tivoConfigData.getCfgNumConnRetry());
+                    tivoConfigData.getCfgIdentifier(), iL, tivoConfigData.getNumRetry());
 
             // Sort out the socket connection
             if (connSocketConnect()) {
@@ -280,7 +280,7 @@ public class TivoStatusProvider {
         if (forceDisconnect) {
             connSocketDisconnect();
         } else {
-            if (!tivoConfigData.isCfgKeepConnOpen()) {
+            if (!tivoConfigData.isKeepConnActive()) {
                 doNappTime();
                 connSocketDisconnect();
             }
@@ -312,7 +312,7 @@ public class TivoStatusProvider {
                 tivoConfigData.getCfgIdentifier());
 
         // if isCfgKeepConnOpen = false, don't set status to OFFLINE since the socket is closed after each command
-        if (tivoHandler != null && tivoConfigData.isCfgKeepConnOpen()) {
+        if (tivoHandler != null && tivoConfigData.isKeepConnActive()) {
             tivoHandler.setStatusOffline();
         }
 
@@ -348,11 +348,11 @@ public class TivoStatusProvider {
      */
     private synchronized boolean connSocketConnect() {
         logger.debug(" connSocketConnect '{}' - attempting connection to host '{}', port '{}'",
-                tivoConfigData.getCfgIdentifier(), tivoConfigData.getCfgHost(), tivoConfigData.getCfgTcpPort());
+                tivoConfigData.getCfgIdentifier(), tivoConfigData.getHost(), tivoConfigData.getTcpPort());
 
         if (connIsConnected()) {
             logger.debug(" connSocketConnect '{}' - already connected to host '{}', port '{}'",
-                    tivoConfigData.getCfgIdentifier(), tivoConfigData.getCfgHost(), tivoConfigData.getCfgTcpPort());
+                    tivoConfigData.getCfgIdentifier(), tivoConfigData.getHost(), tivoConfigData.getTcpPort());
             return true;
         } else {
             // something is wrong, so force a disconnect/clean up so we can try again
@@ -360,7 +360,7 @@ public class TivoStatusProvider {
         }
 
         try {
-            Socket tivoSocket = new Socket(tivoConfigData.getCfgHost(), tivoConfigData.getCfgTcpPort());
+            Socket tivoSocket = new Socket(tivoConfigData.getHost(), tivoConfigData.getTcpPort());
             tivoSocket.setKeepAlive(true);
             tivoSocket.setSoTimeout(CONFIG_SOCKET_TIMEOUT_MS);
             tivoSocket.setReuseAddress(true);
@@ -377,7 +377,7 @@ public class TivoStatusProvider {
                 this.tivoSocket = tivoSocket;
             } else {
                 logger.debug(" connSocketConnect '{}' - socket creation failed to host '{}', port '{}'",
-                        tivoConfigData.getCfgIdentifier(), tivoConfigData.getCfgHost(), tivoConfigData.getCfgTcpPort());
+                        tivoConfigData.getCfgIdentifier(), tivoConfigData.getHost(), tivoConfigData.getTcpPort());
                 return false;
             }
 
@@ -396,14 +396,14 @@ public class TivoStatusProvider {
     }
 
     /**
-     * {@link doNappTime} sleeps for the period specified by the getCfgCmdWait parameter. Primarily used to allow the
-     * TiVo time to process responses after a command is issued.
+     * {@link doNappTime} sleeps for the period specified by the getCmdWaitInterval parameter. Primarily used to allow
+     * the TiVo time to process responses after a command is issued.
      */
     public void doNappTime() {
         try {
             logger.debug(" doNappTime '{}' - I feel like napping for '{}' milliseconds",
-                    tivoConfigData.getCfgIdentifier(), tivoConfigData.getCfgCmdWait());
-            TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCfgCmdWait());
+                    tivoConfigData.getCfgIdentifier(), tivoConfigData.getCmdWaitInterval());
+            TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval());
         } catch (Exception e) {
         }
     }
@@ -434,8 +434,8 @@ public class TivoStatusProvider {
          * @throws IOException
          */
         public StreamReader(InputStream inputStream) {
-            this.setName("OH-binding-" + tivoConfigData.getCfgIdentifier() + "-" + tivoConfigData.getCfgHost() + "."
-                    + tivoConfigData.getCfgTcpPort());
+            this.setName("OH-binding-" + tivoConfigData.getCfgIdentifier() + "-" + tivoConfigData.getHost() + "."
+                    + tivoConfigData.getTcpPort());
             this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             this.stopLatch = new CountDownLatch(1);
             this.setDaemon(true);

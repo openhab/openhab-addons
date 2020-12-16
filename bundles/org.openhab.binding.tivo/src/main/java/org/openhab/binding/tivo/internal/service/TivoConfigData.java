@@ -26,13 +26,13 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class TivoConfigData {
-    private @Nullable String cfgHost = null;
-    private int cfgTcpPort = 31339;
-    private int cfgNumConnRetry = 0;
-    private int cfgPollInterval = 30;
-    private boolean cfgPollChanges = false;
-    private boolean cfgKeepConnOpen = false;
-    private int cfgCmdWait = 0;
+    private @Nullable String host = null;
+    private int tcpPort = 31339;
+    private int numRetry = 0;
+    private int pollInterval = 30;
+    private boolean pollForChanges = false;
+    private boolean keepConActive = false;
+    private int cmdWaitInterval = 0;
     private String cfgIdentifier = "";
 
     /**
@@ -43,10 +43,9 @@ public class TivoConfigData {
      */
     @Override
     public String toString() {
-        return "TivoConfigData [cfgHost=" + cfgHost + ", cfgTcpPort=" + cfgTcpPort + ", cfgNumConnRetry="
-                + cfgNumConnRetry + ", cfgPollInterval=" + cfgPollInterval + ", cfgPollChanges=" + cfgPollChanges
-                + ", cfgKeepConnOpen=" + cfgKeepConnOpen + ", cfgCmdWait=" + cfgCmdWait + ", cfgIdentifier="
-                + cfgIdentifier + "]";
+        return "TivoConfigData [host=" + host + ", tcpPort=" + tcpPort + ", numRetry=" + numRetry + ", pollInterval="
+                + pollInterval + ", pollForChanges=" + pollForChanges + ", keepConActive=" + keepConActive
+                + ", cmdWaitInterval=" + cmdWaitInterval + ", cfgIdentifier=" + cfgIdentifier + "]";
     }
 
     /**
@@ -68,136 +67,136 @@ public class TivoConfigData {
     }
 
     /**
-     * Gets the cfgHost representing the host name or IP address of the device.
+     * Gets the host representing the host name or IP address of the device.
      *
-     * @return the cfgHost
+     * @return the host
      */
-    public @Nullable String getCfgHost() {
-        return cfgHost;
+    public @Nullable String getHost() {
+        return host;
     }
 
     /**
-     * the cfgHost representing the host name or IP address of the device.
+     * the host representing the host name or IP address of the device.
      *
-     * @param cfgHost the cfgHost to set
+     * @param host the host to set
      */
-    public void setCfgHost(String cfgHost) {
-        this.cfgHost = cfgHost;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     /**
      * Gets the cfgTcp representing the IP port of the Remote Control Protocol service on the device.
      *
-     * @return the cfgTcpPort
+     * @return the tcpPort
      */
-    public int getCfgTcpPort() {
-        return cfgTcpPort;
+    public int getTcpPort() {
+        return tcpPort;
     }
 
     /**
      * Sets the cfgTcp representing the IP port of the Remote Control Protocol service on the device (31339).
      *
-     * @param cfgTcpPort the cfgTcpPort to set
+     * @param tcpPort the tcpPort to set
      */
-    public void setCfgTcpPort(int cfgTcpPort) {
-        this.cfgTcpPort = cfgTcpPort;
+    public void setTcpPort(int tcpPort) {
+        this.tcpPort = tcpPort;
     }
 
     /**
-     * Gets the cfgNumConnRetry value. This determines the number of connection attempts made to the IP/Port of the
+     * Gets the numRetry value. This determines the number of connection attempts made to the IP/Port of the
      * service and the number of read attempts that are made when a command is submitted to the device, separated by
      * the
      * interval specified in the Command Wait Interval.
      *
-     * @return the cfgNumConnRetry
+     * @return the numRetry
      */
-    public int getCfgNumConnRetry() {
-        return cfgNumConnRetry;
+    public int getNumRetry() {
+        return numRetry;
     }
 
     /**
-     * Sets the cfgNumConnRetry value. This determines the number of connection attempts made to the IP/Port of the
+     * Sets the numRetry value. This determines the number of connection attempts made to the IP/Port of the
      * service and the number of read attempts that are made when a command is submitted to the device, separated by
      * the
      * interval specified in the Command Wait Interval.
      *
-     * @param cfgNumConnRetry the cfgNumConnRetry to set
+     * @param numRetry the numRetry to set
      */
-    public void setCfgNumConnRetry(int cfgNumConnRetry) {
-        this.cfgNumConnRetry = cfgNumConnRetry;
+    public void setNumRetry(int numRetry) {
+        this.numRetry = numRetry;
     }
 
     /**
-     * Gets the cfgPollInterval representing the interval in seconds between polling attempts to collect any updated
+     * Gets the pollInterval representing the interval in seconds between polling attempts to collect any updated
      * status information.
      *
-     * @return the cfgPollInterval
+     * @return the pollInterval
      */
-    public int getCfgPollInterval() {
-        return cfgPollInterval;
+    public int getPollInterval() {
+        return pollInterval;
     }
 
     /**
-     * Sets the cfgPollInterval representing the interval in seconds between polling attempts to collect any updated
+     * Sets the pollInterval representing the interval in seconds between polling attempts to collect any updated
      * status information.
      *
-     * @param cfgPollInterval the cfgPollInterval to set
+     * @param pollInterval the pollInterval to set
      */
-    public void setCfgPollInterval(int cfgPollInterval) {
-        this.cfgPollInterval = cfgPollInterval;
+    public void setPollInterval(int pollInterval) {
+        this.pollInterval = pollInterval;
     }
 
     /**
      * Checks if is cfg poll changes.
      *
-     * @return the cfgPollChanges
+     * @return the pollForChanges
      */
     public boolean doPollChanges() {
-        return cfgPollChanges;
+        return pollForChanges;
     }
 
     /**
      * Sets the cfg poll changes.
      *
-     * @param cfgPollChanges the cfgPollChanges to set
+     * @param pollForChanges the pollForChanges to set
      */
-    public void setCfgPollChanges(boolean cfgPollChanges) {
-        this.cfgPollChanges = cfgPollChanges;
+    public void setPollForChanges(boolean pollForChanges) {
+        this.pollForChanges = pollForChanges;
     }
 
     /**
      * Checks if is cfg keep conn open.
      *
-     * @return the cfgKeepConnOpen
+     * @return the keepConActive
      */
-    public boolean isCfgKeepConnOpen() {
-        return cfgKeepConnOpen;
+    public boolean isKeepConnActive() {
+        return keepConActive;
     }
 
     /**
      * Sets the cfg keep conn open.
      *
-     * @param cfgKeepConnOpen the cfgKeepConnOpen to set
+     * @param keepConActive the keepConActive to set
      */
-    public void setCfgKeepConnOpen(boolean cfgKeepConnOpen) {
-        this.cfgKeepConnOpen = cfgKeepConnOpen;
+    public void setKeepConnActive(boolean keepConActive) {
+        this.keepConActive = keepConActive;
     }
 
     /**
      * Gets the cfg cmd wait.
      *
-     * @return the cfgCmdWait
+     * @return the cmdWaitInterval
      */
-    public int getCfgCmdWait() {
-        return cfgCmdWait;
+    public int getCmdWaitInterval() {
+        return cmdWaitInterval;
     }
 
     /**
      * Sets the cfg cmd wait.
      *
-     * @param cfgCmdWait the cfgCmdWait to set
+     * @param cmdWaitInterval the cmdWaitInterval to set
      */
-    public void setCfgCmdWait(int cfgCmdWait) {
-        this.cfgCmdWait = cfgCmdWait;
+    public void setCmdWaitInterval(int cmdWaitInterval) {
+        this.cmdWaitInterval = cmdWaitInterval;
     }
 }

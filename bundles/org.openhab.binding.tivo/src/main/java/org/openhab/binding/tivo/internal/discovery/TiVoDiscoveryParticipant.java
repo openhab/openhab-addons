@@ -52,13 +52,11 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public String getServiceType() {
-        logger.debug("TiVo Discover getServiceType");
         return "_tivo-remote._tcp.local.";
     }
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
-        logger.debug("TiVo Discover createResult");
         DiscoveryResult result = null;
 
         ThingUID uid = getThingUID(service);
@@ -73,12 +71,12 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             String label = service.getName();
             int port = service.getPort();
 
-            properties.put(TiVoBindingConstants.CONFIG_ADDRESS, inetAddress);
+            properties.put(TiVoBindingConstants.CONFIG_HOST, inetAddress);
             properties.put(TiVoBindingConstants.CONFIG_PORT, port);
 
             result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("Tivo: " + label).build();
             logger.debug("Created {} for TiVo host '{}' name '{}'", result,
-                    properties.get(TiVoBindingConstants.CONFIG_ADDRESS), label);
+                    properties.get(TiVoBindingConstants.CONFIG_HOST), label);
         }
         return result;
     }
@@ -88,8 +86,6 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
      */
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        logger.debug("TiVo Discover getThingUID");
-        logger.trace("ServiceInfo: {}", service);
         if (service.getType() != null) {
             if (service.getType().equals(getServiceType())) {
                 String uidName = getUIDName(service);

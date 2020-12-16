@@ -25,7 +25,6 @@ import org.openhab.binding.tivo.internal.service.TivoConfigData;
 import org.openhab.binding.tivo.internal.service.TivoStatusData;
 import org.openhab.binding.tivo.internal.service.TivoStatusData.ConnectionStatus;
 import org.openhab.binding.tivo.internal.service.TivoStatusProvider;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -172,43 +171,7 @@ public class TiVoHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing a TiVo '{}' with config options", getThing().getUID());
 
-        Configuration conf = this.getConfig();
-
-        Object value;
-        value = conf.get(CONFIG_ADDRESS);
-        if (value != null) {
-            tivoConfigData.setCfgHost(String.valueOf(value));
-        }
-
-        value = conf.get(CONFIG_PORT);
-        if (value != null) {
-            tivoConfigData.setCfgTcpPort(convertValueToInt(value));
-        }
-
-        value = conf.get(CONFIG_CONNECTION_RETRY);
-        if (value != null) {
-            tivoConfigData.setCfgNumConnRetry(convertValueToInt(value));
-        }
-
-        value = conf.get(CONFIG_POLL_INTERVAL);
-        if (value != null) {
-            tivoConfigData.setCfgPollInterval(convertValueToInt(value));
-        }
-
-        value = conf.get(CONFIG_POLL_FOR_CHANGES);
-        if (value != null) {
-            tivoConfigData.setCfgPollChanges(convertValueToBoolean(value));
-        }
-
-        value = conf.get(CONFIG_KEEP_CONNECTION_OPEN);
-        if (value != null) {
-            tivoConfigData.setCfgKeepConnOpen(convertValueToBoolean(value));
-        }
-
-        value = conf.get(CONFIG_CMD_WAIT_INTERVAL);
-        if (value != null) {
-            tivoConfigData.setCfgCmdWait(convertValueToInt(value));
-        }
+        tivoConfigData = getConfigAs(TivoConfigData.class);
 
         tivoConfigData.setCfgIdentifier(String.valueOf(getThing().getUID()));
         logger.debug("TivoConfigData Obj: '{}'", tivoConfigData);
@@ -227,7 +190,6 @@ public class TiVoHandler extends BaseThingHandler {
 
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
-            logger.debug("'{}' - Polling cancelled by dispose()", getThing().getUID());
             refreshJob.cancel(false);
             this.refreshJob = null;
         }
@@ -246,13 +208,12 @@ public class TiVoHandler extends BaseThingHandler {
             @Override
             public void run() {
                 logger.debug("startPollStatus '{}' @ rate of '{}' seconds", getThing().getUID(),
-                        tivoConfigData.getCfgPollInterval());
-                if (tivoConnection.isPresent())
-                    tivoConnection.get().statusRefresh();
+                        tivoConfigData.getPollInterval());
+                tivoConnection.ifPresent(TivoStatusProvider::statusRefresh);
             }
         };
 
-        if (tivoConfigData.isCfgKeepConnOpen()) {
+        if (tivoConfigData.isKeepConnActive()) {
             // Run once
             refreshJob = scheduler.schedule(runnable, INIT_POLLING_DELAY_S, TimeUnit.SECONDS);
             logger.debug("Status collection '{}' will start in '{}' seconds.", getThing().getUID(),
@@ -260,7 +221,7 @@ public class TiVoHandler extends BaseThingHandler {
         } else if (tivoConfigData.doPollChanges()) {
             // Run at intervals
             refreshJob = scheduler.scheduleWithFixedDelay(runnable, INIT_POLLING_DELAY_S,
-                    tivoConfigData.getCfgPollInterval(), TimeUnit.SECONDS);
+                    tivoConfigData.getPollInterval(), TimeUnit.SECONDS);
             logger.debug("Status polling '{}' will start in '{}' seconds.", getThing().getUID(), INIT_POLLING_DELAY_S);
         } else {
             // Just update the status now
@@ -297,7 +258,7 @@ public class TiVoHandler extends BaseThingHandler {
             // Attempt to execute the command on the tivo
             tivoConnection.get().cmdTivoSend(tmpCommand);
             try {
-                TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCfgCmdWait() * 2);
+                TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval() * 2);
             } catch (Exception e) {
             }
 
@@ -388,11 +349,11 @@ public class TiVoHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                         break;
                     case STANDBY:
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 "STANDBY MODE: Send command TIVO to Remote Control Button (IRCODE) item to wakeup.");
                         break;
                     case UNKNOWN:
-                        updateStatus(ThingStatus.INITIALIZING);
+                        updateStatus(ThingStatus.OFFLINE);
                         break;
                     case INIT:
                         break;

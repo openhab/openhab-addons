@@ -10,32 +10,39 @@ Most TiVo DVRs that support network remote control can be managed/supported by t
 
 All TiVo devices must:
 
- 1. Be connected to a local area TCP/IP network that can be reached by the openHAB instance (this is not the WAN network interface used by cable service providers on some TiVos to provide the TV signals).    
- 2. Have the Network Remote Control function enabled to support discovery and control of the device.  This setting can be found using the remote control at:
+ 1. Be connected to a local area TCP/IP network that can be reached by the openHAB instance (this is not the WAN network interface used by cable service providers on some TiVos to provide the TV signals).
+ 2. Have the Network Remote Control function enabled to support discovery and control of the device. This setting can be found using the remote control at:
 
-    * TiVo branded boxes - using the remote go to TiVo Central > Messages & Settings > Settings > Remote, CableCARD & Devices > Network Remote Control.  Choose Enabled, press Select.
-    * Virgin Media branded boxes - using the remote select Home > Help and Settings > Settings > Devices > Network Remote Control.  Select the option Allow network based remote controls.
+    * TiVo branded boxes - using the remote go to TiVo Central > Messages & Settings > Settings > Remote, CableCARD & Devices > Network Remote Control. Choose Enabled, press Select.
+    * Virgin Media branded boxes - using the remote select Home > Help and Settings > Settings > Devices > Network Remote Control. Select the option Allow network based remote controls.
+
+## Discovery
+
+TiVo devices with the network remote control interface enabled will be displayed automatically within the Inbox.
 
 ## Binding Configuration
 
-The binding requires no manual configuration.  TiVo devices with the network remote control interface enabled, will be displayed within the Inbox.  
-
-You can also add these manually, you will need to specify the LAN IP address of your TiVo Device.
+There are no overall binding configuration settings that need to be set.
+All settings are through thing configuration parameters.
 
 ## Thing Configuration
 
-Auto-discovery is recommended for the discovery and creation of TiVo things, however they can also be created using the .things file format.  The following minimum parameters should be used:
+The thing has the following configuration parameters:
 
-```java
-tivo:sckt:Living_Room "Living Room TiVo" [ address="192.168.0.19" ]
-```
+| Parameter         | Display Name                         | Description                                                                                                                                                                                                                                                                        |
+|-------------------|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| host              | Address                              | The IP address or hostname of your TiVo DVR.                                                                                                                                                                                                                                       |
+| tcpPort           | TCP Port                             | The TCP port number used to connect to the TiVo. **Default: 31339**                                                                                                                                                                                                                |
+| numRetry          | Connection Retries                   | The number of times to attempt reconnection to the TiVo DVR, if there is a connection failure. **Default: 5**                                                                                                                                                                      |
+| keepConActive     | Keep Connection Open                 | Keep connection to the TiVo open. Recommended for monitoring the TiVo for changes in TV channels. <br><br>Disable if other applications that use the Remote Control Protocol port will also be used e.g. mobile phone remote control applications. **Default: True (Enabled)**     |
+| pollForChanges    | Poll for Channel Changes             | Check TiVo for channel changes. Enable if openHAB and a physical remote control (or other services use the Remote Control Protocol) will be used. **Default: True (Enabled)**                                                                                                      |
+| pollInterval      | Polling Interval (Seconds)           | Number of seconds between polling jobs to update status information from the TiVo. **Default: 10**                                                                                                                                                                                 |
+| cmdWaitInterval   | Command Wait Interval (Milliseconds) | Period to wait *after* a command is sent to the TiVo in milliseconds, before checking that the command has completed. **Default: 200**                                                                                                                                             |
 
-Where:
+Some notes:
 
-* **Living_Room** is the unique thing ID for the device (alpha numeric, no spaces) 
-* **address** the IP address or host name of the device
-
-See the Parameters section below, for the definition of the other optional parameter field names / values.
+* If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your TiVo, enable the **Keep Connection Open** option. This will connect and lock the port in-use preventing any other device from connecting it. If you use some other application, disable this option. Performance is improved if the connection is kept open.
+* **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel. If openHAB is your only method of control, you can disable this option. Turning polling off, minimizes the periodic polling overhead on your hardware.
 
 ## Channels
 
@@ -52,28 +59,16 @@ All devices support the following channels:
 
 * To change channels simply post/send the number of the channel to channelSet or channelForce. For OTA channels, a decimal for the sub-channel must be specified (ie: 2.1), for all others just send the channel as a whole number (ie: 100).
 * Keyboard commands must currently be issued one character at a time to the item (this is how the TiVo natively supports this command).
-* To send multiple copies of the same Keyboard command, append an asterisk with the number of repeats required e.g. NUM2*4 would send the number 2 four times. This is useful for performing searches where the number characters can only be accessed by pressing the keys multiple times in rapid succession i.e. each key press cycles through characters A, B, C, 2.
-* Special characters must also be changed to the appropriate command e.g. the comma symbol( ,) must not be sent it should be replaced by 'COMMA'.
-
-
-## Parameters
-
-| Parameter         | Display Name                         | Description                                                                                                                                                                                                                                                                        |
-|-------------------|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| address           | Address                              | The IP address or hostname of your TiVo DVR.                                                                                                                                                                                                                                       |
-| tcpPort           | TCP Port                             | The TCP port number used to connect to the TiVo. **Default: 31339**                                                                                                                                                                                                                |
-| numRetry          | Connection Retries                   | The number of times to attempt reconnection to the TiVo DVR, if there is a connection failure. **Default: 5**                                                                                                                                                                      |
-| keepConActive     | Keep Connection Open                 | Keep connection to the TiVo open. Recommended for monitoring the TiVo for changes in TV channels. <br><br>Disable if other applications that use the Remote Control Protocol port will also be used e.g. mobile phone remote control applications. **Default: True (Enabled)**     |
-| pollForChanges    | Poll for Channel Changes             | Check TiVo for channel changes. Enable if openHAB and a physical remote control (or other services use the Remote Control Protocol) will be used. **Default: True (Enabled)**                                                                                                      |
-| pollInterval      | Polling Interval (Seconds)           | Number of seconds between polling jobs to update status information from the TiVo.  **Default: 10**                                                                                                                                                                                |
-| cmdWaitInterval   | Command Wait Interval (Milliseconds) | Period to wait AFTER a command is sent to the TiVo in milliseconds, before checking that the command has completed. **Default: 200**                                                                                                                                               |
-
-## Configuration Parameters Notes
-
-* If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your TiVo, enable the **Keep Connection Open** option.  This will connect and lock the port in-use preventing any other device from connecting it.  If you use some other application, disable this option. Performance is improved if the connection is kept open.
-* **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel.  If openHAB is your only method of control, you can disable this option.  Turning polling off, minimizes the periodic polling overhead on your hardware.
+* To send multiple copies of the same keyboard command, append an asterisk with the number of repeats required e.g. NUM2*4 would send the number 2 four times. This is useful for performing searches where the number characters can only be accessed by pressing the keys multiple times in rapid succession i.e. each key press cycles through characters A, B, C, 2.
+* Special characters must also be changed to the appropriate command e.g. the comma symbol(`,`) must not be sent it should be replaced by 'COMMA'.
 
 ## Full Example
+
+**tivo.things**
+
+````java
+tivo:sckt:Living_Room "Living Room TiVo" [ host="192.168.0.19" ]
+```
 
 **tivo.items:**
 
@@ -116,7 +111,7 @@ sitemap tivo label="Tivo Central" {
 }
 ```
 
-* This example does not use the 'Current Channel - Forced (FORCECH)' channel.  This method will interrupt your recordings in progress when all your tuners are busy, so it is omitted for safety's sake.
+* This example does not use the 'Current Channel - Forced (FORCECH)' channel. This method will interrupt your recordings in progress when all your tuners are busy, so it is omitted for safety's sake.
 
 **tivo.map:**
 
@@ -143,9 +138,9 @@ etc...
 
 * This rule was used to overcome limitations within the HABpanel user interface at the moment when using transform/map functionality.
 
-* The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the TiVo.  The method to send a keystroke multiple times is used to simulate rapid keystrokes required to achieve number based searched.  
+* The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the TiVo. The method to send a keystroke multiple times is used to simulate rapid keystrokes required to achieve number based searched.
 
-* A simple custom template widget can be used within the HABpanel user interface for tablet-based searches.  See [this discussion thread] (https://community.openhab.org/t/tivo-1-1-protocol-new-binding-contribution/5572/21?u=andymb).
+* A simple custom template widget can be used within the HABpanel user interface for tablet-based searches. See [this discussion thread] (https://community.openhab.org/t/tivo-1-1-protocol-new-binding-contribution/5572/21?u=andymb).
 
 ```
 rule "TiVo Search Command"
@@ -195,5 +190,5 @@ end
 
 ```
 
-* You many need to adjust the two `Thread::sleep(1500)` lines, depending on the performance of your TiVo
-* In testing, response times have varied considerably at different times of the day, etc.  You may need to increase the delay until there is sufficient time added for the system to respond consistently to the 'remote control' menu commands.
+* You may need to adjust the two `Thread::sleep(1500)` lines, depending on the performance of your TiVo
+* In testing, response times have varied considerably at different times of the day, etc. You may need to increase the delay until there is sufficient time added for the system to respond consistently to the 'remote control' menu commands.
