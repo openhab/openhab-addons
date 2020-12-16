@@ -4,15 +4,18 @@ This binding communicates with the Generac MobileLink API and reports on the sta
 
 ## Supported Things
 
+
 ### MobileLink Account
 
-ThingTypeUID: `account`
 A MobileLink account bridge thing represents a user's MobileLink account and is responsible for authentication and polling for updates.
+
+ThingTypeUID: `account`
 
 ### Generator
 
-ThingTypeUID: `generator`
 A Generator thing represents a individual generator linked to an account bridge. Multiple generators are supported.  
+
+ThingTypeUID: `generator`
 
 ## Discovery
 
