@@ -174,19 +174,37 @@ public class ComfoAirHandler extends BaseThingHandler {
             return;
         }
 
-        if (comfoAirConnector != null && comfoAirConnector.getIsSuspended()) {
-            logger.debug("Binding control is currently not active.");
-            return;
-        }
+        if (comfoAirConnector != null) {
+            boolean isActive = !comfoAirConnector.getIsSuspended();
 
-        String commandKey = channel.getUID().getId();
-
-        ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
-        if (readCommand != null && readCommand.getRequestCmd() != null) {
-            scheduler.submit(() -> {
-                State state = sendCommand(readCommand, commandKey);
+            String commandKey = channel.getUID().getId();
+            if (commandKey.equals(ACTIVATE_CHANNEL_ID)) {
+                State state = OnOffType.from(isActive);
                 updateState(channel.getUID(), state);
-            });
+                return;
+            }
+
+            if (!isActive) {
+                logger.debug("Binding control is currently not active.");
+                return;
+            }
+
+            ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
+            if (readCommand != null && readCommand.getRequestCmd() != null) {
+                scheduler.submit(() -> {
+                    State state = sendCommand(readCommand, commandKey);
+                    updateState(channel.getUID(), state);
+                });
+            }
+        }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        Channel channel = this.thing.getChannel(channelUID);
+        if (channel != null) {
+            updateChannelState(channel);
         }
     }
 
