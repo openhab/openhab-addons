@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tivo.internal.discovery;
 
+import static org.openhab.binding.tivo.TiVoBindingConstants.*;
+
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +24,6 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tivo.TiVoBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -47,7 +48,7 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(TiVoBindingConstants.THING_TYPE_TIVO);
+        return Collections.singleton(THING_TYPE_TIVO);
     }
 
     @Override
@@ -71,12 +72,12 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             String label = service.getName();
             int port = service.getPort();
 
-            properties.put(TiVoBindingConstants.CONFIG_HOST, inetAddress);
-            properties.put(TiVoBindingConstants.CONFIG_PORT, port);
+            properties.put(CONFIG_HOST, inetAddress);
+            properties.put(CONFIG_PORT, port);
 
-            result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("Tivo: " + label).build();
-            logger.debug("Created {} for TiVo host '{}' name '{}'", result,
-                    properties.get(TiVoBindingConstants.CONFIG_HOST), label);
+            result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("Tivo: " + label)
+                    .withRepresentationProperty(label).build();
+            logger.debug("Created {} for TiVo host '{}' name '{}'", result, inetAddress, label);
         }
         return result;
     }
@@ -89,7 +90,7 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
         if (service.getType() != null) {
             if (service.getType().equals(getServiceType())) {
                 String uidName = getUIDName(service);
-                return new ThingUID(TiVoBindingConstants.THING_TYPE_TIVO, uidName);
+                return new ThingUID(THING_TYPE_TIVO, uidName);
             }
         }
         return null;

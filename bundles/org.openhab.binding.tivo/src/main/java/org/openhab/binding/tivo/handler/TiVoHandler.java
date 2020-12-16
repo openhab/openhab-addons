@@ -173,7 +173,7 @@ public class TiVoHandler extends BaseThingHandler {
 
         tivoConfigData = getConfigAs(TivoConfigData.class);
 
-        tivoConfigData.setCfgIdentifier(String.valueOf(getThing().getUID()));
+        tivoConfigData.setCfgIdentifier(getThing().getUID().getAsString());
         logger.debug("TivoConfigData Obj: '{}'", tivoConfigData);
         tivoConnection = Optional.of(new TivoStatusProvider(tivoConfigData, this));
 
@@ -225,8 +225,7 @@ public class TiVoHandler extends BaseThingHandler {
             logger.debug("Status polling '{}' will start in '{}' seconds.", getThing().getUID(), INIT_POLLING_DELAY_S);
         } else {
             // Just update the status now
-            if (tivoConnection.isPresent())
-                tivoConnection.get().statusRefresh();
+            tivoConnection.ifPresent(TivoStatusProvider::statusRefresh);
         }
     }
 
@@ -259,7 +258,7 @@ public class TiVoHandler extends BaseThingHandler {
             tivoConnection.get().cmdTivoSend(tmpCommand);
             try {
                 TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval() * 2);
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
             }
 
             tmpStatus = tivoConnection.get().getServiceStatus();
@@ -293,7 +292,7 @@ public class TiVoHandler extends BaseThingHandler {
                 }
             }
 
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | IndexOutOfBoundsException e) {
             logger.warn("TiVo'{}' unable to parse channel integer from CHANNEL_TIVO_CHANNEL: '{}'", getThing().getUID(),
                     command.toString());
         }

@@ -17,17 +17,8 @@ import java.util.Date;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link TivoStatusData} class stores the data from the last status query from the TiVo and any other errors / status
+ * TivoStatusData class stores the data from the last status query from the TiVo and any other errors / status
  * codes.
- *
- * @param cmdOk boolean true = last command executed correctly, false = last command failed with error message
- * @param channelNum int = channel number, -1 indicates no channel received. Valid channel range 1-9999.
- * @param msg string status message from the TiVo socket
- * @param pubToUI boolean true = this status needs to be published to the UI / Thing, false = do not publish (or it
- *            already has been)
- * @param connectionStatus ConnectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, STANDBY = TiVo is in
- *            standby,
- *            ONLINE = Online
  *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - minor updates, removal of unused functions.
@@ -48,6 +39,28 @@ public class TivoStatusData {
     public TivoStatusData() {
     }
 
+    /*
+     * {@link TivoStatusData} class stores the data from the last status query from the TiVo and any other errors /
+     * status codes.
+     *
+     * @param cmdOk boolean true = last command executed correctly, false = last command failed with error message
+     * 
+     * @param channelNum int = channel number, -1 indicates no channel received. Valid channel range 1-9999.
+     * 
+     * @param subChannelNum int = sub-channel number, -1 indicates no sub-channel received. Valid sub-channel range
+     * 1-9999.
+     * 
+     * @param isRecording boolean true = indicates the current channel is recording
+     * 
+     * @param msg string status message from the TiVo socket
+     * 
+     * @param pubToUI boolean true = this status needs to be published to the UI / Thing, false = do not publish (or it
+     * already has been)
+     * 
+     * @param connectionStatus ConnectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, STANDBY = TiVo is
+     * in standby, ONLINE = Online
+     *
+     */
     public TivoStatusData(boolean cmdOk, int channelNum, int subChannelNum, boolean isRecording, String msg,
             boolean pubToUI, ConnectionStatus connectionStatus) {
         this.cmdOk = cmdOk;

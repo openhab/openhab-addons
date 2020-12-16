@@ -23,7 +23,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,8 +51,9 @@ public class TivoStatusProvider {
     private @Nullable TiVoHandler tivoHandler = null;
     private TivoStatusData tivoStatusData = new TivoStatusData();
     private TivoConfigData tivoConfigData = new TivoConfigData();
+    private final String thingUid;
 
-    private static final Integer READ_TIMEOUT = 1000;
+    private static final Integer READ_TIMEOUT = 3000;
 
     /**
      * Instantiates a new TivoConfigStatusProvider.
@@ -68,6 +68,7 @@ public class TivoStatusProvider {
         this.tivoStatusData = new TivoStatusData(false, -1, -1, false, "INITIALISING", false, ConnectionStatus.UNKNOWN);
         this.tivoConfigData = tivoConfigData;
         this.tivoHandler = tivoHandler;
+        this.thingUid = tivoHandler.getThing().getUID().getAsString();
     }
 
     /**
@@ -318,8 +319,11 @@ public class TivoStatusProvider {
 
         try {
             if (streamReader != null) {
-                while (streamReader.isAlive()) {
-                    streamReader.stopReader();
+                streamReader.interrupt();
+                try {
+                    streamReader.join(READ_TIMEOUT);
+                } catch (InterruptedException e) {
+                    logger.warn("Error joining streamReader: {}", e.getMessage());
                 }
                 this.streamReader = null;
             }
@@ -404,7 +408,7 @@ public class TivoStatusProvider {
             logger.debug(" doNappTime '{}' - I feel like napping for '{}' milliseconds",
                     tivoConfigData.getCfgIdentifier(), tivoConfigData.getCmdWaitInterval());
             TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval());
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
         }
     }
 
@@ -422,9 +426,6 @@ public class TivoStatusProvider {
      */
     public class StreamReader extends Thread {
         private @Nullable BufferedReader bufferedReader = null;
-        private volatile boolean stopReader;
-
-        private CountDownLatch stopLatch;
 
         /**
          * {@link StreamReader} construct a data stream reader that reads the status data returned from the TiVo via a
@@ -434,10 +435,8 @@ public class TivoStatusProvider {
          * @throws IOException
          */
         public StreamReader(InputStream inputStream) {
-            this.setName("OH-binding-" + tivoConfigData.getCfgIdentifier() + "-" + tivoConfigData.getHost() + "."
-                    + tivoConfigData.getTcpPort());
+            this.setName("OH-binding-" + thingUid + "-" + tivoConfigData.getHost() + "." + tivoConfigData.getTcpPort());
             this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            this.stopLatch = new CountDownLatch(1);
             this.setDaemon(true);
         }
 
@@ -445,7 +444,7 @@ public class TivoStatusProvider {
         public void run() {
             try {
                 logger.debug("streamReader {} is running. ", tivoConfigData.getCfgIdentifier());
-                while (!stopReader && !Thread.currentThread().isInterrupted()) {
+                while (!Thread.currentThread().isInterrupted()) {
                     String receivedData = null;
                     try {
                         BufferedReader reader = bufferedReader;
@@ -470,22 +469,7 @@ public class TivoStatusProvider {
             } catch (IOException e) {
                 logger.debug("TiVo {} is disconnected. ", tivoConfigData.getCfgIdentifier(), e);
             }
-            // Notify the stopReader method caller that the reader is stopped.
-            this.stopLatch.countDown();
             logger.debug("streamReader {} is stopped. ", tivoConfigData.getCfgIdentifier());
-        }
-
-        /**
-         * {@link stopReader} cleanly stops the {@link StreamReader} thread. Blocks until the reader is stopped.
-         */
-        public void stopReader() {
-            this.stopReader = true;
-            try {
-                this.stopLatch.await(READ_TIMEOUT, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                // Do nothing. The timeout is just here for safety and to be sure that the call to this method will not
-                // block the caller indefinitely.
-            }
         }
     }
 }
