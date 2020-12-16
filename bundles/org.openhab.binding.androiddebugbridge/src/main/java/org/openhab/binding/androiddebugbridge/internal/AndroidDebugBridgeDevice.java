@@ -41,7 +41,7 @@ import com.tananaev.adblib.AdbCrypto;
 @NonNullByDefault
 public class AndroidDebugBridgeDevice {
     public static final int ANDROID_MEDIA_STREAM = 3;
-    private static final String ADB_FOLDER = OpenHAB.getUserDataFolder() + File.pathSeparator + ".adb";
+    private static final String ADB_FOLDER = OpenHAB.getUserDataFolder() + File.separator + ".adb";
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("volume is (?<current>\\d.*) in range \\[(?<min>\\d.*)\\.\\.(?<max>\\d.*)]");
@@ -55,8 +55,8 @@ public class AndroidDebugBridgeDevice {
             if (!directory.exists()) {
                 directory.mkdir();
             }
-            adbCrypto = loadKeyPair(ADB_FOLDER + File.pathSeparator + "adb_pub.key",
-                    ADB_FOLDER + File.pathSeparator + "adb.key");
+            adbCrypto = loadKeyPair(ADB_FOLDER + File.separator + "adb_pub.key",
+                    ADB_FOLDER + File.separator + "adb.key");
         } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
             logger.warn("Unable to setup adb keys: {}", e.getMessage());
         }
