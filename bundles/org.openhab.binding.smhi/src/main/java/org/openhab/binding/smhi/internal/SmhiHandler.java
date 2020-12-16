@@ -206,7 +206,7 @@ public class SmhiHandler extends BaseThingHandler {
                 case WIND_MAX:
                 case WIND_MIN:
                 case GUST:
-                    newState = new QuantityType<>(value.get(), SIUnits.METRE.divide(Units.SECOND));
+                    newState = new QuantityType<>(value.get(), Units.METRE_PER_SECOND);
                     break;
                 case RELATIVE_HUMIDITY:
                 case THUNDER_PROBABILITY:
@@ -230,7 +230,7 @@ public class SmhiHandler extends BaseThingHandler {
                 case PRECIPITATION_MEAN:
                 case PRECIPITATION_MEDIAN:
                 case PRECIPITATION_MIN:
-                    newState = new QuantityType<>(value.get(), MetricPrefix.MILLI(SIUnits.METRE).divide(Units.HOUR));
+                    newState = new QuantityType<>(value.get(), Units.MILLIMETRE_PER_HOUR);
                     break;
                 case PRECIPITATION_TOTAL:
                     newState = new QuantityType<>(value.get(), MetricPrefix.MILLI(SIUnits.METRE));
