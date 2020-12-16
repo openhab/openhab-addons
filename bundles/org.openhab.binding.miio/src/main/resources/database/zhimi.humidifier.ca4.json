@@ -112,7 +112,6 @@
 				"friendlyName": "LED Brightness",
 				"channel": "bright",
 				"type": "Dimmer",
-				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [

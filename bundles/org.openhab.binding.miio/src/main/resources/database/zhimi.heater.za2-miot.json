@@ -132,7 +132,6 @@
 				"friendlyName": "Indicator Light - Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
-				"unit": "PERCENT",
 				"refresh": true,
 				"actions": [
 					{
