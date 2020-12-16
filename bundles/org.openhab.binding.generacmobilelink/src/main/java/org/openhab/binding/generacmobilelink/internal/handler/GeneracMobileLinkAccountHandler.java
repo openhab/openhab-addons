@@ -176,13 +176,12 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             String message = e.getMessage();
             if (message != null && message.contains("Authentication challenge without WWW-Authenticate header")) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unauthorized - Check Credentials");
+                        "Unauthorized - Check Credentials: " + e.getLocalizedMessage());
                 stopPoll();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             }
         } catch (InterruptedException | TimeoutException e) {
-            logger.debug("Could not login", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
@@ -211,15 +210,14 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                             "Invalid Return Code " + httpStatus);
             }
         } catch (ExecutionException | InterruptedException e) {
-            logger.debug("Could not get statuses ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         } catch (TimeoutException e) {
-            logger.debug("Could not get statuses ", e);
             // the API seems to time out on this call frequently, although recovers after trying again
             if (retry) {
-                logger.debug("Retying status request");
+                logger.debug("Timeout occured, Retying status request");
                 getStatuses(false);
             } else {
+                logger.debug("Timeout occured, waiting for next poll cycle");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             }
         }
