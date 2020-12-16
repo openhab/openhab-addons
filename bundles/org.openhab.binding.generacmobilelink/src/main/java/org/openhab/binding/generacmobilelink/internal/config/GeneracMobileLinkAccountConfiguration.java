@@ -13,7 +13,6 @@
 package org.openhab.binding.generacmobilelink.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link GeneracMobileLinkAccountConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class GeneracMobileLinkAccountConfiguration {
-    public @Nullable String username;
-    public @Nullable String password;
+    public String username = "";
+    public String password = "";
     public Integer refreshInterval = 60;
 }

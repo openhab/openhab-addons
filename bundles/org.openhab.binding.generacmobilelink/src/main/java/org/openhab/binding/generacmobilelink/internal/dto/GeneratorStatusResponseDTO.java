@@ -10,19 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.generacmobilelink.internal.api;
+package org.openhab.binding.generacmobilelink.internal.dto;
 
 import java.util.ArrayList;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
- * {@link GeneratorStatusResponse} response from the MobileLink API
+ * {@link GeneratorStatusResponseDTO} response from the MobileLink API
  *
  * @author Dan Cunningham - Initial contribution
  */
 @SuppressWarnings("serial")
-@NonNullByDefault
-public class GeneratorStatusResponse extends ArrayList<GeneratorStatus> {
+public class GeneratorStatusResponseDTO extends ArrayList<GeneratorStatusDTO> {
 
 }

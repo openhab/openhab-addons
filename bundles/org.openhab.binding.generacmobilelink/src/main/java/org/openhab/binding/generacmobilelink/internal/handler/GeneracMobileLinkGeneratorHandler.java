@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.generacmobilelink.internal.handler;
 
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.generacmobilelink.internal.api.GeneratorStatus;
+import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -34,7 +36,7 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
-    private @Nullable GeneratorStatus status;
+    private @Nullable GeneratorStatusDTO status;
 
     public GeneracMobileLinkGeneratorHandler(Thing thing) {
         super(thing);
@@ -51,57 +53,29 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
     public void initialize() {
     }
 
-    protected void updateGeneratorStatus(GeneratorStatus status) {
+    protected void updateGeneratorStatus(GeneratorStatusDTO status) {
         this.status = status;
         updateStatus(ThingStatus.ONLINE);
         updateState();
     }
 
     protected void updateState() {
-        final GeneratorStatus localStatus = status;
+        final GeneratorStatusDTO localStatus = status;
         if (localStatus != null) {
-            if (localStatus.connected != null) {
-                updateState("connected", OnOffType.from(localStatus.connected));
-            }
-            if (localStatus.greenLightLit != null) {
-                updateState("greenLight", OnOffType.from(localStatus.greenLightLit));
-            }
-            if (localStatus.yellowLightLit != null) {
-                updateState("yellowLight", OnOffType.from(localStatus.yellowLightLit));
-            }
-            if (localStatus.redLightLit != null) {
-                updateState("redLight", OnOffType.from(localStatus.redLightLit));
-            }
-            if (localStatus.blueLightLit != null) {
-                updateState("blueLight", OnOffType.from(localStatus.blueLightLit));
-            }
-            if (localStatus.generatorStatusDate != null) {
-                updateState("statusDate", new StringType(localStatus.generatorStatusDate));
-            }
-            if (localStatus.generatorStatus != null) {
-                updateState("status", new StringType(localStatus.generatorStatus));
-            }
-            if (localStatus.currentAlarmDescription != null) {
-                updateState("currentAlarmDescription", new StringType(localStatus.currentAlarmDescription));
-            }
-            if (localStatus.runHours != null) {
-                updateState("runHours", QuantityType.valueOf(localStatus.runHours, Units.HOUR));
-            }
-            if (localStatus.exerciseHours != null) {
-                updateState("exerciseHours", QuantityType.valueOf(localStatus.exerciseHours, Units.HOUR));
-            }
-            if (localStatus.fuelType != null) {
-                updateState("fuelType", new DecimalType(localStatus.fuelType));
-            }
-            if (localStatus.fuelLevel != null) {
-                updateState("fuelLevel", QuantityType.valueOf(localStatus.fuelLevel, Units.PERCENT));
-            }
-            if (localStatus.batteryVoltage != null) {
-                updateState("batteryVoltage", new StringType(localStatus.batteryVoltage));
-            }
-            if (localStatus.generatorServiceStatus != null) {
-                updateState("serviceStatus", OnOffType.from(localStatus.generatorServiceStatus));
-            }
+            updateState("connected", OnOffType.from(localStatus.connected));
+            updateState("greenLight", OnOffType.from(localStatus.greenLightLit));
+            updateState("yellowLight", OnOffType.from(localStatus.yellowLightLit));
+            updateState("redLight", OnOffType.from(localStatus.redLightLit));
+            updateState("blueLight", OnOffType.from(localStatus.blueLightLit));
+            updateState("statusDate", new StringType(localStatus.generatorStatusDate));
+            updateState("status", new StringType(localStatus.generatorStatus));
+            updateState("currentAlarmDescription", new StringType(localStatus.currentAlarmDescription));
+            updateState("runHours", new QuantityType<Time>(localStatus.runHours, Units.HOUR));
+            updateState("exerciseHours", new QuantityType<Time>(localStatus.exerciseHours, Units.HOUR));
+            updateState("fuelType", new DecimalType(localStatus.fuelType));
+            updateState("fuelLevel", QuantityType.valueOf(localStatus.fuelLevel, Units.PERCENT));
+            updateState("batteryVoltage", new StringType(localStatus.batteryVoltage));
+            updateState("serviceStatus", OnOffType.from(localStatus.generatorServiceStatus));
         }
     }
 }

@@ -10,26 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.generacmobilelink.internal.api;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+package org.openhab.binding.generacmobilelink.internal.dto;
 
 /**
- * {@link LoginRequest} request for the MobileLink API
+ * {@link LoginRequestDTO} request for the MobileLink API
  *
  * @author Dan Cunningham - Initial contribution
  */
-@NonNullByDefault
-public class LoginRequest {
-    public LoginRequest(@Nullable String sharedKey, @Nullable String userLogin, @Nullable String userPassword) {
+public class LoginRequestDTO {
+    public LoginRequestDTO(String sharedKey, String userLogin, String userPassword) {
         super();
         this.sharedKey = sharedKey;
         this.userLogin = userLogin;
         this.userPassword = userPassword;
     }
 
-    public @Nullable String sharedKey;
-    public @Nullable String userLogin;
-    public @Nullable String userPassword;
+    public String sharedKey;
+    public String userLogin;
+    public String userPassword;
 }

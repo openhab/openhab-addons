@@ -26,12 +26,12 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants;
-import org.openhab.binding.generacmobilelink.internal.api.GeneratorStatus;
-import org.openhab.binding.generacmobilelink.internal.api.GeneratorStatusResponse;
-import org.openhab.binding.generacmobilelink.internal.api.LoginRequest;
-import org.openhab.binding.generacmobilelink.internal.api.LoginResponse;
 import org.openhab.binding.generacmobilelink.internal.config.GeneracMobileLinkAccountConfiguration;
 import org.openhab.binding.generacmobilelink.internal.discovery.GeneracMobileLinkDiscoveryService;
+import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusDTO;
+import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusResponseDTO;
+import org.openhab.binding.generacmobilelink.internal.dto.LoginRequestDTO;
+import org.openhab.binding.generacmobilelink.internal.dto.LoginResponseDTO;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Bridge;
@@ -65,7 +65,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
     private @Nullable Future<?> pollFuture;
     private @Nullable String authToken;
-    private @Nullable GeneratorStatusResponse generators;
+    private @Nullable GeneratorStatusResponseDTO generators;
     private Integer refreshInterval = 60;
     private HttpClient httpClient;
     private GeneracMobileLinkDiscoveryService discoveryService;
@@ -99,9 +99,9 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        GeneratorStatusResponse generatorsLocal = generators;
+        GeneratorStatusResponseDTO generatorsLocal = generators;
         if (generatorsLocal != null) {
-            Optional<GeneratorStatus> generatorOpt = generatorsLocal.stream()
+            Optional<GeneratorStatusDTO> generatorOpt = generatorsLocal.stream()
                     .filter(g -> String.valueOf(g.gensetID).equals(childThing.getUID().getId())).findFirst();
             if (generatorOpt.isPresent()) {
                 ((GeneracMobileLinkGeneratorHandler) childHandler).updateGeneratorStatus(generatorOpt.get());
@@ -136,13 +136,12 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
 
     private void login() {
         try {
-            final GeneracMobileLinkAccountConfiguration config = getConfigAs(
-                    GeneracMobileLinkAccountConfiguration.class);
+            GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
             refreshInterval = config.refreshInterval;
             ContentResponse contentResponse = httpClient.newRequest(BASE_URL + "/Users/login").method(HttpMethod.POST)
                     .content(
                             new StringContentProvider(
-                                    gson.toJson(new LoginRequest(SHARED_KEY, config.username, config.password))),
+                                    gson.toJson(new LoginRequestDTO(SHARED_KEY, config.username, config.password))),
                             "application/json")
                     .timeout(10, TimeUnit.SECONDS).send();
             int statusCode = contentResponse.getStatus();
@@ -150,7 +149,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             logger.trace("LoginResponse - status: {} content: {}", statusCode, content);
             switch (statusCode) {
                 case HttpStatus.OK_200:
-                    LoginResponse loginResponse = gson.fromJson(content, LoginResponse.class);
+                    LoginResponseDTO loginResponse = gson.fromJson(content, LoginResponseDTO.class);
                     if (loginResponse != null) {
                         authToken = loginResponse.authToken;
                         updateStatus(ThingStatus.ONLINE);
@@ -198,7 +197,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             logger.trace("GeneratorStatusResponse - status: {} content: {}", httpStatus, content);
             switch (httpStatus) {
                 case HttpStatus.OK_200:
-                    generators = gson.fromJson(content, GeneratorStatusResponse.class);
+                    generators = gson.fromJson(content, GeneratorStatusResponseDTO.class);
                     updateGeneratorThings();
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
@@ -228,7 +227,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     }
 
     private void updateGeneratorThings() {
-        GeneratorStatusResponse generatorsLocal = generators;
+        GeneratorStatusResponseDTO generatorsLocal = generators;
         if (generatorsLocal != null) {
             generatorsLocal.forEach(generator -> {
                 Thing thing = getThing().getThing(new ThingUID(GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR,
@@ -245,7 +244,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private void generatorDiscovered(GeneratorStatus generator) {
+    private void generatorDiscovered(GeneratorStatusDTO generator) {
         DiscoveryResult result = DiscoveryResultBuilder
                 .create(new ThingUID(GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR, getThing().getUID(),
                         String.valueOf(generator.gensetID)))

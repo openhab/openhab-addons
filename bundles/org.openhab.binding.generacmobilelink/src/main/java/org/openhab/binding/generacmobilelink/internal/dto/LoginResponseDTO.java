@@ -10,18 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.generacmobilelink.internal.api;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+package org.openhab.binding.generacmobilelink.internal.dto;
 
 /**
- * {@link LoginResponse} response from the MobileLink API
+ * {@link LoginResponseDTO} response from the MobileLink API
  *
  * @author Dan Cunningham - Initial contribution
  */
-@NonNullByDefault
-public class LoginResponse {
-    public @Nullable String authToken;
-    public @Nullable String pushChannelName;
+public class LoginResponseDTO {
+    public String authToken;
+    public String pushChannelName;
 }
