@@ -168,7 +168,7 @@ Restart your server
 
 Either the web-request to Tankerkönig returned a failure or no valid response was received (this could be caused by a banned API-key).
 In both cases the Webservice and the Station(s) go OFFLINE.
-If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on Paper UI.
+If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on UI. For further investigation the API Explorer can be used to show all data-fields of the things.
 On the next receipt of a valid message Webservice and Station(s) will go ONLINE again.
 The scheduled polling of price-data is canceled in case of no valid response.
 Users should check the log for any reports to solve the reason for the OFFLINE status.
@@ -187,4 +187,3 @@ This switch can be set either manually (only suggested for testing!) or by a rul
 *   <https://creativecommons.tankerkoenig.de/>  (sorry, only available in German)
 
 *   &lsqb;MTS-K&rsqb;: <https://www.bundeskartellamt.de/DE/Wirtschaftsbereiche/Mineral%C3%B6l/MTS-Kraftstoffe/Verbraucher/verbraucher_node.html>
-*   &lsqb;openhab1-addons rules&rsqb;: <https://github.com/openhab/openhab1-addons/wiki/Samples-Rules#how-to-calculate-public-holidays>
