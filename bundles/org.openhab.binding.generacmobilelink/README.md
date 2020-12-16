@@ -62,6 +62,7 @@ Bridge generacmobilelink:account:main "MobileLink Account" [ userName="foo@bar.c
     Thing generator 123456 "MobileLink Generator" [ generatorId="123456" ]
 }
 ```
+
 ### Items
 
 ```xtend

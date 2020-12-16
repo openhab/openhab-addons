@@ -44,7 +44,6 @@ public class GeneracMobileLinkDiscoveryService implements DiscoveryService {
     private final Set<DiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
 
     public void generatorDiscovered(DiscoveryResult result) {
-
         for (DiscoveryListener discoveryListener : discoveryListeners) {
             try {
                 discoveryListener.thingDiscovered(this, result);

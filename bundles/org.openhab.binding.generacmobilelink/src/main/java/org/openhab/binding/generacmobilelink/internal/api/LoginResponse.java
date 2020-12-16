@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.generacmobilelink.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * {@link LoginResponse} response from the MobileLink API
  *
  * @author Dan Cunningham - Initial contribution
  */
+@NonNullByDefault
 public class LoginResponse {
-    public String authToken;
-    public String pushChannelName;
+    public @Nullable String authToken;
+    public @Nullable String pushChannelName;
 }

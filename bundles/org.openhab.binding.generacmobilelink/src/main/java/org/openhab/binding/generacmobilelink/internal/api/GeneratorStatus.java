@@ -12,43 +12,47 @@
  */
 package org.openhab.binding.generacmobilelink.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * {@link GeneratorStatus} object from the MobileLink API
  *
  * @author Dan Cunningham - Initial contribution
  */
+@NonNullByDefault
 public class GeneratorStatus {
-    public Integer gensetID;
-    public String generatorDate;
-    public String generatorName;
-    public String generatorSerialNumber;
-    public String generatorModel;
-    public String generatorDescription;
-    public String generatorMDN;
-    public String generatorImei;
-    public String generatorIccid;
-    public String generatorTetherSerial;
-    public Boolean connected;
-    public Boolean greenLightLit;
-    public Boolean yellowLightLit;
-    public Boolean redLightLit;
-    public Boolean blueLightLit;
-    public String generatorStatus;
-    public String generatorStatusDate;
-    public String currentAlarmDescription;
-    public Integer runHours;
-    public Integer exerciseHours;
-    public String batteryVoltage;
-    public Integer fuelType;
-    public Integer fuelLevel;
-    public String generatorBrandImageURL;
-    public Boolean generatorServiceStatus;
-    public String signalStrength;
-    public String deviceId;
-    public Integer deviceTypeId;
-    public String firmwareVersion;
-    public String timezone;
-    public String mACAddress;
-    public String iPAddress;
-    public String sSID;
+    public @Nullable Integer gensetID;
+    public @Nullable String generatorDate;
+    public @Nullable String generatorName;
+    public @Nullable String generatorSerialNumber;
+    public @Nullable String generatorModel;
+    public @Nullable String generatorDescription;
+    public @Nullable String generatorMDN;
+    public @Nullable String generatorImei;
+    public @Nullable String generatorIccid;
+    public @Nullable String generatorTetherSerial;
+    public @Nullable Boolean connected;
+    public @Nullable Boolean greenLightLit;
+    public @Nullable Boolean yellowLightLit;
+    public @Nullable Boolean redLightLit;
+    public @Nullable Boolean blueLightLit;
+    public @Nullable String generatorStatus;
+    public @Nullable String generatorStatusDate;
+    public @Nullable String currentAlarmDescription;
+    public @Nullable Integer runHours;
+    public @Nullable Integer exerciseHours;
+    public @Nullable String batteryVoltage;
+    public @Nullable Integer fuelType;
+    public @Nullable Integer fuelLevel;
+    public @Nullable String generatorBrandImageURL;
+    public @Nullable Boolean generatorServiceStatus;
+    public @Nullable String signalStrength;
+    public @Nullable String deviceId;
+    public @Nullable Integer deviceTypeId;
+    public @Nullable String firmwareVersion;
+    public @Nullable String timezone;
+    public @Nullable String mACAddress;
+    public @Nullable String iPAddress;
+    public @Nullable String sSID;
 }

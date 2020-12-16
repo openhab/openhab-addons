@@ -136,7 +136,8 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
 
     private void login() {
         try {
-            GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
+            final GeneracMobileLinkAccountConfiguration config = getConfigAs(
+                    GeneracMobileLinkAccountConfiguration.class);
             refreshInterval = config.refreshInterval;
             ContentResponse contentResponse = httpClient.newRequest(BASE_URL + "/Users/login").method(HttpMethod.POST)
                     .content(

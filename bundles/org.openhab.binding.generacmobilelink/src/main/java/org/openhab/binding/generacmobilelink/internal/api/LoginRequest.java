@@ -12,20 +12,24 @@
  */
 package org.openhab.binding.generacmobilelink.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * {@link LoginRequest} request for the MobileLink API
  *
  * @author Dan Cunningham - Initial contribution
  */
+@NonNullByDefault
 public class LoginRequest {
-    public LoginRequest(String sharedKey, String userLogin, String userPassword) {
+    public LoginRequest(@Nullable String sharedKey, @Nullable String userLogin, @Nullable String userPassword) {
         super();
         this.sharedKey = sharedKey;
         this.userLogin = userLogin;
         this.userPassword = userPassword;
     }
 
-    public String sharedKey;
-    public String userLogin;
-    public String userPassword;
+    public @Nullable String sharedKey;
+    public @Nullable String userLogin;
+    public @Nullable String userPassword;
 }
