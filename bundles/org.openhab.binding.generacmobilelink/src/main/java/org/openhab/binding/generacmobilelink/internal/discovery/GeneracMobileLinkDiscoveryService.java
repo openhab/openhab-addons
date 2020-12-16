@@ -28,8 +28,6 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.ScanListener;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GeneracMobileLinkDiscoveryService} is responsible for discovering generator things
@@ -38,19 +36,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GeneracMobileLinkDiscoveryService implements DiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(GeneracMobileLinkDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_DISCOVERY_THING_TYPES_UIDS = Set.of(THING_TYPE_GENERATOR);
     private final Map<ThingUID, DiscoveryResult> cachedResults = new HashMap<>();
     private final Set<DiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
 
     public void generatorDiscovered(DiscoveryResult result) {
         for (DiscoveryListener discoveryListener : discoveryListeners) {
-            try {
-                discoveryListener.thingDiscovered(this, result);
-            } catch (Exception e) {
-                logger.error("An error occurred while calling the discovery listener {}.",
-                        discoveryListener.getClass().getName(), e);
-            }
+            discoveryListener.thingDiscovered(this, result);
         }
         synchronized (cachedResults) {
             cachedResults.put(result.getThingUID(), result);
