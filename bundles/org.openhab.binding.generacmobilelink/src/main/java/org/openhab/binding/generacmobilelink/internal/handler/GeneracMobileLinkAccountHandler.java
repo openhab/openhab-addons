@@ -130,7 +130,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
 
         // if we now have a token, get our data
         if (authToken != null) {
-            getStatuses();
+            getStatuses(true);
         }
     }
 
@@ -172,20 +172,23 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             }
         } catch (ExecutionException e) {
             // MobileLink response will trigger a Jetty "Authentication challenge without WWW-Authenticate header"
-            // ExecutionException if the password is not right
-            logger.debug("Could not login", e);
-            // do not continue to poll with bad credentials since this requires user intervention
-            stopPoll();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unauthorized - Check Credentials");
-
+            // ExecutionException if the password is not right, this still does not looked to be fixed in jetty
+            // see https://github.com/eclipse/jetty.project/issues/1555
+            String message = e.getMessage();
+            if (message != null && message.contains("Authentication challenge without WWW-Authenticate header")) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Unauthorized - Check Credentials");
+                stopPoll();
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            }
         } catch (InterruptedException | TimeoutException e) {
             logger.debug("Could not login", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
-    private void getStatuses() {
+    private void getStatuses(boolean retry) {
         try {
             ContentResponse contentResponse = httpClient.newRequest(BASE_URL + "/Generator/GeneratorStatus")
                     .method(HttpMethod.GET).timeout(10, TimeUnit.SECONDS).header("AuthToken", authToken).send();
@@ -208,9 +211,18 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Invalid Return Code " + httpStatus);
             }
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException | InterruptedException e) {
             logger.debug("Could not get statuses ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+        } catch (TimeoutException e) {
+            logger.debug("Could not get statuses ", e);
+            // the API seems to time out on this call frequently, although recovers after trying again
+            if (retry) {
+                logger.debug("Retying status request");
+                getStatuses(false);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            }
         }
     }
 

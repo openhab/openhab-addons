@@ -4,7 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>GeneracMobileLink Binding</name>
-	<description>This is the binding for GeneracMobileLink.</description>
-	<author>Dan Cunningham</author>
+	<description>This binding monitors Generac manufactured generators through the MobileLink cloud service.</description>
 
 </binding:binding>

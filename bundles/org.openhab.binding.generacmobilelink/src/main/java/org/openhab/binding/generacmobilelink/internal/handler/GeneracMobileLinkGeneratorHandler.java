@@ -73,7 +73,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
             updateState("runHours", new QuantityType<Time>(localStatus.runHours, Units.HOUR));
             updateState("exerciseHours", new QuantityType<Time>(localStatus.exerciseHours, Units.HOUR));
             updateState("fuelType", new DecimalType(localStatus.fuelType));
-            updateState("fuelLevel", new DecimalType(localStatus.fuelLevel));
+            updateState("fuelLevel", QuantityType.valueOf(localStatus.fuelLevel, Units.PERCENT));
             updateState("batteryVoltage", new StringType(localStatus.batteryVoltage));
             updateState("serviceStatus", OnOffType.from(localStatus.generatorServiceStatus));
         }

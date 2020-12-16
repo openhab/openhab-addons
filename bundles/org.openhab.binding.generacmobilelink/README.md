@@ -6,11 +6,13 @@ This binding communicates with the Generac MobileLink API and reports on the sta
 
 ### MobileLink Account
 
+ThingTypeUID: `account`
 A MobileLink account bridge thing represents a user's MobileLink account and is responsible for authentication and polling for updates.
 
 ### Generator
 
-A Generator thing represents a individual generator linked to an account bridge.  Multiple generators are supported.  
+ThingTypeUID: `generator`
+A Generator thing represents a individual generator linked to an account bridge. Multiple generators are supported.  
 
 ## Discovery
 
@@ -20,11 +22,11 @@ The MobileLink account bridge must be added manually. Once added, generator thin
 
 ### MobileLink Account
 
-| Parameter       | Description                                                                       |
-|-----------------|-----------------------------------------------------------------------------------|
-| userName        | The user name, typically a email address, used to login to the MobileLink service |
-| password        | The password used to login to the MobileLink service                              |
-| refreshInterval | The frequency to poll for generator updates, minimum duration is 30 seconds       |
+| Parameter       | Description                                                                        |
+|-----------------|------------------------------------------------------------------------------------|
+| userName        | The user name, typically an email address, used to login to the MobileLink service |
+| password        | The password used to login to the MobileLink service                               |
+| refreshInterval | The frequency to poll for generator updates, minimum duration is 30 seconds        |
 
 
 ## Channels
@@ -33,22 +35,23 @@ The MobileLink account bridge must be added manually. Once added, generator thin
 
 All channels are read-only. 
 
-| channel                 | type        | description                               |
-|-------------------------|-------------|-------------------------------------------|
-| connected               | Switch      | Connected status                          |
-| greenLight              | Switch      | Green light state (typically auto mode)   |
-| yellowLight             | Switch      | Yellow light state                        |
-| redLight                | Switch      | Red light state (typically off mode)      |
-| blueLight               | Switch      | Blue light state (typically running mode) |
-| statusDate              | String      | Status date                               |
-| status                  | String      | Status                                    |
-| currentAlarmDescription | String      | Current alarm description                 |
-| runHours                | Number:Time | Run hours                                 |
-| exerciseHours           | Number:Time | Exercise hours                            |
-| fuelType                | Switch      | Fuel Type                                 |
-| fuelLevel               | Switch      | Fuel Level                                |
-| batteryVoltage          | String      | Battery Voltage Status                    |
-| serviceStatus           | String      | Service Status                            |
+| channel                 | type                 | description                               |
+|-------------------------|----------------------|-------------------------------------------|
+| connected               | Switch               | Connected status                          |
+| greenLight              | Switch               | Green light state (typically auto mode)   |
+| yellowLight             | Switch               | Yellow light state                        |
+| redLight                | Switch               | Red light state (typically off mode)      |
+| blueLight               | Switch               | Blue light state (typically running mode) |
+| statusDate              | String               | Status date                               |
+| status                  | String               | Status                                    |
+| currentAlarmDescription | String               | Current alarm description                 |
+| runHours                | Number:Time          | Run hours                                 |
+| exerciseHours           | Number:Time          | Exercise hours                            |
+| fuelType                | Number               | Fuel Type                                 |
+| fuelLevel               | Number:Dimensionless | Fuel Level                                |
+| batteryVoltage          | String               | Battery Voltage Status                    |
+| serviceStatus           | Switch               | Service Status                            |
+
 
 ## Full Example
 

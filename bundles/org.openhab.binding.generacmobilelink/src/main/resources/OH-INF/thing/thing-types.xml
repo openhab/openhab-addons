@@ -39,71 +39,71 @@
 	<channel-type id="connected">
 		<item-type>Switch</item-type>
 		<label>Connected</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="greenLight">
 		<item-type>Switch</item-type>
 		<label>Green Light Status</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="yellowLight">
 		<item-type>Switch</item-type>
 		<label>Yellow Light Status</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="redLight">
 		<item-type>Switch</item-type>
 		<label>Red Light Status</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="blueLight">
 		<item-type>Switch</item-type>
 		<label>Blue Light Status</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="statusDate">
 		<item-type>String</item-type>
 		<label>Last Status Date</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentAlarmDescription">
 		<item-type>String</item-type>
 		<label>Current Alarm Description</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="runHours">
 		<item-type>Number:Time</item-type>
 		<label>Number of Hours Run</label>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="exerciseHours">
 		<item-type>Number:Time</item-type>
 		<label>Number of Hours Exercised</label>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="fuelType">
 		<item-type>Number</item-type>
 		<label>Fuel Type</label>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="fuelLevel">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Fuel Level</label>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryVoltage">
 		<item-type>String</item-type>
 		<label>Battery Voltage Status</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="serviceStatus">
 		<item-type>Switch</item-type>
 		<label>Service Status</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
