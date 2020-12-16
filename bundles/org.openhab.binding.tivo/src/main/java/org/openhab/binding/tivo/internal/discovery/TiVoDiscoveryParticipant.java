@@ -76,7 +76,7 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             properties.put(CONFIG_PORT, port);
 
             result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("Tivo: " + label)
-                    .withRepresentationProperty(label).build();
+                    .withProperty(CONFIG_NAME, label).withRepresentationProperty(CONFIG_NAME).build();
             logger.debug("Created {} for TiVo host '{}' name '{}'", result, inetAddress, label);
         }
         return result;

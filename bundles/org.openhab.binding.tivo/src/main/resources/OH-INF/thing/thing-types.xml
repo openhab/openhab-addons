@@ -20,6 +20,8 @@
 			<channel id="dvrStatus" typeId="dvrStatus"/>
 		</channels>
 
+		<representation-property>name</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Address</label>

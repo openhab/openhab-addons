@@ -45,4 +45,5 @@ public class TiVoBindingConstants {
     // List of all configuration Properties
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_PORT = "tcpPort";
+    public static final String CONFIG_NAME = "name";
 }
