@@ -30,9 +30,9 @@ This binding supports direct serial port connection (RS-485 adapter needed) to h
 | f470-serial     | Serial port connected F470 Heat Pumps            |
 | f470-udp        | UDP connected Nibe F470 Heat Pumps               |
 | f470-simulator  | Simulator for Nibe F470 Heat Pumps               |
-| smo40-serial    | Serial port connected SMO40 controler            |
-| smo40-udp       | UDP connected Nibe SMO40 controler               |
-| smo40-simulator | Simulator for Nibe SMO40 controler               |
+| smo40-serial    | Serial port connected SMO40 controller           |
+| smo40-udp       | UDP connected Nibe SMO40 controller              |
+| smo40-simulator | Simulator for Nibe SMO40 controller              |
 
 ## Discovery
 
