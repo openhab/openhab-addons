@@ -16,8 +16,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "model",
@@ -28,8 +27,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "serial-number",
@@ -40,8 +38,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "firmware-revision",
@@ -52,8 +49,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "on",
@@ -73,8 +69,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "fan-level",
@@ -90,8 +85,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -110,8 +104,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "horizontal-swing",
@@ -127,8 +120,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "horizontal-angle",
@@ -144,8 +136,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "alarm",
@@ -162,8 +153,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "alarm",
-				"readmeComment": ""
+				"category": "alarm"
 			},
 			{
 				"property": "off-delay-time",
@@ -179,8 +169,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brightness",
@@ -201,8 +190,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "motor-control",
@@ -218,8 +206,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "speed-level",
@@ -235,8 +222,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "physical-controls-locked",
@@ -252,8 +238,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

@@ -36,8 +36,7 @@
 				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "status",
@@ -86,8 +85,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "manual-enabled",
@@ -214,8 +212,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			}
 		],
 		"experimental": true

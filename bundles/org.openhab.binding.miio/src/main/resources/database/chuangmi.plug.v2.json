@@ -20,8 +20,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "usb_on",
@@ -36,8 +35,7 @@
 						"command": "set_usb_*",
 						"parameterType": "ONOFFPARA"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

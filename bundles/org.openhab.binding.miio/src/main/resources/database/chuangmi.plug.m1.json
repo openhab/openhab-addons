@@ -22,8 +22,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "temperature",
@@ -38,8 +37,7 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "wifi_led",
@@ -53,8 +51,7 @@
 						"command": "set_wifi_led",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

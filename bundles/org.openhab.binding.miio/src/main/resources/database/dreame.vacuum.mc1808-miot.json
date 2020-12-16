@@ -124,8 +124,7 @@
 							]
 						}
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "battery-level",
@@ -136,8 +135,7 @@
 				"channelType": "system:battery-level",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "charging-state",
@@ -248,8 +246,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "brush-life-level",
@@ -263,8 +260,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter-life-level",
@@ -278,8 +274,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter-left-time",
@@ -294,8 +289,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "brush-left-time1",
@@ -310,8 +304,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "brush-life-level1",
@@ -325,8 +318,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "work-mode",
@@ -340,8 +332,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "area",
@@ -356,8 +347,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "timer",
@@ -373,8 +363,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -428,8 +417,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "total-clean-times",
@@ -443,8 +431,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "total-clean-area",
@@ -459,8 +446,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "clean-log-start-time",
@@ -474,8 +460,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "button-led",
@@ -489,8 +474,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "task-done",
@@ -530,8 +514,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "life-brush-side",
@@ -546,8 +529,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "life-brush-main",
@@ -562,8 +544,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "enable",
@@ -578,8 +559,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "start-time",
@@ -594,8 +574,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "stop-time",
@@ -610,8 +589,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "map-view",
@@ -624,8 +602,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "volume",
@@ -643,8 +620,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "voice-packets",
@@ -659,8 +635,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "time-zone",
@@ -673,8 +648,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			}
 		],
 		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"battery-start-charge\",\"siid\":2,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-start-sweep\",\"siid\":3,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-stop-sweeping\",\"siid\":3,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":26,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":27,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":28,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"clean-start-clean\",\"siid\":18,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"clean-stop-clean\",\"siid\":18,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remote-start-remote\",\"siid\":21,\"aiid\":1,\"in\":[1.0, 2.0]}`\u003cbr /\u003e`action{\"did\":\"remote-stop-remote\",\"siid\":21,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remote-exit-remote\",\"siid\":21,\"aiid\":3,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-map-req\",\"siid\":23,\"aiid\":1,\"in\":[2.0]}`\u003cbr /\u003e`action{\"did\":\"audio-position\",\"siid\":24,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-set-voice\",\"siid\":24,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-play-sound\",\"siid\":24,\"aiid\":3,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",

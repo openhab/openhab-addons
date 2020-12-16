@@ -17,8 +17,7 @@
 						"command": "Machine_*",
 						"parameterType": "ONOFFPARA"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "Query_Machine_Status",
@@ -28,8 +27,7 @@
 				"refresh": true,
 				"customRefreshCommand": "true",
 				"ChannelGroup": "actions",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "",

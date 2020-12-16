@@ -20,8 +20,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -39,8 +38,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "humidity",
@@ -55,8 +53,7 @@
 				"tags": [
 					"Measurement",
 					"Humidity"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "aqi",
@@ -69,8 +66,7 @@
 				"actions": [],
 				"tags": [
 					"Measurement"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "average_aqi",
@@ -83,8 +79,7 @@
 				"actions": [],
 				"tags": [
 					"Measurement"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "volume",
@@ -93,8 +88,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "led",
@@ -109,8 +103,7 @@
 						"command": "set_led",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bright",
@@ -124,8 +117,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "f1_hour",
@@ -135,8 +127,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "f1_hour_used",
@@ -149,8 +140,7 @@
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time",
-				"readmeComment": ""
+				"category": "time"
 			},
 			{
 				"property": "motor1_speed",
@@ -160,8 +150,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "motor2_speed",
@@ -170,8 +159,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter1_life",
@@ -180,8 +168,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "favorite_level",
@@ -196,8 +183,7 @@
 						"command": "set_level_favorite",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "temp_dec",
@@ -214,8 +200,7 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "child_lock",
@@ -230,8 +215,7 @@
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

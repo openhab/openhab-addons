@@ -20,8 +20,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -38,8 +37,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "ptc_on",
@@ -53,8 +51,7 @@
 						"command": "set_ptc_on",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "ptc_level",
@@ -68,8 +65,7 @@
 						"command": "set_ptc_level",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "ptc_status",
@@ -79,8 +75,7 @@
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "screen_direction",
@@ -94,8 +89,7 @@
 						"command": "set_screen_direction",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "display",
@@ -109,8 +103,7 @@
 						"command": "set_display",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "child_lock",
@@ -124,8 +117,7 @@
 						"command": "set_child_lock",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "sound",
@@ -139,8 +131,7 @@
 						"command": "set_sound",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "pm25",
@@ -150,8 +141,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "co2",
@@ -166,8 +156,7 @@
 				"tags": [
 					"Measurement",
 					"CO2"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "control_speed",
@@ -177,8 +166,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "favourite_speed",
@@ -192,8 +180,7 @@
 						"command": "set_favourite_speed",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "temperature_outside",
@@ -203,8 +190,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter_intermediate",
@@ -213,8 +199,7 @@
 				"channelType": "airFreshFilterPercents",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter_inter_day",
@@ -224,8 +209,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter_efficient",
@@ -235,8 +219,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter_effi_day",
@@ -246,8 +229,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "",
@@ -262,8 +244,7 @@
 						"command": "set_filter_reset",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

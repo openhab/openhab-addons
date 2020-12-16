@@ -20,8 +20,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -40,8 +39,7 @@
 				"tags": [
 					"Measurement",
 					"Humidity"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "humidity",
@@ -56,8 +54,7 @@
 				"tags": [
 					"Measurement",
 					"Humidity"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "limit_hum",
@@ -72,8 +69,7 @@
 						"command": "set_limit_hum",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "led_b",
@@ -87,8 +83,7 @@
 						"command": "set_led_b",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "buzzer",
@@ -103,8 +98,7 @@
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "depth",
@@ -114,8 +108,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "dry",
@@ -130,8 +123,7 @@
 						"command": "set_dry",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "use_time",
@@ -144,8 +136,7 @@
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time",
-				"readmeComment": ""
+				"category": "time"
 			},
 			{
 				"property": "speed",
@@ -155,8 +146,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "temperature",
@@ -172,8 +162,7 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "child_lock",
@@ -188,8 +177,7 @@
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

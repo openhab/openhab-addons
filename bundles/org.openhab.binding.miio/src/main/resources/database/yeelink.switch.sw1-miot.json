@@ -23,8 +23,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -79,8 +78,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "on1",
@@ -98,8 +96,7 @@
 				],
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode2",
@@ -154,8 +151,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "interlock",
@@ -173,8 +169,7 @@
 				],
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "flash",
@@ -198,8 +193,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "rc-list",
@@ -212,8 +206,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			}
 		],
 		"experimental": true

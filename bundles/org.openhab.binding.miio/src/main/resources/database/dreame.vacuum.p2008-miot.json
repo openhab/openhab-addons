@@ -83,8 +83,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "charging-state",
@@ -127,8 +126,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "brush-life-level",
@@ -143,8 +141,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "brush-left-time1",
@@ -159,8 +156,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "brush-life-level1",
@@ -175,8 +171,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter-life-level",
@@ -191,8 +186,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter-left-time",
@@ -207,8 +201,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "work-mode",
@@ -222,8 +215,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "cleaning-time",
@@ -238,8 +230,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "cleaning-area",
@@ -254,8 +245,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "cleaning-mode",
@@ -442,8 +432,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "start-time",
@@ -458,8 +447,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "end-time",
@@ -474,8 +462,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "volume",
@@ -493,8 +480,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "voice-packet-id",
@@ -509,8 +495,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "voice-change-state",
@@ -523,8 +508,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "time-zone",
@@ -537,8 +521,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "timer-clean",
@@ -553,8 +536,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "first-clean-time",
@@ -568,8 +550,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "total-clean-time",
@@ -584,8 +565,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "total-clean-times",
@@ -599,8 +579,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "total-clean-area",
@@ -614,8 +593,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "save-map-status",

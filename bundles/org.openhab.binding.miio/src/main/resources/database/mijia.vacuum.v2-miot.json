@@ -315,8 +315,7 @@
 				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "charging-state",
@@ -368,8 +367,7 @@
 				"category": "alarm",
 				"tags": [
 					"Alarm"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "volume",
@@ -388,8 +386,7 @@
 				],
 				"tags": [
 					"Setpoint"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "filter-life-level",
@@ -403,8 +400,7 @@
 				"actions": [],
 				"tags": [
 					"Status"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "filter-left-time",
@@ -418,8 +414,7 @@
 				"actions": [],
 				"tags": [
 					"Status"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brush-life-level",
@@ -433,8 +428,7 @@
 				"actions": [],
 				"tags": [
 					"Status"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brush-left-time",
@@ -448,8 +442,7 @@
 				"actions": [],
 				"tags": [
 					"Status"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brush-life-level1",
@@ -463,8 +456,7 @@
 				"actions": [],
 				"tags": [
 					"Status"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brush-left-time1",
@@ -478,8 +470,7 @@
 				"actions": [],
 				"tags": [
 					"Status"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "clean-area",
@@ -493,8 +484,7 @@
 				"actions": [],
 				"tags": [
 					"Measurement"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "clean-time",
@@ -506,8 +496,7 @@
 				"type": "Number:Time",
 				"unit": "hours",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "total-clean-area",
@@ -518,8 +507,7 @@
 				"channelType": "miot_uint32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "total-clean-time",
@@ -530,8 +518,7 @@
 				"channelType": "miot_uint32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "total-clean-count",
@@ -542,8 +529,7 @@
 				"channelType": "miot_uint16",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "language",
@@ -616,8 +602,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mop-status",

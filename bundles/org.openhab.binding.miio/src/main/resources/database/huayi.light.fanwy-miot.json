@@ -23,8 +23,7 @@
 				"category": "light",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brightness",
@@ -50,8 +49,7 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "color-temperature",
@@ -73,8 +71,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "on1",
@@ -93,8 +90,7 @@
 				"category": "fan",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "fan-level",
@@ -116,8 +112,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "motor-reverse",
@@ -132,8 +127,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",

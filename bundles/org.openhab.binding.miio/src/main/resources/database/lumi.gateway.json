@@ -34,8 +34,7 @@
 						"command": "set_doorbell_volume",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "gateway_volume",
@@ -48,8 +47,7 @@
 						"command": "set_gateway_volume",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "alarming_volume",
@@ -62,8 +60,7 @@
 						"command": "set_alarming_volume",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "doorbell_push",
@@ -76,8 +73,7 @@
 						"command": "set_doorbell_push",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		],
 		"readmeComment": "Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.",

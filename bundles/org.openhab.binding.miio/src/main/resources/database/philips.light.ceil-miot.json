@@ -36,8 +36,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -56,8 +55,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brightness",
@@ -77,8 +75,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "color-temperature",
@@ -94,8 +91,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "dvalue",
@@ -111,8 +107,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "wall-scene-en",
@@ -128,8 +123,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "wall-scene",
@@ -145,8 +139,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "auto-cct",
@@ -162,8 +155,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "dimming-period",
@@ -179,8 +171,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "miband-status",
@@ -191,8 +182,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			}
 		],
 		"experimental": true

@@ -22,8 +22,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "angle_enable",
@@ -37,8 +36,7 @@
 						"command": "set_angle_enable",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "use_time",
@@ -51,8 +49,7 @@
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time",
-				"readmeComment": ""
+				"category": "time"
 			},
 			{
 				"property": "angle",
@@ -67,8 +64,7 @@
 						"command": "set_angle",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "poweroff_time",
@@ -83,8 +79,7 @@
 						"command": "set_poweroff_time",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "buzzer",
@@ -99,8 +94,7 @@
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "led_b",
@@ -114,8 +108,7 @@
 						"command": "set_led_b",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "child_lock",
@@ -129,8 +122,7 @@
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "speed_level",
@@ -145,8 +137,7 @@
 						"command": "set_speed_level",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "speed",
@@ -161,8 +152,7 @@
 						"command": "set_speed",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "natural_level",
@@ -177,8 +167,7 @@
 						"command": "set_natural_level",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "temp_dec",
@@ -194,8 +183,7 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "humidity",
@@ -210,8 +198,7 @@
 				"tags": [
 					"Measurement",
 					"Humidity"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "ac_power",
@@ -221,8 +208,7 @@
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "bat_charge",
@@ -232,8 +218,7 @@
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "battery",
@@ -243,8 +228,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "",
@@ -259,8 +243,7 @@
 						"command": "set_move",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

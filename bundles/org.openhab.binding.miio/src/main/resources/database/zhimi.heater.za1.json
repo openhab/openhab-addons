@@ -22,8 +22,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "target_temperature",
@@ -43,8 +42,7 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brightness",
@@ -62,8 +60,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "buzzer",
@@ -77,8 +74,7 @@
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "relative_humidity",
@@ -91,8 +87,7 @@
 				"tags": [
 					"Measurement",
 					"Humidity"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "child_lock",
@@ -106,8 +101,7 @@
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "theqmostat",
@@ -120,8 +114,7 @@
 						"command": "set_theqmostat",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "temperature",
@@ -136,8 +129,7 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "use_time",
@@ -149,8 +141,7 @@
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"actions": [],
-				"category": "time",
-				"readmeComment": ""
+				"category": "time"
 			}
 		],
 		"experimental": true

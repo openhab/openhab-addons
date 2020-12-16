@@ -28,8 +28,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bright",
@@ -57,8 +56,7 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "delayoff",
@@ -81,8 +79,7 @@
 				"tags": [
 					"Setpoint",
 					"Duration"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "ct",
@@ -112,8 +109,7 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "color_mode",
@@ -168,8 +164,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "rgb",
@@ -210,8 +205,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "name",
@@ -225,8 +219,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"category": "text",
-				"readmeComment": ""
+				"category": "text"
 			}
 		]
 	}

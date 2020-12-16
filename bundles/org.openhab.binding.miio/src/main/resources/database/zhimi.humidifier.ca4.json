@@ -24,8 +24,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -45,8 +44,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "fault",
@@ -57,8 +55,7 @@
 				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "humidity",
@@ -75,8 +72,7 @@
 				"tags": [
 					"Measurement",
 					"Humidity"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "target_humidity",
@@ -93,8 +89,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "water_level",
@@ -108,8 +103,7 @@
 				"transformation": "tankLevel",
 				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "water",
-				"readmeComment": ""
+				"category": "water"
 			},
 			{
 				"property": "led_brightness",
@@ -130,8 +124,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "buzzer",
@@ -148,8 +141,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "dry",
@@ -166,8 +158,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "use_time",
@@ -182,8 +173,7 @@
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time",
-				"readmeComment": ""
+				"category": "time"
 			},
 			{
 				"property": "power_time",
@@ -198,8 +188,7 @@
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time",
-				"readmeComment": ""
+				"category": "time"
 			},
 			{
 				"property": "speed_level",
@@ -211,8 +200,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "actual_speed",
@@ -224,8 +212,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "temp_dec",
@@ -243,8 +230,7 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "child_lock",
@@ -261,8 +247,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "button_pressed",
@@ -273,8 +258,7 @@
 				"channelType": "humidifierLastPressedButton",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "clean",
@@ -290,8 +274,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "country_code",
@@ -308,8 +291,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

@@ -22,8 +22,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bright",
@@ -52,8 +51,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "cct",
@@ -68,8 +66,7 @@
 						"command": "set_cct",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "snm",
@@ -84,8 +81,7 @@
 						"command": "apply_scene",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "cid",
@@ -99,8 +95,7 @@
 						"command": "set_cid",
 						"parameterType": "COLOR"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "",
@@ -114,8 +109,7 @@
 						"command": "switch_the_scene",
 						"parameterType": "EMPTY"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "get_switch_en",
@@ -129,8 +123,7 @@
 						"command": "set_switch_en",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "",
@@ -145,8 +138,7 @@
 						"command": "delay_off",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

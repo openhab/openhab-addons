@@ -21,8 +21,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bright",
@@ -51,8 +50,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "cct",
@@ -67,8 +65,7 @@
 						"command": "set_cct",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "snm",
@@ -83,8 +80,7 @@
 						"command": "apply_fixed_scene",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "",
@@ -98,8 +94,7 @@
 						"command": "switch_the_scene",
 						"parameterType": "EMPTY"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "",
@@ -113,8 +108,7 @@
 						"command": "toggle",
 						"parameterType": "EMPTY"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

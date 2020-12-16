@@ -27,8 +27,7 @@
 				"category": "light",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brightness",
@@ -54,8 +53,7 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "color-temperature",
@@ -82,8 +80,7 @@
 				"tags": [
 					"Setpoint",
 					"ColorTemperature"
-				],
-				"readmeComment": ""
+				]
 			}
 		],
 		"experimental": true

@@ -16,8 +16,7 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bright",
@@ -46,8 +45,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "cct",
@@ -62,8 +60,7 @@
 						"command": "set_cct",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "snm",
@@ -78,8 +75,7 @@
 						"command": "apply_scene",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "dv",
@@ -93,8 +89,7 @@
 					{
 						"parameterType": "EMPTY"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "",
@@ -109,8 +104,7 @@
 						"command": "go_night",
 						"parameterType": "EMPTY"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "",
@@ -125,8 +119,7 @@
 						"command": "delay_off",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "",
@@ -140,8 +133,7 @@
 						"command": "toggle",
 						"parameterType": "EMPTY"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

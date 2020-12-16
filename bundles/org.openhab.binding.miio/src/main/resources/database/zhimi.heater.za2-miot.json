@@ -15,8 +15,7 @@
 				"channelType": "miot_uint32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "on",
@@ -36,8 +35,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "target-temperature",
@@ -59,8 +57,7 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "alarm",
@@ -77,8 +74,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "alarm",
-				"readmeComment": ""
+				"category": "alarm"
 			},
 			{
 				"property": "countdown-time",
@@ -95,8 +91,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "relative-humidity",
@@ -111,8 +106,7 @@
 				"tags": [
 					"Measurement",
 					"Humidity"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "temperature",
@@ -129,8 +123,7 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brightness",
@@ -150,8 +143,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "physical-controls-locked",
@@ -167,8 +159,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "use-time",
@@ -181,8 +172,7 @@
 				"unit": "seconds",
 				"refresh": true,
 				"actions": [],
-				"category": "time",
-				"readmeComment": ""
+				"category": "time"
 			}
 		],
 		"experimental": true

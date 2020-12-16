@@ -21,8 +21,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bright",
@@ -50,8 +49,7 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bg_bright",
@@ -66,8 +64,7 @@
 						"command": "bg_set_bright",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "delayoff",
@@ -90,8 +87,7 @@
 				"tags": [
 					"Setpoint",
 					"Duration"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "ct",
@@ -121,8 +117,7 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "color_mode",
@@ -161,8 +156,7 @@
 					]
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "name",
@@ -177,8 +171,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"category": "text",
-				"readmeComment": ""
+				"category": "text"
 			},
 			{
 				"property": "bg_power",
@@ -193,8 +186,7 @@
 						"command": "bg_set_power",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bg_rgb",
@@ -209,8 +201,7 @@
 						"command": "bg_set_rgb",
 						"parameterType": "COLOR"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bg_ct",
@@ -230,8 +221,7 @@
 							500
 						]
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "",
@@ -246,8 +236,7 @@
 						"command": "set_scene",
 						"parameterType": "CUSTOMSTRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bg_lmode",
@@ -256,8 +245,7 @@
 				"channelType": "ambientColorMode",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "nl_br",
@@ -271,8 +259,7 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			}
 		]
 	}

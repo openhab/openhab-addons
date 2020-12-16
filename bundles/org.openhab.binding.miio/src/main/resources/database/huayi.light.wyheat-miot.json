@@ -23,8 +23,7 @@
 				"category": "light",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "brightness",
@@ -50,8 +49,7 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "color-temperature",
@@ -78,8 +76,7 @@
 				"tags": [
 					"Setpoint",
 					"ColorTemperature"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "on1",
@@ -98,8 +95,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "fault",
@@ -140,8 +136,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "screenshow",
@@ -156,8 +151,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			}
 		],
 		"experimental": true

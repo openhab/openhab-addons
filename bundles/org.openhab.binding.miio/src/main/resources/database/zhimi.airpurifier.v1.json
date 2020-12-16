@@ -20,8 +20,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -39,8 +38,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "humidity",
@@ -55,8 +53,7 @@
 				"tags": [
 					"Measurement",
 					"Humidity"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "aqi",
@@ -69,8 +66,7 @@
 				"actions": [],
 				"tags": [
 					"Measurement"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "bright",
@@ -89,8 +85,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "led",
@@ -105,8 +100,7 @@
 						"command": "set_led",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "act_det",
@@ -116,8 +110,7 @@
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "buzzer",
@@ -132,8 +125,7 @@
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "f1_hour",
@@ -143,8 +135,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter1_life",
@@ -154,8 +145,7 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			}
 		]
 	}

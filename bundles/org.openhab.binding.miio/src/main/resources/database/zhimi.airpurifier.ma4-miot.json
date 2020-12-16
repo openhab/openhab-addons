@@ -15,8 +15,7 @@
 				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "on",
@@ -36,8 +35,7 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "fan-level",
@@ -53,8 +51,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "mode",
@@ -73,8 +70,7 @@
 				],
 				"tags": [
 					"Control"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "firmware-revision",
@@ -85,8 +81,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "manufacturer",
@@ -97,8 +92,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "model",
@@ -109,8 +103,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "serial-number",
@@ -121,8 +114,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "pm2.5-density",
@@ -133,8 +125,7 @@
 				"channelType": "miot_float",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "relative-humidity",
@@ -145,8 +136,7 @@
 				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "temperature",
@@ -157,8 +147,7 @@
 				"channelType": "miot_float",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter-life-level",
@@ -169,8 +158,7 @@
 				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter-used-time",
@@ -181,8 +169,7 @@
 				"channelType": "miot_uint16",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "alarm",
@@ -199,8 +186,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "alarm",
-				"readmeComment": ""
+				"category": "alarm"
 			},
 			{
 				"property": "brightness",
@@ -221,8 +207,7 @@
 				"tags": [
 					"Control",
 					"Light"
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "on1",
@@ -238,8 +223,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "physical-controls-locked",
@@ -255,8 +239,7 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "button-pressed",
@@ -267,8 +250,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "filter-max-time",
@@ -284,8 +266,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "filter-hour-used-debug",
@@ -301,8 +282,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "m1-strong",
@@ -318,8 +298,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "m1-high",
@@ -335,8 +314,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "m1-med",
@@ -352,8 +330,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "m1-med-l",
@@ -369,8 +346,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "m1-low",
@@ -386,8 +362,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "m1-silent",
@@ -403,8 +378,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "m1-favorite",
@@ -420,8 +394,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "motor1-speed",
@@ -432,8 +405,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "motor1-set-speed",
@@ -449,8 +421,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "favorite-fan-level",
@@ -466,8 +437,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "use-time",
@@ -479,8 +449,7 @@
 				"type": "Number",
 				"refresh": true,
 				"actions": [],
-				"category": "time",
-				"readmeComment": ""
+				"category": "time"
 			},
 			{
 				"property": "purify-volume",
@@ -491,8 +460,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "average-aqi",
@@ -503,8 +471,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "average-aqi-cnt",
@@ -515,8 +482,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "aqi-zone",
@@ -527,8 +493,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "sensor-state",
@@ -539,8 +504,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "aqi-goodh",
@@ -556,8 +520,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "aqi-runstate",
@@ -568,8 +531,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "aqi-state",
@@ -580,8 +542,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "aqi-updata-heartbeat",
@@ -597,8 +558,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "rfid-tag",
@@ -609,8 +569,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "rfid-factory-id",
@@ -621,8 +580,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "rfid-product-id",
@@ -633,8 +591,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "rfid-time",
@@ -645,8 +602,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "rfid-serial-num",
@@ -657,8 +613,7 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "app-extra",
@@ -674,8 +629,7 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "main-channel",
@@ -686,8 +640,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "slave-channel",
@@ -698,8 +651,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "cola",
@@ -715,8 +667,7 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				],
-				"readmeComment": ""
+				]
 			},
 			{
 				"property": "buttom-door",
@@ -727,8 +678,7 @@
 				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "reboot-cause",
@@ -739,8 +689,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "hw-version",
@@ -751,8 +700,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "i2c-error-count",
@@ -763,8 +711,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			},
 			{
 				"property": "manual-level",
@@ -775,8 +722,7 @@
 				"channelType": "miot_int32",
 				"type": "Number",
 				"refresh": true,
-				"actions": [],
-				"readmeComment": ""
+				"actions": []
 			}
 		]
 	}
