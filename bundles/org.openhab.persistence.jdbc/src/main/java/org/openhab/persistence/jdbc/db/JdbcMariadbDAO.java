@@ -46,6 +46,8 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
      */
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
+        sqlTypes.put("IMAGEITEM", "VARCHAR(16255)");
+        sqlTypes.put("STRINGITEM", "VARCHAR(16255)"); // MariaDB using utf-8 max = 16383, using 16383-128 = 16255
     }
 
     /**
