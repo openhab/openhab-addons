@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -88,6 +88,6 @@ public class WarmupThingHandler extends BaseThingHandler {
      * @return the number of minutes as a {@link QuantityType}
      */
     protected State parseDuration(@Nullable Integer value) {
-        return value != null ? new QuantityType<>(value, SmartHomeUnits.MINUTE) : UnDefType.UNDEF;
+        return value != null ? new QuantityType<>(value, Units.MINUTE) : UnDefType.UNDEF;
     }
 }

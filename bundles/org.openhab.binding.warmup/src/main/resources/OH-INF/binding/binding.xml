@@ -5,6 +5,5 @@
 
 	<name>Warmup Binding</name>
 	<description>This is the binding for a Warmup 4iE Thermostat primarily used for controlling underfloor heating.</description>
-	<author>James Melville</author>
 
 </binding:binding>
