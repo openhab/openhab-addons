@@ -21,7 +21,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "bright",
@@ -50,7 +51,8 @@
 				"tags": [
 					"Control",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "ambstatus",
@@ -65,7 +67,8 @@
 						"command": "enable_amb",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "ambvalue",
@@ -80,7 +83,8 @@
 						"command": "set_amb_bright",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "dvalue",
@@ -89,7 +93,8 @@
 				"channelType": "illumination",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "eyecare",
@@ -104,7 +109,8 @@
 						"command": "set_eyecare",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "bl",
@@ -117,7 +123,8 @@
 						"command": "enable_bl",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			}
 		]
 	}

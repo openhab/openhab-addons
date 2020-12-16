@@ -25,7 +25,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "bright",
@@ -53,7 +54,8 @@
 				"tags": [
 					"Control",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "cct",
@@ -67,7 +69,8 @@
 						"command": "set_cct",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "snm",
@@ -81,7 +84,8 @@
 						"command": "apply_fixed_scene",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "dv",
@@ -91,7 +95,8 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "sw",
@@ -104,7 +109,8 @@
 						"command": "set_scene_switch",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "bl",
@@ -117,7 +123,8 @@
 						"command": "enable_bl",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "ms",
@@ -130,7 +137,8 @@
 						"command": "enable_mibs",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "ac",
@@ -143,7 +151,8 @@
 						"command": "enable_ac",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "",
@@ -158,7 +167,8 @@
 						"command": "delay_off",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "mb",
@@ -171,7 +181,8 @@
 						"command": "enable_mb",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			}
 		],
 		"experimental": true

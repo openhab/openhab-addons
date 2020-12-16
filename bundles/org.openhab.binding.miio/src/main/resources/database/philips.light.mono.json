@@ -20,7 +20,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "bright",
@@ -49,7 +50,8 @@
 				"tags": [
 					"Control",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "scene_num",
@@ -64,7 +66,8 @@
 						"command": "set_user_scene",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			}
 		]
 	}

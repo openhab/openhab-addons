@@ -34,7 +34,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "run_status",
@@ -42,7 +43,8 @@
 				"channel": "run_status",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "temperature",
@@ -57,7 +59,8 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "rinse",
@@ -65,7 +68,8 @@
 				"channel": "rinse",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "tds_in",
@@ -73,7 +77,8 @@
 				"channel": "tds_in",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "tds_out",
@@ -81,7 +86,8 @@
 				"channel": "tds_out",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f1_totalflow",
@@ -89,7 +95,8 @@
 				"channel": "f1_totalflow",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f1_totaltime",
@@ -97,7 +104,8 @@
 				"channel": "f1_totaltime",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f1_usedflow",
@@ -105,7 +113,8 @@
 				"channel": "f1_usedflow",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f1_usedtime",
@@ -113,7 +122,8 @@
 				"channel": "f1_usedtime",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f2_totalflow",
@@ -121,7 +131,8 @@
 				"channel": "f2_totalflow",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f2_totaltime",
@@ -129,7 +140,8 @@
 				"channel": "f2_totaltime",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f2_usedflow",
@@ -137,7 +149,8 @@
 				"channel": "f2_usedflow",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f2_usedtime",
@@ -145,7 +158,8 @@
 				"channel": "f2_usedtime",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f3_totalflow",
@@ -153,7 +167,8 @@
 				"channel": "f3_totalflow",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f3_totaltime",
@@ -161,7 +176,8 @@
 				"channel": "f3_totaltime",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f3_usedflow",
@@ -169,7 +185,8 @@
 				"channel": "f3_usedflow",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "f3_usedtime",
@@ -177,7 +194,8 @@
 				"channel": "f3_usedtime",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			}
 		],
 		"experimental": true

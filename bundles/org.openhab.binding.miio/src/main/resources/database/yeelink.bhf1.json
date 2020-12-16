@@ -20,7 +20,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "bh_mode",
@@ -33,7 +34,8 @@
 						"command": "set_bh_mode",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "bright",
@@ -61,7 +63,8 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "delayoff",
@@ -84,7 +87,8 @@
 				"tags": [
 					"Setpoint",
 					"Duration"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "temperature",
@@ -98,7 +102,8 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "nl_br",
@@ -112,7 +117,8 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			}
 		]
 	}

@@ -15,7 +15,8 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "manufacturer",
@@ -26,7 +27,8 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "model",
@@ -37,7 +39,8 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "serial-number",
@@ -48,7 +51,8 @@
 				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "on",
@@ -68,7 +72,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			}
 		]
 	}

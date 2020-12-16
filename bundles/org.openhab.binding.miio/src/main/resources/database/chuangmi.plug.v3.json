@@ -20,7 +20,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "usb_on",
@@ -35,7 +36,8 @@
 						"command": "set_usb_*",
 						"parameterType": "ONOFFPARA"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "temperature",
@@ -50,7 +52,8 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "wifi_led",
@@ -65,7 +68,8 @@
 						"command": "set_wifi_led",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"readmeComment": ""
 			}
 		]
 	}

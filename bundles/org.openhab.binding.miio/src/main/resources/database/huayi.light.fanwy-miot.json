@@ -23,7 +23,8 @@
 				"category": "light",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "brightness",
@@ -49,7 +50,8 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "color-temperature",
@@ -71,7 +73,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "on1",
@@ -90,7 +93,8 @@
 				"category": "fan",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "fan-level",
@@ -112,7 +116,8 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "motor-reverse",
@@ -127,7 +132,8 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "mode",
@@ -159,7 +165,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [1\u003d\"Normal Wind\",2\u003d\"Natural Wind\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Normal Wind\",\"1\"\u003d\"Natural Wind\"]"
 			}
 		],
 		"experimental": true

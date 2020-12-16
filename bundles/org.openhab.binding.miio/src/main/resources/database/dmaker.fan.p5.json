@@ -20,7 +20,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "roll",
@@ -33,7 +34,8 @@
 						"command": "s_roll",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "mode",
@@ -51,7 +53,8 @@
 				],
 				"tags": [
 					"Control"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "roll_angle",
@@ -66,7 +69,8 @@
 						"command": "s_angle",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "timer_off",
@@ -80,7 +84,8 @@
 						"command": "s_t_off",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "beep_sound",
@@ -94,7 +99,8 @@
 						"command": "s_beep_sound",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "light",
@@ -108,7 +114,8 @@
 						"command": "s_light",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "child_lock",
@@ -122,7 +129,8 @@
 						"command": "s_lock",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "speed",
@@ -137,7 +145,8 @@
 						"command": "s_speed",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			}
 		]
 	}

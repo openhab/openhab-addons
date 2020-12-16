@@ -23,7 +23,8 @@
 				"category": "light",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "brightness",
@@ -49,7 +50,8 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "color-temperature",
@@ -71,7 +73,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "on1",
@@ -90,7 +93,8 @@
 				"category": "fan",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "fan-level",
@@ -112,7 +116,8 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "mode",
@@ -143,7 +148,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [0\u003d\"Basic\",1\u003d\"Natural Wind\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Basic\",\"1\"\u003d\"Natural Wind\"]"
 			},
 			{
 				"property": "time-off",
@@ -165,7 +170,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "pre-colortemp",
@@ -187,7 +193,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "pre-brightness",
@@ -208,7 +215,8 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "pre-speed",
@@ -230,7 +238,8 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "reversal",
@@ -258,7 +267,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [0\u003d\"Positive\",1\u003d\"Reverse\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Positive\",\"1\"\u003d\"Reverse\"]"
 			},
 			{
 				"property": "pre-custom",
@@ -286,7 +295,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [0\u003d\"Switch Off\",1\u003d\"Open\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Switch Off\",\"1\"\u003d\"Open\"]"
 			},
 			{
 				"property": "flabellum",
@@ -301,7 +310,8 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"readmeComment": ""
 			}
 		],
 		"experimental": true

@@ -24,7 +24,8 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "status_seatheat",
@@ -33,7 +34,8 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "water_temp_t",
@@ -52,7 +54,8 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "fan_temp",
@@ -71,7 +74,8 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "status_led",
@@ -84,7 +88,8 @@
 						"command": "work_night_led",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			}
 		],
 		"experimental": true

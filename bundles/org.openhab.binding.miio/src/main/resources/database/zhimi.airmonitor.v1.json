@@ -20,7 +20,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "aqi",
@@ -33,7 +34,8 @@
 				"actions": [],
 				"tags": [
 					"Measurement"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "battery",
@@ -43,7 +45,8 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "usb_state",
@@ -52,7 +55,8 @@
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "time_state",
@@ -61,7 +65,8 @@
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "night_state",
@@ -74,7 +79,8 @@
 						"command": "set_night_state",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "night_beg_time",
@@ -83,7 +89,8 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "night_end_time",
@@ -92,7 +99,8 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			}
 		]
 	}

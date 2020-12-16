@@ -21,7 +21,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "power_consume_rate",
@@ -34,7 +35,8 @@
 					{
 						"parameterType": "EMPTY"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "wifi_led",
@@ -48,7 +50,8 @@
 						"command": "set_wifi_led",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "power_price",
@@ -61,7 +64,8 @@
 						"command": "set_power_price",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "current",
@@ -70,7 +74,8 @@
 				"channelType": "current",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "temperature",
@@ -85,7 +90,8 @@
 				"tags": [
 					"Measurement",
 					"Temperature"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "lp_autooff",
@@ -93,7 +99,8 @@
 				"channel": "lp_autooff",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "lp_autooff_delay",
@@ -101,7 +108,8 @@
 				"channel": "lp_autooff_delay",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "lp_threshold",
@@ -109,7 +117,8 @@
 				"channel": "lp_threshold",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			}
 		]
 	}

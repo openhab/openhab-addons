@@ -124,7 +124,8 @@
 							]
 						}
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "battery-level",
@@ -135,7 +136,8 @@
 				"channelType": "system:battery-level",
 				"type": "Number",
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "charging-state",
@@ -167,7 +169,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [1\u003d\"Charging\",2\u003d\"Not Charging\",4\u003d\"Charging\",5\u003d\"Go Charging\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Charging\",\"1\"\u003d\"Not Charging\",\"1\"\u003d\"Charging\",\"1\"\u003d\"Go Charging\"]"
 			},
 			{
 				"property": "fault",
@@ -187,7 +189,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [0\u003d\"No faults\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"No faults\"]"
 			},
 			{
 				"property": "status",
@@ -231,7 +233,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping [1\u003d\"Sweeping\",2\u003d\"Idle\",3\u003d\"Paused\",4\u003d\"Error\",5\u003d\"Go Charging\",6\u003d\"Charging\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Sweeping\",\"1\"\u003d\"Idle\",\"1\"\u003d\"Paused\",\"1\"\u003d\"Error\",\"1\"\u003d\"Go Charging\",\"1\"\u003d\"Charging\"]"
 			},
 			{
 				"property": "brush-left-time",
@@ -246,7 +248,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "brush-life-level",
@@ -260,7 +263,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "filter-life-level",
@@ -274,7 +278,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "filter-left-time",
@@ -289,7 +294,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "brush-left-time1",
@@ -304,7 +310,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "brush-life-level1",
@@ -318,7 +325,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "work-mode",
@@ -332,7 +340,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "area",
@@ -347,7 +356,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "timer",
@@ -363,7 +373,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "mode",
@@ -402,7 +413,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [0\u003d\"quiet\",1\u003d\"standard\",2\u003d\"medium\",3\u003d\"strong\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"quiet\",\"1\"\u003d\"standard\",\"1\"\u003d\"medium\",\"1\"\u003d\"strong\"]"
 			},
 			{
 				"property": "total-clean-time",
@@ -417,7 +428,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "total-clean-times",
@@ -431,7 +443,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "total-clean-area",
@@ -446,7 +459,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "clean-log-start-time",
@@ -460,7 +474,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "button-led",
@@ -474,7 +489,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "task-done",
@@ -498,7 +514,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [0\u003d\"\",1\u003d\"\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"\",\"1\"\u003d\"\"]"
 			},
 			{
 				"property": "life-sieve",
@@ -514,7 +530,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "life-brush-side",
@@ -529,7 +546,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "life-brush-main",
@@ -544,7 +562,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "enable",
@@ -559,7 +578,8 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "start-time",
@@ -574,7 +594,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "stop-time",
@@ -589,7 +610,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "map-view",
@@ -602,7 +624,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "volume",
@@ -620,7 +643,8 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "voice-packets",
@@ -635,7 +659,8 @@
 						"command": "set_properties",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "time-zone",
@@ -648,7 +673,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			}
 		],
 		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"battery-start-charge\",\"siid\":2,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-start-sweep\",\"siid\":3,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-stop-sweeping\",\"siid\":3,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":26,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":27,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":28,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"clean-start-clean\",\"siid\":18,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"clean-stop-clean\",\"siid\":18,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remote-start-remote\",\"siid\":21,\"aiid\":1,\"in\":[1.0, 2.0]}`\u003cbr /\u003e`action{\"did\":\"remote-stop-remote\",\"siid\":21,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remote-exit-remote\",\"siid\":21,\"aiid\":3,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-map-req\",\"siid\":23,\"aiid\":1,\"in\":[2.0]}`\u003cbr /\u003e`action{\"did\":\"audio-position\",\"siid\":24,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-set-voice\",\"siid\":24,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-play-sound\",\"siid\":24,\"aiid\":3,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",

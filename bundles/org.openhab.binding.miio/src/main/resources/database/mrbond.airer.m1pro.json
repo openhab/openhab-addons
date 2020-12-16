@@ -20,7 +20,8 @@
 						"command": "set_dry",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "led",
@@ -34,7 +35,8 @@
 						"command": "set_lamp",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "motor",
@@ -47,7 +49,8 @@
 						"command": "set_motor",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "drytime",
@@ -60,7 +63,8 @@
 						"command": "set_drytime",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "airer_location",
@@ -73,7 +77,8 @@
 						"command": "set_airer_location",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "disinfect",
@@ -86,7 +91,8 @@
 						"command": "set_disinfect",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "distime",
@@ -99,7 +105,8 @@
 						"command": "set_distime",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			}
 		],
 		"experimental": true

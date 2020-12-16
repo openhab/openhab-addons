@@ -45,7 +45,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "bright",
@@ -73,7 +74,8 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "delayoff",
@@ -96,7 +98,8 @@
 				"tags": [
 					"Setpoint",
 					"Duration"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "ct",
@@ -126,7 +129,8 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "color_mode",
@@ -165,7 +169,8 @@
 					]
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": ""
 			},
 			{
 				"property": "name",
@@ -180,7 +185,8 @@
 						"parameterType": "STRING"
 					}
 				],
-				"category": "text"
+				"category": "text",
+				"readmeComment": ""
 			},
 			{
 				"property": "",
@@ -195,7 +201,8 @@
 						"command": "set_scene",
 						"parameterType": "CUSTOMSTRING"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "nl_br",
@@ -209,7 +216,8 @@
 				"tags": [
 					"Setpoint",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			}
 		]
 	}

@@ -20,7 +20,8 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "bright",
@@ -49,7 +50,8 @@
 				"tags": [
 					"Control",
 					"Light"
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "snm",
@@ -64,7 +66,8 @@
 						"command": "apply_scene",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "flm",
@@ -77,7 +80,8 @@
 						"command": "set_flmvalue",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": ""
 			},
 			{
 				"property": "dv",
@@ -91,7 +95,8 @@
 					{
 						"parameterType": "EMPTY"
 					}
-				]
+				],
+				"readmeComment": ""
 			}
 		]
 	}
