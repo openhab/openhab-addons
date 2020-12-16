@@ -30,6 +30,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -49,10 +50,12 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     public static final int MAX_RETRIES = 2;
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDiscoveryService.class);
     private boolean discoveryRunning = false;
-    private @Nullable ConfigurationAdmin admin;
+    private ConfigurationAdmin admin;
 
-    public AndroidDebugBridgeDiscoveryService() {
+    @Activate
+    public AndroidDebugBridgeDiscoveryService(@Reference ConfigurationAdmin admin) {
         super(SUPPORTED_THING_TYPES, TIMEOUT_MS, false);
+        this.admin = admin;
     }
 
     @Override
@@ -166,19 +169,9 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                 .withProperties(properties).withLabel(String.format("%s (%s)", model, serialNo)).build());
     }
 
-    @Reference
-    void setConfigurationAdmin(ConfigurationAdmin admin) {
-        this.admin = admin;
-    }
-
     private @Nullable Dictionary<String, Object> getConfig() {
-        var currentAdmin = admin;
-        if (currentAdmin == null) {
-            logger.warn("Configuration admin not ready");
-            return null;
-        }
         try {
-            Configuration configOnline = currentAdmin.getConfiguration("binding.androiddebugbridge", null);
+            Configuration configOnline = admin.getConfiguration(BINDING_CONFIGURATION_PID, null);
             Dictionary<String, Object> propsOnline = null;
             if (configOnline != null && configOnline.getProperties() != null) {
                 propsOnline = configOnline.getProperties();

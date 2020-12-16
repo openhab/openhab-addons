@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Miguel Álvarez - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.androiddebugbridge", service = ThingHandlerFactory.class)
+@Component(configurationPid = BINDING_CONFIGURATION_PID, service = ThingHandlerFactory.class)
 public class AndroidDebugBridgeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

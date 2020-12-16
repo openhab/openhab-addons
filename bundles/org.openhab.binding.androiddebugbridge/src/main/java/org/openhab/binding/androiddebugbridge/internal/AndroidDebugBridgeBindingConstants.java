@@ -28,6 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class AndroidDebugBridgeBindingConstants {
 
     private static final String BINDING_ID = "androiddebugbridge";
+    public static final String BINDING_CONFIGURATION_PID = "binding.androiddebugbridge";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ANDROID_DEVICE = new ThingTypeUID(BINDING_ID, "android");
