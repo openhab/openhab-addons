@@ -66,9 +66,9 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     private @Nullable Future<?> pollFuture;
     private @Nullable String authToken;
     private @Nullable GeneratorStatusResponseDTO generators;
-    private Integer refreshInterval = 60;
-    private HttpClient httpClient;
     private GeneracMobileLinkDiscoveryService discoveryService;
+    private HttpClient httpClient;
+    private int refreshIntervalSeconds = 60;
 
     public GeneracMobileLinkAccountHandler(Bridge bridge, HttpClient httpClient,
             GeneracMobileLinkDiscoveryService discoveryService) {
@@ -79,7 +79,6 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("initialize");
         updateStatus(ThingStatus.UNKNOWN);
         authToken = null;
         restartPoll();
@@ -111,14 +110,14 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
 
     private void stopPoll() {
         Future<?> localPollFuture = pollFuture;
-        if (localPollFuture != null && !localPollFuture.isCancelled()) {
+        if (localPollFuture != null) {
             localPollFuture.cancel(false);
         }
     }
 
     private void restartPoll() {
         stopPoll();
-        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
+        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshIntervalSeconds, TimeUnit.SECONDS);
     }
 
     private void poll() {
@@ -137,7 +136,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     private void login() {
         try {
             GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
-            refreshInterval = config.refreshInterval;
+            refreshIntervalSeconds = config.refreshInterval;
             ContentResponse contentResponse = httpClient.newRequest(BASE_URL + "/Users/login").method(HttpMethod.POST)
                     .content(
                             new StringContentProvider(

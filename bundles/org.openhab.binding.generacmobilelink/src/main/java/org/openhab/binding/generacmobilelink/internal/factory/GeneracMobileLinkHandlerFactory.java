@@ -75,11 +75,9 @@ public class GeneracMobileLinkHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            logger.trace("Creating handler for {} ", thingTypeUID);
             GeneracMobileLinkDiscoveryService discoveryService = new GeneracMobileLinkDiscoveryService();
             GeneracMobileLinkAccountHandler accountHandler = new GeneracMobileLinkAccountHandler((Bridge) thing,
                     httpClient, discoveryService);
-            logger.trace("registerService for {} ", thingTypeUID);
             discoveryServiceRegs.put(accountHandler.getThing().getUID(), bundleContext
                     .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
             return accountHandler;
