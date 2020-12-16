@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.gpio.internal.handler;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import eu.xeli.jpigpio.JPigpio;
 
@@ -31,7 +30,7 @@ public interface PigpioBridgeHandler {
     /**
      * Gets the JPigpio instance
      *
-     * @return the JPigpio instance in an Optional
+     * @return the JPigpio instance
      */
-    public Optional<JPigpio> getJPiGpio();
+    public @Nullable JPigpio getJPiGpio();
 }

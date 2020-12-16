@@ -15,8 +15,6 @@
  */
 package org.openhab.binding.gpio.internal.handler;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gpio.internal.configuration.PigpioBridgeConfiguration;
@@ -26,8 +24,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import eu.xeli.jpigpio.JPigpio;
 import eu.xeli.jpigpio.PigpioException;
@@ -43,14 +39,8 @@ import eu.xeli.jpigpio.PigpioSocket;
 @NonNullByDefault
 public class PigpioRemoteBridgeHandler extends BaseBridgeHandler implements PigpioBridgeHandler {
 
-    /** The logger. */
-    private Logger logger = LoggerFactory.getLogger(PigpioRemoteBridgeHandler.class);
-
     /** The JPigpio instance. */
     private @Nullable JPigpio jPigpio;
-
-    /** The config */
-    private @Nullable PigpioBridgeConfiguration config;
 
     /**
      * Instantiates a new pigpio remote bridge handler.
@@ -67,40 +57,36 @@ public class PigpioRemoteBridgeHandler extends BaseBridgeHandler implements Pigp
 
     @Override
     public void initialize() {
-        config = getConfigAs(PigpioBridgeConfiguration.class);
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Config is null.");
-        } else if (config.ipAddress == null) {
+        PigpioBridgeConfiguration config = getConfigAs(PigpioBridgeConfiguration.class);
+        String ipAddress = config.ipAddress;
+        Integer port = config.port;
+
+        if (ipAddress == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to PiGPIO Service on remote raspberry. IP address not set.");
-        } else if (config.port == null) {
+        } else if (port == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to PiGPIO Service on remote raspberry. Port not set.");
         } else {
             try {
-                jPigpio = new PigpioSocket(config.ipAddress, config.port);
+                jPigpio = new PigpioSocket(ipAddress, port);
                 updateStatus(ThingStatus.ONLINE);
             } catch (NumberFormatException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port not numeric");
-                logger.debug("Non numeric port", e);
             } catch (PigpioException e) {
                 if (e.getErrorCode() == PigpioException.PI_BAD_SOCKET_PORT) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "Port out of range");
-
-                    logger.debug("Port out of range", e);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             e.getLocalizedMessage());
-
-                    logger.debug("Unknown jPigpio error", e);
                 }
             }
         }
     }
 
     @Override
-    public Optional<JPigpio> getJPiGpio() {
-        return Optional.ofNullable(jPigpio);
+    public @Nullable JPigpio getJPiGpio() {
+        return jPigpio;
     }
 }
