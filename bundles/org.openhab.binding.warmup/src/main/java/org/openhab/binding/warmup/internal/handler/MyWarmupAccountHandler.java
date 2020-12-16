@@ -95,15 +95,12 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
     public synchronized void refreshFromServer() {
         try {
             queryResponse = api.getStatus();
+            updateStatus(ThingStatus.ONLINE);
         } catch (MyWarmupApiException e) {
             queryResponse = null;
-            logger.debug("{}", e.getMessage(), e);
+            logger.debug("{}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } finally {
-            if (queryResponse != null) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to contact MyWarmup");
-            }
             refreshFromCache();
         }
     }

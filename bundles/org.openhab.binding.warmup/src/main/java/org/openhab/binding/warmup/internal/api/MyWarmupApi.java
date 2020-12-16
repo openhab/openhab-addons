@@ -73,14 +73,13 @@ public class MyWarmupApi {
         this.configuration = configuration;
     }
 
-    private boolean validateSession() throws MyWarmupApiException {
+    private void validateSession() throws MyWarmupApiException {
         if (authToken == null) {
-            return authenticate();
+            authenticate();
         }
-        return true;
     }
 
-    private boolean authenticate() throws MyWarmupApiException {
+    private void authenticate() throws MyWarmupApiException {
 
         String body = GSON.toJson(new AuthRequestDTO(configuration.username, configuration.password,
                 WarmupBindingConstants.AUTH_METHOD, WarmupBindingConstants.AUTH_APP_ID));
@@ -91,7 +90,6 @@ public class MyWarmupApi {
 
         if (ar != null && ar.getStatus() != null && ar.getStatus().getResult().equals("success")) {
             authToken = ar.getResponse().getToken();
-            return true;
         } else {
             throw new MyWarmupApiException("Authentication Failed");
         }
@@ -103,7 +101,7 @@ public class MyWarmupApi {
      * @return The {@link QueryResponseDTO} object if retrieved, else null
      * @throws MyWarmupApiException API callout error
      */
-    public synchronized @Nullable QueryResponseDTO getStatus() throws MyWarmupApiException {
+    public synchronized QueryResponseDTO getStatus() throws MyWarmupApiException {
         return callWarmupGraphQL("query QUERY { user { locations{ id name "
                 + " rooms { id roomName runMode overrideDur targetTemp currentTemp "
                 + " thermostat4ies{ deviceSN lastPoll }}}}}");
@@ -138,20 +136,18 @@ public class MyWarmupApi {
                 locationId, roomId));
     }
 
-    private @Nullable QueryResponseDTO callWarmupGraphQL(String body) throws MyWarmupApiException {
-        if (validateSession()) {
-            ContentResponse response = callWarmup(WarmupBindingConstants.QUERY_ENDPOINT,
-                    "{\"query\": \"" + body + "\"}", true);
+    private QueryResponseDTO callWarmupGraphQL(String body) throws MyWarmupApiException {
+        validateSession();
+        ContentResponse response = callWarmup(WarmupBindingConstants.QUERY_ENDPOINT, "{\"query\": \"" + body + "\"}",
+                true);
 
-            QueryResponseDTO qr = GSON.fromJson(response.getContentAsString(), QueryResponseDTO.class);
+        QueryResponseDTO qr = GSON.fromJson(response.getContentAsString(), QueryResponseDTO.class);
 
-            if (qr != null && qr.getStatus().equals("success")) {
-                return qr;
-            }
+        if (qr != null && qr.getStatus().equals("success")) {
+            return qr;
+        } else {
+            throw new MyWarmupApiException("Unexpected reponse from API");
         }
-
-        authToken = null;
-        return null;
     }
 
     private synchronized ContentResponse callWarmup(String endpoint, String body, Boolean authenticated)
@@ -183,6 +179,7 @@ public class MyWarmupApi {
             } else if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 logger.debug("Authentication failure {} {}", response.getStatus(), response.getContentAsString());
                 authToken = null;
+                throw new MyWarmupApiException("Authentication failure");
             } else {
                 logger.debug("Unexpected response {} {}", response.getStatus(), response.getContentAsString());
             }
