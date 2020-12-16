@@ -27,7 +27,7 @@ The MobileLink account bridge must be added manually. Once added, generator thin
 
 | Parameter       | Description                                                                        |
 |-----------------|------------------------------------------------------------------------------------|
-| userName        | The user name, typically an email address, used to login to the MobileLink service |
+| username        | The user name, typically an email address, used to login to the MobileLink service |
 | password        | The password used to login to the MobileLink service                               |
 | refreshInterval | The frequency to poll for generator updates, minimum duration is 30 seconds        |
 
