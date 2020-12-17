@@ -77,9 +77,10 @@ public class TivoStatusProvider {
      * the current channel is always returned. The connection is then closed (allows the socket to be used by other
      * devices).
      *
-     * * @return {@link TivoStatusData} object
+     * @return {@link TivoStatusData} object
+     * @throws InterruptedException
      */
-    public void statusRefresh() {
+    public void statusRefresh() throws InterruptedException {
         if (tivoStatusData.getConnectionStatus() != ConnectionStatus.INIT) {
             logger.debug(" statusRefresh '{}' - EXISTING status data - '{}'", tivoConfigData.getCfgIdentifier(),
                     tivoStatusData.toString());
@@ -94,8 +95,9 @@ public class TivoStatusProvider {
      *
      * @param tivoCommand the complete command string (KEYWORD + PARAMETERS e.g. SETCH 102) to send.
      * @return {@link TivoStatusData} status data object, contains the result of the command.
+     * @throws InterruptedException
      */
-    public @Nullable TivoStatusData cmdTivoSend(String tivoCommand) {
+    public @Nullable TivoStatusData cmdTivoSend(String tivoCommand) throws InterruptedException {
         boolean connected = connTivoConnect();
         PrintStream streamWriter = this.streamWriter;
 
@@ -243,8 +245,9 @@ public class TivoStatusProvider {
      * {@link connTivoConnect} manages the creation / retry process of the socket connection.
      *
      * @return true = connected, false = not connected
+     * @throws InterruptedException
      */
-    public boolean connTivoConnect() {
+    public boolean connTivoConnect() throws InterruptedException {
         for (int iL = 1; iL <= tivoConfigData.getNumRetry(); iL++) {
             logger.debug(" connTivoConnect '{}' - starting connection process '{}' of '{}'.",
                     tivoConfigData.getCfgIdentifier(), iL, tivoConfigData.getNumRetry());
@@ -276,8 +279,9 @@ public class TivoStatusProvider {
      * true.
      *
      * @param forceDisconnect true = forces a disconnection , false = disconnects in specific situations
+     * @throws InterruptedException
      */
-    public void connTivoDisconnect(boolean forceDisconnect) {
+    public void connTivoDisconnect(boolean forceDisconnect) throws InterruptedException {
         if (forceDisconnect) {
             connSocketDisconnect();
         } else {
@@ -292,8 +296,9 @@ public class TivoStatusProvider {
      * {@link connTivoReconnect} disconnect and reconnect the socket connection to the TiVo.
      *
      * @return boolean true = connection succeeded, false = connection failed
+     * @throws InterruptedException
      */
-    public boolean connTivoReconnect() {
+    public boolean connTivoReconnect() throws InterruptedException {
         connSocketDisconnect();
         doNappTime();
         return connTivoConnect();
@@ -349,8 +354,9 @@ public class TivoStatusProvider {
      *
      * @param pConnect true = make a new connection , false = close existing connection
      * @return boolean true = connection succeeded, false = connection failed
+     * @throws InterruptedException
      */
-    private synchronized boolean connSocketConnect() {
+    private synchronized boolean connSocketConnect() throws InterruptedException {
         logger.debug(" connSocketConnect '{}' - attempting connection to host '{}', port '{}'",
                 tivoConfigData.getCfgIdentifier(), tivoConfigData.getHost(), tivoConfigData.getTcpPort());
 
@@ -402,12 +408,11 @@ public class TivoStatusProvider {
     /**
      * {@link doNappTime} sleeps for the period specified by the getCmdWaitInterval parameter. Primarily used to allow
      * the TiVo time to process responses after a command is issued.
+     * 
+     * @throws InterruptedException
      */
-    public void doNappTime() {
-        try {
-            TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval());
-        } catch (InterruptedException e) {
-        }
+    public void doNappTime() throws InterruptedException {
+        TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval());
     }
 
     public TivoStatusData getServiceStatus() {

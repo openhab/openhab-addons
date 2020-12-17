@@ -107,7 +107,11 @@ public class TiVoHandler extends BaseThingHandler {
                 commandKeyword = "KEYBOARD";
                 break;
         }
-        sendCommand(commandKeyword, commandParameter, currentStatus);
+        try {
+            sendCommand(commandKeyword, commandParameter, currentStatus);
+        } catch (InterruptedException e) {
+            // TiVo handler disposed or openHAB exiting, do nothing
+        }
     }
 
     public void setStatusOffline() {
@@ -115,7 +119,8 @@ public class TiVoHandler extends BaseThingHandler {
                 "Power on device or check network configuration/connection.");
     }
 
-    private void sendCommand(String commandKeyword, String commandParameter, TivoStatusData currentStatus) {
+    private void sendCommand(String commandKeyword, String commandParameter, TivoStatusData currentStatus)
+            throws InterruptedException {
         if (!tivoConnection.isPresent()) {
             return;
         }
@@ -180,7 +185,11 @@ public class TiVoHandler extends BaseThingHandler {
         }
 
         if (tivoConnection.isPresent()) {
-            tivoConnection.get().connTivoDisconnect(true);
+            try {
+                tivoConnection.get().connTivoDisconnect(true);
+            } catch (InterruptedException e) {
+                // TiVo handler disposed or openHAB exiting, do nothing
+            }
             tivoConnection = Optional.empty();
         }
     }
@@ -192,7 +201,13 @@ public class TiVoHandler extends BaseThingHandler {
         Runnable runnable = () -> {
             logger.debug("startPollStatus '{}' @ rate of '{}' seconds", getThing().getUID(),
                     tivoConfigData.getPollInterval());
-            tivoConnection.ifPresent(TivoStatusProvider::statusRefresh);
+            tivoConnection.ifPresent(connection -> {
+                try {
+                    connection.statusRefresh();
+                } catch (InterruptedException e) {
+                    // TiVo handler disposed or openHAB exiting, do nothing
+                }
+            });
         };
 
         if (tivoConfigData.isKeepConnActive()) {
@@ -207,7 +222,13 @@ public class TiVoHandler extends BaseThingHandler {
             logger.debug("Status polling '{}' will start in '{}' seconds.", getThing().getUID(), INIT_POLLING_DELAY_S);
         } else {
             // Just update the status now
-            tivoConnection.ifPresent(TivoStatusProvider::statusRefresh);
+            tivoConnection.ifPresent(connection -> {
+                try {
+                    connection.statusRefresh();
+                } catch (InterruptedException e) {
+                    // TiVo handler disposed or openHAB exiting, do nothing
+                }
+            });
         }
     }
 
@@ -217,8 +238,9 @@ public class TiVoHandler extends BaseThingHandler {
      * @param commandKeyword the TiVo command object.
      * @param command the command parameter.
      * @return TivoStatusData status of the command.
+     * @throws InterruptedException
      */
-    private TivoStatusData chChannelChange(String commandKeyword, String command) {
+    private TivoStatusData chChannelChange(String commandKeyword, String command) throws InterruptedException {
         int channel = -1;
         int subChannel = -1;
 
@@ -243,10 +265,7 @@ public class TiVoHandler extends BaseThingHandler {
 
             // Attempt to execute the command on the tivo
             tivoConnection.get().cmdTivoSend(tmpCommand);
-            try {
-                TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval() * 2);
-            } catch (InterruptedException e) {
-            }
+            TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval() * 2);
 
             tmpStatus = tivoConnection.get().getServiceStatus();
 
