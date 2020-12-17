@@ -58,6 +58,7 @@ public class ReadmeHelper {
     private static final String BASEFILE = "./README.base.md";
     private static final String OUTPUTFILE = "./README.md";
     private static final String DEVICE_NAMES_FILE = "./src/main/resources/misc/device_names.json";
+    private static final boolean UPDATE_OPTION_MAPPING_README_COMMENTS = true;
 
     @Disabled
     public static void main(String[] args) {
@@ -130,7 +131,6 @@ public class ReadmeHelper {
 
     private StringWriter channelList() {
         StringWriter sw = new StringWriter();
-
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
             if (device.getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
                 MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
@@ -154,6 +154,13 @@ public class ReadmeHelper {
             }
         });
         return sw;
+    }
+
+    private String readmeOptionMapping(MiIoBasicChannel channel) {
+        if (channel.getReadmeComment().startsWith("Value mapping")) {
+
+        }
+        return channel.getReadmeComment();
     }
 
     private StringWriter itemFileExamples() {
