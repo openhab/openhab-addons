@@ -140,7 +140,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Basic\",\"1\"\u003d\"Natural Wind\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Basic\",\"1\"\u003d\"Natural Wind\"]"
 			},
 			{
 				"property": "time-off",
@@ -256,7 +256,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Positive\",\"1\"\u003d\"Reverse\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Postitive\",\"1\"\u003d\"Reverse\"]"
 			},
 			{
 				"property": "pre-custom",
@@ -284,7 +284,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Switch Off\",\"1\"\u003d\"Open\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Switch Off\",\"1\"\u003d\"Open\"]"
 			},
 			{
 				"property": "flabellum",

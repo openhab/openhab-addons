@@ -53,7 +53,7 @@
 				"tags": [
 					"Switch"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Off\",\"1\"\u003d\"On\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
 			},
 			{
 				"property": "mode1",
@@ -126,7 +126,7 @@
 				"tags": [
 					"Switch"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Off\",\"1\"\u003d\"On\"]"
+				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
 			},
 			{
 				"property": "mode3",
