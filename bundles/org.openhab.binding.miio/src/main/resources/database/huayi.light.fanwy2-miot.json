@@ -140,9 +140,12 @@
 						"parameterType": "NUMBER"
 					}
 				],
+<<<<<<< HEAD
 				"tags": [
 					"Control"
 				],
+=======
+>>>>>>> refs/remotes/origin/main
 				"readmeComment": "Value mapping [\"1\"\u003d\"Basic\",\"1\"\u003d\"Natural Wind\"]"
 			},
 			{

@@ -184,55 +184,55 @@
 	</channel>
 	<channel name="dslEnable" label="DSL Enable">
 		<item type="Switch"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewEnable"/>
 	</channel>
 	<channel name="dslStatus" label="DSL Status">
 		<item type="Switch"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewStatus"/>
 	</channel>
 	<channel name="dslDownstreamNoiseMargin" label="DSL Downstream Noise Margin">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewDownstreamNoiseMargin"/>
 	</channel>
 	<channel name="dslUpstreamNoiseMargin" label="DSL Upstream Noise Margin">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewUpstreamNoiseMargin"/>
 	</channel>
-	<channel name="dslDownstreamNoiseMargin" label="DSL Downstream Attenuation">
+	<channel name="dslDownstreamAttenuation" label="DSL Downstream Attenuation">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewDownstreamAttenuation"/>
 	</channel>
-	<channel name="dslUpstreamNoiseMargin" label="DSL Upstream Attenuation">
+	<channel name="dslUpstreamAttentuation" label="DSL Upstream Attenuation">
 		<item type="Number:Dimensionless" unit="dB" statePattern="%.1f dB"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetInfo" argument="NewUpstreamAttenuation"/>
 	</channel>
 	<channel name="dslFECErrors" label="DSL FEC Errors">
 		<item type="Number:Dimensionless"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetStatisticsTotal" argument="NewFECErrors"/>
 	</channel>
 	<channel name="dslHECErrors" label="DSL HEC Errors">
 		<item type="Number:Dimensionless"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetStatisticsTotal" argument="NewHECErrors"/>
 	</channel>
 	<channel name="dslCRCErrors" label="DSL CRC Errors">
 		<item type="Number:Dimensionless"/>
-		<service deviceType="urn:dslforum-org:service:WANDSLInterfaceConfig:1"
+		<service deviceType="urn:dslforum-org:device:WANDevice:1"
 			serviceId="urn:WANDSLIfConfig-com:serviceId:WANDSLInterfaceConfig1"/>
 		<getAction name="GetStatisticsTotal" argument="NeCRCErrors"/>
 	</channel>

@@ -231,7 +231,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Sweeping\",\"1\"\u003d\"Idle\",\"1\"\u003d\"Paused\",\"1\"\u003d\"Error\",\"1\"\u003d\"Go Charging\",\"1\"\u003d\"Charging\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Sweeping\",\"2\"\u003d\"Idle\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Go Charging\",\"6\"\u003d\"Charging\"]"
 			},
 			{
 				"property": "brush-left-time",
@@ -402,7 +402,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"quiet\",\"1\"\u003d\"standard\",\"1\"\u003d\"medium\",\"1\"\u003d\"strong\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"quiet\",\"1\"\u003d\"standard\",\"2\"\u003d\"medium\",\"3\"\u003d\"strong\"]"
 			},
 			{
 				"property": "total-clean-time",
