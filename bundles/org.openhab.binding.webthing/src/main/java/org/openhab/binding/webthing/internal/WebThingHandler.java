@@ -294,10 +294,10 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                 var elapsedSinceLastReconnect = Duration.between(lastReconnect.get(), Instant.now());
                 if (isOnline() && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds())) {
                     if (tryReconnect(webThingURI)) {
-                        logger.debug("WebThing {} reconnected. Initiated by periodical reconnect", getWebThingLabel());
+                        logger.debug("WebThing {} reconnected. Initiated by periodic reconnect", getWebThingLabel());
                     } else {
                         logger.debug(
-                                "could not reconnect WebThing {} (periodical reconnect failed). Next trial in {} sec",
+                                "could not reconnect WebThing {} (periodic reconnect failed). Next trial in {} sec",
                                 getWebThingLabel(), HEALTH_CHECK_PERIOD.getSeconds());
                     }
 
