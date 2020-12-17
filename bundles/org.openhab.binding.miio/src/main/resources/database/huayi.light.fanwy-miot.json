@@ -156,13 +156,10 @@
 					}
 				],
 				"category": "fan",
-<<<<<<< HEAD
 				"tags": [
 					"Control"
 				],
-=======
->>>>>>> refs/remotes/origin/main
-				"readmeComment": "Value mapping [\"1\"\u003d\"Normal Wind\",\"1\"\u003d\"Natural Wind\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"Normal Wind\",\"2\"\u003d\"Natural Wind\"]"
 			}
 		],
 		"experimental": true
