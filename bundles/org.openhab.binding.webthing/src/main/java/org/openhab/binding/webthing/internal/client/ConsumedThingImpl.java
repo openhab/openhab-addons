@@ -22,12 +22,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
 import org.slf4j.Logger;
@@ -55,15 +57,16 @@ public class ConsumedThingImpl implements ConsumedThing {
     /**
      * constructor
      *
+     * @param webSocketClient the web socket client to use
      * @param httpClient the http client to use
      * @param webThingURI the identifier of a WebThing resource
      * @param executor executor to use
      * @param errorHandler the error handler
      * @throws IOException it the WebThing can not be connected
      */
-    ConsumedThingImpl(HttpClient httpClient, URI webThingURI, ScheduledExecutorService executor,
-            Consumer<String> errorHandler) throws IOException {
-        this(httpClient, webThingURI, executor, errorHandler, WebSocketConnectionFactory.instance());
+    ConsumedThingImpl(WebSocketClient webSocketClient, HttpClient httpClient, URI webThingURI,
+            ScheduledExecutorService executor, Consumer<String> errorHandler) throws IOException {
+        this(httpClient, webThingURI, executor, errorHandler, WebSocketConnectionFactory.instance(webSocketClient));
     }
 
     /**
@@ -130,8 +133,13 @@ public class ConsumedThingImpl implements ConsumedThing {
                 }
             }
         }
-        throw new RuntimeException("webthing " + webThingURI + " does not support websocket uri. WebThing description: "
+        throw new RuntimeException("WebThing " + webThingURI + " does not support websocket uri. WebThing description: "
                 + this.description);
+    }
+
+    @Override
+    public boolean isAlive() {
+        return isOpen.get() && this.websocketDownstream.isAlive();
     }
 
     @Override
@@ -155,14 +163,14 @@ public class ConsumedThingImpl implements ConsumedThing {
     }
 
     @Override
-    public void observeProperty(String propertyName, PropertyChangedListener listener) {
+    public void observeProperty(String propertyName, BiConsumer<String, Object> listener) {
         this.websocketDownstream.observeProperty(propertyName, listener);
 
         // it may take a long time before the observed property value will be changed. For this reason
         // read and notify the current property value (as starting point)
         try {
             var value = readProperty(propertyName);
-            listener.onPropertyValueChanged(propertyName, value);
+            listener.accept(propertyName, value);
         } catch (PropertyAccessException pae) {
             logger.warn("could not read WebThing {} property {}", webThingURI, propertyName, pae);
         }
@@ -183,6 +191,7 @@ public class ConsumedThingImpl implements ConsumedThing {
             if (value != null) {
                 return value;
             } else {
+                onError("WebThing " + webThingURI + " erroneous");
                 throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri
                         + "). Response does not include " + propertyName + "(" + propertyUri + "): " + body);
             }
@@ -207,6 +216,8 @@ public class ConsumedThingImpl implements ConsumedThing {
                 var response = httpClient.newRequest(propertyUri).method("PUT").content(new StringContentProvider(json))
                         .timeout(30, TimeUnit.SECONDS).send();
                 if (response.getStatus() < 200 || response.getStatus() >= 300) {
+                    onError("WebThing " + webThingURI + "could not write " + propertyName + " (" + propertyUri
+                            + ") with " + newValue);
                     throw new PropertyAccessException(
                             "could not write " + propertyName + " (" + propertyUri + ") with " + newValue);
                 }

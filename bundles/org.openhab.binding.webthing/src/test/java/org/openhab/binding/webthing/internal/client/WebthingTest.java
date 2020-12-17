@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
@@ -25,18 +26,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.websocket.api.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
@@ -185,19 +185,6 @@ public class WebthingTest {
         }
         assertEquals(33.0, propertyChangedListenerImpl.valueRef.get());
 
-        propertyChangedListenerImpl.valueRef.set(null);
-        message = new PropertyStatusMessage();
-        message.messageType = "propertyStatus";
-        message.data = Map.of("target_position", 55);
-        webSocketServerSide.sendShuffledMessageToClient(message);
-
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException ignore) {
-        }
-
-        assertNull(propertyChangedListenerImpl.valueRef.get());
-
         webSocketServerSide.sendCloseToClient();
         assertEquals("websocket closed by peer. ", errorHandler.errorRef.get());
     }
@@ -304,83 +291,183 @@ public class WebthingTest {
             var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
             var webSocket = new WebSocketImpl(webSocketConnection);
             webSocketRef.set(webSocket);
-            webSocketConnection.onOpen(webSocket);
+            webSocketConnection.onWebSocketConnect(webSocket);
             return webSocketConnection;
         }
     }
 
-    public static final class WebSocketImpl implements WebSocket {
-        private final WebSocket.Listener listener;
+    public static final class WebSocketImpl implements Session {
+        private final WebSocketListener listener;
+        private final WebSocketPingPongListener pongListener;
         public AtomicBoolean ignorePing = new AtomicBoolean(false);
 
-        WebSocketImpl(WebSocket.Listener listener) {
-            this.listener = listener;
+        WebSocketImpl(WebSocketConnectionImpl connection) {
+            this.listener = connection;
+            this.pongListener = connection;
+        }
+
+        @Override
+        public void close() {
+        }
+
+        @Override
+        public void close(CloseStatus closeStatus) {
+        }
+
+        @Override
+        public void close(int statusCode, String reason) {
+        }
+
+        @Override
+        public void disconnect() throws IOException {
+        }
+
+        @Override
+        public long getIdleTimeout() {
+            return 0;
+        }
+
+        @Override
+        public InetSocketAddress getLocalAddress() {
+            return null;
+        }
+
+        @Override
+        public WebSocketPolicy getPolicy() {
+            return null;
+        }
+
+        @Override
+        public String getProtocolVersion() {
+            return null;
+        }
+
+        @Override
+        public RemoteEndpoint getRemote() {
+            return new RemoteEndpoint() {
+                @Override
+                public void sendBytes(ByteBuffer data) throws IOException {
+                }
+
+                @Override
+                public Future<Void> sendBytesByFuture(ByteBuffer data) {
+                    return null;
+                }
+
+                @Override
+                public void sendBytes(ByteBuffer data, WriteCallback callback) {
+                }
+
+                @Override
+                public void sendPartialBytes(ByteBuffer fragment, boolean isLast) throws IOException {
+                }
+
+                @Override
+                public void sendPartialString(String fragment, boolean isLast) throws IOException {
+                }
+
+                @Override
+                public void sendPing(ByteBuffer applicationData) throws IOException {
+                    if (!ignorePing.get()) {
+                        pongListener.onWebSocketPong(applicationData);
+                    }
+                }
+
+                @Override
+                public void sendPong(ByteBuffer applicationData) throws IOException {
+                }
+
+                @Override
+                public void sendString(String text) throws IOException {
+                }
+
+                @Override
+                public Future<Void> sendStringByFuture(String text) {
+                    return null;
+                }
+
+                @Override
+                public void sendString(String text, WriteCallback callback) {
+                }
+
+                @Override
+                public BatchMode getBatchMode() {
+                    return null;
+                }
+
+                @Override
+                public void setBatchMode(BatchMode mode) {
+                }
+
+                @Override
+                public InetSocketAddress getInetSocketAddress() {
+                    return null;
+                }
+
+                @Override
+                public void flush() throws IOException {
+                }
+            };
+        }
+
+        @Override
+        public InetSocketAddress getRemoteAddress() {
+            return null;
+        }
+
+        @Override
+        public UpgradeRequest getUpgradeRequest() {
+            return null;
+        }
+
+        @Override
+        public UpgradeResponse getUpgradeResponse() {
+            return null;
+        }
+
+        @Override
+        public boolean isOpen() {
+            return false;
+        }
+
+        @Override
+        public boolean isSecure() {
+            return false;
+        }
+
+        @Override
+        public void setIdleTimeout(long ms) {
+        }
+
+        @Override
+        public SuspendToken suspend() {
+            return null;
         }
 
         public void sendToClient(PropertyStatusMessage message) {
             var data = new Gson().toJson(message);
-            listener.onText(this, data.substring(0, 11), false);
-            listener.onText(this, data.substring(11, 17), false);
-            listener.onText(this, data.substring(17), true);
-        }
-
-        public void sendShuffledMessageToClient(PropertyStatusMessage message) {
-            var data = new Gson().toJson(message);
-            listener.onText(this, data.substring(0, 6), false);
-            listener.onText(this, data.substring(17), true);
+            listener.onWebSocketText(data);
         }
 
         public void sendCloseToClient() {
-            listener.onClose(this, 200, "");
+            listener.onWebSocketClose(200, "");
         }
 
-        public CompletableFuture<WebSocket> sendText(CharSequence data, boolean last) {
-            return null;
-        }
-
-        public CompletableFuture<WebSocket> sendBinary(ByteBuffer data, boolean last) {
-            return null;
-        }
-
-        public CompletableFuture<WebSocket> sendPing(ByteBuffer message) {
+        public CompletableFuture<WebSocket> sendPing(String message) {
             if (!ignorePing.get()) {
-                listener.onPong(this, message);
+                var bytes = message.getBytes(StandardCharsets.UTF_8);
+                listener.onWebSocketBinary(bytes, 0, bytes.length);
             }
             return null;
         }
-
-        public CompletableFuture<WebSocket> sendPong(ByteBuffer message) {
-            return null;
-        }
-
-        public CompletableFuture<WebSocket> sendClose(int statusCode, String reason) {
-            return null;
-        }
-
-        public void request(long n) {
-        }
-
-        public String getSubprotocol() {
-            return null;
-        }
-
-        public boolean isOutputClosed() {
-            return false;
-        }
-
-        public boolean isInputClosed() {
-            return false;
-        }
-
-        public void abort() {
-        }
     }
 
-    private static final class PropertyChangedListenerImpl implements PropertyChangedListener {
+    private static final class PropertyChangedListenerImpl implements BiConsumer<String, Object> {
         public final AtomicReference<String> propertyNameRef = new AtomicReference<>();
         public final AtomicReference<Object> valueRef = new AtomicReference<>();
 
-        public void onPropertyValueChanged(String propertyName, Object value) {
+        @Override
+        public void accept(String propertyName, Object value) {
             propertyNameRef.set(propertyName);
             valueRef.set(value);
         }

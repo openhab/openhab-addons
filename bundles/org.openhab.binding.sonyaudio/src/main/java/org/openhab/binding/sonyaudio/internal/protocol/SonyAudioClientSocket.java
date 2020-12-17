@@ -22,11 +22,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.annotations.*;
+import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.slf4j.Logger;
@@ -143,6 +140,11 @@ public class SonyAudioClientSocket {
                     }
                 });
             }
+        }
+
+        @OnWebSocketFrame
+        public void onFrame(Frame frame) {
+            System.out.println(frame.getType());
         }
 
         @OnWebSocketMessage
