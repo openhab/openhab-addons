@@ -19,6 +19,7 @@
   <modules>
     <!-- automation -->
     <module>org.openhab.automation.groovyscripting</module>
+    <module>org.openhab.automation.jythonscripting</module>
     <!-- io -->
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
