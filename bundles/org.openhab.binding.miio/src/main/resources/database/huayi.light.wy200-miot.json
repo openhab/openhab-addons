@@ -36,7 +36,6 @@
 				"friendlyName": "Light - Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
-				"unit": "percentage",
 				"stateDescription": {
 					"minimum": 1,
 					"maximum": 100,
