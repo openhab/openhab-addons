@@ -14,14 +14,17 @@
 				"channel": "fault",
 				"channelType": "LumiCurtainHagl05_fault",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "No faults"
-					}
-				],
 				"readmeComment": "Value mapping [0\u003d\"No faults\"]"
 			},
 			{
@@ -43,22 +46,25 @@
 				"channel": "status",
 				"channelType": "LumiCurtainHagl05_status",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Stopped"
+						},
+						{
+							"value": "1",
+							"label": "Opening"
+						},
+						{
+							"value": "2",
+							"label": "Closing"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "Stopped"
-					},
-					{
-						"value": 1,
-						"description": "Opening"
-					},
-					{
-						"value": 2,
-						"description": "Closing"
-					}
-				],
 				"readmeComment": "Value mapping [0\u003d\"Stopped\",1\u003d\"Opening\",2\u003d\"Closing\"]"
 			},
 			{
@@ -85,21 +91,23 @@
 				"channel": "manual-enabled",
 				"channelType": "LumiCurtainHagl05_manual-enabled",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Disable"
+						},
+						{
+							"value": "1",
+							"label": "Enable"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
-					}
-				],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "Disable"
-					},
-					{
-						"value": 1,
-						"description": "Enable"
 					}
 				],
 				"readmeComment": "Value mapping [0\u003d\"Disable\",1\u003d\"Enable\"]"
@@ -112,21 +120,23 @@
 				"channel": "polarity",
 				"channelType": "LumiCurtainHagl05_polarity",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Positive"
+						},
+						{
+							"value": "1",
+							"label": "Reverse"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
-					}
-				],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "Positive"
-					},
-					{
-						"value": 1,
-						"description": "Reverse"
 					}
 				],
 				"readmeComment": "Value mapping [0\u003d\"Positive\",1\u003d\"Reverse\"]"
@@ -139,21 +149,23 @@
 				"channel": "pos-limit",
 				"channelType": "LumiCurtainHagl05_pos-limit",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Unlimit"
+						},
+						{
+							"value": "1",
+							"label": "Limit"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
-					}
-				],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "Unlimit"
-					},
-					{
-						"value": 1,
-						"description": "Limit"
 					}
 				],
 				"readmeComment": "Value mapping [0\u003d\"Unlimit\",1\u003d\"Limit\"]"
@@ -166,21 +178,23 @@
 				"channel": "en-night-tip-light",
 				"channelType": "LumiCurtainHagl05_en-night-tip-light",
 				"type": "Switch",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Disable"
+						},
+						{
+							"value": "1",
+							"label": "Enable"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
-					}
-				],
-				"value-list": [
-					{
-						"value": 0,
-						"description": "Disable"
-					},
-					{
-						"value": 1,
-						"description": "Enable"
 					}
 				],
 				"readmeComment": "Value mapping [0\u003d\"Disable\",1\u003d\"Enable\"]"

@@ -61,10 +61,7 @@ public class AmcrestHandler extends ChannelDuplexHandler {
         }
         try {
             String content = msg.toString();
-
-            if (!content.isEmpty()) {
-                ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-            }
+            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             if (content.contains("Error: No Events")) {
                 if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion".equals(requestUrl)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);

@@ -104,6 +104,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
     private Thing feedThing;
     private FeedHandler feedHandler;
     private ChannelUID channelUID;
+    private HttpService httpService;
 
     /**
      * This class is used as a mock for HTTP web server, serving XML feed content.
@@ -175,9 +176,8 @@ public class FeedHandlerTest extends JavaOSGiTest {
         });
     }
 
-    private void registerFeedTestServlet() {
-        HttpService httpService = getService(HttpService.class);
-        assertThat(httpService, is(notNullValue()));
+    private synchronized void registerFeedTestServlet() {
+        waitForAssert(() -> assertThat(httpService = getService(HttpService.class), is(notNullValue())));
         servlet = new FeedServiceMock(DEFAULT_MOCK_CONTENT);
         try {
             httpService.registerServlet(MOCK_SERVLET_PATH, servlet, null, null);
@@ -186,9 +186,8 @@ public class FeedHandlerTest extends JavaOSGiTest {
         }
     }
 
-    private void unregisterFeedTestServlet() {
-        HttpService httpService = getService(HttpService.class);
-        assertThat(httpService, is(notNullValue()));
+    private synchronized void unregisterFeedTestServlet() {
+        waitForAssert(() -> assertThat(httpService = getService(HttpService.class), is(notNullValue())));
         httpService.unregister(MOCK_SERVLET_PATH);
         servlet = null;
     }

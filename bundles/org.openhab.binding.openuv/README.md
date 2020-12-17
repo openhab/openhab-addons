@@ -52,7 +52,8 @@ The OpenUV Report thing that is retrieved has these channels:
 | Channel ID   | Item Type           | Description                                     |
 |--------------|---------------------|-------------------------------------------------|
 | UVIndex      | Number              | UV Index                                        |
-| UVColor      | Color               | Color associated to given UV Index.             |
+| Alert        | Number              | Alert level associated to given UV Index        |
+| UVColor      | Color               | Color associated to given alert level.          |
 | UVMax        | Number              | Max UV Index for the day (at solar noon)        |
 | UVMaxTime    | DateTime            | Max UV Index datetime (solar noon)              |
 | Ozone        | Number:ArealDensity | Ozone level in du (Dobson Units) from OMI data  |

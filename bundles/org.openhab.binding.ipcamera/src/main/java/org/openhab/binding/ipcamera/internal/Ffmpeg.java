@@ -53,10 +53,12 @@ public class Ffmpeg {
     private IpCameraFfmpegThread ipCameraFfmpegThread = new IpCameraFfmpegThread();
     private int keepAlive = 8;
     private boolean running = false;
+    private String password;
 
     public Ffmpeg(IpCameraHandler handle, FFmpegFormat format, String ffmpegLocation, String inputArguments,
             String input, String outArguments, String output, String username, String password) {
         this.format = format;
+        this.password = password;
         ipCameraHandler = handle;
         String altInput = input;
         // Input can be snapshots not just rtsp or http
@@ -169,7 +171,7 @@ public class Ffmpeg {
     public void startConverting() {
         if (!ipCameraFfmpegThread.isAlive()) {
             ipCameraFfmpegThread = new IpCameraFfmpegThread();
-            logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand);
+            logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand.replaceAll(password, "********"));
             ipCameraFfmpegThread.start();
             running = true;
             if (format.equals(FFmpegFormat.HLS)) {

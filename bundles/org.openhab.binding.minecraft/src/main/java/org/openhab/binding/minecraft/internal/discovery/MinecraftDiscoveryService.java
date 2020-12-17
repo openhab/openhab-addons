@@ -145,7 +145,7 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Submit the discovered Devices to the Smarthome inbox,
+     * Submit the discovered Devices to the inbox.
      *
      * @param bridgeUID
      * @param name name of the player
@@ -161,7 +161,7 @@ public class MinecraftDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Submit the discovered Signs to the Smarthome inbox,
+     * Submit the discovered Signs to the inbox.
      *
      * @param bridgeUID
      * @param sign data describing sign

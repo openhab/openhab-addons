@@ -425,11 +425,11 @@ public class HeliosVariable implements Comparable<HeliosVariable> {
                 return "Function " + value;
             case HeliosEasyControlsBindingConstants.HEAT_EXCHANGER_TYPE:
                 switch (value) {
-                    case "0":
-                        return "Plastic";
                     case "1":
-                        return "Aluminium";
+                        return "Plastic";
                     case "2":
+                        return "Aluminium";
+                    case "3":
                         return "Enthalpy";
                 }
                 throw new HeliosException(this.createErrorMessage(value));

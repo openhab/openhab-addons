@@ -25,7 +25,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -139,7 +139,7 @@ public class A5_38_08_Blinds extends _4BSMessage {
             int an = (db1 & 0x7F) * 2;
 
             if ((an >= 0) && (an <= 180)) {
-                return new QuantityType<>(as ? an * -1 : an, SmartHomeUnits.DEGREE_ANGLE);
+                return new QuantityType<>(as ? an * -1 : an, Units.DEGREE_ANGLE);
             }
         }
 

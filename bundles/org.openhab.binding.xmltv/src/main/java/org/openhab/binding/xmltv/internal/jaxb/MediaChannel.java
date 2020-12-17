@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Java class for an channel XML element
- * Renamed to MediaChannel in order to avoid confusion with ESH Channels
+ * Renamed to MediaChannel in order to avoid confusion with Framework Channels
  *
  * @author Gaël L'hopital - Initial contribution
  */
