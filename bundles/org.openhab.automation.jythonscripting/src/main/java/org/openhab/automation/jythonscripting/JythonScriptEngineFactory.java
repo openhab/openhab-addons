@@ -63,16 +63,14 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
         if (existingPythonPath == null || existingPythonPath.isEmpty()) {
             System.setProperty(PYTHON_PATH, DEFAULT_PYTHON_PATH);
         } else if (!existingPythonPath.contains(DEFAULT_PYTHON_PATH)) {
-            Set<String> newPythonPathList = new TreeSet<>(
-                    new ArrayList<>(Arrays.asList(existingPythonPath.split(File.pathSeparator))));
+            Set<String> newPythonPathList = new TreeSet<>(Arrays.asList(existingPythonPath.split(File.pathSeparator)));
             newPythonPathList.add(DEFAULT_PYTHON_PATH);
-            String newPythonPath = String.join(File.pathSeparator, newPythonPathList);
-            System.setProperty(PYTHON_PATH, newPythonPath);
+            System.setProperty(PYTHON_PATH, String.join(File.pathSeparator, newPythonPathList));
         }
 
-        System.setProperty(PYTHON_CACHEDIR,
-                Paths.get(OpenHAB.getUserDataFolder(), "cache", "org.openhab.automation.jythonscripting", "cachedir")
-                        .toString());
+        System.setProperty(PYTHON_CACHEDIR, Paths
+                .get(OpenHAB.getUserDataFolder(), "cache", JythonScriptEngineFactory.class.getPackageName(), "cachedir")
+                .toString());
 
         logPythonPaths();
     }
@@ -96,7 +94,7 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
                 scriptTypes.addAll(factory.getMimeTypes());
             }
         }
-        return List.copyOf(scriptTypes);
+        return scriptTypes;
     }
 
     @Override
@@ -117,11 +115,9 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
 
         String existingPythonPath = System.getProperty(PYTHON_PATH);
         if (existingPythonPath != null && existingPythonPath.contains(DEFAULT_PYTHON_PATH)) {
-            Set<String> newPythonPathList = new TreeSet<>(
-                    new ArrayList<>(Arrays.asList(existingPythonPath.split(File.pathSeparator))));
+            Set<String> newPythonPathList = new TreeSet<>(Arrays.asList(existingPythonPath.split(File.pathSeparator)));
             newPythonPathList.remove(DEFAULT_PYTHON_PATH);
-            String newPythonPath = String.join(File.pathSeparator, newPythonPathList);
-            System.setProperty(PYTHON_PATH, newPythonPath);
+            System.setProperty(PYTHON_PATH, String.join(File.pathSeparator, newPythonPathList));
         }
 
         System.clearProperty(PYTHON_HOME);
