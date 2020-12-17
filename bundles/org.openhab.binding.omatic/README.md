@@ -9,14 +9,14 @@ Examples of usage:
 - Monitor your dishwasher, dryer or washing machine. Once they are finished you will get notified about the cost, consumption and time it took.
 - Send info when the power consumption is above a certain limit for a device.
 
-<img src="https://raw.githubusercontent.com/seaside1/omatic/master/image/omatic.jpg" width=200 />
+<img src="doc/image/omatic.jpg" width=200 />
 
 Please take a look at ThomDietrich's [post](https://community.openhab.org/t/washing-machine-state-machine/15587) in the openHAB forum about monitoring your washing machine.
 The aim of this binding is to simplify the rules and do the state transitions and calculations in a java binding.
 It should thus be easier to write smaller and simpler rules in DSL or Jython to handle the state Machine.
 
 ## States
-<img src="https://github.com/seaside1/omatic/blob/master/image/stateomatic.png" width=200 />
+<img src="doc/image/stateomatic.png" width=200 />
 
 The state machine has the following states: Not Started, Active, Idle, Completed.
 Where the state machine is considered to be running when the state is Active or Idle.
@@ -98,7 +98,7 @@ The binding has no configuration options, all configuration is done at the Thing
 
 ## Full Example
 
-It's recommended to use PaperUI to add and configure the state machines, but this below is an example without the specification of the thing.
+It's recommended to use OpenHAB GUI to add and configure the state machines, but this below is an example without the specification of the thing.
 
 
 items/omatic.items
