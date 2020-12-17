@@ -31,6 +31,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
+import org.openhab.binding.miio.internal.basic.OptionsValueListDTO;
+import org.openhab.binding.miio.internal.basic.StateDescriptionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,6 +144,10 @@ public class ReadmeHelper {
                     sw.write("|------------------|---------|-------------------------------------|------------|\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
+                        if (UPDATE_OPTION_MAPPING_README_COMMENTS
+                                && ch.getReadmeComment().startsWith("Value mapping")) {
+                            ch.setReadmeComment(readmeOptionMapping(ch, device.getModel()));
+                        }
                         sw.write("| " + minLengthString(ch.getChannel(), 16) + " | " + minLengthString(ch.getType(), 7)
                                 + " | " + minLengthString(ch.getFriendlyName(), 35) + " | "
                                 + minLengthString(ch.getReadmeComment(), 10) + " |\n");
@@ -156,11 +162,29 @@ public class ReadmeHelper {
         return sw;
     }
 
-    private String readmeOptionMapping(MiIoBasicChannel channel) {
-        if (channel.getReadmeComment().startsWith("Value mapping")) {
-
+    public String readmeOptionMapping(MiIoBasicChannel channel, String model) {
+        StateDescriptionDTO stateDescription = channel.getStateDescription();
+        if (stateDescription != null && stateDescription.getOptions() != null) {
+            final List<OptionsValueListDTO> options = stateDescription.getOptions();
+            if (options != null && options.size() > 0) {
+                StringBuilder mapping = new StringBuilder();
+                mapping.append("Value mapping [");
+                options.forEach((option) -> {
+                    mapping.append(String.format("\"%s\"=\"%s\",", String.valueOf(option.value),
+                            String.valueOf(option.label)));
+                });
+                mapping.deleteCharAt(mapping.length() - 1);
+                mapping.append("]");
+                String newComment = mapping.toString();
+                if (!channel.getReadmeComment().contentEquals(newComment)) {
+                    LOGGER.info("Channel {} - {} readme comment updated to '{}'", model, channel.getChannel(),
+                            newComment);
+                }
+                return newComment;
+            }
         }
         return channel.getReadmeComment();
+
     }
 
     private StringWriter itemFileExamples() {
