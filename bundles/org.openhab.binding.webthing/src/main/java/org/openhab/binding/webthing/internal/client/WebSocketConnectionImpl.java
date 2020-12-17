@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -123,7 +124,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
 
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
-        onWebSocketError(new IOException("websocket closed by peer. " + reason));
+        onWebSocketError(new IOException("websocket closed by peer. " + Optional.ofNullable(reason).orElse("")));
     }
 
     @Override
