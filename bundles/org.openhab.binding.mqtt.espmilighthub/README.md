@@ -56,7 +56,7 @@ Fill in the MQTT broker fields with the correct details so the hub can connect a
 Now when you use any Milight remote control, you will see MQTT topics being created that should include `level` and `hsb` in the messages.
 If you see `brightness` and not `level`, then go back and follow the above setup steps.
 
-You can use this linux command to watch all MQTT topics from milight:
+You can use this linux command to watch all MQTT topics from Milight:
 
 ```
 mosquitto_sub -u usernamehere -P passwordhere -p 1883 -v -t 'milight/#'
@@ -108,15 +108,12 @@ mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' 
 
 | Channel | Type | Description |
 |-|-|-|
-| level | Dimmer | Level changes the brightness of the globe. |
-| colourTemperature | Dimmer | Change from cool to warm white with this control. |
-| colour | Color | Allows you to change the colour, brightness and saturation of the globe. |
-| discoMode | String | Switch to a Disco mode directly from a drop down list. |
-| bulbMode | String (read only) | Displays the mode the bulb is currently in so that rules can determine if the globe is white, a color, disco modes or night mode are selected. |
-| speedUp | Switch | Send the command to speed up the disco mode. |
-| slowDown | Switch | Send the command to slow down the disco mode. |
-| setWhite | Switch | Change the light to use white LEDs. |
-| nightMode | Switch | Send the command to use night mode which uses a very dim level of light and locks out some features of the remote controls. |
+| `level` | Dimmer | Level changes the brightness of the globe. |
+| `colourTemperature` | Dimmer | Change from cool to warm white with this control. |
+| `colour` | Color | Allows you to change the colour, brightness and saturation of the globe. |
+| `discoMode` | String | Switch to a Disco mode directly from a drop down list. |
+| `bulbMode` | String (read only) | Displays the mode the bulb is currently in so that rules can determine if the globe is white, a color, disco modes or night mode are selected. |
+| `command` | String | Sends the raw commands that the buttons on a remote send. |
 
 ## Note Regarding Transmission Delays
 
@@ -175,8 +172,7 @@ Dimmer Hallway_Level "Front Hall" {channel="mqtt:rgb_cct:0xC2101:Level"}
 Dimmer Hallway_ColourTemperature "White Color Temp" {channel="mqtt:rgb_cct:0xC2101:colourTemperature"}
 Color  Hallway_Colour "Front Hall" ["Lighting"] {channel="mqtt:rgb_cct:0xC2101:colour"}
 String Hallway_DiscoMode "Disco Mode" {channel="mqtt:rgb_cct:0xC2101:discoMode"}
-String Hallway_Command "Command to Send" {channel="mqtt:rgb_cct:0xC2101:command"}
-Switch Hallway_SendCommand "Send Command" {channel="mqtt:rgb_cct:0xC2101:sendCommand"}
+Switch Hallway_Command "Send Command" {channel="mqtt:rgb_cct:0xC2101:command"}
 
 ```
 
@@ -190,7 +186,6 @@ Switch Hallway_SendCommand "Send Command" {channel="mqtt:rgb_cct:0xC2101:sendCom
             Slider      item=Hallway_ColourTemperature
             Colorpicker item=Hallway_Colour
             Selection   item=Hallway_DiscoMode
-            Selection   item=Hallway_Command
-            Switch      item=Hallway_SendCommand mappings=[ON="Send"]        
+            Switch      item=Hallway_Command     
         }
 ```

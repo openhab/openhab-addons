@@ -5,14 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:mqtt:rgb">
-		<parameter name="defaultCommand" type="text" required="true">
-			<label>Default Command</label>
-			<description>When the send command button is pressed, if no selection is made from the command channel then use this
-				command by default. TIP: use "set_white" for RGBW globes to set back to white light quickly.
-			</description>
-			<default>night_mode</default>
-		</parameter>
-
 		<parameter name="oneTriggersNightMode" type="boolean" required="true">
 			<label>1 Triggers Night Mode</label>
 			<description>Night Mode is a much lower level of light and this allows it to be auto selected when your fader/slider
@@ -22,9 +14,10 @@
 		</parameter>
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
-			<label>Default to the lowest level of light when the power fails.</label>
-			<description>If lights loose power from the power switch OR a power outage, they will default to the lowest
-				brightness.
+			<label>When globes are off, default to the lowest level of light if the power fails.</label>
+			<description>If lights loose power from the power switch being cycled OR a power outage, the lights will default to
+				the lowest
+				brightness to prevent waking people.
 			</description>
 			<default>true</default>
 		</parameter>
@@ -47,14 +40,6 @@
 	</config-description>
 
 	<config-description uri="thing-type:mqtt:rgbandcct">
-		<parameter name="defaultCommand" type="text" required="true">
-			<label>Default Command</label>
-			<description>When the send command button is pressed, if no selection is made from the command channel then use this
-				command by default. TIP: use "set_white" for RGBW globes to set back to white light quickly.
-			</description>
-			<default>night_mode</default>
-		</parameter>
-
 		<parameter name="whiteHue" type="integer" required="true" min="-1" max="360">
 			<label>White Hue</label>
 			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set
@@ -94,23 +79,16 @@
 		</parameter>
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
-			<label>Default to the lowest level of light when the power fails.</label>
-			<description>If lights loose power from the power switch OR a power outage, they will default to the lowest
-				brightness.
+			<label>When globes are off, default to the lowest level of light if the power fails.</label>
+			<description>If lights loose power from the power switch being cycled OR a power outage, the lights will default to
+				the lowest
+				brightness to prevent waking people.
 			</description>
 			<default>true</default>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:mqtt:rgbw">
-		<parameter name="defaultCommand" type="text" required="true">
-			<label>Default Command</label>
-			<description>When the send command button is pressed, if no selection is made from the command channel then use this
-				command by default. TIP: use "set_white" for RGBW globes to set back to white light quickly.
-			</description>
-			<default>night_mode</default>
-		</parameter>
-
 		<parameter name="whiteHue" type="integer" required="true" min="-1" max="360">
 			<label>White Hue</label>
 			<description>When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set
@@ -136,9 +114,10 @@
 		</parameter>
 
 		<parameter name="powerFailsToMinimum" type="boolean" required="true">
-			<label>Default to the lowest level of light when the power fails.</label>
-			<description>If lights loose power from the power switch OR a power outage, they will default to the lowest
-				brightness.
+			<label>When globes are off, default to the lowest level of light if the power fails.</label>
+			<description>If lights loose power from the power switch being cycled OR a power outage, the lights will default to
+				the lowest
+				brightness to prevent waking people.
 			</description>
 			<default>true</default>
 		</parameter>

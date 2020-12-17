@@ -18,10 +18,7 @@
 			<channel id="colour" typeId="colour"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
-			<channel id="nightMode" typeId="nightMode"/>
-			<channel id="setWhite" typeId="setWhite"/>
-			<channel id="speedUp" typeId="speedUp"/>
-			<channel id="slowDown" typeId="slowDown"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:rgbandcct"/>
 	</thing-type>
@@ -40,10 +37,7 @@
 			<channel id="colour" typeId="colour"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
-			<channel id="nightMode" typeId="nightMode"/>
-			<channel id="setWhite" typeId="setWhite"/>
-			<channel id="speedUp" typeId="speedUp"/>
-			<channel id="slowDown" typeId="slowDown"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:rgbandcct"/>
 	</thing-type>
@@ -59,6 +53,7 @@
 		<channels>
 			<channel id="level" typeId="level"/>
 			<channel id="colourTemperature" typeId="colourTemperature"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:cct"/>
 	</thing-type>
@@ -74,6 +69,7 @@
 		<channels>
 			<channel id="level" typeId="level"/>
 			<channel id="colourTemperature" typeId="colourTemperature"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:cct"/>
 	</thing-type>
@@ -91,10 +87,7 @@
 			<channel id="colour" typeId="colour"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
-			<channel id="nightMode" typeId="nightMode"/>
-			<channel id="setWhite" typeId="setWhite"/>
-			<channel id="speedUp" typeId="speedUp"/>
-			<channel id="slowDown" typeId="slowDown"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:rgbw"/>
 	</thing-type>
@@ -112,9 +105,7 @@
 			<channel id="colour" typeId="colour"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
-			<channel id="nightMode" typeId="nightMode"/>
-			<channel id="speedUp" typeId="speedUp"/>
-			<channel id="slowDown" typeId="slowDown"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:rgb"/>
 	</thing-type>
@@ -143,28 +134,24 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="nightMode" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Night Mode</label>
-		<description>Send the command to use night mode. </description>
-	</channel-type>
-
-	<channel-type id="speedUp" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Mode Speed Up</label>
-		<description>Send the command to speed up the disco mode</description>
-	</channel-type>
-
-	<channel-type id="slowDown" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Mode Slow Down</label>
-		<description>Send the command to slow down the disco mode</description>
-	</channel-type>
-
-	<channel-type id="setWhite" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Set White</label>
-		<description>Change the light to use white LEDs.</description>
+	<channel-type id="command" advanced="true">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a raw command to the globe/s.</description>
+		<state>
+			<options>
+				<option value="next_mode">Next Mode</option>
+				<option value="previous_mode">Previous Mode</option>
+				<option value="mode_speed_up">Mode Speed Up</option>
+				<option value="mode_speed_down">Mode Speed Down</option>
+				<option value="set_white">Set White</option>
+				<option value="level_down">Level Down</option>
+				<option value="level_up">Level Up</option>
+				<option value="temperature_down">Temperature Down</option>
+				<option value="temperature_up">Temperature Up</option>
+				<option value="night_mode">Night Mode</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="bulbMode" advanced="true">

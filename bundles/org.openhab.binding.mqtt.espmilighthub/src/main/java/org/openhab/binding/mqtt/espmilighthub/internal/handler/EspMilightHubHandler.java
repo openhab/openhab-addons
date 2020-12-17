@@ -230,7 +230,10 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             savedLevel = hsb.getBrightness().toBigDecimal();
             return;
         } else if (command instanceof PercentType) {
-            if (((PercentType) command).intValue() == 1 && config.oneTriggersNightMode) {
+            if (((PercentType) command).intValue() == 0) {
+                turnOff();
+                return;
+            } else if (((PercentType) command).intValue() == 1 && config.oneTriggersNightMode) {
                 sendMQTT("{\"command\":\"night_mode\"}");
                 return;
             }
@@ -261,29 +264,8 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 int scaledCommand = (int) Math.round((370 - (2.17 * Float.valueOf(command.toString()))));
                 sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel + ",\"color_temp\":" + scaledCommand + "}");
                 break;
-            case CHANNEL_NIGHT_MODE:
-                if (command.equals(OnOffType.ON)) {
-                    sendMQTT("{\"command\":\"night_mode\"}");
-                }
-                break;
-            case CHANNEL_SPEED_UP:
-                if (command.equals(OnOffType.ON)) {
-                    sendMQTT("{\"command\":\"mode_speed_up\"}");
-                }
-                break;
-            case CHANNEL_SLOW_DOWN:
-                if (command.equals(OnOffType.ON)) {
-                    sendMQTT("{\"command\":\"mode_speed_down\"}");
-                }
-                break;
-            case CHANNEL_SET_WHITE:
-                if (command.equals(OnOffType.ON)) {
-                    if (globeType.equals("rgbw") || globeType.equals("rgb")) {
-                        sendMQTT("{\"command\":\"set_white\"}");
-                        return;
-                    }
-                    sendMQTT("{\"state\":\"ON\",\"color_temp\":" + config.favouriteWhite + "}");
-                }
+            case CHANNEL_COMMAND:
+                sendMQTT("{\"command\":\"" + command + "\"}");
                 break;
             case CHANNEL_DISCO_MODE:
                 sendMQTT("{\"mode\":\"" + command + "\"}");
