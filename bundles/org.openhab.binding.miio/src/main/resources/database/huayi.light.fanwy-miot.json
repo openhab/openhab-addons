@@ -32,7 +32,6 @@
 				"friendlyName": "Light - Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
-				"unit": "percentage",
 				"stateDescription": {
 					"minimum": 1,
 					"maximum": 100,
@@ -87,7 +86,8 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				],"category": "fan",
+				],
+				"category": "fan",
 				"tags": [
 					"Switch"
 				]
@@ -155,9 +155,8 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				
-					"category": "fan"
-				,"readmeComment": "Value mapping [1\u003d\"Normal Wind\",2\u003d\"Natural Wind\"]"
+				"category": "fan",
+				"readmeComment": "Value mapping [\"1\"\u003d\"Normal Wind\",\"1\"\u003d\"Natural Wind\"]"
 			}
 		],
 		"experimental": true

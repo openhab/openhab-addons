@@ -32,7 +32,6 @@
 				"friendlyName": "Light - Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
-				"unit": "percentage",
 				"stateDescription": {
 					"minimum": 1,
 					"maximum": 100,
@@ -116,7 +115,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [0\u003d\"No Faults\"]"
+				"readmeComment": "Value mapping [\"1\"\u003d\"No Faults\"]"
 			},
 			{
 				"property": "heat-level",
