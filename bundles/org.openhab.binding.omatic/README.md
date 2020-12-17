@@ -1,6 +1,6 @@
 # State O-Matic Binding
 The State O-Matic Binding will enable you to monitor electrical devices such as
-washing machine, dryer , dishwasher, electrical car charging and so on.
+washing machine, dryer, dishwasher, electrical car charging and so on.
 The component is generic and any type of equipment can be monitored as long as
 it is possible to read its power consumption.
 
