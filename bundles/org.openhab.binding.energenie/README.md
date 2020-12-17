@@ -9,8 +9,7 @@ The Binding supports PM2-LAN, PMS-LAN, PMS2-LAN or PMS-WLAN power extenders as w
 
 ## Discovery
 
-Gembird energenie devices don't support autodiscovery.
-All Things need to be created manually either in PaperUI or within Things files.
+Gembird energenie devices don't support autodiscovery, all Things need to be created manually.
 
 ## Binding Configuration
 
