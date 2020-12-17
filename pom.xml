@@ -76,6 +76,7 @@
 
     <bnd.importpackage/>
     <bnd.exportpackage/>
+    <bnd.fixupmessages/>
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
@@ -153,7 +154,8 @@ Import-Package: \\
   ${bnd.exportpackage}
 -sources: false
 -contract: *
--includeresource: ${bnd.includeresource}]]></bnd>
+-includeresource: ${bnd.includeresource}
+-fixupmessages: ${bnd.fixupmessages}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
           </configuration>
