@@ -153,7 +153,6 @@ public class ReadmeHelper {
                                 + minLengthString(ch.getReadmeComment(), 10) + " |\n");
                     }
                     sw.write("\n");
-
                 } else {
                     LOGGER.info("Pls check: Device not found in db: {}", device);
                 }
@@ -162,7 +161,7 @@ public class ReadmeHelper {
         return sw;
     }
 
-    public String readmeOptionMapping(MiIoBasicChannel channel, String model) {
+    public static String readmeOptionMapping(MiIoBasicChannel channel, String model) {
         StateDescriptionDTO stateDescription = channel.getStateDescription();
         if (stateDescription != null && stateDescription.getOptions() != null) {
             final List<OptionsValueListDTO> options = stateDescription.getOptions();
@@ -184,7 +183,6 @@ public class ReadmeHelper {
             }
         }
         return channel.getReadmeComment();
-
     }
 
     private StringWriter itemFileExamples() {
