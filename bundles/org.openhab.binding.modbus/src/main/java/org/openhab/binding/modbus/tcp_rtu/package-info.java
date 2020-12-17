@@ -1,1 +1,0 @@
-package org.openhab.binding.modbus.tcp_rtu;
