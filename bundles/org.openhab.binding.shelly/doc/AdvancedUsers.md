@@ -70,25 +70,3 @@ This can be achieved by
 
 When the IP address changes for a device you need to delete the Thing and then re-discover the device.
 In this case channel linkage gets lost and you need to re-link the channels/items.
-
-## Log optimization
-
-The binding provides channels (e.g. heartBeat, currentWatts), which might cause a lot of log output, especially when having multiple dozen Shellys.
-
-openHAB has an integrated feature to filter the event log.
-This mechanism doesn't filter the event, but the log output (items still receive the updates).
-
-A configuration is added as a new section to `openhab2-userdata/etc/org.ops4j.pax.logging.cfg`
-
-Based on this you could use the following config:
-
-```
-# custom filtering rules
-log4j2.appender.event.filter.uselessevents.type = RegexFilter
-log4j2.appender.event.filter.uselessevents.regex = .*(heartBeat|LastUpdate|lastUpdate|LetzteAktualisierung|Uptime|Laufzeit|ZuletztGesehen).*
-log4j2.appender.event.filter.uselessevents.onMatch = DENY
-log4j2.appender.event.filter.uselessevents.onMisMatch = NEUTRAL
-```
-
-This filters events for items heartBeat, lastUpdate, LetzteAktualisierung, Uptime, Laufzeit, ZuletztGesehen. Replace those strings with the items you want to filter. Use a list of items to reduce logging.
-Please note: Once events are filtered they are not show anymore in the logfile, you can’t find them later.

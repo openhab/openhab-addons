@@ -6,7 +6,7 @@
 
 ## Use Case
 
-![](images/oh_image1.png)   ![](images/oh_image2.png)   ![](https://shelly.cloud/wp-content/uploads/2020/06/shelly25.jpg)
+![](images/oh_image1.png)   ![](https://shelly.cloud/wp-content/uploads/2020/06/shelly25.jpg)   ![](images/oh_image2.png)
 
 More and more people have rollers, which are equipped with a motor and button control improving your comfort when operating the shutter.
 
