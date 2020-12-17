@@ -11,7 +11,7 @@ Examples of usage:
 
 <img src="https://raw.githubusercontent.com/seaside1/omatic/master/image/omatic.jpg" width=200 />
 
-Please take a look at ThomDietrich post in OpenHAB forums about monitoring your washingmachine https://community.openhab.org/t/washing-machine-state-machine/15587
+Please take a look at ThomDietrich's [post](https://community.openhab.org/t/washing-machine-state-machine/15587) in the openHAB forum about monitoring your washing machine.
 The aim of this binding is to simplify the rules and do the state transitions and calculations in a java binding.
 It should thus be easier to write smaller and simpler rules in DSL or Jython to handle the state Machine.
 
