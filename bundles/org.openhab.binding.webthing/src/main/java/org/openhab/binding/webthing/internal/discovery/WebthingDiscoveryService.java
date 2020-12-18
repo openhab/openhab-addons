@@ -174,9 +174,9 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
                 for (var discoveryResult : discoverWebThing(serviceInfo)) {
                     results.add(discoveryResult);
                     thingDiscovered(discoveryResult);
-                    logger.debug("WebThing '{}' ({}) discovered (id: {})", discoveryResult.getLabel(),
+                    logger.debug("WebThing '{}' (uri: {}, id: {}, schema: {}) discovered", discoveryResult.getLabel(),
                             discoveryResult.getProperties().get("webThingURI"),
-                            discoveryResult.getProperties().get("id"));
+                            discoveryResult.getProperties().get("id"), discoveryResult.getProperties().get("schema"));
                 }
             } catch (Exception e) {
                 logger.warn("error occurred by discovering {}", serviceInfo.getNiceTextString(), e);
@@ -263,6 +263,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
             var thingUID = new ThingUID(THING_TYPE_UID, id);
             Map<String, Object> properties = new HashMap<>(1);
             properties.put("id", id);
+            properties.put("schema", description.contextKeyword);
             return Optional.of(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_UID)
                     .withProperty("webThingURI", uri).withLabel(description.title).withProperties(properties)
                     .withRepresentationProperty("id").build());

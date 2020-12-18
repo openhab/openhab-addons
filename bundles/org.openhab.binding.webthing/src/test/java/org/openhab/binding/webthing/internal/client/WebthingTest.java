@@ -65,6 +65,36 @@ public class WebthingTest {
     }
 
     @Test
+    public void testWebthingDescriptionUnsetSchema() throws Exception {
+        var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
+        var request = mockRequest(null, load("/unsetschema_response.json"));
+        when(httpClient.newRequest(URI.create("http://example.org:8090"))).thenReturn(request);
+
+        var request2 = mockRequest(null, load("/windsensor_property.json"));
+        when(httpClient.newRequest(URI.create("http://example.org:8090/properties/windspeed"))).thenReturn(request2);
+
+        var webthing = createTestWebthing("http://example.org:8090", httpClient);
+        var metadata = webthing.getThingDescription();
+        assertEquals("Wind", metadata.title);
+    }
+
+    @Test
+    public void testWebthingDescriptionUNsupportedSchema() throws Exception {
+        var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
+        var request = mockRequest(null, load("/unknownschema_response.json"));
+        when(httpClient.newRequest(URI.create("http://example.org:8090"))).thenReturn(request);
+
+        try {
+            createTestWebthing("http://example.org:8090", httpClient);
+            fail();
+        } catch (IOException e) {
+            assertEquals(
+                    "unsupported schema (@context parameter) https://www.w3.org/2019/wot/td/v1 (Supported schemas are https://webthings.io/schemas and https://iot.mozilla.org/schemas)",
+                    e.getMessage());
+        }
+    }
+
+    @Test
     public void testReadReadOnlyProperty() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
         var request = mockRequest(null, load("/windsensor_response.json"));

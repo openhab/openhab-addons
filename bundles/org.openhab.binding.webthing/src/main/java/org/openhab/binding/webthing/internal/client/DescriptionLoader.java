@@ -15,6 +15,7 @@ package org.openhab.binding.webthing.internal.client;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -22,6 +23,8 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -33,6 +36,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class DescriptionLoader {
+    private final Logger logger = LoggerFactory.getLogger(DescriptionLoader.class);
     private final HttpClient httpClient;
 
     /**
@@ -62,7 +66,18 @@ public class DescriptionLoader {
             var body = response.getContentAsString();
             var description = new Gson().fromJson(body, WebThingDescription.class);
             if ((description.properties != null) && (description.properties.size() > 0)) {
-                return description;
+                if ((description.contextKeyword == null) || description.contextKeyword.trim().length() == 0) {
+                    description.contextKeyword = "https://webthings.io/schemas";
+                }
+                var schema = description.contextKeyword.replaceFirst("/$", "").toLowerCase(Locale.US).trim();
+                if (schema.equals("https://webthings.io/schemas") || schema.equals("https://iot.mozilla.org/schemas")) {
+                    return description;
+                }
+                logger.debug(
+                        "WebThing {} detected with unsupported schema {} (Supported schemas are https://webthings.io/schemas and https://iot.mozilla.org/schemas)",
+                        webthingURI, description.contextKeyword);
+                throw new IOException("unsupported schema (@context parameter) " + description.contextKeyword
+                        + " (Supported schemas are https://webthings.io/schemas and https://iot.mozilla.org/schemas)");
             } else {
                 throw new IOException("description does not include properties");
             }

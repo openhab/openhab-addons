@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The Web Thing Description. Refer https://iot.mozilla.org/wot/#web-thing-description
  *
@@ -26,6 +28,9 @@ public class WebThingDescription {
     public String id = null;
 
     public String title = "";
+
+    @SerializedName("@context")
+    public String contextKeyword = "";
 
     public Map<String, Property> properties = Map.of();
 
