@@ -82,7 +82,7 @@ public class DescriptionLoader {
                 throw new IOException("description does not include properties");
             }
         } catch (ExecutionException | TimeoutException e) {
-            throw new IOException("error occurred by querying WebThing", e);
+            throw new IOException("error occurred by calling WebThing", e);
         } catch (JsonSyntaxException se) {
             throw new IOException("resource seems not to be a WebThing. Typo?");
         } catch (InterruptedException ie) {
