@@ -36,6 +36,7 @@ package org.openhab.binding.lgwebos.internal.handler.command;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 
 import com.google.gson.JsonElement;
@@ -57,11 +58,11 @@ public class ServiceCommand<T> {
     protected Type type;
     protected JsonObject payload;
     protected String target;
-    protected Function<JsonObject, T> converter;
+    protected Function<JsonObject, @Nullable T> converter;
 
     ResponseListener<T> responseListener;
 
-    public ServiceCommand(String targetURL, JsonObject payload, Function<JsonObject, T> converter,
+    public ServiceCommand(String targetURL, JsonObject payload, Function<JsonObject, @Nullable T> converter,
             ResponseListener<T> listener) {
         this.target = targetURL;
         this.payload = payload;
