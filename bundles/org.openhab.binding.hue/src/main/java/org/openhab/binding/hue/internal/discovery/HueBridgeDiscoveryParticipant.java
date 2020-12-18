@@ -51,13 +51,14 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
+        String serialNumber = device.getDetails().getSerialNumber();
         ThingUID uid = getThingUID(device);
-        if (uid != null) {
+        if (uid != null && serialNumber != null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(HOST, device.getDetails().getBaseURL().getHost());
             properties.put(PORT, device.getDetails().getBaseURL().getPort());
             properties.put(PROTOCOL, device.getDetails().getBaseURL().getProtocol());
-            properties.put(PROPERTY_SERIAL_NUMBER, device.getDetails().getSerialNumber().toLowerCase());
+            properties.put(PROPERTY_SERIAL_NUMBER, serialNumber.toLowerCase());
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(PROPERTY_SERIAL_NUMBER)
@@ -73,11 +74,12 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         DeviceDetails details = device.getDetails();
         if (details != null) {
             ModelDetails modelDetails = details.getModelDetails();
-            if (modelDetails != null) {
+            String serialNumber = details.getSerialNumber();
+            if (modelDetails != null && serialNumber != null) {
                 String modelName = modelDetails.getModelName();
                 if (modelName != null) {
                     if (modelName.startsWith("Philips hue bridge")) {
-                        return new ThingUID(THING_TYPE_BRIDGE, details.getSerialNumber().toLowerCase());
+                        return new ThingUID(THING_TYPE_BRIDGE, serialNumber.toLowerCase());
                     }
                 }
             }
