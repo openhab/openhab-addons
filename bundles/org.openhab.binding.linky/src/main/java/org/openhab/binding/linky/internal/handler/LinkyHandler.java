@@ -65,8 +65,8 @@ import com.google.gson.Gson;
 public class LinkyHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
 
-    private static final int REFRESH_FIRST_HOUR_OF_DAY = 5;
-    private static final int REFRESH_INTERVAL_IN_MIN = 360;
+    private static final int REFRESH_FIRST_HOUR_OF_DAY = 2;
+    private static final int REFRESH_INTERVAL_IN_MIN = 180;
 
     private final HttpClient httpClient;
     private final Gson gson;
@@ -91,7 +91,30 @@ public class LinkyHandler extends BaseThingHandler {
 
         this.cachedDailyData = new ExpiringDayCache<>("daily cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
-            return getConsumptionData(today.minusDays(15), today);
+            Consumption consumption = getConsumptionData(today.minusDays(15), today);
+            if (consumption != null) {
+                Aggregate days = consumption.aggregats.days;
+                Aggregate weeks = consumption.aggregats.weeks;
+                if (logger.isDebugEnabled()) {
+                    for (int i = 0; i < days.datas.size(); i++) {
+                        logger.debug("Day {} {} value {}",
+                                days.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                days.periodes.get(i).dateFin.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                days.datas.get(i));
+                    }
+                    for (int i = 0; i < weeks.datas.size(); i++) {
+                        logger.debug("Weeek {} {} value {}",
+                                weeks.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                weeks.periodes.get(i).dateFin.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                weeks.datas.get(i));
+                    }
+                }
+                if (days.datas.get(days.datas.size() - 1).isNaN()) {
+                    logger.debug("Dayly data including yesterday are not yet available");
+                    consumption = null;
+                }
+            }
+            return consumption;
         });
 
         this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
@@ -102,12 +125,46 @@ public class LinkyHandler extends BaseThingHandler {
 
         this.cachedMonthlyData = new ExpiringDayCache<>("monthly cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
-            return getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
+            Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
+            if (consumption != null) {
+                Aggregate days = consumption.aggregats.days;
+                Aggregate months = consumption.aggregats.months;
+                if (logger.isDebugEnabled()) {
+                    for (int i = 0; i < months.datas.size(); i++) {
+                        logger.debug("Month {} {} value {}",
+                                months.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                months.periodes.get(i).dateFin.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                months.datas.get(i));
+                    }
+                }
+                if (days.datas.get(days.datas.size() - 1).isNaN()) {
+                    logger.debug("Monthly data including yesterday are not yet available");
+                    consumption = null;
+                }
+            }
+            return consumption;
         });
 
         this.cachedYearlyData = new ExpiringDayCache<>("yearly cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
-            return getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
+            Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
+            if (consumption != null) {
+                Aggregate days = consumption.aggregats.days;
+                Aggregate years = consumption.aggregats.years;
+                if (logger.isDebugEnabled()) {
+                    for (int i = 0; i < years.datas.size(); i++) {
+                        logger.debug("Year {} {} value {}",
+                                years.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                years.periodes.get(i).dateFin.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                                years.datas.get(i));
+                    }
+                }
+                if (days.datas.get(days.datas.size() - 1).isNaN()) {
+                    logger.debug("Yearly data including yesterday are not yet available");
+                    consumption = null;
+                }
+            }
+            return consumption;
         });
     }
 
@@ -178,12 +235,8 @@ public class LinkyHandler extends BaseThingHandler {
         if (isLinked(PEAK_POWER) || isLinked(PEAK_TIMESTAMP)) {
             cachedPowerData.getValue().ifPresent(values -> {
                 Aggregate days = values.aggregats.days;
-                if (days.datas.size() == 0 || days.periodes.size() == 0) {
-                    logger.debug("Daily power data are without any period/data");
-                } else {
-                    updateVAChannel(PEAK_POWER, days.datas.get(0));
-                    updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(0).dateDebut));
-                }
+                updateVAChannel(PEAK_POWER, days.datas.get(0));
+                updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(0).dateDebut));
             });
         }
     }
@@ -192,30 +245,10 @@ public class LinkyHandler extends BaseThingHandler {
      * Request new dayly/weekly data and updates channels
      */
     private synchronized void updateDailyData() {
-        if (isLinked(YESTERDAY) || isLinked(THIS_WEEK)) {
+        if (isLinked(YESTERDAY)) {
             cachedDailyData.getValue().ifPresent(values -> {
                 Aggregate days = values.aggregats.days;
-                if (days.periodes.size() > days.datas.size()) {
-                    logger.debug("Daily data are invalid: not a data for each period");
-                    return;
-                }
-                int maxValue = days.periodes.size() - 1;
-                int thisWeekNumber = days.periodes.get(maxValue).dateDebut.get(weekFields.weekOfWeekBasedYear());
-                double yesterday = days.datas.get(maxValue);
-                double thisWeek = 0.00;
-
-                for (int i = maxValue; i >= 0; i--) {
-                    int weekNumber = days.periodes.get(i).dateDebut.get(weekFields.weekOfWeekBasedYear());
-                    if (weekNumber == thisWeekNumber) {
-                        Double value = days.datas.get(i);
-                        thisWeek += !value.isNaN() ? value : 0;
-                    } else {
-                        break;
-                    }
-                }
-
-                updateKwhChannel(YESTERDAY, yesterday);
-                updateKwhChannel(THIS_WEEK, thisWeek);
+                updateKwhChannel(YESTERDAY, days.datas.get(days.datas.size() - 1));
             });
         }
     }
@@ -224,14 +257,21 @@ public class LinkyHandler extends BaseThingHandler {
      * Request new weekly data and updates channels
      */
     private synchronized void updateWeeklyData() {
-        if (isLinked(LAST_WEEK)) {
+        if (isLinked(LAST_WEEK) || isLinked(THIS_WEEK)) {
             cachedDailyData.getValue().ifPresent(values -> {
+                Aggregate days = values.aggregats.days;
+                int idxLast = days.periodes.get(days.periodes.size() - 1).dateDebut.get(weekFields.dayOfWeek()) == 7 ? 2
+                        : 1;
                 Aggregate weeks = values.aggregats.weeks;
-                if (weeks.datas.size() > 1) {
-                    updateKwhChannel(LAST_WEEK, weeks.datas.get(1));
+                if (weeks.datas.size() > idxLast) {
+                    updateKwhChannel(LAST_WEEK, weeks.datas.get(idxLast));
                 } else {
-                    logger.debug("Weekly data are without last week data");
                     updateKwhChannel(LAST_WEEK, Double.NaN);
+                }
+                if (weeks.datas.size() > (idxLast + 1)) {
+                    updateKwhChannel(THIS_WEEK, weeks.datas.get(idxLast + 1));
+                } else {
+                    updateKwhChannel(THIS_WEEK, Double.NaN);
                 }
             });
         }
@@ -244,18 +284,11 @@ public class LinkyHandler extends BaseThingHandler {
         if (isLinked(LAST_MONTH) || isLinked(THIS_MONTH)) {
             cachedMonthlyData.getValue().ifPresent(values -> {
                 Aggregate months = values.aggregats.months;
-                if (months.datas.size() == 0) {
-                    logger.debug("Monthly data are without any data");
-                    updateKwhChannel(LAST_MONTH, Double.NaN);
-                    updateKwhChannel(THIS_MONTH, Double.NaN);
+                updateKwhChannel(LAST_MONTH, months.datas.get(0));
+                if (months.datas.size() > 1) {
+                    updateKwhChannel(THIS_MONTH, months.datas.get(1));
                 } else {
-                    updateKwhChannel(LAST_MONTH, months.datas.get(0));
-                    if (months.datas.size() > 1) {
-                        updateKwhChannel(THIS_MONTH, months.datas.get(1));
-                    } else {
-                        logger.debug("Monthly data are without current month data");
-                        updateKwhChannel(THIS_MONTH, Double.NaN);
-                    }
+                    updateKwhChannel(THIS_MONTH, Double.NaN);
                 }
             });
         }
@@ -268,18 +301,11 @@ public class LinkyHandler extends BaseThingHandler {
         if (isLinked(LAST_YEAR) || isLinked(THIS_YEAR)) {
             cachedYearlyData.getValue().ifPresent(values -> {
                 Aggregate years = values.aggregats.years;
-                if (years.datas.size() == 0) {
-                    logger.debug("Yearly data are without any data");
-                    updateKwhChannel(LAST_YEAR, Double.NaN);
-                    updateKwhChannel(THIS_YEAR, Double.NaN);
+                updateKwhChannel(LAST_YEAR, years.datas.get(0));
+                if (years.datas.size() > 1) {
+                    updateKwhChannel(THIS_YEAR, years.datas.get(1));
                 } else {
-                    updateKwhChannel(LAST_YEAR, years.datas.get(0));
-                    if (years.datas.size() > 1) {
-                        updateKwhChannel(THIS_YEAR, years.datas.get(1));
-                    } else {
-                        logger.debug("Yearly data are without current year data");
-                        updateKwhChannel(THIS_YEAR, Double.NaN);
-                    }
+                    updateKwhChannel(THIS_YEAR, Double.NaN);
                 }
             });
         }
@@ -315,7 +341,7 @@ public class LinkyHandler extends BaseThingHandler {
         List<String> report = new ArrayList<>();
         if (startDay.getYear() == endDay.getYear() && startDay.getMonthValue() == endDay.getMonthValue()) {
             // All values in the same month
-            Consumption result = getConsumptionData(startDay, endDay);
+            Consumption result = getConsumptionData(startDay, endDay.plusDays(1));
             if (result != null) {
                 Aggregate days = result.aggregats.days;
                 for (int i = 0; i < days.datas.size(); i++) {
@@ -410,10 +436,10 @@ public class LinkyHandler extends BaseThingHandler {
             boolean connectedBefore = isConnected();
             switch (channelUID.getId()) {
                 case YESTERDAY:
-                case THIS_WEEK:
                     updateDailyData();
                     break;
                 case LAST_WEEK:
+                case THIS_WEEK:
                     updateWeeklyData();
                     break;
                 case LAST_MONTH:

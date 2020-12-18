@@ -256,8 +256,15 @@ public class EnedisHttpApi {
         if (data.isEmpty()) {
             throw new LinkyException(String.format("Requesting '%s' returned an empty response", url));
         }
+        logger.trace("getData returned {}", data);
         try {
             ConsumptionReport report = gson.fromJson(data, ConsumptionReport.class);
+            try {
+                report.checkData();
+            } catch (LinkyException e) {
+                throw new LinkyException(
+                        String.format("Requesting '%s' returned an invalid response: %s", url, e.getMessage()));
+            }
             return report.firstLevel.consumptions;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
