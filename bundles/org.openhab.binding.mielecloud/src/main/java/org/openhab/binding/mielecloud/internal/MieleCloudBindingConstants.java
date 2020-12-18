@@ -217,6 +217,7 @@ public final class MieleCloudBindingConstants {
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_NOT_CONFIGURED = "@text/mielecloud.bridge.status.access.token.not.configured";
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED = "@text/mielecloud.bridge.status.account.not.authorized";
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_REFRESH_FAILED = "@text/mielecloud.bridge.status.access.token.refresh.failed";
+        public static final String BRIDGE_STATUS_DESCRIPTION_TRANSIENT_HTTP_ERROR = "@text/mielecloud.bridge.status.transient.http.error";
 
         public static final String THING_STATUS_DESCRIPTION_WEBSERVICE_MISSING = "@text/mielecloud.thing.status.webservice.missing";
         public static final String THING_STATUS_DESCRIPTION_REMOVED = "@text/mielecloud.thing.status.removed";

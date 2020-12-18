@@ -395,7 +395,8 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
         getHandler().onConnectionError(ConnectionError.SERVER_ERROR, 10);
 
         // then:
-        assertThingStatusIs(ThingStatus.OFFLINE);
+        assertThingStatusIs(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                I18NKeys.BRIDGE_STATUS_DESCRIPTION_TRANSIENT_HTTP_ERROR);
     }
 
     @Test
@@ -408,7 +409,8 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
         getHandler().onConnectionError(ConnectionError.REQUEST_INTERRUPTED, 10);
 
         // then:
-        assertThingStatusIs(ThingStatus.OFFLINE);
+        assertThingStatusIs(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                I18NKeys.BRIDGE_STATUS_DESCRIPTION_TRANSIENT_HTTP_ERROR);
     }
 
     @Test
@@ -421,7 +423,8 @@ public class MieleBridgeHandlerTest extends OpenHabOsgiTest {
         getHandler().onConnectionError(ConnectionError.OTHER_HTTP_ERROR, 10);
 
         // then:
-        assertThingStatusIs(ThingStatus.OFFLINE);
+        assertThingStatusIs(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                I18NKeys.BRIDGE_STATUS_DESCRIPTION_TRANSIENT_HTTP_ERROR);
     }
 
     @Test
