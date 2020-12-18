@@ -70,7 +70,8 @@ public class GardenaSmartWebSocket {
         this.token = token;
         this.socketId = socketId;
 
-        webSocketClient = webSocketFactory.createWebSocketClient(socketId);
+        String webSocketId = String.valueOf(hashCode());
+        webSocketClient = webSocketFactory.createWebSocketClient(webSocketId);
         webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
         webSocketClient.setStopTimeout(3000);
         webSocketClient.setMaxIdleTimeout(150000);
