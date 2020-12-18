@@ -32,8 +32,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author James Melville - Initial contribution
@@ -41,7 +39,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MyWarmupAccountHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(MyWarmupAccountHandler.class);
     private final MyWarmupApi api;
 
     private @Nullable QueryResponseDTO queryResponse = null;
@@ -98,7 +95,6 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (MyWarmupApiException e) {
             queryResponse = null;
-            logger.debug("{}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } finally {
             refreshFromCache();
