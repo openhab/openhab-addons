@@ -157,6 +157,9 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     }
 
     public void onError(String reason) {
+        if (reason == null) {
+            reason = "";
+        }
         var wasConnectedBefore = isOnline();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
 
@@ -165,10 +168,10 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::close);
 
         if (wasConnectedBefore) { // to reduce log messages, just log in case of connection state changed
-            logger.info("WebThing {} disconnected. {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
+            logger.info("WebThing {} disconnected {}. Try reconnect (each {} sec)", getWebThingLabel(), reason.trim(),
                     HEALTH_CHECK_PERIOD.getSeconds());
         } else {
-            logger.debug("WebThing {} is offline. {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
+            logger.debug("WebThing {} is offline {}. Try reconnect (each {} sec)", getWebThingLabel(), reason.trim(),
                     HEALTH_CHECK_PERIOD.getSeconds());
         }
     }
