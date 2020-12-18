@@ -24,7 +24,7 @@
       org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
   </properties>
 
-  <!-- For whatever reason the luaj develops never released their latest version on Maven Central, once they do this can
+  <!-- For whatever reason the luaj developers never released their latest version on Maven Central, once they do this can
     be removed -->
   <repositories>
     <repository>
