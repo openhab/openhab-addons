@@ -100,6 +100,11 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     }
 
     private void createDiscoveryResult(DeviceState deviceState, ThingTypeUID thingTypeUid) {
+        MieleBridgeHandler bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler == null) {
+            return;
+        }
+
         ThingUID thingUid = new ThingUID(thingTypeUid, bridgeHandler.getThing().getUID(),
                 deviceState.getDeviceIdentifier());
 

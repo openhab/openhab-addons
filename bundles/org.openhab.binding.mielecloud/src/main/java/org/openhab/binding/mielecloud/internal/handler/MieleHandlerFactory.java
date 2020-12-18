@@ -38,8 +38,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Factory producing the {@link ThingHandler}s for all things supported by this binding.
@@ -50,8 +48,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.mielecloud")
 public class MieleHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_WASHING_MACHINE,
             THING_TYPE_WASHER_DRYER, THING_TYPE_COFFEE_SYSTEM, THING_TYPE_FRIDGE_FREEZER, THING_TYPE_FRIDGE,
             THING_TYPE_FREEZER, THING_TYPE_OVEN, THING_TYPE_WINE_STORAGE, THING_TYPE_HOB, THING_TYPE_DRYER,

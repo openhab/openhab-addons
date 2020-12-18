@@ -72,9 +72,13 @@ public final class ResultServlet extends AbstractRedirectionServlet {
         try {
             ThingUID bridgeId = authorizationHandler.getBridgeUid();
 
+            StringBuffer requestUrl = request.getRequestURL();
+            if (requestUrl == null) {
+                return "/mielecloud/failure?" + FailureServlet.MISSING_REQUEST_URL_PARAMETER_NAME + "=true";
+            }
+
             try {
-                authorizationHandler
-                        .completeAuthorization(request.getRequestURL().toString() + "?" + request.getQueryString());
+                authorizationHandler.completeAuthorization(requestUrl.toString() + "?" + request.getQueryString());
             } catch (OAuthException e) {
                 logger.warn("Failed to complete authorization.", e);
                 return "/mielecloud/failure?" + FailureServlet.FAILED_TO_COMPLETE_AUTHORIZATION_PARAMETER_NAME

@@ -70,11 +70,12 @@ public class AuthorizationFailedRetryStrategy implements RetryStrategy {
             refreshToken();
         } catch (MieleWebserviceException e) {
             // Workaround for HTML response from cloud in case of a 401 HTTP error.
-            if (!(e.getCause() instanceof ExecutionException)) {
+            var cause = e.getCause();
+            if (cause == null || !(cause instanceof ExecutionException)) {
                 throw e;
             }
 
-            if (!JETTY_401_HEADER_BODY_MISMATCH_EXCEPTION_MESSAGE.equals(e.getCause().getMessage())) {
+            if (!JETTY_401_HEADER_BODY_MISMATCH_EXCEPTION_MESSAGE.equals(cause.getMessage())) {
                 throw e;
             }
 

@@ -34,6 +34,7 @@ public class FailureServlet extends AbstractShowPageServlet {
     public static final String FAILED_TO_COMPLETE_AUTHORIZATION_PARAMETER_NAME = "failedToCompleteAuthorization";
     public static final String MISSING_BRIDGE_UID_PARAMETER_NAME = "missingBridgeUid";
     public static final String MALFORMED_BRIDGE_UID_PARAMETER_NAME = "malformedBridgeUid";
+    public static final String MISSING_REQUEST_URL_PARAMETER_NAME = "missingRequestUrl";
 
     public static final String OAUTH2_ERROR_ACCESS_DENIED = "access_denied";
     public static final String OAUTH2_ERROR_INVALID_REQUEST = "invalid_request";
@@ -47,7 +48,7 @@ public class FailureServlet extends AbstractShowPageServlet {
 
     /**
      * Creates a new {@link FailureServlet}.
-     * 
+     *
      * @param resourceLoader Loader to use for resources.
      */
     public FailureServlet(ResourceLoader resourceLoader) {
@@ -75,6 +76,8 @@ public class FailureServlet extends AbstractShowPageServlet {
             return "Missing bridge UID.";
         } else if (ServletUtil.isParameterEnabled(request, MALFORMED_BRIDGE_UID_PARAMETER_NAME)) {
             return "Malformed bridge UID.";
+        } else if (ServletUtil.isParameterEnabled(request, MISSING_REQUEST_URL_PARAMETER_NAME)) {
+            return "Missing request URL. Please try the config flow again.";
         } else {
             return "Unknown error.";
         }

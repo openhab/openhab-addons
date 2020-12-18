@@ -80,15 +80,11 @@ public class SseConnectionTest {
     private Request mockRequest() {
         Request request = mock(Request.class);
         when(request.onResponseHeaders(any())).thenAnswer(invocation -> {
-            if (invocation != null) {
-                registeredHeadersListener = invocation.getArgument(0);
-            }
+            registeredHeadersListener = invocation.getArgument(0);
             return request;
         });
         when(request.onComplete(any())).thenAnswer(invocation -> {
-            if (invocation != null) {
-                registeredCompleteListener = invocation.getArgument(0);
-            }
+            registeredCompleteListener = invocation.getArgument(0);
             return request;
         });
         when(request.idleTimeout(anyLong(), any())).thenReturn(request);

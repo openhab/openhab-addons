@@ -91,8 +91,13 @@ public final class ForwardToLoginServlet extends AbstractRedirectionServlet {
             return getErrorRedirectUrlWithExpiryTime(e.getOngoingAuthorizationExpiryTimestamp());
         }
 
+        StringBuffer requestUrl = request.getRequestURL();
+        if (requestUrl == null) {
+            return getErrorRedirectionUrl(PairAccountServlet.MISSING_REQUEST_URL_PARAMETER_NAME);
+        }
+
         try {
-            return authorizationHandler.getAuthorizationUrl(deriveRedirectUri(request.getRequestURL().toString()));
+            return authorizationHandler.getAuthorizationUrl(deriveRedirectUri(requestUrl.toString()));
         } catch (NoOngoingAuthorizationException e) {
             logger.warn(
                     "Failed to create authorization URL: There was no ongoing authorization although we just started one.");

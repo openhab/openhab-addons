@@ -40,6 +40,7 @@ public final class PairAccountServlet extends AbstractShowPageServlet {
     public static final String ONGOING_AUTHORIZATION_IN_STEP1_EXPIRES_IN_MINUTES_PARAMETER_NAME = "ongoingAuthorizationInStep1ExpiresInMinutes";
     public static final String ONGOING_AUTHORIZATION_UNKNOWN_EXPIRY_TIME = "unknown";
     public static final String NO_ONGOING_AUTHORIZATION_IN_STEP2_PARAMETER_NAME = "noOngoingAuthorizationInStep2";
+    public static final String MISSING_REQUEST_URL_PARAMETER_NAME = "missingRequestUrl";
 
     private static final String PAIR_ACCOUNT_SKELETON = "pairing.html";
 
@@ -105,6 +106,9 @@ public final class PairAccountServlet extends AbstractShowPageServlet {
         } else if (ServletUtil.isParameterEnabled(request, NO_ONGOING_AUTHORIZATION_IN_STEP2_PARAMETER_NAME)) {
             return skeleton.replace(ERROR_MESSAGE_PLACEHOLDER,
                     "<div class=\"alert alert-danger\" role=\"alert\">Failed to start auhtorization process. Are you trying to perform multiple authorizations at the same time?</div>");
+        } else if (ServletUtil.isParameterEnabled(request, MISSING_REQUEST_URL_PARAMETER_NAME)) {
+            return skeleton.replace(ERROR_MESSAGE_PLACEHOLDER,
+                    "<div class=\"alert alert-danger\" role=\"alert\">Missing request URL. Please try again.</div>");
         } else {
             return skeleton.replace(ERROR_MESSAGE_PLACEHOLDER, "");
         }

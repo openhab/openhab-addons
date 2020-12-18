@@ -525,7 +525,7 @@ public class DeviceState {
             return Optional.empty();
         }
 
-        return Optional.of(list.get(index));
+        return Optional.ofNullable(list.get(index));
     }
 
     private boolean deviceIsInOffState() {
