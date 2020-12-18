@@ -188,7 +188,10 @@ public class FeedHandlerTest extends JavaOSGiTest {
 
     private synchronized void unregisterFeedTestServlet() {
         waitForAssert(() -> assertThat(httpService = getService(HttpService.class), is(notNullValue())));
-        httpService.unregister(MOCK_SERVLET_PATH);
+        try {
+            httpService.unregister(MOCK_SERVLET_PATH);
+        } catch (IllegalArgumentException ignore) {
+        }
         servlet = null;
     }
 
