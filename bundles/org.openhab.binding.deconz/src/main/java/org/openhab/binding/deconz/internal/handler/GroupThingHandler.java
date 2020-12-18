@@ -113,7 +113,7 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
                 if (command instanceof StringType) {
                     String sceneId = scenes.get(command.toString());
                     if (sceneId != null) {
-                        sendCommand(null, command, channelUID, "scene/" + sceneId + "/recall", null);
+                        sendCommand(null, command, channelUID, "scenes/" + sceneId + "/recall", null);
                     } else {
                         logger.debug("Ignoring command {} for {}, scene is not found in available scenes: {}", command,
                                 channelUID, scenes);
