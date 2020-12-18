@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-public class MeterRealtimeDetails {
+public class MeterRealtimeDetailsDTO {
     @SerializedName("Manufacturer")
     private String manufacturer;
     @SerializedName("Model")

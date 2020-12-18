@@ -20,6 +20,7 @@ import org.openhab.binding.fronius.internal.api.BaseFroniusResponse;
 import org.openhab.binding.fronius.internal.api.ValueUnit;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -128,6 +129,8 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             state = new DecimalType(((ValueUnit) value).getValue());
         } else if (value instanceof String) {
             state = new StringType((String) value);
+        } else if (value instanceof QuantityType) {
+            state = (QuantityType) value;
         } else {
             logger.warn("Update channel {}: Unsupported value type {}", channelId, value.getClass().getSimpleName());
         }

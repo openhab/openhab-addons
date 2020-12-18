@@ -20,15 +20,18 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-public class MeterRealtimeBody {
+public class MeterRealtimeBodyDTO {
     @SerializedName("Data")
-    private MeterRealtimeBodyData data;
+    private MeterRealtimeBodyDataDTO data;
 
-    public MeterRealtimeBodyData getData() {
+    public MeterRealtimeBodyDataDTO getData() {
+        if (data == null) {
+            data = new MeterRealtimeBodyDataDTO();
+        }
         return data;
     }
 
-    public void setData(MeterRealtimeBodyData data) {
+    public void setData(MeterRealtimeBodyDataDTO data) {
         this.data = data;
     }
 }

@@ -20,18 +20,18 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-public class MeterRealtimeResponse extends BaseFroniusResponse {
+public class MeterRealtimeResponseDTO extends BaseFroniusResponse {
     @SerializedName("Body")
-    private MeterRealtimeBody body;
+    private MeterRealtimeBodyDTO body;
 
-    public MeterRealtimeBody getBody() {
+    public MeterRealtimeBodyDTO getBody() {
         if (body == null) {
-            body = new MeterRealtimeBody();
+            body = new MeterRealtimeBodyDTO();
         }
         return body;
     }
 
-    public void setBody(MeterRealtimeBody body) {
+    public void setBody(MeterRealtimeBodyDTO body) {
         this.body = body;
     }
 }

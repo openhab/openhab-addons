@@ -64,26 +64,37 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ### Channels for `meter` Thing
 
-| Channel ID              | Item Type | Description                                                                                                                                                                                                              |
-| ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `model`                 | String    | The model name of the meter                                                                                                                                                                                              |
-| `serial`                | String    | The serial number of the meter                                                                                                                                                                                           |
-| `enable`                | Number    | 1 = enabled, 0 = disabled                                                                                                                                                                                                |
-| `location`              | Number    | 0 = grid interconnection point (primary meter)<br/> 1 = load (primary meter)   <br />3 = external generator (secondary meters)(multiple)<br />256-511 = subloads (secondary meters)(unique). Refer to Fronius Solar API. |
-| `currentacphase1`       | Number    | AC Current on Phase 1                                                                                                                                                                                                    |
-| `currentacphase2`       | Number    | AC Current on Phase 2                                                                                                                                                                                                    |
-| `currentacphase3`       | Number    | AC Current on Phase 3                                                                                                                                                                                                    |
-| `voltageacphase1`       | Number    | AC Voltage on Phase 1                                                                                                                                                                                                    |
-| `voltageacphase2`       | Number    | AC Voltage on Phase 2                                                                                                                                                                                                    |
-| `voltageacphase3`       | Number    | AC Voltage on Phase 3                                                                                                                                                                                                    |
-| `powerrealphase1`       | Number    | Real Power on Phase 1                                                                                                                                                                                                    |
-| `powerrealphase2`       | Number    | Real Power on Phase 2                                                                                                                                                                                                    |
-| `powerrealphase3`       | Number    | Real Power on Phase 3                                                                                                                                                                                                    |
-| `powerfactorphase1`     | Number    | Power Factor on Phase 1                                                                                                                                                                                                  |
-| `powerfactorphase2`     | Number    | Power Factor on Phase 2                                                                                                                                                                                                  |
-| `powerfactorphase3`     | Number    | Power Factor on Phase 3                                                                                                                                                                                                  |
-| `energyrealsumconsumed` | Number    | Real Energy consumed                                                                                                                                                                                                     |
-| `energyrealsumproduced` | Number    | Real Energy produced                                                                                                                                                                                                     |
+| Channel ID              | Item Type              | Description                                                                                                                                                                                                              |
+| ----------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `enable`                | Number                 | 1 = enabled, 0 = disabled                                                                                                                                                                                                |
+| `location`              | Number                 | 0 = grid interconnection point (primary meter)<br/> 1 = load (primary meter)   <br />3 = external generator (secondary meters)(multiple)<br />256-511 = subloads (secondary meters)(unique). Refer to Fronius Solar API. |
+| `currentacphase1`       | Number:ElectricCurrent | AC Current on Phase 1                                                                                                                                                                                                    |
+| `currentacphase2`       | Number:ElectricCurrent | AC Current on Phase 2                                                                                                                                                                                                    |
+| `currentacphase3`       | Number:ElectricCurrent | AC Current on Phase 3                                                                                                                                                                                                    |
+| `voltageacphase1`       | Number:Voltage         | AC Voltage on Phase 1                                                                                                                                                                                                    |
+| `voltageacphase2`       | Number:Voltage         | AC Voltage on Phase 2                                                                                                                                                                                                    |
+| `voltageacphase3`       | Number:Voltage         | AC Voltage on Phase 3                                                                                                                                                                                                    |
+| `powerrealphase1`       | Number:Voltage         | Real Power on Phase 1                                                                                                                                                                                                    |
+| `powerrealphase2`       | Number:Power           | Real Power on Phase 2                                                                                                                                                                                                    |
+| `powerrealphase3`       | Number:Power           | Real Power on Phase 3                                                                                                                                                                                                    |
+| `powerfactorphase1`     | Number                 | Power Factor on Phase 1                                                                                                                                                                                                  |
+| `powerfactorphase2`     | Number                 | Power Factor on Phase 2                                                                                                                                                                                                  |
+| `powerfactorphase3`     | Number                 | Power Factor on Phase 3                                                                                                                                                                                                  |
+| `energyrealsumconsumed` | Number:Energy          | Real Energy consumed                                                                                                                                                                                                     |
+| `energyrealsumproduced` | Number:Energy          | Real Energy produced                                                                                                                                                                                                     |
+|                         |
+
+
+
+
+## Properties
+
+The `meter` thing has the following properties:
+
+| Property | Description                    |
+| -------- | ------------------------------ |
+| `model`  | The model name of the meter    |
+| `serial` | The serial number of the meter |
 
 ## Full Example
 
@@ -114,22 +125,20 @@ Number Grid_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflow
 Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
 Number Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
 
-String Meter_Model { channel="fronius:meter:mybridge:mymeter:model" }
-String Meter_Serial { channel="fronius:meter:mybridge:mymeter:serial" }
 Number Meter_Enable { channel="fronius:meter:mybridge:mymeter:enable" }
 Number Meter_Location { channel="fronius:meter:mybridge:mymeter:location" }
-Number Meter_CurrentPhase1 { channel="fronius:meter:mybridge:mymeter:currentacphase1" }
-Number Meter_CurrentPhase2 { channel="fronius:meter:mybridge:mymeter:currentacphase2" }
-Number Meter_CurrentPhase3 { channel="fronius:meter:mybridge:mymeter:currentacphase3" }
-Number Meter_VoltagePhase1 { channel="fronius:meter:mybridge:mymeter:voltageacphase1" }
-Number Meter_VoltagePhase2 { channel="fronius:meter:mybridge:mymeter:voltageacphase2" }
-Number Meter_VoltagePhase3 { channel="fronius:meter:mybridge:mymeter:voltageacphase3" }
-Number Meter_PowerPhase1 { channel="fronius:meter:mybridge:mymeter:powerrealphase1" }
-Number Meter_PowerPhase2 { channel="fronius:meter:mybridge:mymeter:powerrealphase2" }
-Number Meter_PowerPhase3 { channel="fronius:meter:mybridge:mymeter:powerrealphase3" }
+Number:ElectricCurrent Meter_CurrentPhase1 { channel="fronius:meter:mybridge:mymeter:currentacphase1" }
+Number:ElectricCurrent Meter_CurrentPhase2 { channel="fronius:meter:mybridge:mymeter:currentacphase2" }
+Number:ElectricCurrent Meter_CurrentPhase3 { channel="fronius:meter:mybridge:mymeter:currentacphase3" }
+Number:Voltage Meter_VoltagePhase1 { channel="fronius:meter:mybridge:mymeter:voltageacphase1" }
+Number:Voltage Meter_VoltagePhase2 { channel="fronius:meter:mybridge:mymeter:voltageacphase2" }
+Number:Voltage Meter_VoltagePhase3 { channel="fronius:meter:mybridge:mymeter:voltageacphase3" }
+Number:Power Meter_PowerPhase1 { channel="fronius:meter:mybridge:mymeter:powerrealphase1" }
+Number:Power Meter_PowerPhase2 { channel="fronius:meter:mybridge:mymeter:powerrealphase2" }
+Number:Power Meter_PowerPhase3 { channel="fronius:meter:mybridge:mymeter:powerrealphase3" }
 Number Meter_PowerFactorPhase1 { channel="fronius:meter:mybridge:mymeter:powerfactorphase1" }
 Number Meter_PowerFactorPhase2 { channel="fronius:meter:mybridge:mymeter:powerfactorphase2" }
 Number Meter_PowerFactorPhase3 { channel="fronius:meter:mybridge:mymeter:powerfactorphase3" }
-Number Meter_EnergyConsumed { channel="fronius:meter:mybridge:mymeter:energyrealsumconsumed" }
-Number Meter_EnergyProduced { channel="fronius:meter:mybridge:mymeter:energyrealsumproduced" }
+Number:Energy Meter_EnergyConsumed { channel="fronius:meter:mybridge:mymeter:energyrealsumconsumed" }
+Number:Energy Meter_EnergyProduced { channel="fronius:meter:mybridge:mymeter:energyrealsumproduced" }
 ```

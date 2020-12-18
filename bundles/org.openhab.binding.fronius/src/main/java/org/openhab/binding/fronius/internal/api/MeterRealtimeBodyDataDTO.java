@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-public class MeterRealtimeBodyData {
+public class MeterRealtimeBodyDataDTO {
     @SerializedName("Current_AC_Phase_1")
     private double currentACPhase1;
     @SerializedName("Current_AC_Phase_2")
@@ -28,7 +28,7 @@ public class MeterRealtimeBodyData {
     @SerializedName("Current_AC_Phase_3")
     private double currentACPhase3;
     @SerializedName("Details")
-    private MeterRealtimeDetails details;
+    private MeterRealtimeDetailsDTO details;
     @SerializedName("Enable")
     private int enable;
     @SerializedName("EnergyReactive_VArAC_Sum_Consumed")
@@ -120,11 +120,14 @@ public class MeterRealtimeBodyData {
         this.currentACPhase3 = currentACPhase3;
     }
 
-    public MeterRealtimeDetails getDetails() {
+    public MeterRealtimeDetailsDTO getDetails() {
+        if (details == null) {
+            details = new MeterRealtimeDetailsDTO();
+        }
         return details;
     }
 
-    public void setDetails(MeterRealtimeDetails details) {
+    public void setDetails(MeterRealtimeDetailsDTO details) {
         this.details = details;
     }
 
