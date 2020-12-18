@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
 import org.openhab.persistence.jdbc.utils.DbMetaData;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcMariadbDAO extends JdbcBaseDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcMariadbDAO.class);
 
