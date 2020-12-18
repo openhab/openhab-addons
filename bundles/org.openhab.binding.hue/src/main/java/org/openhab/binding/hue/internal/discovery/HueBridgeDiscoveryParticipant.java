@@ -51,18 +51,24 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
-        String serialNumber = device.getDetails().getSerialNumber();
         ThingUID uid = getThingUID(device);
-        if (uid != null && serialNumber != null && !serialNumber.isBlank()) {
+        if (uid != null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(HOST, device.getDetails().getBaseURL().getHost());
             properties.put(PORT, device.getDetails().getBaseURL().getPort());
             properties.put(PROTOCOL, device.getDetails().getBaseURL().getProtocol());
-            properties.put(PROPERTY_SERIAL_NUMBER, serialNumber.toLowerCase());
+            String serialNumber = device.getDetails().getSerialNumber();
+            DiscoveryResult result;
+            if (serialNumber != null && !serialNumber.isBlank()) {
+                properties.put(PROPERTY_SERIAL_NUMBER, serialNumber.toLowerCase());
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(PROPERTY_SERIAL_NUMBER)
-                    .build();
+                result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withLabel(device.getDetails().getFriendlyName())
+                        .withRepresentationProperty(PROPERTY_SERIAL_NUMBER).build();
+            } else {
+                result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                        .withLabel(device.getDetails().getFriendlyName()).build();
+            }
             return result;
         } else {
             return null;
