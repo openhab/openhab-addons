@@ -53,7 +53,7 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         String serialNumber = device.getDetails().getSerialNumber();
         ThingUID uid = getThingUID(device);
-        if (uid != null && serialNumber != null) {
+        if (uid != null && serialNumber != null && !serialNumber.isBlank()) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(HOST, device.getDetails().getBaseURL().getHost());
             properties.put(PORT, device.getDetails().getBaseURL().getPort());
@@ -75,7 +75,7 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
         if (details != null) {
             ModelDetails modelDetails = details.getModelDetails();
             String serialNumber = details.getSerialNumber();
-            if (modelDetails != null && serialNumber != null) {
+            if (modelDetails != null && serialNumber != null && !serialNumber.isBlank()) {
                 String modelName = modelDetails.getModelName();
                 if (modelName != null) {
                     if (modelName.startsWith("Philips hue bridge")) {
