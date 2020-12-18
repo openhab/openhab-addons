@@ -138,9 +138,9 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
 
     private synchronized void login() {
         try {
-            // use asyc jetty for login as the API service will response with a 401 error when credentials are wrong,
-            // but not a WWW-Authenticate header which causes Jetty to throw a generic execution exception which
-            // prevents us from knowing the response code
+            // use asynchronous Jetty for login as the API service will response with a 401 error when credentials are
+            // wrong, but not a WWW-Authenticate header which causes synchronous Jetty to throw a generic execution
+            // exception which prevents us from knowing the response code
             GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
             refreshIntervalSeconds = config.refreshInterval;
             final CompletableFuture<AsyncResult> futureResult = new CompletableFuture<>();
