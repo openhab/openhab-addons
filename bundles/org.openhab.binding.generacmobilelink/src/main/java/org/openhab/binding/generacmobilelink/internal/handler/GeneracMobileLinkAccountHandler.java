@@ -13,6 +13,7 @@
 package org.openhab.binding.generacmobilelink.internal.handler;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -111,7 +114,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     private void stopPoll() {
         Future<?> localPollFuture = pollFuture;
         if (localPollFuture != null) {
-            localPollFuture.cancel(false);
+            localPollFuture.cancel(true);
         }
     }
 
@@ -133,22 +136,31 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private void login() {
+    private synchronized void login() {
         try {
+            // use asyc jetty for login as the API service will response with a 401 error when credentials are wrong,
+            // but not a WWW-Authenticate header which causes Jetty to throw a generic execution exception which
+            // prevents us from knowing the response code
             GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
             refreshIntervalSeconds = config.refreshInterval;
-            ContentResponse contentResponse = httpClient.newRequest(BASE_URL + "/Users/login").method(HttpMethod.POST)
+            final CompletableFuture<AsyncResult> futureResult = new CompletableFuture<>();
+            httpClient.newRequest(BASE_URL + "/Users/login").method(HttpMethod.POST)
                     .content(
                             new StringContentProvider(
                                     gson.toJson(new LoginRequestDTO(SHARED_KEY, config.username, config.password))),
                             "application/json")
-                    .timeout(10, TimeUnit.SECONDS).send();
-            int statusCode = contentResponse.getStatus();
-            String content = contentResponse.getContentAsString();
-            logger.trace("LoginResponse - status: {} content: {}", statusCode, content);
-            switch (statusCode) {
+                    .timeout(10, TimeUnit.SECONDS).send(new BufferingResponseListener() {
+                        @NonNullByDefault({})
+                        @Override
+                        public void onComplete(Result result) {
+                            futureResult
+                                    .complete(new AsyncResult(getContentAsString(), result.getResponse().getStatus()));
+                        }
+                    });
+            AsyncResult result = futureResult.get();
+            switch (result.responseCode) {
                 case HttpStatus.OK_200:
-                    LoginResponseDTO loginResponse = gson.fromJson(content, LoginResponseDTO.class);
+                    LoginResponseDTO loginResponse = gson.fromJson(result.content, LoginResponseDTO.class);
                     if (loginResponse != null) {
                         authToken = loginResponse.authToken;
                         updateStatus(ThingStatus.ONLINE);
@@ -163,25 +175,14 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                     // do not continue to poll with bad credentials since this requires user intervention
                     stopPoll();
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Unauthorized - Check Credentials");
+                            "Unauthorized: " + result.content);
                     break;
                 default:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Invalid Response Code " + statusCode);
+                            "Invalid Response Code " + result.responseCode);
             }
-        } catch (ExecutionException e) {
-            // MobileLink response will trigger a Jetty "Authentication challenge without WWW-Authenticate header"
-            // ExecutionException if the password is not right, this still does not looked to be fixed in jetty
-            // see https://github.com/eclipse/jetty.project/issues/1555
-            String message = e.getMessage();
-            if (message != null && message.contains("Authentication challenge without WWW-Authenticate header")) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unauthorized - Check Credentials: " + e.getLocalizedMessage());
-                stopPoll();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-            }
-        } catch (InterruptedException | TimeoutException e) {
+
+        } catch (ExecutionException | InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
@@ -249,5 +250,15 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                 .withProperty("generatorId", String.valueOf(generator.gensetID))
                 .withRepresentationProperty("generatorId").withBridge(getThing().getUID()).build();
         discoveryService.generatorDiscovered(result);
+    }
+
+    public static class AsyncResult {
+        public @Nullable String content;
+        public final int responseCode;
+
+        public AsyncResult(@Nullable String content, int responseCode) {
+            this.content = content;
+            this.responseCode = responseCode;
+        }
     }
 }
