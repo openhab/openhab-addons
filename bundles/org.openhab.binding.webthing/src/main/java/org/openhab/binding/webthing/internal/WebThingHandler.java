@@ -108,7 +108,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
 
         // starting watchdog that checks the healthiness of the WebThing connection, periodically
         watchdogHandle
-                .getAndSet(Optional.of(scheduler.scheduleWithFixedDelay(new WatchdogTask(),
+                .getAndSet(Optional.of(scheduler.scheduleWithFixedDelay(this::checkWebThingConnection,
                         HEALTH_CHECK_PERIOD.getSeconds(), HEALTH_CHECK_PERIOD.getSeconds(), TimeUnit.SECONDS)))
                 .ifPresent(future -> future.cancel(true));
     }
@@ -168,7 +168,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::close);
 
         if (wasConnectedBefore) { // to reduce log messages, just log in case of connection state changed
-            logger.info("WebThing {} disconnected {}. Try reconnect (each {} sec)", getWebThingLabel(), reason.trim(),
+            logger.debug("WebThing {} disconnected {}. Try reconnect (each {} sec)", getWebThingLabel(), reason.trim(),
                     HEALTH_CHECK_PERIOD.getSeconds());
         } else {
             logger.debug("WebThing {} is offline {}. Try reconnect (each {} sec)", getWebThingLabel(), reason.trim(),
@@ -281,30 +281,25 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     //
     /////////////
 
-    private final class WatchdogTask implements Runnable {
+    private final void checkWebThingConnection() {
+        // try reconnect, if necessary
+        if (isDisconnected() || (isOnline() && !isAlive())) {
+            logger.debug("try reconnecting WebThing {}", getWebThingLabel());
+            if (tryReconnect(webThingURI)) {
+                logger.debug("WebThing {} reconnected", getWebThingLabel());
+            }
 
-        @Override
-        public void run() {
-            // try reconnect, if necessary
-            if (isDisconnected() || (isOnline() && !isAlive())) {
-                logger.debug("try reconnecting WebThing {}", getWebThingLabel());
+        } else {
+            // force reconnecting periodically, to fix erroneous states that occurs for unknown reasons
+            var elapsedSinceLastReconnect = Duration.between(lastReconnect.get(), Instant.now());
+            if (isOnline() && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds())) {
                 if (tryReconnect(webThingURI)) {
-                    logger.debug("WebThing {} reconnected", getWebThingLabel());
+                    logger.debug("WebThing {} reconnected. Initiated by periodic reconnect", getWebThingLabel());
+                } else {
+                    logger.debug("could not reconnect WebThing {} (periodic reconnect failed). Next trial in {} sec",
+                            getWebThingLabel(), HEALTH_CHECK_PERIOD.getSeconds());
                 }
 
-            } else {
-                // force reconnecting periodically, to fix erroneous states that occurs for unknown reasons
-                var elapsedSinceLastReconnect = Duration.between(lastReconnect.get(), Instant.now());
-                if (isOnline() && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds())) {
-                    if (tryReconnect(webThingURI)) {
-                        logger.debug("WebThing {} reconnected. Initiated by periodic reconnect", getWebThingLabel());
-                    } else {
-                        logger.debug(
-                                "could not reconnect WebThing {} (periodic reconnect failed). Next trial in {} sec",
-                                getWebThingLabel(), HEALTH_CHECK_PERIOD.getSeconds());
-                    }
-
-                }
             }
         }
     }
