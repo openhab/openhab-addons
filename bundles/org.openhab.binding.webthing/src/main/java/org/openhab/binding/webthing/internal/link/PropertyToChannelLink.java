@@ -68,14 +68,9 @@ public class PropertyToChannelLink implements BiConsumer<String, Object> {
 
     @Override
     public void accept(String propertyName, Object value) {
-        try {
-            var stateCommand = typeConverter.toStateCommand(value);
-            channelHandler.updateItemState(channel.getUID(), stateCommand);
-            logger.debug("channel {} updated with {} ({})", channel.getUID().getAsString(), value,
-                    channel.getAcceptedItemType());
-        } catch (Exception e) {
-            logger.warn("updating channel {} with {} ({}) failed", channel.getUID().getAsString(),
-                    channel.getAcceptedItemType(), value, e);
-        }
+        var stateCommand = typeConverter.toStateCommand(value);
+        channelHandler.updateItemState(channel.getUID(), stateCommand);
+        logger.debug("channel {} updated with {} ({})", channel.getUID().getAsString(), value,
+                channel.getAcceptedItemType());
     }
 }

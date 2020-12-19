@@ -125,7 +125,6 @@ public class WebthingChannelLinkTest {
 
     @Test
     public void testDataTypeMapping() throws Exception {
-
         performDataTypeMappingTest("level_prop", 56.5, new DecimalType(56.5), 3.5, new DecimalType(3.5));
         performDataTypeMappingTest("level_unit_prop", 10, new PercentType(10), 90, new PercentType(90));
         performDataTypeMappingTest("thermo_prop", "off", new StringType("off"), "auto", new StringType("auto"));

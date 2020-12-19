@@ -20,8 +20,6 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Factory to create new instances of a WebSocket connection
@@ -30,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 interface WebSocketConnectionFactory {
-    Logger logger = LoggerFactory.getLogger(WebSocketConnectionFactory.class);
 
     /**
      * create (and opens) a new WebSocket connection
@@ -40,7 +37,7 @@ interface WebSocketConnectionFactory {
      * @param errorHandler the error handler
      * @param pingPeriod the ping period to check the healthiness of the connection
      * @return the newly opened WebSocket connection
-     * @throws IOException if the web socket conection can not be established
+     * @throws IOException if the web socket connection can not be established
      */
     WebSocketConnection create(URI webSocketURI, ScheduledExecutorService executor, Consumer<String> errorHandler,
             Duration pingPeriod) throws IOException;
@@ -50,14 +47,10 @@ interface WebSocketConnectionFactory {
      * @return the default instance of the factory
      */
     static WebSocketConnectionFactory instance(WebSocketClient webSocketClient) {
-        return new WebSocketConnectionFactory() {
-            @Override
-            public WebSocketConnection create(URI webSocketURI, ScheduledExecutorService executor,
-                    Consumer<String> errorHandler, Duration pingPeriod) throws IOException {
-                var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
-                webSocketClient.connect(webSocketConnection, webSocketURI);
-                return webSocketConnection;
-            }
+        return (webSocketURI, executor, errorHandler, pingPeriod) -> {
+            var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
+            webSocketClient.connect(webSocketConnection, webSocketURI);
+            return webSocketConnection;
         };
     }
 }

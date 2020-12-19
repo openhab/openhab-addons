@@ -80,8 +80,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     }
 
     private boolean isAlive() {
-        var webThingConnection = webThingConnectionRef.get().orElse(null);
-        return (webThingConnection != null) && webThingConnection.isAlive();
+        return webThingConnectionRef.get().map(ConsumedThing::isAlive).orElse(false);
     }
 
     @Override
@@ -157,9 +156,6 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     }
 
     public void onError(String reason) {
-        if (reason == null) {
-            reason = "";
-        }
         var wasConnectedBefore = isOnline();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
 
@@ -168,10 +164,10 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         webThingConnectionRef.getAndSet(Optional.empty()).ifPresent(ConsumedThing::close);
 
         if (wasConnectedBefore) { // to reduce log messages, just log in case of connection state changed
-            logger.debug("WebThing {} disconnected {}. Try reconnect (each {} sec)", getWebThingLabel(), reason.trim(),
+            logger.debug("WebThing {} disconnected {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
                     HEALTH_CHECK_PERIOD.getSeconds());
         } else {
-            logger.debug("WebThing {} is offline {}. Try reconnect (each {} sec)", getWebThingLabel(), reason.trim(),
+            logger.debug("WebThing {} is offline {}. Try reconnect (each {} sec)", getWebThingLabel(), reason,
                     HEALTH_CHECK_PERIOD.getSeconds());
         }
     }
@@ -281,7 +277,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
     //
     /////////////
 
-    private final void checkWebThingConnection() {
+    private void checkWebThingConnection() {
         // try reconnect, if necessary
         if (isDisconnected() || (isOnline() && !isAlive())) {
             logger.debug("try reconnecting WebThing {}", getWebThingLabel());

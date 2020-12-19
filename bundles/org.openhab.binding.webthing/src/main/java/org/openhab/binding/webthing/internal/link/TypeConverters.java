@@ -165,7 +165,7 @@ class TypeConverters {
         public Command toStateCommand(Object propertyValue) {
             String textValue = propertyValue.toString();
             if (propertyValue instanceof Collection) {
-                textValue = ((Collection) propertyValue).stream()
+                textValue = ((Collection<Object>) propertyValue).stream()
                         .reduce("", (entry1, entry2) -> entry1.toString() + "\n" + entry2.toString()).toString();
             }
             return StringType.valueOf(textValue);

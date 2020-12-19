@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
-import org.eclipse.jetty.websocket.api.annotations.*;
 import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
 import org.slf4j.Logger;
@@ -67,7 +66,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     WebSocketConnectionImpl(ScheduledExecutorService executor, Consumer<String> errorHandler, Duration pingPeriod) {
         this.errorHandler = errorHandler;
         this.pingPeriod = pingPeriod;
-        this.pingHandle = executor.scheduleAtFixedRate(this::sendPing, pingPeriod.dividedBy(2).toMillis(),
+        this.pingHandle = executor.scheduleWithFixedDelay(this::sendPing, pingPeriod.dividedBy(2).toMillis(),
                 pingPeriod.toMillis(), TimeUnit.MILLISECONDS);
         this.watchDogHandle = executor.scheduleWithFixedDelay(this::checkConnection, pingPeriod.toMillis(),
                 pingPeriod.toMillis(), TimeUnit.MILLISECONDS);
@@ -110,10 +109,16 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     public void onWebSocketText(String message) {
         try {
             var propertyStatus = gson.fromJson(message, PropertyStatusMessage.class);
-            if (propertyStatus.messageType.equals("propertyStatus")) {
+            if ((propertyStatus != null) && (propertyStatus.messageType != null)
+                    && (propertyStatus.messageType.equals("propertyStatus"))) {
                 for (var propertyEntry : propertyStatus.data.entrySet()) {
-                    propertyChangedListeners.getOrDefault(propertyEntry.getKey(), EMPTY_PROPERTY_CHANGED_LISTENER)
-                            .accept(propertyEntry.getKey(), propertyEntry.getValue());
+                    var listener = propertyChangedListeners.getOrDefault(propertyEntry.getKey(),
+                            EMPTY_PROPERTY_CHANGED_LISTENER);
+                    try {
+                        listener.accept(propertyEntry.getKey(), propertyEntry.getValue());
+                    } catch (RuntimeException re) {
+                        logger.warn("calling property change listener {} failed. {}", listener, re.getMessage());
+                    }
                 }
             } else {
                 logger.debug("Ignoring received message of unknown type: {}", message);
@@ -146,7 +151,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
         if (session != null) {
             try {
                 session.getRemote().sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 onError("could not send ping " + e.getMessage());
             }
         }
@@ -155,7 +160,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     @Override
     public boolean isAlive() {
         var elapsedSinceLastReceived = Duration.between(lastTimeReceived.get(), Instant.now());
-        var thresholdOverdued = pingPeriod.multipliedBy(2);
+        var thresholdOverdued = pingPeriod.multipliedBy(3);
         var isOverdued = elapsedSinceLastReceived.toMillis() > thresholdOverdued.toMillis();
         return (sessionRef.get() != null) && !isOverdued;
     }

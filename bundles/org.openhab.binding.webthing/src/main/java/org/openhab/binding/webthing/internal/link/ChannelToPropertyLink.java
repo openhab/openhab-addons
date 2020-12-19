@@ -77,7 +77,8 @@ public class ChannelToPropertyLink implements WebThingHandler.ItemChangedListene
             webThing.writeProperty(propertyName, typeConverter.toPropertyValue((State) stateCommand));
             logger.debug("property {} updated with {} ({}) ", propertyName, propertyValue, this.propertyType);
         } catch (PropertyAccessException pae) {
-            logger.warn("could not write WebThing property {} with new channel value", propertyName, pae);
+            logger.warn("could not write WebThing property {} with new channel value. {}", propertyName,
+                    pae.getMessage());
         }
     }
 }

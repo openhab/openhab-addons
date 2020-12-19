@@ -243,7 +243,7 @@ public class WebthingTest {
         assertNull(errorHandler.errorRef.get());
 
         try {
-            Thread.sleep(pingPeriod.multipliedBy(3).toMillis());
+            Thread.sleep(pingPeriod.multipliedBy(4).toMillis());
         } catch (InterruptedException ignore) {
         }
         assertTrue(errorHandler.errorRef.get().startsWith("connection seems to be broken (last message received at"));

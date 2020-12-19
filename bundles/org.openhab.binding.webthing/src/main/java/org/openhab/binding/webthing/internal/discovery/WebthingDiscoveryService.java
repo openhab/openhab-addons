@@ -60,7 +60,6 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
     private final DescriptionLoader descriptionLoader;
     private final MDNSClient mdnsClient;
     private final HttpClient httpClient;
-    private final Scheduler executor;
 
     /**
      * constructor
@@ -75,7 +74,6 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
         this.mdnsClient = mdnsClient;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.descriptionLoader = new DescriptionLoader(httpClient);
-        this.executor = executor;
 
         super.activate(configProperties);
         if (isBackgroundDiscoveryEnabled()) {
@@ -153,10 +151,14 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
         var discoveryTasks = Arrays.stream(serviceInfos).map(DiscoveryTask::new).collect(Collectors.toList());
         try {
             for (var future : scheduler.invokeAll(discoveryTasks, 5, TimeUnit.MINUTES)) {
-                future.get(5, TimeUnit.MINUTES);
+                try {
+                    future.get(5, TimeUnit.MINUTES);
+                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                    logger.warn("discovering task {} terminated. {}", future, e.getMessage());
+                }
             }
-        } catch (Exception e) {
-            logger.warn("error occurred by discovering", e);
+        } catch (InterruptedException ie) {
+            logger.warn("discovering interrupted. {}", ie.getMessage());
         }
     }
 
@@ -170,16 +172,12 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
         @Override
         public Set<DiscoveryResult> call() {
             var results = new HashSet<DiscoveryResult>();
-            try {
-                for (var discoveryResult : discoverWebThing(serviceInfo)) {
-                    results.add(discoveryResult);
-                    thingDiscovered(discoveryResult);
-                    logger.debug("WebThing '{}' (uri: {}, id: {}, schemas: {}) discovered", discoveryResult.getLabel(),
-                            discoveryResult.getProperties().get("webThingURI"),
-                            discoveryResult.getProperties().get("id"), discoveryResult.getProperties().get("schemas"));
-                }
-            } catch (Exception e) {
-                logger.warn("error occurred by discovering {}", serviceInfo.getNiceTextString(), e);
+            for (var discoveryResult : discoverWebThing(serviceInfo)) {
+                results.add(discoveryResult);
+                thingDiscovered(discoveryResult);
+                logger.debug("WebThing '{}' (uri: {}, id: {}, schemas: {}) discovered", discoveryResult.getLabel(),
+                        discoveryResult.getProperties().get("webThingURI"), discoveryResult.getProperties().get("id"),
+                        discoveryResult.getProperties().get("schemas"));
             }
             return results;
         }
@@ -210,7 +208,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
             //
             // In the routine below the enpoint will be checked for single WebThings first, than for multiple
             // WebThings if a ingle WebTHing has not been found.
-            // Furthermore, first it will be tried to connect the endppint using https. If this fails, as fallback
+            // Furthermore, first it will be tried to connect the endpoint using https. If this fails, as fallback
             // plain http is used.
 
             // check single WebThing path via https (e.g. https://192.168.0.23:8433/)

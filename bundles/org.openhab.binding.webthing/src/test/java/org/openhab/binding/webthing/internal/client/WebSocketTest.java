@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.webthing.internal.client;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.Executors;
@@ -38,10 +36,6 @@ public class WebSocketTest {
         var webSocketConnection = factory.create(URI.create("ws://192.168.1.48:9060/"),
                 Executors.newScheduledThreadPool(1), error -> {
                 }, Duration.ofSeconds(10));
-
-        webSocketConnection.observeProperty("windspeed", (String name, Object value) -> {
-            System.out.println(name + ": " + value);
-        });
 
         webSocketConnection.close();
         webSocketClient.stop();
