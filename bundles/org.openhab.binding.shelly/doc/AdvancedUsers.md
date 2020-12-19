@@ -70,3 +70,41 @@ This can be achieved by
 
 When the IP address changes for a device you need to delete the Thing and then re-discover the device.
 In this case channel linkage gets lost and you need to re-link the channels/items.
+
+## Log optimization
+
+The binding provides channels (e.g. heartBeat, currentWatts), which might cause a lot of log output, especially when having multiple dozen Shellys.
+openHAB has an integrated feature to filter the event log.
+This mechanism doesn't filter the event, but the output is not written to the log file (items still receive the updates).
+
+The configuration has to be added to the log configuration file, which is different to openHAB 2.5.x and 3.x (see below).
+
+The example filters events for items `heartBeat`, `lastUpdate`, `LetzteAktualisierung`, `Uptime`, `Laufzeit`, `ZuletztGesehen`
+Replace those strings with the items you want to filter.
+Use a list of items to reduce logging.
+
+`Please note:` Once events are filtered they are not show anymore in the logfile, you can’t find them later.
+
+
+The configuration format of openHAB 3 is in xml format.
+- Open the file `userdata/etc/log4j2.xml`
+- Search for tag 'RollingFile'
+- and add a tag `<RegexFilter>...</RegExFilter>`
+
+The attribute `regex` of this tag defines the regular expression, `onMatch="DENY"` the the logger to discard those lines
+
+Example:
+
+```
+...
+        <!-- Rolling file appender -->
+        <RollingFile fileName="${sys:openhab.logdir}/openhab.log" filePattern="${sys:openhab.logdir}/openhab.log.%i" name="LOGFILE">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5.5p] [%-36.36c] - %m%n"/>
+            <RegexFilter regex=".*(heartBeat|LastUpdate|lastUpdate|LetzteAktualisierung|Uptime|Laufzeit|ZuletztGesehen).*" onMatch="DENY" onMismatch="ACCEPT"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="16 MB"/>
+            </Policies>
+        </RollingFile>
+...
+```
+
