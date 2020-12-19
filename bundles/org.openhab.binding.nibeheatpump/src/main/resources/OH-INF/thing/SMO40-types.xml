@@ -8107,56 +8107,56 @@
 		<item-type>Number</item-type>
 		<label>Cool offset S8</label>
 		<description>Offset of the cool curve, see manual for more information </description>
-		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48733" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cool offset S7</label>
 		<description>Offset of the cool curve, see manual for more information </description>
-		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48734" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cool offset S6</label>
 		<description>Offset of the cool curve, see manual for more information </description>
-		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48735" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cool offset S5</label>
 		<description>Offset of the cool curve, see manual for more information </description>
-		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48736" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cool offset S4</label>
 		<description>Offset of the cool curve, see manual for more information </description>
-		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48737" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cool offset S3</label>
 		<description>Offset of the cool curve, see manual for more information </description>
-		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48738" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cool offset S2</label>
 		<description>Offset of the cool curve, see manual for more information </description>
-		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48739" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cool offset S1</label>
 		<description>Offset of the cool curve, see manual for more information </description>
-		<state min="-10" max="10" step="1" pattern="%d  " readOnly="false">
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48740" advanced="true">
