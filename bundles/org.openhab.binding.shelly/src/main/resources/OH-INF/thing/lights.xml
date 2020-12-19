@@ -109,12 +109,6 @@
 	<channel-group-type id="rgbw2ColorControl">
 		<label>Light Control</label>
 		<description>Control your light channels</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="autoOn" typeId="timerAutoOn"/>
-			<channel id="autoOff" typeId="timerAutoOff"/>
-			<channel id="timerActive" typeId="timerActive"/>
-		</channels>
 	</channel-group-type>
 	<channel-group-type id="rgbw2WhiteControl">
 		<label>White Control</label>
@@ -211,7 +205,7 @@
 		<description>blue, 0..255, only in Color Mode</description>
 		<state min="0" max="255" step="1" readOnly="false"></state>
 	</channel-type>
-	<channel-type id="colorWhite" advanced="true">
+	<channel-type id="colorWhite">
 		<item-type>Dimmer</item-type>
 		<label>White</label>
 		<description>white, 0..255, applies in Color Mode</description>

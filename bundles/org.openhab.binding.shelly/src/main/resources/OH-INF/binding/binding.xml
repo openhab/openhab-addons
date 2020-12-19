@@ -5,22 +5,28 @@
 
 	<name>Shelly Binding</name>
 	<description>This binding supports the Shelly series of devices.</description>
+	<author>Markus Michels</author>
 
-	<config-description>
+	<config-description uri="binding:shelly">
 		<parameter name="defaultUserId" type="text">
 			<default>admin</default>
-			<label>Default User</label>
-			<description>Default userId to access protected Shelly devices.</description>
+			<label>@text/binding.shelly.config.defaultUserId.label</label>
+			<description>@text/binding.shelly.config.defaultUserId.description</description>
 		</parameter>
 		<parameter name="defaultPassword" type="text">
 			<default>admin</default>
-			<label>Default Password</label>
-			<description>Default password to access protected Shelly devices.</description>
+			<label>@text/binding.shelly.config.defaultPassword.label</label>
+			<description>@text/binding.shelly.config.defaultPassword.description</description>
+		</parameter>
+		<parameter name="localIP" type="text">
+			<label>@text/binding.shelly.config.localIP.label</label>
+			<description>@text/binding.shelly.config.localIP.description</description>
+			<default></default>
 		</parameter>
 		<parameter name="autoCoIoT" type="boolean">
 			<default>true</default>
-			<label>Auto-enable CoIoT</label>
-			<description>True: Enable CoIoT events by default when firmware 1.6+ is detected</description>
+			<label>@text/binding.shelly.config.autoCoIoT.label</label>
+			<description>@text/binding.shelly.config.autoCoIoT.description</description>
 		</parameter>
 	</config-description>
 

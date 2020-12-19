@@ -126,7 +126,7 @@
 
 	<channel-group-type id="smokeSensor">
 		<label>Sensor Data</label>
-		<description>Data from the Flood Sensor</description>
+		<description>Data from the Smook Sensor</description>
 	</channel-group-type>
 	<channel-group-type id="gasSensor">
 		<label>Sensor Data</label>
@@ -135,6 +135,10 @@
 	<channel-group-type id="doorWinSensors">
 		<label>Sensors</label>
 		<description>Data from the sensors</description>
+	</channel-group-type>
+	<channel-group-type id="uniSensor">
+		<label>Sensor Data</label>
+		<description>Data from the Sensors</description>
 	</channel-group-type>
 
 	<channel-group-type id="senseSensors">
@@ -154,12 +158,6 @@
 	<channel-group-type id="buttonState">
 		<label>Button State</label>
 		<description>Status of the Button</description>
-		<channels>
-			<channel id="input" typeId="inputState"/>
-			<channel id="button" typeId="system.button"/>
-			<channel id="lastEvent" typeId="lastEvent"/>
-			<channel id="eventCount" typeId="eventCount"/>
-		</channels>
 	</channel-group-type>
 
 
@@ -318,6 +316,13 @@
 		<item-type>Number:Density</item-type>
 		<label>Concentration</label>
 		<description>Gas concentration in ppm</description>
+		<state readOnly="true" pattern="%d %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="sensorADC">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage (ADC)</label>
+		<description>ADC voltage in V</description>
 		<state readOnly="true" pattern="%d %unit%">
 		</state>
 	</channel-type>
