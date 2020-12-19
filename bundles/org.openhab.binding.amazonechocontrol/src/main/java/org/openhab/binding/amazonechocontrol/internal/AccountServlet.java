@@ -393,7 +393,7 @@ public class AccountServlet extends HttpServlet {
         html.append(servletUrl);
         html.append("/changeDomain'>Change</a>");
 
-        // paper ui link
+        // Main UI link
         html.append("<br><a href='/#!/settings/things/" + BINDING_ID + ":"
                 + URLEncoder.encode(THING_TYPE_ACCOUNT.getId(), "UTF8") + ":" + URLEncoder.encode(id, "UTF8") + "'>");
         html.append(StringEscapeUtils.escapeHtml("Check Thing in Main UI"));
