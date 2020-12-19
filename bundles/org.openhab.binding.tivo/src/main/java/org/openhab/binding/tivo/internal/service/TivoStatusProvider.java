@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TivoStatusProvider {
     private static final Pattern TIVO_STATUS_PATTERN = Pattern.compile("^CH_STATUS (\\d{4}) (?:(\\d{4}))?");
-    private static final Integer READ_TIMEOUT = 3000;
+    private static final int TIMEOUT_SEC = 3000;
 
     private final Logger logger = LoggerFactory.getLogger(TivoStatusProvider.class);
     private @Nullable Socket tivoSocket = null;
@@ -176,8 +176,8 @@ public class TivoStatusProvider {
         // Only other documented status is in the form 'CH_STATUS channel reason' or
         // 'CH_STATUS channel sub-channel reason'
         Matcher matcher = TIVO_STATUS_PATTERN.matcher(rawStatus);
-        Integer chNum = -1; // -1 used globally to indicate channel number error
-        Integer subChNum = -1;
+        int chNum = -1; // -1 used globally to indicate channel number error
+        int subChNum = -1;
         boolean isRecording = false;
 
         if (matcher.find()) {
@@ -326,7 +326,7 @@ public class TivoStatusProvider {
             if (streamReader != null) {
                 streamReader.interrupt();
                 try {
-                    streamReader.join(READ_TIMEOUT);
+                    streamReader.join(TIMEOUT_SEC);
                 } catch (InterruptedException e) {
                     logger.debug("Error joining streamReader: {}", e.getMessage());
                 }
