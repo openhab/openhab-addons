@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="url"
-		extensible="color,contact,datetime,dimmer,image,location,number,rollershutter,string,switch">
+		extensible="color,contact,datetime,dimmer,image,location,number,player,rollershutter,string,switch">
 		<label>HTTP URL Thing</label>
 		<description>Represents a base URL and all associated requests.</description>
 
