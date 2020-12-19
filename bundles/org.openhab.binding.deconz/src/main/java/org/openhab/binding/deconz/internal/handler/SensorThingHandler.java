@@ -28,6 +28,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -96,7 +97,7 @@ public class SensorThingHandler extends SensorBaseThingHandler {
         super.valueUpdated(channelID, newState, initializing);
         switch (channelID) {
             case CHANNEL_BATTERY_LEVEL:
-                updateDecimalTypeChannel(channelID, newState.battery);
+                updateQuantityTypeChannel(channelID, newState.battery, Units.PERCENT);
                 break;
             case CHANNEL_LIGHT:
                 Boolean dark = newState.dark;

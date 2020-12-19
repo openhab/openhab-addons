@@ -469,7 +469,7 @@
 		<label>Battery Sensor</label>
 		<description>A battery sensor</description>
 		<channels>
-			<channel typeId="battery" id="battery_level"/>
+			<channel typeId="battery_level" id="battery_level"/>
 			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
@@ -478,11 +478,11 @@
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
-	<channel-type id="battery">
-		<item-type>Number</item-type>
+	<channel-type id="battery_level">
+		<item-type>Number:Dimensionless</item-type>
 		<label>Battery</label>
 		<description>The battery state.</description>
-		<state pattern="%d %%" readOnly="true"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<thing-type id="carbonmonoxidesensor">

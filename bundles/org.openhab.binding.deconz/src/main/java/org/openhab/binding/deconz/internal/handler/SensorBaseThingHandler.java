@@ -32,6 +32,7 @@ import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -181,9 +182,6 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
             ChannelTypeUID channelTypeUID;
             switch (channelId) {
-                case CHANNEL_BATTERY_LEVEL:
-                    channelTypeUID = new ChannelTypeUID("system:battery-level");
-                    break;
                 case CHANNEL_BATTERY_LOW:
                     channelTypeUID = new ChannelTypeUID("system:low-battery");
                     break;
@@ -207,7 +205,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_BATTERY_LEVEL:
                 if (batteryLevel != null) {
-                    updateState(channelUID, new DecimalType(batteryLevel.longValue()));
+                    updateQuantityTypeChannel(CHANNEL_BATTERY_LEVEL, batteryLevel.longValue(), Units.PERCENT);
                 }
                 break;
             case CHANNEL_BATTERY_LOW:
