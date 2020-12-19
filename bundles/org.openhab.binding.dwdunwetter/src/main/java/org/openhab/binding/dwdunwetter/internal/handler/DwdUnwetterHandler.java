@@ -169,7 +169,7 @@ public class DwdUnwetterHandler extends BaseThingHandler {
     }
 
     private ChannelUID getChannelUuid(String typeId, int warningNumber) {
-        return new ChannelUID(getThing().getUID(), typeId + (warningNumber + 1));
+        return new ChannelUID(getThing().getUID(), typeId + warningNumber);
     }
 
     private ChannelUID getChannelUuid(String typeId) {
@@ -193,7 +193,7 @@ public class DwdUnwetterHandler extends BaseThingHandler {
     }
 
     private String getChannelLabelSuffix(int warningNumber) {
-        return "(" + (warningNumber + 1) + ")";
+        return "(" + warningNumber + ")";
     }
 
     /**
