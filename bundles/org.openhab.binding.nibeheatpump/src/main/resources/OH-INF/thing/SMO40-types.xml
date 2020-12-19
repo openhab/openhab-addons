@@ -1115,7 +1115,7 @@
 		<item-type>Number</item-type>
 		<label>Humidity average</label>
 		<description>Humidity average</description>
-		<state pattern="%.1f %%%" readOnly="true">
+		<state pattern="%.1f %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41050" advanced="true">
@@ -2511,70 +2511,70 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 10</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41961" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 9</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41962" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 8</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41963" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 7</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41964" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 6</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41965" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 5</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41966" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 4</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41967" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 3</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41968" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 2</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41969" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 1</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41980" advanced="true">
@@ -3039,42 +3039,42 @@
 		<item-type>Number</item-type>
 		<label>External ERS 4 accessory GQ2 speed</label>
 		<description>Indicates the speed of the GQ2 fan speed on the ERS accessory.</description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42154" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 3 accessory GQ2 speed</label>
 		<description>Indicates the speed of the GQ2 fan speed on the ERS accessory.</description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42155" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 2 accessory GQ2 speed</label>
 		<description>Indicates the speed of the GQ2 fan speed on the ERS accessory.</description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42156" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 4 accessory GQ3 speed</label>
 		<description>Indicates the speed of the GQ3 fan speed on the ERS accessory.</description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42157" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 3 accessory GQ3 speed</label>
 		<description>Indicates the speed of the GQ3 fan speed on the ERS accessory.</description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42158" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 2 accessory GQ3 speed</label>
 		<description>Indicates the speed of the GQ3 fan speed on the ERS accessory.</description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42159" advanced="true">
@@ -4676,21 +4676,21 @@
 		<item-type>Number</item-type>
 		<label>EB108 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44390" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB107 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44391" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB106 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %%%" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44392" advanced="true">
