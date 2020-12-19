@@ -60,7 +60,6 @@ public class ModbusTcpThingHandler
         poolConfiguration.setInterConnectDelayMillis(config.getTimeBetweenReconnectMillis());
         poolConfiguration.setInterTransactionDelayMillis(config.getTimeBetweenTransactionsMillis());
         poolConfiguration.setReconnectAfterMillis(config.getReconnectAfterMillis());
-        poolConfiguration.setRtuEncoded(config.getRtuEncoded());
     }
 
     @SuppressWarnings("null") // since Optional.map is always called with NonNull argument
