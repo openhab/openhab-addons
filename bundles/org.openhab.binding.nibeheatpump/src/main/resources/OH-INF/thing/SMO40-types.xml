@@ -506,14 +506,14 @@
 		<item-type>Number</item-type>
 		<label>External ERS 1 accessory GQ2 speed</label>
 		<description>Indicates the speed of the GQ2 fan speed on the ERS accessory.</description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-40312" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 1 accessory GQ3 speed</label>
 		<description>Indicates the speed of the GQ3 fan speed on the ERS accessory.</description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-40339" advanced="true">
@@ -835,7 +835,7 @@
 		<item-type>Number</item-type>
 		<label>OPT rel. modulation level</label>
 		<description>OPT relative modulation level</description>
-		<state pattern="%.1f %" readOnly="true">
+		<state pattern="%.1f %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-40802" advanced="true">
@@ -891,7 +891,7 @@
 		<item-type>Number</item-type>
 		<label>BM1 Humidity </label>
 		<description></description>
-		<state pattern="%.1f %" readOnly="true">
+		<state pattern="%.1f %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-40856" advanced="true">
@@ -1024,14 +1024,14 @@
 		<item-type>Number</item-type>
 		<label>F135 AZ10 Pump Speed</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-40962" advanced="true">
 		<item-type>Number</item-type>
 		<label>F135 AZ10 Fan Speed</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-40964" advanced="true">
@@ -1115,7 +1115,7 @@
 		<item-type>Number</item-type>
 		<label>Humidity average</label>
 		<description>Humidity average</description>
-		<state pattern="%.1f %" readOnly="true">
+		<state pattern="%.1f %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41050" advanced="true">
@@ -2511,70 +2511,70 @@
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 10</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41961" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 9</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41962" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 8</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41963" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 7</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41964" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 6</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41965" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 5</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41966" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 4</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41967" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 3</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41968" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 2</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41969" advanced="true">
 		<item-type>Number</item-type>
 		<label>AA23-BE5 Com Percentage 1</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-41980" advanced="true">
@@ -3039,42 +3039,42 @@
 		<item-type>Number</item-type>
 		<label>External ERS 4 accessory GQ2 speed</label>
 		<description>Indicates the speed of the GQ2 fan speed on the ERS accessory.</description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42154" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 3 accessory GQ2 speed</label>
 		<description>Indicates the speed of the GQ2 fan speed on the ERS accessory.</description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42155" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 2 accessory GQ2 speed</label>
 		<description>Indicates the speed of the GQ2 fan speed on the ERS accessory.</description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42156" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 4 accessory GQ3 speed</label>
 		<description>Indicates the speed of the GQ3 fan speed on the ERS accessory.</description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42157" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 3 accessory GQ3 speed</label>
 		<description>Indicates the speed of the GQ3 fan speed on the ERS accessory.</description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42158" advanced="true">
 		<item-type>Number</item-type>
 		<label>External ERS 2 accessory GQ3 speed</label>
 		<description>Indicates the speed of the GQ3 fan speed on the ERS accessory.</description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-42159" advanced="true">
@@ -4676,56 +4676,56 @@
 		<item-type>Number</item-type>
 		<label>EB108 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44390" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB107 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44391" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB106 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44392" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB105 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44393" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB104 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44394" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB103 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44395" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB102 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44396">
 		<item-type>Number</item-type>
 		<label>EB101 Speed charge pump</label>
 		<description></description>
-		<state pattern="%d %" readOnly="true">
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-44415" advanced="true">
@@ -6743,7 +6743,7 @@
 		<item-type>Number</item-type>
 		<label>Heat medium pump manual speed</label>
 		<description>Heat medium pump speed if manual</description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48087" advanced="true">
@@ -7064,56 +7064,56 @@
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Heat Slave 8</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48368" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Heat Slave 7</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48369" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Heat Slave 6</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48370" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Heat Slave 5</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48371" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Heat Slave 4</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48372" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Heat Slave 3</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48373" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Heat Slave 2</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48374" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Heat Slave 1</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48375" advanced="true">
@@ -7168,7 +7168,7 @@
 		<item-type>Number</item-type>
 		<label>Speed circ.pump HW Slave 1</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48391" advanced="true">
@@ -7223,56 +7223,56 @@
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Pool Slave 8</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48400" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Pool Slave 7</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48401" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Pool Slave 6</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48402" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Pool Slave 5</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48403" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Pool Slave 4</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48404" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Pool Slave 3</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48405" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Pool Slave 2</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48406" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Pool Slave 1</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48407" advanced="true">
@@ -7327,56 +7327,56 @@
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Cooling Slave 8</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48416" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Cooling Slave 7</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48417" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Cooling Slave 6</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48418" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Cooling Slave 5</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48419" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Cooling Slave 4</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48420" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Cooling Slave 3</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48421" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Cooling Slave 2</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48422" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Cooling Slave 1</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48424" advanced="true">
@@ -7431,56 +7431,56 @@
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Waiting Slave 8</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48434" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Waiting Slave 7</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48435" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Waiting Slave 6</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48436" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Waiting Slave 5</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48437" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Waiting Slave 4</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48438" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Waiting Slave 3</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48439" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Waiting Slave 2</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48440" advanced="true">
 		<item-type>Number</item-type>
 		<label>Speed circ.pump Waiting Slave 1</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48457" advanced="true">
@@ -7493,56 +7493,56 @@
 		<item-type>Number</item-type>
 		<label>EB108 Max charge pump reg speed</label>
 		<description>Max charge pump reg speed</description>
-		<state min="80" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="80" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48461" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB107 Max charge pump reg speed</label>
 		<description>Max charge pump reg speed</description>
-		<state min="80" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="80" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48462" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB106 Max charge pump reg speed</label>
 		<description>Max charge pump reg speed</description>
-		<state min="80" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="80" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48463" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB105 Max charge pump reg speed</label>
 		<description>Max charge pump reg speed</description>
-		<state min="80" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="80" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48464" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB104 Max charge pump reg speed</label>
 		<description>Max charge pump reg speed</description>
-		<state min="80" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="80" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48465" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB103 Max charge pump reg speed</label>
 		<description>Max charge pump reg speed</description>
-		<state min="80" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="80" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48466" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB102 Max charge pump reg speed</label>
 		<description>Max charge pump reg speed</description>
-		<state min="80" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="80" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48467" advanced="true">
 		<item-type>Number</item-type>
 		<label>EB101 Max charge pump reg speed</label>
 		<description>Max charge pump reg speed</description>
-		<state min="80" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="80" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48468" advanced="true">
@@ -8317,7 +8317,7 @@
 		<item-type>Number</item-type>
 		<label>RH set value</label>
 		<description>RH set value</description>
-		<state min="30" max="90" step="1" pattern="%d %" readOnly="false">
+		<state min="30" max="90" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48808" advanced="true">
@@ -8454,35 +8454,35 @@
 		<item-type>Number</item-type>
 		<label>ERS 1 Exhaust Fan speed 4</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48854" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 1 Exhaust Fan speed 3</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48855" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 1 Exhaust Fan speed 2</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48856" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 1 Exhaust Fan speed 1</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48857" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 1 Exhaust Fan speed normal</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48889" advanced="true">
@@ -8501,7 +8501,7 @@
 		<item-type>Number</item-type>
 		<label>F135 Pump Speed</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48895" advanced="true">
@@ -8514,35 +8514,35 @@
 		<item-type>Number</item-type>
 		<label>ERS 1 Supply Fan speed 4</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48897" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 1 Supply Fan speed 3</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48898" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 1 Supply Fan speed 2</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48899" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 1 Supply Fan speed 1</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48900" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 1 Supply Fan speed normal</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-48901" advanced="true">
@@ -9047,210 +9047,210 @@
 		<item-type>Number</item-type>
 		<label>ERS 4 Exhaust Fan speed 4</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49329" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Exhaust Fan speed 4</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49330" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Exhaust Fan speed 4</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49331" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 4 Exhaust Fan speed 3</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49332" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Exhaust Fan speed 3</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49333" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Exhaust Fan speed 3</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49334" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 4 Exhaust Fan speed 2</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49335" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Exhaust Fan speed 2</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49336" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Exhaust Fan speed 2</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49337" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 4 Exhaust Fan speed 1</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49338" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Exhaust Fan speed 1</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49339" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Exhaust Fan speed 1</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49340" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 4 Exhaust Fan speed normal</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49341" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Exhaust Fan speed normal</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49342" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Exhaust Fan speed normal</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49343" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 4 Supply Fan speed 4</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49344" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Supply Fan speed 4</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49345" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Supply Fan speed 4</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49346" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 4 Supply Fan speed 3</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49347" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Supply Fan speed 3</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49348" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Supply Fan speed 3</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49349" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 4 Supply Fan speed 2</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49350" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Supply Fan speed 2</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49351" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Supply Fan speed 2</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49352" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 4 Supply Fan speed 1</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49353" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Supply Fan speed 1</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49354" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Supply Fan speed 1</label>
 		<description></description>
-		<state min="0" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49355" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 4 Supply Fan speed normal</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49356" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 3 Supply Fan speed normal</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49357" advanced="true">
 		<item-type>Number</item-type>
 		<label>ERS 2 Supply Fan speed normal</label>
 		<description></description>
-		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
+		<state min="1" max="100" step="1" pattern="%d %%" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="smo40-49358" advanced="true">
