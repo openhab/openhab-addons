@@ -37,6 +37,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class DescriptionLoader {
     private final Logger logger = LoggerFactory.getLogger(DescriptionLoader.class);
+    private final Gson gson = new Gson();
     private final HttpClient httpClient;
 
     /**
@@ -64,7 +65,7 @@ public class DescriptionLoader {
                         "could not read resource description " + webthingURI + ". Got " + response.getStatus());
             }
             var body = response.getContentAsString();
-            var description = new Gson().fromJson(body, WebThingDescription.class);
+            var description = gson.fromJson(body, WebThingDescription.class);
             if ((description.properties != null) && (description.properties.size() > 0)) {
                 if ((description.contextKeyword == null) || description.contextKeyword.trim().length() == 0) {
                     description.contextKeyword = "https://webthings.io/schemas";

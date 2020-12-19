@@ -13,7 +13,6 @@
 package org.openhab.binding.webthing.internal.client;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -33,9 +32,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.websocket.api.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -49,14 +45,15 @@ import com.google.gson.Gson;
  * @author Gregor Roth - Initial contribution
  */
 public class WebthingTest {
+    private static final Gson GSON = new Gson();
 
     @Test
     public void testWebthingDescription() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/windsensor_response.json"));
+        var request = Mocks.mockRequest(null, load("/windsensor_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090"))).thenReturn(request);
 
-        var request2 = mockRequest(null, load("/windsensor_property.json"));
+        var request2 = Mocks.mockRequest(null, load("/windsensor_property.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/properties/windspeed"))).thenReturn(request2);
 
         var webthing = createTestWebthing("http://example.org:8090", httpClient);
@@ -67,10 +64,10 @@ public class WebthingTest {
     @Test
     public void testWebthingDescriptionUnsetSchema() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/unsetschema_response.json"));
+        var request = Mocks.mockRequest(null, load("/unsetschema_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090"))).thenReturn(request);
 
-        var request2 = mockRequest(null, load("/windsensor_property.json"));
+        var request2 = Mocks.mockRequest(null, load("/windsensor_property.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/properties/windspeed"))).thenReturn(request2);
 
         var webthing = createTestWebthing("http://example.org:8090", httpClient);
@@ -81,7 +78,7 @@ public class WebthingTest {
     @Test
     public void testWebthingDescriptionUNsupportedSchema() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/unknownschema_response.json"));
+        var request = Mocks.mockRequest(null, load("/unknownschema_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090"))).thenReturn(request);
 
         try {
@@ -97,10 +94,10 @@ public class WebthingTest {
     @Test
     public void testReadReadOnlyProperty() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/windsensor_response.json"));
+        var request = Mocks.mockRequest(null, load("/windsensor_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090"))).thenReturn(request);
 
-        var request2 = mockRequest(null, load("/windsensor_property.json"));
+        var request2 = Mocks.mockRequest(null, load("/windsensor_property.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/properties/windspeed"))).thenReturn(request2);
 
         var webthing = createTestWebthing("http://example.org:8090", httpClient);
@@ -119,10 +116,10 @@ public class WebthingTest {
     @Test
     public void testReadPropertyTest() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/awning_response.json"));
+        var request = Mocks.mockRequest(null, load("/awning_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/0"))).thenReturn(request);
 
-        var request2 = mockRequest(null, load("/awning_property.json"));
+        var request2 = Mocks.mockRequest(null, load("/awning_property.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/0/properties/target_position")))
                 .thenReturn(request2);
 
@@ -134,10 +131,10 @@ public class WebthingTest {
     @Test
     public void testWriteProperty() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/awning_response.json"));
+        var request = Mocks.mockRequest(null, load("/awning_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/0"))).thenReturn(request);
 
-        var request2 = mockRequest("{\"target_position\":10}", load("/awning_property.json"));
+        var request2 = Mocks.mockRequest("{\"target_position\":10}", load("/awning_property.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/0/properties/target_position")))
                 .thenReturn(request2);
 
@@ -148,10 +145,10 @@ public class WebthingTest {
     @Test
     public void testWritePropertyError() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/awning_response.json"));
+        var request = Mocks.mockRequest(null, load("/awning_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/0"))).thenReturn(request);
 
-        var request2 = mockRequest("{\"target_position\":10}", load("/awning_property.json"), 200, 400);
+        var request2 = Mocks.mockRequest("{\"target_position\":10}", load("/awning_property.json"), 200, 400);
         when(httpClient.newRequest(URI.create("http://example.org:8090/0/properties/target_position")))
                 .thenReturn(request2);
 
@@ -169,10 +166,10 @@ public class WebthingTest {
     @Test
     public void testReadPropertyError() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/windsensor_response.json"));
+        var request = Mocks.mockRequest(null, load("/windsensor_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090"))).thenReturn(request);
 
-        var request2 = mockRequest(null, load("/windsensor_response.json"), 500, 200);
+        var request2 = Mocks.mockRequest(null, load("/windsensor_response.json"), 500, 200);
         when(httpClient.newRequest(URI.create("http://example.org:8090/properties/windspeed"))).thenReturn(request2);
 
         var webthing = createTestWebthing("http://example.org:8090", httpClient);
@@ -187,10 +184,10 @@ public class WebthingTest {
     @Test
     public void testWebSocket() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/awning_response.json"));
+        var request = Mocks.mockRequest(null, load("/awning_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/0"))).thenReturn(request);
 
-        var request2 = mockRequest(null, load("/awning_property.json"));
+        var request2 = Mocks.mockRequest(null, load("/awning_property.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/0/properties/target_position")))
                 .thenReturn(request2);
 
@@ -222,10 +219,10 @@ public class WebthingTest {
     @Test
     public void testWebSocketReceiveTimout() throws Exception {
         var httpClient = mock(org.eclipse.jetty.client.HttpClient.class);
-        var request = mockRequest(null, load("/awning_response.json"));
+        var request = Mocks.mockRequest(null, load("/awning_response.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/0"))).thenReturn(request);
 
-        var request2 = mockRequest(null, load("/awning_property.json"));
+        var request2 = Mocks.mockRequest(null, load("/awning_property.json"));
         when(httpClient.newRequest(URI.create("http://example.org:8090/0/properties/target_position")))
                 .thenReturn(request2);
 
@@ -270,46 +267,6 @@ public class WebthingTest {
     public static ConsumedThingImpl createTestWebthing(String uri, HttpClient httpClient, Consumer<String> errorHandler,
             WebSocketConnectionFactory websocketConnectionFactory) throws IOException {
         return createTestWebthing(uri, httpClient, errorHandler, websocketConnectionFactory, Duration.ofSeconds(100));
-    }
-
-    private static Request mockRequest(String requestContent, String responseContent) throws Exception {
-        return mockRequest(requestContent, responseContent, 200, 200);
-    }
-
-    private static Request mockRequest(String requestContent, String responseContent, int getResponse, int postResponse)
-            throws Exception {
-        var request = mock(Request.class);
-
-        // GET request -> request.timeout(30, TimeUnit.SECONDS).send();
-        var getRequest = mock(Request.class);
-        var getContentResponse = mock(ContentResponse.class);
-        when(getContentResponse.getStatus()).thenReturn(getResponse);
-        when(getContentResponse.getContentAsString()).thenReturn(responseContent);
-        when(getRequest.send()).thenReturn(getContentResponse);
-        when(request.timeout(30, TimeUnit.SECONDS)).thenReturn(getRequest);
-
-        // POST request -> request.method("PUT").content(new StringContentProvider(json)).timeout(30,
-        // TimeUnit.SECONDS).send();
-        if (requestContent != null) {
-            var postRequest = mock(Request.class);
-            when(postRequest.content(argThat((ContentProvider content) -> bufToString(content).equals(requestContent))))
-                    .thenReturn(postRequest);
-            when(postRequest.timeout(30, TimeUnit.SECONDS)).thenReturn(postRequest);
-
-            var postContentResponse = mock(ContentResponse.class);
-            when(postContentResponse.getStatus()).thenReturn(postResponse);
-            when(postRequest.send()).thenReturn(postContentResponse);
-            when(request.method("PUT")).thenReturn(postRequest);
-        }
-        return request;
-    }
-
-    private static String bufToString(Iterable<ByteBuffer> data) {
-        var result = "";
-        for (var byteBuffer : data) {
-            result += StandardCharsets.UTF_8.decode(byteBuffer).toString();
-        }
-        return result;
     }
 
     public static class TestWebsocketConnectionFactory implements WebSocketConnectionFactory {
@@ -475,7 +432,7 @@ public class WebthingTest {
         }
 
         public void sendToClient(PropertyStatusMessage message) {
-            var data = new Gson().toJson(message);
+            var data = GSON.toJson(message);
             listener.onWebSocketText(data);
         }
 

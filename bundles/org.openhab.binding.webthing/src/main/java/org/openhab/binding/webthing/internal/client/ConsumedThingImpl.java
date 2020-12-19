@@ -48,6 +48,7 @@ public class ConsumedThingImpl implements ConsumedThing {
     private static final Duration DEFAULT_PING_PERIOD = Duration.ofSeconds(80);
     private final Logger logger = LoggerFactory.getLogger(ConsumedThingImpl.class);
     private final URI webThingURI;
+    private final Gson gson = new Gson();
     private final HttpClient httpClient;
     private final Consumer<String> errorHandler;
     private final WebThingDescription description;
@@ -186,7 +187,7 @@ public class ConsumedThingImpl implements ConsumedThing {
                 throw new PropertyAccessException("could not read " + propertyName + " (" + propertyUri + ")");
             }
             var body = response.getContentAsString();
-            var properties = new Gson().fromJson(body, Map.class);
+            var properties = gson.fromJson(body, Map.class);
             var value = properties.get(propertyName);
             if (value != null) {
                 return value;
@@ -212,7 +213,7 @@ public class ConsumedThingImpl implements ConsumedThing {
             } else {
                 logger.debug("updating {} with {}", propertyName, newValue);
                 Map<String, Object> payload = Map.of(propertyName, newValue);
-                var json = new Gson().toJson(payload);
+                var json = gson.toJson(payload);
                 var response = httpClient.newRequest(propertyUri).method("PUT").content(new StringContentProvider(json))
                         .timeout(30, TimeUnit.SECONDS).send();
                 if (response.getStatus() < 200 || response.getStatus() >= 300) {

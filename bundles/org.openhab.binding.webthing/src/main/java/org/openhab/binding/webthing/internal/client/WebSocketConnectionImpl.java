@@ -48,6 +48,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
             Object value) -> {
     };
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnectionImpl.class);
+    private final Gson gson = new Gson();
     private final Duration pingPeriod;
     private final Consumer<String> errorHandler;
     private final ScheduledFuture<?> watchDogHandle;
@@ -108,7 +109,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     @Override
     public void onWebSocketText(String message) {
         try {
-            var propertyStatus = new Gson().fromJson(message, PropertyStatusMessage.class);
+            var propertyStatus = gson.fromJson(message, PropertyStatusMessage.class);
             if (propertyStatus.messageType.equals("propertyStatus")) {
                 for (var propertyEntry : propertyStatus.data.entrySet()) {
                     propertyChangedListeners.getOrDefault(propertyEntry.getKey(), EMPTY_PROPERTY_CHANGED_LISTENER)
