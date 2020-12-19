@@ -166,6 +166,11 @@ BEGIN:Calendar_Test_Switch:ON
 END:Calendar_Test_Switch:OFF
 ```
 
+### Notes for Nextcloud
+
+The `url` should be: `https://<URL_TO_SERVER>/remote.php/dav/calendars/<username>/<calendar_name>?export`, so the `?export` is important to get an `ical` file from the calendar.
+Username and password for the nextcloud account have to be set as well.
+
 ## Breaking changes
 
 In OH3 `calendar` was changed from Thing to Bridge. You need to recreate calendars (or replace `Thing` by `Bridge` in your `.things` file).
