@@ -381,14 +381,8 @@ public class RobonectHandler extends BaseThingHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
-        try {
-            if (httpClient != null) {
-                httpClient.stop();
-                httpClient = null;
-            }
-        } catch (Exception e) {
-            logger.debug("Could not stop http client", e);
-        }
+
+        httpClient = null;
     }
 
     /**
