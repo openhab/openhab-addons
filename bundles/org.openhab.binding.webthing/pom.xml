@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.webthing</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Webthing Binding</name>
+  <name>openHAB Add-ons :: Bundles :: WebThing Binding</name>
 
 </project>
