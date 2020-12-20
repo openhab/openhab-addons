@@ -891,7 +891,6 @@ public enum ComfoAirCommandType {
         return null;
     }
 
-    @SuppressWarnings("null")
     private static void uniteCommandsMap(Map<Integer, ComfoAirCommand> commands, ComfoAirCommandType commandType) {
         if (commandType.readReplyCommand != 0) {
             int replyCmd = commandType.readReplyCommand;
