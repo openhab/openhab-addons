@@ -12,7 +12,7 @@ This binding requires an adapter to interface to the Pentair system bus.
 This bus/wire runs between the Pentair control system, indoor control panels, IntelliFlo pumps, etc.
 It is a standard RS-485 bus running at 9600,8N1 so any RS-485 adapter should work and you should be able to buy one for under $30.
 Pentair does not publish any information on the protocol so this binding was developed using the great reverse-engineering efforts of others made available on the internet.
-I have cited sevearl of those in the References section below.
+I have cited several of those in the References section below.
 
 ### Connecting adapter to your system
 
@@ -55,7 +55,6 @@ This binding supports the following thing types:
 | EasyTouch       |   Thing    | Pentiar EasyTouch pool controller.      |
 | Intelliflo Pump |   Thing    | Pentair Intelliflo variable speed pump. |
 | Intellichlor    |   Thing    | Pentair Intellichlor chlorinator.       |
-
 
 ## Binding Configuration
 
