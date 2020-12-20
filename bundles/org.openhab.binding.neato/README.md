@@ -1,6 +1,8 @@
 # Neato Binding
 
-This binding is used to connect your openHAB 2 system with Neato web (where you log in and find Your Neato's). The binding supports discovery via configuring your login and password to a bridge. From the binding, you will get status of your vacuum cleaners and also a command channel where you can control them. Since the binding uses a polling mechanism, there may be some latency depending on your setting regarding refresh time. 
+This binding is used to connect your openHAB system with Neato web (where you log in and find Your Neato's).
+The binding supports discovery via configuring your login and password to a bridge.
+From the binding, you will get status of your vacuum cleaners and also a command channel where you can control them. Since the binding uses a polling mechanism, there may be some latency depending on your setting regarding refresh time. 
 
 For log in transaction, the binding uses Neato Beehive API and for status and control, the binding uses Nucleao API. 
 
@@ -26,7 +28,9 @@ Discovery is used _after_ a bridge has been created and configured with your log
 
 ## Thing Configuration
 
-In order to manually create a thing file and not use the discovery routine you will need to know the vacuums serial number as well as the secret used in web service calls. This is a bit difficult to get. The easiest way of getting this information is to use the third party python library that is available at https://github.com/stianaske/pybotvac.
+In order to manually create a thing file and not use the discovery routine you will need to know the vacuums serial number as well as the secret used in web service calls.
+This is a bit difficult to get.
+The easiest way of getting this information is to use the third party python library that is available at https://github.com/stianaske/pybotvac.
 
 Neato Account Config
 
@@ -107,4 +111,3 @@ Frame label="Neato BotVac Connected" {
 ```
 neato:vacuumcleaner:fanndamm [ serial="vacuumcleaner-serial", secret="secret-string"]
 ```
-
