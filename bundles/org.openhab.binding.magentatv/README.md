@@ -29,7 +29,7 @@ UPnP will be used to discover receivers on the local network and discover the ne
 The receiver needs to be powered on to get discovered.
 
 Once the receiver is discovered it can be added from the Inbox.
-Make sure to set `udn` in the Thing configuration after adding the new thing, see section Thing Configuration.
+Make sure to set `userId` in the Thing configuration after adding the new thing, see section Thing Configuration.
 
 Note:
 The binding uses the network settings in openHAB's system configuration to determine the local IP address.
