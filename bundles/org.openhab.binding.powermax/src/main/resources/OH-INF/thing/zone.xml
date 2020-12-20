@@ -17,6 +17,7 @@
 		<channels>
 			<channel id="tripped" typeId="tripped"/>
 			<channel id="armed" typeId="armed"/>
+			<channel id="locked" typeId="locked"/>
 			<channel id="last_trip" typeId="last_trip"/>
 			<channel id="low_battery" typeId="system.low-battery"/>
 			<channel id="bypassed" typeId="bypassed"/>

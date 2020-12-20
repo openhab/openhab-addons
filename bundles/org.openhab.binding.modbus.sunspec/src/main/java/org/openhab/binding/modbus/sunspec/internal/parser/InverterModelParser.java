@@ -15,7 +15,7 @@ package org.openhab.binding.modbus.sunspec.internal.parser;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConstants;
 import org.openhab.binding.modbus.sunspec.internal.dto.InverterModelBlock;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
  * Parses inverter modbus data into an InverterModelBlock

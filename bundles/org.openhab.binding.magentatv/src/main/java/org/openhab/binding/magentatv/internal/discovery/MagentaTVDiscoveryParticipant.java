@@ -74,6 +74,9 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                         .substring(device.getIdentity().getUdn().getIdentifierString().length() - 12);
                 String mac = hex.substring(0, 2) + ":" + hex.substring(2, 4) + ":" + hex.substring(4, 6) + ":"
                         + hex.substring(6, 8) + ":" + hex.substring(8, 10) + ":" + hex.substring(10, 12);
+                if (port.equals("49153")) { // MR400 reports the rong
+                    port = MR400_DEF_REMOTE_PORT;
+                }
                 properties.put(PROPERTY_VENDOR, VENDOR + "(" + manufacturer + ")");
                 properties.put(PROPERTY_MODEL_ID, modelName);
                 properties.put(PROPERTY_HARDWARE_VERSION, device.getDetails().getModelDetails().getModelNumber());

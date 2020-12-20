@@ -88,8 +88,8 @@
 				"channelType": "waterlevel",
 				"type": "Number",
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"transformation": "tankLevel",
+				"ChannelGroup": "Status",
 				"actions": []
 			},
 			{
@@ -151,11 +151,12 @@
 				"channel": "usedhours",
 				"channelType": "usedhours",
 				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"unit": "hours",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "power_time",
@@ -165,11 +166,12 @@
 				"channel": "powerhours",
 				"channelType": "powerhours",
 				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"unit": "hours",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "speed_level",
@@ -203,9 +205,15 @@
 				"channel": "temperature",
 				"channelType": "temperatureC",
 				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "child_lock",

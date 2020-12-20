@@ -27,7 +27,7 @@ import org.openhab.binding.mqtt.generic.mapping.TopicPrefix;
 public class NodeAttributes extends AbstractMqttAttributeClass {
     public @MandatoryField String name;
     public @MandatoryField @MQTTvalueTransform(splitCharacter = ",") String[] properties;
-    // Type has no meaning for ESH yet and is currently purely of textual, descriptive nature
+    // Type has no meaning yet and is currently purely of textual, descriptive nature
     public String type;
 
     @Override

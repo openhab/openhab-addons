@@ -75,6 +75,10 @@ public class CallMonitor {
      */
     public void dispose() {
         reconnectJob.cancel(true);
+        CallMonitorThread monitorThread = this.monitorThread;
+        if (monitorThread != null) {
+            monitorThread.interrupt();
+        }
     }
 
     public class CallMonitorThread extends Thread {
@@ -120,11 +124,13 @@ public class CallMonitor {
                     handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                     while (!interrupted) {
                         try {
-                            String line = reader.readLine();
-                            if (line != null) {
-                                logger.debug("Received raw call string from fbox: {}", line);
-                                CallEvent ce = new CallEvent(line);
-                                handleCallEvent(ce);
+                            if (reader.ready()) {
+                                String line = reader.readLine();
+                                if (line != null) {
+                                    logger.debug("Received raw call string from fbox: {}", line);
+                                    CallEvent ce = new CallEvent(line);
+                                    handleCallEvent(ce);
+                                }
                             }
                         } catch (IOException e) {
                             if (interrupted) {
@@ -136,8 +142,9 @@ public class CallMonitor {
                             break;
                         } finally {
                             try {
-                                sleep(1000L);
+                                sleep(500L);
                             } catch (InterruptedException e) {
+                                interrupted = true;
                             }
                         }
                     }

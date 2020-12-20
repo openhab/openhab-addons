@@ -76,7 +76,7 @@ public enum EventResponseEnum {
     }
 
     /**
-     * Returns true, if the given property exists at the ESH event properties, otherwise false.
+     * Returns true, if the given property exists at the event properties, otherwise false.
      *
      * @param property to check
      * @return contains property (true = yes | false = no)

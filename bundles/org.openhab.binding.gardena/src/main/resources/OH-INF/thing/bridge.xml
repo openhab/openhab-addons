@@ -4,38 +4,30 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Gardena Smart Home Account -->
+	<!-- Gardena smart system Account -->
 	<bridge-type id="account">
-		<label>Gardena Smart Home Account</label>
-		<description>The Gardena Smart Home Account</description>
+		<label>Gardena Smart System Account</label>
+		<description>The Gardena smart system account</description>
 
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>Email</label>
-				<description>Email address for logging in to Gardena Smart Home</description>
+				<description>Email address for logging in to Gardena smart system</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<context>password</context>
-				<description>Password for logging in to Gardena Smart Home</description>
+				<description>Password for logging in to Gardena smart system</description>
 			</parameter>
-			<parameter name="sessionTimeout" type="integer">
-				<label>Session Timeout</label>
-				<description>The timeout in minutes for a session to Gardena Smart Home</description>
-				<advanced>true</advanced>
-				<default>30</default>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API Key</label>
+				<description>The Gardena smart system integration API key</description>
 			</parameter>
-			<parameter name="connectionTimeout" type="integer">
+			<parameter name="connectionTimeout" type="integer" min="0" unit="s">
 				<label>Connection Timeout</label>
-				<description>The timeout in seconds for connections to Gardena Smart Home</description>
-				<advanced>true</advanced>
+				<description>The timeout in seconds for connections to Gardena smart system integration API</description>
+				<unitLabel>seconds</unitLabel>
 				<default>10</default>
-			</parameter>
-			<parameter name="refresh" type="integer">
-				<label>Refresh Interval</label>
-				<description>The interval in seconds for refreshing the data from Gardena Smart Home</description>
-				<advanced>true</advanced>
-				<default>60</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

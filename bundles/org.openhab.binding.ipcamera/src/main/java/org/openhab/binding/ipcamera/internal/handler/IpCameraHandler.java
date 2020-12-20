@@ -249,7 +249,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             if (contentType.contains("multipart")) {
                                 closeConnection = false;
-                                if (mjpegUri.contains(requestUrl)) {
+                                if (mjpegUri.equals(requestUrl)) {
                                     if (msg instanceof HttpMessage) {
                                         // very start of stream only
                                         ReferenceCountUtil.retain(msg, 1);
@@ -268,13 +268,13 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                 }
                 if (msg instanceof HttpContent) {
-                    if (mjpegUri.contains(requestUrl)) {
+                    if (mjpegUri.equals(requestUrl)) {
                         // multiple MJPEG stream packets come back as this.
                         ReferenceCountUtil.retain(msg, 1);
                         streamToGroup(msg, mjpegChannelGroup, true);
                     } else {
                         HttpContent content = (HttpContent) msg;
-                        // Found some cameras uses Content-Type: image/jpg instead of image/jpeg
+                        // Found some cameras use Content-Type: image/jpg instead of image/jpeg
                         if (contentType.contains("image/jp")) {
                             for (int i = 0; i < content.content().capacity(); i++) {
                                 incomingJpeg[bytesAlreadyRecieved++] = content.content().getByte(i);
@@ -304,8 +304,8 @@ public class IpCameraHandler extends BaseThingHandler {
                                     super.channelRead(ctx, reply);
                                 }
                             }
-                            // HIKVISION alertStream never has a LastHttpContent as it always stays open//
-                            if (contentType.contains("multipart")) {
+                            // Alarm Streams never have a LastHttpContent as they always stay open//
+                            else if (contentType.contains("multipart")) {
                                 if (bytesAlreadyRecieved != 0) {
                                     reply = incomingMessage;
                                     incomingMessage = "";
@@ -316,13 +316,14 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             // Foscam needs this as will other cameras with chunks//
                             if (isChunked && bytesAlreadyRecieved != 0) {
+                                logger.debug("Reply is chunked.");
                                 reply = incomingMessage;
                                 super.channelRead(ctx, reply);
                             }
                         }
                     }
                 } else { // msg is not HttpContent
-                    // Foscam and Amcrest cameras need this
+                    // Foscam cameras need this
                     if (!contentType.contains("image/jp") && bytesAlreadyRecieved != 0) {
                         reply = incomingMessage;
                         logger.debug("Packet back from camera is {}", incomingMessage);
@@ -982,7 +983,6 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                 }
                 String input = (cameraConfig.getAlarmInputUrl().isEmpty()) ? rtspUri : cameraConfig.getAlarmInputUrl();
-                String outputOptions = "-f null -";
                 String filterOptions = "";
                 if (!audioAlarmEnabled) {
                     filterOptions = "-an";
@@ -991,16 +991,22 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 if (!motionAlarmEnabled && !ffmpegSnapshotGeneration) {
                     filterOptions = filterOptions.concat(" -vn");
+                } else if (motionAlarmEnabled && !cameraConfig.getMotionOptions().isEmpty()) {
+                    String usersMotionOptions = cameraConfig.getMotionOptions();
+                    if (usersMotionOptions.startsWith("-")) {
+                        // Need to put the users custom options first in the chain before the motion is detected
+                        filterOptions += " " + usersMotionOptions + ",select='gte(scene," + motionThreshold
+                                + ")',metadata=print";
+                    } else {
+                        filterOptions = filterOptions + " " + usersMotionOptions + " -vf select='gte(scene,"
+                                + motionThreshold + ")',metadata=print";
+                    }
                 } else if (motionAlarmEnabled) {
                     filterOptions = filterOptions
                             .concat(" -vf select='gte(scene," + motionThreshold + ")',metadata=print");
                 }
-                if (!cameraConfig.getUser().isEmpty()) {
-                    filterOptions += " ";// add space as the Framework does not allow spaces at start of config.
-                }
                 ffmpegRtspHelper = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, input,
-                        filterOptions + cameraConfig.getMotionOptions(), outputOptions, cameraConfig.getUser(),
-                        cameraConfig.getPassword());
+                        filterOptions, "-f null -", cameraConfig.getUser(), cameraConfig.getPassword());
                 localAlarms = ffmpegRtspHelper;
                 if (localAlarms != null) {
                     localAlarms.startConverting();
@@ -1484,7 +1490,7 @@ public class IpCameraHandler extends BaseThingHandler {
     boolean streamIsStopped(String url) {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
         if (channelTracking != null) {
-            if (channelTracking.getChannel().isOpen()) {
+            if (channelTracking.getChannel().isActive()) {
                 return false; // stream is running.
             }
         }
@@ -1534,20 +1540,21 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    // runs every 8 seconds due to mjpeg streams not staying open unless they update this often.
+    /**
+     * {@link pollCameraRunnable} Polls every 8 seconds, to check camera is still ONLINE and keep mjpeg and alarm
+     * streams open and more.
+     *
+     */
     void pollCameraRunnable() {
         // Snapshot should be first to keep consistent time between shots
-        if (!snapshotUri.isEmpty()) {
-            if (updateImageChannel) {
-                sendHttpGET(snapshotUri);
-            }
-        }
         if (streamingAutoFps) {
             updateAutoFps = true;
             if (!snapshotPolling && !ffmpegSnapshotGeneration) {
                 // Dont need to poll if creating from RTSP stream with FFmpeg or we are polling at full rate already.
                 sendHttpGET(snapshotUri);
             }
+        } else if (!snapshotUri.isEmpty() && !snapshotPolling) {// we need to check camera is still online.
+            sendHttpGET(snapshotUri);
         }
         // NOTE: Use lowPriorityRequests if get request is not needed every poll.
         if (!lowPriorityRequests.isEmpty()) {

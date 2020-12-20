@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution and API
  * @author Gaël L'hopital - Make it localizable
  */
-@Component(service = TransformationService.class, property = { "smarthome.transform=MAP" })
+@Component(service = TransformationService.class, property = { "openhab.transform=MAP" })
 public class MapTransformationService extends AbstractFileTransformationService<Properties> {
 
     private final Logger logger = LoggerFactory.getLogger(MapTransformationService.class);

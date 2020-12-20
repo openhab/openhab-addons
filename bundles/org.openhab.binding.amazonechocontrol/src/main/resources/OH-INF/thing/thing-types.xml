@@ -73,6 +73,7 @@
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
+			<channel id="textCommand" typeId="textCommand"/>
 			<channel id="remind" typeId="remind"/>
 			<channel id="nextReminder" typeId="nextReminder"/>
 			<channel id="playAlarmSound" typeId="playAlarmSound"/>
@@ -127,6 +128,7 @@
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
+			<channel id="textCommand" typeId="textCommand"/>
 			<channel id="remind" typeId="remind"/>
 			<channel id="nextReminder" typeId="nextReminder"/>
 			<channel id="playAlarmSound" typeId="playAlarmSound"/>
@@ -181,6 +183,7 @@
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
+			<channel id="textCommand" typeId="textCommand"/>
 			<channel id="remind" typeId="remind"/>
 			<channel id="nextReminder" typeId="nextReminder"/>
 			<channel id="playAlarmSound" typeId="playAlarmSound"/>
@@ -451,6 +454,11 @@
 		<item-type>Dimmer</item-type>
 		<label>Speak Volume</label>
 		<description>Volume of the Speak channel. If 0, the current volume will be used.</description>
+	</channel-type>
+	<channel-type id="textCommand" advanced="true">
+		<item-type>String</item-type>
+		<label>TextCommand</label>
+		<description>Run a command (Write only). The command can run like a spoken command.</description>
 	</channel-type>
 	<channel-type id="lastVoiceCommand" advanced="true">
 		<item-type>String</item-type>

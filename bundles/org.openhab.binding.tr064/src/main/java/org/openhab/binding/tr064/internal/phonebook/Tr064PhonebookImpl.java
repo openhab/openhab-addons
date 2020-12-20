@@ -31,8 +31,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.tr064.internal.dto.phonebook.NumberType;
-import org.openhab.binding.tr064.internal.dto.phonebook.PhonebooksType;
+import org.openhab.binding.tr064.internal.dto.additions.NumberType;
+import org.openhab.binding.tr064.internal.dto.additions.PhonebooksType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

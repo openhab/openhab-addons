@@ -24,6 +24,7 @@
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="commands" typeId="commands"/>
+			<channel id="rpc" typeId="rpc"/>
 			<channel id="testcommands" typeId="testcommands"/>
 		</channels>
 	</channel-group-type>
@@ -32,5 +33,6 @@
 		<item-type>Switch</item-type>
 		<label>(experimental)Execute test to find supported channels</label>
 		<description>(experimental)Execute test for all known properties to find channels supported by your device.</description>
+		<category>settings</category>
 	</channel-type>
 </thing:thing-descriptions>

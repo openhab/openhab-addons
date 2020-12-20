@@ -88,7 +88,7 @@ public class NeatoAccountDiscoveryService extends AbstractDiscoveryService {
             return;
         }
 
-        logger.debug("addThing(): Adding new Neato unit {} to the smarthome inbox", robot.getName());
+        logger.debug("addThing(): Adding new Neato unit {} to the inbox", robot.getName());
 
         Map<String, Object> properties = new HashMap<>();
         String serial = robot.getSerial();

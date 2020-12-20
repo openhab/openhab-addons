@@ -21,7 +21,7 @@ public class HomekitSettings {
     public static final String MANUFACTURER = "openHAB Community";
     public static final String SERIAL_NUMBER = "none";
     public static final String MODEL = "openHAB";
-    public static final String HARDWARE_REVISION = "2.5";
+    public static final String HARDWARE_REVISION = "3.0";
 
     public String name = "openHAB";
     public int port = 9123;
@@ -45,30 +45,6 @@ public class HomekitSettings {
     public String doorTargetStateClosed = "CLOSED";
     public String doorTargetStateOpen = "OPEN";
     public String networkInterface;
-
-    @Deprecated
-    public String thermostatHeatMode;
-    @Deprecated
-    public String thermostatCoolMode;
-    @Deprecated
-    public String thermostatAutoMode;
-    @Deprecated
-    public String thermostatOffMode;
-
-    public void process() {
-        if (thermostatHeatMode /* legacy setting */ != null) {
-            this.thermostatTargetModeHeat = thermostatHeatMode;
-        }
-        if (thermostatCoolMode /* legacy setting */ != null) {
-            this.thermostatTargetModeCool = thermostatCoolMode;
-        }
-        if (thermostatAutoMode /* legacy setting */ != null) {
-            this.thermostatTargetModeAuto = thermostatAutoMode;
-        }
-        if (thermostatOffMode /* legacy setting */ != null) {
-            this.thermostatTargetModeOff = thermostatOffMode;
-        }
-    }
 
     @Override
     public int hashCode() {
