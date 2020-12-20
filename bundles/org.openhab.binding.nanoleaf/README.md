@@ -31,7 +31,7 @@ Just make sure that you delete them and rediscover as described below.
 
 **Adding the Controller as a Thing**
 
-To add a nanoleaf controller, go to your inbox, press the plus sign which **starts a scan**.
+To add a nanoleaf controller, go to your inbox and start a scan.
 Then choose "Nanoleaf Binding".
 A controller (bridge) device is discovered automatically using mDNS in your local network.
 Alternatively, you can also provide a things file (see below for more details).
