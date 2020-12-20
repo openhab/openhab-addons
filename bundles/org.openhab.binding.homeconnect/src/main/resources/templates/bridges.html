@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="base :: head"></head>
+
+<body>
+<nav th:replace="base :: topNav"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="base :: sidebarMenu (current='bridges')"></nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Bridges</h1>
+            </div>
+
+            <div th:if="${bridgeHandlers.size() == 0}">No Home Connect bridge found. Please manually add 'Home Connect API' bridge and authorize it here.</div>
+            <div th:each="bridgeHandler: ${bridgeHandlers}">
+                <div class="card mb-3" th:with="thing=${bridgeHandler.getThing()}, status=${bridgeHandler.getThing().getStatus().toString()}, uid=${thing.getUID().getAsString()}">
+                    <div class="card-body">
+                        <section th:id="${uid}">
+                            <h5 class="card-title" th:text="${thing.getLabel()}">Card title</h5>
+                        </section>
+                        <h6 class="card-subtitle mb-2 text-muted" th:text="${uid}">Card subtitle</h6>
+
+                        <div th:if="${action == uid + 'clearCredentials'}" class="alert alert-success" role="alert">
+                            Successfully cleared credentials.
+                        </div>
+
+                        <div th:if="${action == uid + 'authorize'}" class="alert alert-success" role="alert">
+                            Successfully authorized bridge.
+                        </div>
+
+                        <dl class="row">
+                            <dt class="col-sm-2">OAuth Flow</dt>
+                            <dd class="col-sm-8">Authorization Code Grant Flow</dd>
+                            <div class="w-100"></div>
+
+                            <dt class="col-sm-2">Client ID</dt>
+                            <dd class="col-sm-8" th:text="${bridgeHandler.getConfiguration().getClientId()}">1234567890</dd>
+                            <div class="w-100"></div>
+
+                            <dt class="col-sm-2">Client Secret</dt>
+                            <dd class="col-sm-8" th:text="${bridgeHandler.getConfiguration().getClientSecret()}">xyz</dd>
+                            <div class="w-100"></div>
+
+                            <dt class="col-sm-2">Redirect URI</dt>
+                            <dd class="col-sm-8">
+                                <span class="redirectUri">http://xy/homeconnect</span><br />
+                                <small class="text-muted">Please make sure the redirect URI is matching the one specified at https://developer.home-connect.com/applications/.</small>
+                            </dd>
+                            <div class="w-100"></div>
+
+                            <dt class="col-sm-2">API Endpoint</dt>
+                            <dd class="col-sm-8" th:text="${bridgeHandler.getConfiguration().isSimulator() ? @org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants@API_SIMULATOR_BASE_URL : @org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants@API_BASE_URL}">xyz</dd>
+                            <div class="w-100"></div>
+
+                            <dt class="col-sm-2">SSE connections</dt>
+                            <dd class="col-sm-8" th:text="${bridgeHandler.getEventSourceClient().connectionSize()}">xyz</dd>
+                            <div class="w-100"></div>
+
+                            <dt class="col-sm-2">Status</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge" th:classappend="|${status == 'UNINITIALIZED' ? 'badge-warning' : ''} ${status == 'OFFLINE' ? 'badge-danger' : ''} ${status == 'ONLINE' ? 'badge-success' : ''}|" th:text="${status}">OFFLINE</span>
+                            </dd>
+                            <div class="w-100"></div>
+
+                            <dt class="col-sm-2"></dt>
+                            <dd class="col-sm-8">
+                                <form method="post" style="display: inline-block">
+                                    <input type="hidden" name="bridgeId" th:value="${uid}"/>
+                                    <input type="hidden" name="action" value="clearCredentials">
+                                    <button type="submit" class="btn btn-secondary btn-sm">Clear stored credentials</button>
+                                </form>
+                                <form method="post" style="display: inline-block">
+                                    <input type="hidden" name="bridgeId" th:value="${uid}"/>
+                                    <input type="hidden" name="action" value="authorize">
+                                    <button type="submit" class="btn btn-primary btn-sm">Authorize bridge</button>
+                                </form>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!--/*/ <th:block th:include="base :: js">
+    </th:block> /*/-->
+
+</body>
+</html>
