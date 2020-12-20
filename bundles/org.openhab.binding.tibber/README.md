@@ -71,8 +71,7 @@ Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibb
 * Sign in (Tibber user account) and "load" personal token.
 * Copy query from below and paste into the Tibber API Explorer, and run query. 
 * If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
-* Copy HomeId from Tibber API Explorer, without quotation marks, and paste into Paper UI configuration
-
+* Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
 
 ```
 {
@@ -87,16 +86,15 @@ Note: Tibber HomeId is retrieved from [www.developer.com](https://developer.tibb
 }
 ```
 
-If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds in Paper UI.
-
+If user have multiple HomeIds / Pulse, separate Things have to be created for the different/desired HomeIds.
 
 ## Thing Configuration
 
-When Tibber Binding is installed, Tibber API should be autodiscovered in Paper UI. 
+When Tibber Binding is installed, Tibber API should be auto discovered. 
 
-Retrieve personal token and HomeId from description above, and initialize/start Binding from Paper UI. 
+Retrieve personal token and HomeId from description above, and initialize/start a scan with the binding. 
 
-Tibber API will be autodiscovered if provided input is correct.
+Tibber API will be auto discovered if provided input is correct.
 
 
 ## Full Example

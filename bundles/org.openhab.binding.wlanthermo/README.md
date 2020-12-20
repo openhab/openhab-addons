@@ -20,8 +20,8 @@ This binding supports the following version of WlanThermo:
 
 ## Discovery
 
-There is no auto-discovery of WlanThermo Things. 
-Things must be created manually, e.g. via PaperUI.
+There is no auto-discovery for WlanThermo Things. 
+Things must be created manually.
 
 ## Thing Configuration
 

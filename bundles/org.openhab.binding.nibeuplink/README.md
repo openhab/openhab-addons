@@ -302,8 +302,7 @@ Following models/channels are currently available:
 
 ### Custom Channels
 
-An arbitrary number of custom channels can be added via paper-ui or file based configuration.
-The recommended way is to use paper-ui as this is much easier to use.
+An arbitrary number of custom channels can be added via the UI or using file based configuration.
 There are three custom channel types available, which allow different scaling of the raw values retrieved from the NIBE API:
 
 - type-number-unscaled

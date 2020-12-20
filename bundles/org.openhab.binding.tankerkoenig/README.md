@@ -123,28 +123,10 @@ If you receive the error because you are running an old Linux installation which
 
    1.) Update the Linux system and install the latest Java version
    
-   2.) Download the most recent JDK and install it directly on to your system without using a pre-composed package
-   
-   On Debian based systems one can use: http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
+   2.) Download the most recent JDK and install it directly on to your system without using a pre-composed package   
 
    3.) Update the cacerts store by importing the missing certificate
-   
-   Note: Using this version, loaded certificates will expire!
-   If you still want to import the missing certificate, the example below may help:
-   Check which Java package you have installed:
-
-```java
->> sudo dpkg -l | grep java
->> ii  oracle-java8-jdk                    8u65                             armhf        Java™ Platform, Standard Edition 8 Development Kit
-```
-
-Find the ca-store of your JDK
-
-```java
->> sudo dpkg -L oracle-java8-jdk | grep cacerts
->> /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security/cacerts
-```
-    
+       
 Check which CA has validated the certificate
 
 Navigate to https://creativecommons.tankerkoenig.de/
@@ -156,7 +138,7 @@ Export the certificate of the certificate authority
 Import the certificate to the CA-store which you have found
 
 ```java
->> cd /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security
+>> cd /usr/lib/jvm/jdk-11-oracle-arm32-vfp-hflt/jre/lib/security
 >> keytool -import -keystore cacerts -alias LetsEncrypt -file ca.crt
 ```
 
