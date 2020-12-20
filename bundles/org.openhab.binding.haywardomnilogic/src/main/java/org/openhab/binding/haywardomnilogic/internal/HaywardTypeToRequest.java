@@ -16,8 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The type to request.
- *
- * @author Matt Myers - Initial Contribution
  */
 @NonNullByDefault
 public enum HaywardTypeToRequest {

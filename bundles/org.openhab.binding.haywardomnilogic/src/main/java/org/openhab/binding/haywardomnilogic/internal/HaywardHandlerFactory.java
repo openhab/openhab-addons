@@ -46,8 +46,6 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * The {@link HaywardHandlerFactory} is responsible for creating things and thing
  * handlers.
- *
- * @author Matt Myers - Initial Contribution
  */
 
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.haywardomnilogic")

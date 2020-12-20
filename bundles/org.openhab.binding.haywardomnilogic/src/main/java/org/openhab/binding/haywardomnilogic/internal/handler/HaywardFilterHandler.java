@@ -23,6 +23,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -30,8 +31,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Filter Handler
- *
- * @author Matt Myers - Initial Contribution
  */
 @NonNullByDefault
 public class HaywardFilterHandler extends HaywardThingHandler {
@@ -87,6 +86,9 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                     updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i));
                 }
             }
+
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -141,6 +143,8 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                 logger.debug("Unable to send command to Hayward's server {}:{}", bridgehandler.config.endpointUrl,
                         bridgehandler.config.username, e);
             }
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

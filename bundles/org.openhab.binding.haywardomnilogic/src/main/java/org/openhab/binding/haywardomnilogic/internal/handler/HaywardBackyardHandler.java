@@ -19,13 +19,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The Backyard Handler
- *
- * @author Matt Myers - Initial Contribution
  */
 @NonNullByDefault
 public class HaywardBackyardHandler extends HaywardThingHandler {
@@ -60,6 +60,8 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
                     updateData(HaywardBindingConstants.CHANNEL_BACKYARD_STATE, data.get(0));
                 }
             }
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -71,42 +73,45 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
 
         @SuppressWarnings("null")
         HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) getBridge().getHandler();
+        if (bridgehandler != null) {
+            // *****Request Alarm List from Hayward server
+            String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetAlarmList</Name><Parameters>"
+                    + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token + "</Parameter>"
+                    + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + bridgehandler.account.mspSystemID
+                    + "</Parameter>"
+                    + "<Parameter name=\"CultureInfoName\" dataType=\"String\">en-us</Parameter></Parameters></Request>";
 
-        // *****Request Alarm List from Hayward server
-        @SuppressWarnings("null")
-        String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetAlarmList</Name><Parameters>"
-                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token + "</Parameter>"
-                + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + bridgehandler.account.mspSystemID
-                + "</Parameter>"
-                + "<Parameter name=\"CultureInfoName\" dataType=\"String\">en-us</Parameter></Parameters></Request>";
+            String xmlResponse = bridgehandler.httpXmlResponse(urlParameters);
 
-        String xmlResponse = bridgehandler.httpXmlResponse(urlParameters);
-
-        if (xmlResponse.isEmpty()) {
-            logger.debug("Hayward getAlarmList XML response was empty");
-            return false;
-        }
-
-        String status = bridgehandler
-                .evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
-
-        if (!(status.equals("0"))) {
-            logger.trace("Hayward getAlarm XML response: {}", xmlResponse);
-            return false;
-        }
-
-        bowID = bridgehandler.evaluateXPath("//Property[@name='BowID']/text()", xmlResponse);
-        parameter1 = bridgehandler.evaluateXPath("//Property[@name='Parameter1']/text()", xmlResponse);
-        message = bridgehandler.evaluateXPath("//Property[@name='Message']/text()", xmlResponse);
-
-        for (int i = 0; i < 5; i++) {
-            if (i < bowID.size()) {
-                alarmStr = parameter1.get(i) + ": " + message.get(i);
-            } else {
-                alarmStr = "";
+            if (xmlResponse.isEmpty()) {
+                logger.debug("Hayward getAlarmList XML response was empty");
+                return false;
             }
-            updateData("backyardAlarm" + String.format("%01d", i + 1), alarmStr);
+
+            String status = bridgehandler
+                    .evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
+
+            if (!(status.equals("0"))) {
+                logger.trace("Hayward getAlarm XML response: {}", xmlResponse);
+                return false;
+            }
+
+            bowID = bridgehandler.evaluateXPath("//Property[@name='BowID']/text()", xmlResponse);
+            parameter1 = bridgehandler.evaluateXPath("//Property[@name='Parameter1']/text()", xmlResponse);
+            message = bridgehandler.evaluateXPath("//Property[@name='Message']/text()", xmlResponse);
+
+            for (int i = 0; i < 5; i++) {
+                if (i < bowID.size()) {
+                    alarmStr = parameter1.get(i) + ": " + message.get(i);
+                } else {
+                    alarmStr = "";
+                }
+                updateData("backyardAlarm" + String.format("%01d", i + 1), alarmStr);
+            }
+            return true;
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            return false;
         }
-        return true;
     }
 }

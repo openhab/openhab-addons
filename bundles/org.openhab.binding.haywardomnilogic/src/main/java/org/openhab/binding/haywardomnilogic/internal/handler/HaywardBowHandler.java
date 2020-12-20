@@ -19,11 +19,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 
 /**
  * The Body of Water Handler
- *
- * @author Matt Myers - Initial Contribution
  */
 @NonNullByDefault
 public class HaywardBowHandler extends HaywardThingHandler {
@@ -54,6 +54,9 @@ public class HaywardBowHandler extends HaywardThingHandler {
                     updateData(HaywardBindingConstants.CHANNEL_BOW_WATERTEMP, data.get(i));
                 }
             }
+
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

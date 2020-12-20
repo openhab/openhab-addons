@@ -30,7 +30,7 @@
 				<default>12</default>
 				<description>How often to request telemetry data from Hayward Server</description>
 			</parameter>
-			<parameter name="alarmPollTime" type="integer" min="0" max="120" required="true">
+			<parameter name="alarmPollTime" type="integer" min="0" max="120" unit="s" required="true">
 				<label>Alarm Poll Delay</label>
 				<default>60</default>
 				<description>How often to request alarm data from Hayward Server. Enter 0 to disable.</description>

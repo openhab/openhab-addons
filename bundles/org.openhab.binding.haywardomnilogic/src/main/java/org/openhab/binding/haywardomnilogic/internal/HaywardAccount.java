@@ -16,8 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link HaywardAccount} class contains fields mapping thing configuration parameters.
- *
- * @author Matt Myers - Initial Contribution
  */
 
 @NonNullByDefault

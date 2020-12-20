@@ -19,11 +19,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 
 /**
  * The Sensor Handler
- *
- * @author Matt Myers - Initial Contribution
  */
 @NonNullByDefault
 public class HaywardSensorHandler extends HaywardThingHandler {
@@ -48,6 +48,8 @@ public class HaywardSensorHandler extends HaywardThingHandler {
                     updateData(HaywardBindingConstants.CHANNEL_RELAY_STATE, data.get(i));
                 }
             }
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

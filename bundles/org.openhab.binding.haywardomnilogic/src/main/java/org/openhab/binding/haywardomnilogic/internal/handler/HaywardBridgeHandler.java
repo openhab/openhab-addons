@@ -59,8 +59,6 @@ import org.xml.sax.InputSource;
 /**
  * The {@link HaywardBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
- *
- * @author Matt Myers - Initial contribution
  */
 
 @NonNullByDefault
@@ -155,9 +153,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "scheduledInitialize exception");
-            logger.debug("Hayward Connection thing: Unable to open connection to Hayward Server: {} Username: {}",
-                    config.endpointUrl, config.username, e);
+                    "scheduledInitialize exception: " + e);
             clearPolling(pollTelemetryFuture);
             clearPolling(pollAlarmsFuture);
             commFailureCount = 50;
@@ -263,12 +259,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
         if (xmlResponse.isEmpty()) {
             logger.debug("Hayward Connection thing: requestConfig XML response was null");
-            return "";
+            return "Fail";
         }
 
         if (evaluateXPath("//Backyard/Name/text()", xmlResponse).isEmpty()) {
             logger.debug("Hayward Connection thing: requestConfiguration XML response: {}", xmlResponse);
-            return "";
+            return "Fail";
         }
         return xmlResponse;
     }

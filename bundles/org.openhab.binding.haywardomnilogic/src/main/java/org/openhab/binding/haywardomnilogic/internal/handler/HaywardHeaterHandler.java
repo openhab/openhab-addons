@@ -20,11 +20,11 @@ import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.binding.haywardomnilogic.internal.config.HaywardConfig;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 
 /**
  * The Heater Handler
- *
- * @author Matt Myers - Initial Contribution
  */
 @NonNullByDefault
 public class HaywardHeaterHandler extends HaywardThingHandler {
@@ -60,6 +60,8 @@ public class HaywardHeaterHandler extends HaywardThingHandler {
                     }
                 }
             }
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

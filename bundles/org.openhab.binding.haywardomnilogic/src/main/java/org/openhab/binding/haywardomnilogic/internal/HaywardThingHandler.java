@@ -33,8 +33,6 @@ import org.openhab.core.types.State;
 /**
  * The {@link HaywarThingHandler} is a subclass of the BaseThingHandler and a Super
  * Class to each Hayward Thing Handler
- *
- * @author Matt Myers - Initial contribution
  */
 
 @NonNullByDefault
