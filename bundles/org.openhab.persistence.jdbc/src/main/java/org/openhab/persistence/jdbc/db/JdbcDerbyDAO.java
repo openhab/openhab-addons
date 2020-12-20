@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,12 +176,6 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
      ****************************/
     static final DateTimeFormatter JDBC_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    /**
-     * @param filter
-     * @param numberDecimalcount
-     * @param table
-     * @return
-     */
     private String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
             String simpleName) {
         logger.debug(
@@ -190,11 +185,13 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'";
+            filterString += " TIME>'"
+                    + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(ZoneId.systemDefault())) + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'";
+            filterString += " TIME<'"
+                    + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(ZoneId.systemDefault())) + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
         if (filter.getPageSize() != 0x7fffffff) {

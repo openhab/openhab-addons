@@ -356,11 +356,13 @@ public class JdbcBaseDAO {
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'";
+            filterString += " TIME>'"
+                    + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(ZoneId.systemDefault())) + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'";
+            filterString += " TIME<'"
+                    + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(ZoneId.systemDefault())) + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC ";
         if (filter.getPageSize() != 0x7fffffff) {
