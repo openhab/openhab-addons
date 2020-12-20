@@ -1,6 +1,6 @@
 # Samsung Smartthings Binding
 
-This binding integrates the Samsung Smartthings Hub into openHAB. This is implemented as an openHAB 2 binding.
+This binding integrates the Samsung Smartthings Hub into openHAB.
 
 ## Supported things
 

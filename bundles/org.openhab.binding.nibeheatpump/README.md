@@ -33,7 +33,7 @@ This binding supports direct serial port connection (RS-485 adapter needed) to h
 
 ## Discovery
 
-Discovery is not supported, therefore the binding and things need to be configured via Paper UI or thing files. 
+Discovery is not supported. 
 
 ## Prerequisites
 
@@ -111,7 +111,7 @@ No binding configuration required.
 
 ## Thing Configuration
 
-Things can be fully configured via Paper UI.
+Things can be fully configured via the UI.
 The following information is useful when configuring things via thing configuration files.
 
 ### UDP connection

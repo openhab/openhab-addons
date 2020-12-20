@@ -46,18 +46,13 @@ Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
 
 To start a discovery, just
  
-- install this binding
-- open Paper UI
-- add a new thing in menu Configuration/Things
-- choose SomfyTahoma Binding and select Somfy Tahoma Bridge
-- enter your email (login) and password to the TahomaLink cloud portal
+- Add a new Somfy Tahoma bridge thing.
+- Configure the bridge with your email (login) and password to the TahomaLink cloud portal.
  
-If the supplied TahomaLink credentials are correct, the automatic discovery starts immediately and detected roller shutters, awnings, switches and action groups appear in Paper UI inbox. 
+If the supplied TahomaLink credentials are correct, the automatic discovery can be used to scan and detect roller shutters, awnings, switches and action groups that will appear in your Inbox. 
 
 ## Thing Configuration
 
-To manually configure the thing you have to specify bridge and things in *.things file in conf/addons directory of your openHAB 2.x installation.
-To manually link the thing channels to items just use the *.items file in conf/items directory of your openHAB 2.x installation. 
 To retrieve thing configuration and url parameter, just add the automatically discovered device from your inbox and copy its values from thing edit page. (the url parameter is visible on edit page only)
 Please see the example below.
 
