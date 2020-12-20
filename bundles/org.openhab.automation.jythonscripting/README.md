@@ -17,7 +17,7 @@ If you create an empty file called `test.py`, you will see a log line with infor
     ... [INFO ] [.a.m.s.r.i.l.ScriptFileWatcher:150  ] - Loading script 'test.py'
 ```
 
-To enable debug logging, use the [Karaf logging]({{base}}/administration/logging.html) commands to
+To enable debug logging, use the [console logging]({{base}}/administration/logging.html) commands to
 enable debug logging for the automation functionality:
 
 ```text
