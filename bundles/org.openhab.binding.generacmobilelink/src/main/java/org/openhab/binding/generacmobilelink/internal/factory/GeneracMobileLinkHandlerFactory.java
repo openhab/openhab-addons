@@ -14,10 +14,10 @@ package org.openhab.binding.generacmobilelink.internal.factory;
 
 import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants.*;
 
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +50,7 @@ import org.osgi.service.component.annotations.Reference;
 public class GeneracMobileLinkHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT,
             THING_TYPE_GENERATOR);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new ConcurrentHashMap<>();
     private final HttpClient httpClient;
 
     @Activate

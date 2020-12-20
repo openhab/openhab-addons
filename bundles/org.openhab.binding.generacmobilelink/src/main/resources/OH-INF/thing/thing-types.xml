@@ -62,7 +62,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="statusDate">
-		<item-type>String</item-type>
+		<item-type>DateTime</item-type>
 		<label>Last Status Date</label>
 		<state readOnly="true"/>
 	</channel-type>

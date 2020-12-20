@@ -17,12 +17,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.ContentProvider;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -31,6 +31,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants;
 import org.openhab.binding.generacmobilelink.internal.config.GeneracMobileLinkAccountConfiguration;
 import org.openhab.binding.generacmobilelink.internal.discovery.GeneracMobileLinkDiscoveryService;
+import org.openhab.binding.generacmobilelink.internal.dto.ErrorResponseDTO;
 import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusDTO;
 import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusResponseDTO;
 import org.openhab.binding.generacmobilelink.internal.dto.LoginRequestDTO;
@@ -124,103 +125,106 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     }
 
     private void poll() {
-        // if our token is null we need to login
         if (authToken == null) {
-            logger.debug("login");
+            logger.debug("Attempting Login");
             login();
         }
-
-        // if we now have a token, get our data
-        if (authToken != null) {
-            getStatuses(true);
-        }
+        getStatuses(true);
     }
 
     private synchronized void login() {
+        GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
+        refreshIntervalSeconds = config.refreshInterval;
         try {
-            // use asynchronous Jetty for login as the API service will response with a 401 error when credentials are
-            // wrong, but not a WWW-Authenticate header which causes synchronous Jetty to throw a generic execution
-            // exception which prevents us from knowing the response code
-            GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
-            refreshIntervalSeconds = config.refreshInterval;
-            final CompletableFuture<AsyncResult> futureResult = new CompletableFuture<>();
-            httpClient.newRequest(BASE_URL + "/Users/login").method(HttpMethod.POST)
-                    .content(
-                            new StringContentProvider(
-                                    gson.toJson(new LoginRequestDTO(SHARED_KEY, config.username, config.password))),
-                            "application/json")
-                    .timeout(10, TimeUnit.SECONDS).send(new BufferingResponseListener() {
-                        @NonNullByDefault({})
-                        @Override
-                        public void onComplete(Result result) {
-                            futureResult
-                                    .complete(new AsyncResult(getContentAsString(), result.getResponse().getStatus()));
-                        }
-                    });
-            AsyncResult result = futureResult.get();
-            switch (result.responseCode) {
-                case HttpStatus.OK_200:
-                    LoginResponseDTO loginResponse = gson.fromJson(result.content, LoginResponseDTO.class);
-                    if (loginResponse != null) {
-                        authToken = loginResponse.authToken;
-                        updateStatus(ThingStatus.ONLINE);
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Invalid Response Body");
-                    }
-                    break;
-                case HttpStatus.UNAUTHORIZED_401:
-                    // the server responds with a 500 error in some cases when credentials are not correct
-                case HttpStatus.INTERNAL_SERVER_ERROR_500:
-                    // do not continue to poll with bad credentials since this requires user intervention
+            HTTPResult result = sendRequest(BASE_URL + "/Users/login", HttpMethod.POST, null,
+                    new StringContentProvider(
+                            gson.toJson(new LoginRequestDTO(SHARED_KEY, config.username, config.password))),
+                    "application/json");
+            if (result.responseCode == HttpStatus.OK_200) {
+                LoginResponseDTO loginResponse = gson.fromJson(result.content, LoginResponseDTO.class);
+                if (loginResponse != null) {
+                    authToken = loginResponse.authToken;
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                handleErrorResponse(result);
+                if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
+                    // bad credentials, stop trying to login
                     stopPoll();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Unauthorized: " + result.content);
-                    break;
-                default:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Invalid Response Code " + result.responseCode);
+                }
             }
-
-        } catch (ExecutionException | InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+        } catch (InterruptedException e) {
         }
     }
 
     private void getStatuses(boolean retry) {
+        if (authToken == null) {
+            return;
+        }
         try {
-            ContentResponse contentResponse = httpClient.newRequest(BASE_URL + "/Generator/GeneratorStatus")
-                    .method(HttpMethod.GET).timeout(10, TimeUnit.SECONDS).header("AuthToken", authToken).send();
-            int httpStatus = contentResponse.getStatus();
-            String content = contentResponse.getContentAsString();
-            logger.trace("GeneratorStatusResponse - status: {} content: {}", httpStatus, content);
-            switch (httpStatus) {
-                case HttpStatus.OK_200:
-                    generators = gson.fromJson(content, GeneratorStatusResponseDTO.class);
-                    updateGeneratorThings();
-                    if (getThing().getStatus() != ThingStatus.ONLINE) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                    break;
-                case HttpStatus.UNAUTHORIZED_401:
-                    authToken = null;
-                    restartPoll();
-                    break;
-                default:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Invalid Return Code " + httpStatus);
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } catch (TimeoutException e) {
-            // the API seems to time out on this call frequently, although recovers after trying again
-            if (retry) {
-                logger.debug("Timeout occured, Retying status request");
-                getStatuses(false);
+            HTTPResult result = sendRequest(BASE_URL + "/Generator/GeneratorStatus", HttpMethod.GET, authToken, null,
+                    null);
+            if (result.responseCode == HttpStatus.OK_200) {
+                generators = gson.fromJson(result.content, GeneratorStatusResponseDTO.class);
+                updateGeneratorThings();
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             } else {
-                logger.debug("Timeout occured, waiting for next poll cycle");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                if (retry) {
+                    logger.debug("Retrying status request");
+                    getStatuses(false);
+                } else {
+                    handleErrorResponse(result);
+                }
             }
+        } catch (InterruptedException e) {
+        }
+    }
+
+    private HTTPResult sendRequest(String url, HttpMethod method, @Nullable String token,
+            @Nullable ContentProvider content, @Nullable String contentType) throws InterruptedException {
+        try {
+            Request request = httpClient.newRequest(url).method(method).timeout(10, TimeUnit.SECONDS);
+            if (token != null) {
+                request = request.header("AuthToken", token);
+            }
+            if (content != null & contentType != null) {
+                request = request.content(content, contentType);
+            }
+            logger.trace("Sending {} to {}", request.getMethod(), request.getURI());
+            final CompletableFuture<HTTPResult> futureResult = new CompletableFuture<>();
+            request.send(new BufferingResponseListener() {
+                @NonNullByDefault({})
+                @Override
+                public void onComplete(Result result) {
+                    futureResult.complete(new HTTPResult(result.getResponse().getStatus(), getContentAsString()));
+                }
+            });
+            HTTPResult result = futureResult.get();
+            logger.trace("Response - status: {} content: {}", result.responseCode, result.content);
+            return result;
+        } catch (ExecutionException e) {
+            logger.debug("request failed", e);
+            return new HTTPResult(0, e.getMessage());
+        }
+    }
+
+    private void handleErrorResponse(HTTPResult result) {
+        switch (result.responseCode) {
+            case HttpStatus.UNAUTHORIZED_401:
+                // the server responds with a 500 error in some cases when credentials are not correct
+            case HttpStatus.INTERNAL_SERVER_ERROR_500:
+                // server returned a valid error response
+                ErrorResponseDTO error = gson.fromJson(result.content, ErrorResponseDTO.class);
+                if (error != null && error.errorCode > 0) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Unauthorized: " + result.content);
+                    authToken = null;
+                    break;
+                }
+            default:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, result.content);
         }
     }
 
@@ -249,16 +253,16 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                 .withLabel("MobileLink Generator " + generator.generatorName)
                 .withProperty("generatorId", String.valueOf(generator.gensetID))
                 .withRepresentationProperty("generatorId").withBridge(getThing().getUID()).build();
-        discoveryService.generatorDiscovered(result);
+        discoveryService.thingDiscovered(result);
     }
 
-    public static class AsyncResult {
+    public static class HTTPResult {
         public @Nullable String content;
         public final int responseCode;
 
-        public AsyncResult(@Nullable String content, int responseCode) {
-            this.content = content;
+        public HTTPResult(int responseCode, @Nullable String content) {
             this.responseCode = responseCode;
+            this.content = content;
         }
     }
 }

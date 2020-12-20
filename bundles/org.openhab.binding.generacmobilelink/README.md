@@ -45,15 +45,15 @@ All channels are read-only.
 | yellowLight             | Switch               | Yellow light state                        |
 | redLight                | Switch               | Red light state (typically off mode)      |
 | blueLight               | Switch               | Blue light state (typically running mode) |
-| statusDate              | String               | Status date                               |
-| status                  | String               | Status                                    |
+| statusDate              | DateTime             | Status date (start of day)                |
+| status                  | String               | General status                            |
 | currentAlarmDescription | String               | Current alarm description                 |
-| runHours                | Number:Time          | Run hours                                 |
-| exerciseHours           | Number:Time          | Exercise hours                            |
-| fuelType                | Number               | Fuel Type                                 |
-| fuelLevel               | Number:Dimensionless | Fuel Level                                |
-| batteryVoltage          | String               | Battery Voltage Status                    |
-| serviceStatus           | Switch               | Service Status                            |
+| runHours                | Number:Time          | Number of run hours                       |
+| exerciseHours           | Number:Time          | Number of exercise hours                  |
+| fuelType                | Number               | Fuel type                                 |
+| fuelLevel               | Number:Dimensionless | Fuel level                                |
+| batteryVoltage          | String               | Battery voltage status                    |
+| serviceStatus           | Switch               | Service status                            |
 
 
 ## Full Example

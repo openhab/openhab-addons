@@ -14,20 +14,12 @@ package org.openhab.binding.generacmobilelink.internal.discovery;
 
 import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.discovery.DiscoveryListener;
+import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.config.discovery.ScanListener;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 
 /**
  * The {@link GeneracMobileLinkDiscoveryService} is responsible for discovering generator things
@@ -35,28 +27,20 @@ import org.openhab.core.thing.ThingUID;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class GeneracMobileLinkDiscoveryService implements DiscoveryService {
+public class GeneracMobileLinkDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_DISCOVERY_THING_TYPES_UIDS = Set.of(THING_TYPE_GENERATOR);
-    private final Map<ThingUID, DiscoveryResult> cachedResults = new HashMap<>();
-    private final Set<DiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
 
-    public void generatorDiscovered(DiscoveryResult result) {
-        for (DiscoveryListener discoveryListener : discoveryListeners) {
-            discoveryListener.thingDiscovered(this, result);
-        }
-        synchronized (cachedResults) {
-            cachedResults.put(result.getThingUID(), result);
-        }
+    public GeneracMobileLinkDiscoveryService() {
+        super(SUPPORTED_DISCOVERY_THING_TYPES_UIDS, 0);
     }
 
     @Override
-    public Collection<ThingTypeUID> getSupportedThingTypes() {
+    public Set<ThingTypeUID> getSupportedThingTypes() {
         return SUPPORTED_DISCOVERY_THING_TYPES_UIDS;
     }
 
     @Override
-    public int getScanTimeout() {
-        return 0;
+    public void startScan() {
     }
 
     @Override
@@ -65,31 +49,7 @@ public class GeneracMobileLinkDiscoveryService implements DiscoveryService {
     }
 
     @Override
-    public void startScan(@Nullable ScanListener listener) {
-        if (listener != null) {
-            listener.onFinished();
-        }
-    }
-
-    @Override
-    public void abortScan() {
-    }
-
-    @Override
-    public void addDiscoveryListener(@Nullable DiscoveryListener listener) {
-        if (listener == null) {
-            return;
-        }
-        synchronized (cachedResults) {
-            for (DiscoveryResult cachedResult : cachedResults.values()) {
-                listener.thingDiscovered(this, cachedResult);
-            }
-        }
-        discoveryListeners.add(listener);
-    }
-
-    @Override
-    public void removeDiscoveryListener(@Nullable DiscoveryListener listener) {
-        discoveryListeners.remove(listener);
+    public void thingDiscovered(DiscoveryResult result) {
+        super.thingDiscovered(result);
     }
 }

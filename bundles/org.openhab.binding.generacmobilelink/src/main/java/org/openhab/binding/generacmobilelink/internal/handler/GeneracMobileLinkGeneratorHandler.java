@@ -12,11 +12,17 @@
  */
 package org.openhab.binding.generacmobilelink.internal.handler;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusDTO;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -28,6 +34,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GeneracMobileLinkGeneratorHandler} is responsible for updating a generator things's channels
@@ -36,6 +44,7 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(GeneracMobileLinkGeneratorHandler.class);
     private @Nullable GeneratorStatusDTO status;
 
     public GeneracMobileLinkGeneratorHandler(Thing thing) {
@@ -51,6 +60,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     protected void updateGeneratorStatus(GeneratorStatusDTO status) {
@@ -67,7 +77,15 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
             updateState("yellowLight", OnOffType.from(localStatus.yellowLightLit));
             updateState("redLight", OnOffType.from(localStatus.redLightLit));
             updateState("blueLight", OnOffType.from(localStatus.blueLightLit));
-            updateState("statusDate", new StringType(localStatus.generatorStatusDate));
+            try {
+                // API returns a format like 12/20/2020
+                updateState("statusDate",
+                        new DateTimeType(LocalDate
+                                .parse(localStatus.generatorStatusDate, DateTimeFormatter.ofPattern("MM/dd/yyyy"))
+                                .atStartOfDay(ZoneId.systemDefault())));
+            } catch (IllegalArgumentException | DateTimeParseException e) {
+                logger.debug("Could not parse statusDate", e);
+            }
             updateState("status", new StringType(localStatus.generatorStatus));
             updateState("currentAlarmDescription", new StringType(localStatus.currentAlarmDescription));
             updateState("runHours", new QuantityType<Time>(localStatus.runHours, Units.HOUR));
