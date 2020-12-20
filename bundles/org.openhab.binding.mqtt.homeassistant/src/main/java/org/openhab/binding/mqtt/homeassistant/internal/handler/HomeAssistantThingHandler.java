@@ -68,7 +68,7 @@ import com.google.gson.GsonBuilder;
  * The specification does not cover the case of disappearing Components. This handler doesn't as well therefore.<br>
  * <br>
  *
- * A Component Instance equals an ESH Channel Group and the Component parts equal ESH Channels.<br>
+ * A Component Instance equals a Channel Group and the Component parts equal Channels.<br>
  * <br>
  *
  * If a Components configuration changes, the known ChannelGroupType and ChannelTypes are replaced with the new ones.

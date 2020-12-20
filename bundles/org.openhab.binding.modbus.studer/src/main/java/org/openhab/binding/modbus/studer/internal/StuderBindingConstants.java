@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.studer.internal;
 
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -29,6 +29,7 @@
 		<channels>
 			<channel id="control" typeId="control"/>
 			<channel id="commands" typeId="commands"/>
+			<channel id="rpc" typeId="rpc"/>
 			<channel id="fan" typeId="fan"/>
 			<channel id="vacuum" typeId="vacuum"/>
 			<channel id="segment" typeId="segment"/>

@@ -71,7 +71,7 @@ Fragment-Host: org.openhab.binding.modbus
 	org.openhab.core.thing;version='[3.0.0,3.0.1)',\
 	org.openhab.core.thing.xml;version='[3.0.0,3.0.1)',\
 	org.openhab.core.transform;version='[3.0.0,3.0.1)',\
-	org.openhab.io.transport.modbus;version='[3.0.0,3.0.1)',\
+	org.openhab.core.io.transport.modbus;version='[3.0.0,3.0.1)',\
 	org.opentest4j;version='[1.2.0,1.2.1)',\
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.3,2.3.4)',\
 	jakarta.xml.bind-api;version='[2.3.3,2.3.4)',\

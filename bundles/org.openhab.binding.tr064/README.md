@@ -49,7 +49,7 @@ This is an optional parameter and multiple values are allowed.
 
 Most devices support call lists.
 The binding can analyze these call lists and provide channels for the number of missed calls, inbound calls, outbound calls and rejected (blocked) calls.
-The days for which this analysis takes place can be controlled with the `missedCallDays`, `rejectedCallDays`, `inboundCallDays` and `outboundCallDays`
+The days for which this analysis takes place can be controlled with the `missedCallDays`, `rejectedCallDays`, `inboundCallDays`, `outboundCallDays` and `callListDays`.
 This is an optional parameter and multiple values are allowed.
 
 Since FritzOS! 7.20 WAN access of local devices can be controlled by their IPs.
@@ -75,7 +75,8 @@ This is an optional parameter and multiple values are allowed.
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
 | `callDeflectionEnable`     | `Switch`                  |          | Enable/Disable the call deflection setup with the given index. |
-| `deviceLog`                | `String`                  |     x    | A string containing the last log messages.                     |
+| `callList`                 | `String`                  |     x    | A string containing the call list as JSON (see below)          |    
+| `deviceLog`                | `String`                  |     x    | A string containing the last log messages                      |
 | `dslCRCErrors`             | `Number:Dimensionless`    |     x    | DSL CRC Errors                                                 |
 | `dslDownstreamNoiseMargin` | `Number:Dimensionless`    |     x    | DSL Downstream Noise Margin                                    |
 | `dslDownstreamNoiseMargin` | `Number:Dimensionless`    |     x    | DSL Downstream Attenuation                                     |
@@ -95,9 +96,12 @@ This is an optional parameter and multiple values are allowed.
 | `tamEnable`                | `Switch`                  |          | Enable/Disable the answering machine with the given index.     |
 | `tamNewMessages`           | `Number`                  |          | The number of new messages of the given answering machine.     |
 | `uptime`                   | `Number:Time`             |          | Uptime                                                         |
+| `pppUptime`                | `Number:Time`             |          | Uptime (if using PPP)                                          |
 | `wanAccessType`            | `String`                  |     x    | Access Type                                                    |
 | `wanConnectionStatus`      | `String`                  |          | Connection Status                                              |
+| `wanPppConnectionStatus`   | `String`                  |          | Connection Status (if using PPP)                               |
 | `wanIpAddress`             | `String`                  |     x    | WAN IP Address                                                 |
+| `wanPppIpAddress`          | `String`                  |     x    | WAN IP Address (if using PPP)                                  |
 | `wanMaxDownstreamRate`     | `Number:DataTransferRate` |     x    | Max. Downstream Rate                                           |
 | `wanMaxUpstreamRate`       | `Number:DataTransferRate` |     x    | Max. Upstream Rate                                             |
 | `wanPhysicalLinkStatus`    | `String`                  |     x    | Link Status                                                    |
@@ -107,6 +111,12 @@ This is an optional parameter and multiple values are allowed.
 | `wifi5GHzEnable`           | `Switch`                  |          | Enable/Disable the 5.0 GHz WiFi device.                        |
 | `wifiGuestEnable`          | `Switch`                  |          | Enable/Disable the guest WiFi.                                 |
 
+### Channel `callList`
+
+Call lists are provided for one or more days (as configured) as JSON.
+The JSON consists of an array of individual calls with the fields `date`, `type`, `localNumber`, `remoteNumber`, `duration`.
+The call-types are the same as provided by the FritzBox, i.e. `1` (inbound), `2` (missed), `3` (outbound), `10` (rejected).
+ 
 ## `PHONEBOOK` Profile
 
 The binding provides a profile for using the FritzBox phonebooks for resolving numbers to names.
@@ -117,3 +127,4 @@ If only a specific phonebook from the device should be used, this can be specifi
 The default is to use all available phonebooks from the specified thing.
 In case the format of the number in the phonebook and the format of the number from the channel are different (e.g. regarding country prefixes), the `matchCount` parameter can be used.
 The configured `matchCount` is counted from the right end and denotes the number of matching characters needed to consider this number as matching.
+

@@ -60,7 +60,7 @@ public class ExecTransformationProfileFactory implements ProfileFactory, Profile
         return Arrays.asList(ExecTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=EXEC)")
+    @Reference(target = "(openhab.transform=EXEC)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

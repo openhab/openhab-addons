@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.smarthome;
 
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.CHANNEL_TYPE_TEMPERATURE;
-import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.ITEM_TYPE_NUMBER_TEMPERATURE;
+import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -71,7 +70,7 @@ public class HandlerTemperatureSensor extends HandlerBase {
                 JsonObject value = state.get("value").getAsJsonObject();
                 // For groups take the first
                 if (temperatureValue == null) {
-                    int temperature = value.get("value").getAsInt();
+                    float temperature = value.get("value").getAsFloat();
                     String scale = value.get("scale").getAsString();
                     if ("CELSIUS".equals(scale)) {
                         temperatureValue = new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);

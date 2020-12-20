@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital
  * @author Markus Rathgeb - drop usage of Guava
  */
-@Component(service = TransformationService.class, property = { "smarthome.transform=SCALE" })
+@Component(service = TransformationService.class, property = { "openhab.transform=SCALE" })
 public class ScaleTransformationService extends AbstractFileTransformationService<Map<Range, String>> {
 
     private final Logger logger = LoggerFactory.getLogger(ScaleTransformationService.class);

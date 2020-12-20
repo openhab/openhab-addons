@@ -229,7 +229,7 @@ The binding provides the following properties:
 | co2ControlStatus                 | CO2 control status (0 = off, 1 = stepped, 2 = stepless)                                                                          | 
 | vocControlStatus                 | VOC control status (0 = off, 1 = stepped, 2 = stepless)                                                                          | 
 | dateFormat                       | Date format (0 = dd.mm.yyyy, 1 = mm.dd.yyyy, 2 = yyyy.mm.dd)                                                                     | 
-| heatExchangerType                | Heat exchanger type (0 = plastic, 1 = aluminium, 2 = enthalpy)                                                                   | 
+| heatExchangerType                | Heat exchanger type (1 = plastic, 2 = aluminium, 3 = enthalpy)                                                                   | 
 | serNo                            | Serial number                                                                                                                    | 
 | prodCode                         | Production Code                                                                                                                  | 
 | vhzType                          | Pre-heater type (1 = EH-Basis, 2 EH-ERW, 3 = SEWT, 4 = LEWT)                                                                     | 

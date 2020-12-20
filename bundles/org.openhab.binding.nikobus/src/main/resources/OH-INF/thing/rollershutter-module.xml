@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nikobus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="rollershutter-module">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pc-link"/>
+		</supported-bridge-type-refs>
+
+		<label>Rollershutter Module</label>
+		<description>Nikobus Rollershutter module</description>
+
+		<channels>
+			<channel id="output-1" typeId="rollershutter-output">
+				<label>Output 1</label>
+			</channel>
+			<channel id="output-2" typeId="rollershutter-output">
+				<label>Output 2</label>
+			</channel>
+			<channel id="output-3" typeId="rollershutter-output">
+				<label>Output 3</label>
+			</channel>
+			<channel id="output-4" typeId="rollershutter-output">
+				<label>Output 4</label>
+			</channel>
+			<channel id="output-5" typeId="rollershutter-output">
+				<label>Output 5</label>
+			</channel>
+			<channel id="output-6" typeId="rollershutter-output">
+				<label>Output 6</label>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="module:address:config"/>
+	</thing-type>
+
+	<channel-type id="rollershutter-output">
+		<item-type>Rollershutter</item-type>
+		<label>Output</label>
+		<description>Rollershutter Module's Output</description>
+		<config-description-ref uri="rollershutter-module:rollershutter-output:config"/>
+	</channel-type>
+
+</thing:thing-descriptions>

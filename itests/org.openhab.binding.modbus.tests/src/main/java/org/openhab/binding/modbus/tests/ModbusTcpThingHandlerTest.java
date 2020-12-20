@@ -25,14 +25,14 @@ import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.transport.modbus.endpoint.EndpointPoolConfiguration;
+import org.openhab.core.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
+import org.openhab.core.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
-import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
-import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 
 /**
  * @author Sami Salonen - Initial contribution

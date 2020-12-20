@@ -61,7 +61,7 @@ public class MapTransformationProfileFactory implements ProfileFactory, ProfileT
         return Arrays.asList(MapTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=MAP)")
+    @Reference(target = "(openhab.transform=MAP)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

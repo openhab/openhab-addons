@@ -24,6 +24,7 @@ public final class MiIoBindingConfiguration {
     public String token;
     public String deviceId;
     public String model;
+    public String communication;
     public int refreshInterval;
     public int timeout;
     public String cloudServer;

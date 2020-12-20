@@ -23,4 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class UpnpControlConfiguration {
     public @Nullable String udn;
+    public int refresh = 60;
+    public int responseTimeout = 2500;
 }

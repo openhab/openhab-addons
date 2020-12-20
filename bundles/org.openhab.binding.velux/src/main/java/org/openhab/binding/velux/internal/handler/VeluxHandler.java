@@ -115,6 +115,7 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
             for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
                 logger.trace("handleConfigurationUpdate(): found modified config entry {}.",
                         configurationParameter.getKey());
+                configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
             }
             // persist new configuration and reinitialize handler
             dispose();

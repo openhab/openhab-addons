@@ -41,12 +41,6 @@ public class CaddxMessage {
     private final byte checksum1Calc;
     private final byte checksum2Calc;
 
-    /**
-     * Constructor.
-     *
-     * @param message
-     *            - the message received
-     */
     public CaddxMessage(byte[] message, boolean withChecksum) {
         if (withChecksum && message.length < 3) {
             logger.debug("CaddxMessage: The message should be at least 3 bytes long.");

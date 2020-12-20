@@ -558,20 +558,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 PowermaxThingHandler handler = (PowermaxThingHandler) thing.getHandler();
                 if (handler != null) {
                     if (thing.getThingTypeUID().equals(THING_TYPE_ZONE)) {
-                        if ((channel == null) || channel.equals(TRIPPED)) {
-                            handler.updateChannelFromAlarmState(TRIPPED, state);
-                        }
-                        if ((channel == null) || channel.equals(LAST_TRIP)) {
-                            handler.updateChannelFromAlarmState(LAST_TRIP, state);
-                        }
-                        if ((channel == null) || channel.equals(BYPASSED)) {
-                            handler.updateChannelFromAlarmState(BYPASSED, state);
-                        }
-                        if ((channel == null) || channel.equals(ARMED)) {
-                            handler.updateChannelFromAlarmState(ARMED, state);
-                        }
-                        if ((channel == null) || channel.equals(LOW_BATTERY)) {
-                            handler.updateChannelFromAlarmState(LOW_BATTERY, state);
+                        for (String channelId : List.of(TRIPPED, LAST_TRIP, BYPASSED, ARMED, LOCKED, LOW_BATTERY)) {
+                            if ((channel == null) || channel.equals(channelId)) {
+                                handler.updateChannelFromAlarmState(channelId, state);
+                            }
                         }
                     } else if (thing.getThingTypeUID().equals(THING_TYPE_X10)) {
                         if ((channel == null) || channel.equals(X10_STATUS)) {

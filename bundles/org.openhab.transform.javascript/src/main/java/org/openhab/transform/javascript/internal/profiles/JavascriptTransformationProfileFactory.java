@@ -60,7 +60,7 @@ public class JavascriptTransformationProfileFactory implements ProfileFactory, P
         return Arrays.asList(JavascriptTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=JS)")
+    @Reference(target = "(openhab.transform=JS)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

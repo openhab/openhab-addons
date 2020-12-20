@@ -36,14 +36,16 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The `server` thing has the following configuration parameters:
 
-| Parameter          | Required | Description                                                                                               |
-|--------------------|----------|-----------------------------------------------------------------------------------------------------------|
-| host               | yes      | The host name or IP address of the remote openHAB server.                                                 |
-| useHttps           | no       | Set to true if you want to use HTTPS to communicate with the remote openHAB server. Default is false.     |
-| port               | yes      | The HTTP port to use to communicate with the remote openHAB server. Default is 8080.                      |
-| trustedCertificate | no       | Set to true if you want to use HTTPS even without a valid SSL certificate provided by your remote server. |
-| restPath           | yes      | The subpath of the REST API on the remote openHAB server. Default is /rest                                |
-| token              | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API.    |
+| Parameter             | Required | Description                                                                                               |
+|-----------------------|----------|-----------------------------------------------------------------------------------------------------------|
+| host                  | yes      | The host name or IP address of the remote openHAB server.                                                 |
+| useHttps              | no       | Set to true if you want to use HTTPS to communicate with the remote openHAB server. Default is false.     |
+| port                  | yes      | The HTTP port to use to communicate with the remote openHAB server. Default is 8080.                      |
+| trustedCertificate    | no       | Set to true if you want to use HTTPS even without a valid SSL certificate provided by your remote server. |
+| restPath              | yes      | The subpath of the REST API on the remote openHAB server. Default is /rest                                |
+| token                 | no       | The token to use when the remote openHAB server is setup to require authorization to run its REST API.    |
+| accessibilityInterval | no       | Minutes between checking the remote server accessibility. 0 to disable the check. Default is 3.           |
+| aliveInterval         | no       | Number of last minutes to take into account to determine whether the remote server is alive. 0 to disable this feature. Default is 5. |
 
 The `thing` thing has the following configuration parameters:
 
@@ -75,7 +77,10 @@ Only basic groups (with no state) from the remote server are ignored.
 The channel ID of the created channel corresponds to the name of the item on the remote server.
 For example, if your remote item is named `MyDate`, the channel UID of the channel created by the binding will be `remoteopenhab:server:xxx:MyDate`.
 
-On the `thing` thing, if the `buildTriggerChannels` parameter is set to true, a channel is created automatically for each trigger channel defined in the remote thing.
+On the `thing` thing, you will not find all channels from your remote thing.
+Only trigger channels from your remote thing will be created.
+**All state channels from your remote thing will be ignored** (use the `server` thing to link a local item to a remote (item).
+if the `buildTriggerChannels` parameter is set to true, a channel is created automatically for each trigger channel defined in the remote thing.
 For example, if your remote thing provides a trigger channel with this UID `astro:sun:local:night#event`, the channel UID of the channel created by the binding will be `remoteopenhab:thing:xxx:astro_sun_local_night_event`.
 
 ## Limitations

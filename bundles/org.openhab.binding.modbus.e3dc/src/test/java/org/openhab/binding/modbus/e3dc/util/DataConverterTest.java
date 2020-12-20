@@ -19,7 +19,7 @@ import java.util.BitSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.modbus.e3dc.internal.dto.DataConverter;
-import org.openhab.io.transport.modbus.ValueBuffer;
+import org.openhab.core.io.transport.modbus.ValueBuffer;
 
 /**
  * The {@link DataConverterTest} Test data conversions

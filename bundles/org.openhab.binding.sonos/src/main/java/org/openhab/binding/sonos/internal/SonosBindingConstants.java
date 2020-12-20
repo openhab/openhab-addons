@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class SonosBindingConstants {
 
     public static final String BINDING_ID = "sonos";
-    public static final String ESH_PREFIX = "smarthome-";
+    public static final String TITLE_PREFIX = "smarthome-";
 
     // List of all Thing Type UIDs
     // Column (:) is not used for PLAY:1, PLAY:3, PLAY:5 and CONNECT:AMP because of
