@@ -205,7 +205,6 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             logger.trace("Response - status: {} content: {}", result.responseCode, result.content);
             return result;
         } catch (ExecutionException e) {
-            logger.debug("request failed", e);
             return new HTTPResult(0, e.getMessage());
         }
     }
