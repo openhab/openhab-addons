@@ -76,8 +76,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
                 }
                 break;
             case CHANNEL_ALERT:
-                if (command instanceof OnOffType) {
-                    newGroupAction.alert = command == OnOffType.ON ? "alert" : "none";
+                if (command instanceof StringType) {
+                    newGroupAction.alert = command.toString();
                 } else {
                     return;
                 }
