@@ -186,9 +186,6 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-        if (bridgeStatusInfo.getStatus().equals(ThingStatus.REMOVED)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge has been removed.");
-        }
         logger.debug("Set status to {}", getThing().getStatusInfo());
     }
 

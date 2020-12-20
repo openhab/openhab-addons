@@ -15,7 +15,7 @@ package org.openhab.binding.openweathermap.internal.handler;
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.library.unit.SIUnits.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.util.ArrayList;
 import java.util.List;

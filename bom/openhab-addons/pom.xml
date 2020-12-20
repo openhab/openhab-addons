@@ -23,6 +23,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.automation.jythonscripting</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.adorne</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -1429,11 +1434,6 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.io.openhabcloud</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.io.transport.modbus</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

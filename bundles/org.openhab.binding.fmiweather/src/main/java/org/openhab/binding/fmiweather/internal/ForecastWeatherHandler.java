@@ -15,7 +15,7 @@ package org.openhab.binding.fmiweather.internal;
 import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 import static org.openhab.binding.fmiweather.internal.client.ForecastRequest.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;

@@ -13,7 +13,7 @@
 package org.openhab.binding.modbus.sunspec.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
  * General interface for sunspec parsers

@@ -63,7 +63,7 @@ import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -719,7 +719,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (OnOffType.ON.equals(command)) {
             updateState(CONTROL, PlayPauseType.PAUSE);
             stop();
-            updateState(TRACK_POSITION, new QuantityType<>(0, SmartHomeUnits.SECOND));
+            updateState(TRACK_POSITION, new QuantityType<>(0, Units.SECOND));
         }
     }
 
@@ -881,9 +881,9 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private void handleCommandTrackPosition(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateState(channelUID, new QuantityType<>(trackPosition, SmartHomeUnits.SECOND));
+            updateState(channelUID, new QuantityType<>(trackPosition, Units.SECOND));
         } else if (command instanceof QuantityType<?>) {
-            QuantityType<?> position = ((QuantityType<?>) command).toUnit(SmartHomeUnits.SECOND);
+            QuantityType<?> position = ((QuantityType<?>) command).toUnit(Units.SECOND);
             if (position != null) {
                 int pos = Integer.min(trackDuration, position.intValue());
                 seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
@@ -1335,7 +1335,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             try {
                 trackDuration = Arrays.stream(value.split("\\.")[0].split(":")).mapToInt(n -> Integer.parseInt(n))
                         .reduce(0, (n, m) -> n * 60 + m);
-                updateState(TRACK_DURATION, new QuantityType<>(trackDuration, SmartHomeUnits.SECOND));
+                updateState(TRACK_DURATION, new QuantityType<>(trackDuration, Units.SECOND));
             } catch (NumberFormatException e) {
                 logger.debug("Illegal format for track duration {}", value);
                 return;
@@ -1353,7 +1353,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             try {
                 trackPosition = Arrays.stream(value.split("\\.")[0].split(":")).mapToInt(n -> Integer.parseInt(n))
                         .reduce(0, (n, m) -> n * 60 + m);
-                updateState(TRACK_POSITION, new QuantityType<>(trackPosition, SmartHomeUnits.SECOND));
+                updateState(TRACK_POSITION, new QuantityType<>(trackPosition, Units.SECOND));
                 int relPosition = (trackDuration != 0) ? trackPosition * 100 / trackDuration : 0;
                 updateState(REL_TRACK_POSITION, new PercentType(relPosition));
             } catch (NumberFormatException e) {
@@ -1605,7 +1605,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         trackPositionRefresh = null;
 
         trackPosition = 0;
-        updateState(TRACK_POSITION, new QuantityType<>(trackPosition, SmartHomeUnits.SECOND));
+        updateState(TRACK_POSITION, new QuantityType<>(trackPosition, Units.SECOND));
         int relPosition = (trackDuration != 0) ? trackPosition / trackDuration : 0;
         updateState(REL_TRACK_POSITION, new PercentType(relPosition));
     }

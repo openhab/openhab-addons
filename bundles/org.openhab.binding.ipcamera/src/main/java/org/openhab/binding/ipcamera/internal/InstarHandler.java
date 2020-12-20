@@ -58,13 +58,10 @@ public class InstarHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        String content = "";
-        String value1 = "";
         try {
-            content = msg.toString();
-            if (content.isEmpty()) {
-                return;
-            }
+            String value1 = "";
+            String content = msg.toString();
+            ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             switch (requestUrl) {
                 case "/param.cgi?cmd=getinfrared":
                     if (content.contains("var infraredstat=\"auto")) {

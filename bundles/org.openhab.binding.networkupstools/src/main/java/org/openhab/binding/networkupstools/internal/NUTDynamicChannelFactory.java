@@ -113,7 +113,7 @@ class NUTDynamicChannelFactory {
         final ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channel.getUID().getId() + "Type");
         final String label = channel.getLabel();
         final ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, label == null ? "" : label, itemType)
-                .withStateDescription(sdb.withReadOnly(Boolean.TRUE).build().toStateDescription())
+                .withStateDescriptionFragment(sdb.withReadOnly(Boolean.TRUE).build())
                 .withConfigDescriptionURI(NUTBindingConstants.DYNAMIC_CHANNEL_CONFIG_QUANTITY_TYPE).build();
         channelTypeProvider.addChannelType(channelType);
         return channelTypeUID;

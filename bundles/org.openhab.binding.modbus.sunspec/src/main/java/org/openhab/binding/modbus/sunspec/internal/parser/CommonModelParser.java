@@ -17,8 +17,8 @@ import java.nio.charset.Charset;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConstants;
 import org.openhab.binding.modbus.sunspec.internal.dto.CommonModelBlock;
-import org.openhab.io.transport.modbus.ModbusBitUtilities;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

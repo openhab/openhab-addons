@@ -14,11 +14,8 @@ package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.Util.buildUrl;
 
-import java.net.SocketTimeoutException;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,8 +43,7 @@ import com.google.gson.Gson;
  * @author Jan N. Klug - Refactored to abstract class
  */
 @NonNullByDefault
-public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extends BaseThingHandler
-        implements WebSocketMessageListener {
+public abstract class DeconzBaseThingHandler extends BaseThingHandler implements WebSocketMessageListener {
     private final Logger logger = LoggerFactory.getLogger(DeconzBaseThingHandler.class);
     protected final ResourceType resourceType;
     protected ThingConfig config = new ThingConfig();
@@ -88,6 +84,15 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         }
     }
 
+    private @Nullable DeconzBridgeHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return null;
+        }
+        return (DeconzBridgeHandler) bridge.getHandler();
+    }
+
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (config.id.isEmpty()) {
@@ -98,12 +103,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             // the bridge is ONLINE, we can communicate with the gateway, so we update the connection parameters and
             // register the listener
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                return;
-            }
-            DeconzBridgeHandler bridgeHandler = (DeconzBridgeHandler) bridge.getHandler();
+            DeconzBridgeHandler bridgeHandler = getBridgeHandler();
             if (bridgeHandler == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
@@ -129,8 +129,6 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         }
     }
 
-    protected abstract @Nullable T parseStateResponse(AsyncHttpClient.Result r);
-
     /**
      * processes a newly received (initial) state response
      *
@@ -138,56 +136,60 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
      *
      * @param stateResponse
      */
-    protected abstract void processStateResponse(@Nullable T stateResponse);
+    protected abstract void processStateResponse(DeconzBaseMessage stateResponse);
 
     /**
      * Perform a request to the REST API for retrieving the full light state with all data and configuration.
      */
-    protected void requestState(Consumer<@Nullable T> processor) {
-        AsyncHttpClient asyncHttpClient = http;
-        if (asyncHttpClient == null) {
-            return;
+    protected void requestState(Consumer<DeconzBaseMessage> processor) {
+        DeconzBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler != null) {
+            bridgeHandler.getBridgeFullState()
+                    .thenAccept(f -> f.map(s -> s.getMessage(resourceType, config.id)).ifPresentOrElse(message -> {
+                        logger.trace("{} processing {}", thing.getUID(), message);
+                        processor.accept(message);
+                    }, () -> {
+                        if (initializationJob != null) {
+                            stopInitializationJob();
+                            initializationJob = scheduler.schedule(() -> requestState(this::processStateResponse), 10,
+                                    TimeUnit.SECONDS);
+                        }
+                    }));
         }
-
-        String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey,
-                resourceType.getIdentifier(), config.id);
-        logger.trace("Requesting URL for initial data: {}", url);
-
-        // Get initial data
-        asyncHttpClient.get(url, bridgeConfig.timeout).thenApply(this::parseStateResponse).exceptionally(e -> {
-            if (e instanceof SocketTimeoutException || e instanceof TimeoutException
-                    || e instanceof CompletionException) {
-                logger.debug("Get new state failed: ", e);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-
-            stopInitializationJob();
-            initializationJob = scheduler.schedule(() -> requestState(this::processStateResponse), 10,
-                    TimeUnit.SECONDS);
-
-            return null;
-        }).thenAccept(processor);
     }
 
     /**
-     * sends a command to the bridge
+     * sends a command to the bridge with the default command URL
      *
      * @param object must be serializable and contain the command
      * @param originalCommand the original openHAB command (used for logging purposes)
      * @param channelUID the channel that this command was send to (used for logging purposes)
      * @param acceptProcessing additional processing after the command was successfully send (might be null)
      */
-    protected void sendCommand(Object object, Command originalCommand, ChannelUID channelUID,
+    protected void sendCommand(@Nullable Object object, Command originalCommand, ChannelUID channelUID,
             @Nullable Runnable acceptProcessing) {
+        sendCommand(object, originalCommand, channelUID, resourceType.getCommandUrl(), acceptProcessing);
+    }
+
+    /**
+     * sends a command to the bridge with a caller-defined command URL
+     *
+     * @param object must be serializable and contain the command
+     * @param originalCommand the original openHAB command (used for logging purposes)
+     * @param channelUID the channel that this command was send to (used for logging purposes)
+     * @param commandUrl the command URL
+     * @param acceptProcessing additional processing after the command was successfully send (might be null)
+     */
+    protected void sendCommand(@Nullable Object object, Command originalCommand, ChannelUID channelUID,
+            String commandUrl, @Nullable Runnable acceptProcessing) {
         AsyncHttpClient asyncHttpClient = http;
         if (asyncHttpClient == null) {
             return;
         }
         String url = buildUrl(bridgeConfig.host, bridgeConfig.httpPort, bridgeConfig.apikey,
-                resourceType.getIdentifier(), config.id, resourceType.getCommandUrl());
+                resourceType.getIdentifier(), config.id, commandUrl);
 
-        String json = gson.toJson(object);
+        String json = object == null ? null : gson.toJson(object);
         logger.trace("Sending {} to {} {} via {}", json, resourceType, config.id, url);
 
         asyncHttpClient.put(url, json, bridgeConfig.timeout).thenAccept(v -> {

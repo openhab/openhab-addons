@@ -3,10 +3,13 @@
 This binding allows your openHAB to communicate with the Xiaomi Smart Home Suite.
 It consists of devices communicating over a ZigBee network with a ZigBee - WiFi gateway. 
 
-The devices are very affordable and you can get them from your favourite chinese marktes like [AliExpress](https://www.aliexpress.com/) or [GearBest](https://www.gearbest.com).
-The sensors run on a coincell battery for over a year. 
+The devices are very affordable and you can get them from your favourite Chinese markets like [AliExpress](https://www.aliexpress.com/) or [GearBest](https://www.gearbest.com).
+The sensors run on a coin cell battery for over a year. 
 
-After setup, you can disconnect the gateway from the internet to keep your sensor information private.
+After setup, you can disconnect the gateway from the internet to keep your sensor information private. 
+
+Please note that using the Xiaomi gateway with OpenHAB requires enabling the developer mode and that multiple user reports suggest that it is no longer posible.
+Zigbee2Mqtt provides an alternative method to integrate Xiaomi devices.
 
 ## Supported devices
 
@@ -67,7 +70,7 @@ After setup, you can disconnect the gateway from the internet to keep your senso
 
 *   In openHAB you should now be able to discover the Xiaomi Gateway
 *   From now on you don't really need the app anymore. Only if you want to update the gateway firmware or if you want to add devices (see below). But adding devices can also be done without the app (see below)
-*   Enter the previously noted developer key in openHAB Paper UI -> Configuration -> Things -> Xiaomi Gateway -> Edit -> Developer Key. Save (This is required if you want to be able to send controls to the devices like the light of the gateway)
+*   Enter the previously noted developer key in openHAB Administration -> Settings -> Things -> Xiaomi Gateway -> Edit -> Developer Key. Save (This is required if you want to be able to send controls to the devices like the light of the gateway)
 
 ## Connecting devices to the gateway
 
@@ -85,7 +88,7 @@ There are three ways of connecting supported devices to the gateway:
 * With the binding
 
     1.  After adding the gateway make sure you have entered the right developer key
-    2.  In Paper UI, go to your Inbox and trigger a discovery for the binding
+    2.  In the UI, go to your Inbox and trigger a discovery for the binding
     3.  The gateway flashes in blue and you hear a female voice in Chinese, you have 30 seconds to include your new device
     4.  Follow the instructions for your device to pair it to the gateway
     5.  You will hear a confirmation message in Chinese

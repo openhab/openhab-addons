@@ -113,7 +113,8 @@
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "use_time",
@@ -125,7 +126,8 @@
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time"
 			},
 			{
 				"property": "motor1_speed",
@@ -139,7 +141,7 @@
 			},
 			{
 				"property": "filter1_life",
-				"friendlyName": "Filter  Life",
+				"friendlyName": "Filter Life",
 				"channel": "filterlife",
 				"type": "Number",
 				"refresh": true,
@@ -166,12 +168,17 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"channelType": "temperatureC",
-				"unit": "CELCIUS",
 				"type": "Number:Temperature",
+				"unit": "CELCIUS",
 				"refresh": true,
 				"transformation": "/10",
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "purify_volume",

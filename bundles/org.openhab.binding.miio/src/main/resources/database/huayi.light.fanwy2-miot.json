@@ -1,0 +1,307 @@
+{
+	"deviceMapping": {
+		"id": [
+			"huayi.light.fanwy2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Light - Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Light - Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Light"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Light - Color Temperature",
+				"channel": "color-temperature",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"stateDescription": {
+					"minimum": 3000,
+					"maximum": 5700,
+					"step": 1,
+					"pattern": "%.1f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "on1",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Fan - Power",
+				"channel": "on1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "fan-level",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Fan - Fan Level",
+				"channel": "fan-level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 1.0,
+					"maximum": 100.0,
+					"step": 1.0,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Fan - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Basic"
+						},
+						{
+							"value": "1",
+							"label": "Natural Wind"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Basic\",\"1\"\u003d\"Natural Wind\"]"
+			},
+			{
+				"property": "time-off",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Presets - Time Off",
+				"channel": "time-off",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.1f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "pre-colortemp",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Presets - Pre Colortemp",
+				"channel": "pre-colortemp",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"stateDescription": {
+					"minimum": 3000,
+					"maximum": 5700,
+					"step": 1,
+					"pattern": "%.1f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "pre-brightness",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Presets - Pre Brightness",
+				"channel": "pre-brightness",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 1.0,
+					"maximum": 100.0,
+					"step": 1.0,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "pre-speed",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Presets - Pre Speed",
+				"channel": "pre-speed",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 1.0,
+					"maximum": 100.0,
+					"step": 1.0,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "reversal",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Presets - Reversal",
+				"channel": "reversal",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Postitive"
+						},
+						{
+							"value": "1",
+							"label": "Reverse"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Postitive\",\"1\"\u003d\"Reverse\"]"
+			},
+			{
+				"property": "pre-custom",
+				"siid": 4,
+				"piid": 7,
+				"friendlyName": "Presets - Pre Custom",
+				"channel": "pre-custom",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Switch Off"
+						},
+						{
+							"value": "1",
+							"label": "Open"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Switch Off\",\"1\"\u003d\"Open\"]"
+			},
+			{
+				"property": "flabellum",
+				"siid": 4,
+				"piid": 8,
+				"friendlyName": "Presets - Flabellum",
+				"channel": "flabellum",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			}
+		],
+		"experimental": true
+	}
+}

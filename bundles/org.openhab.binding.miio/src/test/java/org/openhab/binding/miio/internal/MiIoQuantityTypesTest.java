@@ -13,11 +13,11 @@
 package org.openhab.binding.miio.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static tec.uom.se.unit.Units.SQUARE_METRE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Test case for {@link MiIoQuantityTypes}
@@ -39,22 +39,22 @@ public class MiIoQuantityTypesTest {
     public void regularsUnitTest() {
 
         String unitName = "minute";
-        assertEquals(SmartHomeUnits.MINUTE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(Units.MINUTE, MiIoQuantiyTypes.get(unitName));
 
         unitName = "Minute";
-        assertEquals(SmartHomeUnits.MINUTE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(Units.MINUTE, MiIoQuantiyTypes.get(unitName));
     }
 
     @Test
     public void aliasUnitsTest() {
 
         String unitName = "square_meter";
-        assertEquals(SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(SIUnits.SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
 
         unitName = "Square_meter";
-        assertEquals(SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(SIUnits.SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
 
         unitName = "squaremeter";
-        assertEquals(SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(SIUnits.SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
     }
 }

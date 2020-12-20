@@ -27,8 +27,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 
 /**
- * The {@link LightStateConverter} is responsible for mapping Eclipse SmartHome
- * types to jue types and vice versa.
+ * The {@link LightStateConverter} is responsible for mapping to/from jue types.
  *
  * @author Dennis Nobel - Initial contribution
  * @author Oliver Libutzki - Adjustments
