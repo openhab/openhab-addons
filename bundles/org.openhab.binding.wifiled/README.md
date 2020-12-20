@@ -19,7 +19,7 @@ Other LD*** devices might work but probably need some small adaptations.
 
 ## Discovery
 
-The LED WiFi Controllers can be discovered by triggering a search in openHAB's inbox.
+The LED WiFi Controllers can be auto discovered.
 Your device needs to be connected to your local network (i.e. by using the WiFi PBC connection method or the native App shipped with the device).
 Read the device manual for more information about how to connect your device to your network.
 
@@ -29,7 +29,6 @@ No binding configuration required.
 
 ## Thing Configuration
 
-The Thing can be configured through the Paper UI.
 Use the configuration if you have devices of type LD382 or LD686, want to enable color fading,
 or if the device discovery does not find your LED controller automatically.
 
@@ -57,8 +56,8 @@ The polling period is a parameter only used by the CLASSIC driver and specifies 
 
 ### Device Discovery
 
-If the automatic discovery fails, you have to set the IP address and the port of your device manually.  Make sure that the 
-device protocol matches your device type.
+If the automatic discovery fails, you have to set the IP address and the port of your device manually.
+Make sure that the device protocol matches your device type.
 
 ## Channels
 
