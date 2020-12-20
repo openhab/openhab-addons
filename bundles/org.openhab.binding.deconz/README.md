@@ -174,7 +174,7 @@ Other devices support
 | valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                    |
 | mode              | String                   |     R/W     | Mode: "auto", "heat" and "off"        | `thermostat`                                    |
 | offset            | Number                   |     R       | Temperature offset for sensor         | `thermostat`                                    |
-| alert             | Switch                   |     R/W     | Turn alerts on/off                    | `warningdevice`, `lightgroup`                   |
+| alert             | String                   |     W       | Turn alerts on. Allowed commands are `none`, `select` (short blinking), `lselect` (long blinking) | `warningdevice`, `lightgroup`, `dimmablelight`, `colorlight`, `extendedcolorlight`, `colortemperaturelight` |
 | all_on            | Switch                   |     R       | All lights in group are on            | `lightgroup`                                    |
 | any_on            | Switch                   |     R       | Any light in group is on              | `lightgroup`                                    |
 | scene             | String                   |     W       | Recall a scene. Allowed commands are set dynamically                                    | `lightgroup`                                    |                  
