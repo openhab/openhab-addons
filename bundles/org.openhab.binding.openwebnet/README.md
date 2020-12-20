@@ -51,7 +51,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 
 ## Discovery
 
-Gateway and Things discovery is supported using PaperUI by pressing the discovery ("+") button form Inbox.
+Gateway and Things discovery is supported by this binding.
 
 ### BUS/SCS Discovery
 
@@ -88,8 +88,6 @@ If a device cannot be discovered automatically it's always possible to add it ma
 
 ### Configuring BUS/SCS Gateway
 
-To add a BUS gateway manually using PaperUI: go to *Inbox > "+" > OpenWebNet > click `ADD MANUALLY`* and then select `BUS Gateway`.
-
 Configuration parameters are:
 
 - `host` : IP address / hostname of the BUS/SCS gateway (`String`, *mandatory*)
@@ -105,8 +103,6 @@ Alternatively the BUS/SCS Gateway thing can be configured using the `.things` fi
 
 ### Configuring Wireless ZigBee USB Gateway 
 
-To add a ZigBee USB Gateway manually using PaperUI: go to *Inbox > "+" > OpenWebNet > click `ADD MANUALLY`* and then select `ZigBee USB Gateway`.
-
 Configuration parameters are:
 
 - `serialPort` : the serial port where the ZigBee USB Gateway is connected (`String`, *mandatory*)
@@ -114,9 +110,8 @@ Configuration parameters are:
 
 ### Configuring Devices
 
-Devices can be discovered automatically from Inbox after a gateway has been configured and connected.
-
-Devices can be also added manually from PaperUI. For each device it must be configured:
+Devices can be discovered automatically after a gateway has been configured and connected.
+For any manually added devices, you must configure:
 
 - the associated gateway (`Bridge Selection` menu)
 - the `where` config parameter (`OpenWebNet Device Address`):
@@ -179,7 +174,6 @@ Items (Light, Dimmer, etc.) will be discovered by Google Assistant/Alexa/HomeKit
 ```xtend
 Switch          iLR_switch          "Light"                             <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
 Dimmer          iLR_dimmer          "Dimmer [%.0f %%]"                  <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
-/* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
 Rollershutter   iLR_shutter         "Shutter [%.0f %%]"                 <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
 ```
 
