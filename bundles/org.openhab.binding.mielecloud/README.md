@@ -107,7 +107,7 @@ Bridge mielecloud:account:home [ locale="en" ] {
 The following table lists all available channels.
 See the following chapters for detailed information about which appliance supports which channels.
 Depending on the exact appliance configuration not all channels might be supported, e.g. a hob with four plates will only fill the channels for plates 1-4.
-Channe ID and channel type ID match unless noted.
+Channel ID and channel type ID match unless noted.
 
 | Channel Type ID               | Item Type            | Description                                                                                                                               | Read only |
 | ----------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- |
