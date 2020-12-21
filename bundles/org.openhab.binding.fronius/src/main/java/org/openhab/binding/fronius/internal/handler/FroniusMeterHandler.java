@@ -117,6 +117,10 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
     private void updateProperties() {
         Map<String, String> properties = editProperties();
 
+        if (meterRealtimeResponse == null) {
+            return;
+        }
+
         properties.put(FroniusBindingConstants.MeterModel,
                 meterRealtimeResponse.getBody().getData().getDetails().getModel());
         properties.put(FroniusBindingConstants.MeterSerial,

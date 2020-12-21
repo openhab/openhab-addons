@@ -212,31 +212,31 @@
 	</channel-type>
 	<channel-type id="meter_ac_current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label></label>
+		<label>AC Current</label>
 		<description></description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_ac_voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label></label>
+		<label>AC Voltage</label>
 		<description></description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_powerreal">
 		<item-type>Number:Power</item-type>
-		<label></label>
+		<label>Power</label>
 		<description></description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_powerfactor">
 		<item-type>Number</item-type>
-		<label></label>
+		<label>Power Factor</label>
 		<description></description>
 		<state pattern="%.2f" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_energy">
 		<item-type>Number:Energy</item-type>
-		<label></label>
+		<label>Energy</label>
 		<description></description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
