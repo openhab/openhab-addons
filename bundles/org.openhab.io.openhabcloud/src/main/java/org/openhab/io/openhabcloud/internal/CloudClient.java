@@ -199,7 +199,11 @@ public class CloudClient {
         }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                logger.error("Error connecting to the openHAB Cloud instance: {}", args[0]);
+                if (logger.isDebugEnabled()) {
+                    logger.error("Error connecting to the openHAB Cloud instance: {}", args[0]);
+                } else {
+                    logger.error("Error connecting to the openHAB Cloud instance");
+                }
             }
         }).on("request", new Emitter.Listener() {
             @Override

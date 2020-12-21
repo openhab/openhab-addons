@@ -25,9 +25,16 @@
 	</thing-type>
 
 	<channel-type id="alert">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Alert</label>
 		<category>Alarm</category>
+		<command>
+			<options>
+				<option value="none">No Alarm</option>
+				<option value="select">Blinking (short time)</option>
+				<option value="lselect">Blinking (long time)</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="all_on">
