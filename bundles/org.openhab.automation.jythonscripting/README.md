@@ -37,7 +37,7 @@ from org.slf4j import LoggerFactory
 LoggerFactory.getLogger("org.openhab.core.automation.examples").info("Hello world!")
 ```
 
-Jython can [import Java classes](http://www.jython.org/jythonbook/en/1.0/ModulesPackages.html).
+Jython can [import Java classes](https://jython.readthedocs.io/en/latest/ModulesPackages/).
 Depending on the openHAB logging configuration, you may need to prefix logger names with `org.openhab.core.automation` for them to show up in the log file (or you modify the logging configuration).
 
 ::: tip Note
