@@ -120,8 +120,6 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
         final ICalendarConfiguration currentConfiguration = getConfigAs(ICalendarConfiguration.class);
         configuration = currentConfiguration;
 
@@ -154,14 +152,18 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             }
             final long refreshTime = refreshTimeBD.longValue();
             if (calendarFile.isFile()) {
-                if (reloadCalendar()) {
-                    updateStatus(ThingStatus.ONLINE);
-                    updateStates();
-                    rescheduleCalendarStateUpdate();
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "The calendar seems to be configured correctly, but the local copy of calendar could not be loaded.");
-                }
+                updateStatus(ThingStatus.ONLINE);
+
+                scheduler.submit(() -> {
+                    // reload calendar file asynchronously
+                    if (reloadCalendar()) {
+                        updateStates();
+                        updateChildren();
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "The calendar seems to be configured correctly, but the local copy of calendar could not be loaded.");
+                    }
+                });
                 pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, refreshTime, refreshTime,
                         TimeUnit.MINUTES);
             } else {
@@ -176,20 +178,18 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
     }
 
     @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        final AbstractPresentableCalendar calendar = runtimeCalendar;
+        if (calendar != null) {
+            updateChild(childHandler);
+        }
+    }
+
+    @Override
     public void onCalendarUpdated() {
         if (reloadCalendar()) {
             updateStates();
-            for (Thing childThing : getThing().getThings()) {
-                ThingHandler handler = childThing.getHandler();
-                if (handler instanceof CalendarUpdateListener) {
-                    try {
-                        logger.trace("Notifying {} about fresh calendar.", handler.getThing().getUID());
-                        ((CalendarUpdateListener) handler).onCalendarUpdated();
-                    } catch (Exception e) {
-                        logger.trace("The update of a child handler failed. Ignoring.", e);
-                    }
-                }
-            }
+            updateChildren();
         } else {
             logger.trace("Calendar was updated, but loading failed.");
         }
@@ -386,6 +386,29 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             // save time when updateStates was previously called
             // the purpose is to prevent repeat command execution of events that have already been executed
             updateStatesLastCalledTime = now;
+        }
+    }
+
+    /**
+     * Updates all children of this handler.
+     */
+    private void updateChildren() {
+        getThing().getThings().forEach(childThing -> updateChild(childThing.getHandler()));
+    }
+
+    /**
+     * Updates a specific child handler.
+     *
+     * @param childHandler the handler to be updated
+     */
+    private void updateChild(@Nullable ThingHandler childHandler) {
+        if (childHandler instanceof CalendarUpdateListener) {
+            logger.trace("Notifying {} about fresh calendar.", childHandler.getThing().getUID());
+            try {
+                ((CalendarUpdateListener) childHandler).onCalendarUpdated();
+            } catch (Exception e) {
+                logger.trace("The update of a child handler failed. Ignoring.", e);
+            }
         }
     }
 }

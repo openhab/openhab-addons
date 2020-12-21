@@ -393,10 +393,10 @@ public class AccountServlet extends HttpServlet {
         html.append(servletUrl);
         html.append("/changeDomain'>Change</a>");
 
-        // paper ui link
-        html.append("<br><a href='/paperui/index.html#/configuration/things/view/" + BINDING_ID + ":"
+        // Main UI link
+        html.append("<br><a href='/#!/settings/things/" + BINDING_ID + ":"
                 + URLEncoder.encode(THING_TYPE_ACCOUNT.getId(), "UTF8") + ":" + URLEncoder.encode(id, "UTF8") + "'>");
-        html.append(StringEscapeUtils.escapeHtml("Check Thing in Paper UI"));
+        html.append(StringEscapeUtils.escapeHtml("Check Thing in Main UI"));
         html.append("</a><br><br>");
 
         // device list

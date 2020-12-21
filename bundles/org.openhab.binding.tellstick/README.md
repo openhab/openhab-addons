@@ -45,8 +45,7 @@ The binding itself requires no configuration.
 ## Thing Configuration
 
 Only the bridges require manual configuration.
-It is preferable that devices and sensors are discovered automatically; let the discovery/inbox initially configure them. 
-You can add them either with karaf: `inbox approve <thingId>` or by using the inbox of the Paper UI.
+It is preferable that devices and sensors are discovered automatically; let the discovery initially configure them. 
 
 ### Dimmers & switches
 

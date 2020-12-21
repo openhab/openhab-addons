@@ -1,0 +1,213 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yeelink.switch.sw1"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "First Switch - Switch Status",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "First Switch Default - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "On"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
+			},
+			{
+				"property": "mode1",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "First Switch - Delay",
+				"channel": "mode1",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": -1.0,
+					"maximum": 43200.0,
+					"step": 1.0,
+					"pattern": "%.1f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"tags": [
+					"Control"
+				]
+			},
+			{
+				"property": "on1",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Second Switch - Switch Status",
+				"channel": "on1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "mode2",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Second Switch Default - Mode",
+				"channel": "mode2",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "On"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
+			},
+			{
+				"property": "mode3",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Second Switch Service - Delay",
+				"channel": "mode3",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": -1.0,
+					"maximum": 43200.0,
+					"step": 1.0,
+					"pattern": "%.1f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"tags": [
+					"Control"
+				]
+			},
+			{
+				"property": "interlock",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Extension - Interlock",
+				"channel": "interlock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "flash",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Extension - Flash",
+				"channel": "flash",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0.0,
+					"maximum": 1.0,
+					"step": 1.0,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				]
+			},
+			{
+				"property": "rc-list",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Extension - Rc List",
+				"channel": "rc-list",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			}
+		],
+		"experimental": true
+	}
+}

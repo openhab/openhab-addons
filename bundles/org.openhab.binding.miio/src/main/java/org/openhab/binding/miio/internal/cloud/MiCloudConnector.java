@@ -52,6 +52,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
@@ -154,22 +155,26 @@ public class MiCloudConnector {
         String mapResponse = request(url, map);
         logger.trace("response: {}", mapResponse);
         String errorMsg = "";
-        JsonElement response = PARSER.parse(mapResponse);
-        if (response.isJsonObject()) {
-            logger.debug("Received  JSON message {}", response.toString());
-            if (response.getAsJsonObject().has("result") && response.getAsJsonObject().get("result").isJsonObject()) {
-                JsonObject jo = response.getAsJsonObject().get("result").getAsJsonObject();
-                if (jo.has("url")) {
-                    String mapUrl = jo.get("url").getAsString();
-                    return mapUrl != null ? mapUrl : "";
+        try {
+            JsonElement response = PARSER.parse(mapResponse);
+            if (response.isJsonObject()) {
+                logger.debug("Received  JSON message {}", response);
+                if (response.getAsJsonObject().has("result")
+                        && response.getAsJsonObject().get("result").isJsonObject()) {
+                    JsonObject jo = response.getAsJsonObject().get("result").getAsJsonObject();
+                    if (jo.has("url")) {
+                        return jo.get("url").getAsString();
+                    } else {
+                        errorMsg = "Could not get url";
+                    }
                 } else {
-                    errorMsg = "Could not get url";
+                    errorMsg = "Could not get result";
                 }
             } else {
-                errorMsg = "Could not get result";
+                errorMsg = "Received message is invalid JSON";
             }
-        } else {
-            errorMsg = "Received message is invalid JSON";
+        } catch (ClassCastException | IllegalStateException e) {
+            errorMsg = "Received message could not be parsed";
         }
         logger.debug("{}: {}", errorMsg, mapResponse);
         return "";
@@ -209,11 +214,13 @@ public class MiCloudConnector {
             if (resp.isJsonObject()) {
                 final JsonObject jor = resp.getAsJsonObject();
                 if (jor.has("result")) {
-                    devicesList = GSON.fromJson(jor.get("result"), CloudDeviceListDTO.class).getCloudDevices();
-
-                    for (CloudDeviceDTO device : devicesList) {
-                        device.setServer(country);
-                        logger.debug("Xiaomi cloud info: {}", device);
+                    CloudDeviceListDTO cdl = GSON.fromJson(jor.get("result"), CloudDeviceListDTO.class);
+                    if (cdl != null) {
+                        devicesList.addAll(cdl.getCloudDevices());
+                        for (CloudDeviceDTO device : devicesList) {
+                            device.setServer(country);
+                            logger.debug("Xiaomi cloud info: {}", device);
+                        }
                     }
                 } else {
                     logger.debug("Response missing result: '{}'", response);
@@ -222,6 +229,7 @@ public class MiCloudConnector {
                 logger.debug("Response is not a json object: '{}'", response);
             }
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
+            loginFailedCounter++;
             logger.info("Error while parsing devices: {}", e.getMessage());
         }
         return devicesList;
@@ -238,6 +246,7 @@ public class MiCloudConnector {
             }
         } catch (MiCloudException e) {
             logger.info("{}", e.getMessage());
+            loginFailedCounter++;
         }
         return "";
     }
@@ -260,6 +269,7 @@ public class MiCloudConnector {
         if (this.serviceToken.isEmpty() || this.userId.isEmpty()) {
             throw new MiCloudException("Cannot execute request. service token or userId missing");
         }
+        loginFailedCounterCheck();
         startClient();
         logger.debug("Send request: {} to {}", params.get("data"), url);
         Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -305,10 +315,13 @@ public class MiCloudConnector {
         } catch (HttpResponseException e) {
             serviceToken = "";
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
+            loginFailedCounter++;
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
+            loginFailedCounter++;
         } catch (MiIoCryptoException e) {
             logger.debug("Error while decrypting response of request to {} :{}", url, e.getMessage(), e);
+            loginFailedCounter++;
         }
         return "";
     }
@@ -339,14 +352,20 @@ public class MiCloudConnector {
             logger.info("Error logging on to Xiaomi cloud ({}): {}", loginFailedCounter, e.getMessage());
             loginFailedCounter++;
             serviceToken = "";
-            if (loginFailedCounter > 10) {
-                logger.info("Repeated errors logging on to Xiaomi cloud. Cleaning stored cookies");
-                dumpCookies(".xiaomi.com", true);
-                dumpCookies(".mi.com", true);
-            }
+            loginFailedCounterCheck();
             return false;
         }
         return true;
+    }
+
+    void loginFailedCounterCheck() {
+        if (loginFailedCounter > 10) {
+            logger.info("Repeated errors logging on to Xiaomi cloud. Cleaning stored cookies");
+            dumpCookies(".xiaomi.com", true);
+            dumpCookies(".mi.com", true);
+            serviceToken = "";
+            loginFailedCounter = 0;
+        }
     }
 
     protected boolean loginRequest() throws MiCloudException {
@@ -360,7 +379,6 @@ public class MiCloudConnector {
                 location = sign; // seems we already have login location
             }
             final ContentResponse responseStep3 = loginStep3(location);
-
             switch (responseStep3.getStatus()) {
                 case HttpStatus.FORBIDDEN_403:
                     throw new MiCloudException("Access denied. Did you set the correct api-key and/or username?");
@@ -375,7 +393,7 @@ public class MiCloudConnector {
             throw new MiCloudException("Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
         } catch (MiIoCryptoException e) {
             throw new MiCloudException("Error decrypting. Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | JsonParseException e) {
             throw new MiCloudException("Error getting logon URL. Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
         }
     }
@@ -396,22 +414,21 @@ public class MiCloudConnector {
         logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
         try {
             JsonElement resp = new JsonParser().parse(parseJson(content));
-            if (resp.getAsJsonObject().has("_sign")) {
+            if (resp.isJsonObject() && resp.getAsJsonObject().has("_sign")) {
                 String sign = resp.getAsJsonObject().get("_sign").getAsString();
                 logger.trace("Xiaomi Login step 1 sign = {}", sign);
                 return sign;
             } else {
-                logger.trace("Xiaomi Login _sign missing. Maybe still has login cookie.");
+                logger.debug("Xiaomi Login _sign missing. Maybe still has login cookie.");
                 return "";
             }
-
-        } catch (JsonSyntaxException | NullPointerException e) {
+        } catch (JsonParseException | IllegalStateException | ClassCastException e) {
             throw new MiCloudException("Error getting logon sign. Cannot parse response: " + e.getMessage(), e);
         }
     }
 
-    private String loginStep2(String sign)
-            throws MiIoCryptoException, InterruptedException, TimeoutException, ExecutionException, MiCloudException {
+    private String loginStep2(String sign) throws MiIoCryptoException, InterruptedException, TimeoutException,
+            ExecutionException, MiCloudException, JsonSyntaxException, JsonParseException {
         String passToken;
         String cUserId;
 
@@ -442,7 +459,9 @@ public class MiCloudConnector {
 
         JsonElement resp2 = new JsonParser().parse(parseJson(content2));
         CloudLoginDTO jsonResp = GSON.fromJson(resp2, CloudLoginDTO.class);
-
+        if (jsonResp == null) {
+            throw new MiCloudException("Error getting logon details from step 2: " + content2);
+        }
         ssecurity = jsonResp.getSsecurity();
         userId = jsonResp.getUserId();
         cUserId = jsonResp.getcUserId();
@@ -492,9 +511,9 @@ public class MiCloudConnector {
         if (logger.isTraceEnabled()) {
             try {
                 URI uri = URI.create(url);
-                if (uri != null) {
-                    logger.trace("Cookie dump for {}", uri);
-                    CookieStore cs = httpClient.getCookieStore();
+                logger.trace("Cookie dump for {}", uri);
+                CookieStore cs = httpClient.getCookieStore();
+                if (cs != null) {
                     List<HttpCookie> cookies = cs.get(uri);
                     for (HttpCookie cookie : cookies) {
                         logger.trace("Cookie ({}) : {} --> {}     (path: {}. Removed: {})", cookie.getDomain(),
@@ -504,9 +523,9 @@ public class MiCloudConnector {
                         }
                     }
                 } else {
-                    logger.trace("Could not create URI from {}", url);
+                    logger.trace("Could not create cookiestore from {}", url);
                 }
-            } catch (IllegalArgumentException | NullPointerException e) {
+            } catch (IllegalArgumentException e) {
                 logger.trace("Error dumping cookies from {}: {}", url, e.getMessage(), e);
             }
         }

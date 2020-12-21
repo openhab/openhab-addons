@@ -27,7 +27,7 @@ public interface RemoteopenhabItemsDataListener {
     /**
      * A new ItemStateEvent was published.
      */
-    void onItemStateEvent(String itemName, String stateType, String state);
+    void onItemStateEvent(String itemName, String stateType, String state, boolean onlyIfStateChanged);
 
     /**
      * A new ItemAddedEvent was published.

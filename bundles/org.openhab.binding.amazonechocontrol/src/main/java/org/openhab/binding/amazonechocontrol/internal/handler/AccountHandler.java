@@ -93,7 +93,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler implements IWebSocketCommandHandler, IAmazonThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
-    private Storage<String> stateStorage;
+    private final Storage<String> stateStorage;
     private @Nullable Connection connection;
     private @Nullable WebSocketConnection webSocketConnection;
 
@@ -651,7 +651,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         if (devices != null) {
             return devices;
         }
-        return Collections.emptyList();
+        return List.of();
     }
 
     public void setEnabledFlashBriefingsJson(String flashBriefingJson) {
@@ -743,11 +743,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             switch (command) {
                 case "PUSH_ACTIVITY":
                     handlePushActivity(pushCommand.payload);
-                    if (refreshDataDelayed != null) {
-                        refreshDataDelayed.cancel(false);
-                    }
-                    this.refreshAfterCommandJob = scheduler.schedule(this::refreshAfterCommand, 700,
-                            TimeUnit.MILLISECONDS);
                     break;
                 case "PUSH_DOPPLER_CONNECTION_CHANGE":
                 case "PUSH_BLUETOOTH_STATE_CHANGE":

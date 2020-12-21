@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 
 /**
  * The {@link ModbusBinding} class defines common constants, which are
