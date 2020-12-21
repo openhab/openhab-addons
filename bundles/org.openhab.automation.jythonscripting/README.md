@@ -41,7 +41,7 @@ Jython can [import Java classes](http://www.jython.org/jythonbook/en/1.0/Modules
 Depending on the openHAB logging configuration, you may need to prefix logger names with `org.openhab.core.automation` for them to show up in the log file (or you modify the logging configuration).
 
 ::: tip Note
-Be careful with using wildcards when importing Java packages (e.g., `import org.sl4j.*`).
+Be careful with using wildcards when importing Java packages (e.g., `import org.slf4j.*`).
 This will work in some cases, but it might not work in some situations.
 It is best to use explicit imports with Java packages.
 For more details, see the Jython documentation on
