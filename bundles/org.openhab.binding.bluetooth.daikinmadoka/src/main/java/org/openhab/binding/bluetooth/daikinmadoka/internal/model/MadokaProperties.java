@@ -26,7 +26,8 @@ public class MadokaProperties {
     public enum FanSpeed {
         MAX(5),
         MEDIUM(3),
-        LOW(1);
+        LOW(1),
+        AUTO(0);
 
         private int v;
 
@@ -39,8 +40,10 @@ public class MadokaProperties {
                 return MAX;
             } else if (v >= 2 && v <= 4) {
                 return MEDIUM;
-            } else {
+            } else if (v == 1) {
                 return LOW;
+            } else {
+                return AUTO;
             }
         }
 
