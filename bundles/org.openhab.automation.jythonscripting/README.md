@@ -45,7 +45,7 @@ Be careful with using wildcards when importing Java packages (e.g., `import org.
 This will work in some cases, but it might not work in some situations.
 It is best to use explicit imports with Java packages.
 For more details, see the Jython documentation on
-[Java package scanning](http://www.jython.org/jythonbook/en/1.0/ModulesPackages.html#java-package-scanning).
+[Java package scanning](https://jython.readthedocs.io/en/latest/ModulesPackages/#java-package-scanning).
 :::
 
 The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logger.html)
