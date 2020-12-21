@@ -54,7 +54,7 @@ public class HaywardBowHandler extends HaywardThingHandler {
                     updateData(HaywardBindingConstants.CHANNEL_BOW_WATERTEMP, data.get(i));
                 }
             }
-
+            this.updateStatus(ThingStatus.ONLINE);
         } else {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }

@@ -65,6 +65,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                     }
                 }
             }
+            this.updateStatus(ThingStatus.ONLINE);
         } else {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
@@ -131,6 +132,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                 logger.debug("Unable to send command to Hayward's server {}:{}", bridgehandler.config.endpointUrl,
                         bridgehandler.config.username, e);
             }
+            this.updateStatus(ThingStatus.ONLINE);
         } else {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }

@@ -48,6 +48,7 @@ public class HaywardSensorHandler extends HaywardThingHandler {
                     updateData(HaywardBindingConstants.CHANNEL_RELAY_STATE, data.get(i));
                 }
             }
+            this.updateStatus(ThingStatus.ONLINE);
         } else {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }

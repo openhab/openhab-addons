@@ -60,6 +60,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
                     updateData(HaywardBindingConstants.CHANNEL_BACKYARD_STATE, data.get(0));
                 }
             }
+            this.updateStatus(ThingStatus.ONLINE);
         } else {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
@@ -108,6 +109,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
                 }
                 updateData("backyardAlarm" + String.format("%01d", i + 1), alarmStr);
             }
+            this.updateStatus(ThingStatus.ONLINE);
             return true;
         } else {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
