@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.config.MieleCloudConfigService;
-import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
 import org.openhab.binding.mielecloud.internal.util.AbstractConfigFlowTest;
 import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
 import org.openhab.binding.mielecloud.internal.util.Website;
@@ -40,19 +39,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 @NonNullByDefault
 public class CreateBridgeServletTest extends AbstractConfigFlowTest {
     @Test
-    public void whenNoAccessTokenIsPresentThenAWarningIsShownOnTheSuccessPage() throws Exception {
-        // when:
-        Website website = getCrawler()
-                .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString());
-
-        // then:
-        assertTrue(website.contains("Pairing successful!"));
-        assertTrue(website.contains(
-                "Could not auto configure the bridge. There is no access token available. Please try the configuration flow again."));
-    }
-
-    @Test
     public void whenBridgeCreationFailsThenAWarningIsShownOnTheSuccessPage() throws Exception {
         // given:
         MieleCloudConfigService configService = getService(MieleCloudConfigService.class);
@@ -65,11 +51,6 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         when(inbox.add(any())).thenReturn(true);
         when(inbox.approve(any(), anyString(), anyString())).thenReturn(null);
         setPrivate(Objects.requireNonNull(createBridgeServlet), "inbox", inbox);
-
-        OAuthAuthorizationHandler authorizationHandler = mock(OAuthAuthorizationHandler.class);
-        when(authorizationHandler.getAccessToken(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID))
-                .thenReturn(MieleCloudBindingIntegrationTestConstants.ACCESS_TOKEN);
-        setPrivate(Objects.requireNonNull(createBridgeServlet), "authorizationHandler", authorizationHandler);
 
         // when:
         Website website = getCrawler()
@@ -98,11 +79,6 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         ThingRegistry thingRegistry = mock(ThingRegistry.class);
         when(thingRegistry.get(any())).thenReturn(null);
         setPrivate(Objects.requireNonNull(createBridgeServlet), "thingRegistry", thingRegistry);
-
-        OAuthAuthorizationHandler authorizationHandler = mock(OAuthAuthorizationHandler.class);
-        when(authorizationHandler.getAccessToken(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID))
-                .thenReturn(MieleCloudBindingIntegrationTestConstants.ACCESS_TOKEN);
-        setPrivate(Objects.requireNonNull(createBridgeServlet), "authorizationHandler", authorizationHandler);
 
         // when:
         Website website = getCrawler()
@@ -136,11 +112,6 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
         when(thingRegistry.get(any())).thenReturn(bridge);
         setPrivate(Objects.requireNonNull(createBridgeServlet), "thingRegistry", thingRegistry);
 
-        OAuthAuthorizationHandler authorizationHandler = mock(OAuthAuthorizationHandler.class);
-        when(authorizationHandler.getAccessToken(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID))
-                .thenReturn(MieleCloudBindingIntegrationTestConstants.ACCESS_TOKEN);
-        setPrivate(Objects.requireNonNull(createBridgeServlet), "authorizationHandler", authorizationHandler);
-
         // when:
         Website website = getCrawler()
                 .doGetRelative("/mielecloud/createBridgeThing?" + CreateBridgeServlet.BRIDGE_UID_PARAMETER_NAME + "="
@@ -163,11 +134,6 @@ public class CreateBridgeServletTest extends AbstractConfigFlowTest {
 
         CreateBridgeServlet createBridgeServlet = configService.getCreateBridgeServlet();
         assertNotNull(createBridgeServlet);
-
-        OAuthAuthorizationHandler authorizationHandler = mock(OAuthAuthorizationHandler.class);
-        when(authorizationHandler.getAccessToken(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID))
-                .thenReturn(MieleCloudBindingIntegrationTestConstants.ALTERNATIVE_ACCESS_TOKEN);
-        setPrivate(Objects.requireNonNull(createBridgeServlet), "authorizationHandler", authorizationHandler);
 
         OAuthTokenRefresher tokenRefresher = mock(OAuthTokenRefresher.class);
         when(tokenRefresher.getAccessTokenFromStorage(anyString()))

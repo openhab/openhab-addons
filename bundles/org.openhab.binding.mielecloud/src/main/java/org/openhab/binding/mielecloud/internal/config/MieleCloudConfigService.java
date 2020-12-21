@@ -171,8 +171,8 @@ public final class MieleCloudConfigService {
                     successServlet = new SuccessServlet(resourceLoader, createLanguageProvider()), new Hashtable<>(),
                     httpContext);
             httpService.registerServlet(CREATE_BRIDGE_THING_ALIAS,
-                    createBridgeServlet = new CreateBridgeServlet(inbox, thingRegistry, authorizationHandler),
-                    new Hashtable<>(), httpContext);
+                    createBridgeServlet = new CreateBridgeServlet(inbox, thingRegistry), new Hashtable<>(),
+                    httpContext);
             httpService.registerServlet(FAILURE_ALIAS, new FailureServlet(resourceLoader), new Hashtable<>(),
                     httpContext);
             httpService.registerResources(CSS_ALIAS, WEBSITE_CSS_RESOURCE_PATH, httpContext);

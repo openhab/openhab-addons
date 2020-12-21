@@ -49,7 +49,6 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
                 .thenReturn(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID);
 
         setPrivate(getResultServlet(), "authorizationHandler", authorizationHandler);
-        setPrivate(getCreateBridgeServlet(), "authorizationHandler", authorizationHandler);
     }
 
     private void setUpWebservice() throws Exception {

@@ -39,7 +39,6 @@ public class SuccessServlet extends AbstractShowPageServlet {
 
     public static final String BRIDGE_UID_PARAMETER_NAME = "bridgeUid";
 
-    public static final String MISSING_ACCESS_TOKEN_PARAMETER_NAME = "missingAccessToken";
     public static final String BRIDGE_CREATION_FAILED_PARAMETER_NAME = "bridgeCreationFailed";
     public static final String BRIDGE_RECONFIGURATION_FAILED_PARAMETER_NAME = "bridgeReconfigurationFailed";
 
@@ -97,10 +96,7 @@ public class SuccessServlet extends AbstractShowPageServlet {
     }
 
     private String renderErrorMessage(HttpServletRequest request, String skeleton) {
-        if (ServletUtil.isParameterEnabled(request, MISSING_ACCESS_TOKEN_PARAMETER_NAME)) {
-            return skeleton.replace(ERROR_MESSAGE_TEXT_PLACEHOLDER,
-                    "<div class=\"alert alert-danger\" role=\"alert\">Could not auto configure the bridge. There is no access token available. Please try the configuration flow again.</div>");
-        } else if (ServletUtil.isParameterEnabled(request, BRIDGE_CREATION_FAILED_PARAMETER_NAME)) {
+        if (ServletUtil.isParameterEnabled(request, BRIDGE_CREATION_FAILED_PARAMETER_NAME)) {
             return skeleton.replace(ERROR_MESSAGE_TEXT_PLACEHOLDER,
                     "<div class=\"alert alert-danger\" role=\"alert\">Could not auto configure the bridge. Failed to approve the bridge from the inbox. Please try the configuration flow again.</div>");
         } else if (ServletUtil.isParameterEnabled(request, BRIDGE_RECONFIGURATION_FAILED_PARAMETER_NAME)) {

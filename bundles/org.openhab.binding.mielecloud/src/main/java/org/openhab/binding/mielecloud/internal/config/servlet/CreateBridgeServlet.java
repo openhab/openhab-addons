@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
-import org.openhab.binding.mielecloud.internal.auth.OAuthException;
-import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
 import org.openhab.binding.mielecloud.internal.config.exception.BridgeCreationFailedException;
 import org.openhab.binding.mielecloud.internal.config.exception.BridgeReconfigurationFailedException;
 import org.openhab.binding.mielecloud.internal.util.LocaleValidator;
@@ -62,20 +60,16 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
 
     private final Inbox inbox;
     private final ThingRegistry thingRegistry;
-    private final OAuthAuthorizationHandler authorizationHandler;
 
     /**
      * Creates a new {@link CreateBridgeServlet}.
      *
      * @param inbox openHAB inbox for discovery results.
      * @param thingRegistry openHAB thing registry.
-     * @param authorizationHandler Handler for the authorization process.
      */
-    public CreateBridgeServlet(Inbox inbox, ThingRegistry thingRegistry,
-            OAuthAuthorizationHandler authorizationHandler) {
+    public CreateBridgeServlet(Inbox inbox, ThingRegistry thingRegistry) {
         this.inbox = inbox;
         this.thingRegistry = thingRegistry;
-        this.authorizationHandler = authorizationHandler;
     }
 
     @Override
@@ -96,19 +90,10 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
 
         String locale = getValidLocale(request.getParameter(LOCALE_PARAMETER_NAME));
 
-        String accessToken = null;
-        try {
-            accessToken = authorizationHandler.getAccessToken(bridgeUid);
-        } catch (OAuthException e) {
-            logger.warn("Failed to obtain access token.", e);
-            return "/mielecloud/success?" + SuccessServlet.MISSING_ACCESS_TOKEN_PARAMETER_NAME + "=true&"
-                    + SuccessServlet.BRIDGE_UID_PARAMETER_NAME + "=" + bridgeUidString;
-        }
-
         logger.info("Auto configuring Miele account using locale '{}' (requested locale was '{}')", locale,
                 request.getParameter(LOCALE_PARAMETER_NAME));
         try {
-            Thing bridge = pairOrReconfigureBridge(accessToken, locale, bridgeUid);
+            Thing bridge = pairOrReconfigureBridge(locale, bridgeUid);
             waitForBridgeToComeOnline(bridge);
             return "/mielecloud";
         } catch (BridgeReconfigurationFailedException e) {
@@ -122,11 +107,11 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
         }
     }
 
-    private Thing pairOrReconfigureBridge(String accessToken, String locale, ThingUID bridgeUid) {
+    private Thing pairOrReconfigureBridge(String locale, ThingUID bridgeUid) {
         DiscoveryResult result = DiscoveryResultBuilder.create(bridgeUid)
                 .withRepresentationProperty(Thing.PROPERTY_MODEL_ID).withLabel(MIELE_CLOUD_BRIDGE_LABEL)
-                .withProperty(Thing.PROPERTY_MODEL_ID, MIELE_CLOUD_BRIDGE_NAME).withProperty("accessToken", accessToken)
-                .withProperty(LOCALE_PARAMETER_NAME, locale).build();
+                .withProperty(Thing.PROPERTY_MODEL_ID, MIELE_CLOUD_BRIDGE_NAME)
+                .withProperty(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE, locale).build();
         if (inbox.add(result)) {
             return pairBridge(bridgeUid);
         } else {
