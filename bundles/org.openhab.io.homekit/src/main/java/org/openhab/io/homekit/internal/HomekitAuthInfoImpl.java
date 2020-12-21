@@ -44,11 +44,14 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private String mac;
     private BigInteger salt;
     private byte[] privateKey;
-    private final String pin;
+    private String pin;
+    private String setupId;
 
-    public HomekitAuthInfoImpl(Storage<String> storage, String pin) throws InvalidAlgorithmParameterException {
+    public HomekitAuthInfoImpl(Storage<String> storage, String pin, String setupId)
+            throws InvalidAlgorithmParameterException {
         this.storage = storage;
         this.pin = pin;
+        this.setupId = setupId;
         initializeStorage();
     }
 
@@ -63,9 +66,26 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         return mac;
     }
 
+    public void setMac(String mac) {
+        this.mac = mac;
+    }
+
     @Override
     public String getPin() {
         return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
+    @Override
+    public String getSetupId() {
+        return setupId;
+    }
+
+    public void setSetupId(String setupId) {
+        this.setupId = setupId;
     }
 
     @Override
