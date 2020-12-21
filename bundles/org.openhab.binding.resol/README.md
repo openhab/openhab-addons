@@ -138,8 +138,8 @@ resol.items
 /*************************************************/
 /* Solar system                                  */
 /*************************************************/
-Number:Temperature SolarTemperature "Solar Collector Temperatur [%.1f °C]" <temperature> { channel="resol.device.VBUS.DeltaSol_MX-Controller:Temperature_sensor_1" }
-Number:Temperature TankTemperature "Solar Tank Temperatur [%.1f °C]" <temperature> { channel="resol.device.VBUS.DeltaSol_MX-Controller:Temperature_sensor_2" }
+Number:Temperature SolarTemperature "Solar Collector Temperature [%.1f °C]" <temperature> { channel="resol.device.VBUS.DeltaSol_MX-Controller:Temperature_sensor_1" }
+Number:Temperature TankTemperature "Solar Tank Temperature [%.1f °C]" <temperature> { channel="resol.device.VBUS.DeltaSol_MX-Controller:Temperature_sensor_2" }
 Number:Intensity "Irradiation [%.1f W/m²]" <sun> {channel="resol:device:VBUS:DeltaSol_MX-Controller:Irradiation_sensor_16"}
 Number SolarPump "Solar pump [%.0f %%]" {channel="resol:device:VBUS:DeltaSol_MX-Controller:Pump_speed_relay_1"}
 
@@ -162,7 +162,7 @@ Number:Power SolarPower "Solar Power [%.0f W]" {channel="resol:device:VBUS:Delta
 /*************************************************/
 /* EM Module                                     */
 /*************************************************/
-Number:Temperature EM_Temperatur_1 "Temperatur EM sensor 1 [%.1f °C]" <temperature> {channel="resol:device:VBUS:DeltaSol_MX-Modules:Temperature_Module_1_Sensor_1"}
+Number:Temperature EM_Temperature_1 "Temperature EM sensor 1 [%.1f °C]" <temperature> {channel="resol:device:VBUS:DeltaSol_MX-Modules:Temperature_Module_1_Sensor_1"}
 
 /*************************************************/
 /* Failure handling                              */
