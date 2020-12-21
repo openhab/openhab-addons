@@ -14,16 +14,16 @@ package org.openhab.binding.dlinksmarthome.internal.handler;
 
 import static org.openhab.binding.dlinksmarthome.internal.DLinkSmartHomeBindingConstants.MOTION;
 
-import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorCommunication;
-import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorCommunication.DeviceStatus;
-import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig;
-import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorListener;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.binding.dlinksmarthome.internal.DLinkThingConfig;
+import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorCommunication;
+import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorCommunication.DeviceStatus;
+import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorListener;
 
 /**
  * The {@link DLinkMotionSensorHandler} is responsible for handling commands, which are
@@ -49,7 +49,7 @@ public class DLinkMotionSensorHandler extends BaseThingHandler implements DLinkM
 
     @Override
     public void initialize() {
-        final DLinkMotionSensorConfig config = getConfigAs(DLinkMotionSensorConfig.class);
+        final DLinkThingConfig config = getConfigAs(DLinkThingConfig.class);
         motionSensor = new DLinkMotionSensorCommunication(config, this, scheduler);
     }
 
