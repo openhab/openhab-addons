@@ -29,7 +29,7 @@ log:set DEBUG org.openhab.core.automation
 Jython scripts provide access to almost all the functionality in an openHAB runtime environment.
 As a simple example, the following script logs "Hello, World!".
 Note that `print` will usually not work since the output has no terminal to display the text.
-The openHAB server uses the [SLFJ](https://www.slf4j.org/) library for logging.
+The openHAB server uses the [SLF4J](https://www.slf4j.org/) library for logging.
 
 ```python
 from org.slf4j import LoggerFactory
