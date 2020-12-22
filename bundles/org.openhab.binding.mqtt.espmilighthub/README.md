@@ -1,12 +1,13 @@
 # EspMilightHub Binding
 
 This binding allows an open source esp8266 based bridge to automatically find and add Milight globes.
-The hubs can be built from 2 ready made boards and connecting them with 7 wires, they can be very easy to build with no soldering needed. 
+The hubs can be built from 2 ready made boards and  only need connecting with 7 wires. 
+They can be very easy to build with no soldering needed. 
 
 Advantages to using this DIY bridge over the OEM bridge:
 
-+ Almost unlimited groups so you can have individual control over an entire house of Milight globes without multiple bridges.
-+ If using the Milight remotes to control the globes with this binding can update the openHAB controls the moment a key is pressed on the remote.
++ Almost unlimited groups to give individual control over an entire house of Milight globes without needing multiple bridges.
++ If using the Milight remotes to control the globes, this binding can update the openHAB controls the moment a key is pressed on the physical remotes.
 + Supports auto discovery.
 
 ## Setup the hardware
@@ -56,7 +57,7 @@ Fill in the MQTT broker fields with the correct details so the hub can connect a
 Now when you use any Milight remote control, you will see MQTT topics being created that should include `level` and `hsb` in the messages.
 If you see `brightness` and not `level`, then go back and follow the above setup steps.
 
-You can use this linux command to watch all MQTT topics from Milight:
+You can use this Linux command to watch all MQTT topics from Milight:
 
 ```
 mosquitto_sub -u usernamehere -P passwordhere -p 1883 -v -t 'milight/#'
@@ -68,7 +69,8 @@ Once you have setup and test the hub you can move onto using the binding.
 
 ## Supported Things
 
-This binding is best thought of as a remote control emulator, so the things are really the type of remote that you own and not the globes. The Milight protocol is 1 way only so there is no way to find actual globes.
+This binding is best thought of as a remote control emulator, so the things are really the type of remote that you own and not the globes.
+The Milight protocol is 1 way only so there is no way to find actual globes.
 
 | Thing Type ID | Description |
 |-|-|
@@ -81,8 +83,8 @@ This binding is best thought of as a remote control emulator, so the things are 
 
 ## Discovery
 
-First install the MQTT binding and setup a `broker` and make sure it is ONLINE, as this binding uses the MQTT binding to talk to your broker and hence that binding must be setup first.
-Next make sure you have moved a control on either a physical remote, or used a virtual control inside the esp8266 control panel web page to create a MQTT message.
+First install the MQTT binding and setup a `broker` thing and make sure it is ONLINE, as this binding uses the MQTT binding to talk to your broker and hence that binding must be setup first.
+Next, move a control on either a physical remote, or used a virtual control inside the esp8266 control panel web page which cause a MQTT message to be sent.
 This binding should then detect the new device the moment the control is moved and a new entry should appear in your INBOX.
 
 To remove a saved state from your MQTT broker that causes an entry in your INBOX you can use this command or use the ignore feature of openHAB.
@@ -95,12 +97,11 @@ mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' 
 
 | Parameter | Description | Required | Default |
 |-|-|-|-|
-| `defaultCommand` | When the send command button is pressed, if no selection is made from the command channel then use this. | Y | night_mode |
 | `whiteHue` | When both the `whiteHue` and `whiteSat` values are seen by the binding it will trigger the white LEDS. Set to -1 to disable, 0 for Alexa, or 35 for Google Home. | Y | 35 |
 | `whiteSat` | When both the whiteHue and whiteSat values are seen by the binding it will trigger the white LEDS. Set to -1 to disable, 100 for Alexa or 32 for Google Home. | Y | 32 |
 | `favouriteWhite` | When one of the shortcuts triggers white mode, use this for the colour white instead of the default colour. | Y |200 |
 | `dimmedCT` | Traditional globes grow warmer the more they are dimmed. Set this to 370, or leave blank to disable. | N | blank |
-| `oneTriggersNightMode` | `Night Mode` is a much lower level of light and this feature allows it to be auto selected when your fader/slider moves to 1%. NOTE: Night mode locks out some controls of a physical remote so this is disabled by default. | Y | false |
+| `oneTriggersNightMode` | Night mode is a much lower level of light and this feature allows it to be auto selected when your fader/slider moves to 1%. NOTE: Night mode by design locks out some controls of a physical remote, so this feature is disabled by default. | Y | false |
 | `powerFailsToMinimum` | If lights loose power from the power switch OR a power outage, they will default to using the lowest brightness if the light was turned off before the power failure occurred. | Y | true |
 | `whiteThreshold` | RGBW globes do not respond to saturation changes, so this feature allows you to specify a number that if the saturation drops below, it will trigger the white mode. -1 will disable this feature. | Y | 12 |
 
@@ -131,14 +132,10 @@ Settings for the radio tab found in the esp control panel using your browser, mi
 
 ## Important for Textual Configuration
 
-The binding requires things to have a specific format for the unique ID, the auto discovery does this for you.
+This binding requires things to have a specific format for the unique ID, the auto discovery does this for you.
 
-```
-espmilighthub:ThingType:broker:ThingUID
-```
-
-You need to add the Device ID and Group ID together to create the things unique ID.
-The DeviceID is different for each remotes.
+If doing textual configuration you need to add the Device ID and Group ID together to create the things unique ID.
+The DeviceID is different for each remote.
 The GroupID can be 0 (all channels on the remote), or 1 to 8 for each of the individual channels on the remote).
 If you do not understand this please use auto discovery to do it for you. 
 
@@ -149,30 +146,32 @@ For example:
 
 | Device ID | Group ID |ThingUID  | 
 |-----------|----------|----------|
-| 0xC210    | 1        | 0xC2101  | 
+| 0xE6C     | 4        | 0xE6C4   | 
 | 0xB4CA    | 4        | 0xB4CA4  | 
 | 0xB4CA    | 8        | 0xB4CA8  |
 | 0xB4CA    | 0        | 0xB4CA0  |
 
 ## Full Example
 
-To use these examples for textual configuration, you must have already configured a MQTT broker thing and know its unique ID.
-This UID will be used in the things file and will replace the text `brokerUID`.
+To use these examples for textual configuration, you must have already have a configured a MQTT `broker` thing and know its unique ID.
+This UID will be used in the things file and will replace the text `myBroker`.
+The first line in the things file will create a `broker` thing and this can be removed if you have already setup a broker in another file or via the UI already.
 
 *.things
 
 ```
-Thing mqtt:rgb_cct:0xC2101 "Hallway" (mqtt:broker:brokerUID) @ "MQTT"
+Bridge mqtt:broker:myBroker [ host="localhost", secure=false, password="*******", qos=1, username="user"]
+Thing mqtt:rgb_cct:0xE6C4 "Hallway" (mqtt:broker:myBroker) @ "MQTT"
 ```
 
 *.items
 
 ```
-Dimmer Hallway_Level "Front Hall" {channel="mqtt:rgb_cct:0xC2101:Level"}
-Dimmer Hallway_ColourTemperature "White Color Temp" {channel="mqtt:rgb_cct:0xC2101:colourTemperature"}
-Color  Hallway_Colour "Front Hall" ["Lighting"] {channel="mqtt:rgb_cct:0xC2101:colour"}
-String Hallway_DiscoMode "Disco Mode" {channel="mqtt:rgb_cct:0xC2101:discoMode"}
-Switch Hallway_Command "Send Command" {channel="mqtt:rgb_cct:0xC2101:command"}
+Dimmer Hallway_Level "Front Hall" {channel="mqtt:rgb_cct:0xE6C4:level"}
+Dimmer Hallway_ColourTemperature "White Color Temp" {channel="mqtt:rgb_cct:0xE6C4:colourTemperature"}
+Color  Hallway_Colour "Front Hall" ["Lighting"] {channel="mqtt:rgb_cct:0xE6C4:colour"}
+String Hallway_DiscoMode "Disco Mode" {channel="mqtt:rgb_cct:0xE6C4:discoMode"}
+Switch Hallway_Command "Send Command" {channel="mqtt:rgb_cct:0xE6C4:command"}
 
 ```
 
