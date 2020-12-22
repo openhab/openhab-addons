@@ -87,7 +87,7 @@ or in case of unknown models include the model information of a similar device t
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 230 different models.
+Currently the miio binding supports more than 250 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -283,6 +283,32 @@ Currently the miio binding supports more than 230 different models.
 | Mi Water Purifier lx10       | miio:basic       | [yunmi.waterpuri.lx10](#yunmi-waterpuri-lx10) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier C1 (Triple Setting) | miio:basic       | [yunmi.waterpuri.lx11](#yunmi-waterpuri-lx11) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier S1         | miio:basic       | [yunmi.waterpuri.lx12](#yunmi-waterpuri-lx12) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Inverter Air Conditioner (1.5HP) | miio:basic       | [xiaomi.aircondition.ma1](#xiaomi-aircondition-ma1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.ma2](#xiaomi-aircondition-ma2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Vertical Air Conditioner (2HP) | miio:basic       | [xiaomi.aircondition.ma4](#xiaomi-aircondition-ma4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Vertical Air Conditioner C1 (2HP / Inverter / China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.ma5](#xiaomi-aircondition-ma5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner C1 (1.5HP / Conventional / China Energy Label Level 3) | miio:basic       | [xiaomi.aircondition.ma6](#xiaomi-aircondition-ma6) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner C1 (1HP / Inverter / China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.ma9](#xiaomi-aircondition-ma9) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Ultra Electricity Saving Vertical Air Conditioner (2HP/Inverter/New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.c10](#xiaomi-aircondition-c10) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Ultra Electricity Saving Vertical Air Conditioner (3HP/Inverter/New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.c11](#xiaomi-aircondition-c11) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mc1](#xiaomi-aircondition-mc1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mc2](#xiaomi-aircondition-mc2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level <1) | miio:basic       | [xiaomi.aircondition.mc4](#xiaomi-aircondition-mc4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level <1) | miio:basic       | [xiaomi.aircondition.mc5](#xiaomi-aircondition-mc5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Vertical Air Conditioner A (2HP / Inverter / China Energy Label Level <1) | miio:basic       | [xiaomi.aircondition.mc6](#xiaomi-aircondition-mc6) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Vertical Air Conditioner A (3HP / Inverter / China Energy Label Level <1) | miio:basic       | [xiaomi.aircondition.mc7](#xiaomi-aircondition-mc7) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Ultra Electricity Saving Air Conditioner(1.5HP/Inverter/New China Energy Label Level 3) | miio:basic       | [xiaomi.aircondition.mc8](#xiaomi-aircondition-mc8) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Ultra Electricity Saving Vertical Air Conditioner(2HP/Inverter/New China Energy Label Level 3) | miio:basic       | [xiaomi.aircondition.mc9](#xiaomi-aircondition-mc9) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner C (1HP / Inverter / New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mh1](#xiaomi-aircondition-mh1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner C (1.5HP / Inverter / New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mh2](#xiaomi-aircondition-mh2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Ultra Electricity Saving Air Conditioner(1HP/Inverter/New China Energy Label Level 3) | miio:basic       | [xiaomi.aircondition.mh3](#xiaomi-aircondition-mh3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner X (1HP / Inverter / New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt1](#xiaomi-aircondition-mt1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Conditioner X (1.5HP / Inverter / New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt2](#xiaomi-aircondition-mt2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Gentle Breeze Air Conditioner (1HP / Inverter / New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt3](#xiaomi-aircondition-mt3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Gentle Breeze Air Conditioner (1.5HP / Inverter / New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt4](#xiaomi-aircondition-mt4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Gentle Breeze Vertical Air Conditioner (3HP / Inverter / New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt5](#xiaomi-aircondition-mt5) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt7](#xiaomi-aircondition-mt7) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt8](#xiaomi-aircondition-mt8) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Wi-Fi Repeater 2          | miio:unsupported | xiaomi.repeater.v2     | No        |            |
 | Mi Network Speaker           | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
 | Uclean Smart Toilet Seat     | miio:basic       | [xjx.toilet.pro](#xjx-toilet-pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -2692,6 +2718,588 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | f3_totaltime     | Number  | Filter 3 Total Time                 |            |
 | f3_usedflow      | Number  | Filter 3 Used Flow                  |            |
 | f3_usedtime      | Number  | Filter 3 Used Time                  |            |
+
+### Mi Inverter Air Conditioner (1.5HP) (<a name="xiaomi-aircondition-ma1">xiaomi.aircondition.ma1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+
+### Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1) (<a name="xiaomi-aircondition-ma2">xiaomi.aircondition.ma2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+
+### Mi Vertical Air Conditioner (2HP) (<a name="xiaomi-aircondition-ma4">xiaomi.aircondition.ma4</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+
+### Mi Smart Vertical Air Conditioner C1 (2HP / Inverter / China Energy Label Level 1) (<a name="xiaomi-aircondition-ma5">xiaomi.aircondition.ma5</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+
+### Mi Smart Air Conditioner C1 (1.5HP / Conventional / China Energy Label Level 3) (<a name="xiaomi-aircondition-ma6">xiaomi.aircondition.ma6</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+
+### Mi Smart Air Conditioner C1 (1HP / Inverter / China Energy Label Level 1) (<a name="xiaomi-aircondition-ma9">xiaomi.aircondition.ma9</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+
+### Mi Smart Ultra Electricity Saving Vertical Air Conditioner (2HP/Inverter/New China Energy Label Level 1) (<a name="xiaomi-aircondition-c10">xiaomi.aircondition.c10</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Ultra Electricity Saving Vertical Air Conditioner (3HP/Inverter/New China Energy Label Level 1) (<a name="xiaomi-aircondition-c11">xiaomi.aircondition.c11</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level 1) (<a name="xiaomi-aircondition-mc1">xiaomi.aircondition.mc1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level 1) (<a name="xiaomi-aircondition-mc2">xiaomi.aircondition.mc2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level <1) (<a name="xiaomi-aircondition-mc4">xiaomi.aircondition.mc4</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level <1) (<a name="xiaomi-aircondition-mc5">xiaomi.aircondition.mc5</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Vertical Air Conditioner A (2HP / Inverter / China Energy Label Level <1) (<a name="xiaomi-aircondition-mc6">xiaomi.aircondition.mc6</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Vertical Air Conditioner A (3HP / Inverter / China Energy Label Level <1) (<a name="xiaomi-aircondition-mc7">xiaomi.aircondition.mc7</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Ultra Electricity Saving Air Conditioner(1.5HP/Inverter/New China Energy Label Level 3) (<a name="xiaomi-aircondition-mc8">xiaomi.aircondition.mc8</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Ultra Electricity Saving Vertical Air Conditioner(2HP/Inverter/New China Energy Label Level 3) (<a name="xiaomi-aircondition-mc9">xiaomi.aircondition.mc9</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Air Conditioner C (1HP / Inverter / New China Energy Label Level 1) (<a name="xiaomi-aircondition-mh1">xiaomi.aircondition.mh1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Air Conditioner C (1.5HP / Inverter / New China Energy Label Level 1) (<a name="xiaomi-aircondition-mh2">xiaomi.aircondition.mh2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Ultra Electricity Saving Air Conditioner(1HP/Inverter/New China Energy Label Level 3) (<a name="xiaomi-aircondition-mh3">xiaomi.aircondition.mh3</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Air Conditioner X (1HP / Inverter / New China Energy Label Level 1) (<a name="xiaomi-aircondition-mt1">xiaomi.aircondition.mt1</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Air Conditioner X (1.5HP / Inverter / New China Energy Label Level 1) (<a name="xiaomi-aircondition-mt2">xiaomi.aircondition.mt2</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Gentle Breeze Air Conditioner (1HP / Inverter / New China Energy Label Level 1) (<a name="xiaomi-aircondition-mt3">xiaomi.aircondition.mt3</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Gentle Breeze Air Conditioner (1.5HP / Inverter / New China Energy Label Level 1) (<a name="xiaomi-aircondition-mt4">xiaomi.aircondition.mt4</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Gentle Breeze Vertical Air Conditioner (3HP / Inverter / New China Energy Label Level 1) (<a name="xiaomi-aircondition-mt5">xiaomi.aircondition.mt5</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1) (<a name="xiaomi-aircondition-mt7">xiaomi.aircondition.mt7</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
+
+### Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1) (<a name="xiaomi-aircondition-mt8">xiaomi.aircondition.mt8</a>) Channels
+
+| Channel          | Type    | Description                         | Comment    |
+|------------------|---------|-------------------------------------|------------|
+| on               | Switch  | Power                               |            |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
+| eco              | Switch  | Air Conditioner - Eco               |            |
+| heater           | Switch  | Air Conditioner - Heater            |            |
+| dryer            | Switch  | Air Conditioner - Dryer             |            |
+| sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
+| temperature      | Number:Temperature | Environment - Temperature           |            |
+| alarm            | Switch  | Alarm - Alarm                       |            |
+| on1              | Switch  | Indicator Light - Switch Status     |            |
+| electricity      | Number:Energy | Power consumption accumulation in kWh |            |
+| elec-count       | Number  | Electricity - Count                 |            |
+| clean            | String  | Maintenance - Clean                 |            |
+| examine          | String  | Maintenance - Examine               |            |
+| running-duration | Number:Duration | Maintenance - Running Duration      |            |
+| fan-percent      | Number:Dimentionless | Fan Speed %                         |            |
+| timer            | String  | Enhance - Timer                     |            |
 
 ### Uclean Smart Toilet Seat (<a name="xjx-toilet-pro">xjx.toilet.pro</a>) Channels
 
@@ -6213,6 +6821,666 @@ Number f3_totalflow "Filter 3 Total Flow" (G_waterpuri) {channel="miio:basic:wat
 Number f3_totaltime "Filter 3 Total Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_totaltime"}
 Number f3_usedflow "Filter 3 Used Flow" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedflow"}
 Number f3_usedtime "Filter 3 Used Time" (G_waterpuri) {channel="miio:basic:waterpuri:f3_usedtime"}
+```
+
+### Mi Inverter Air Conditioner (1.5HP) (xiaomi.aircondition.ma1) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Inverter Air Conditioner (1.5HP)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+```
+
+### Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1) (xiaomi.aircondition.ma2) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+```
+
+### Mi Vertical Air Conditioner (2HP) (xiaomi.aircondition.ma4) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Vertical Air Conditioner (2HP)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+```
+
+### Mi Smart Vertical Air Conditioner C1 (2HP / Inverter / China Energy Label Level 1) (xiaomi.aircondition.ma5) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Vertical Air Conditioner C1 (2HP / Inverter / China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+```
+
+### Mi Smart Air Conditioner C1 (1.5HP / Conventional / China Energy Label Level 3) (xiaomi.aircondition.ma6) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner C1 (1.5HP / Conventional / China Energy Label Level 3)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+```
+
+### Mi Smart Air Conditioner C1 (1HP / Inverter / China Energy Label Level 1) (xiaomi.aircondition.ma9) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner C1 (1HP / Inverter / China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+```
+
+### Mi Smart Ultra Electricity Saving Vertical Air Conditioner (2HP/Inverter/New China Energy Label Level 1) (xiaomi.aircondition.c10) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner (2HP/Inverter/New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Ultra Electricity Saving Vertical Air Conditioner (3HP/Inverter/New China Energy Label Level 1) (xiaomi.aircondition.c11) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner (3HP/Inverter/New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level 1) (xiaomi.aircondition.mc1) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level 1) (xiaomi.aircondition.mc2) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level <1) (xiaomi.aircondition.mc4) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner A (1HP / Inverter / China Energy Label Level <1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level <1) (xiaomi.aircondition.mc5) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner A (1.5HP / Inverter / China Energy Label Level <1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Vertical Air Conditioner A (2HP / Inverter / China Energy Label Level <1) (xiaomi.aircondition.mc6) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Vertical Air Conditioner A (2HP / Inverter / China Energy Label Level <1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Vertical Air Conditioner A (3HP / Inverter / China Energy Label Level <1) (xiaomi.aircondition.mc7) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Vertical Air Conditioner A (3HP / Inverter / China Energy Label Level <1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Ultra Electricity Saving Air Conditioner(1.5HP/Inverter/New China Energy Label Level 3) (xiaomi.aircondition.mc8) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner(1.5HP/Inverter/New China Energy Label Level 3)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Ultra Electricity Saving Vertical Air Conditioner(2HP/Inverter/New China Energy Label Level 3) (xiaomi.aircondition.mc9) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Ultra Electricity Saving Vertical Air Conditioner(2HP/Inverter/New China Energy Label Level 3)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Air Conditioner C (1HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mh1) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner C (1HP / Inverter / New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Air Conditioner C (1.5HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mh2) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner C (1.5HP / Inverter / New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Ultra Electricity Saving Air Conditioner(1HP/Inverter/New China Energy Label Level 3) (xiaomi.aircondition.mh3) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner(1HP/Inverter/New China Energy Label Level 3)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Air Conditioner X (1HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt1) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner X (1HP / Inverter / New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Air Conditioner X (1.5HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt2) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Air Conditioner X (1.5HP / Inverter / New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Gentle Breeze Air Conditioner (1HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt3) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Gentle Breeze Air Conditioner (1HP / Inverter / New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Gentle Breeze Air Conditioner (1.5HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt4) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Gentle Breeze Air Conditioner (1.5HP / Inverter / New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Gentle Breeze Vertical Air Conditioner (3HP / Inverter / New China Energy Label Level 1) (xiaomi.aircondition.mt5) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Gentle Breeze Vertical Air Conditioner (3HP / Inverter / New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1) (xiaomi.aircondition.mt7) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1) (xiaomi.aircondition.mt8) item file lines
+
+note: Autogenerated example. Replace the id (aircondition) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_aircondition "Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1)" <status>
+Switch on "Power" (G_aircondition) {channel="miio:basic:aircondition:on"}
+Number mode "Air Conditioner - Mode" (G_aircondition) {channel="miio:basic:aircondition:mode"}
+Number:Temperature target-temperature "Air Conditioner - Target Temperature" (G_aircondition) {channel="miio:basic:aircondition:target-temperature"}
+Switch eco "Air Conditioner - Eco" (G_aircondition) {channel="miio:basic:aircondition:eco"}
+Switch heater "Air Conditioner - Heater" (G_aircondition) {channel="miio:basic:aircondition:heater"}
+Switch dryer "Air Conditioner - Dryer" (G_aircondition) {channel="miio:basic:aircondition:dryer"}
+Switch sleep-mode "Air Conditioner - Sleep Mode" (G_aircondition) {channel="miio:basic:aircondition:sleep-mode"}
+Number fan-level "Fan Control - Fan Level" (G_aircondition) {channel="miio:basic:aircondition:fan-level"}
+Switch vertical-swing "Fan Control - Vertical Swing" (G_aircondition) {channel="miio:basic:aircondition:vertical-swing"}
+Number:Temperature temperature "Environment - Temperature" (G_aircondition) {channel="miio:basic:aircondition:temperature"}
+Switch alarm "Alarm - Alarm" (G_aircondition) {channel="miio:basic:aircondition:alarm"}
+Switch on1 "Indicator Light - Switch Status" (G_aircondition) {channel="miio:basic:aircondition:on1"}
+Number:Energy electricity "Power consumption accumulation in kWh" (G_aircondition) {channel="miio:basic:aircondition:electricity"}
+Number elec-count "Electricity - Count" (G_aircondition) {channel="miio:basic:aircondition:elec-count"}
+String clean "Maintenance - Clean" (G_aircondition) {channel="miio:basic:aircondition:clean"}
+String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:aircondition:examine"}
+Number:Duration running-duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
+Number:Dimentionless fan-percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
+String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
 ```
 
 ### Uclean Smart Toilet Seat (xjx.toilet.pro) item file lines
