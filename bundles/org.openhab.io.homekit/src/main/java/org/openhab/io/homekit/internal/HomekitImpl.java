@@ -61,15 +61,15 @@ import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
 public class HomekitImpl implements Homekit {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
 
-    private final @NonNullByDefault({}) NetworkAddressService networkAddressService;
-    private final @NonNullByDefault({}) ConfigurationAdmin configAdmin;
+    private final NetworkAddressService networkAddressService;
+    private final ConfigurationAdmin configAdmin;
 
-    private @NonNullByDefault({}) HomekitAuthInfoImpl authInfo;
-    private @NonNullByDefault({}) HomekitSettings settings;
+    private HomekitAuthInfoImpl authInfo;
+    private HomekitSettings settings;
     private @Nullable InetAddress networkInterface;
     private @Nullable HomekitServer homekitServer;
     private @Nullable HomekitRoot bridge;
-    private @NonNullByDefault({}) HomekitChangeListener changeListener;
+    private final HomekitChangeListener changeListener;
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
@@ -77,7 +77,8 @@ public class HomekitImpl implements Homekit {
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
             @Reference NetworkAddressService networkAddressService, @Reference MetadataRegistry metadataRegistry,
-            @Reference ConfigurationAdmin configAdmin, Map<String, Object> properties) {
+            @Reference ConfigurationAdmin configAdmin, Map<String, Object> properties)
+            throws IOException, InvalidAlgorithmParameterException {
         this.networkAddressService = networkAddressService;
         this.configAdmin = configAdmin;
         this.settings = processConfig(properties);
@@ -88,6 +89,7 @@ public class HomekitImpl implements Homekit {
             startHomekitServer();
         } catch (IOException | InvalidAlgorithmParameterException e) {
             logger.warn("Cannot activate HomeKit binding. {}", e.getMessage());
+            throw e;
         }
     }
 
