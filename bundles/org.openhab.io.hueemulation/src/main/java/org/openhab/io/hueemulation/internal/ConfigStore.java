@@ -17,8 +17,8 @@ import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -121,6 +121,8 @@ public class ConfigStore {
 
     private int highestAssignedHueID = 1;
 
+    private String hueIDPrefix = "";
+
     public ConfigStore() {
         scheduler = ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
     }
@@ -147,7 +149,7 @@ public class ConfigStore {
         determineHighestAssignedHueID();
 
         if (config.uuid.isEmpty()) {
-            config.uuid = getHueUUID();
+            config.uuid = UUID.randomUUID().toString();
             writeUUIDFuture = scheduler.schedule(() -> {
                 logger.info("No unique ID assigned yet. Assigning {} and restarting...", config.uuid);
                 WriteConfig.setUUID(configAdmin, config.uuid);
@@ -156,19 +158,6 @@ public class ConfigStore {
         } else {
             modified(properties);
         }
-    }
-
-    private static String getHueUUID() {
-        // Hue API example is AA:BB:CC:DD:EE:FF:00:11-XX
-        // XX is generated from the item.
-        final Random r = new Random();
-        int n = r.nextInt(255);
-        final StringBuilder uuid = new StringBuilder(String.format("%02X", n));
-        for (int i = 0; i < 7; i++) {
-            n = r.nextInt(255);
-            uuid.append(String.format(":%02X", n));
-        }
-        return uuid.toString();
     }
 
     private @Nullable InetAddress byName(@Nullable String address) {
@@ -246,6 +235,8 @@ public class ConfigStore {
             ds.config.bridgeid = ds.config.bridgeid.substring(0, 12);
         }
 
+        hueIDPrefix = getHueIDPrefixFromUUID(config.uuid);
+
         if (config.permanentV1bridge) {
             ds.config.makeV1bridge();
         }
@@ -269,6 +260,17 @@ public class ConfigStore {
         } else {
             return hostAddress;
         }
+    }
+
+    private String getHueIDPrefixFromUUID(final String uuid) {
+        // Hue API example is AA:BB:CC:DD:EE:FF:00:11-XX
+        // XX is generated from the item.
+        String prefix = uuid.replace("-", "").toUpperCase().replaceAll("..", "$0:");
+        if (prefix.length() > 23) {
+            prefix = prefix.substring(0, 23);
+        }
+
+        return prefix;
     }
 
     @Deactivate
@@ -325,6 +327,15 @@ public class ConfigStore {
         }
 
         return String.format("%02X", hueId);
+    }
+
+    /**
+     * Get the prefix used to create a unique id
+     *
+     * @return The prefix in the form of AA:BB:CC:DD:EE:FF:00:11
+     */
+    public String getHueIDPrefix() {
+        return hueIDPrefix;
     }
 
     public boolean isReady() {
