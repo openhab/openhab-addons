@@ -341,16 +341,17 @@ public class ConfigStore {
             metadataRegistry.add(new Metadata(key, String.valueOf(hueId), null));
         }
 
-        return String.format("%02X", hueId);
+        return String.valueOf(hueId);
     }
 
     /**
-     * Get the prefix used to create a unique id
+     * Get the unique id
      *
-     * @return The prefix
+     * @param hueId The item hueID
+     * @return The unique id
      */
-    public String getHueIDPrefix() {
-        return hueIDPrefix;
+    public String getHueUniqueId(final String hueId) {
+        return hueIDPrefix + "-" + String.format("%02X", Integer.valueOf(hueId));
     }
 
     public boolean isReady() {

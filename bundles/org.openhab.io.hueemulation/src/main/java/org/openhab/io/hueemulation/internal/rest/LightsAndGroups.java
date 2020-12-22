@@ -180,7 +180,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
             cs.ds.groups.put(hueID, group);
         } else {
-            HueLightEntry device = new HueLightEntry(element, cs.getHueIDPrefix() + "-" + hueID.toString(), deviceType);
+            HueLightEntry device = new HueLightEntry(element, cs.getHueUniqueId(hueID), deviceType);
             device.item = element;
             cs.ds.lights.put(hueID, device);
             updateGroup0();
