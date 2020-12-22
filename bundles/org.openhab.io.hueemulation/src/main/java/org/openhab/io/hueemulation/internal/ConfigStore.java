@@ -262,12 +262,27 @@ public class ConfigStore {
         }
     }
 
+    /**
+     * Get the prefix used to create a unique id
+     *
+     * @param uuid The uuid
+     * @return The prefix in the format of AA:BB:CC:DD:EE:FF:00:11 if uuid is a valid UUID, otherwise uuid is returned.
+     */
     private String getHueIDPrefixFromUUID(final String uuid) {
-        // Hue API example is AA:BB:CC:DD:EE:FF:00:11-XX
+        // Hue API example of a unique id is AA:BB:CC:DD:EE:FF:00:11-XX
         // XX is generated from the item.
-        String prefix = uuid.replace("-", "").toUpperCase().replaceAll("..", "$0:");
-        if (prefix.length() > 23) {
-            prefix = prefix.substring(0, 23);
+        String prefix = uuid;
+        try {
+            // Generate prefix if uuid is a randomly generated UUID
+            if (UUID.fromString(uuid).version() == 4) {
+                final StringBuilder sb = new StringBuilder(23);
+                sb.append(uuid, 0, 2).append(":").append(uuid, 2, 4).append(":").append(uuid, 4, 6).append(":")
+                        .append(uuid, 6, 8).append(":").append(uuid, 9, 11).append(":").append(uuid, 11, 13).append(":")
+                        .append(uuid, 14, 16).append(":").append(uuid, 16, 18);
+                prefix = sb.toString().toUpperCase();
+            }
+        } catch (final IllegalArgumentException e) {
+            // uuid is not a valid UUID
         }
 
         return prefix;
@@ -332,7 +347,7 @@ public class ConfigStore {
     /**
      * Get the prefix used to create a unique id
      *
-     * @return The prefix in the form of AA:BB:CC:DD:EE:FF:00:11
+     * @return The prefix
      */
     public String getHueIDPrefix() {
         return hueIDPrefix;
