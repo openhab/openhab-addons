@@ -811,7 +811,7 @@ sitemap modbus_ex_scaling label="modbus_ex_scaling"
 ```
 
 
-### Individual Bit from Register Example
+### Commanding Individual Bits
 
 This example shows how `modbus:bit` profile is used to read and command individual bit of a register.
 
