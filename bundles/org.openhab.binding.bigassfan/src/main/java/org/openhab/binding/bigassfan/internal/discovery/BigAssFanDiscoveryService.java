@@ -238,8 +238,8 @@ public class BigAssFanDiscoveryService extends AbstractDiscoveryService {
 
         ThingUID uid = new ThingUID(thingTypeUid, serialNumber);
         logger.debug("Creating discovery result for UID={}, IP={}", uid, device.getIpAddress());
-        thingDiscovered(
-                DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(device.getLabel()).build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withRepresentationProperty(THING_PROPERTY_MAC).withLabel(device.getLabel()).build());
     }
 
     private void schedulePollJob() {
