@@ -232,11 +232,10 @@ public class ModbusGainOffsetProfile implements StateProfile {
     private QuantityType<?> applyGain(QuantityType<?> qtState, QuantityType<?> gainDelta, boolean towardsHandler) {
         if (towardsHandler) {
             QuantityType<?> plain = qtState.toUnit(gainDelta.getUnit());
-            // if(plain == null) {
-            // logger.warn("Cannot process command '{}', unit should compatible with gain", qtState);
-            //
-            // }
-            // return applyGain(maybeKelvin(qtState), QuantityType.ONE.divide(maybeKelvin(gainDelta)), false);
+            if (plain == null) {
+                throw new UnconvertibleException(
+                        String.format("Cannot process command '%s', unit should compatible with gain", qtState));
+            }
             return new QuantityType<>(plain.toBigDecimal().divide(gainDelta.toBigDecimal()), Units.ONE);
         } else {
             return qtState.multiply(gainDelta);
