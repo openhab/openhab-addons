@@ -27,9 +27,9 @@ public interface ModbusProfiles {
 
     public static final String MODBUS_SCOPE = "modbus";
 
-    ProfileTypeUID BIT_MASK = new ProfileTypeUID(MODBUS_SCOPE, "bitMask");
+    ProfileTypeUID BIT = new ProfileTypeUID(MODBUS_SCOPE, "bit");
     ProfileTypeUID GAIN_OFFSET = new ProfileTypeUID(MODBUS_SCOPE, "gainOffset");
 
-    StateProfileType BIT_MASK_TYPE = ProfileTypeBuilder.newState(BIT_MASK, "Bit Mask").build();
+    StateProfileType BIT_MASK_TYPE = ProfileTypeBuilder.newState(BIT, "Bit profile").build();
     StateProfileType GAIN_OFFSET_TYPE = ProfileTypeBuilder.newState(GAIN_OFFSET, "Gain-Offset Correction").build();
 }
