@@ -691,7 +691,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
                 updateChannel(grp + CH_FORECAST_CONDITION, EcobeeUtils.undefOrString(forecast.condition));
                 updateChannel(grp + CH_FORECAST_TEMPERATURE, EcobeeUtils.undefOrTemperature(forecast.temperature));
                 updateChannel(grp + CH_FORECAST_PRESSURE,
-                        EcobeeUtils.undefOrQuantity(forecast.pressure, ImperialUnits.INCH_OF_MERCURY));
+                        EcobeeUtils.undefOrQuantity(forecast.pressure, Units.MILLIBAR));
                 updateChannel(grp + CH_FORECAST_RELATIVE_HUMIDITY,
                         EcobeeUtils.undefOrQuantity(forecast.relativeHumidity, Units.PERCENT));
                 updateChannel(grp + CH_FORECAST_DEWPOINT, EcobeeUtils.undefOrTemperature(forecast.dewpoint));
