@@ -63,9 +63,6 @@ public class HomekitImpl implements Homekit {
 
     private final @NonNullByDefault({}) NetworkAddressService networkAddressService;
     private final @NonNullByDefault({}) ConfigurationAdmin configAdmin;
-    private final @NonNullByDefault({}) ItemRegistry itemRegistry;
-    private final @NonNullByDefault({}) StorageService storageService;
-    private final @NonNullByDefault({}) MetadataRegistry metadataRegistry;
 
     private @NonNullByDefault({}) HomekitAuthInfoImpl authInfo;
     private @NonNullByDefault({}) HomekitSettings settings;
@@ -80,12 +77,8 @@ public class HomekitImpl implements Homekit {
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
             @Reference NetworkAddressService networkAddressService, @Reference MetadataRegistry metadataRegistry,
-            @Reference ConfigurationAdmin configAdmin, Map<String, Object> properties)
-            throws IOException, InvalidAlgorithmParameterException {
-        this.storageService = storageService;
-        this.itemRegistry = itemRegistry;
+            @Reference ConfigurationAdmin configAdmin, Map<String, Object> properties) {
         this.networkAddressService = networkAddressService;
-        this.metadataRegistry = metadataRegistry;
         this.configAdmin = configAdmin;
         this.settings = processConfig(properties);
         this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
