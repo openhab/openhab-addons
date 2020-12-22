@@ -630,3 +630,8 @@ Here are some ideas on what could be done with this binding. You have more ideas
 - Notify yourself of a finished dishwasher, tumble dryer, washer dryer or washing machine, e.g. by changing the lighting
 - Control the supercooler / superfreezer of your freezer, fridge or fridge-freezer combination with a voice assistant
 - Notify yourself when the oven has finished pre-heating
+
+## Acknowledgements
+
+The development of this binding was initiated and sponsored by Miele & Cie. KG.
+
