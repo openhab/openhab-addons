@@ -163,6 +163,7 @@ public class GlobalCacheDiscoveryService extends AbstractDiscoveryService {
                     logger.trace("Creating discovery result for: {}, type={}, IP={}", uid,
                             gcMulticastListener.getModel(), gcMulticastListener.getIPAddress());
                     thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                            .withRepresentationProperty(THING_PROPERTY_MAC)
                             .withLabel(gcMulticastListener.getVendor() + " " + gcMulticastListener.getModel()).build());
                 }
             }
