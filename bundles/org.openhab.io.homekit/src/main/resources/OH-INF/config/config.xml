@@ -37,7 +37,7 @@
 			<description>Defines the pin, used for pairing, in the form ###-##-###.</description>
 			<default>031-45-154</default>
 		</parameter>
-		<parameter name="setupId" type="text" patter="[0-9A-Z]{4}" required="false" groupName="core">
+		<parameter name="setupId" type="text" pattern="[0-9A-Z]{4}" required="false" groupName="core">
 			<label>setupId</label>
 			<description>Setup ID used for pairing using QR Code. Alphanumeric code of length 4.</description>
 		</parameter>
