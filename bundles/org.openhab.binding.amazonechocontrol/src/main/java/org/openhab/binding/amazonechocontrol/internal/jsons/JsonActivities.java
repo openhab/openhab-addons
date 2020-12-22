@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -26,7 +29,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class JsonActivities {
 
-    public @Nullable Activity @Nullable [] activities;
+    public @Nullable List<Activity> activities;
 
     public static class Activity {
         public @Nullable String activityStatus;
@@ -40,9 +43,13 @@ public class JsonActivities {
         public @Nullable String providerInfoDescription;
         public @Nullable String registeredCustomerId;
         public @Nullable Object sourceActiveUsers;
-        public @Nullable SourceDeviceId @Nullable [] sourceDeviceIds;
+        public @Nullable List<SourceDeviceId> sourceDeviceIds;
         public @Nullable String utteranceId;
         public @Nullable Long version;
+
+        public List<SourceDeviceId> getSourceDeviceIds() {
+            return Objects.requireNonNullElse(sourceDeviceIds, List.of());
+        }
 
         public static class SourceDeviceId {
             public @Nullable String deviceAccountId;
@@ -51,7 +58,6 @@ public class JsonActivities {
         }
 
         public static class Description {
-
             public @Nullable String summary;
             public @Nullable String firstUtteranceId;
             public @Nullable String firstStreamId;

@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.core.library.types.DecimalType;
@@ -64,6 +65,10 @@ public class HandlerColorController extends HandlerBase {
 
     private @Nullable HSBType lastColor;
     private @Nullable String lastColorName;
+
+    public HandlerColorController(SmartHomeDeviceHandler smartHomeDeviceHandler) {
+        super(smartHomeDeviceHandler);
+    }
 
     @Override
     public String[] getSupportedInterface() {
@@ -123,10 +128,10 @@ public class HandlerColorController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command)
+            List<SmartHomeCapability> capabilities, String channelId, Command command)
             throws IOException, InterruptedException {
         if (channelId.equals(COLOR.channelId)) {
-            if (containsCapabilityProperty(capabilties, COLOR.propertyName)) {
+            if (containsCapabilityProperty(capabilities, COLOR.propertyName)) {
                 if (command instanceof HSBType) {
                     HSBType color = ((HSBType) command);
                     JsonObject colorObject = new JsonObject();
@@ -138,7 +143,7 @@ public class HandlerColorController extends HandlerBase {
             }
         }
         if (channelId.equals(COLOR_PROPERTIES.channelId)) {
-            if (containsCapabilityProperty(capabilties, COLOR.propertyName)) {
+            if (containsCapabilityProperty(capabilities, COLOR.propertyName)) {
                 if (command instanceof StringType) {
                     String colorName = command.toFullString();
                     if (!colorName.isEmpty()) {

@@ -20,9 +20,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -499,14 +497,8 @@ public class AccountServlet extends HttpServlet {
     private void renderCapabilities(Connection connection, Device device, StringBuilder html) {
         html.append("<h2>Capabilities</h2>");
         html.append("<table><tr><th align='left'>Name</th></tr>");
-        String[] capabilities = device.capabilities;
-        if (capabilities != null) {
-            for (String capability : capabilities) {
-                html.append("<tr><td>");
-                html.append(StringEscapeUtils.escapeHtml(capability));
-                html.append("</td></tr>");
-            }
-        }
+        device.getCapabilities().forEach(
+                capability -> html.append("<tr><td>" + StringEscapeUtils.escapeHtml(capability) + "</td></tr>"));
         html.append("</table>");
     }
 
@@ -533,7 +525,7 @@ public class AccountServlet extends HttpServlet {
 
     private void renderPlayAlarmSoundChannel(Connection connection, Device device, StringBuilder html) {
         html.append("<h2>" + StringEscapeUtils.escapeHtml("Channel " + CHANNEL_PLAY_ALARM_SOUND) + "</h2>");
-        JsonNotificationSound[] notificationSounds = null;
+        List<JsonNotificationSound> notificationSounds = List.of();
         String errorMessage = "No notifications sounds found";
         try {
             notificationSounds = connection.getNotificationSounds(device);
@@ -541,7 +533,7 @@ public class AccountServlet extends HttpServlet {
                 | InterruptedException e) {
             errorMessage = e.getLocalizedMessage();
         }
-        if (notificationSounds != null) {
+        if (!notificationSounds.isEmpty()) {
             html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
             for (JsonNotificationSound notificationSound : notificationSounds) {
                 if (notificationSound.folder == null && notificationSound.providerId != null
@@ -616,8 +608,8 @@ public class AccountServlet extends HttpServlet {
             String stateDeviceSerialNumber = state.deviceSerialNumber;
             if ((stateDeviceSerialNumber == null && device.serialNumber == null)
                     || (stateDeviceSerialNumber != null && stateDeviceSerialNumber.equals(device.serialNumber))) {
-                PairedDevice[] pairedDeviceList = state.pairedDeviceList;
-                if (pairedDeviceList != null && pairedDeviceList.length > 0) {
+                List<PairedDevice> pairedDeviceList = state.getPairedDeviceList();
+                if (pairedDeviceList.size() > 0) {
                     html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
                     for (PairedDevice pairedDevice : pairedDeviceList) {
                         html.append("<tr><td>");
