@@ -321,11 +321,9 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     @Override
     protected void stopBackgroundDiscovery() {
         logger.trace("stopBackgroundDiscovery() called.");
-
         ScheduledFuture<?> task = this.backgroundTask;
         if (task != null && !task.isCancelled()) {
             task.cancel(true);
         }
     }
-
 }
