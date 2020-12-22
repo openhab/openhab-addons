@@ -50,8 +50,9 @@ import org.openhab.core.util.HexUtils;
 public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     // List of thing types which support sending of eep messages
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_CENTRALCOMMAND,
-            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_THERMOSTAT));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_CENTRALCOMMAND, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING,
+                    THING_TYPE_ROLLERSHUTTER, THING_TYPE_THERMOSTAT, THING_TYPE_HEATRECOVERYVENTILATION));
 
     protected byte[] senderId; // base id of bridge + senderIdOffset, used for sending msg
     protected byte[] destinationId; // in case of broadcast FFFFFFFF otherwise the enocean id of the device

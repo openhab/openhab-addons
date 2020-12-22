@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.measure.quantity.Angle;
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Illuminance;
@@ -78,13 +79,17 @@ public class EnOceanBindingConstants {
     public static final ThingTypeUID THING_TYPE_MULTFUNCTIONSMOKEDETECTOR = new ThingTypeUID(BINDING_ID,
             "multiFunctionSmokeDetector");
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(
-            THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE, THING_TYPE_CENTRALCOMMAND,
-            THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
-            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR,
-            THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_OCCUPANCYSENSOR,
-            THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR, THING_TYPE_ENVIRONMENTALSENSOR,
-            THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR));
+    public static final ThingTypeUID THING_TYPE_HEATRECOVERYVENTILATION = new ThingTypeUID(BINDING_ID,
+            "heatRecoveryVentilation");
+
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<>(
+            Arrays.asList(THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE,
+                    THING_TYPE_CENTRALCOMMAND, THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE,
+                    THING_TYPE_CONTACT, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR,
+                    THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER,
+                    THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,
+                    THING_TYPE_ENVIRONMENTALSENSOR, THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT,
+                    THING_TYPE_MULTFUNCTIONSMOKEDETECTOR, THING_TYPE_HEATRECOVERYVENTILATION));
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
     // this makes it a lot easier as we do not have to manage a type id and an id, drawback long channel names
@@ -178,6 +183,30 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_SERVICECOMMAND = "serviceCommand";
     public static final String CHANNEL_STATUS_REQUEST_EVENT = "statusRequestEvent";
     public static final String CHANNEL_SEND_COMMAND = "sendCommand";
+
+    public static final String CHANNEL_VENTILATIONOPERATIONMODE = "ventilationOperationMode";
+    public static final String CHANNEL_FIREPLACESAFETYMODE = "fireplaceSafetyMode";
+    public static final String CHANNEL_HEATEXCHANGERBYPASSSTATUS = "heatExchangerBypassStatus";
+    public static final String CHANNEL_SUPPLYAIRFLAPSTATUS = "supplyAirFlapStatus";
+    public static final String CHANNEL_EXHAUSTAIRFLAPSTATUS = "exhaustAirFlapStatus";
+    public static final String CHANNEL_DEFROSTMODE = "defrostMode";
+    public static final String CHANNEL_COOLINGPROTECTIONMODE = "coolingProtectionMode";
+    public static final String CHANNEL_OUTDOORAIRHEATERSTATUS = "outdoorAirHeaterStatus";
+    public static final String CHANNEL_SUPPLYAIRHEATERSTATUS = "supplyAirHeaterStatus";
+    public static final String CHANNEL_DRAINHEATERSTATUS = "drainHeaterStatus";
+    public static final String CHANNEL_TIMEROPERATIONMODE = "timerOperationMode";
+    public static final String CHANNEL_WEEKLYTIMERPROGRAMSTATUS = "weeklyTimerProgramStatus";
+    public static final String CHANNEL_ROOMTEMPERATURECONTROLSTATUS = "roomTemperatureControlStatus";
+    public static final String CHANNEL_AIRQUALITYVALUE1 = "airQualityValue1";
+    public static final String CHANNEL_AIRQUALITYVALUE2 = "airQualityValue2";
+    public static final String CHANNEL_OUTDOORAIRTEMPERATURE = "outdoorAirTemperature";
+    public static final String CHANNEL_SUPPLYAIRTEMPERATURE = "supplyAirTemperature";
+    public static final String CHANNEL_INDOORAIRTEMPERATURE = "indoorAirTemperature";
+    public static final String CHANNEL_EXHAUSTAIRTEMPERATURE = "exhaustAirTemperature";
+    public static final String CHANNEL_SUPPLYAIRFANAIRFLOWRATE = "supplyAirFanAirFlowRate";
+    public static final String CHANNEL_EXHAUSTAIRFANAIRFLOWRATE = "exhaustAirFanAirFlowRate";
+    public static final String CHANNEL_SUPPLYFANSPEED = "supplyFanSpeed";
+    public static final String CHANNEL_EXHAUSTFANSPEED = "exhaustFanSpeed";
 
     public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Collections
             .unmodifiableMap(new HashMap<String, EnOceanChannelDescription>() {
@@ -383,6 +412,71 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_STATUS_REQUEST_EVENT), null, "", false, true));
                     put(CHANNEL_SEND_COMMAND, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_SEND_COMMAND), CoreItemFactory.SWITCH));
+
+                    put(CHANNEL_VENTILATIONOPERATIONMODE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_VENTILATIONOPERATIONMODE), CoreItemFactory.STRING));
+                    put(CHANNEL_FIREPLACESAFETYMODE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_FIREPLACESAFETYMODE), CoreItemFactory.SWITCH));
+                    put(CHANNEL_HEATEXCHANGERBYPASSSTATUS,
+                            new EnOceanChannelDescription(
+                                    new ChannelTypeUID(BINDING_ID, CHANNEL_HEATEXCHANGERBYPASSSTATUS),
+                                    CoreItemFactory.CONTACT));
+                    put(CHANNEL_SUPPLYAIRFLAPSTATUS, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYAIRFLAPSTATUS), CoreItemFactory.CONTACT));
+                    put(CHANNEL_EXHAUSTAIRFLAPSTATUS, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTAIRFLAPSTATUS), CoreItemFactory.CONTACT));
+                    put(CHANNEL_DEFROSTMODE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_DEFROSTMODE), CoreItemFactory.SWITCH));
+                    put(CHANNEL_COOLINGPROTECTIONMODE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_COOLINGPROTECTIONMODE), CoreItemFactory.SWITCH));
+                    put(CHANNEL_OUTDOORAIRHEATERSTATUS, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_OUTDOORAIRHEATERSTATUS), CoreItemFactory.SWITCH));
+                    put(CHANNEL_SUPPLYAIRHEATERSTATUS, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYAIRHEATERSTATUS), CoreItemFactory.SWITCH));
+                    put(CHANNEL_DRAINHEATERSTATUS, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_DRAINHEATERSTATUS), CoreItemFactory.SWITCH));
+                    put(CHANNEL_TIMEROPERATIONMODE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TIMEROPERATIONMODE), CoreItemFactory.SWITCH));
+                    put(CHANNEL_WEEKLYTIMERPROGRAMSTATUS, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_WEEKLYTIMERPROGRAMSTATUS), CoreItemFactory.SWITCH));
+                    put(CHANNEL_ROOMTEMPERATURECONTROLSTATUS,
+                            new EnOceanChannelDescription(
+                                    new ChannelTypeUID(BINDING_ID, CHANNEL_ROOMTEMPERATURECONTROLSTATUS),
+                                    CoreItemFactory.SWITCH));
+                    put(CHANNEL_AIRQUALITYVALUE1,
+                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AIRQUALITYVALUE1),
+                                    CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                            + Dimensionless.class.getSimpleName()));
+                    put(CHANNEL_AIRQUALITYVALUE2,
+                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AIRQUALITYVALUE2),
+                                    CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                            + Dimensionless.class.getSimpleName()));
+                    put(CHANNEL_OUTDOORAIRTEMPERATURE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_OUTDOORAIRTEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
+                    put(CHANNEL_SUPPLYAIRTEMPERATURE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYAIRTEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
+                    put(CHANNEL_INDOORAIRTEMPERATURE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_INDOORAIRTEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
+                    put(CHANNEL_EXHAUSTAIRTEMPERATURE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTAIRTEMPERATURE),
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
+                    put(CHANNEL_SUPPLYAIRFANAIRFLOWRATE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYAIRFANAIRFLOWRATE), CoreItemFactory.NUMBER
+                                    + ItemUtil.EXTENSION_SEPARATOR + VolumetricFlowRate.class.getSimpleName()));
+                    put(CHANNEL_EXHAUSTAIRFANAIRFLOWRATE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTAIRFANAIRFLOWRATE), CoreItemFactory.NUMBER
+                                    + ItemUtil.EXTENSION_SEPARATOR + VolumetricFlowRate.class.getSimpleName()));
+                    put(CHANNEL_SUPPLYFANSPEED,
+                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SUPPLYFANSPEED),
+                                    CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                            + Dimensionless.class.getSimpleName()));
+                    put(CHANNEL_EXHAUSTFANSPEED,
+                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTFANSPEED),
+                                    CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
+                                            + Dimensionless.class.getSimpleName()));
 
                     put(CHANNEL_REPEATERMODE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_REPEATERMODE), CoreItemFactory.STRING));
