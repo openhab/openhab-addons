@@ -61,16 +61,11 @@ import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
 public class HomekitImpl implements Homekit {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
 
-    @Reference
-    protected @NonNullByDefault({}) NetworkAddressService networkAddressService;
-    @Reference
-    protected @NonNullByDefault({}) ConfigurationAdmin configAdmin;
-    @Reference
-    protected @NonNullByDefault({}) ItemRegistry itemRegistry;
-    @Reference
-    protected @NonNullByDefault({}) StorageService storageService;
-    @Reference
-    protected @NonNullByDefault({}) MetadataRegistry metadataRegistry;
+    private final @NonNullByDefault({}) NetworkAddressService networkAddressService;
+    private final @NonNullByDefault({}) ConfigurationAdmin configAdmin;
+    private final @NonNullByDefault({}) ItemRegistry itemRegistry;
+    private final @NonNullByDefault({}) StorageService storageService;
+    private final @NonNullByDefault({}) MetadataRegistry metadataRegistry;
 
     private @NonNullByDefault({}) HomekitAuthInfoImpl authInfo;
     private @NonNullByDefault({}) HomekitSettings settings;
@@ -82,11 +77,16 @@ public class HomekitImpl implements Homekit {
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
 
-    public HomekitImpl() {
-    }
-
     @Activate
-    protected void activate(Map<String, Object> properties) {
+    public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
+            @Reference NetworkAddressService networkAddressService, @Reference MetadataRegistry metadataRegistry,
+            @Reference ConfigurationAdmin configAdmin, Map<String, Object> properties)
+            throws IOException, InvalidAlgorithmParameterException {
+        this.storageService = storageService;
+        this.itemRegistry = itemRegistry;
+        this.networkAddressService = networkAddressService;
+        this.metadataRegistry = metadataRegistry;
+        this.configAdmin = configAdmin;
         this.settings = processConfig(properties);
         this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
         try {
