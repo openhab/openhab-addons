@@ -17,12 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.test.java.JavaTest;
 
 /**
  * @author Robert Bach - Initial contribution
  */
 @NonNullByDefault
-public class ValueCacheTest {
+public class ValueCacheTest extends JavaTest {
 
     @Test
     public void updateValueNotInCache() {
@@ -45,20 +46,17 @@ public class ValueCacheTest {
     }
 
     @Test
-    public void updateValueInCacheUnchangedButCacheDurationExpired() throws InterruptedException {
+    public void updateValueInCacheUnchangedButCacheDurationExpired() {
         ValueCache valueCache = new ValueCache(1);
         assertTrue(valueCache.updateValue("channel", OnOffType.ON));
-        Thread.sleep(2);
-        assertTrue(valueCache.updateValue("channel", OnOffType.ON));
+        waitForAssert(() -> assertTrue(valueCache.updateValue("channel", OnOffType.ON)));
     }
 
     @Test
-    public void updateValueMultipleCacheUpdatesButNotReportedAsToUpdate() throws InterruptedException {
-        ValueCache valueCache = new ValueCache(60);
+    public void updateValueMultipleCacheUpdatesButNotReportedAsToUpdate() {
+        ValueCache valueCache = new ValueCache(100);
         assertTrue(valueCache.updateValue("channel", OnOffType.ON));
-        Thread.sleep(30);
-        assertFalse(valueCache.updateValue("channel", OnOffType.ON));
-        Thread.sleep(35);
-        assertTrue(valueCache.updateValue("channel", OnOffType.ON));
+        waitForAssert(() -> assertFalse(valueCache.updateValue("channel", OnOffType.ON)));
+        waitForAssert(() -> assertTrue(valueCache.updateValue("channel", OnOffType.ON)));
     }
 }
