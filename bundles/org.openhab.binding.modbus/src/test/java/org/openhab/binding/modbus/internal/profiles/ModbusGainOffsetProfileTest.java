@@ -175,6 +175,9 @@ public class ModbusGainOffsetProfileTest {
 
                 // celsius gain, kelvin command
                 Arguments.of("0", "0.1 °C", "-2706.5", "2.5 K"),
+
+                // incompatible command unit, should be convertible with gain
+                Arguments.of("0", "0.1 °C", null, "2.5 m/s"),
                 //
                 // incompatible offset unit
                 //
