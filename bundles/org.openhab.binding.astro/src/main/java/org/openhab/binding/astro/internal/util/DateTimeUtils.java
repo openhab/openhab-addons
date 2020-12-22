@@ -159,15 +159,22 @@ public class DateTimeUtils {
     /**
      * Returns the next Calendar from today.
      */
-    public static Calendar getNext(Calendar... calendars) {
-        Calendar now = Calendar.getInstance();
+    public static Calendar getNextFromToday(Calendar... calendars) {
+        return getNext(Calendar.getInstance(), calendars);
+    }
+
+    static Calendar getNext(Calendar now, Calendar... calendars) {
         Calendar next = null;
+        Calendar firstSeasonOfYear = null;
         for (Calendar calendar : calendars) {
+            if (firstSeasonOfYear == null || calendar.before(firstSeasonOfYear)) {
+                firstSeasonOfYear = calendar;
+            }
             if (calendar.after(now) && (next == null || calendar.before(next))) {
                 next = calendar;
             }
         }
-        return next;
+        return next == null ? firstSeasonOfYear : next;
     }
 
     /**
