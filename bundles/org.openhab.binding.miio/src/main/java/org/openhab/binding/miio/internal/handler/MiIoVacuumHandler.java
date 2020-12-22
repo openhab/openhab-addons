@@ -161,6 +161,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
+        updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
     }
 
     @Override
@@ -227,9 +228,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
-        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()) {
+        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
+                && !command.toString().contentEquals("-")) {
             sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
-            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), UnDefType.UNDEF);
+            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
             forceStatusUpdate();
             return;
         }
