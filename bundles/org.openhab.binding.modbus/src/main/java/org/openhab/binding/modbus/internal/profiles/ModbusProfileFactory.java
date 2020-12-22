@@ -52,7 +52,7 @@ public class ModbusProfileFactory implements ProfileFactory, ProfileTypeProvider
 
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Set.of(BIT_MASK_TYPE, GAIN_OFFSET_TYPE);
 
-    private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(BIT_MASK, GAIN_OFFSET);
+    private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(BIT, GAIN_OFFSET);
 
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
@@ -69,7 +69,7 @@ public class ModbusProfileFactory implements ProfileFactory, ProfileTypeProvider
     @Override
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
             ProfileContext context) {
-        if (BIT_MASK.equals(profileTypeUID)) {
+        if (BIT.equals(profileTypeUID)) {
             return new ModbusBitProfile(callback, context);
         } else if (GAIN_OFFSET.equals(profileTypeUID)) {
             return new ModbusGainOffsetProfile(callback, context);

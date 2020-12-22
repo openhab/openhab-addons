@@ -310,6 +310,39 @@ Number  Temperature_Modbus_Livingroom                       "Temperature Living 
 
 Main documentation on `autoupdate` in [Items section of openHAB docs](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax).
 
+### Profiles
+
+The binding defines to types of profiles for extra convenience.
+
+#### `modbus:gainOffset`
+
+This profile is meant for simple scaling and offsetting of values received from the Modbus slave.
+The profile works also in the reverse direction, when commanding items.
+
+In addition, the profile allows attaching units to the raw numbers, as well as converting the quantity-aware numbers to bare numbers on write.
+
+Profile has two parameters, `gain` (bare number or number with unit) and `pre-offset` (bare number), both of which must be provided.
+
+When reading from Modbus, the result will be `updateTowardsItem = (raw_value_from_modbus + preOffset) * gain`.
+When applying command, the calculation goes in reverse.
+
+See examples for concrete use case with value scaling.
+
+#### `modbus:bit`
+
+This profile is meant for reading _AND_ writing individual bit of a Modbus register.
+
+On read, the profile updates its internal cache of the register value.
+Commands then modify this internal cache and full 16-bit register data is written.
+
+Profile has ony parameter, `bit-index`, index of the bit to be manipulated.
+`bit-index=0` refers to least-significant bit while `bit-index=15` refers to most-significant bit of the register.
+
+Note: use the profile only with `readValueType=int16` / `writeValueType=int16`.
+Channel should be linked with `number` channel.
+
+See examples section for a concrete use case.
+
 ### Discovery
 
 Device specific modbus bindings can take part in the discovery of things, and detect devices automatically. The discovery is initiated by the `tcp` and `serial` bridges when they have `enableDiscovery` setting enabled.
@@ -551,7 +584,7 @@ For example, `openhab-transformation-javascript` feature provides the javascript
 There are three different format to specify the configuration:
 
 1. String `"default"`, in which case the default transformation is used. The default is to convert non-zero numbers to `ON`/`OPEN`, and zero numbers to `OFF`/`CLOSED`, respectively. If the item linked to the data channel does not accept these states, the number is converted to best-effort-basis to the states accepted by the item. For example, the extracted number is passed as-is for `Number` items, while `ON`/`OFF` would be used with `DimmerItem`.
-1. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the extracted number as input. This is useful for example scaling (divide by x) the polled data before it is used in openHAB. See examples for more details.
+1. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the extracted number as input. This is useful for applying complex arithmetic of the polled data before it is used in openHAB. See examples for more details.
 1. Any other value is interpreted as static text, in which case the actual content of the polled value is ignored. Transformation result is always the same. The transformation output is converted to best-effort-basis to the states accepted by the item.
 
 Consult [background documentation on items](https://www.openhab.org/docs/concepts/items.html) to understand accepted data types (state) by each item.
@@ -563,41 +596,9 @@ Consult [background documentation on items](https://www.openhab.org/docs/concept
 There are three different format to specify the configuration:
 
 1. String `"default"`, in which case the default transformation is used. The default is to do no conversion to the command.
-1. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the command as input. This is useful for example scaling ("multiply by x") commands before the data is written to Modbus. See examples for more details.
+1. `"SERVICENAME(ARG)"` for calling a transformation service. The transformation receives the command as input. This is useful for applying complex arithmetic for commands before the data is written to Modbus. See examples for more details.
 1. Any other value is interpreted as static text, in which case the actual command is ignored. Transformation result is always the same.
 
-#### Transformation Example: Scaling
-
-Typical use case for transformations is scaling of numbers.
-The data in Modbus slaves is quite commonly encoded as integers, and thus scaling is necessary to convert them to useful float numbers.
-
-`transform/multiply10.js`:
-
-```javascript
-// Wrap everything in a function (no global variable pollution)
-// variable "input" contains data passed by openHAB
-(function(inputData) {
-    // on read: the polled number as string
-    // on write: openHAB command as string
-    var MULTIPLY_BY = 10;
-    return Math.round(parseFloat(inputData, 10) * MULTIPLY_BY);
-})(input)
-```
-
-`transform/divide10.js`:
-
-```javascript
-// Wrap everything in a function (no global variable pollution)
-// variable "input" contains data passed by openHAB
-(function(inputData) {
-    // on read: the polled number as string
-    // on write: openHAB command as string
-    var DIVIDE_BY = 10;
-    return parseFloat(inputData) / DIVIDE_BY;
-})(input)
-```
-
-See [Scaling example](#scaling-example) for full example with things, items and a sitemap.
 
 #### Example: Inverting Binary Data On Read And Write
 
@@ -770,14 +771,23 @@ sitemap modbus_ex2 label="modbus_ex2"
 
 ### Scaling Example
 
-This example divides value on read, and multiplies them on write, using JS transforms.
+Often Modbus slave might have the numbers stored as integers, with no information of the measurement unit.
+In openHAB, it is recommended to scale and attach units for the read data.
+
+In the below example, modbus data needs to be multiplied by `0.1` to convert the value to Celsius.
+For example, `45` corresponds to `45 °C`.
+
+Note how that unit can be specified within the `gain` parameter of `modbus:gainOffset` profile.
+This enables the use of quantity-aware `Number` item `Number:Temperature`.
+
+The profile also works the other way round, scaling the commands sent to the item to bare-numbers suitable for Modbus.
 
 `things/modbus_ex_scaling.things`:
 
 ```xtend
 Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
     Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
-        Thing data holding5Scaled [ readStart="5", readValueType="int16", readTransform="JS(divide10.js)", writeStart="5", writeValueType="int16", writeType="holding", writeTransform="JS(multiply10.js)" ]
+        Thing data temperatureDeciCelsius [ readStart="5", readValueType="int16", writeStart="5", writeValueType="int16", writeType="holding" ]
     }
 }
 ```
@@ -785,7 +795,7 @@ Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
 `items/modbus_ex_scaling.items`:
 
 ```xtend
-Number Holding5Scaled            "Holding index 5 scaled [%.1f]"   { channel="modbus:data:localhostTCP3:holdingPoller:holding5Scaled:number" }
+Number:Temperature TemperatureItem            "Temperature [%.1f °C]"   { channel="modbus:data:localhostTCP3:holdingPoller:temperatureDeciCelsius:number"[ profile="modbus:gainOffset", gain="0.1 °C", offset="0" ] }
 ```
 
 `sitemaps/modbus_ex_scaling.sitemap`:
@@ -794,13 +804,47 @@ Number Holding5Scaled            "Holding index 5 scaled [%.1f]"   { channel="mo
 sitemap modbus_ex_scaling label="modbus_ex_scaling"
 {
     Frame {
-        Text item=Holding5Scaled
-        Setpoint item=Holding5Scaled minValue=0 maxValue=100 step=20
+        Text item=TemperatureItem
+        Setpoint item=TemperatureItem minValue=0 maxValue=100 step=20
     }
 }
 ```
 
-See [transformation example](#transformation-example-scaling) for the `divide10.js` and `multiply10.js`.
+
+### Individual Bit from Register Example
+
+This example shows how `modbus:bit` profile is used to read and command individual bit of a register.
+
+
+`things/modbus_ex_bitProfile.things`:
+
+```xtend
+Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
+    Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
+        Thing data register5 [ readStart="5", readValueType="int16", writeStart="5", writeValueType="int16", writeType="holding" ]
+        Thing data register5Bit1 [ readStart="5.1", readValueType="bit" ]
+    }
+}
+```
+
+`items/modbus_ex_bitProfile.items`:
+
+```xtend
+Number SecondLeastSignificantBit            "2nd least significant bit using profile [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5:number"[ profile="modbus:bit", bit-index="1" ] }
+Number SecondLeastSignificantBitAltRead            "2nd least significant bit read-only using readValueType=bit [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5Bit1:number" }
+```
+
+`sitemaps/modbus_ex_bitProfile.sitemap`:
+
+```xtend
+sitemap modbus_ex_bitProfile label="modbus_ex_bitProfile"
+{
+    Frame {
+        Text item=Holding5Scaled
+        Setpoint item=SecondLeastSignificantBit minValue=0 maxValue=100 step=20
+    }
+}
+```
 
 ### Dimmer Example
 

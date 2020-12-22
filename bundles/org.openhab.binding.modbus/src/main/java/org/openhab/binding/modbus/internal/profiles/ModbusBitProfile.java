@@ -84,7 +84,7 @@ public class ModbusBitProfile implements StateProfile {
 
     @Override
     public ProfileTypeUID getProfileTypeUID() {
-        return ModbusProfiles.BIT_MASK;
+        return ModbusProfiles.BIT;
     }
 
     @Override
