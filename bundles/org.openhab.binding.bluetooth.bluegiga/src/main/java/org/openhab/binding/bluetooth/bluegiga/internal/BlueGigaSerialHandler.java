@@ -280,14 +280,22 @@ public class BlueGigaSerialHandler {
                     inputLength = inputBuffer[1] + (inputBuffer[0] & 0x02 << 8) + 4;
                     if (inputLength > 64) {
                         logger.debug("BLE length larger than 64 bytes ({})", inputLength);
+                        if (inputStream.markSupported()) {
+                            inputStream.reset();
+                        }
+                        inputCount = 0;
+                        continue;
                     }
                 }
                 if (inputCount == inputLength) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("BLE RX: {}", printHex(inputBuffer, inputLength));
+                    }
+
                     // End of packet reached - process
                     BlueGigaResponse responsePacket = BlueGigaResponsePackets.getPacket(inputBuffer);
 
                     if (logger.isTraceEnabled()) {
-                        logger.trace("BLE RX: {}", printHex(inputBuffer, inputLength));
                         logger.trace("BLE RX: {}", responsePacket);
                     }
                     if (responsePacket != null) {
@@ -298,7 +306,7 @@ public class BlueGigaSerialHandler {
                     exceptionCnt = 0;
                 }
 
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 logger.debug("BlueGiga BLE IOException: ", e);
 
                 if (exceptionCnt++ > 10) {
@@ -306,6 +314,10 @@ public class BlueGigaSerialHandler {
                     close = true;
                     notifyEventListeners(e);
                 }
+            } catch (Exception e) {
+                logger.debug("BlueGiga BLE Exception, closing handler", e);
+                close = true;
+                notifyEventListeners(e);
             }
         }
         logger.debug("BlueGiga BLE exited.");
