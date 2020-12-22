@@ -1069,7 +1069,7 @@ The new binding supports 32 and 64 bit values types when writing.
 
 ### How to manually migrate
 
-Here is a step by step example for a migration from a 1.x configuration to an equivalent 2.x configuration. 
+Here is a step by step example for a migration from a 1.x configuration to an equivalent 2.x configuration.
 It does not cover all features the 1.x configuration offers, but it should serve as an example on how to get it done.
 
 The 1.x modbus configuration to be updated defined 4 slaves:
@@ -1107,8 +1107,8 @@ The 1.x modbus configuration to be updated defined 4 slaves:
 As you can see, all the slaves poll the same modbus device (actually a Wago 750-841 controller).
 We now have to create `Things` for this slaves.
 
-The 2.x modbus binding uses a three-level definition. 
-Level one defines a `Bridge` for every modbus device that is to be addressed. 
+The 2.x modbus binding uses a three-level definition.
+Level one defines a `Bridge` for every modbus device that is to be addressed.
 The 1.x configuration in this example only addresses one device, so there will be one top level bridge.
 
 ```
@@ -1145,7 +1145,7 @@ Address, length and type can be directly taken over from the 1.x config.
 The third (and most complex) part is the definition of data `Thing` objects for every `Item` bound to modbus.
 This definitions go into the corresponding 2nd level `Bridge` definitions.
 Here it is especially important that the modbus binding now uses absolute addresses all over the place, while the addresses in the item definition for the 1.x binding were relative to the start address of the slave definition before.
-For less work in the following final step, the update of the `Item` configuration, the naming of the `data` things in this example uses the offset of the modbus value within the `poller` as suffix, starting with 0(!). 
+For less work in the following final step, the update of the `Item` configuration, the naming of the `data` things in this example uses the offset of the modbus value within the `poller` as suffix, starting with 0(!).
 See below for details.
 
 Here a few examples of the Item configuration from the 1.x binding:
@@ -1153,12 +1153,12 @@ Here a few examples of the Item configuration from the 1.x binding:
 The first Item polled with the first `poller` used this configuration (with offset 0):
 
 ```
-Switch FooSwitch  "Foo Switch"  {modbus="slave1:0"} 
+Switch FooSwitch  "Foo Switch"  {modbus="slave1:0"}
 ```
 
 Now we have to define a `Thing` that can later be bound to that Item.
 
-The `slave1` `poller` uses `12288` as start address. 
+The `slave1` `poller` uses `12288` as start address.
 So we define the first data Thing within the `poller` `wago_slave1` with this address and choose a name that ends with `0`:
 
 ```
@@ -1202,32 +1202,32 @@ Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
 }
 ```
 
-Save this in the `things` folder. 
-Watch the file `events.log` as it lists your new added `data` `Things`. 
-Given that there are no config errors, they quickly change from `INITIALIZING` to `ONLINE`. 
+Save this in the `things` folder.
+Watch the file `events.log` as it lists your new added `data` `Things`.
+Given that there are no config errors, they quickly change from `INITIALIZING` to `ONLINE`.
 
-Finally the Item definition has to be changed to refer to the new created `data` `Thing`. 
+Finally the Item definition has to be changed to refer to the new created `data` `Thing`.
 You can copy the names you need for this directly from the `events.log` file:
 
 ```
-Switch FooSwitch  "Foo Switch" {modbus="slave1:0"} 
+Switch FooSwitch  "Foo Switch" {modbus="slave1:0"}
 Switch BarSwitch  "Bar Switch" {modbus="slave1:1"}
 ```
 
 turn into
 
 ```
-Switch FooSwitch  "Foo Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_000:switch", autopudate="false"} 
+Switch FooSwitch  "Foo Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_000:switch", autopudate="false"}
 Switch BarSwitch  "Bar Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_001:switch", autoupdate="false"}
 ```
 
 If you have many Items to change and used the naming scheme recommended above, you can now use the following search-and-replace expressions in your editor:
 
-Replace 
+Replace
 
 `{modbus="slave1:`
 
-by 
+by
 
 `{channel="modbus:data:wago:wago_slave1:wago_s1_00`
 
@@ -1235,11 +1235,11 @@ in all lines which used single digits for the address in the 1.x config.
 Instead of `wago`, `wago_slave1` and `wago_s1_00` you have to use the names you have chosen for your `Bridge`, `poller` and `data` things.
 Similar expressions are to be used for two-digit and three-digit relative addresses.
 
-Replace 
+Replace
 
 `"}`
 
-by 
+by
 
 `:switch"}`
 
@@ -1253,7 +1253,7 @@ The definition of `autoupdate` is optional; please refer to [`autoupdate`](#auto
 Continue to add `data` `Thing`s for all your other Items the same way and link them to your Items.
 
 Save your updated item file and check whether updates come in as expected.
- 
+
 ## Troubleshooting
 
 ### Thing Status
