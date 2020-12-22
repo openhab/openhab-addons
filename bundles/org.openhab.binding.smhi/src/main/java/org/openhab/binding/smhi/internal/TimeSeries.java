@@ -16,8 +16,10 @@ package org.openhab.binding.smhi.internal;
 import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,8 +50,8 @@ public class TimeSeries implements Iterable<Forecast> {
      * @param hourOffset number of hours after now.
      * @return
      */
-    public @Nullable Forecast getForecast(int hourOffset) {
-        return getForecast(ZonedDateTime.now(), hourOffset);
+    public Optional<Forecast> getForecast(int hourOffset) {
+        return getForecast(referenceTime, hourOffset);
     }
 
     /**
@@ -58,17 +60,23 @@ public class TimeSeries implements Iterable<Forecast> {
      * @param hourOffset number of hours after now.
      * @return
      */
-    public @Nullable Forecast getForecast(ZonedDateTime startTime, int hourOffset) {
+    public Optional<Forecast> getForecast(ZonedDateTime startTime, int hourOffset) {
         if (hourOffset < 0) {
             throw new IllegalArgumentException("Offset must be at least 0");
         }
 
         for (Forecast forecast : forecasts) {
-            if (forecast.getValidTime().compareTo(startTime.plusHours(hourOffset)) >= 0) {
-                return forecast;
+            if (forecast.getValidTime().compareTo(startTime.plusHours(hourOffset)) > 0) {
+                return Optional.of(forecast);
             }
         }
-        return null;
+        return Optional.empty();
+    }
+
+    public List<Forecast> getDay(int dayOffset) {
+        ZonedDateTime day = referenceTime.plusDays(dayOffset);
+        return forecasts.stream().filter(forecast -> forecast.getValidTime().getDayOfMonth() == day.getDayOfMonth())
+                .collect(Collectors.toList());
     }
 
     @Override

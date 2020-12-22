@@ -13,10 +13,7 @@
 package org.openhab.binding.smhi.internal;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -56,13 +53,22 @@ public class SmhiBindingConstants {
     public static final String PRECIPITATION_CATEGORY = "pcat";
     public static final String WEATHER_SYMBOL = "wsymb2";
 
-    public static final List<String> CHANNEL_IDS = Collections
-            .unmodifiableList(Stream
-                    .of(PRESSURE, TEMPERATURE, VISIBILITY, WIND_DIRECTION, WIND_SPEED, RELATIVE_HUMIDITY,
-                            THUNDER_PROBABILITY, TOTAL_CLOUD_COVER, LOW_CLOUD_COVER, MEDIUM_CLOUD_COVER,
-                            HIGH_CLOUD_COVER, GUST, PRECIPITATION_MIN, PRECIPITATION_MAX, PRECIPITATION_MEAN,
-                            PRECIPITATION_MEDIAN, PERCENT_FROZEN, PRECIPITATION_CATEGORY, WEATHER_SYMBOL)
-                    .collect(Collectors.toList()));
+    public static final String TEMPERATURE_MAX = "tmax";
+    public static final String TEMPERATURE_MIN = "tmin";
+    public static final String WIND_MAX = "wsmax";
+    public static final String WIND_MIN = "wsmin";
+    public static final String PRECIPITATION_TOTAL = "ptotal";
+
+    public static final List<String> HOURLY_CHANNELS = List.of(PRESSURE, TEMPERATURE, VISIBILITY, WIND_DIRECTION,
+            WIND_SPEED, RELATIVE_HUMIDITY, THUNDER_PROBABILITY, TOTAL_CLOUD_COVER, LOW_CLOUD_COVER, MEDIUM_CLOUD_COVER,
+            HIGH_CLOUD_COVER, GUST, PRECIPITATION_MIN, PRECIPITATION_MAX, PRECIPITATION_MEAN, PRECIPITATION_MEDIAN,
+            PERCENT_FROZEN, PRECIPITATION_CATEGORY, WEATHER_SYMBOL);
+
+    public static final List<String> DAILY_CHANNELS = List.of(PRESSURE, TEMPERATURE, TEMPERATURE_MAX, TEMPERATURE_MIN,
+            VISIBILITY, WIND_DIRECTION, WIND_SPEED, WIND_MAX, WIND_MIN, RELATIVE_HUMIDITY, THUNDER_PROBABILITY,
+            TOTAL_CLOUD_COVER, LOW_CLOUD_COVER, MEDIUM_CLOUD_COVER, HIGH_CLOUD_COVER, GUST, PRECIPITATION_MIN,
+            PRECIPITATION_MAX, PRECIPITATION_TOTAL, PRECIPITATION_MEAN, PRECIPITATION_MEDIAN, PERCENT_FROZEN,
+            PRECIPITATION_CATEGORY, WEATHER_SYMBOL);
 
     public static final String BASE_URL = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/";
     public static final String APPROVED_TIME_URL = BASE_URL + "approvedtime.json";
