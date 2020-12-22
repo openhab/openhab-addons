@@ -15,6 +15,7 @@ package org.openhab.io.hueemulation.internal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.IllegalFormatException;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -351,7 +352,14 @@ public class ConfigStore {
      * @return The unique id
      */
     public String getHueUniqueId(final String hueId) {
-        return hueIDPrefix + "-" + String.format("%02X", Integer.valueOf(hueId));
+        String unique = hueId;
+        try {
+            unique = String.format("%02X", Integer.valueOf(hueId));
+        } catch (final NumberFormatException | IllegalFormatException e) {
+            // Use the hueId as is
+        }
+
+        return hueIDPrefix + "-" + unique;
     }
 
     public boolean isReady() {
