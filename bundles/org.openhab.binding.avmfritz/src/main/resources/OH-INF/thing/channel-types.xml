@@ -97,6 +97,7 @@
 		<label>Sensor Data</label>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
 		</channels>
 	</channel-group-type>
 
@@ -109,6 +110,14 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 
 		<config-description-ref uri="channel-type:avmfritz:temperature"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Current Humidity</label>
+		<description>Current measured humidity.</description>
+		<category>Humidity</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="energy">

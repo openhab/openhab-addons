@@ -25,7 +25,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.dto.ButtonModel;
 import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
+import org.openhab.binding.avmfritz.internal.dto.HumidityModel;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.CommonTriggerEvents;
@@ -83,6 +86,14 @@ public class AVMFritzButtonHandler extends DeviceHandler {
                     updateBattery(deviceModel);
                 }
             }
+        }
+    }
+
+    @Override
+    protected void updateHumiditySensor(@Nullable HumidityModel humidityModel) {
+        if (humidityModel != null) {
+            updateThingChannelState(CHANNEL_GROUP_SENSORS + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_HUMIDITY,
+                    new QuantityType<>(humidityModel.getRelativeHumidity(), Units.PERCENT));
         }
     }
 
