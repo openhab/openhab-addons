@@ -18,6 +18,7 @@ package org.openhab.io.homekit.internal;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitSettings {
+    public static final String CONFIG_PID = "org.openhab.homekit";
     public static final String MANUFACTURER = "openHAB Community";
     public static final String SERIAL_NUMBER = "none";
     public static final String MODEL = "openHAB";

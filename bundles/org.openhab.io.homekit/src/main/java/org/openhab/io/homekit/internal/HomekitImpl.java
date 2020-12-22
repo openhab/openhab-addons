@@ -54,7 +54,7 @@ import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
  *
  * @author Andy Lintner - Initial contribution
  */
-@Component(service = { Homekit.class }, configurationPid = "org.openhab.homekit", property = {
+@Component(service = { Homekit.class }, configurationPid = HomekitSettings.CONFIG_PID, property = {
         Constants.SERVICE_PID + "=org.openhab.homekit", "port:Integer=9123" })
 @ConfigurableService(category = "io", label = "HomeKit Integration", description_uri = "io:homekit")
 @NonNullByDefault
@@ -87,7 +87,6 @@ public class HomekitImpl implements Homekit {
 
     @Activate
     protected void activate(Map<String, Object> properties) {
-        logger.info("Activate {}", properties);
         this.settings = processConfig(properties);
         this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
         try {
@@ -100,13 +99,11 @@ public class HomekitImpl implements Homekit {
     }
 
     private HomekitSettings processConfig(Map<String, Object> properties) {
-        logger.info("process {}", properties);
-
         HomekitSettings settings = (new Configuration(properties)).as(HomekitSettings.class);
         org.osgi.service.cm.Configuration config = null;
         Dictionary<String, Object> props = null;
         try {
-            config = configAdmin.getConfiguration("org.openhab.homekit");
+            config = configAdmin.getConfiguration(HomekitSettings.CONFIG_PID);
             props = config.getProperties();
         } catch (IOException e) {
             logger.warn("Cannot retrieve config admin {}", e.getMessage());
@@ -119,13 +116,17 @@ public class HomekitImpl implements Homekit {
             settings.networkInterface = networkAddressService.getPrimaryIpv4HostAddress();
             props.put("networkInterface", settings.networkInterface);
         }
-        if (settings.setupId == null) {
+        if (settings.setupId == null) { // generate setupId very first time
             settings.setupId = HAPSetupCodeUtils.generateSetupId();
             props.put("setupId", settings.setupId);
         }
-        // always generated from PIN, setup ID and accessory category (1 = bridge).
-        settings.qrCode = HAPSetupCodeUtils.getSetupURI(settings.pin.replaceAll("-", ""), settings.setupId, 1);
-        props.put("qrCode", settings.qrCode);
+
+        // QR Code setup URI is always generated from PIN, setup ID and accessory category (1 = bridge)
+        String setupURI = HAPSetupCodeUtils.getSetupURI(settings.pin.replaceAll("-", ""), settings.setupId, 1);
+        if ((settings.qrCode == null) || (!settings.qrCode.equals(setupURI))) { // QR code was changed
+            settings.qrCode = setupURI;
+            props.put("qrCode", settings.qrCode);
+        }
 
         if (config != null) {
             try {
@@ -139,8 +140,6 @@ public class HomekitImpl implements Homekit {
 
     @Modified
     protected synchronized void modified(Map<String, Object> config) {
-        logger.info("Modified {}", config);
-
         try {
             HomekitSettings oldSettings = settings;
             settings = processConfig(config);
