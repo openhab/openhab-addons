@@ -719,6 +719,33 @@ Import-Package: \\
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>with-bnd-resolver-resolve</id>
+      <activation>
+        <property>
+          <name>withResolver</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>biz.aQute.bnd</groupId>
+              <artifactId>bnd-resolver-maven-plugin</artifactId>
+              <version>${bnd.version}</version>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>resolve</goal>
+                  </goals>
+                  <phase>package</phase>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
   </profiles>
 
 </project>
