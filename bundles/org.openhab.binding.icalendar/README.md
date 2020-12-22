@@ -59,6 +59,7 @@ They are all read-only.
 | next_title        | String    | Title of the next event                                                             |
 | next_start        | DateTime  | Start of the next event                                                             |
 | next_end          | DateTime  | End of the next event                                                               |
+| last_update       | DateTime  | The time and date of the last successful update of the calendar                     |
 
 ### Channels for `eventfilter`
 
