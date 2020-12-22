@@ -87,6 +87,7 @@ public class HomekitImpl implements Homekit {
 
     @Activate
     protected void activate(Map<String, Object> properties) {
+        logger.info("Activate {}", properties);
         this.settings = processConfig(properties);
         this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
         try {
@@ -99,6 +100,8 @@ public class HomekitImpl implements Homekit {
     }
 
     private HomekitSettings processConfig(Map<String, Object> properties) {
+        logger.info("process {}", properties);
+
         HomekitSettings settings = (new Configuration(properties)).as(HomekitSettings.class);
         org.osgi.service.cm.Configuration config = null;
         Dictionary<String, Object> props = null;
@@ -126,7 +129,7 @@ public class HomekitImpl implements Homekit {
 
         if (config != null) {
             try {
-                config.update(props);
+                config.updateIfDifferent(props);
             } catch (IOException e) {
                 logger.warn("Cannot update configuration {}", e.getMessage());
             }
@@ -136,6 +139,8 @@ public class HomekitImpl implements Homekit {
 
     @Modified
     protected synchronized void modified(Map<String, Object> config) {
+        logger.info("Modified {}", config);
+
         try {
             HomekitSettings oldSettings = settings;
             settings = processConfig(config);
