@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.modbus.sbc.internal;
 
-import static org.openhab.io.transport.modbus.ModbusConstants.ValueType.*;
+import static org.openhab.core.io.transport.modbus.ModbusConstants.ValueType.*;
 
 import java.math.BigDecimal;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.unit.SmartHomeUnits;
-import org.openhab.io.transport.modbus.ModbusConstants;
-import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
+import org.openhab.core.io.transport.modbus.ModbusConstants;
+import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link ALD1Registers} is responsible for defining Modbus registers and their units.
@@ -31,14 +31,14 @@ import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 @NonNullByDefault
 public enum ALD1Registers {
     // the following register numbers are 1-based. They need to be converted before sending them on the wire.
-    TOTAL_ENERGY(0.01f, 28, UINT32, SmartHomeUnits.KILOWATT_HOUR),
-    PARTIAL_ENERGY(0.01f, 30, UINT32, SmartHomeUnits.KILOWATT_HOUR), // only unidirectional meters
-    FEEDING_BACK_ENERGY(0.01f, 30, UINT32, SmartHomeUnits.KILOWATT_HOUR), // only bidirectional meters
-    VOLTAGE(1, 36, UINT16, SmartHomeUnits.VOLT),
-    CURRENT(0.1f, 37, UINT16, SmartHomeUnits.AMPERE),
-    ACTIVE_POWER(10, 38, INT16, SmartHomeUnits.WATT),
-    REACTIVE_POWER(10, 39, INT16, SmartHomeUnits.VAR),
-    POWER_FACTOR(0.01f, 40, UINT16, SmartHomeUnits.ONE);
+    TOTAL_ENERGY(0.01f, 28, UINT32, Units.KILOWATT_HOUR),
+    PARTIAL_ENERGY(0.01f, 30, UINT32, Units.KILOWATT_HOUR), // only unidirectional meters
+    FEEDING_BACK_ENERGY(0.01f, 30, UINT32, Units.KILOWATT_HOUR), // only bidirectional meters
+    VOLTAGE(1, 36, UINT16, Units.VOLT),
+    CURRENT(0.1f, 37, UINT16, Units.AMPERE),
+    ACTIVE_POWER(10, 38, INT16, Units.WATT),
+    REACTIVE_POWER(10, 39, INT16, Units.VAR),
+    POWER_FACTOR(0.01f, 40, UINT16, Units.ONE);
 
     private BigDecimal multiplier;
     private int registerNumber;
