@@ -20,6 +20,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -58,10 +59,13 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
     private final ItemRegistry itemRegistry;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry) {
+    public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.itemRegistry = itemRegistry;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -215,6 +219,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
         conf = new JdbcConfiguration(configuration);
         if (conf.valid && checkDBAccessability()) {
             checkDBSchema();
+            conf.setTimeZone(timeZoneProvider.getTimeZone());
             // connection has been established ... initialization completed!
             initialized = true;
         } else {

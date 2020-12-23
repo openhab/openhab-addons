@@ -160,7 +160,7 @@ public class JdbcMapper {
         if (table != null) {
             long timerStart = System.currentTimeMillis();
             List<HistoricItem> r = conf.getDBDAO().doGetHistItemFilterQuery(item, filter, numberDecimalcount, table,
-                    item.getName());
+                    item.getName(), conf.getTimeZone());
             logTime("insertItemValue", timerStart, System.currentTimeMillis());
             return r;
         } else {

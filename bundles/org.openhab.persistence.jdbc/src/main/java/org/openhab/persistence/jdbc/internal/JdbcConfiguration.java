@@ -13,6 +13,7 @@
 package org.openhab.persistence.jdbc.internal;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -67,6 +68,8 @@ public class JdbcConfiguration {
     public MovingAverage timeAverage100arr = new MovingAverage(100);
     public MovingAverage timeAverage200arr = new MovingAverage(200);
     public boolean enableLogTime = false;
+
+    private ZoneId timeZone = ZoneId.systemDefault();
 
     public JdbcConfiguration(Map<Object, Object> configuration) {
         logger.debug("JDBC::JdbcConfiguration");
@@ -248,6 +251,7 @@ public class JdbcConfiguration {
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException
                 | NoSuchMethodException e) {
             logger.error("JDBC::updateConfig: Exception: {}", e.getMessage());
+            dBDAO = new JdbcBaseDAO();
         } catch (ClassNotFoundException e) {
             logger.warn("JDBC::updateConfig: no Configuration for serviceName '{}' found. ClassNotFoundException: {}",
                     serviceName, e.getMessage());
@@ -360,6 +364,14 @@ public class JdbcConfiguration {
 
     public void setDbName(String dbName) {
         this.dbName = dbName;
+    }
+
+    public ZoneId getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(ZoneId timeZone) {
+        this.timeZone = timeZone;
     }
 
     public boolean isDbConnected() {

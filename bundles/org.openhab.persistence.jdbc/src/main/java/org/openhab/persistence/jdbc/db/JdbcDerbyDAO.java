@@ -157,8 +157,8 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
 
     @Override
     public List<HistoricItem> doGetHistItemFilterQuery(Item item, FilterCriteria filter, int numberDecimalcount,
-            String table, String name) {
-        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name);
+            String table, String name, ZoneId timeZone) {
+        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
         List<Object[]> m = Yank.queryObjectArrays(sql, null);
 
         logger.debug("JDBC::doGetHistItemFilterQuery got Array length={}", m.size());
@@ -177,7 +177,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     static final DateTimeFormatter JDBC_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
-            String simpleName) {
+            String simpleName, ZoneId timeZone) {
         logger.debug(
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",
                 StringUtilsExt.filterToString(filter), numberDecimalcount, table, simpleName);
@@ -185,13 +185,13 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         String filterString = "";
         if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'"
-                    + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(ZoneId.systemDefault())) + "'";
+            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
+                    + "'";
         }
         if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'"
-                    + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(ZoneId.systemDefault())) + "'";
+            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
+                    + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
         if (filter.getPageSize() != 0x7fffffff) {
