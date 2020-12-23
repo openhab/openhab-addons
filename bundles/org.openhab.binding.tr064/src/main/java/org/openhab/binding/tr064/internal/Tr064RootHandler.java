@@ -133,6 +133,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
         }
 
         endpointBaseURL = "http://" + config.host + ":49000";
+        soapConnector = new SOAPConnector(httpClient, endpointBaseURL);
         updateStatus(ThingStatus.UNKNOWN);
 
         connectFuture = scheduler.scheduleWithFixedDelay(this::internalInitialize, 0, RETRY_INTERVAL, TimeUnit.SECONDS);
