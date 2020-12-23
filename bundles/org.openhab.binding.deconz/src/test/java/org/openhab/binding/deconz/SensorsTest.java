@@ -32,6 +32,7 @@ import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
 import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -111,5 +112,30 @@ public class SensorsTest {
                 eq(new StringType(ThermostatMode.AUTO.name())));
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelTemperatureUID),
                 eq(new QuantityType<>(16.5, SIUnits.CELSIUS)));
+    }
+
+    @Test
+    public void fireSensorUpdateTest() throws IOException {
+        SensorMessage sensorMessage = DeconzTest.getObjectFromJson("fire.json", SensorMessage.class, gson);
+        assertNotNull(sensorMessage);
+
+        ThingUID thingUID = new ThingUID("deconz", "sensor");
+        ChannelUID channelBatteryLevelUID = new ChannelUID(thingUID, CHANNEL_BATTERY_LEVEL);
+        ChannelUID channelFireUID = new ChannelUID(thingUID, CHANNEL_FIRE);
+        ChannelUID channelTamperedUID = new ChannelUID(thingUID, CHANNEL_TAMPERED);
+        ChannelUID channelLastSeenUID = new ChannelUID(thingUID, CHANNEL_LAST_SEEN);
+
+        Thing sensor = ThingBuilder.create(THING_TYPE_FIRE_SENSOR, thingUID)
+                .withChannel(ChannelBuilder.create(channelBatteryLevelUID, "Number").build())
+                .withChannel(ChannelBuilder.create(channelFireUID, "Switch").build())
+                .withChannel(ChannelBuilder.create(channelTamperedUID, "Switch").build())
+                .withChannel(ChannelBuilder.create(channelLastSeenUID, "DateTime").build()).build();
+        SensorThingHandler sensorThingHandler = new SensorThingHandler(sensor, gson);
+        sensorThingHandler.setCallback(thingHandlerCallback);
+
+        sensorThingHandler.messageReceived("", sensorMessage);
+
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelFireUID), eq(OnOffType.OFF));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelBatteryLevelUID), eq(new DecimalType(98)));
     }
 }
