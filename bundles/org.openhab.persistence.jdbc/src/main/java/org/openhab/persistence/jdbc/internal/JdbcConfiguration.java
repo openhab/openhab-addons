@@ -248,7 +248,6 @@ public class JdbcConfiguration {
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException
                 | NoSuchMethodException e) {
             logger.error("JDBC::updateConfig: Exception: {}", e.getMessage());
-            dBDAO = new JdbcBaseDAO();
         } catch (ClassNotFoundException e) {
             logger.warn("JDBC::updateConfig: no Configuration for serviceName '{}' found. ClassNotFoundException: {}",
                     serviceName, e.getMessage());
