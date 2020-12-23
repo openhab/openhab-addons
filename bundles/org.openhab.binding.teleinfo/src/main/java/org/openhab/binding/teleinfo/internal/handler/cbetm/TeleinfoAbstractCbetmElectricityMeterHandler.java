@@ -68,7 +68,7 @@ public abstract class TeleinfoAbstractCbetmElectricityMeterHandler extends Telei
             }
 
             updateState(CHANNEL_CBETM_LONG_PMAX, QuantityType.valueOf(frameCbetmLong.getPmax(), Units.WATT));
-            updateState(CHANNEL_CBETM_LONG_PAPP, QuantityType.valueOf(frameCbetmLong.getPapp(), Units.WATT));
+            updateState(CHANNEL_CBETM_LONG_PAPP, QuantityType.valueOf(frameCbetmLong.getPapp(), Units.VOLT_AMPERE));
             updateState(CHANNEL_CBETM_LONG_PPOT, new StringType(frameCbetmLong.getPpot()));
 
             updateState(CHANNEL_CBETM_SHORT_ADIR1, UnDefType.NULL);

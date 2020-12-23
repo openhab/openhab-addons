@@ -65,13 +65,10 @@
 				},
 				"refresh": true,
 				"actions": [],
-<<<<<<< HEAD
 				"category": "status",
 				"tags": [
 					"Status"
 				],
-=======
->>>>>>> refs/remotes/origin/main
 				"readmeComment": "Value mapping [\"1\"\u003d\"Stopped\",\"1\"\u003d\"Opening\",\"1\"\u003d\"Closing\"]"
 			},
 			{

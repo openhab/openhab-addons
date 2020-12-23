@@ -44,13 +44,10 @@
 				},
 				"refresh": true,
 				"actions": [],
-<<<<<<< HEAD
 				"category": "status",
 				"tags": [
 					"Status"
 				],
-=======
->>>>>>> refs/heads/main
 				"readmeComment": "Value mapping [\"1\"\u003d\"Sweeping\",\"2\"\u003d\"Idle\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Go Charging\",\"6\"\u003d\"Charging\"]"
 			},
 			{
