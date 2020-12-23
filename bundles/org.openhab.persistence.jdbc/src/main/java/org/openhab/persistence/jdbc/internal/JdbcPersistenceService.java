@@ -59,13 +59,12 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
     private final ItemRegistry itemRegistry;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry,
             final @Reference TimeZoneProvider timeZoneProvider) {
+        super(timeZoneProvider);
         this.itemRegistry = itemRegistry;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -219,7 +218,6 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
         conf = new JdbcConfiguration(configuration);
         if (conf.valid && checkDBAccessability()) {
             checkDBSchema();
-            conf.setTimeZone(timeZoneProvider.getTimeZone());
             // connection has been established ... initialization completed!
             initialized = true;
         } else {
