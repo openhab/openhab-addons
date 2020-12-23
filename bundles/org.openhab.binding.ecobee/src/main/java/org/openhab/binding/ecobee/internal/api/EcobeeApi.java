@@ -167,9 +167,18 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             accessTokenResponse = localAccessTokenResponse;
             ecobeeAuth.doAuthorization();
         } catch (OAuthException | IOException | RuntimeException e) {
-            logger.info("API: Got exception trying to get access token from OAuth service", e);
+            if (logger.isDebugEnabled()) {
+                logger.info("API: Got exception trying to get access token from OAuth service", e);
+            } else {
+                logger.info("API: Got {} trying to get access token from OAuth service: {}",
+                        e.getClass().getSimpleName(), e.getMessage());
+            }
         } catch (EcobeeAuthException e) {
-            logger.info("API: The Ecobee authorization process threw an exception", e);
+            if (logger.isDebugEnabled()) {
+                logger.info("API: The Ecobee authorization process threw an exception", e);
+            } else {
+                logger.info("API: The Ecobee authorization process threw an exception: {}", e.getMessage());
+            }
             ecobeeAuth.setState(EcobeeAuthState.NEED_PIN);
         } catch (OAuthResponseException e) {
             handleOAuthException(e);
