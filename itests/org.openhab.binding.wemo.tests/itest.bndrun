@@ -63,7 +63,6 @@ Fragment-Host: org.openhab.binding.wemo
 	org.objectweb.asm.commons;version='[8.0.1,8.0.2)',\
 	org.objectweb.asm.tree;version='[8.0.1,8.0.2)',\
 	org.ops4j.pax.web.pax-web-api;version='[7.2.19,7.2.20)',\
-	xstream;version='[1.4.13,1.4.14)',\
 	org.openhab.binding.wemo;version='[3.1.0,3.1.1)',\
 	org.openhab.binding.wemo.tests;version='[3.1.0,3.1.1)',\
 	org.openhab.core;version='[3.1.0,3.1.1)',\
@@ -77,4 +76,5 @@ Fragment-Host: org.openhab.binding.wemo
 	org.openhab.core.io.transport.upnp;version='[3.1.0,3.1.1)',\
 	org.openhab.core.test;version='[3.1.0,3.1.1)',\
 	org.openhab.core.thing;version='[3.1.0,3.1.1)',\
-	org.openhab.core.thing.xml;version='[3.1.0,3.1.1)'
+	org.openhab.core.thing.xml;version='[3.1.0,3.1.1)',\
+	xstream;version='[1.4.15,1.4.16)'
