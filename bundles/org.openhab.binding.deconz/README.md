@@ -146,7 +146,7 @@ The sensor devices support some of the following channels:
 | vibration       | Switch                   |      R      | Status of vibration: `ON` = vibration was detected; `OFF` = no vibration                  | alarmsensor                                  |
 | light           | String                   |      R      | Light level: `Daylight`; `Sunset`; `Dark`                                                 | daylightsensor                               |
 | value           | Number                   |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                               |
-| battery_level   | Number                   |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
+| battery_level   | Number:Dimensionless     |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
 | battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
 | carbonmonoxide  | Switch                   |      R      | `ON` = carbon monoxide detected                                                           | carbonmonoxide                               |
 | color           | Color                    |      R      | Color set by remote                                                                       | colorcontrol                                 |
