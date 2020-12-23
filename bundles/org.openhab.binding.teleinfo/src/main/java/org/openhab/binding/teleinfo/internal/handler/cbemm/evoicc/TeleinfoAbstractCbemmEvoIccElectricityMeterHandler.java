@@ -38,6 +38,6 @@ public abstract class TeleinfoAbstractCbemmEvoIccElectricityMeterHandler
 
     protected void updateStatesForCommonCbemmEvolutionIccChannels(FrameCbemmEvolutionIcc frame) {
         updateStatesForCommonCbemmChannels(frame);
-        updateState(CHANNEL_CBEMM_EVOLUTION_ICC_PAPP, QuantityType.valueOf(frame.getPapp(), Units.WATT));
+        updateState(CHANNEL_CBEMM_EVOLUTION_ICC_PAPP, QuantityType.valueOf(frame.getPapp(), Units.VOLT_AMPERE));
     }
 }
