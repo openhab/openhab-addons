@@ -54,7 +54,6 @@ Fragment-Host: org.openhab.binding.tradfri
 	jakarta.xml.bind-api;version='[2.3.3,2.3.4)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[1.0.1,1.0.2)',\
 	org.apache.servicemix.specs.activation-api-1.2.1;version='[1.2.1,1.2.2)',\
-	xstream;version='[1.4.13,1.4.14)',\
 	org.openhab.binding.tradfri;version='[3.1.0,3.1.1)',\
 	org.openhab.binding.tradfri.tests;version='[3.1.0,3.1.1)',\
 	org.openhab.core;version='[3.1.0,3.1.1)',\
@@ -67,4 +66,5 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.openhab.core.io.transport.mdns;version='[3.1.0,3.1.1)',\
 	org.openhab.core.test;version='[3.1.0,3.1.1)',\
 	org.openhab.core.thing;version='[3.1.0,3.1.1)',\
-	org.openhab.core.thing.xml;version='[3.1.0,3.1.1)'
+	org.openhab.core.thing.xml;version='[3.1.0,3.1.1)',\
+	xstream;version='[1.4.15,1.4.16)'
