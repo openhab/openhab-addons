@@ -26,8 +26,7 @@
 				"property": "mode",
 				"friendlyName": "Humidifier Mode",
 				"channel": "humidifierMode",
-				"type": "Number:Dimensionless",
-				"unit": "PERCENT",
+				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [

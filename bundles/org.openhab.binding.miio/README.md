@@ -85,6 +85,85 @@ or in case of unknown models include the model information of a similar device t
 
 `Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4", communication="cloud"]`
 
+# Advanced: Unsupported devices
+
+Newer devices may not yet be supported.
+However, many devices share large similarities with existing devices.
+The binding allows to try/test if your new device is working with database files of older devices as well.
+
+There are 2 ways to get unsupported devices working, by overriding the model with the model of a supported item or by test all known properties to see which are supported by your device.
+
+## Substitute model for unsupported devices
+
+Replace the model with the model which is already supported.
+For this, first remove your unsupported thing. Manually add a miio:basic thing. 
+Besides the regular configuration (like ip address, token) the modelId needs to be provided.
+Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
+Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
+
+## Supported property test for unsupported devices
+
+The unsupported device has a test channel with switch. When switching on, all known properties are tested, this may take few minutes.
+A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
+If supported properties are found, an experimental database file is saved to the conf/misc/miio folder (see below chapter).
+The thing will go offline and will come back online as basic device, supporting the found channels.
+The database file may need to be modified to display the right channel names.
+After validation, please share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
+
+## Advanced: adding local database files to support new devices
+
+Things using the basic handler (miio:basic things) are driven by json 'database' files.
+This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
+The conf/misc/miio (e.g. in Linux `/opt/openhab/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
+During the start of the binding the exact path used in your system will be printed in the debug log. 
+Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …`
+If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
+Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
+For format, please check the current database files in openHAB GitHub.
+
+# FAQ.. what to do in case of problems
+
+If your device is not getting online:
+
+_Are you using text config?_
+Make sure you define all the fields as per above example. 
+Or, better, try to get it going first without text config.
+
+_The token is wrong_
+The most common cause of non responding devices is a wrong token.
+When you reset, or change wifi or update firmware, and possibly other cases as well, the token may change. You'll need to get a refreshed token.
+
+_My token is coming from the cloud... how can it be wrong?_
+Is not very likely but still can happen._
+This can happen e.g. if your device is defined on multiple country servers. 
+The binding may pull the token from the wrong country server.
+First try to get the token from all country servers by leave the county setting empty.
+If that does not solve it, you define only the country that the device is on in the binding config page (where the cloud userid/pwd is entered) this should pull the right token.
+
+_You have the same device added multiple times._
+The communication each time send a sequential number. 
+If the device is twice defined, the numbers received by the device are no longer sequential and it will stop responding for some time.
+
+_The connection is not too good, so you have timeouts etc._
+Position your device closer to wifi / check in the mihome app if the wifi strength is good enough.
+Alternatively as described above, double check for multiple connections for single device.
+
+_Your device is on a different subnet?_
+This is in most cases not working. 
+Firmware of the device don't accept commands coming from other subnets.
+Set the communication in the thing configuration to 'cloud'.
+
+_Cloud connectivity is not working_
+The most common problem is a wrong userId/password. Try to fix your userId/password.
+If it still fails, you're bit out of luck. You may try to restart OpenHAB (not just the binding) to clean the cookies. 
+As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
+
+_My Roborock vacuum is not found or not reacting_
+Did you link the vacuum with the Roborock app? 
+This won't work, the Roborock app is using a different communication method. 
+Reset your vacuum and connect it to the Xiaomi MiHome app. 
+This will change the communication method and the Mi IO binding can communicate with the vacuum.
+
 # Mi IO Devices
 
 Currently the miio binding supports more than 250 different models.
@@ -378,86 +457,6 @@ Currently the miio binding supports more than 250 different models.
 | Smartmi Smart Convector Heater 1S | miio:basic       | [zhimi.heater.zb1](#zhimi-heater-zb1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 
 
-# Advanced: Unsupported devices
-
-Newer devices may not yet be supported.
-However, many devices share large similarities with existing devices.
-The binding allows to try/test if your new device is working with database files of older devices as well.
-
-There are 2 ways to get unsupported devices working, by overriding the model with the model of a supported item or by test all known properties to see which are supported by your device.
-
-## Substitute model for unsupported devices
-
-Replace the model with the model which is already supported.
-For this, first remove your unsupported thing. Manually add a miio:basic thing. 
-Besides the regular configuration (like ip address, token) the modelId needs to be provided.
-Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
-Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
-
-## Supported property test for unsupported devices
-
-The unsupported device has a test channel with switch. When switching on, all known properties are tested, this may take few minutes.
-A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
-If supported properties are found, an experimental database file is saved to the conf/misc/miio folder (see below chapter).
-The thing will go offline and will come back online as basic device, supporting the found channels.
-The database file may need to be modified to display the right channel names.
-After validation, please share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
-
-## Advanced: adding local database files to support new devices
-
-Things using the basic handler (miio:basic things) are driven by json 'database' files.
-This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The conf/misc/miio (e.g. in Linux `/opt/openhab/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
-During the start of the binding the exact path used in your system will be printed in the debug log. 
-Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …`
-If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
-Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
-For format, please check the current database files in openHAB GitHub.
-
-# FAQ.. what to do in case of problems
-
-If your device is not getting online:
-
-_Are you using text config?_
-Make sure you define all the fields as per above example. 
-Or, better, try to get it going first without text config.
-
-_The token is wrong_
-The most common cause of non responding devices is a wrong token.
-When you reset, or change wifi or update firmware, and possibly other cases as well, the token may change. You'll need to get a refreshed token.
-
-_My token is coming from the cloud... how can it be wrong?_
-Is not very likely but still can happen._
-This can happen e.g. if your device is defined on multiple country servers. 
-The binding may pull the token from the wrong country server.
-First try to get the token from all country servers by leave the county setting empty.
-If that does not solve it, you define only the country that the device is on in the binding config page (where the cloud userid/pwd is entered) this should pull the right token.
-
-_You have the same device added multiple times._
-The communication each time send a sequential number. 
-If the device is twice defined, the numbers received by the device are no longer sequential and it will stop responding for some time.
-
-_The connection is not too good, so you have timeouts etc._
-Position your device closer to wifi / check in the mihome app if the wifi strength is good enough.
-Alternatively as described above, double check for multiple connections for single device.
-
-_Your device is on a different subnet?_
-This is in most cases not working. 
-Firmware of the device don't accept commands coming from other subnets.
-Set the communication in the thing configuration to 'cloud'.
-
-_Cloud connectivity is not working_
-The most common problem is a wrong userId/password. Try to fix your userId/password.
-If it still fails, you're bit out of luck. You may try to restart OpenHAB (not just the binding) to clean the cookies. 
-As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
-
-_My Roborock vacuum is not found or not reacting_
-Did you link the vacuum with the Roborock app? 
-This won't work, the Roborock app is using a different communication method. 
-Reset your vacuum and connect it to the Xiaomi MiHome app. 
-This will change the communication method and the Mi IO binding can communicate with the vacuum.
-
-
 # Channels
 
 Depending on the device, different channels are available.
@@ -578,7 +577,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | power            | Switch  | Power                               |            |
-| humidifierMode   | Number:Dimensionless | Humidifier Mode                     |            |
+| humidifierMode   | String  | Humidifier Mode                     |            |
 | humidity         | Number:Dimensionless | Humidity                            |            |
 | setHumidity      | Number  | Humidity Set                        |            |
 | bright           | Dimmer  | LED Brightness                      |            |
@@ -2724,13 +2723,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2741,13 +2740,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2758,13 +2757,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2775,13 +2774,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2792,13 +2791,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2809,13 +2808,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["1"="Cool","2"="Dry","3"="Heat","4"="Fan"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2826,13 +2825,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2850,13 +2849,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2874,13 +2873,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2898,13 +2897,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2922,13 +2921,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2946,13 +2945,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2970,13 +2969,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -2994,13 +2993,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3018,13 +3017,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3042,13 +3041,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3066,13 +3065,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3090,13 +3089,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3114,13 +3113,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3138,13 +3137,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3162,13 +3161,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3186,13 +3185,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3210,13 +3209,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3234,13 +3233,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3258,13 +3257,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -3282,13 +3281,13 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel          | Type    | Description                         | Comment    |
 |------------------|---------|-------------------------------------|------------|
 | on               | Switch  | Power                               |            |
-| mode             | Number  | Air Conditioner - Mode              | Value mapping [2="Cool",3="Dry",4="Fan",5="Heat"] |
+| mode             | Number  | Air Conditioner - Mode              | Value mapping ["2"="Cool","3"="Dry","4"="Fan","5"="Heat"] |
 | target-temperature | Number:Temperature | Air Conditioner - Target Temperature |            |
 | eco              | Switch  | Air Conditioner - Eco               |            |
 | heater           | Switch  | Air Conditioner - Heater            |            |
 | dryer            | Switch  | Air Conditioner - Dryer             |            |
 | sleep-mode       | Switch  | Air Conditioner - Sleep Mode        |            |
-| fan-level        | Number  | Fan Control - Fan Level             | Value mapping [0="Auto",1="Level1",2="Level2",3="Level3",4="Level4",5="Level5",6="Level6",7="Level7"] |
+| fan-level        | Number  | Fan Control - Fan Level             | Value mapping ["0"="Auto","1"="Level1","2"="Level2","3"="Level3","4"="Level4","5"="Level5","6"="Level6","7"="Level7"] |
 | vertical-swing   | Switch  | Fan Control - Vertical Swing        |            |
 | temperature      | Number:Temperature | Environment - Temperature           |            |
 | alarm            | Switch  | Alarm - Alarm                       |            |
@@ -4282,7 +4281,7 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 ```java
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-Number:Dimensionless humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
+String humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
 Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
 Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
