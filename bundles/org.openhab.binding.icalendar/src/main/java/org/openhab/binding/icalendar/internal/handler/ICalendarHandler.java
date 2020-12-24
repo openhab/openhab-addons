@@ -314,6 +314,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 ICalendarHandler.this.updateStates();
                 ICalendarHandler.this.rescheduleCalendarStateUpdate();
             }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+            logger.debug("Scheduled update in {} seconds", currentEvent.end.getEpochSecond() - now.getEpochSecond());
         } else {
             final Event nextEvent = currentCalendar.getNextEvent(now);
             final ICalendarConfiguration currentConfig = this.configuration;
@@ -326,11 +327,14 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
                 }, 1L, TimeUnit.DAYS);
+                logger.debug("Scheduled reschedule in 1 day");
             } else {
                 updateJobFuture = scheduler.schedule(() -> {
                     ICalendarHandler.this.updateStates();
                     ICalendarHandler.this.rescheduleCalendarStateUpdate();
                 }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+                logger.debug("Scheduled update in {} seconds", nextEvent.start.getEpochSecond() - now.getEpochSecond());
+
             }
         }
     }
