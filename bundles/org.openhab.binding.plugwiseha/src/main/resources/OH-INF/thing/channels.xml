@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="plugwiseha"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="setpointTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint temperature</label>
+		<description>Gets or sets the set point of this zone</description>
+		<category>heating</category>
+		<state min="0.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Zone temperature</label>
+		<description>Gets the temperature of this zone</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Switch the Plugwise Smart plug ON or OFF</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<description>Locks the switch state of the Plugwise Smart plug</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="powerUsage">
+		<item-type>Number</item-type>
+		<label>Power usage</label>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chState">
+		<item-type>Switch</item-type>
+		<label>Central heating active</label>
+		<description>Is the boiler active for central heating, On or OFF</description>
+		<category>switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dhwState">
+		<item-type>Switch</item-type>
+		<label>Domestic hot water active</label>
+		<description>Is the boiler active for domestic hot water, On or OFF</description>
+		<category>switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="waterPressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Water pressure</label>
+		<description>Gets the water pressure of the boiler</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

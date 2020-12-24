@@ -15,25 +15,27 @@ package org.openhab.binding.plugwiseha.internal.api.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PlugwiseHABadRequestException} represents a binding specific {@link Exception}.
+ * The {@link PlugwiseHAInvalidHostException} signals there was a problem with the hostname of the controller.
  *
  * @author Bas van Wetten - Initial contribution
  * @author Leo Siepel - finish initial contribution
+ * 
  */
+
 @NonNullByDefault
-public class PlugwiseHABadRequestException extends PlugwiseHAException {
+public class PlugwiseHAInvalidHostException extends PlugwiseHAException {
 
     private static final long serialVersionUID = 1L;
 
-    public PlugwiseHABadRequestException(String message) {
+    public PlugwiseHAInvalidHostException(String message) {
         super(message);
     }
 
-    public PlugwiseHABadRequestException(String message, Throwable cause) {
+    public PlugwiseHAInvalidHostException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public PlugwiseHABadRequestException(Throwable cause) {
+    public PlugwiseHAInvalidHostException(Throwable cause) {
         super(cause);
     }
 }

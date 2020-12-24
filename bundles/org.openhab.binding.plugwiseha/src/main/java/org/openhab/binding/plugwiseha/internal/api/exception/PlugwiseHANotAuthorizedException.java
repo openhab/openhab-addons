@@ -15,25 +15,26 @@ package org.openhab.binding.plugwiseha.internal.api.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PlugwiseHABadRequestException} represents a binding specific {@link Exception}.
+ * The {@link PlugwiseHANotAuthorizedException} signals the controller denied a request due to invalid credentials.
  *
  * @author Bas van Wetten - Initial contribution
  * @author Leo Siepel - finish initial contribution
+ * 
  */
 @NonNullByDefault
-public class PlugwiseHABadRequestException extends PlugwiseHAException {
+public class PlugwiseHANotAuthorizedException extends PlugwiseHAException {
 
     private static final long serialVersionUID = 1L;
 
-    public PlugwiseHABadRequestException(String message) {
+    public PlugwiseHANotAuthorizedException(String message) {
         super(message);
     }
 
-    public PlugwiseHABadRequestException(String message, Throwable cause) {
+    public PlugwiseHANotAuthorizedException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public PlugwiseHABadRequestException(Throwable cause) {
+    public PlugwiseHANotAuthorizedException(Throwable cause) {
         super(cause);
     }
 }
