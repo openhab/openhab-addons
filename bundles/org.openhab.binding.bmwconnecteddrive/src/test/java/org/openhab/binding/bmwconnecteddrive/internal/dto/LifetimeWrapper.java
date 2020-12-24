@@ -33,7 +33,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
@@ -129,21 +129,21 @@ public class LifetimeWrapper {
                 assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.KILOWATT_HOUR, qt.getUnit(), "kw");
+                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw");
                 assertEquals(allTrips.avgElectricConsumption.userAverage, qt.floatValue(), 0.1, "Avg Consumption");
                 break;
             case AVG_RECUPERATION:
                 assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.KILOWATT_HOUR, qt.getUnit(), "kw");
+                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw");
                 assertEquals(allTrips.avgRecuperation.userAverage, qt.floatValue(), 0.1, "Avg Recuperation");
                 break;
             case AVG_COMBINED_CONSUMPTION:
                 assertTrue(isHybrid, "Is Hybrid");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.LITRE, qt.getUnit(), "Liter");
+                assertEquals(Units.LITRE, qt.getUnit(), "Liter");
                 assertEquals(allTrips.avgCombinedConsumption.userAverage, qt.floatValue(), 0.01,
                         "Avg Combined Consumption");
                 break;

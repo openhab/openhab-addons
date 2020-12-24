@@ -34,7 +34,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
@@ -116,7 +116,7 @@ public class TripWrapper {
             case DURATION:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.MINUTE, qt.getUnit(), "Minute");
+                assertEquals(Units.MINUTE, qt.getUnit(), "Minute");
                 assertEquals(lastTrip.duration, qt.floatValue(), 0.1, "Duration");
                 break;
             case DISTANCE:
@@ -128,20 +128,20 @@ public class TripWrapper {
             case AVG_CONSUMPTION:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.KILOWATT_HOUR, qt.getUnit(), "kw");
+                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw");
                 assertEquals(lastTrip.avgElectricConsumption, qt.floatValue(), 0.1, "Avg Consumption");
                 break;
             case AVG_COMBINED_CONSUMPTION:
                 assertTrue(isHybrid, "Is Hybrid");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.LITRE, qt.getUnit(), "Liter");
+                assertEquals(Units.LITRE, qt.getUnit(), "Liter");
                 assertEquals(Converter.round(lastTrip.avgCombinedConsumption), qt.floatValue(), 0.01, "Percent");
                 break;
             case AVG_RECUPERATION:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.KILOWATT_HOUR, qt.getUnit(), "kw");
+                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw");
                 assertEquals(lastTrip.avgRecuperation, qt.floatValue(), 0.1, "Avg Recuperation");
                 break;
             default:

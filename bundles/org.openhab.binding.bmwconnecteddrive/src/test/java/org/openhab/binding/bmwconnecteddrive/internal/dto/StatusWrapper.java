@@ -40,7 +40,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
@@ -195,7 +195,7 @@ public class StatusWrapper {
                 assertTrue(hasFuel, "Has Fuel");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.LITRE, qt.getUnit(), "Liter Unit");
+                assertEquals(Units.LITRE, qt.getUnit(), "Liter Unit");
                 assertEquals(Converter.round(vStatus.remainingFuel), Converter.round(qt.floatValue()), 0.01,
                         "Fuel Level");
                 break;
@@ -203,7 +203,7 @@ public class StatusWrapper {
                 assertTrue(isElectric, "Is Eelctric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.PERCENT, qt.getUnit(), "Percent");
+                assertEquals(Units.PERCENT, qt.getUnit(), "Percent");
                 assertEquals(Converter.round(vStatus.chargingLevelHv), Converter.round(qt.floatValue()), 0.01,
                         "Charge Level");
                 break;
@@ -274,7 +274,7 @@ public class StatusWrapper {
             case HEADING:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals(SmartHomeUnits.DEGREE_ANGLE, qt.getUnit(), "Angle Unit");
+                assertEquals(Units.DEGREE_ANGLE, qt.getUnit(), "Angle Unit");
                 assertNotNull(vStatus.position);
                 assertEquals(vStatus.position.heading, qt.intValue(), 0.01, "Heading");
                 break;
