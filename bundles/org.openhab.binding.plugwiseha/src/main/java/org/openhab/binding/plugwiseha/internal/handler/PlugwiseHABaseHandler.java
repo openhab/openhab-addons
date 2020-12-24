@@ -17,7 +17,6 @@ import static org.openhab.core.thing.ThingStatus.*;
 
 import java.lang.reflect.ParameterizedType;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException;
@@ -154,10 +153,10 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
 
     private final @Nullable PlugwiseHAController getController() {
         Bridge bridge = getBridge();
-  
+
         if (bridge != null) {
-            PlugwiseHABridgeHandler handler = bridge.getHandler();
-            if (handler != null && handler instanceof PlugwiseHABridgeHandler) {
+            if (bridge.getHandler() instanceof PlugwiseHABridgeHandler) {
+                PlugwiseHABridgeHandler handler = (PlugwiseHABridgeHandler) bridge.getHandler();
                 return handler.getController();
             }
         }

@@ -20,7 +20,6 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
@@ -348,7 +347,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             default:
                 break;
-            }
+        }
 
         if (state != UnDefType.NULL && state != UnDefType.UNDEF) {
             updateState(channelID, state);
