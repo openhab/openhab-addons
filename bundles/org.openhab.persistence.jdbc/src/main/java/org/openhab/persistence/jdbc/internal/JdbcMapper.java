@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.knowm.yank.Yank;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
@@ -38,6 +39,8 @@ import org.slf4j.LoggerFactory;
 public class JdbcMapper {
     private final Logger logger = LoggerFactory.getLogger(JdbcMapper.class);
 
+    private final TimeZoneProvider timeZoneProvider;
+
     // Error counter - used to reconnect to database on error
     protected int errCnt;
     protected boolean initialized = false;
@@ -46,6 +49,10 @@ public class JdbcMapper {
     private long afterAccessMin = 10000;
     private long afterAccessMax = 0;
     private static final String ITEM_NAME_PATTERN = "[^a-zA-Z_0-9\\-]";
+
+    public JdbcMapper(TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     /*****************
      * MAPPER ITEMS *
@@ -160,7 +167,7 @@ public class JdbcMapper {
         if (table != null) {
             long timerStart = System.currentTimeMillis();
             List<HistoricItem> r = conf.getDBDAO().doGetHistItemFilterQuery(item, filter, numberDecimalcount, table,
-                    item.getName());
+                    item.getName(), timeZoneProvider.getTimeZone());
             logTime("insertItemValue", timerStart, System.currentTimeMillis());
             return r;
         } else {
