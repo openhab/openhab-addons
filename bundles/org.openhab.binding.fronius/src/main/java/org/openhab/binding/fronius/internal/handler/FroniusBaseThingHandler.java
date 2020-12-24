@@ -199,10 +199,11 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
                 logger.debug("Error in fronius response: {}", errorMsg);
             }
         } catch (JsonSyntaxException e) {
-            errorMsg = "Configuration is incorrect";
+            errorMsg = "Invalid JSON data received";
             logger.debug("Error running fronius request: {}", errorMsg);
         } catch (IOException | IllegalStateException e) {
-            logger.debug("Error running fronius request: {}", e.getMessage());
+            errorMsg = e.getMessage();
+            logger.debug("Error running fronius request: {}", errorMsg);
         }
 
         // Update the thing status
