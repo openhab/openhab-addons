@@ -134,3 +134,9 @@ clearone.sitemap
 This binding represents only a small fraction of the possible features of the ClearOne XAP units, but the feature-set implemented has been chosen to represent basic usage as a multi-room audio hub, where a single source is selected for playback on a per-zone basis, along with one or more fixed one-to-many mappings (for example, your openHAB server (as mono input) could be mapped to all outputs, for playing notifications).
 
 It is required to use the G-Ware software for initial configuration and advanced settings. This does not appear to be available on ClearOne's website any more ([original link](https://www.clearone.com/g-ware-506)). I have hosted it [here](https://my105e.com/confused/openhab/clearone/G_Ware5_0_67.zip).
+
+## Notes
+
+Units are linked via an RJ45 connection, over CAT5 or newer cable. There is a limitation of ~26m between units. As you approach this limit, you may find that communication between the units is not reliable, and messages are either lost, or received incorrectly.
+
+Pins 3 and 5 (Green/White and Green if using TIA/EIA 568B) are used for communication between units. You may wish to disconnect these wires, and instead run multiple serial connections. This binding supports this.
