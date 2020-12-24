@@ -75,8 +75,7 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof ConnectedDriveBridgeHandler) {
-            // close Handler and remove Discovery Service
-            ((ConnectedDriveBridgeHandler) thingHandler).close();
+            // nothing to cleanup
         } else {
             VEHICLE_HANDLER_REGISTRY.remove(thingHandler);
         }

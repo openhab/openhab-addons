@@ -14,12 +14,14 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.ANONYMOUS;
 
-import java.util.Hashtable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.discovery.VehicleDiscovery;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
@@ -27,7 +29,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Dealer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -35,9 +36,9 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,10 +51,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements StringResponseCallback {
     private final Logger logger = LoggerFactory.getLogger(ConnectedDriveBridgeHandler.class);
+    private @Nullable VehicleDiscovery discoveryService;
     private HttpClientFactory httpClientFactory;
-    private BundleContext bundleContext;
-    private VehicleDiscovery discoveryService;
-    private ServiceRegistration<?> discoveryServiceRegstration;
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<ConnectedDriveConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
@@ -65,10 +64,6 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     public ConnectedDriveBridgeHandler(Bridge bridge, HttpClientFactory hcf, BundleContext bc) {
         super(bridge);
         httpClientFactory = hcf;
-        bundleContext = bc;
-        discoveryService = new VehicleDiscovery(this);
-        discoveryServiceRegstration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
-                new Hashtable<>());
         discoveryFingerprintChannel = new ChannelUID(bridge.getUID(), DISCOVERY_FINGERPRINT);
     }
 
@@ -182,11 +177,16 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(VehicleDiscovery.class);
+    }
+
     public Optional<ConnectedDriveProxy> getProxy() {
         return proxy;
     }
 
-    public void close() {
-        discoveryServiceRegstration.unregister();
+    public void setDiscoveryService(VehicleDiscovery discoveryService) {
+        this.discoveryService = discoveryService;
     }
 }

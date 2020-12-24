@@ -537,10 +537,14 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
         Doors doorState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Doors.class);
         Windows windowState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Windows.class);
-        updateState(doors, StringType.valueOf(VehicleStatusUtils.checkClosed(doorState)));
-        updateState(windows, StringType.valueOf(VehicleStatusUtils.checkClosed(windowState)));
-        updateDoors(doorState);
-        updateWindows(windowState);
+        if (doorState != null) {
+            updateState(doors, StringType.valueOf(VehicleStatusUtils.checkClosed(doorState)));
+            updateDoors(doorState);
+        }
+        if (windowState != null) {
+            updateState(windows, StringType.valueOf(VehicleStatusUtils.checkClosed(windowState)));
+            updateWindows(windowState);
+        }
 
         // Range values
         // based on unit of length decide if range shall be reported in km or miles
