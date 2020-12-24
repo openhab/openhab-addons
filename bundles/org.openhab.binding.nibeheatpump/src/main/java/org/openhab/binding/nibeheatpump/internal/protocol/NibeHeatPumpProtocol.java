@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.nibeheatpump.internal.protocol;
 
-import org.apache.commons.lang3.ArrayUtils;
+import java.io.ByteArrayOutputStream;
+
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 
 /**
@@ -140,22 +141,54 @@ public class NibeHeatPumpProtocol {
 
         if (checksum == msgChecksum || (checksum == FRAME_START_CHAR_FROM_NIBE && msgChecksum == (byte) 0xC5)) {
             // if data contains 0x5C (start character), data seems to contains double 0x5C characters
-
-            // let's remove doubles
-            for (int i = 1; i < msglen; i++) {
-                if (data[i] == FRAME_START_CHAR_FROM_NIBE) {
-                    data = ArrayUtils.remove(data, i);
-                    msglen--;
-
-                    // fix message len
-                    data[OFFSET_LEN]--;
-                }
-            }
+            return removeEscapedDuplicates(data, msglen);
         } else {
             throw new NibeHeatPumpException(
                     "Checksum does not match. Checksum=" + (msgChecksum & 0xFF) + ", expected=" + (checksum & 0xFF));
         }
+    }
+
+    private static byte[] removeEscapedDuplicates(byte[] data, int msglen) {
+        if (dataContainsEscapedDuplicates(data, msglen)) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream(msglen);
+            byte newlen = data[OFFSET_LEN];
+
+            // write start char
+            out.write(FRAME_START_CHAR_FROM_NIBE);
+
+            // remove all duplicates between start char and checksum bytes
+            // checksum byte can't be 0x5C as it's set to 0xC5 in this case by the heat pump
+            for (int i = 1; i < msglen; i++) {
+                if (data[i] == FRAME_START_CHAR_FROM_NIBE && data[i + 1] == FRAME_START_CHAR_FROM_NIBE) {
+                    // write one 0x5C
+                    out.write(FRAME_START_CHAR_FROM_NIBE);
+
+                    // skip next 0x5C and decrease the length
+                    i++;
+                    newlen--;
+                } else {
+                    out.write(data[i]);
+                }
+            }
+
+            // write checksum
+            out.write(data[msglen]);
+
+            // return modified data
+            byte[] newdata = out.toByteArray();
+            newdata[OFFSET_LEN] = newlen;
+            return newdata;
+        }
 
         return data;
+    }
+
+    private static boolean dataContainsEscapedDuplicates(byte[] data, int msglen) {
+        for (int i = 1; i < msglen; i++) {
+            if (data[i] == FRAME_START_CHAR_FROM_NIBE && data[i + 1] == FRAME_START_CHAR_FROM_NIBE) {
+                return true;
+            }
+        }
+        return false;
     }
 }

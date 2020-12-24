@@ -67,11 +67,11 @@ public abstract class NibeHeatPumpBaseMessage implements NibeHeatPumpMessage {
 
     @Override
     public void encodeMessage(byte[] data) throws NibeHeatPumpException {
-        data = NibeHeatPumpProtocol.checkMessageChecksumAndRemoveDoubles(data);
-        rawMessage = data;
-        msgId = data[1];
+        byte[] d = NibeHeatPumpProtocol.checkMessageChecksumAndRemoveDoubles(data);
+        rawMessage = d.clone();
+        msgId = d[1];
 
-        byte messageTypeByte = NibeHeatPumpProtocol.getMessageType(data);
+        byte messageTypeByte = NibeHeatPumpProtocol.getMessageType(d);
         msgType = NibeHeatPumpBaseMessage.getMessageType(messageTypeByte);
     }
 
