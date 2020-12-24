@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="luxtronik"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Heatpump Type -->
+	<thing-type id="heatpump">
+		<label>Luxtronik Binding Thing</label>
+		<description>Sample thing for Luxtronik Binding</description>
+
+		<channels>
+			<channel id="channel1" typeId="sample-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="config1" type="text" required="true">
+				<label>Sample Parameter</label>
+				<description>This is a sample text configuration parameter</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="cooling-operation-mode">
+		<item-type>Number</item-type>
+		<label>Cooling Operation Mode</label>
+		<description>Cooling Operation Mode</description>
+		<state>
+			<options>
+			  <option value="0">Off</option>
+			  <option value="1">Automatic</option>
+			</options>
+		</state>
+	</channel-type>
+
+    <channel-type id="sample-channel">
+        <item-type>Switch</item-type>
+        <label>Luxtronik Binding Channel</label>
+        <description>Sample channel for Luxtronik Binding</description>
+    </channel-type>
+
+</thing:thing-descriptions>

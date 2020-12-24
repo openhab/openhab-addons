@@ -167,6 +167,7 @@
     <module>org.openhab.binding.loxone</module>
     <module>org.openhab.binding.luftdateninfo</module>
     <module>org.openhab.binding.lutron</module>
+    <module>org.openhab.binding.luxtronik</module>
     <module>org.openhab.binding.magentatv</module>
     <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
