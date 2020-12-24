@@ -19,7 +19,7 @@
 				the lowest
 				brightness to prevent waking people.
 			</description>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 	</config-description>
 
@@ -119,7 +119,7 @@
 				the lowest
 				brightness to prevent waking people.
 			</description>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 
 		<parameter name="whiteThreshold" type="integer" required="true" min="-1" max="99">
