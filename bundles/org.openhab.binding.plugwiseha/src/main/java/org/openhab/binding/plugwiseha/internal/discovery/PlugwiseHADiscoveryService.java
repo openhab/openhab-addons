@@ -86,13 +86,11 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        ScheduledFuture<?> discoveryFuture = this.discoveryFuture;
-        if (discoveryFuture != null) {
-            if (!discoveryFuture.isCancelled()) {
-                logger.debug("Stop Plugwise Home Automation background discovery");
-                discoveryFuture.cancel(true);
-                discoveryFuture = null;
-            }
+        logger.debug("Stopping Plugwise Home Automation background discovery");
+        ScheduledFuture<?> localDiscoveryFuture = discoveryFuture;
+        if (localDiscoveryFuture != null && !localDiscoveryFuture.isCancelled()) {
+            localDiscoveryFuture.cancel(true);
+            discoveryFuture = null;
         }
     }
 
