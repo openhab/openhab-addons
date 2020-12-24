@@ -109,7 +109,7 @@ public final class SseConnection {
             return;
         }
 
-        logger.info("Opening SSE connection...");
+        logger.debug("Opening SSE connection...");
         Request sseRequest = createRequest();
         if (sseRequest == null) {
             logger.warn("Could not create SSE request, not opening SSE connection.");
@@ -208,7 +208,7 @@ public final class SseConnection {
     private void scheduleReconnect(long secondsUntilRetry) {
         long retryInSeconds = Math.max(MINIMUM_RECONNECT_ATTEMPT_WAIT_TIME_IN_SECONDS, secondsUntilRetry);
         scheduler.schedule(this::connectInternal, retryInSeconds, TimeUnit.SECONDS);
-        logger.info("Scheduled reconnect attempt for Miele webservice to take place in {} seconds", retryInSeconds);
+        logger.debug("Scheduled reconnect attempt for Miele webservice to take place in {} seconds", retryInSeconds);
     }
 
     public synchronized void disconnect() {
@@ -216,14 +216,14 @@ public final class SseConnection {
 
         Request runningRequest = sseRequest;
         if (runningRequest == null) {
-            logger.info("SSE connection is not established, skipping SSE disconnect.");
+            logger.debug("SSE connection is not established, skipping SSE disconnect.");
             return;
         }
 
-        logger.info("Disconnecting SSE");
+        logger.debug("Disconnecting SSE");
         runningRequest.abort(new MieleWebserviceDisconnectSseException());
         sseRequest = null;
-        logger.info("Disconnected");
+        logger.debug("Disconnected");
     }
 
     private void onServerSentEvent(ServerSentEvent event) {

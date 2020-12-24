@@ -52,9 +52,9 @@ public class AuthorizationFailedRetryStrategy implements RetryStrategy {
 
     private void refreshToken() {
         try {
-            logger.info("Refreshing Miele OAuth access token.");
+            logger.debug("Refreshing Miele OAuth access token.");
             tokenRefresher.refreshToken(serviceHandle);
-            logger.info("Miele OAuth access token has successfully been refreshed.");
+            logger.debug("Miele OAuth access token has successfully been refreshed.");
         } catch (OAuthException e) {
             throw new MieleWebserviceException("Failed to refresh access token.", e,
                     ConnectionError.AUTHORIZATION_FAILED);

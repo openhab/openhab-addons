@@ -59,7 +59,7 @@ class SseStreamParser {
             }
 
             silentlyCloseReader();
-            logger.info("SSE stream ended. Closing stream.");
+            logger.debug("SSE stream ended. Closing stream.");
             onStreamClosedCallback.accept(null);
         } catch (IOException exception) {
             silentlyCloseReader();
@@ -69,7 +69,7 @@ class SseStreamParser {
                 onStreamClosedCallback.accept(exception.getCause());
             }
         }
-        logger.info("SSE stream closed.");
+        logger.debug("SSE stream closed.");
     }
 
     private void silentlyCloseReader() {

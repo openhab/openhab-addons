@@ -178,7 +178,7 @@ public final class MieleCloudConfigService {
             httpService.registerResources(CSS_ALIAS, WEBSITE_CSS_RESOURCE_PATH, httpContext);
             httpService.registerResources(JS_ALIAS, WEBSITE_JS_RESOURCE_PATH, httpContext);
             httpService.registerResources(IMG_ALIAS, WEBSITE_IMG_RESOURCE_PATH, httpContext);
-            logger.info("Registered Miele Cloud binding website at /mielecloud");
+            logger.debug("Registered Miele Cloud binding website at /mielecloud");
         } catch (NamespaceException | ServletException e) {
             logger.warn(
                     "Failed to register Miele Cloud binding website. Miele Cloud binding website will not be available.",
@@ -209,7 +209,7 @@ public final class MieleCloudConfigService {
         forwardToLoginServlet = null;
         resultServlet = null;
         createBridgeServlet = null;
-        logger.info("Unregistered Miele Cloud binding website at /mielecloud");
+        logger.debug("Unregistered Miele Cloud binding website at /mielecloud");
     }
 
     private void unregisterWebResource(String alias) {

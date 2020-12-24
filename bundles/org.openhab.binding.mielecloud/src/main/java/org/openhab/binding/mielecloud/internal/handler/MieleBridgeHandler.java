@@ -199,7 +199,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onNewAccessToken(String accessToken) {
-        logger.info("Setting new access token for webservice access.");
+        logger.debug("Setting new access token for webservice access.");
         updateProperty(MieleCloudBindingConstants.PROPERTY_ACCESS_TOKEN, accessToken);
 
         // Without this the retry would fail causing the thing to go OFFLINE
@@ -228,7 +228,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     private void tryInitializeWebservice() {
         Optional<String> accessToken = tokenRefresher.getAccessTokenFromStorage(getOAuthServiceHandle());
         if (!accessToken.isPresent()) {
-            logger.info("No OAuth2 access token available. Retrying later.");
+            logger.debug("No OAuth2 access token available. Retrying later.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_NOT_CONFIGURED);
             return;

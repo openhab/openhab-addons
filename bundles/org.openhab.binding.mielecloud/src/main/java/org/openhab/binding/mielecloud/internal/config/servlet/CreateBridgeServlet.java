@@ -90,7 +90,7 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
 
         String locale = getValidLocale(request.getParameter(LOCALE_PARAMETER_NAME));
 
-        logger.info("Auto configuring Miele account using locale '{}' (requested locale was '{}')", locale,
+        logger.debug("Auto configuring Miele account using locale '{}' (requested locale was '{}')", locale,
                 request.getParameter(LOCALE_PARAMETER_NAME));
         try {
             Thing bridge = pairOrReconfigureBridge(locale, bridgeUid);
@@ -125,12 +125,12 @@ public final class CreateBridgeServlet extends AbstractRedirectionServlet {
             throw new BridgeCreationFailedException();
         }
 
-        logger.info("Successfully created bridge {}", thingUid);
+        logger.debug("Successfully created bridge {}", thingUid);
         return thing;
     }
 
     private Thing reconfigureBridge(ThingUID thingUid, String locale) {
-        logger.info("Thing already exists. Modifying configuration.");
+        logger.debug("Thing already exists. Modifying configuration.");
         Thing thing = thingRegistry.get(thingUid);
         if (thing == null) {
             throw new BridgeReconfigurationFailedException(

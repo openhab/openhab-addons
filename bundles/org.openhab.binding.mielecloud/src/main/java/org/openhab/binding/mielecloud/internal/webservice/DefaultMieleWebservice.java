@@ -129,7 +129,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
     private Request createSseRequest(String endpoint) {
         Optional<String> accessToken = this.accessToken;
         if (!accessToken.isPresent()) {
-            logger.info("No access token present.");
+            logger.warn("No access token present.");
             return null;
         }
 
@@ -181,7 +181,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
         formattedProcessAction = formattedProcessAction.substring(1, formattedProcessAction.length() - 1);
         String json = "{\"processAction\":" + formattedProcessAction + "}";
 
-        logger.info("Activate process action {} of Miele device {}", processAction.toString(), deviceId);
+        logger.debug("Activate process action {} of Miele device {}", processAction.toString(), deviceId);
         putActions(deviceId, json);
     }
 
@@ -190,7 +190,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
         Light light = enabled ? Light.ENABLE : Light.DISABLE;
         String json = "{\"light\":" + light.format() + "}";
 
-        logger.info("Set light of Miele device {} to {}", deviceId, enabled);
+        logger.debug("Set light of Miele device {} to {}", deviceId, enabled);
         putActions(deviceId, json);
     }
 
@@ -199,7 +199,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
         String action = enabled ? "powerOn" : "powerOff";
         String json = "{\"" + action + "\":true}";
 
-        logger.info("Set power state of Miele device {} to {}", deviceId, action);
+        logger.debug("Set power state of Miele device {} to {}", deviceId, action);
         putActions(deviceId, json);
     }
 
@@ -207,7 +207,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
     public void putProgram(String deviceId, long programId) {
         String json = "{\"programId\":" + programId + "}";
 
-        logger.info("Activate program with ID {} of Miele device {}", programId, deviceId);
+        logger.debug("Activate program with ID {} of Miele device {}", programId, deviceId);
         putActions(deviceId, json);
     }
 
@@ -215,12 +215,12 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
     public void logout() {
         Optional<String> accessToken = this.accessToken;
         if (!accessToken.isPresent()) {
-            logger.info("No access token present.");
+            logger.debug("No access token present.");
             return;
         }
 
         try {
-            logger.info("Invalidating Miele webservice access token.");
+            logger.debug("Invalidating Miele webservice access token.");
             Request request = requestFactory.createPostRequest(ENDPOINT_LOGOUT, accessToken.get());
             this.accessToken = Optional.empty();
             sendRequest(request);
@@ -275,7 +275,7 @@ public final class DefaultMieleWebservice implements MieleWebservice, SseListene
         }
 
         try {
-            logger.info("Fetch action state description for Miele device {}", deviceId);
+            logger.debug("Fetch action state description for Miele device {}", deviceId);
             Request request = requestFactory.createGetRequest(String.format(ENDPOINT_ACTIONS, deviceId),
                     accessToken.get());
             ContentResponse response = sendRequest(request);
