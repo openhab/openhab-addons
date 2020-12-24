@@ -15,7 +15,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>MobileLink Generator</label>
-		<description>Generator</description>
+		<description>MobileLink Generator</description>
 		<channels>
 			<channel id="connected" typeId="connected"/>
 			<channel id="greenLight" typeId="greenLight"/>

@@ -17,9 +17,13 @@ import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBi
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants;
+import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusDTO;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * The {@link GeneracMobileLinkDiscoveryService} is responsible for discovering generator things
@@ -48,8 +52,13 @@ public class GeneracMobileLinkDiscoveryService extends AbstractDiscoveryService 
         return false;
     }
 
-    @Override
-    public void thingDiscovered(DiscoveryResult result) {
-        super.thingDiscovered(result);
+    public void generatorDiscovered(GeneratorStatusDTO generator, ThingUID bridgeUID) {
+        DiscoveryResult result = DiscoveryResultBuilder
+                .create(new ThingUID(GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR, bridgeUID,
+                        String.valueOf(generator.gensetID)))
+                .withLabel("MobileLink Generator " + generator.generatorName)
+                .withProperty("generatorId", String.valueOf(generator.gensetID))
+                .withRepresentationProperty("generatorId").withBridge(bridgeUID).build();
+        thingDiscovered(result);
     }
 }

@@ -36,8 +36,6 @@ import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusDTO;
 import org.openhab.binding.generacmobilelink.internal.dto.GeneratorStatusResponseDTO;
 import org.openhab.binding.generacmobilelink.internal.dto.LoginRequestDTO;
 import org.openhab.binding.generacmobilelink.internal.dto.LoginResponseDTO;
-import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -125,60 +123,56 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
     }
 
     private void poll() {
-        if (authToken == null) {
-            logger.debug("Attempting Login");
-            login();
-        }
-        getStatuses(true);
-    }
-
-    private synchronized void login() {
-        GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
-        refreshIntervalSeconds = config.refreshInterval;
         try {
-            HTTPResult result = sendRequest(BASE_URL + "/Users/login", HttpMethod.POST, null,
-                    new StringContentProvider(
-                            gson.toJson(new LoginRequestDTO(SHARED_KEY, config.username, config.password))),
-                    "application/json");
-            if (result.responseCode == HttpStatus.OK_200) {
-                LoginResponseDTO loginResponse = gson.fromJson(result.content, LoginResponseDTO.class);
-                if (loginResponse != null) {
-                    authToken = loginResponse.authToken;
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } else {
-                handleErrorResponse(result);
-                if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
-                    // bad credentials, stop trying to login
-                    stopPoll();
-                }
+            if (authToken == null) {
+                logger.debug("Attempting Login");
+                login();
             }
+            getStatuses(true);
         } catch (InterruptedException e) {
         }
     }
 
-    private void getStatuses(boolean retry) {
+    private synchronized void login() throws InterruptedException {
+        GeneracMobileLinkAccountConfiguration config = getConfigAs(GeneracMobileLinkAccountConfiguration.class);
+        refreshIntervalSeconds = config.refreshInterval;
+        HTTPResult result = sendRequest(BASE_URL + "/Users/login", HttpMethod.POST, null,
+                new StringContentProvider(
+                        gson.toJson(new LoginRequestDTO(SHARED_KEY, config.username, config.password))),
+                "application/json");
+        if (result.responseCode == HttpStatus.OK_200) {
+            LoginResponseDTO loginResponse = gson.fromJson(result.content, LoginResponseDTO.class);
+            if (loginResponse != null) {
+                authToken = loginResponse.authToken;
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            handleErrorResponse(result);
+            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
+                // bad credentials, stop trying to login
+                stopPoll();
+            }
+        }
+    }
+
+    private void getStatuses(boolean retry) throws InterruptedException {
         if (authToken == null) {
             return;
         }
-        try {
-            HTTPResult result = sendRequest(BASE_URL + "/Generator/GeneratorStatus", HttpMethod.GET, authToken, null,
-                    null);
-            if (result.responseCode == HttpStatus.OK_200) {
-                generators = gson.fromJson(result.content, GeneratorStatusResponseDTO.class);
-                updateGeneratorThings();
-                if (getThing().getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } else {
-                if (retry) {
-                    logger.debug("Retrying status request");
-                    getStatuses(false);
-                } else {
-                    handleErrorResponse(result);
-                }
+        HTTPResult result = sendRequest(BASE_URL + "/Generator/GeneratorStatus", HttpMethod.GET, authToken, null, null);
+        if (result.responseCode == HttpStatus.OK_200) {
+            generators = gson.fromJson(result.content, GeneratorStatusResponseDTO.class);
+            updateGeneratorThings();
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
             }
-        } catch (InterruptedException e) {
+        } else {
+            if (retry) {
+                logger.debug("Retrying status request");
+                getStatuses(false);
+            } else {
+                handleErrorResponse(result);
+            }
         }
     }
 
@@ -234,7 +228,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                 Thing thing = getThing().getThing(new ThingUID(GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR,
                         getThing().getUID(), String.valueOf(generator.gensetID)));
                 if (thing == null) {
-                    generatorDiscovered(generator);
+                    discoveryService.generatorDiscovered(generator, getThing().getUID());
                 } else {
                     ThingHandler handler = thing.getHandler();
                     if (handler != null) {
@@ -243,16 +237,6 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                 }
             });
         }
-    }
-
-    private void generatorDiscovered(GeneratorStatusDTO generator) {
-        DiscoveryResult result = DiscoveryResultBuilder
-                .create(new ThingUID(GeneracMobileLinkBindingConstants.THING_TYPE_GENERATOR, getThing().getUID(),
-                        String.valueOf(generator.gensetID)))
-                .withLabel("MobileLink Generator " + generator.generatorName)
-                .withProperty("generatorId", String.valueOf(generator.gensetID))
-                .withRepresentationProperty("generatorId").withBridge(getThing().getUID()).build();
-        discoveryService.thingDiscovered(result);
     }
 
     public static class HTTPResult {
