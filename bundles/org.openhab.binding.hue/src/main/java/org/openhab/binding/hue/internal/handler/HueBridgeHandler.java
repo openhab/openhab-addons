@@ -734,6 +734,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             if (config != null) {
                 Map<String, String> properties = editProperties();
                 String serialNumber = config.getBridgeId().substring(0, 6) + config.getBridgeId().substring(10);
+                serialNumber = serialNumber.toLowerCase();
                 properties.put(PROPERTY_SERIAL_NUMBER, serialNumber);
                 properties.put(PROPERTY_MODEL_ID, config.getModelId());
                 properties.put(PROPERTY_MAC_ADDRESS, config.getMACAddress());
