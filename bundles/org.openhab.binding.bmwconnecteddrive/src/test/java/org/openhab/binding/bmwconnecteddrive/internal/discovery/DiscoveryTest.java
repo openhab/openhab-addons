@@ -51,7 +51,8 @@ public class DiscoveryTest {
         Bridge b = mock(Bridge.class);
         when(bh.getThing()).thenReturn(b);
         when(b.getUID()).thenReturn(new ThingUID("bmwconnecteddrive", "account", "abc"));
-        VehicleDiscovery discovery = new VehicleDiscovery(bh);
+        VehicleDiscovery discovery = new VehicleDiscovery();
+        discovery.setThingHandler(bh);
         DiscoveryListener listener = mock(DiscoveryListener.class);
         discovery.addDiscoveryListener(listener);
         VehiclesContainer container = GSON.fromJson(content, VehiclesContainer.class);
@@ -76,18 +77,23 @@ public class DiscoveryTest {
         Bridge b = mock(Bridge.class);
         when(bh.getThing()).thenReturn(b);
         when(b.getUID()).thenReturn(new ThingUID("bmwconnecteddrive", "account", "abc"));
-        VehicleDiscovery discovery = new VehicleDiscovery(bh);
+        VehicleDiscovery discovery = new VehicleDiscovery();
+        discovery.setThingHandler(bh);
         DiscoveryListener listener = mock(DiscoveryListener.class);
         discovery.addDiscoveryListener(listener);
         VehiclesContainer container = GSON.fromJson(content, VehiclesContainer.class);
         ArgumentCaptor<DiscoveryResult> discoveries = ArgumentCaptor.forClass(DiscoveryResult.class);
         ArgumentCaptor<DiscoveryService> services = ArgumentCaptor.forClass(DiscoveryService.class);
 
-        discovery.onResponse(container);
-        verify(listener, times(DISCOVERY_VEHICLES)).thingDiscovered(services.capture(), discoveries.capture());
-        List<DiscoveryResult> results = discoveries.getAllValues();
-        results.forEach(entry -> {
-            logger.info("{}", entry.toString());
-        });
+        if (container != null) {
+            discovery.onResponse(container);
+            verify(listener, times(DISCOVERY_VEHICLES)).thingDiscovered(services.capture(), discoveries.capture());
+            List<DiscoveryResult> results = discoveries.getAllValues();
+            results.forEach(entry -> {
+                logger.info("{}", entry.toString());
+            });
+        } else {
+            assertTrue(false);
+        }
     }
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveHandlerFactory;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Vehicle;
@@ -32,8 +33,11 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,21 +47,14 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-// @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.bmwconnecteddrive")
-public class VehicleDiscovery extends AbstractDiscoveryService {
+public class VehicleDiscovery extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(VehicleDiscovery.class);
     private static final int DISCOVERY_TIMEOUT = 10;
 
-    private ConnectedDriveBridgeHandler bridgeHandler;
+    private @Nullable ConnectedDriveBridgeHandler bridgeHandler;
 
-    public VehicleDiscovery(ConnectedDriveBridgeHandler bh) {
+    public VehicleDiscovery() {
         super(SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
-        bridgeHandler = bh;
-    }
-
-    @Override
-    protected void startScan() {
-        bridgeHandler.requestVehicles();
     }
 
     public void onResponse(VehiclesContainer container) {
@@ -174,5 +171,48 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
             }
         }
         return buf.toString();
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof ConnectedDriveBridgeHandler) {
+            bridgeHandler = (ConnectedDriveBridgeHandler) handler;
+            bridgeHandler.setDiscoveryService(this);
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
+    }
+
+    @Override
+    public int getScanTimeout() {
+        return DISCOVERY_TIMEOUT;
+    }
+
+    @Override
+    public boolean isBackgroundDiscoveryEnabled() {
+        return false;
+    }
+
+    @Override
+    protected void startScan() {
+        bridgeHandler.requestVehicles();
+    }
+
+    @Override
+    public void abortScan() {
+        // nothing to abort
+    }
+
+    @Override
+    public void activate() {
+        super.activate(null);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 }
