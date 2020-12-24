@@ -266,6 +266,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * @return Whether the calendar was loaded successfully.
      */
     private boolean reloadCalendar() {
+        logger.trace("reloading calendar of {}", getThing().getUID());
         if (!calendarFile.isFile()) {
             logger.info("Local file for reloading calendar is missing.");
             return false;
@@ -343,6 +344,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * Updates the states of the Thing and its channels.
      */
     private void updateStates() {
+        logger.trace("updating states of {}", getThing().getUID());
         final AbstractPresentableCalendar calendar = runtimeCalendar;
         if (calendar == null) {
             updateStatus(ThingStatus.OFFLINE);
