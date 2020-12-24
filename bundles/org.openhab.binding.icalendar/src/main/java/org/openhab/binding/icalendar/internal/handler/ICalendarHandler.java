@@ -75,6 +75,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
     private @Nullable AbstractPresentableCalendar runtimeCalendar;
     private @Nullable ScheduledFuture<?> updateJobFuture;
     private Instant updateStatesLastCalledTime;
+    private @Nullable Instant calendarDownloadedTime;
 
     public ICalendarHandler(Bridge bridge, HttpClient httpClient, EventPublisher eventPublisher,
             TimeZoneProvider tzProvider) {
@@ -278,6 +279,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             final AbstractPresentableCalendar calendar = AbstractPresentableCalendar.create(fileStream);
             runtimeCalendar = calendar;
             rescheduleCalendarStateUpdate();
+            calendarDownloadedTime = Instant.ofEpochMilli(calendarFile.lastModified());
         } catch (IOException | CalendarException e) {
             logger.warn("Loading calendar failed: {}", e.getMessage());
             return false;
@@ -374,6 +376,11 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 updateState(CHANNEL_NEXT_EVENT_START, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_END, UnDefType.UNDEF);
             }
+
+            final Instant lastUpdate = calendarDownloadedTime;
+            updateState(CHANNEL_LAST_UPDATE,
+                    (lastUpdate != null ? new DateTimeType(lastUpdate.atZone(tzProvider.getTimeZone()))
+                            : UnDefType.UNDEF));
 
             // process all Command Tags in all Calendar Events which ENDED since updateStates was last called
             // the END Event tags must be processed before the BEGIN ones

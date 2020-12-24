@@ -26,20 +26,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -1052,15 +1039,13 @@ public class Connection {
     }
 
     public List<Device> getDeviceList() throws IOException, URISyntaxException, InterruptedException {
-        String json = getDeviceListJson();
-        JsonDevices devices = parseJson(json, JsonDevices.class);
-        if (devices != null) {
-            Device[] result = devices.devices;
-            if (result != null) {
-                return new ArrayList<>(Arrays.asList(result));
-            }
-        }
-        return Collections.emptyList();
+        JsonDevices devices = Objects.requireNonNull(parseJson(getDeviceListJson(), JsonDevices.class));
+        logger.trace("Devices {}", devices.devices);
+
+        // @Nullable because of a limitation of the null-checker, we filter null-serialNumbers before
+        Set<@Nullable String> serialNumbers = ConcurrentHashMap.newKeySet();
+        return devices.devices.stream().filter(d -> d.serialNumber != null && serialNumbers.add(d.serialNumber))
+                .collect(Collectors.toList());
     }
 
     public String getDeviceListJson() throws IOException, URISyntaxException, InterruptedException {

@@ -89,6 +89,10 @@ The transition time is the time to move between two states and is configured in 
 The resolution provided is 1/10s.
 If no value is provided, the default value of the device is used.
 
+`extendedcolorlight` and `colorlight` have different modes for setting the color.
+Some devices accept only XY, others HSB, others both modes and the binding tries to autodetect the correct mode.
+If this fails, the advanced `colormode` parameter can be set to `xy` or `hs`.
+
 ### Textual Thing Configuration - Retrieving an API Key
 
 If you use the textual configuration, the thing file without an API key will look like this, for example:
@@ -170,7 +174,7 @@ Other devices support
 | valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                    |
 | mode              | String                   |     R/W     | Mode: "auto", "heat" and "off"        | `thermostat`                                    |
 | offset            | Number                   |     R       | Temperature offset for sensor         | `thermostat`                                    |
-| alert             | Switch                   |     R/W     | Turn alerts on/off                    | `warningdevice`, `lightgroup`                   |
+| alert             | String                   |     W       | Turn alerts on. Allowed commands are `none`, `select` (short blinking), `lselect` (long blinking) | `warningdevice`, `lightgroup`, `dimmablelight`, `colorlight`, `extendedcolorlight`, `colortemperaturelight` |
 | all_on            | Switch                   |     R       | All lights in group are on            | `lightgroup`                                    |
 | any_on            | Switch                   |     R       | Any light in group is on              | `lightgroup`                                    |
 | scene             | String                   |     W       | Recall a scene. Allowed commands are set dynamically                                    | `lightgroup`                                    |                  

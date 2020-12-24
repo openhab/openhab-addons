@@ -8,9 +8,7 @@
     <groupId>org.openhab.addons</groupId>
         
     <artifactId>org.openhab.addons.reactor</artifactId>
-        
-    <version>3.0.0-SNAPSHOT</version>
-      
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
     
   <groupId>org.openhab.addons.bundles</groupId>
@@ -24,6 +22,7 @@
   <modules>
     <!-- automation -->
     <module>org.openhab.automation.groovyscripting</module>
+    <module>org.openhab.automation.jythonscripting</module>
     <!-- io -->
         
     <module>org.openhab.io.homekit</module>

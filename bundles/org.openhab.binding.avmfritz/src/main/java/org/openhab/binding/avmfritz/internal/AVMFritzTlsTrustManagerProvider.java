@@ -22,7 +22,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * Provides a TrustManager to allow secure connections to any FRITZ!Box
  *
- * @author Chritoph Weitkamp - Initial Contribution
+ * @author Christoph Weitkamp - Initial Contribution
  */
 @Component
 @NonNullByDefault

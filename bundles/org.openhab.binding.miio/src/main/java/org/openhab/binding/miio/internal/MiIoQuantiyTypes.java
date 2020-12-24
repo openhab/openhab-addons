@@ -48,6 +48,7 @@ public enum MiIoQuantiyTypes {
     LITRE(Units.LITRE, "liter"),
     LUX(Units.LUX),
     RADIANS(Units.RADIAN, "radians"),
+    KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh"),
     SQUARE_METRE(SIUnits.SQUARE_METRE, "square_meter", "squaremeter"),
     PERCENT(Units.PERCENT),
     KGM3(Units.KILOGRAM_PER_CUBICMETRE, "kilogram_per_cubicmeter"),

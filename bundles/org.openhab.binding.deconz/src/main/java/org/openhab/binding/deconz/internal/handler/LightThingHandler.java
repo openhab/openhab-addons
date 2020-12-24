@@ -78,6 +78,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
      */
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
+    private String colorMode = "";
 
     // set defaults, we can override them later if we receive better values
     private int ctMax = ZCL_CT_MAX;
@@ -131,8 +132,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_ALERT:
-                if (command instanceof OnOffType) {
-                    newLightState.alert = command == OnOffType.ON ? "alert" : "none";
+                if (command instanceof StringType) {
+                    newLightState.alert = command.toString();
                 } else {
                     return;
                 }
@@ -179,7 +180,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                     }
                 } else if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
-                    if ("xy".equals(lightStateCache.colormode)) {
+                    if ("xy".equals(colorMode)) {
                         PercentType[] xy = hsbCommand.toXY();
                         if (xy.length < 2) {
                             logger.warn("Failed to convert {} to xy-values", command);
@@ -268,6 +269,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         }
 
         LightMessage lightMessage = (LightMessage) stateResponse;
+
         if (needsPropertyUpdate) {
             // if we did not receive an ctmin/ctmax, then we probably don't need it
             needsPropertyUpdate = false;
@@ -358,7 +360,10 @@ public class LightThingHandler extends DeconzBaseThingHandler {
 
         switch (channelId) {
             case CHANNEL_ALERT:
-                updateState(channelId, "alert".equals(newState.alert) ? OnOffType.ON : OnOffType.OFF);
+                String alert = newState.alert;
+                if (alert != null) {
+                    updateState(channelId, new StringType(alert));
+                }
                 break;
             case CHANNEL_SWITCH:
             case CHANNEL_LOCK:
@@ -426,6 +431,13 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                     // skip for SKIP_UPDATE_TIMESPAN after last command if lightState is different from command
                     logger.trace("Ignoring differing update after last command until {}", lastCommandExpireTimestamp);
                     return;
+                }
+                if (colorMode.isEmpty()) {
+                    String cmode = lightState.colormode;
+                    if (cmode != null && ("hs".equals(cmode) || "xy".equals(cmode))) {
+                        // only set the color mode if it is hs or xy, not ct
+                        colorMode = cmode;
+                    }
                 }
                 lightStateCache = lightState;
                 if (Boolean.TRUE.equals(lightState.reachable)) {
