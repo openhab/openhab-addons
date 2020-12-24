@@ -18,6 +18,7 @@ import java.io.StringWriter;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,8 +45,6 @@ import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.jetty.util.B64Code;
-import org.eclipse.jetty.util.StringUtil;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHABadRequestException;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAForbiddenException;
@@ -100,7 +99,7 @@ public class PlugwiseHAControllerRequest<T> {
         // Create Basic Auth header if username and password are supplied
         if (!username.isBlank() && !password.isBlank()) {
             setHeader(HttpHeader.AUTHORIZATION.toString(),
-                    "Basic " + B64Code.encode(String.format("%s:%s", username, password), StringUtil.__ISO_8859_1));
+                    "Basic " + Base64.getEncoder().encodeToString(String.format("%s:%s", username, password).getBytes()));
         }
     }
 
