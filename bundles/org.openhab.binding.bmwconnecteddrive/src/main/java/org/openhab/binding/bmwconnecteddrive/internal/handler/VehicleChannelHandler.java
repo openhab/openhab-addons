@@ -45,7 +45,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -442,11 +442,11 @@ public class VehicleChannelHandler extends BaseThingHandler {
         updateState(lifeTimeSingleLongestDistance, QuantityType
                 .valueOf(Converter.round(allTrips.chargecycleRange.userHigh), MetricPrefix.KILO(SIUnits.METRE)));
         updateState(lifeTimeAverageConsumption, QuantityType
-                .valueOf(Converter.round(allTrips.avgElectricConsumption.userAverage), SmartHomeUnits.KILOWATT_HOUR));
+                .valueOf(Converter.round(allTrips.avgElectricConsumption.userAverage), Units.KILOWATT_HOUR));
         updateState(lifetimeAvgCombinedConsumption,
-                QuantityType.valueOf(allTrips.avgCombinedConsumption.userAverage, SmartHomeUnits.LITRE));
-        updateState(lifeTimeAverageRecuperation, QuantityType
-                .valueOf(Converter.round(allTrips.avgRecuperation.userAverage), SmartHomeUnits.KILOWATT_HOUR));
+                QuantityType.valueOf(allTrips.avgCombinedConsumption.userAverage, Units.LITRE));
+        updateState(lifeTimeAverageRecuperation,
+                QuantityType.valueOf(Converter.round(allTrips.avgRecuperation.userAverage), Units.KILOWATT_HOUR));
         updateState(tripDistanceSinceCharging, QuantityType.valueOf(
                 Converter.round(allTrips.chargecycleRange.userCurrentChargeCycle), MetricPrefix.KILO(SIUnits.METRE)));
     }
@@ -454,15 +454,14 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected void updateLastTrip(LastTrip trip) {
         // Whyever the Last Trip DateTime is delivered without offest - so LocalTime
         updateState(tripDateTime, DateTimeType.valueOf(Converter.getLocalDateTimeWithoutOffest(trip.date)));
-        updateState(tripDuration, QuantityType.valueOf(trip.duration, SmartHomeUnits.MINUTE));
+        updateState(tripDuration, QuantityType.valueOf(trip.duration, Units.MINUTE));
         updateState(tripDistance,
                 QuantityType.valueOf(Converter.round(trip.totalDistance), MetricPrefix.KILO(SIUnits.METRE)));
         updateState(tripAvgConsumption,
-                QuantityType.valueOf(Converter.round(trip.avgElectricConsumption), SmartHomeUnits.KILOWATT_HOUR));
-        updateState(tripAvgCombinedConsumption,
-                QuantityType.valueOf(trip.avgCombinedConsumption, SmartHomeUnits.LITRE));
+                QuantityType.valueOf(Converter.round(trip.avgElectricConsumption), Units.KILOWATT_HOUR));
+        updateState(tripAvgCombinedConsumption, QuantityType.valueOf(trip.avgCombinedConsumption, Units.LITRE));
         updateState(tripAvgRecuperation,
-                QuantityType.valueOf(Converter.round(trip.avgRecuperation), SmartHomeUnits.KILOWATT_HOUR));
+                QuantityType.valueOf(Converter.round(trip.avgRecuperation), Units.KILOWATT_HOUR));
     }
 
     protected void updateChargeProfile(ChargeProfile cp) {
@@ -510,7 +509,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     protected void updatePosition(Position pos) {
         updateState(gpsLocation, PointType.valueOf(pos.getCoordinates()));
-        updateState(heading, QuantityType.valueOf(pos.heading, SmartHomeUnits.DEGREE_ANGLE));
+        updateState(heading, QuantityType.valueOf(pos.heading, Units.DEGREE_ANGLE));
     }
 
     protected void updateVehicleStatus(VehicleStatus vStatus) {
@@ -596,10 +595,10 @@ public class VehicleChannelHandler extends BaseThingHandler {
             }
         }
         if (isElectric) {
-            updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, SmartHomeUnits.PERCENT));
+            updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, Units.PERCENT));
         }
         if (hasFuel) {
-            updateState(remainingFuel, QuantityType.valueOf(vStatus.remainingFuel, SmartHomeUnits.LITRE));
+            updateState(remainingFuel, QuantityType.valueOf(vStatus.remainingFuel, Units.LITRE));
         }
 
         // Charge Values
