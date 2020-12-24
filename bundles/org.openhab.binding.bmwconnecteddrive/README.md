@@ -308,13 +308,8 @@ State *Executed* is the final State when Execution is finished.
 
 | Channel Label           | Channel Group ID | Channel ID          | Type    | 
 |-------------------------|------------------|---------------------|---------|
-| Activate Flash Lights   | remote           | light               | Switch  |
-| Find Vehicle            | remote           | finder              | Switch  |
-| Lock Doors              | remote           | lock                | Switch  |
-| Unlock Doors            | remote           | unlock              | Switch  |
-| Horn Blow               | remote           | horn                | Switch  |
-| Active Air Conditioning | remote           | climate             | Switch  |
-| Service Execution State | remote           | state               | STring  |
+| Remote Service Command  | remote           | command             | String  |
+| Service Execution State | remote           | state               | String  |
 
 #### Destinations
 

@@ -7,12 +7,7 @@
 		<label>Remote Services</label>
 		<description>Services can be executed via BMW Server like Door lock/unlock, Air Conditioning and more</description>
 		<channels>
-			<channel id="light" typeId="remote-light-channel"/>
-			<channel id="finder" typeId="remote-finder-channel"/>
-			<channel id="lock" typeId="remote-lock-channel"/>
-			<channel id="unlock" typeId="remote-unlock-channel"/>
-			<channel id="horn" typeId="remote-horn-channel"/>
-			<channel id="climate" typeId="remote-climate-channel"/>
+			<channel id="command" typeId="remote-command-channel"/>
 			<channel id="state" typeId="remote-state-channel"/>
 		</channels>
 	</channel-group-type>
