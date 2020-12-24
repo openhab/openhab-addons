@@ -54,7 +54,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
 
     private Future<?> telnetStateRequest;
 
-    private Future<?> telnetRunnable;
+    private Thread telnetRunnable;
 
     public DenonMarantzTelnetConnector(DenonMarantzConfiguration config, DenonMarantzState state,
             ScheduledExecutorService scheduler) {
@@ -69,7 +69,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
     @Override
     public void connect() {
         telnetClient = new DenonMarantzTelnetClient(config, this);
-        telnetRunnable = scheduler.submit(telnetClient);
+        telnetRunnable = new Thread(telnetClient);
     }
 
     @Override
@@ -98,9 +98,11 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
             telnetStateRequest = null;
         }
 
-        if (telnetClient != null && !telnetRunnable.isDone()) {
-            telnetRunnable.cancel(true);
+        if (telnetClient != null) {
+            telnetRunnable.interrupt();
             telnetClient.shutdown();
+            telnetClient = null;
+            telnetRunnable = null;
         }
     }
 
