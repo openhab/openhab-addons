@@ -65,6 +65,8 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
                 commManager.enrollPowerlink();
                 updatedState = commManager.createNewState();
                 updatedState.setDownloadSetupRequired(true);
+            } else {
+                commManager.sendAck(this, (byte) 0x02);
             }
         } else {
             addDebugInfo("Subtype", subType, "UNKNOWN");

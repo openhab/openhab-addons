@@ -50,7 +50,7 @@ public class PowermaxInfoMessage extends PowermaxBaseMessage {
 
         PowermaxPanelType panelType = null;
         try {
-            panelType = PowermaxPanelType.fromCode(message[7]);
+            panelType = PowermaxPanelType.fromCode(panelTypeNr);
             panelTypeStr = panelType.toString();
         } catch (IllegalArgumentException e) {
             panelType = null;

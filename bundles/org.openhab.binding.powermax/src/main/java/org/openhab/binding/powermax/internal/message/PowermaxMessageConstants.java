@@ -15,7 +15,7 @@ package org.openhab.binding.powermax.internal.message;
 /**
  * Constants used in Powermax messages
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Ron Isaacson - Initial contribution
  */
 public class PowermaxMessageConstants {
 

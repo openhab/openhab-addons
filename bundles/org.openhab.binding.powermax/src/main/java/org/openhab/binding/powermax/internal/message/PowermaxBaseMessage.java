@@ -15,6 +15,7 @@ package org.openhab.binding.powermax.internal.message;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public class PowermaxBaseMessage {
      * @param message the message as a buffer of bytes
      */
     public PowermaxBaseMessage(byte[] message) {
-        this.debugInfo = new ArrayList<String>();
+        this.debugInfo = new ArrayList<>();
         this.sendType = null;
         decodeMessage(message);
     }
@@ -62,7 +63,7 @@ public class PowermaxBaseMessage {
      * @param param the dynamic part of a message to be sent; null if no dynamic part
      */
     public PowermaxBaseMessage(PowermaxSendType sendType, byte[] param) {
-        this.debugInfo = new ArrayList<String>();
+        this.debugInfo = new ArrayList<>();
         this.sendType = sendType;
         byte[] message = new byte[sendType.getMessage().length + 3];
         int index = 0;
@@ -166,14 +167,14 @@ public class PowermaxBaseMessage {
 
     // Debugging helpers
 
-    public void addDebugInfo(String name, String info, String decoded) {
+    public void addDebugInfo(String name, String info, @Nullable String decoded) {
         StringBuilder debugLine = new StringBuilder();
 
         debugLine.append(name);
         debugLine.append(" = ");
         debugLine.append(info);
 
-        if ((decoded != null) && !(decoded.isBlank())) {
+        if (decoded != null && !decoded.isBlank()) {
             debugLine.append(" - " + decoded);
         }
 
@@ -184,7 +185,7 @@ public class PowermaxBaseMessage {
         addDebugInfo(name, info, null);
     }
 
-    public void addDebugInfo(String name, byte[] data, String decoded) {
+    public void addDebugInfo(String name, byte[] data, @Nullable String decoded) {
         String hex = "0x" + HexUtils.bytesToHex(data);
         addDebugInfo(name, hex, decoded);
     }
@@ -193,9 +194,8 @@ public class PowermaxBaseMessage {
         addDebugInfo(name, data, null);
     }
 
-    public void addDebugInfo(String name, int data, String decoded) {
-        String len = data <= 0xFF ? "02" : data <= 0xFFFF ? "04" : "08";
-        String hex = String.format("0x%" + len + "X", data);
+    public void addDebugInfo(String name, int data, @Nullable String decoded) {
+        String hex = String.format("0x%02X", data);
         addDebugInfo(name, hex, decoded);
     }
 
