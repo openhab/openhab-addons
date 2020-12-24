@@ -32,7 +32,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
-import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.ExecutionState;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.RemoteService;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
@@ -111,40 +110,37 @@ public class VehicleHandler extends VehicleChannelHandler {
         // Check for Channel Group and corresponding Actions
         if (CHANNEL_GROUP_REMOTE.equals(group)) {
             // Executing Remote Services
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
-                    if (remote.isPresent()) {
-                        switch (channelUID.getIdWithoutGroup()) {
-                            case REMOTE_SERVICE_LIGHT_FLASH:
-                                updateState(remoteLightChannel,
-                                        OnOffType.from(remote.get().execute(RemoteService.LIGHT_FLASH)));
-                                break;
-                            case REMOTE_SERVICE_AIR_CONDITIONING:
-                                updateState(remoteClimateChannel,
-                                        OnOffType.from(remote.get().execute(RemoteService.AIR_CONDITIONING)));
-                                break;
-                            case REMOTE_SERVICE_DOOR_LOCK:
-                                updateState(remoteLockChannel,
-                                        OnOffType.from(remote.get().execute(RemoteService.DOOR_LOCK)));
-                                break;
-                            case REMOTE_SERVICE_DOOR_UNLOCK:
-                                updateState(remoteUnlockChannel,
-                                        OnOffType.from(remote.get().execute(RemoteService.DOOR_UNLOCK)));
-                                break;
-                            case REMOTE_SERVICE_HORN:
-                                updateState(remoteHornChannel,
-                                        OnOffType.from(remote.get().execute(RemoteService.HORN)));
-                                break;
-                            case REMOTE_SERVICE_VEHICLE_FINDER:
-                                updateState(remoteFinderChannel,
-                                        OnOffType.from(remote.get().execute(RemoteService.VEHICLE_FINDER)));
-                                break;
-                        }
+            if (command instanceof StringType) {
+                String serviceCommand = ((StringType) command).toFullString();
+                if (remote.isPresent()) {
+                    switch (serviceCommand) {
+                        case REMOTE_SERVICE_LIGHT_FLASH:
+                            remote.get().execute(RemoteService.LIGHT_FLASH);
+                            break;
+                        case REMOTE_SERVICE_AIR_CONDITIONING:
+                            remote.get().execute(RemoteService.AIR_CONDITIONING);
+                            break;
+                        case REMOTE_SERVICE_DOOR_LOCK:
+                            remote.get().execute(RemoteService.DOOR_LOCK);
+                            break;
+                        case REMOTE_SERVICE_DOOR_UNLOCK:
+                            remote.get().execute(RemoteService.DOOR_UNLOCK);
+                            break;
+                        case REMOTE_SERVICE_HORN:
+                            remote.get().execute(RemoteService.HORN);
+                            break;
+                        case REMOTE_SERVICE_VEHICLE_FINDER:
+                            remote.get().execute(RemoteService.VEHICLE_FINDER);
+                            break;
+                        default:
+                            logger.info("Remote service execution {} unknown", serviceCommand);
+                            break;
                     }
-                    updateState(vehicleFingerPrint, OnOffType.OFF);
                 }
             }
-        } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
+        } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group))
+
+        {
             // Image Change
             if (configuration.isPresent()) {
                 if (command instanceof StringType) {
@@ -314,7 +310,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                 }
 
                 // Switch all Remote Service Channels and other Switches Off
-                switchRemoteServicesOff();
                 updateState(vehicleFingerPrint, OnOffType.OFF);
                 updateState(serviceNext, OnOffType.OFF);
                 updateState(checkControlNext, OnOffType.OFF);
@@ -339,16 +334,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
-    }
-
-    public void switchRemoteServicesOff() {
-        updateState(remoteLightChannel, OnOffType.from(false));
-        updateState(remoteFinderChannel, OnOffType.from(false));
-        updateState(remoteLockChannel, OnOffType.from(false));
-        updateState(remoteUnlockChannel, OnOffType.from(false));
-        updateState(remoteHornChannel, OnOffType.from(false));
-        updateState(remoteClimateChannel, OnOffType.from(false));
-        updateState(remoteStateChannel, OnOffType.from(false));
     }
 
     private void startSchedule(int interval) {
@@ -419,9 +404,6 @@ public class VehicleHandler extends VehicleChannelHandler {
     public void updateRemoteExecutionStatus(String service, String status) {
         updateState(remoteStateChannel, StringType
                 .valueOf(Converter.toTitleCase(new StringBuilder(service).append(" ").append(status).toString())));
-        if (ExecutionState.EXECUTED.toString().equals(status)) {
-            switchRemoteServicesOff();
-        }
     }
 
     public Optional<VehicleConfiguration> getConfiguration() {

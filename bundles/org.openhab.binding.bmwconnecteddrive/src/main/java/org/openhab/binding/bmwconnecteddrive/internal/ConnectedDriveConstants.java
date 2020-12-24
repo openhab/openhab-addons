@@ -178,6 +178,7 @@ public class ConnectedDriveConstants {
     public static final String REMOTE_SERVICE_DOOR_UNLOCK = "unlock";
     public static final String REMOTE_SERVICE_HORN = "horn";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING = "climate";
+    public static final String REMOTE_SERVICE_COMMAND = "command";
     public static final String REMOTE_STATE = "state";
 
     // Troubleshoot

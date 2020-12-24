@@ -166,6 +166,5 @@ public class RemoteServiceHandler implements StringResponseCallback {
             serviceExecuting = Optional.empty();
             counter = 0;
         }
-        handler.switchRemoteServicesOff();
     }
 }

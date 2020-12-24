@@ -3,29 +3,19 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="remote-light-channel">
-		<item-type>Switch</item-type>
-		<label>Activate Flash Lights</label>
-	</channel-type>
-	<channel-type id="remote-finder-channel">
-		<item-type>Switch</item-type>
-		<label>Find Vehicle</label>
-	</channel-type>
-	<channel-type id="remote-lock-channel">
-		<item-type>Switch</item-type>
-		<label>Lock Doors</label>
-	</channel-type>
-	<channel-type id="remote-unlock-channel">
-		<item-type>Switch</item-type>
-		<label>Unlock Doors</label>
-	</channel-type>
-	<channel-type id="remote-horn-channel">
-		<item-type>Switch</item-type>
-		<label>Horn Blow</label>
-	</channel-type>
-	<channel-type id="remote-climate-channel">
-		<item-type>Switch</item-type>
-		<label>Active Air Conditioning</label>
+	<channel-type id="remote-command-channel">
+		<item-type>String</item-type>
+		<label>Remote Command Execution</label>
+		<command>
+			<options>
+				<option value="light">Flash Lights</option>
+				<option value="finder">Vehicle Finder</option>
+				<option value="lock">Door Lock</option>
+				<option value="unlock">Door Unlock</option>
+				<option value="horn">Horn Blow</option>
+				<option value="climate">Climate Control</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="remote-state-channel">
 		<item-type>String</item-type>

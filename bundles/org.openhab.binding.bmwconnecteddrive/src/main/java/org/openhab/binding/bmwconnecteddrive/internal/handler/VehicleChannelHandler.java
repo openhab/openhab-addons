@@ -140,12 +140,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID heading;
 
     // Remote Services
-    protected ChannelUID remoteLightChannel;
-    protected ChannelUID remoteFinderChannel;
-    protected ChannelUID remoteLockChannel;
-    protected ChannelUID remoteUnlockChannel;
-    protected ChannelUID remoteHornChannel;
-    protected ChannelUID remoteClimateChannel;
+    protected ChannelUID remoteCommandChannel;
     protected ChannelUID remoteStateChannel;
 
     // Remote Services
@@ -283,12 +278,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         timer3Enabled = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS);
         timer3Days = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_ENABLED);
 
-        remoteLightChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_LIGHT_FLASH);
-        remoteFinderChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_VEHICLE_FINDER);
-        remoteLockChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_DOOR_LOCK);
-        remoteUnlockChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_DOOR_UNLOCK);
-        remoteHornChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_HORN);
-        remoteClimateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_AIR_CONDITIONING);
+        remoteCommandChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_COMMAND);
         remoteStateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_STATE);
 
         destinationName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, NAME);
