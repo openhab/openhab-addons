@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.plugwiseha.internal.config;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -56,7 +55,7 @@ public class PlugwiseHABridgeThingConfig {
     }
 
     public boolean isValid() {
-        return StringUtils.isNotBlank(host) && StringUtils.isNotBlank(username) && StringUtils.isNotBlank(smileId);
+        return !host.isBlank() && !username.isBlank() && !smileId.isBlank();
     }
 
     @Override

@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.plugwiseha.internal.api.model.DTO;
+package org.openhab.binding.plugwiseha.internal.api.model.dto;
 
 import java.util.Map;
 import java.util.Optional;
@@ -55,8 +55,12 @@ public class ActuatorFunctionalities extends PlugwiseHACollection<ActuatorFuncti
                 String type = actuatorFunctionality.getType();
                 ActuatorFunctionality originalActuatorFunctionality = this.get(type);
 
-                if (originalActuatorFunctionality == null
-                        || originalActuatorFunctionality.isOlderThan(actuatorFunctionality)) {
+                Boolean originalIsOlder = false;
+                if (originalActuatorFunctionality != null) {
+                    originalIsOlder = originalActuatorFunctionality.isOlderThan(actuatorFunctionality);
+                }
+
+                if (originalActuatorFunctionality == null || originalIsOlder) {
                     this.put(type, actuatorFunctionality);
                 }
             }

@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.plugwiseha.internal.api.model.DTO;
+package org.openhab.binding.plugwiseha.internal.api.model.dto;
 
 import java.util.Map;
 
@@ -27,19 +27,27 @@ public class Appliances extends PlugwiseHACollection<Appliance> {
     @Override
     public void merge(Map<String, Appliance> appliances) {
         if (appliances != null) {
-            for (Appliance updatedAppliance : appliances.values()) {
-                String id = updatedAppliance.getId();
+            for (Appliance applicance : appliances.values()) {
+                String id = applicance.getId();
                 Appliance originalAppliance = this.get(id);
 
-                if (originalAppliance != null && originalAppliance.isOlderThan(updatedAppliance)) {
-                    Logs updatedPointLogs = updatedAppliance.getPointLogs();
-                    ActuatorFunctionalities updatedActuatorFunctionalities = updatedAppliance
-                            .getActuatorFunctionalities();
+                Boolean originalApplianceIsOlder = false;
+                if (originalAppliance != null) {
+                    originalApplianceIsOlder = originalAppliance.isOlderThan(applicance);
+                }
 
-                    updatedPointLogs.merge(originalAppliance.getPointLogs());
-                    updatedActuatorFunctionalities.merge(originalAppliance.getActuatorFunctionalities());
+                if (originalAppliance != null && originalApplianceIsOlder) {
+                    Logs updatedPointLogs = applicance.getPointLogs();
+                    if (updatedPointLogs != null) {
+                        updatedPointLogs.merge(originalAppliance.getPointLogs());
+                    }
 
-                    this.put(id, updatedAppliance);
+                    ActuatorFunctionalities updatedActuatorFunctionalities = applicance.getActuatorFunctionalities();
+                    if (updatedActuatorFunctionalities != null) {
+                        updatedActuatorFunctionalities.merge(originalAppliance.getActuatorFunctionalities());
+                    }
+
+                    this.put(id, applicance);
                 }
             }
         }

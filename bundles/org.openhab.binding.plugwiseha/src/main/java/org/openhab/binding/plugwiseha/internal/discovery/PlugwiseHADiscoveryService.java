@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException;
-import org.openhab.binding.plugwiseha.internal.api.model.DTO.Appliance;
-import org.openhab.binding.plugwiseha.internal.api.model.DTO.DomainObjects;
-import org.openhab.binding.plugwiseha.internal.api.model.DTO.Location;
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.Appliance;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.DomainObjects;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.Location;
 import org.openhab.binding.plugwiseha.internal.handler.PlugwiseHABridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;

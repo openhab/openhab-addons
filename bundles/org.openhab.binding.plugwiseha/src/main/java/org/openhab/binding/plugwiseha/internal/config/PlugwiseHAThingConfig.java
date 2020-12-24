@@ -13,7 +13,6 @@
 
 package org.openhab.binding.plugwiseha.internal.config;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -44,7 +43,7 @@ public class PlugwiseHAThingConfig {
     // Member methods
 
     public boolean isValid() {
-        return StringUtils.isNotBlank(id) && lowBatteryPercentage > 0 && lowBatteryPercentage < 100;
+        return !id.isBlank() && lowBatteryPercentage > 0 && lowBatteryPercentage < 100;
     }
 
     @Override

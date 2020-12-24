@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.plugwiseha.internal.api.model.DTO;
+package org.openhab.binding.plugwiseha.internal.api.model.dto;
 
 import java.util.Map;
 
@@ -28,23 +28,27 @@ public class Locations extends PlugwiseHACollection<Location> {
     @Override
     public void merge(Map<String, Location> locations) {
         if (locations != null) {
-            for (Location updatedLocation : locations.values()) {
-                String id = updatedLocation.getId();
+            for (Location location : locations.values()) {
+                String id = location.getId();
                 Location originalLocation = this.get(id);
 
-                try {
-                    if (originalLocation != null && originalLocation.isOlderThan(updatedLocation)) {
-                        Logs updatedPointLogs = updatedLocation.getPointLogs();
-                        ActuatorFunctionalities updatedActuatorFunctionalities = updatedLocation
-                                .getActuatorFunctionalities();
+                Boolean originalLocationIsOlder = false;
+                if (originalLocation != null) {
+                    originalLocationIsOlder = originalLocation.isOlderThan(location);
+                }
 
+                if (originalLocation != null && originalLocationIsOlder) {
+                    Logs updatedPointLogs = location.getPointLogs();
+                    if (updatedPointLogs != null) {
                         updatedPointLogs.merge(originalLocation.getPointLogs());
-                        updatedActuatorFunctionalities.merge(originalLocation.getActuatorFunctionalities());
-
-                        this.put(id, updatedLocation);
                     }
-                } catch (NullPointerException e) {
-                    e.toString();
+
+                    ActuatorFunctionalities updatedActuatorFunctionalities = location.getActuatorFunctionalities();
+                    if (updatedActuatorFunctionalities != null) {
+                        updatedActuatorFunctionalities.merge(originalLocation.getActuatorFunctionalities());
+                    }
+
+                    this.put(id, location);
                 }
             }
         }

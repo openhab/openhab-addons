@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.plugwiseha.internal.api.model.DTO;
+package org.openhab.binding.plugwiseha.internal.api.model.dto;
 
 import java.util.ArrayList;
 import java.util.List;

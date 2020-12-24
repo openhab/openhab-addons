@@ -31,7 +31,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -99,7 +98,7 @@ public class PlugwiseHAControllerRequest<T> {
         setHeader(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_TEXT_XML);
 
         // Create Basic Auth header if username and password are supplied
-        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+        if (!username.isBlank() && !password.isBlank()) {
             setHeader(HttpHeader.AUTHORIZATION.toString(),
                     "Basic " + B64Code.encode(String.format("%s:%s", username, password), StringUtil.__ISO_8859_1));
         }

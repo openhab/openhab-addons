@@ -29,8 +29,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException;
-import org.openhab.binding.plugwiseha.internal.api.model.DTO.Appliance;
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.Appliance;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -250,110 +250,105 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
         // TODO Fetch appliance from API to force refresh - use synchronized block to
         // prevent multiple threads from calling
 
-        try {
-            switch (channelID) {
-                case APPLIANCE_BATTERYLEVEL_CHANNEL: {
-                    Optional<Double> batteryLevelOptional = entity.getBatteryLevel();
-                    Double batteryLevel = batteryLevelOptional.isPresent() ? batteryLevelOptional.get() * 100 : null;
+        switch (channelID) {
+            case APPLIANCE_BATTERYLEVEL_CHANNEL: {
+                Double batteryLevel = entity.getBatteryLevel().orElse(null);
 
-                    if (batteryLevelOptional.isPresent()) {
-                        state = new DecimalType(batteryLevel.intValue());
-                        if (batteryLevel <= config.getLowBatteryPercentage()) {
-                            updateState(APPLIANCE_BATTERYLEVELLOW_CHANNEL, OnOffType.ON);
-                        } else {
-                            updateState(APPLIANCE_BATTERYLEVELLOW_CHANNEL, OnOffType.OFF);
-                        }
+                if (batteryLevel != null) {
+                    batteryLevel = batteryLevel * 100;
+                    state = new DecimalType(batteryLevel.intValue());
+                    if (batteryLevel <= config.getLowBatteryPercentage()) {
+                        updateState(APPLIANCE_BATTERYLEVELLOW_CHANNEL, OnOffType.ON);
+                    } else {
+                        updateState(APPLIANCE_BATTERYLEVELLOW_CHANNEL, OnOffType.OFF);
                     }
-                    break;
                 }
-                case APPLIANCE_BATTERYLEVELLOW_CHANNEL: {
-                    Double batteryLevel = entity.getBatteryLevel().orElse(null);
-
-                    if (batteryLevel != null) {
-                        batteryLevel *= 100;
-                        if (batteryLevel <= config.getLowBatteryPercentage()) {
-                            state = OnOffType.ON;
-                        } else {
-                            state = OnOffType.OFF;
-                        }
-                    }
-                    break;
-                }
-                case APPLIANCE_CHSTATE_CHANNEL:
-                    if (entity.getCHState().isPresent()) {
-                        if (entity.getCHState().get()) {
-                            state = OnOffType.ON;
-                        } else {
-                            state = OnOffType.OFF;
-                        }
-                    }
-                    break;
-                case APPLIANCE_DHWSTATE_CHANNEL:
-                    if (entity.getDHWState().isPresent()) {
-                        if (entity.getDHWState().get()) {
-                            state = OnOffType.ON;
-                        } else {
-                            state = OnOffType.OFF;
-                        }
-                    }
-                    break;
-                case APPLIANCE_LOCK_CHANNEL:
-                    Boolean relayLockState = entity.getRelayLockState().orElse(null);
-
-                    if (relayLockState != null) {
-                        if (relayLockState) {
-                            state = OnOffType.ON;
-                        } else {
-                            state = OnOffType.OFF;
-                        }
-                    }
-                    break;
-                case APPLIANCE_OFFSET_CHANNEL:
-                    if (entity.getOffsetTemperature().isPresent()) {
-                        state = new DecimalType(entity.getOffsetTemperature().get());
-                    }
-                    break;
-                case APPLIANCE_POWER_CHANNEL:
-                    if (entity.getRelayState().isPresent()) {
-                        if (entity.getRelayState().get()) {
-                            state = OnOffType.ON;
-                        } else {
-                            state = OnOffType.OFF;
-                        }
-                    }
-                    break;
-                case APPLIANCE_POWER_USAGE_CHANNEL:
-                    if (entity.getPowerUsage().isPresent()) {
-                        state = new DecimalType(entity.getPowerUsage().get());
-                    }
-                    break;
-                case APPLIANCE_SETPOINT_CHANNEL:
-                    if (entity.getSetpointTemperature().isPresent()) {
-                        state = new DecimalType(entity.getSetpointTemperature().get());
-                    }
-                    break;
-                case APPLIANCE_TEMPERATURE_CHANNEL:
-                    if (entity.getTemperature().isPresent()) {
-                        state = new DecimalType(entity.getTemperature().get());
-                    }
-                    break;
-                case APPLIANCE_VALVEPOSITION_CHANNEL:
-                    if (entity.getValvePosition().isPresent()) {
-                        state = new DecimalType(entity.getValvePosition().get());
-                    }
-                    break;
-                case APPLIANCE_WATERPRESSURE_CHANNEL:
-                    if (entity.getWaterPressure().isPresent()) {
-                        state = new DecimalType(entity.getWaterPressure().get());
-                    }
-                    break;
-                default:
-                    break;
+                break;
             }
-        } catch (NullPointerException e) {
-            e.toString();
-            throw e;
-        }
+            case APPLIANCE_BATTERYLEVELLOW_CHANNEL: {
+                Double batteryLevel = entity.getBatteryLevel().orElse(null);
+
+                if (batteryLevel != null) {
+                    batteryLevel *= 100;
+                    if (batteryLevel <= config.getLowBatteryPercentage()) {
+                        state = OnOffType.ON;
+                    } else {
+                        state = OnOffType.OFF;
+                    }
+                }
+                break;
+            }
+            case APPLIANCE_CHSTATE_CHANNEL:
+                if (entity.getCHState().isPresent()) {
+                    if (entity.getCHState().get()) {
+                        state = OnOffType.ON;
+                    } else {
+                        state = OnOffType.OFF;
+                    }
+                }
+                break;
+            case APPLIANCE_DHWSTATE_CHANNEL:
+                if (entity.getDHWState().isPresent()) {
+                    if (entity.getDHWState().get()) {
+                        state = OnOffType.ON;
+                    } else {
+                        state = OnOffType.OFF;
+                    }
+                }
+                break;
+            case APPLIANCE_LOCK_CHANNEL:
+                Boolean relayLockState = entity.getRelayLockState().orElse(null);
+
+                if (relayLockState != null) {
+                    if (relayLockState) {
+                        state = OnOffType.ON;
+                    } else {
+                        state = OnOffType.OFF;
+                    }
+                }
+                break;
+            case APPLIANCE_OFFSET_CHANNEL:
+                if (entity.getOffsetTemperature().isPresent()) {
+                    state = new DecimalType(entity.getOffsetTemperature().get());
+                }
+                break;
+            case APPLIANCE_POWER_CHANNEL:
+                if (entity.getRelayState().isPresent()) {
+                    if (entity.getRelayState().get()) {
+                        state = OnOffType.ON;
+                    } else {
+                        state = OnOffType.OFF;
+                    }
+                }
+                break;
+            case APPLIANCE_POWER_USAGE_CHANNEL:
+                if (entity.getPowerUsage().isPresent()) {
+                    state = new DecimalType(entity.getPowerUsage().get());
+                }
+                break;
+            case APPLIANCE_SETPOINT_CHANNEL:
+                if (entity.getSetpointTemperature().isPresent()) {
+                    state = new DecimalType(entity.getSetpointTemperature().get());
+                }
+                break;
+            case APPLIANCE_TEMPERATURE_CHANNEL:
+                if (entity.getTemperature().isPresent()) {
+                    state = new DecimalType(entity.getTemperature().get());
+                }
+                break;
+            case APPLIANCE_VALVEPOSITION_CHANNEL:
+                if (entity.getValvePosition().isPresent()) {
+                    state = new DecimalType(entity.getValvePosition().get());
+                }
+                break;
+            case APPLIANCE_WATERPRESSURE_CHANNEL:
+                if (entity.getWaterPressure().isPresent()) {
+                    state = new DecimalType(entity.getWaterPressure().get());
+                }
+                break;
+            default:
+                break;
+            }
 
         if (state != UnDefType.NULL && state != UnDefType.UNDEF) {
             updateState(channelID, state);

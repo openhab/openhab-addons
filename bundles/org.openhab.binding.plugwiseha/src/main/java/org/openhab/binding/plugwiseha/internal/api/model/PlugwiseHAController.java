@@ -24,12 +24,11 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException;
-import org.openhab.binding.plugwiseha.internal.api.model.DTO.*;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.*;
 import org.openhab.binding.plugwiseha.internal.api.xml.PlugwiseHAXStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +45,9 @@ public class PlugwiseHAController {
 
     // Private member variables/constants
 
-    private final static int MAX_AGE_MINUTES_REFRESH = 10;
-    private final static int MAX_AGE_MINUTES_FULL_REFRESH = 30;
-    private final static DateTimeFormatter FORMAT = DateTimeFormatter.RFC_1123_DATE_TIME; // default Date format that
+    private static final int MAX_AGE_MINUTES_REFRESH = 10;
+    private static final int MAX_AGE_MINUTES_FULL_REFRESH = 30;
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.RFC_1123_DATE_TIME; // default Date format that
                                                                                           // will be used in conversion
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHAController.class);
@@ -140,7 +139,7 @@ public class PlugwiseHAController {
         return getAppliances(false);
     }
 
-    public @NonNull Appliances getAppliances(Boolean forceRefresh) throws PlugwiseHAException {
+    public Appliances getAppliances(Boolean forceRefresh) throws PlugwiseHAException {
         Appliances appliances = this.domainObjects.getAppliances();
 
         if (!forceRefresh && appliances != null) {
@@ -197,7 +196,6 @@ public class PlugwiseHAController {
     }
 
     public @Nullable Location getLocation(String id, Boolean forceRefresh) throws PlugwiseHAException {
-
         Locations locations = this.getLocations(forceRefresh);
 
         if (!locations.containsKey(id)) {

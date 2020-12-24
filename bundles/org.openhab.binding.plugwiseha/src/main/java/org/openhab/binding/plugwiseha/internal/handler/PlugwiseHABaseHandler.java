@@ -62,7 +62,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
 
     // Abstract methods
 
-    protected abstract void initialize(@NonNull C config);
+    protected abstract void initialize(C config);
 
     protected abstract @Nullable E getEntity(PlugwiseHAController controller, Boolean forceRefresh)
             throws PlugwiseHAException;
@@ -154,9 +154,14 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
 
     private final @Nullable PlugwiseHAController getController() {
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() != null && (bridge.getHandler() instanceof PlugwiseHABridgeHandler)) {
-            return ((PlugwiseHABridgeHandler) bridge.getHandler()).getController();
+  
+        if (bridge != null) {
+            PlugwiseHABridgeHandler handler = bridge.getHandler();
+            if (handler != null && handler instanceof PlugwiseHABridgeHandler) {
+                return handler.getController();
+            }
         }
+
         return null;
     }
 
@@ -189,7 +194,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
                         }
                     }
                 } catch (PlugwiseHAException e) {
-                    logger.warn("Unexpected error handling refresh", e.getMessage());
+                    logger.warn("Unexpected error handling refresh {}", e.getMessage());
                 }
             }
         }

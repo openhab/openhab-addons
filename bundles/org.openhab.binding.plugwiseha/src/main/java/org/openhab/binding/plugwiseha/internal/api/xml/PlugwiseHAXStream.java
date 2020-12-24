@@ -17,9 +17,9 @@ import java.io.BufferedOutputStream;
 import java.io.OutputStreamWriter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.plugwiseha.internal.api.model.DTO.*;
-import org.openhab.binding.plugwiseha.internal.api.model.DTO.Module;
 import org.openhab.binding.plugwiseha.internal.api.model.converter.DateTimeConverter;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.*;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.Module;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;

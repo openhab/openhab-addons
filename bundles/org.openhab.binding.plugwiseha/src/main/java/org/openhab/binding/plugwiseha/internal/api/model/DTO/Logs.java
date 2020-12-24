@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.plugwiseha.internal.api.model.DTO;
+package org.openhab.binding.plugwiseha.internal.api.model.dto;
 
 import java.util.Map;
 import java.util.Optional;
@@ -123,14 +123,14 @@ public class Logs extends PlugwiseHACollection<Log> {
         if (logs != null) {
             for (Log log : logs.values()) {
                 String type = log.getType();
-                Log updatedLog = this.get(type);
+                Log originalLog = this.get(type);
+                Boolean originalLogIsOlder = false;
+                if (originalLog != null) {
+                    originalLogIsOlder = originalLog.isOlderThan(log);
+                }
 
-                try {
-                    if (updatedLog == null || updatedLog.isOlderThan(log)) {
-                        this.put(type, log);
-                    }
-                } catch (NullPointerException e) {
-                    e.toString();
+                if (originalLog == null || originalLogIsOlder) {
+                    this.put(type, log);
                 }
             }
         }

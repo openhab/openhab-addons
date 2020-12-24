@@ -31,9 +31,9 @@ import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAInvalidHo
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHANotAuthorizedException;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHATimeoutException;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAUnauthorizedException;
-import org.openhab.binding.plugwiseha.internal.api.model.DTO.GatewayInfo;
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAModel;
+import org.openhab.binding.plugwiseha.internal.api.model.dto.GatewayInfo;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHABridgeThingConfig;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
 import org.openhab.core.thing.Bridge;
@@ -203,8 +203,9 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
             logger.debug("Refreshing the Plugwise Home Automation Controller {}", getThing().getUID());
             this.config = getConfig().as(PlugwiseHABridgeThingConfig.class);
 
-            if (this.getController() != null) {
-                this.getController().refresh();
+            PlugwiseHAController controller = this.getController();
+            if (controller != null) {
+                controller.refresh();
             }
 
             getThing().getThings().forEach((thing) -> {
@@ -244,8 +245,9 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
 
     protected void setBridgeProperties() {
         try {
-            if (this.getController() != null) {
-                this.gatewayInfo = this.getController().getGatewayInfo();
+            PlugwiseHAController controller = this.getController();
+            if (controller != null) {
+                this.gatewayInfo = controller.getGatewayInfo();
             }
 
             Map<String, String> properties = editProperties();

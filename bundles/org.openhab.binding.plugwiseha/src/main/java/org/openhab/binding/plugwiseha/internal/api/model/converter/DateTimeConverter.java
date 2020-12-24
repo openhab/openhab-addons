@@ -17,8 +17,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 
 /**
@@ -30,7 +28,7 @@ import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 
 public class DateTimeConverter extends AbstractSingleValueConverter {
 
-    private final static DateTimeFormatter FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME; // default Date format that
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME; // default Date format that
 
     @Override
     @SuppressWarnings("rawType")
@@ -40,7 +38,7 @@ public class DateTimeConverter extends AbstractSingleValueConverter {
 
     @Override
     public ZonedDateTime fromString(String str) {
-        if (StringUtils.isBlank(str)) {
+        if (str.isBlank()) {
             return null;
         }
 
