@@ -152,8 +152,6 @@ public class ComfoAirHandler extends BaseThingHandler {
             comfoAirConnector.close();
         }
 
-        updateState(ACTIVATE_CHANNEL_ID, OnOffType.OFF);
-
         final ScheduledFuture<?> localPoller = poller;
 
         if (localPoller != null) {
