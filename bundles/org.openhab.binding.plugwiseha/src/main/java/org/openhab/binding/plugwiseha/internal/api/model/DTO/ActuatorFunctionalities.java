@@ -27,9 +27,9 @@ import java.util.Optional;
 
 public class ActuatorFunctionalities extends PlugwiseHACollection<ActuatorFunctionality> {
 
-    private final String THERMOSTAT_FUNCTIONALITY = "thermostat";
-    private final String OFFSETTEMPERATURE_FUNCTIONALITY = "temperature_offset";
-    private final String RELAY_FUNCTIONALITY = "relay";
+    private static final String THERMOSTAT_FUNCTIONALITY = "thermostat";
+    private static final String OFFSETTEMPERATURE_FUNCTIONALITY = "temperature_offset";
+    private static final String RELAY_FUNCTIONALITY = "relay";
 
     public Optional<Boolean> getRelayLockState() {
         return this.getFunctionalityRelay().flatMap(ActuatorFunctionality::getRelayLockState)

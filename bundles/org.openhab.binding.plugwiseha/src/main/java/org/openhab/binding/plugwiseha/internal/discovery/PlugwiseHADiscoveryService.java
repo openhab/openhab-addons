@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plugwiseha.internal.PlugwiseHABindingConstants;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException;
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
@@ -41,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Bas van Wetten - Initial contribution
  * @author Leo Siepel - finish initial contribution
  */
+@NonNullByDefault
 public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHADiscoveryService.class);
@@ -48,7 +51,7 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT = 5;
     private static final int REFRESH = 600;
 
-    private ScheduledFuture<?> discoveryFuture;
+    private @Nullable ScheduledFuture<?> discoveryFuture;
 
     public PlugwiseHADiscoveryService(PlugwiseHABridgeHandler bridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT, true);
@@ -67,22 +70,29 @@ public class PlugwiseHADiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start Plugwise Home Automation background discovery");
-        if (this.discoveryFuture == null || this.discoveryFuture.isCancelled()) {
-            if (this.handler.getThing().getStatus() == ThingStatus.ONLINE) {
-                logger.debug("Start Scan");
-                this.discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 30, REFRESH, TimeUnit.SECONDS);
-            } else {
-                stopBackgroundDiscovery();
+
+        if (this.discoveryFuture != null) {
+            if (this.discoveryFuture.isCancelled()) {
+                if (this.handler.getThing().getStatus() == ThingStatus.ONLINE) {
+                    logger.debug("Start Scan");
+                    this.discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan, 30, REFRESH,
+                            TimeUnit.SECONDS);
+                } else {
+                    stopBackgroundDiscovery();
+                }
             }
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (this.discoveryFuture != null && !this.discoveryFuture.isCancelled()) {
-            logger.debug("Stop Plugwise Home Automation background discovery");
-            this.discoveryFuture.cancel(true);
-            this.discoveryFuture = null;
+        ScheduledFuture<?> discoveryFuture = this.discoveryFuture;
+        if (discoveryFuture != null) {
+            if (!discoveryFuture.isCancelled()) {
+                logger.debug("Stop Plugwise Home Automation background discovery");
+                discoveryFuture.cancel(true);
+                discoveryFuture = null;
+            }
         }
     }
 

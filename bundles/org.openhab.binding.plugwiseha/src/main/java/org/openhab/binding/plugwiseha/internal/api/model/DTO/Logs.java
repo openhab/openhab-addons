@@ -26,16 +26,16 @@ import java.util.Optional;
  */
 public class Logs extends PlugwiseHACollection<Log> {
 
-    private final String THERMOSTAT = "thermostat";
-    private final String TEMPERATURE = "temperature";
-    private final String TEMPERATURE_OFFSET = "temperature_offset";
-    private final String BATTERY = "battery";
-    private final String POWER_USAGE = "electricity_consumed";
-    private final String RELAY = "relay";
-    private final String DHWSTATE = "domestic_hot_water_state";
-    private final String CHSTATE = "central_heating_state";
-    private final String VALVE_POSITION = "valve_position";
-    private final String WATER_PRESSURE = "central_heater_water_pressure";
+    private static final String THERMOSTAT = "thermostat";
+    private static final String TEMPERATURE = "temperature";
+    private static final String TEMPERATURE_OFFSET = "temperature_offset";
+    private static final String BATTERY = "battery";
+    private static final String POWER_USAGE = "electricity_consumed";
+    private static final String RELAY = "relay";
+    private static final String DHWSTATE = "domestic_hot_water_state";
+    private static final String CHSTATE = "central_heating_state";
+    private static final String VALVE_POSITION = "valve_position";
+    private static final String WATER_PRESSURE = "central_heater_water_pressure";
 
     public Optional<Double> getTemperature() {
         return this.getLogTemperature().map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
