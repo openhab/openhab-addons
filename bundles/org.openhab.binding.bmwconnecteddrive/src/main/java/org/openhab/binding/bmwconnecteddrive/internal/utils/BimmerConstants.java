@@ -35,11 +35,12 @@ public class BimmerConstants {
     public static final String REGION_ROW = "ROW";
 
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/country_selector.py
-    public static final String AUTH_SERVER_NORTH_AMERICA = "customer.bmwgroup.com/gcdm/usa";
-    public static final String AUTH_SERVER_CHINA = "customer.bmwgroup.cn/gcdm";
-    public static final String AUTH_SERVER_ROW = "customer.bmwgroup.com/gcdm";
+    public static final String AUTH_SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us/gcdm";
+    public static final String AUTH_SERVER_CHINA = "b2vapi.bmwgroup.cn/gcdm";
+    public static final String AUTH_SERVER_ROW = "b2vapi.bmwgroup.com/gcdm";
     public static final Map<String, String> AUTH_SERVER_MAP = Map.of(REGION_NORTH_AMERICA, AUTH_SERVER_NORTH_AMERICA,
             REGION_CHINA, AUTH_SERVER_CHINA, REGION_ROW, AUTH_SERVER_ROW);
+
     public static final String OAUTH_ENDPOINT = "/oauth/token";
 
     public static final String SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us";
@@ -48,12 +49,18 @@ public class BimmerConstants {
     public static final Map<String, String> SERVER_MAP = Map.of(REGION_NORTH_AMERICA, SERVER_NORTH_AMERICA,
             REGION_CHINA, SERVER_CHINA, REGION_ROW, SERVER_ROW);
 
-    public static final String AUTHORIZATION_VALUE = "Basic blF2NkNxdHhKdVhXUDc0eGYzQ0p3VUVQOjF6REh4NnVuNGNEanliTEVOTjNreWZ1bVgya0VZaWdXUGNRcGR2RFJwSUJrN3JPSg==";
+    // see https://github.com/bimmerconnected/bimmer_connected/pull/252/files
+    public static final Map<String, String> AUTHORIZATION_VALUE_MAP = Map.of(REGION_NORTH_AMERICA,
+            "Basic ZDc2NmI1MzctYTY1NC00Y2JkLWEzZGMtMGNhNTY3MmQ3ZjhkOjE1ZjY5N2Y2LWE1ZDUtNGNhZC05OWQ5LTNhMTViYzdmMzk3Mw==",
+            REGION_CHINA,
+            "Basic blF2NkNxdHhKdVhXUDc0eGYzQ0p3VUVQOjF6REh4NnVuNGNEanliTEVOTjNreWZ1bVgya0VZaWdXUGNRcGR2RFJwSUJrN3JPSg==",
+            REGION_ROW,
+            "Basic ZDc2NmI1MzctYTY1NC00Y2JkLWEzZGMtMGNhNTY3MmQ3ZjhkOjE1ZjY5N2Y2LWE1ZDUtNGNhZC05OWQ5LTNhMTViYzdmMzk3Mw==");
+
     public static final String CREDENTIAL_VALUES = "nQv6CqtxJuXWP74xf3CJwUEP:1zDHx6un4cDjybLENN3kyfumX2kEYigWPcQpdvDRpIBk7rOJ";
-    public static final String CLIENT_ID_VALUE = "dbf0a542-ebd1-4ff0-a9a7-55172fbfce35";
     public static final String REDIRECT_URI_VALUE = "https://www.bmw-connecteddrive.com/app/static/external-dispatch.html";
     public static final String SCOPE_VALUES = "authenticate_user vehicle_data remote_services";
 
-    public static final String LEGACY_AUTHORIZATION_VALUE = "Basic ZDc2NmI1MzctYTY1NC00Y2JkLWEzZGMtMGNhNTY3MmQ3ZjhkOjE1ZjY5N2Y2LWE1ZDUtNGNhZC05OWQ5LTNhMTViYzdmMzk3Mw==";
     public static final String LEGACY_CREDENTIAL_VALUES = "nQv6CqtxJuXWP74xf3CJwUEP:1zDHx6un4cDjybLENN3kyfumX2kEYigWPcQpdvDRpIBk7rOJ";
+    public static final String REFERER_URL = "https://www.bmw-connecteddrive.de/app/index.html";
 }
