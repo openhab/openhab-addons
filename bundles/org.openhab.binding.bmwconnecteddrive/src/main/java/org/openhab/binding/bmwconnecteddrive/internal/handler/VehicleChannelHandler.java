@@ -69,10 +69,13 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     // List Interfaces
     protected List<CBSMessage> serviceList = new ArrayList<CBSMessage>();
+    protected String selectedService = Constants.INVALID;
     private int serviceListIndex = -1;
     protected List<CCMMessage> checkControlList = new ArrayList<CCMMessage>();
+    protected String selectedCC = Constants.INVALID;
     private int checkControlListIndex = -1;
     protected List<Destination> destinationList = new ArrayList<Destination>();
+    protected String selectedDestination = Constants.INVALID;
 
     protected BMWConnectedDriveOptionProvider optionProvider;
 
@@ -289,15 +292,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
     public void initialize() {
     }
 
-    /**
-     * Update List Interfaces
-     */
-
-    public synchronized void nextCheckControl() {
-        checkControlListIndex++;
-        updateService();
-    }
-
     public synchronized void setCheckControlList(List<CCMMessage> l) {
         checkControlList = l;
         updateCheckControls();
@@ -330,7 +324,26 @@ public class VehicleChannelHandler extends BaseThingHandler {
         }
     }
 
-    private void updateService() {
+    private void updateService(List sl) {
+        boolean isFirstUpdate = serviceList.isEmpty();
+        serviceList = sl;
+        List<StateOption> options = new ArrayList<>();
+        if (destinationList.size() == 0) {
+            destinationList.add(Destination.getUndefined());
+        }
+
+        destinationList.forEach(destination -> {
+            options.add(new StateOption(destination.getAddress(), destination.getAddress()));
+        });
+
+        logger.info("Added {} options to {}", destinationList.size(), destinationName.getAsString());
+        logger.info("Options {}", options.toArray());
+        optionProvider.setStateOptions(destinationName, options);
+        if (isFirstUpdate) {
+            updateState(destinationName, StringType.valueOf(destinationList.get(0).getAddress()));
+            updateState(destinationLocation, PointType.valueOf(destinationList.get(0).getCoordinates()));
+        }
+
         if (!serviceList.isEmpty()) {
             if (serviceListIndex < 0 || serviceListIndex >= serviceList.size()) {
                 // select first item
@@ -359,23 +372,43 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateDestinations(List<Destination> dl) {
-        boolean isFirstUpdate = destinationList.isEmpty();
-        destinationList = dl;
         List<StateOption> options = new ArrayList<>();
-        if (destinationList.size() == 0) {
-            destinationList.add(Destination.getUndefined());
-        } else {
-            destinationList.forEach(destination -> {
-                options.add(new StateOption(destination.getAddress(), destination.getAddress()));
-            });
+        // if list is empty add "undefined" element
+        if (dl.size() == 0) {
+            dl.add(Destination.getUndefined());
         }
+
+        // add all elements to options
+        destinationList = dl;
+        boolean isSelectedElementIn = false;
+        for (Destination destination : destinationList) {
+            options.add(new StateOption(destination.getAddress(), destination.getAddress()));
+            if (selectedDestination.equals(destination.getAddress())) {
+                isSelectedElementIn = true;
+            }
+        }
+
         logger.info("Added {} options to {}", destinationList.size(), destinationName.getAsString());
         logger.info("Options {}", options.toArray());
         optionProvider.setStateOptions(destinationName, options);
-        if (isFirstUpdate) {
+
+        // if current selected item isn't anymore in the list select first entry
+        if (!isSelectedElementIn) {
             updateState(destinationName, StringType.valueOf(destinationList.get(0).getAddress()));
             updateState(destinationLocation, PointType.valueOf(destinationList.get(0).getCoordinates()));
         }
+    }
+
+    protected void selectDestination(String destinationName) {
+        destinationList.forEach(entry -> {
+            if (destinationName.equals(entry.getAddress())) {
+                // update selected Item
+                selectedDestination = destinationName;
+                // update coordinates according to new set location
+                updateState(destinationLocation, PointType.valueOf(entry.getCoordinates()));
+                return;
+            }
+        });
     }
 
     protected void updateAllTrips(AllTrips allTrips) {

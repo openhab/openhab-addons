@@ -38,7 +38,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -169,12 +168,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         } else if (CHANNEL_GROUP_DESTINATION.equals(group)) {
             // receive new destination location
             if (command instanceof StringType) {
-                destinationList.forEach(entry -> {
-                    if (((StringType) command).toFullString().equals(entry.getAddress())) {
-                        // update coordinates according to new set location
-                        updateState(destinationLocation, PointType.valueOf(entry.getCoordinates()));
-                    }
-                });
+                selectDestination(((StringType) command).toFullString());
             }
         }
         if (channelUID.getIdWithoutGroup().equals(VEHICLE_FINGERPRINT)) {
@@ -561,7 +555,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 }
                 updateVehicleStatus(vStatus);
                 setCheckControlList(vStatus.checkControlMessages);
-                setServiceList(vStatus.cbsData);
+                // setServiceList(vStatus.cbsData);
                 updatePosition(vStatus.position);
             }
         }
