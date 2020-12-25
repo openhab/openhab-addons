@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class TiVoHandler extends BaseThingHandler {
-    private static final Pattern NUMERIC_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
+    private static final Pattern NUMERIC_PATTERN = Pattern.compile("(\\d+)\\.?(\\d+)?");
 
     private final Logger logger = LoggerFactory.getLogger(TiVoHandler.class);
     private TivoConfigData tivoConfigData = new TivoConfigData();
@@ -154,8 +154,10 @@ public class TiVoHandler extends BaseThingHandler {
             updateTivoStatus(currentStatus, commandResult);
         }
 
-        // disconnect once command is complete (really only disconnects if isCfgKeepConnOpen = false)
-        tivoConnection.get().connTivoDisconnect(false);
+        if (!tivoConfigData.isKeepConnActive()) {
+            // disconnect once command is complete
+            tivoConnection.get().connTivoDisconnect();
+        }
     }
 
     @Override
@@ -186,7 +188,7 @@ public class TiVoHandler extends BaseThingHandler {
 
         if (tivoConnection.isPresent()) {
             try {
-                tivoConnection.get().connTivoDisconnect(true);
+                tivoConnection.get().connTivoDisconnect();
             } catch (InterruptedException e) {
                 // TiVo handler disposed or openHAB exiting, do nothing
             }
@@ -249,10 +251,10 @@ public class TiVoHandler extends BaseThingHandler {
             // Parse the channel number and if there is a decimal, the sub-channel number (OTA channels)
             Matcher matcher = NUMERIC_PATTERN.matcher(command);
             if (matcher.find()) {
-                if (matcher.groupCount() == 1 || matcher.groupCount() == 2) {
+                if (matcher.groupCount() >= 1) {
                     channel = Integer.parseInt(matcher.group(1).trim());
                 }
-                if (matcher.groupCount() == 2) {
+                if (matcher.groupCount() >= 2 && matcher.group(2) != null) {
                     subChannel = Integer.parseInt(matcher.group(2).trim());
                 }
             } else {

@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -87,7 +86,9 @@ public class TivoStatusProvider {
         }
         connTivoConnect();
         doNappTime();
-        connTivoDisconnect(false);
+        if (!tivoConfigData.isKeepConnActive()) {
+            connTivoDisconnect();
+        }
     }
 
     /**
@@ -274,41 +275,22 @@ public class TivoStatusProvider {
     }
 
     /**
-     * {@link connTivoDisconnect} conditionally closes the Socket connection. When 'keep connection open' or 'channel
-     * scanning' is true, the disconnection process is ignored. Disconnect can be forced by setting forceDisconnect to
-     * true.
-     *
-     * @param forceDisconnect true = forces a disconnection , false = disconnects in specific situations
-     * @throws InterruptedException
-     */
-    public void connTivoDisconnect(boolean forceDisconnect) throws InterruptedException {
-        if (forceDisconnect) {
-            connSocketDisconnect();
-        } else {
-            if (!tivoConfigData.isKeepConnActive()) {
-                doNappTime();
-                connSocketDisconnect();
-            }
-        }
-    }
-
-    /**
      * {@link connTivoReconnect} disconnect and reconnect the socket connection to the TiVo.
      *
      * @return boolean true = connection succeeded, false = connection failed
      * @throws InterruptedException
      */
     public boolean connTivoReconnect() throws InterruptedException {
-        connSocketDisconnect();
+        connTivoDisconnect();
         doNappTime();
         return connTivoConnect();
     }
 
     /**
-     * {@link connSocketDisconnect} cleanly closes the socket connection and dependent objects
+     * {@link connTivoDisconnect} cleanly closes the socket connection and dependent objects
      *
      */
-    private void connSocketDisconnect() {
+    public void connTivoDisconnect() throws InterruptedException {
         TiVoHandler tivoHandler = this.tivoHandler;
         StreamReader streamReader = this.streamReader;
         PrintStream streamWriter = this.streamWriter;
@@ -322,28 +304,25 @@ public class TivoStatusProvider {
             tivoHandler.setStatusOffline();
         }
 
+        if (streamWriter != null) {
+            streamWriter.close();
+            this.streamWriter = null;
+        }
+
         try {
-            if (streamReader != null) {
-                streamReader.interrupt();
-                try {
-                    streamReader.join(TIMEOUT_SEC);
-                } catch (InterruptedException e) {
-                    logger.debug("Error joining streamReader: {}", e.getMessage());
-                }
-                this.streamReader = null;
-            }
-            if (streamWriter != null) {
-                streamWriter.close();
-                this.streamWriter = null;
-            }
             if (tivoSocket != null) {
                 tivoSocket.close();
                 this.tivoSocket = null;
             }
-
         } catch (IOException e) {
             logger.debug(" TiVo '{}' - I/O exception while disconnecting: '{}'.  Connection closed.",
                     tivoConfigData.getCfgIdentifier(), e.getMessage());
+        }
+
+        if (streamReader != null) {
+            streamReader.interrupt();
+            streamReader.join(TIMEOUT_SEC);
+            this.streamReader = null;
         }
     }
 
@@ -366,7 +345,7 @@ public class TivoStatusProvider {
             return true;
         } else {
             // something is wrong, so force a disconnect/clean up so we can try again
-            connTivoDisconnect(true);
+            connTivoDisconnect();
         }
 
         try {
@@ -408,7 +387,7 @@ public class TivoStatusProvider {
     /**
      * {@link doNappTime} sleeps for the period specified by the getCmdWaitInterval parameter. Primarily used to allow
      * the TiVo time to process responses after a command is issued.
-     * 
+     *
      * @throws InterruptedException
      */
     public void doNappTime() throws InterruptedException {
@@ -438,7 +417,7 @@ public class TivoStatusProvider {
          * @throws IOException
          */
         public StreamReader(InputStream inputStream) {
-            this.setName("OH-binding-" + thingUid + "-" + tivoConfigData.getHost() + "." + tivoConfigData.getTcpPort());
+            this.setName("OH-binding-" + thingUid + "-" + tivoConfigData.getHost() + ":" + tivoConfigData.getTcpPort());
             this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             this.setDaemon(true);
         }
@@ -449,12 +428,14 @@ public class TivoStatusProvider {
                 logger.debug("streamReader {} is running. ", tivoConfigData.getCfgIdentifier());
                 while (!Thread.currentThread().isInterrupted()) {
                     String receivedData = null;
+                    BufferedReader reader = bufferedReader;
+                    if (reader == null) {
+                        throw new IOException("streamReader failed: input stream is null");
+                    }
+
                     try {
-                        BufferedReader reader = bufferedReader;
-                        if (reader != null) {
-                            receivedData = reader.readLine();
-                        }
-                    } catch (SocketTimeoutException | SocketException e) {
+                        receivedData = reader.readLine();
+                    } catch (SocketTimeoutException e) {
                         // Do nothing. Just allow the thread to check if it has to stop.
                     }
 

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Lobstein - Updated for OH3
  */
 @NonNullByDefault
-@Component(immediate = true, configurationPid = "discovery.tivo")
+@Component(configurationPid = "discovery.tivo")
 public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(TiVoDiscoveryParticipant.class);
 
