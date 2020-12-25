@@ -15,16 +15,4 @@
 		<item-type>Number:Length</item-type>
 		<label>Mileage till Service</label>
 	</channel-type>
-	<channel-type id="service-size-channel">
-		<item-type>Number</item-type>
-		<label>Number of Scheduled Services</label>
-	</channel-type>
-	<channel-type id="service-index-channel">
-		<item-type>Number</item-type>
-		<label>Current Selected Service Index</label>
-	</channel-type>
-	<channel-type id="service-next-channel">
-		<item-type>Switch</item-type>
-		<label>Next Service</label>
-	</channel-type>
 </thing:thing-descriptions>
