@@ -23,10 +23,11 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.internal.ResolBindingConstants;
-import org.openhab.binding.resol.internal.ResolConfiguration;
+import org.openhab.binding.resol.internal.ResolBridgeConfiguration;
 import org.openhab.binding.resol.internal.discovery.ResolDiscoveryService;
 import org.openhab.binding.resol.internal.providers.ResolChannelTypeProvider;
 import org.openhab.core.i18n.LocaleProvider;
@@ -80,12 +81,13 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> pollingJob;
 
     @Nullable
-    private TcpDataSource dataSource;
-
-    @Nullable
     private Connection tcpConnection;
     private Specification spec;
     private Set<String> availableDevices = new HashSet<String>();
+
+    private Map<String, ResolThingHandler> thingHandlerMap = new HashMap<String, ResolThingHandler>();
+
+    private Map<Integer, @NonNull ResolEmuEMThingHandler> emThingHandlerMap = new HashMap<Integer, @NonNull ResolEmuEMThingHandler>();
 
     public ResolBridgeHandler(Bridge bridge, @Nullable LocaleProvider localeProvider) {
         super(bridge);
@@ -130,8 +132,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private Map<String, ResolThingHandler> thingHandlerMap = new HashMap<String, ResolThingHandler>();
-
     public void registerResolThingListener(ResolThingHandler thingHandler) {
         Thing t = thingHandler.getThing();
 
@@ -155,6 +155,29 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    public void registerResolThingListener(ResolEmuEMThingHandler resolEmuEMThingHandler) {
+
+        emThingHandlerMap.put(resolEmuEMThingHandler.getVbusAddress(), resolEmuEMThingHandler);
+        synchronized (this) {
+            Connection con = tcpConnection;
+            if (isConnected && con != null) {
+                resolEmuEMThingHandler.useConnection(con);
+                updateStatus();
+            } else {
+                resolEmuEMThingHandler.updateStatus(ThingStatus.OFFLINE);
+            }
+        }
+    }
+
+    public void unregisterThingListener(ResolEmuEMThingHandler resolEmuEMThingHandler) {
+        if (!emThingHandlerMap.containsKey(resolEmuEMThingHandler.getVbusAddress())) {
+            logger.warn("thingHandler for vbus address {} not registered", resolEmuEMThingHandler.getVbusAddress());
+        } else {
+            resolEmuEMThingHandler.updateStatus(ThingStatus.OFFLINE);
+            emThingHandlerMap.remove(resolEmuEMThingHandler.getVbusAddress());
+        }
+    }
+
     private void updateThingHandlerStatus(ResolThingHandler thingHandler, ThingStatus status) {
         thingHandler.updateStatus(status);
     }
@@ -163,78 +186,96 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             if (!isConnected) {
-                Connection connection = tcpConnection;
-                /* first cleanup in case there is an old but failed TCP connection around */
-                try {
-                    if (connection != null) {
-                        connection.disconnect();
-                        connection = null;
-                        tcpConnection = null;
-                    }
-                } catch (IOException e) {
-                    logger.warn("TCP disconnect failed", e);
-                }
-                TcpDataSource source = null;
-                /* now try to establish a new TCP connection */
-                try {
-                    source = TcpDataSourceProvider.fetchInformation(InetAddress.getByName(ipAddress), 500);
-                    if (source != null) {
-                        source.setLivePassword(password);
-                    }
-                } catch (IOException e) {
-                    isConnected = false;
-                    unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
-                }
-                if (source != null) {
+                synchronized (ResolBridgeHandler.this) {
+                    Connection connection = tcpConnection;
+                    /* first cleanup in case there is an old but failed TCP connection around */
                     try {
-                        connection = source.connectLive(0, 0x0020);
-                        dataSource = source;
-                        tcpConnection = connection;
-                    } catch (Exception e) {
-                        // this generic Exception catch is required, as TcpDataSource.connectLive throws this generic
-                        // type
+                        if (connection != null) {
+                            connection.disconnect();
+                            for (int x : emThingHandlerMap.keySet()) {
+                                ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
+                                if (emu != null) {
+                                    emu.stop();
+                                }
+                            }
+
+                            connection = null;
+                            tcpConnection = null;
+                        }
+                    } catch (IOException e) {
+                        logger.warn("TCP disconnect failed", e);
+                    }
+                    TcpDataSource source = null;
+                    /* now try to establish a new TCP connection */
+                    try {
+                        source = TcpDataSourceProvider.fetchInformation(InetAddress.getByName(ipAddress), 500);
+                        if (source != null) {
+                            source.setLivePassword(password);
+                        }
+                    } catch (IOException e) {
                         isConnected = false;
                         unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
                     }
+                    if (source != null) {
+                        try {
+                            logger.debug("opening a new connection...");
+                            connection = source.connectLive(0, 0x0020);
+                            tcpConnection = connection;
+                        } catch (Exception e) {
+                            // this generic Exception catch is required, as TcpDataSource.connectLive throws this
+                            // generic
+                            // type
+                            logger.debug("... failed");
+                            isConnected = false;
+                            unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
+                        }
+                        logger.debug("... succeeded");
 
+                        if (connection != null) {
+                            try {
+                                Thread.sleep(3000); // Wait for connection...
+                            } catch (InterruptedException e) {
+                                isConnected = (connection.getConnectionState()
+                                        .equals(Connection.ConnectionState.CONNECTED));
+                            }
+
+                            // Add a listener to the Connection to monitor state changes and
+                            // read incoming frames
+                            connection.addListener(new ResolConnectorAdapter());
+                        }
+                    }
+                    // Establish the connection
                     if (connection != null) {
                         try {
-                            Thread.sleep(3000); // Wait for connection...
-                        } catch (InterruptedException e) {
-                            isConnected = (connection.getConnectionState()
-                                    .equals(Connection.ConnectionState.CONNECTED));
+                            connection.connect();
+                            for (int x : emThingHandlerMap.keySet()) {
+                                ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
+                                if (emu != null) {
+                                    emu.useConnection(connection);
+                                }
+                            }
+                        } catch (IOException e) {
+                            logger.warn("Connection failed: {}", e.getMessage());
+                            unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
+                            isConnected = false;
                         }
 
-                        // Add a listener to the Connection to monitor state changes and
-                        // read incoming frames
-                        connection.addListener(new ResolConnectorAdapter());
-                    }
-                }
-                // Establish the connection
-                if (connection != null) {
-                    try {
-                        connection.connect();
-                    } catch (IOException e) {
-                        logger.warn("Connection failed: {}", e.getMessage());
-                        unconnectedReason = Objects.requireNonNullElse(e.getMessage(), "");
+                        try {
+                            Thread.sleep(3000); // after a reconnect wait 3 sec
+                        } catch (InterruptedException e) {
+                            /* ignore interruptions */
+                        }
+                        isConnected = connection.getConnectionState().equals(Connection.ConnectionState.CONNECTED);
+                    } else {
                         isConnected = false;
                     }
-
-                    try {
-                        Thread.sleep(3000); // after a reconnect wait 3 sec
-                    } catch (InterruptedException e) {
-                        /* ignore interruptions */
+                    if (!isConnected) {
+                        logger.debug("Cannot establish connection to {} ({})", ipAddress, unconnectedReason);
+                    } else {
+                        unconnectedReason = "";
                     }
-                    isConnected = connection.getConnectionState().equals(Connection.ConnectionState.CONNECTED);
-                } else {
-                    isConnected = false;
+                    updateStatus();
                 }
-                if (!isConnected) {
-                    logger.debug("Cannot establish connection to {} ({})", ipAddress, unconnectedReason);
-                } else {
-                    unconnectedReason = "";
-                }
-                updateStatus();
             }
         }
     };
@@ -271,7 +312,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         updateStatus();
-        ResolConfiguration configuration = getConfigAs(ResolConfiguration.class);
+        ResolBridgeConfiguration configuration = getConfigAs(ResolBridgeConfiguration.class);
         ipAddress = configuration.ipAddress;
         refreshInterval = configuration.refreshInterval;
         password = configuration.password;
@@ -289,6 +330,12 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
             Connection connection = tcpConnection;
             if (connection != null) {
                 connection.disconnect();
+                for (int x : emThingHandlerMap.keySet()) {
+                    ResolEmuEMThingHandler emu = emThingHandlerMap.get(x);
+                    if (emu != null) {
+                        emu.stop();
+                    }
+                }
             }
         } catch (IOException ioe) {
             // we don't care about exceptions on disconnect in dispose
@@ -317,6 +364,9 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
         @Override
         public void packetReceived(@Nullable Connection connection, @Nullable Packet packet) {
+            if (connection == null || packet == null) {
+                return;
+            }
             String thingType = spec.getSourceDeviceSpec(packet).getName(); // use En here
 
             thingType = thingType.replace(" [", "-");
@@ -336,124 +386,133 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                     Integer.toHexString(spec.getSourceDeviceSpec(packet).getSelfAddress()),
                     Integer.toHexString(spec.getSourceDeviceSpec(packet).getPeerAddress()), thingType);
 
-            if (!availableDevices.contains(thingType)) {
-                // register the seen device
-                createThing(ResolBindingConstants.THING_ID_DEVICE, thingType,
-                        spec.getSourceDeviceSpec(packet).getName(lang));
-                availableDevices.add(thingType);
-            }
+            if (emThingHandlerMap.containsKey(spec.getSourceDeviceSpec(packet).getPeerAddress())) {
+                ResolEmuEMThingHandler emThingHandler = emThingHandlerMap
+                        .get(spec.getSourceDeviceSpec(packet).getPeerAddress());
+                if (emThingHandler != null) {
+                    emThingHandler.handle(packet);
+                }
+            } else {
+                // a generic packet was received, so let's handle it here
+                if (!availableDevices.contains(thingType)) {
+                    // register the seen device
+                    createThing(ResolBindingConstants.THING_ID_DEVICE, thingType,
+                            spec.getSourceDeviceSpec(packet).getName(lang));
+                    availableDevices.add(thingType);
+                }
 
-            PacketFieldValue[] pfvs = spec.getPacketFieldValuesForHeaders(new Packet[] { packet });
-            for (PacketFieldValue pfv : pfvs) {
-                logger.trace("Id: {}, Name: {}, Raw: {}, Text: {}", pfv.getPacketFieldId(), pfv.getName(lang),
-                        pfv.getRawValueDouble(), pfv.formatTextValue(null, Locale.getDefault()));
-                ResolThingHandler thingHandler = thingHandlerMap.get(thingType);
-                if (thingHandler != null) {
-                    String channelId = pfv.getName(); // use English here
-                    channelId = channelId.replace(" [", "-");
-                    channelId = channelId.replace("]", "");
-                    channelId = channelId.replace("(", "-");
-                    channelId = channelId.replace(")", "");
-                    channelId = channelId.replace(" #", "-");
-                    channelId = channelId.replaceAll("[^A-Za-z0-9_-]+", "_");
+                PacketFieldValue[] pfvs = spec.getPacketFieldValuesForHeaders(new Packet[] { packet });
+                for (PacketFieldValue pfv : pfvs) {
+                    logger.trace("Id: {}, Name: {}, Raw: {}, Text: {}", pfv.getPacketFieldId(), pfv.getName(lang),
+                            pfv.getRawValueDouble(), pfv.formatTextValue(null, Locale.getDefault()));
+                    ResolThingHandler thingHandler = thingHandlerMap.get(thingType);
+                    if (thingHandler != null) {
+                        String channelId = pfv.getName(); // use English here
+                        channelId = channelId.replace(" [", "-");
+                        channelId = channelId.replace("]", "");
+                        channelId = channelId.replace("(", "-");
+                        channelId = channelId.replace(")", "");
+                        channelId = channelId.replace(" #", "-");
+                        channelId = channelId.replaceAll("[^A-Za-z0-9_-]+", "_");
 
-                    ChannelTypeUID channelTypeUID;
+                        ChannelTypeUID channelTypeUID;
 
-                    if (pfv.getPacketFieldSpec().getUnit().getUnitId() >= 0) {
-                        channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
-                                pfv.getPacketFieldSpec().getUnit().getUnitCodeText());
-                    } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.Number) {
-                        if (pfv.getEnumVariant() != null) {
-                            // Do not auto-link the numeric value, if there is an enum for it
-                            channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "NoneHidden");
+                        if (pfv.getPacketFieldSpec().getUnit().getUnitId() >= 0) {
+                            channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
+                                    pfv.getPacketFieldSpec().getUnit().getUnitCodeText());
+                        } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.Number) {
+                            if (pfv.getEnumVariant() != null) {
+                                // Do not auto-link the numeric value, if there is an enum for it
+                                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "NoneHidden");
+                            } else {
+                                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "None");
+                            }
+
+                        } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.DateTime) {
+                            channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "DateTime");
                         } else {
                             channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "None");
                         }
 
-                    } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.DateTime) {
-                        channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "DateTime");
-                    } else {
-                        channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "None");
-                    }
+                        String acceptedItemType = "String";
 
-                    String acceptedItemType = "String";
+                        Thing thing = thingHandler.getThing();
+                        switch (pfv.getPacketFieldSpec().getType()) {
+                            case DateTime:
+                                acceptedItemType = "DateTime";
+                                break;
+                            case WeekTime:
+                            case Number:
+                                acceptedItemType = ResolChannelTypeProvider
+                                        .itemTypeForUnit(pfv.getPacketFieldSpec().getUnit());
+                                break;
+                            case Time:
+                            default:
+                                acceptedItemType = "String";
+                                break;
+                        }
+                        Channel a = thing.getChannel(channelId);
 
-                    Thing thing = thingHandler.getThing();
-                    switch (pfv.getPacketFieldSpec().getType()) {
-                        case DateTime:
-                            acceptedItemType = "DateTime";
-                            break;
-                        case WeekTime:
-                        case Number:
-                            acceptedItemType = ResolChannelTypeProvider
-                                    .itemTypeForUnit(pfv.getPacketFieldSpec().getUnit());
-                            break;
-                        case Time:
-                        default:
-                            acceptedItemType = "String";
-                            break;
-                    }
-                    Channel a = thing.getChannel(channelId);
-
-                    if (a == null && pfv.getRawValueDouble() != null) {
-                        ThingBuilder thingBuilder = thingHandler.editThing();
-
-                        ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-                        Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withType(channelTypeUID)
-                                .withLabel(pfv.getName(lang)).build();
-
-                        thingBuilder.withChannel(channel).withLabel(thing.getLabel());
-
-                        thingHandler.updateThing(thingBuilder.build());
-                    }
-
-                    switch (pfv.getPacketFieldSpec().getType()) {
-                        case Number:
-                            Double dd = pfv.getRawValueDouble();
-                            if (dd != null) {
-                                if (isSpecialValue(dd)) {
-                                    /* some error occurred in the measurement - ignore the value */
-                                } else {
-                                    thingHandler.setChannelValue(channelId, dd.doubleValue());
-                                }
-                            } else {
-                                /*
-                                 * field not available in this packet, e. g. old firmware version
-                                 * not (yet) transmitting it
-                                 */
-                            }
-                            break;
-                        case DateTime:
-                            thingHandler.setChannelValue(channelId, pfv.getRawValueDate());
-                            break;
-                        case WeekTime:
-                        case Time:
-                        default:
-                            thingHandler.setChannelValue(channelId,
-                                    pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), locale));
-                    }
-
-                    if (pfv.getEnumVariant() != null) {
-                        // if we have an enum, we additionally add that as channel
-                        String enumChannelId = channelId + "-str";
-                        if (thing.getChannel(enumChannelId) == null) {
-                            ChannelTypeUID enumChannelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
-                                    "None");
+                        if (a == null && pfv.getRawValueDouble() != null) {
                             ThingBuilder thingBuilder = thingHandler.editThing();
 
-                            ChannelUID enumChannelUID = new ChannelUID(thing.getUID(), enumChannelId);
-                            Channel channel = ChannelBuilder.create(enumChannelUID, "String")
-                                    .withType(enumChannelTypeUID).withLabel(pfv.getName(lang)).build();
+                            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+                            Channel channel = ChannelBuilder.create(channelUID, acceptedItemType)
+                                    .withType(channelTypeUID).withLabel(pfv.getName(lang)).build();
 
                             thingBuilder.withChannel(channel).withLabel(thing.getLabel());
 
                             thingHandler.updateThing(thingBuilder.build());
                         }
 
-                        thingHandler.setChannelValue(enumChannelId, pfv.getEnumVariant().getText(lang));
+                        switch (pfv.getPacketFieldSpec().getType()) {
+                            case Number:
+                                Double dd = pfv.getRawValueDouble();
+                                if (dd != null) {
+                                    if (isSpecialValue(dd)) {
+                                        /* some error occurred in the measurement - ignore the value */
+                                    } else {
+                                        thingHandler.setChannelValue(channelId, dd.doubleValue());
+                                    }
+                                } else {
+                                    /*
+                                     * field not available in this packet, e. g. old firmware version
+                                     * not (yet) transmitting it
+                                     */
+                                }
+                                break;
+                            case DateTime:
+                                thingHandler.setChannelValue(channelId, pfv.getRawValueDate());
+                                break;
+                            case WeekTime:
+                            case Time:
+                            default:
+                                thingHandler.setChannelValue(channelId,
+                                        pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), locale));
+                        }
+
+                        if (pfv.getEnumVariant() != null) {
+                            // if we have an enum, we additionally add that as channel
+                            String enumChannelId = channelId + "-str";
+                            if (thing.getChannel(enumChannelId) == null) {
+                                ChannelTypeUID enumChannelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
+                                        "None");
+                                ThingBuilder thingBuilder = thingHandler.editThing();
+
+                                ChannelUID enumChannelUID = new ChannelUID(thing.getUID(), enumChannelId);
+                                Channel channel = ChannelBuilder.create(enumChannelUID, "String")
+                                        .withType(enumChannelTypeUID).withLabel(pfv.getName(lang)).build();
+
+                                thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+
+                                thingHandler.updateThing(thingBuilder.build());
+                            }
+
+                            thingHandler.setChannelValue(enumChannelId, pfv.getEnumVariant().getText(lang));
+                        }
+                    } else {
+                        logger.info("ThingHandler for {} not registered.", thingType);
                     }
-                } else {
-                    logger.info("ThingHandler for {} not registered.", thingType);
                 }
             }
         }

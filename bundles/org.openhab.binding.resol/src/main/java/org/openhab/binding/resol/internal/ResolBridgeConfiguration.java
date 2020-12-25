@@ -15,12 +15,12 @@ package org.openhab.binding.resol.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ResolConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ResolBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Raphael Mack - Initial contribution
  */
 @NonNullByDefault
-public class ResolConfiguration {
+public class ResolBridgeConfiguration {
 
     public String ipAddress = "";
     public String password = "vbus";

@@ -34,18 +34,21 @@ public class ResolBindingConstants {
     public static final String BINDING_ID = "resol";
 
     // List of all ChannelTypeUIDs is empty, as we got totally rid of static channel types.
-    // ChannelTypeUIDs are constructed from the BINDING_ID and the UnitCodeTextIndex from teh VSF
+    // ChannelTypeUIDs are constructed from the BINDING_ID and the UnitCodeTextIndex from the VSF
 
     // List of all Thing Type
     public static final String THING_ID_DEVICE = "device";
+    public static final String THING_ID_EMU_EM = "emulatedEM";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_UID_BRIDGE = new ThingTypeUID(BINDING_ID, BRIDGE_VBUSLAN);
 
     public static final ThingTypeUID THING_TYPE_UID_DEVICE = new ThingTypeUID(BINDING_ID, THING_ID_DEVICE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_UID_BRIDGE, THING_TYPE_UID_DEVICE).collect(Collectors.toSet()));
+    public static final ThingTypeUID THING_TYPE_UID_EMU_EM = new ThingTypeUID(BINDING_ID, THING_ID_EMU_EM);
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_UID_BRIDGE, THING_TYPE_UID_DEVICE, THING_TYPE_UID_EMU_EM).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_UID_BRIDGE).collect(Collectors.toSet()));

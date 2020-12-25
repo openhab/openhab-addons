@@ -10,7 +10,45 @@
 		</supported-bridge-type-refs>
 
 		<label>Resol Device</label>
-		<description>Solar or system controller (or any other device on the VBus) from Resol.</description>
+		<description>Solar or system controller (or any other real device on the VBus) from Resol.</description>
+	</thing-type>
+
+	<thing-type id="emulatedEM">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="vbuslan"/>
+		</supported-bridge-type-refs>
+
+		<label>Emulated Extension Module (EM) Device</label>
+		<description>Emulation of an EM device which can be connected through the VBUS to resol controllers which support the EM devices.</description>
+	    <channels>
+            <channel id="relay1" typeId="relay"/>
+            <channel id="relay2" typeId="relay"/>
+            <channel id="relay3" typeId="relay"/>
+            <channel id="relay4" typeId="relay"/>
+            <channel id="relay5" typeId="relay"/>
+            
+            <channel id="temperature1" typeId="temperature"/>
+            <channel id="temperature2" typeId="temperature"/>
+            <channel id="temperature3" typeId="temperature"/>
+            <channel id="temperature4" typeId="temperature"/>
+            <channel id="temperature5" typeId="temperature"/>
+            <channel id="temperature6" typeId="temperature"/>
+
+            <channel id="resistor1" typeId="resistance"/>
+            <channel id="resistor2" typeId="resistance"/>
+            <channel id="resistor3" typeId="resistance"/>
+            <channel id="resistor4" typeId="resistance"/>
+            <channel id="resistor5" typeId="resistance"/>
+            <channel id="resistor6" typeId="resistance"/>
+        </channels>
+        
+        <config-description>
+            <parameter name="deviceId" type="integer" required="true" min="1" max="15">
+                <label>Module ID to be emulated</label>
+                <description>The (sub-)address of the emulated EM device, usable range depends on the used controller.</description>
+            </parameter>
+        </config-description>
+        
 	</thing-type>
 
 	<channel-type id="None">
@@ -25,4 +63,26 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+    <channel-type id="relay" advanced="false">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Relay State</label>
+        <description>Virtual relay output, will be set by the controller and can be used to communicate data from the resol controller to Openhab.</description>
+        <category>Switch</category>
+        <state pattern="%d %%" readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="temperature" advanced="false">
+        <item-type>Number:Temperature</item-type>
+        <label>Temperature</label>
+        <description>Virtual temperature sensor, will be read by the controller and can be used to communicate data from Openhab to the resol controller.</description>
+        <category>Temperature</category>
+        <state pattern="%d %unit%" readOnly="true"/>
+    </channel-type>
+
+    <channel-type id="resistance" advanced="false">
+        <item-type>Number:ElectricResistance</item-type>
+        <label>Resistance</label>
+        <description>Virtual resistance input, will be read by the controller and can be used to communicate data from Openhab to the resol controller. Use only one of temperature and resistance set point for each virtual input.</description>
+        <state pattern="%d %unit%" readOnly="true"/>
+    </channel-type>
 </thing:thing-descriptions>

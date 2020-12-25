@@ -19,6 +19,7 @@ import java.util.Hashtable;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.handler.ResolBridgeHandler;
+import org.openhab.binding.resol.handler.ResolEmuEMThingHandler;
 import org.openhab.binding.resol.handler.ResolThingHandler;
 import org.openhab.binding.resol.internal.discovery.ResolDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -68,6 +69,10 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(ResolBindingConstants.THING_TYPE_UID_DEVICE)) {
             return new ResolThingHandler(thing);
+        }
+
+        if (thingTypeUID.equals(ResolBindingConstants.THING_TYPE_UID_EMU_EM)) {
+            return new ResolEmuEMThingHandler(thing);
         }
 
         if (thingTypeUID.equals(ResolBindingConstants.THING_TYPE_UID_BRIDGE)) {
