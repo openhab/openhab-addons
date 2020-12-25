@@ -35,11 +35,4 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-
-	<channel-type id="discovery-fingerprint-channel">
-		<item-type>Switch</item-type>
-		<label>Discovery Fingerprint</label>
-		<description>Forcing a log entry to analyze Discovery Problems</description>
-	</channel-type>
-
 </thing:thing-descriptions>

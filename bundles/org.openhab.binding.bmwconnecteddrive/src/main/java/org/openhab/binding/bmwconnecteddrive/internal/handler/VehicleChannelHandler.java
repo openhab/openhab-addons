@@ -77,7 +77,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     protected BMWConnectedDriveOptionProvider optionProvider;
 
-    // Vahicle Status Channels
+    // Vehicle Status Channels
     protected ChannelUID doors;
     protected ChannelUID windows;
     protected ChannelUID lock;
@@ -161,9 +161,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID timer3Departure;
     protected ChannelUID timer3Enabled;
     protected ChannelUID timer3Days;
-
-    // Troubleshooting
-    protected ChannelUID vehicleFingerPrint;
 
     // Image
     protected ChannelUID imageChannel;
@@ -278,8 +275,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
         imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_FORMAT);
         imageViewportChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT);
         imageSizeChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE);
-
-        vehicleFingerPrint = new ChannelUID(thing.getUID(), CHANNEL_GROUP_TROUBLESHOOT, VEHICLE_FINGERPRINT);
     }
 
     @Override

@@ -25,7 +25,6 @@
 			<channel-group id="lifetime" typeId="hybrid-lifetime-values"/>
 			<channel-group id="destination" typeId="destination-values"/>
 			<channel-group id="image" typeId="image-values"/>
-			<channel-group id="troubleshoot" typeId="troubleshoot-control"/>
 		</channel-groups>
 
 		<config-description>
