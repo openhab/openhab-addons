@@ -1,7 +1,7 @@
 # Epson Projector Binding
 
-This binding is compatible with Epson projectors that support the ESC/VP21 protocol over a serial port or USB to serial adapter.
-Alternatively, you can connect to your projector via a TCP connection using a serial over IP device or by using`ser2net`.
+This binding is compatible with Epson projectors that support the ESC/VP21 protocol over the built-in ethernet port, serial port or USB to serial adapter.
+If your projector does not have a built-in ethernet port, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.
 
 ## Supported Things
 
@@ -9,7 +9,8 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-The projector thing cannot be auto-discovered, it has to be configured manually.
+If the projector has a built-in ethernet port connected to the same network as the openHAB server and the 'AMX Device Discovery' option is present and enabled in the projector's network menu, the thing will be discovered automatically.
+Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
 
@@ -25,8 +26,8 @@ The `projector-serial` thing has the following configuration parameters:
 
 The `projector-tcp` thing has the following configuration parameters:
 
-- _host_: IP address for the serial over IP device
-- _port_: Port for the serial over IP device
+- _host_: IP address for the projector or serial over IP device
+- _port_: Port for the projector or serial over IP device; default 3629 for projectors with built-in ethernet connector
 - _pollingInterval_: Polling interval in seconds to update channel states | 5-60 seconds; default 10 seconds
 
 Some notes:
@@ -38,6 +39,7 @@ Some notes:
 * The following channels _aspectratio_, _colormode_, _luminance_, _gamma_ and _background_ are pre-populated with a full set of options and not every option will be useable on all projectors.
 * If your projector has an option in one of the above mentioned channels that is not recognized by the binding, the channel will display 'UNKNOWN' if that un-recognized option is selected by the remote control.
 * If the projector power is switched to off in the middle of a polling operation, some of the channel values may become undefined until the projector is switched on again.
+* If the binding fails to connect to the projector using the direct IP connection, ensure that no password is configured on the projctor.
 
 * On Linux, you may get an error stating the serial port cannot be opened when the epsonprojector binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
@@ -86,11 +88,11 @@ Some notes:
 things/epson.things:
 
 ```java
-//serial port connection
+// serial port connection
 epsonprojector:projector-serial:hometheater "Projector" [ serialPort="COM5", pollingInterval=10 ]
 
-// serial over IP connection
-epsonprojector:projector-tcp:hometheater "Projector"  [ host="192.168.0.10", port=4444, pollingInterval=10 ]
+// direct IP or serial over IP connection
+epsonprojector:projector-tcp:hometheater "Projector"  [ host="192.168.0.10", port=3629, pollingInterval=10 ]
 
 ```
 
