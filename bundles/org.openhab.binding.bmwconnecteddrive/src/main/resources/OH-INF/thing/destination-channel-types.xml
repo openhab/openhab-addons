@@ -11,16 +11,4 @@
 		<item-type>Location</item-type>
 		<label>Destination GPS Coordinates</label>
 	</channel-type>
-	<channel-type id="destination-size-channel">
-		<item-type>Number</item-type>
-		<label>Number of Available Destinations</label>
-	</channel-type>
-	<channel-type id="destination-index-channel">
-		<item-type>Number</item-type>
-		<label>Index of Selected Destination</label>
-	</channel-type>
-	<channel-type id="destination-next-channel">
-		<item-type>Switch</item-type>
-		<label>Next Destination</label>
-	</channel-type>
 </thing:thing-descriptions>

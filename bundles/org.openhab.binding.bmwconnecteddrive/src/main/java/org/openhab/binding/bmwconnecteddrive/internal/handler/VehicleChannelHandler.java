@@ -37,7 +37,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
@@ -50,6 +49,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link VehicleChannelHandler} is responsible for handling commands, which are
@@ -59,18 +60,20 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class VehicleChannelHandler extends BaseThingHandler {
+    protected final Logger logger = LoggerFactory.getLogger(VehicleChannelHandler.class);
     protected boolean imperial = false;
     protected boolean hasFuel = false;
     protected boolean isElectric = false;
     protected boolean isHybrid = false;
 
     // List Interfaces
-    private List<CBSMessage> serviceList = new ArrayList<CBSMessage>();
+    protected List<CBSMessage> serviceList = new ArrayList<CBSMessage>();
     private int serviceListIndex = -1;
-    private List<CCMMessage> checkControlList = new ArrayList<CCMMessage>();
+    protected List<CCMMessage> checkControlList = new ArrayList<CCMMessage>();
     private int checkControlListIndex = -1;
-    private List<Destination> destinationList = new ArrayList<Destination>();
-    private int destinationListIndex = -1;
+    protected List<Destination> destinationList = new ArrayList<Destination>();
+
+    protected BMWConnectedDriveOptionProvider optionProvider;
 
     // Vahicle Status Channels
     protected ChannelUID doors;
@@ -84,15 +87,9 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID serviceDate;
     protected ChannelUID serviceMileage;
     protected ChannelUID serviceName;
-    protected ChannelUID serviceSize;
-    protected ChannelUID serviceIndex;
-    protected ChannelUID serviceNext;
 
     protected ChannelUID checkControlMileage;
     protected ChannelUID checkControlName;
-    protected ChannelUID checkControlSize;
-    protected ChannelUID checkControlIndex;
-    protected ChannelUID checkControlNext;
 
     protected ChannelUID doorDriverFront;
     protected ChannelUID doorDriverRear;
@@ -146,9 +143,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
     // Remote Services
     protected ChannelUID destinationName;
     protected ChannelUID destinationLocation;
-    protected ChannelUID destinationSize;
-    protected ChannelUID destinationIndex;
-    protected ChannelUID destinationNext;
 
     // Charging
     protected ChannelUID chargingStatus;
@@ -183,8 +177,9 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected Optional<String> destinationCache = Optional.empty();
     protected Optional<byte[]> imageCache = Optional.empty();
 
-    public VehicleChannelHandler(Thing thing, String type, boolean imperial) {
+    public VehicleChannelHandler(Thing thing, BMWConnectedDriveOptionProvider op, String type, boolean imperial) {
         super(thing);
+        optionProvider = op;
 
         this.imperial = imperial;
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
@@ -206,15 +201,9 @@ public class VehicleChannelHandler extends BaseThingHandler {
         serviceDate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, DATE);
         serviceMileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, MILEAGE);
         serviceName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, NAME);
-        serviceSize = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SIZE);
-        serviceIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, INDEX);
-        serviceNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, NEXT);
 
         checkControlMileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, MILEAGE);
         checkControlName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, NAME);
-        checkControlSize = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, SIZE);
-        checkControlIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, INDEX);
-        checkControlNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, NEXT);
 
         doorDriverFront = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_DRIVER_FRONT);
         doorDriverRear = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_DRIVER_REAR);
@@ -283,9 +272,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
         destinationName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, NAME);
         destinationLocation = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, GPS);
-        destinationSize = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, SIZE);
-        destinationIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, INDEX);
-        destinationNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, NEXT);
 
         imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_FORMAT);
         imageViewportChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT);
@@ -331,8 +317,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 updateState(checkControlMileage,
                         QuantityType.valueOf(Converter.round(entry.ccmMileage), MetricPrefix.KILO(SIUnits.METRE)));
             }
-            updateState(checkControlSize, new DecimalType(checkControlList.size()));
-            updateState(checkControlIndex, new DecimalType(checkControlListIndex));
         } else {
             // list is empty - set all fields to INVALID. If this isn't done the old values remain
             updateState(checkControlName, StringType.valueOf(Constants.INVALID));
@@ -342,8 +326,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 updateState(checkControlMileage,
                         QuantityType.valueOf(Converter.round(-1), MetricPrefix.KILO(SIUnits.METRE)));
             }
-            updateState(checkControlSize, new DecimalType(checkControlList.size()));
-            updateState(checkControlIndex, new DecimalType(-1));
         }
     }
 
@@ -373,8 +355,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 updateState(serviceMileage, QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage),
                         MetricPrefix.KILO(SIUnits.METRE)));
             }
-            updateState(serviceSize, new DecimalType(serviceList.size()));
-            updateState(serviceIndex, new DecimalType(serviceListIndex));
         } else {
             // list is empty - set all fields to INVALID. If this isn't done the old values remain
             updateState(serviceName, StringType.valueOf(Constants.INVALID));
@@ -384,47 +364,8 @@ public class VehicleChannelHandler extends BaseThingHandler {
             } else {
                 updateState(serviceMileage, QuantityType.valueOf(-1, MetricPrefix.KILO(SIUnits.METRE)));
             }
-            updateState(serviceSize, new DecimalType(serviceList.size()));
-            updateState(serviceIndex, new DecimalType(-1));
         }
     }
-
-    public synchronized void setDestinationList(List<Destination> l) {
-        destinationList = l;
-        updateDestination();
-    }
-
-    public synchronized void nextDestination() {
-        destinationListIndex++;
-        updateDestination();
-    }
-
-    /**
-     * needs to be synchronized with onResponse update
-     */
-    private void updateDestination() {
-        if (!destinationList.isEmpty()) {
-            if (destinationListIndex < 0 || destinationListIndex >= destinationList.size()) {
-                // select first item
-                destinationListIndex = 0;
-            }
-            Destination entry = destinationList.get(destinationListIndex);
-            updateState(destinationName, StringType.valueOf(entry.getAddress()));
-            updateState(destinationLocation, PointType.valueOf(entry.getCoordinates()));
-            updateState(destinationSize, new DecimalType(destinationList.size()));
-            updateState(destinationIndex, new DecimalType(destinationListIndex));
-        } else {
-            // list is empty - set all fields to INVALID. If this isn't done the old values remain
-            updateState(destinationName, StringType.valueOf(Constants.INVALID));
-            updateState(destinationLocation, PointType.valueOf("-1,-1"));
-            updateState(destinationSize, new DecimalType(destinationList.size()));
-            updateState(destinationIndex, new DecimalType(-1));
-        }
-    }
-
-    /**
-     * Channel Groups
-     */
 
     protected void updateAllTrips(AllTrips allTrips) {
         updateState(lifeTimeCumulatedDrivenDistance, QuantityType

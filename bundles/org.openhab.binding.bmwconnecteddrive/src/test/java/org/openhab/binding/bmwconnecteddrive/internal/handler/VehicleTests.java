@@ -22,7 +22,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
@@ -57,10 +56,10 @@ public class VehicleTests {
     private static final int RANGE_CONV = 4;
     private static final int RANGE_ELECTRIC = 4;
     private static final int DOORS = 12;
-    private static final int CHECK_EMPTY = 4;
-    private static final int CHECK_AVAILABLE = 4;
-    private static final int SERVICE_AVAILABLE = 5;
-    private static final int SERVICE_EMPTY = 5;
+    private static final int CHECK_EMPTY = 2;
+    private static final int CHECK_AVAILABLE = 2;
+    private static final int SERVICE_AVAILABLE = 3;
+    private static final int SERVICE_EMPTY = 3;
     private static final int POSITION = 2;
 
     @Nullable
@@ -86,8 +85,8 @@ public class VehicleTests {
         this.imperial = imperial;
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
-        HttpClient hc = mock(HttpClient.class);
-        cch = new VehicleHandler(thing, hc, type, imperial);
+        BMWConnectedDriveOptionProvider op = mock(BMWConnectedDriveOptionProvider.class);
+        cch = new VehicleHandler(thing, op, type, imperial);
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);

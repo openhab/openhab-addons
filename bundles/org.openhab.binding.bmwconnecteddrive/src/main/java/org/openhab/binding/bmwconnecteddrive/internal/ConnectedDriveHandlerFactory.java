@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bmwconnecteddrive.internal.handler.BMWConnectedDriveOptionProvider;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.VehicleHandler;
 import org.openhab.core.i18n.LocaleProvider;
@@ -44,12 +45,15 @@ import org.osgi.service.component.annotations.Reference;
 public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
+    private final BMWConnectedDriveOptionProvider optionProvider;
     private static final List<VehicleHandler> VEHICLE_HANDLER_REGISTRY = new ArrayList<VehicleHandler>();
     private boolean imperial = false;
 
     @Activate
-    public ConnectedDriveHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocaleProvider lp) {
+    public ConnectedDriveHandlerFactory(final @Reference HttpClientFactory hcf,
+            final @Reference BMWConnectedDriveOptionProvider op, final @Reference LocaleProvider lp) {
         httpClientFactory = hcf;
+        optionProvider = op;
         imperial = IMPERIAL_COUNTRIES.contains(lp.getLocale().getCountry());
     }
 
@@ -64,8 +68,7 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
             return new ConnectedDriveBridgeHandler((Bridge) thing, httpClientFactory, bundleContext);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            VehicleHandler vh = new VehicleHandler(thing, httpClientFactory.getCommonHttpClient(), thingTypeUID.getId(),
-                    imperial);
+            VehicleHandler vh = new VehicleHandler(thing, optionProvider, thingTypeUID.getId(), imperial);
             VEHICLE_HANDLER_REGISTRY.add(vh);
             return vh;
         }
