@@ -150,7 +150,7 @@ sitemap demo label="Main Menu" {
         Switch item="AirPressFault" icon="" label="Air pressure fault"
         Switch item="waterOvTemp" icon="" label="Water over-temperature fault"
         Text item="OemFaultCode" icon="" label="OEM fault code"
-		Switch item="Diagnostics" icon="" label="Diagnostics indication"
+        Switch item="Diagnostics" icon="" label="Diagnostics indication"
     }
 }
 
