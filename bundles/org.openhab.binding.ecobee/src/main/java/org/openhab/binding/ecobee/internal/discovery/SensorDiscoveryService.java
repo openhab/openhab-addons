@@ -17,6 +17,8 @@ import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +27,6 @@ import org.openhab.binding.ecobee.internal.handler.EcobeeThermostatBridgeHandler
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -40,21 +41,22 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class SensorDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+public class SensorDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(SensorDiscoveryService.class);
 
     private @NonNullByDefault({}) EcobeeThermostatBridgeHandler bridgeHandler;
 
+    private @Nullable Future<?> sensorDiscoveryJob;
+
     public SensorDiscoveryService() {
-        super(30);
+        super(SUPPORTED_SENSOR_THING_TYPES_UIDS, 30, true);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof EcobeeThermostatBridgeHandler) {
-            ((EcobeeThermostatBridgeHandler) handler).setDiscoveryService(this);
-            bridgeHandler = (EcobeeThermostatBridgeHandler) handler;
+            this.bridgeHandler = (EcobeeThermostatBridgeHandler) handler;
         }
     }
 
@@ -65,12 +67,13 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
 
     @Override
     public void activate() {
-        logger.debug("SensorDiscovery: Activating Ecobee sensor discovery service");
+        super.activate(null);
+        ThingHandlerService.super.activate();
     }
 
     @Override
     public void deactivate() {
-        logger.debug("SensorDiscovery: Deactivating Ecobee sensor discovery service");
+        super.deactivate();
     }
 
     @Override
@@ -79,14 +82,29 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     @Override
-    public void startBackgroundDiscovery() {
-        logger.debug("SensorDiscovery: Performing background discovery scan for {}", bridgeHandler.getThing().getUID());
-        discoverSensors();
+    protected void startBackgroundDiscovery() {
+        logger.debug("SensorDiscovery: Starting sensor background discovery job");
+        Future<?> localSensorDiscoveryJob = sensorDiscoveryJob;
+        if (localSensorDiscoveryJob == null || localSensorDiscoveryJob.isCancelled()) {
+            // TODO
+            sensorDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverSensors,
+                    DISCOVERY_INITIAL_DELAY_SECONDS, DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("SensorDiscovery: Stopping sensor background discovery job");
+        Future<?> localSensorDiscoveryJob = sensorDiscoveryJob;
+        if (localSensorDiscoveryJob != null) {
+            localSensorDiscoveryJob.cancel(true);
+            sensorDiscoveryJob = null;
+        }
     }
 
     @Override
     public void startScan() {
-        logger.debug("SensorDiscovery: Starting discovery scan for {}", bridgeHandler.getThing().getUID());
+        logger.debug("SensorDiscovery: Starting sensor discovery scan for tid {}", bridgeHandler.getThermostatId());
         discoverSensors();
     }
 
@@ -105,12 +123,16 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     private synchronized void discoverSensors() {
+        logger.debug("SensorDiscovery: Discovering sensors for '{}'", bridgeHandler.getThermostatId());
+        if (!bridgeHandler.isBackgroundDiscoveryEnabled()) {
+            return;
+        }
         for (RemoteSensorDTO sensor : bridgeHandler.getSensors()) {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             ThingUID sensorUID = new ThingUID(UID_SENSOR_THING, bridgeUID, sensor.id.replace(":", "-"));
             thingDiscovered(createDiscoveryResult(sensorUID, bridgeUID, sensor));
-            logger.trace("SensorDiscovery: Sensor with id '{}' and name '{}' added to Inbox with UID '{}'", sensor.id,
-                    sensor.name, sensorUID);
+            logger.debug("SensorDiscovery: Sensor for '{}' with id '{}' and name '{}' added with UID '{}'",
+                    bridgeHandler.getThermostatId(), sensor.id, sensor.name, sensorUID);
         }
     }
 

@@ -63,6 +63,10 @@ public class EcobeeBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(UID_ACCOUNT_BRIDGE, UID_THERMOSTAT_BRIDGE, UID_SENSOR_THING).collect(Collectors.toSet()));
 
+    // Background discovery frequency
+    public static final int DISCOVERY_INTERVAL_SECONDS = 300;
+    public static final int DISCOVERY_INITIAL_DELAY_SECONDS = 10;
+
     // Thermostat bridge and remote sensor thing config parameters
     public static final String CONFIG_THERMOSTAT_ID = "thermostatId";
     public static final String CONFIG_SENSOR_ID = "sensorId";

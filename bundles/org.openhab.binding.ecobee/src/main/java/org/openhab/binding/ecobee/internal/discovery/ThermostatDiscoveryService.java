@@ -17,6 +17,8 @@ import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +27,6 @@ import org.openhab.binding.ecobee.internal.handler.EcobeeAccountBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -40,22 +41,22 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class ThermostatDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class ThermostatDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(ThermostatDiscoveryService.class);
 
     private @NonNullByDefault({}) EcobeeAccountBridgeHandler bridgeHandler;
 
+    private @Nullable Future<?> thermostatDiscoveryJob;
+
     public ThermostatDiscoveryService() {
-        super(30);
+        super(SUPPORTED_THERMOSTAT_BRIDGE_THING_TYPES_UIDS, 30, true);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof EcobeeAccountBridgeHandler) {
             this.bridgeHandler = (EcobeeAccountBridgeHandler) handler;
-            this.bridgeHandler.setDiscoveryService(this);
         }
     }
 
@@ -66,14 +67,13 @@ public class ThermostatDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void activate() {
-        logger.debug("ThermostatDiscovery: Activating Ecobee thermostat discovery service for {}",
-                bridgeHandler.getThing().getUID());
+        super.activate(null);
+        ThingHandlerService.super.activate();
     }
 
     @Override
     public void deactivate() {
-        logger.debug("ThermostatDiscovery: Deactivating Ecobee thermostat discovery service for {}",
-                bridgeHandler.getThing().getUID());
+        super.deactivate();
     }
 
     @Override
@@ -82,15 +82,29 @@ public class ThermostatDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void startBackgroundDiscovery() {
-        logger.trace("ThermostatDiscovery: Performing background discovery scan for {}",
-                bridgeHandler.getThing().getUID());
-        discoverThermostats();
+    protected void startBackgroundDiscovery() {
+        logger.debug("ThermostatDiscovery: Starting thermostat background discovery job");
+        Future<?> localThermostatDiscoveryJob = thermostatDiscoveryJob;
+        if (localThermostatDiscoveryJob == null || localThermostatDiscoveryJob.isCancelled()) {
+            // TODO
+            thermostatDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverThermostats,
+                    DISCOVERY_INITIAL_DELAY_SECONDS, DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("ThermostatDiscovery: Stopping thermostat background discovery job");
+        Future<?> localThermostatDiscoveryJob = thermostatDiscoveryJob;
+        if (localThermostatDiscoveryJob != null) {
+            localThermostatDiscoveryJob.cancel(true);
+            thermostatDiscoveryJob = null;
+        }
     }
 
     @Override
     public void startScan() {
-        logger.debug("ThermostatDiscovery: Starting discovery scan for {}", bridgeHandler.getThing().getUID());
+        logger.debug("ThermostatDiscovery: Starting thermostat discovery scan");
         discoverThermostats();
     }
 
@@ -109,14 +123,18 @@ public class ThermostatDiscoveryService extends AbstractDiscoveryService
     }
 
     private synchronized void discoverThermostats() {
-        for (ThermostatDTO thermostat : bridgeHandler.getRegisteredThermostats()) {
+        logger.debug("ThermostatDiscovery: Discovering thermostats");
+        if (!bridgeHandler.isBackgroundDiscoveryEnabled()) {
+            return;
+        }
+        for (ThermostatDTO thermostat : this.bridgeHandler.getRegisteredThermostats()) {
             String name = thermostat.name;
             String identifier = thermostat.identifier;
             if (identifier != null && name != null) {
-                ThingUID thingUID = new ThingUID(UID_THERMOSTAT_BRIDGE, bridgeHandler.getThing().getUID(),
+                ThingUID thingUID = new ThingUID(UID_THERMOSTAT_BRIDGE, this.bridgeHandler.getThing().getUID(),
                         thermostat.identifier);
                 thingDiscovered(createDiscoveryResult(thingUID, identifier, name));
-                logger.trace("ThermostatDiscovery: Thermostat with id '{}' and name '{}' added to Inbox with UID '{}'",
+                logger.debug("ThermostatDiscovery: Thermostat with id '{}' and name '{}' added to Inbox with UID '{}'",
                         thermostat.identifier, thermostat.name, thingUID);
             }
         }
