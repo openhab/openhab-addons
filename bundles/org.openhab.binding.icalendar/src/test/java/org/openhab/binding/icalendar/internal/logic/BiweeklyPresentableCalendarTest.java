@@ -151,6 +151,7 @@ public class BiweeklyPresentableCalendarTest {
      * This test checks for Events that have just begun or ended, and if so it checks for Command Tags
      * and checks if these tags are valid
      */
+    @SuppressWarnings("null")
     @Test
     public void testCommandTagCode() {
         List<Event> events = null;
