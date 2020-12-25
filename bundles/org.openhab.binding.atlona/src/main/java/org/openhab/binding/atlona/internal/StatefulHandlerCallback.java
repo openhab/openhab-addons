@@ -140,7 +140,6 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
      * @return the {@link State} for the propertyName or null if not found
      */
     public State getState(String propertyName) {
-        // TODO Auto-generated method stub
         return state.get(propertyName);
     }
 }
