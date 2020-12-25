@@ -67,38 +67,40 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         if (props == null) {
             return;
         }
-        var discoveryPort = Integer.parseInt((String) props.get("discoveryPort"));
-        var discoveryReachableMs = Integer.parseInt((String) props.get("discoveryReachableMs"));
-        var discoveryIpRangeMin = Integer.parseInt((String) props.get("discoveryIpRangeMin"));
-        var discoveryIpRangeMax = Integer.parseInt((String) props.get("discoveryIpRangeMax"));
+        int discoveryPort = Integer.parseInt((String) props.get("discoveryPort"));
+        int discoveryReachableMs = Integer.parseInt((String) props.get("discoveryReachableMs"));
+        int discoveryIpRangeMin = Integer.parseInt((String) props.get("discoveryIpRangeMin"));
+        int discoveryIpRangeMax = Integer.parseInt((String) props.get("discoveryIpRangeMax"));
         try {
             nets = NetworkInterface.getNetworkInterfaces();
             for (NetworkInterface netint : Collections.list(nets)) {
                 Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
                 for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-                    if (!discoveryRunning)
+                    if (!discoveryRunning) {
                         break;
+                    }
                     if (!(inetAddress instanceof Inet4Address))
                         continue;
                     if (inetAddress.getHostAddress().equals(LOCAL_INTERFACE_IP))
                         continue;
                     String[] ipParts = inetAddress.getHostAddress().split("\\.");
-                    for (var i = discoveryIpRangeMin; i <= discoveryIpRangeMax; i++) {
-                        if (!discoveryRunning)
+                    for (int i = discoveryIpRangeMin; i <= discoveryIpRangeMax; i++) {
+                        if (!discoveryRunning) {
                             break;
+                        }
                         ipParts[3] = Integer.toString(i);
-                        var currentIp = String.join(".", ipParts);
+                        String currentIp = String.join(".", ipParts);
                         try {
                             var currentAddress = InetAddress.getByName(currentIp);
                             logger.debug("address: {}", currentIp);
                             if (currentAddress.isReachable(discoveryReachableMs)) {
                                 logger.debug("Reachable ip: {}", currentIp);
-                                var retries = 0;
+                                int retries = 0;
                                 while (retries < MAX_RETRIES) {
                                     try {
                                         discoverWithADB(currentIp, discoveryPort);
                                     } catch (IOException e) {
-                                        var message = e.getMessage();
+                                        String message = e.getMessage();
                                         if (message != null && message.contains("rejected by remote peer")) {
                                             retries++;
                                             logger.debug("retrying - pending {}", MAX_RETRIES - retries);
@@ -106,7 +108,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                                             continue;
                                         }
                                         throw e;
-                                    } catch (AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException e) {
+                                    } catch (AndroidDebugBridgeDeviceReadException e) {
                                         retries++;
                                         if (retries < MAX_RETRIES) {
                                             logger.debug("retrying - pending {}", MAX_RETRIES - retries);
@@ -117,8 +119,8 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                                     break;
                                 }
                             }
-                        } catch (IOException | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException
-                                | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException e) {
+                        } catch (IOException | AndroidDebugBridgeDeviceException
+                                | AndroidDebugBridgeDeviceReadException e) {
                             logger.warn("Error connecting to device at {}: {}", currentIp, e.getMessage());
                         }
                     }
@@ -129,9 +131,8 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverWithADB(String ip, int port)
-            throws InterruptedException, IOException, AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException,
-            AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException {
+    private void discoverWithADB(String ip, int port) throws InterruptedException, IOException,
+            AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException {
         var device = new AndroidDebugBridgeDevice();
         device.configure(ip, port);
         try {

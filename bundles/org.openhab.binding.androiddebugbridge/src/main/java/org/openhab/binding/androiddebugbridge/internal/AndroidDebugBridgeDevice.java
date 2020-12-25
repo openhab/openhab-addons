@@ -64,10 +64,8 @@ public class AndroidDebugBridgeDevice {
 
     private String ip = "127.0.0.1";
     private int port = 5555;
-    @Nullable
-    private Socket socket;
-    @Nullable
-    private AdbConnection connection;
+    private @Nullable Socket socket;
+    private @Nullable AdbConnection connection;
 
     public void configure(String ip, int port) {
         this.ip = ip;
@@ -270,18 +268,6 @@ public class AndroidDebugBridgeDevice {
             } catch (IOException ignored) {
             }
             socket = null;
-        }
-    }
-
-    static class AndroidDebugBridgeDeviceException extends Exception {
-        public AndroidDebugBridgeDeviceException(String message) {
-            super(message);
-        }
-    }
-
-    static class AndroidDebugBridgeDeviceReadException extends Exception {
-        public AndroidDebugBridgeDeviceReadException(String message) {
-            super(message);
         }
     }
 

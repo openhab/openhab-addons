@@ -70,17 +70,16 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 adbConnection.connect();
             }
             handleCommandInternal(channelUID, command);
-        } catch (AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException | InterruptedException | IOException e) {
+        } catch (AndroidDebugBridgeDeviceException | InterruptedException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             adbConnection.disconnect();
-        } catch (AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException e) {
+        } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.debug("read error: {}", e.getMessage());
         }
     }
 
-    private void handleCommandInternal(ChannelUID channelUID, Command command)
-            throws InterruptedException, IOException, AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException,
-            AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException {
+    private void handleCommandInternal(ChannelUID channelUID, Command command) throws InterruptedException, IOException,
+            AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException {
         if (!isLinked(channelUID))
             return;
         String channelId = channelUID.getId();
@@ -106,11 +105,10 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         }
     }
 
-    private void handleMediaVolume(ChannelUID channelUID, Command command)
-            throws IOException, InterruptedException, AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException,
-            AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException {
+    private void handleMediaVolume(ChannelUID channelUID, Command command) throws IOException, InterruptedException,
+            AndroidDebugBridgeDeviceReadException, AndroidDebugBridgeDeviceException {
         if (command instanceof RefreshType) {
-            AndroidDebugBridgeDevice.VolumeInfo volumeInfo = adbConnection.getMediaVolume();
+            var volumeInfo = adbConnection.getMediaVolume();
             maxMediaVolume = volumeInfo.max;
             updateState(channelUID, new PercentType((int) Math.round(toPercent(volumeInfo.current, volumeInfo.max))));
         } else {
@@ -131,7 +129,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     }
 
     private void handleMediaControlCommand(ChannelUID channelUID, Command command)
-            throws InterruptedException, IOException, AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException {
+            throws InterruptedException, IOException, AndroidDebugBridgeDeviceException {
         if (command instanceof RefreshType) {
             boolean playing = adbConnection.isPlayingMedia();
             updateState(channelUID, playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
@@ -172,58 +170,63 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         var schedule = connectionCheckerSchedule;
         if (schedule != null) {
             schedule.cancel(true);
             connectionCheckerSchedule = null;
         }
         adbConnection.disconnect();
+        super.dispose();
     }
 
     public void checkConnection() {
         var currentConfig = config;
         if (currentConfig == null)
             return;
-        logger.debug("Refresh device {} status", currentConfig.ip);
-        if (adbConnection.isConnected()) {
-            if (thing.getStatus() != ThingStatus.ONLINE)
-                updateStatus(ThingStatus.ONLINE);
-            refreshStatus();
-        } else {
+        try {
+            logger.debug("Refresh device {} status", currentConfig.ip);
+            if (adbConnection.isConnected()) {
+                if (thing.getStatus() != ThingStatus.ONLINE)
+                    updateStatus(ThingStatus.ONLINE);
+                refreshStatus();
+
+            } else {
+                if (thing.getStatus() != ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.OFFLINE);
+                }
+                try {
+                    adbConnection.connect();
+                } catch (AndroidDebugBridgeDeviceException e) {
+                    logger.debug("Error connecting to device: {}", e.getMessage());
+                    return;
+                }
+                if (adbConnection.isConnected()) {
+                    updateStatus(ThingStatus.ONLINE);
+                    refreshStatus();
+                }
+            }
+        } catch (InterruptedException | IOException | AndroidDebugBridgeDeviceException e) {
+            logger.warn("Connection checker error: {}", e.getMessage());
             if (thing.getStatus() != ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.OFFLINE);
-            }
-            try {
-                adbConnection.connect();
-            } catch (AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException e) {
-                logger.debug("Error connecting to device: {}", e.getMessage());
-                return;
-            }
-            if (adbConnection.isConnected()) {
-                updateStatus(ThingStatus.ONLINE);
-                refreshStatus();
             }
         }
     }
 
-    private void refreshStatus() {
+    private void refreshStatus() throws InterruptedException, IOException, AndroidDebugBridgeDeviceException {
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), MEDIA_VOLUME_CHANNEL), RefreshType.REFRESH);
-        } catch (IOException | InterruptedException | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException
-                | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException e) {
+        } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh media volume: {}", e.getMessage());
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), MEDIA_CONTROL_CHANNEL), RefreshType.REFRESH);
-        } catch (IOException | InterruptedException | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException
-                | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException e) {
+        } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh play status: {}", e.getMessage());
         }
         try {
             handleCommandInternal(new ChannelUID(this.thing.getUID(), CURRENT_PACKAGE_CHANNEL), RefreshType.REFRESH);
-        } catch (IOException | InterruptedException | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceException
-                | AndroidDebugBridgeDevice.AndroidDebugBridgeDeviceReadException e) {
+        } catch (AndroidDebugBridgeDeviceReadException e) {
             logger.warn("Unable to refresh current package: {}", e.getMessage());
         }
     }
