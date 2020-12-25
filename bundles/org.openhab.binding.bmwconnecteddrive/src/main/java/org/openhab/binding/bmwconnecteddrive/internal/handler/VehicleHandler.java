@@ -14,14 +14,16 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
@@ -39,6 +41,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -49,8 +52,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.types.StateOption;
 
 /**
  * The {@link VehicleHandler} is responsible for handling commands, which are
@@ -60,7 +62,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VehicleHandler extends VehicleChannelHandler {
-    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
     private boolean legacyMode = false; // switch to legacy API in case of 404 Errors
 
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
@@ -70,7 +71,6 @@ public class VehicleHandler extends VehicleChannelHandler {
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     private ImageProperties imageProperties = new ImageProperties();
-
     VehicleStatusCallback vehicleStatusCallback = new VehicleStatusCallback();
     StringResponseCallback oldVehicleStatusCallback = new LegacyVehicleStatusCallback();
     StringResponseCallback lastTripCallback = new LastTripCallback();
@@ -80,8 +80,8 @@ public class VehicleHandler extends VehicleChannelHandler {
     DestinationsCallback destinationCallback = new DestinationsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
 
-    public VehicleHandler(Thing thing, HttpClient hc, String type, boolean imperial) {
-        super(thing, type, imperial);
+    public VehicleHandler(Thing thing, BMWConnectedDriveOptionProvider op, String type, boolean imperial) {
+        super(thing, op, type, imperial);
     }
 
     @Override
@@ -138,9 +138,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     }
                 }
             }
-        } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group))
-
-        {
+        } else if (CHANNEL_GROUP_VEHICLE_IMAGE.equals(group)) {
             // Image Change
             if (configuration.isPresent()) {
                 if (command instanceof StringType) {
@@ -172,36 +170,15 @@ public class VehicleHandler extends VehicleChannelHandler {
                     }
                 }
             }
-        }
-        if (channelUID.getIdWithoutGroup().equals(NEXT)) {
-            String gUid = channelUID.getGroupId();
-            if (gUid != null) {
-                switch (gUid) {
-                    case CHANNEL_GROUP_SERVICE:
-                        if (command instanceof OnOffType) {
-                            if (command.equals(OnOffType.ON)) {
-                                nextService();
-                                updateState(channelUID, OnOffType.OFF);
-                            }
-                        }
-                        break;
-                    case CHANNEL_GROUP_DESTINATION:
-                        if (command instanceof OnOffType) {
-                            if (command.equals(OnOffType.ON)) {
-                                nextDestination();
-                                updateState(channelUID, OnOffType.OFF);
-                            }
-                        }
-                        break;
-                    case CHANNEL_GROUP_CHECK_CONTROL:
-                        if (command instanceof OnOffType) {
-                            if (command.equals(OnOffType.ON)) {
-                                nextCheckControl();
-                                updateState(channelUID, OnOffType.OFF);
-                            }
-                        }
-                        break;
-                }
+        } else if (CHANNEL_GROUP_DESTINATION.equals(group)) {
+            // receive new destination location
+            if (command instanceof StringType) {
+                destinationList.forEach(entry -> {
+                    if (((StringType) command).toFullString().equals(entry.getAddress())) {
+                        // update coordinates according to new set location
+                        updateState(destinationLocation, PointType.valueOf(entry.getCoordinates()));
+                    }
+                });
             }
         }
         if (channelUID.getIdWithoutGroup().equals(VEHICLE_FINGERPRINT)) {
@@ -308,12 +285,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                 } else {
                     logger.debug("Bridge null");
                 }
-
-                // Switch all Remote Service Channels and other Switches Off
-                updateState(vehicleFingerPrint, OnOffType.OFF);
-                updateState(serviceNext, OnOffType.OFF);
-                updateState(checkControlNext, OnOffType.OFF);
-                updateState(destinationNext, OnOffType.OFF);
 
                 // get Image after init with config values
                 synchronized (imageProperties) {
@@ -470,7 +441,17 @@ public class VehicleHandler extends VehicleChannelHandler {
                 DestinationContainer dc = Converter.getGson().fromJson(content.get(), DestinationContainer.class);
 
                 if (dc.destinations != null) {
-                    setDestinationList(dc.destinations);
+                    destinationList = dc.destinations;
+                    List<StateOption> options = new ArrayList<>();
+                    if (destinationList.size() == 0) {
+                        destinationList.add(Destination.getUndefined());
+                    }
+                    destinationList.forEach(destination -> {
+                        options.add(new StateOption(destination.getAddress(), destination.getAddress()));
+                    });
+                    logger.info("Added {} options to {}", destinationList.size(), destinationName.getAsString());
+                    logger.info("Options {}", options.toArray());
+                    optionProvider.setStateOptions(destinationName, options);
                 }
             }
         }

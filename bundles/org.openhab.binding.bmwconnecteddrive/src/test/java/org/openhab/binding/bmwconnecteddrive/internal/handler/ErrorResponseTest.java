@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.core.thing.ChannelUID;
@@ -64,8 +63,8 @@ public class ErrorResponseTest {
         this.imperial = imperial;
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
-        HttpClient hc = mock(HttpClient.class);
-        cch = new VehicleHandler(thing, hc, type, imperial);
+        BMWConnectedDriveOptionProvider op = mock(BMWConnectedDriveOptionProvider.class);
+        cch = new VehicleHandler(thing, op, type, imperial);
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);

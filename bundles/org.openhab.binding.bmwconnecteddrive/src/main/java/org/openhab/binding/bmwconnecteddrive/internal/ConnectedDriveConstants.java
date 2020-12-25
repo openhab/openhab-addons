@@ -93,11 +93,6 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_DESTINATION = "destination";
     public static final String CHANNEL_GROUP_TROUBLESHOOT = "troubleshoot";
 
-    // List Interface Constants
-    public static final String SIZE = "size";
-    public static final String INDEX = "index";
-    public static final String NEXT = "next";
-
     // Generic Constants for several groups
     public static final String NAME = "name";
     public static final String DATE = "date";

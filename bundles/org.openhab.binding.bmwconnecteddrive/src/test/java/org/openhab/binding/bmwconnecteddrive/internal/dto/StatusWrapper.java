@@ -389,45 +389,6 @@ public class StatusWrapper {
                 wanted = StringType.valueOf(vStatus.sunroof);
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
-            case SIZE:
-                assertTrue(state instanceof DecimalType);
-                dt = (DecimalType) state;
-                switch (gUid) {
-                    case CHANNEL_GROUP_CHECK_CONTROL:
-                        assertEquals(vStatus.checkControlMessages.size(), dt.intValue(),
-                                "Number CheckControl Messages");
-                        break;
-                    case CHANNEL_GROUP_SERVICE:
-                        assertEquals(vStatus.cbsData.size(), dt.intValue(), "Number of Services");
-                        break;
-                    default:
-                        assertFalse(true, "Channel " + channelUID + " " + state + " not found");
-                        break;
-                }
-                break;
-            case INDEX:
-                assertTrue(state instanceof DecimalType);
-                dt = (DecimalType) state;
-                switch (gUid) {
-                    case CHANNEL_GROUP_SERVICE:
-                        if (vStatus.cbsData.isEmpty()) {
-                            assertEquals(-1, dt.intValue(), "Index of Services");
-                        } else {
-                            assertEquals(0, dt.intValue(), "Index of Services");
-                        }
-                        break;
-                    case CHANNEL_GROUP_CHECK_CONTROL:
-                        if (vStatus.checkControlMessages.isEmpty()) {
-                            assertEquals(-1, dt.intValue(), "Index of CheckControls");
-                        } else {
-                            assertEquals(0, dt.intValue(), "Index of CheckControls");
-                        }
-                        break;
-                    default:
-                        assertFalse(true, "Channel " + channelUID + " " + state + " not found");
-                        break;
-                }
-                break;
             case SERVICE_DATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = (DateTimeType) state;
