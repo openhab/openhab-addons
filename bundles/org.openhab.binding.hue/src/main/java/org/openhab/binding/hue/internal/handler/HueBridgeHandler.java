@@ -139,7 +139,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 }
             } catch (ApiException | IOException e) {
                 if (hueBridge != null && lastBridgeConnectionState) {
-                    logger.debug("Connection to Hue Bridge {} lost.", hueBridge.getIPAddress());
+                    logger.debug("Connection to Hue Bridge {} lost: {}", hueBridge.getIPAddress(), e.getMessage(), e);
                     lastBridgeConnectionState = false;
                     onConnectionLost();
                 }
