@@ -15,25 +15,20 @@ package org.openhab.binding.ecobee.internal.handler;
 import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ecobee.internal.action.EcobeeActions;
 import org.openhab.binding.ecobee.internal.api.EcobeeApi;
 import org.openhab.binding.ecobee.internal.config.EcobeeThermostatConfiguration;
-import org.openhab.binding.ecobee.internal.discovery.SensorDiscoveryService;
 import org.openhab.binding.ecobee.internal.dto.SelectionDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.AlertDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ClimateDTO;
@@ -70,7 +65,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -252,12 +246,6 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             return handler.performThermostatFunction(request);
         }
         return false;
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.unmodifiableList(
-                Stream.of(EcobeeActions.class, SensorDiscoveryService.class).collect(Collectors.toList()));
     }
 
     public void updateChannels(ThermostatDTO thermostat) {

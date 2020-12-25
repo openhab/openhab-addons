@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ecobee.internal.api.EcobeeApi;
 import org.openhab.binding.ecobee.internal.config.EcobeeAccountConfiguration;
-import org.openhab.binding.ecobee.internal.discovery.ThermostatDiscoveryService;
+import org.openhab.binding.ecobee.internal.discovery.EcobeeDiscoveryService;
 import org.openhab.binding.ecobee.internal.dto.SelectionDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatUpdateRequestDTO;
@@ -131,7 +131,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ThermostatDiscoveryService.class);
+        return Collections.singleton(EcobeeDiscoveryService.class);
     }
 
     @Override

@@ -59,6 +59,11 @@ public class EcobeeBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_SENSOR_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(UID_SENSOR_THING).collect(Collectors.toSet()));
 
+    // Collection of thermostat and sensor thing types
+    public static final Set<ThingTypeUID> SUPPORTED_THERMOSTAT_AND_SENSOR_THING_TYPES_UIDS = Stream
+            .concat(SUPPORTED_THERMOSTAT_BRIDGE_THING_TYPES_UIDS.stream(), SUPPORTED_SENSOR_THING_TYPES_UIDS.stream())
+            .collect(Collectors.toSet());
+
     // Collection of all supported thing types
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(UID_ACCOUNT_BRIDGE, UID_THERMOSTAT_BRIDGE, UID_SENSOR_THING).collect(Collectors.toSet()));
