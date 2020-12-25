@@ -68,6 +68,7 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_AIR_PRESSURE_FAULT = "airpressfault";
     public static final String CHANNEL_WATER_OVER_TEMP = "waterovtemp";
     public static final String CHANNEL_OEM_FAULTCODE = "oemfaultcode";
+	public static final String CHANNEL_DIAGNOSTICS_INDICATION = "diag";
 
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Collections
             .unmodifiableSet(Stream.of(CHANNEL_ROOM_TEMPERATURE, CHANNEL_ROOM_SETPOINT, CHANNEL_FLOW_TEMPERATURE,
@@ -80,5 +81,5 @@ public class OpenThermGatewayBindingConstants {
                     CHANNEL_DOMESTIC_HOT_WATER_SETPOINT, CHANNEL_FLAME, CHANNEL_RELATIVE_MODULATION_LEVEL,
                     CHANNEL_MAXIMUM_MODULATION_LEVEL, CHANNEL_FAULT, CHANNEL_SERVICEREQUEST, CHANNEL_REMOTE_RESET,
                     CHANNEL_LOW_WATER_PRESSURE, CHANNEL_GAS_FLAME_FAULT, CHANNEL_AIR_PRESSURE_FAULT,
-                    CHANNEL_WATER_OVER_TEMP, CHANNEL_OEM_FAULTCODE).collect(Collectors.toSet()));
+                    CHANNEL_WATER_OVER_TEMP, CHANNEL_OEM_FAULTCODE, CHANNEL_DIAGNOSTICS_INDICATION).collect(Collectors.toSet()));
 }
