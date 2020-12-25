@@ -11,7 +11,7 @@
 		<label>Presence Sensor</label>
 		<description>A Presence sensor</description>
 		<channels>
-			<channel typeId="presence" id="presence"/>
+			<channel typeId="system.motion" id="presence"/>
 			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
@@ -19,13 +19,6 @@
 
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
-
-	<channel-type id="presence">
-		<item-type>Switch</item-type>
-		<label>Presence</label>
-		<description>Presence detected</description>
-		<state readOnly="true"></state>
-	</channel-type>
 
 	<channel-type id="last_updated">
 		<item-type>DateTime</item-type>
@@ -469,7 +462,7 @@
 		<label>Battery Sensor</label>
 		<description>A battery sensor</description>
 		<channels>
-			<channel typeId="battery" id="battery_level"/>
+			<channel typeId="system.battery-level" id="battery_level"/>
 			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
@@ -477,13 +470,6 @@
 
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
-
-	<channel-type id="battery">
-		<item-type>Number</item-type>
-		<label>Battery</label>
-		<description>The battery state.</description>
-		<state pattern="%d %%" readOnly="true"/>
-	</channel-type>
 
 	<thing-type id="carbonmonoxidesensor">
 		<supported-bridge-type-refs>
